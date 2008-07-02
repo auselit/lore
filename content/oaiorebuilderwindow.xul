@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://oaiorebuilder/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://oaiorebuilder/locale/oaiorebuilder.dtd">
+<xul:window xmlns="http://www.w3.org/1999/xhtml" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="oaiorebuilder"
+        title="OAI-ORE Builder"
+        width="600" height="400"
+        persist="screenX,screenY,width,height">
+<!-- this file is currently not used - it is an unfinished attempt to allow the extension to be popped out into a separate window -->        
+        <xul:script type="application/x-javascript" src="overlay.js"/>
+  
+  <xul:stringbundleset id="stringbundleset">
+    <xul:stringbundle id="oaiorebuilder-strings" src="chrome://oaiorebuilder/locale/oaiorebuilder.properties"/>
+  </xul:stringbundleset>
+
+   
+         <xul:toolbox>
+  			<xul:toolbar id="graph-toolbar">
+  			 <xul:toolbarbutton id="oobMenuButton" type="menu">
+  			 	<xul:menupopup>
+  			 	<xul:menuitem id="oobMenuAbout" label="About" oncommand="oaiorebuilder.openAbout()"/>
+  			 	<xul:menuitem id="oobMenuOptions" label="Options" oncommand="oaiorebuilder.openOptions()"/>
+  			 	</xul:menupopup>
+  			 </xul:toolbarbutton>
+   			 <xul:toolbarbutton id="add-node" tooltiptext="&oaiorebuilder.addNodeTip;" label="&oaiorebuilder.addNodeLabel;" oncommand="oaiorebuilder.addGraphNode();"/>
+   			 <xul:toolbarbutton id="load-rdf" tooltiptext="&oaiorebuilder.loadRDFTip;" label="&oaiorebuilder.loadRDFLabel;" oncommand="oaiorebuilder.loadRDF();"/>
+   			 <xul:toolbarbutton id="reset-graph" tooltiptext="&oaiorebuilder.resetGraphTip;" label="&oaiorebuilder.resetGraphLabel;" oncommand="oaiorebuilder.resetGraph();"/>
+ 			</xul:toolbar>
+		</xul:toolbox>
+        <iframe flex="3" height="500px" width="100%" src="chrome://oaiorebuilder/content/oaiore.html" name="graphiframe" id="graphiframe"/>
+        
+</xul:window>

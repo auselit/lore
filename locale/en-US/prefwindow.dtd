@@ -1,0 +1,13 @@
+<!ENTITY prefwindow.title "oaiorebuilder preferences">
+<!ENTITY pane1.title "oaiorebuilder preferences">
+<!ENTITY relonturl.label "Relationship Ontology URL:">
+<!ENTITY relonturl.accesskey "U">
+<!ENTITY relontns.label "Relationship Ontology Namespace:">
+<!ENTITY relontns.accesskey "N">
+<!ENTITY relontprefix.label "Relationship Ontology Prefix:">
+<!ENTITY rdfrepos.label "Repository Access URL:">
+<!ENTITY rdfrepostype.label "Repository Type">
+<!ENTITY relontprefix.accesskey "P">
+<!ENTITY dccreator.label "Creator:">
+<!ENTITY dccreator.accesskey "C">
+

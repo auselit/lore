@@ -1,0 +1,44 @@
+
+#oaiorebuilder-toolbar-button
+{
+  list-style-image: url("chrome://oaiorebuilder/skin/oaioreicon-sm.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+#oaiorebuilder-toolbar-button:hover
+{
+  -moz-image-region: rect(24px 24px 48px  0px);
+}
+[iconsize="small"] #oaiorebuilder-toolbar-button
+{
+  -moz-image-region: rect( 0px 40px 16px 24px);
+}
+[iconsize="small"] #oaiorebuilder-toolbar-button:hover
+{
+  -moz-image-region: rect(24px 40px 40px 24px);
+}
+#oobStatusBar {
+    cursor: pointer;
+}
+
+#oaiorebuilderStatusIcon {
+    list-style-image: url(chrome://oaiorebuilder/skin/oaioreicon-sm.png);
+}
+#oobContentBox {
+    /*-moz-binding: url("chrome://oaiorebuilder/content/bindings.xml#contentBox");*/
+    height: 270px;
+}
+
+#oobContentSplitter {
+    border-top: 1px solid !important;
+    -moz-border-top-colors: threedShadow !important;
+    border-bottom: 1px solid !important;
+    -moz-border-bottom-colors: #EEEEEE !important;
+    min-height: 3px;
+    max-height: 3px;
+    background-color: #FFFFFF;
+}
+#oobMenuButton {
+	/*margin: 0 4px 0 0;
+    padding: 0 0 0 4px;*/
+	list-style-image: url(chrome://oaiorebuilder/skin/oaioreicon-sm.png);
+}

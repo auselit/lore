@@ -1,0 +1,280 @@
+<html>
+<head>
+  <title>OAI-ORE Graph Builder</title> 
+  	<!-- graph drawing library scripts -->   
+  	<SCRIPT type="text/javascript" src='lib/wz_jsgraphics.js'></SCRIPT>
+	<SCRIPT type="text/javascript" src='lib/mootools.js'></SCRIPT>
+	<SCRIPT type="text/javascript" src='lib/moocanvas.js'></SCRIPT>
+	<SCRIPT type="text/javascript" src='lib/draw2d.js'></SCRIPT>
+	<!-- oaiorebuilder graph nodes, connnections, listeners etc -->
+	<SCRIPT type="text/javascript" src="graphs/ContextmenuConnection.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="graphs/InputPort.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="graphs/OutputPort.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="graphs/ResourceFigure.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="graphs/SelectionProperties.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="graphs/CommandListener.js"></SCRIPT>
+	<!-- styles -->
+	<link rel="stylesheet" type="text/css" href="lib/ext/resources/css/ext-all.css" />
+	<link rel="stylesheet" type="text/css" href="lib/ext/resources/css/xtheme-vista.css"/>
+	<style type="text/css">
+		.horizontal-line {width:100%; height:2px; font-size:10%; line-height:2px; border-bottom: 1.5px solid #363636;}
+		#properties {position:relative;width:300px;height:100%; background:white;}
+		#drawingarea {position:relative;width:3000px;height:3000px;}
+		.textfield {padding:1px; padding-left:3px;margin:0; height:1.8em; width:400px;border: solid #363636 1px;}
+		.button {font-weight:bold; padding:0;margin:0;height:1.8em; border:none;background:#363636;color:white;}
+		.x-layout-panel .x-tabs-body {
+			position:relative;
+			height:auto;
+		}
+		.x-date-picker {width: 200px}
+	</style> 
+	<!-- Ext (UI) scripts --> 
+	<script type="text/javascript" src="lib/ext/adapter/yui/yui-utilities.js"></script>
+	<script type="text/javascript" src="lib/ext/adapter/yui/ext-yui-adapter.js"></script>     
+	<script type="text/javascript" src="lib/ext/ext-all.js"></script>
+	<!-- RDF parser -->
+	<SCRIPT type="text/javascript" src="lib/parser.js"></SCRIPT>
+	<!-- oaiorebuilder ui functions -->
+	<SCRIPT type="text/javascript" src="graphs/uifunctions.js"></SCRIPT>
+</head>
+<body>
+  <div id="menubar"></div>
+  <div id="resourcemap"">
+  	<div  id="graph" class="x-layout-active-content">
+      <div id="drawingarea">
+      </div>	
+  	</div>
+    <div id="rdfarea"></div>
+	</div>
+  <div id="sidebar">
+  	<div id="properties">
+     	<div id="remproperties"></div>
+	 	<div id="aggreproperties"></div>
+	 	<div id="nodeproperties"></div>
+  	</div>
+  	<div id="searcharea">
+  	</div>
+  </div>
+  
+  <script type="text/javascript">
+  	// property grids
+  	var grid = new Ext.grid.PropertyGrid('remproperties', {width: 298});
+	var selectedFigure; // last selected figure - updated by SelectionProperties.js
+	grid.render();
+	setUpMetadataMenu(grid, "grid");
+	grid.getColumnModel().setColumnWidth(0,60);
+	var now = new Date();
+	//TODO: don't hardcode these values (some are overwritten by loadPrefs)
+	grid.setSource({
+		"rdf:about": "http://example.org/rem",
+		"ore:describes": "#aggregation",
+		"dc:creator": "",
+		"dcterms:modified": now,
+		"dcterms:created": now,
+		"rdf:type": "http://www.openarchives.org/ore/terms/ResourceMap"
+	});
+	var aggregrid = new Ext.grid.PropertyGrid('aggreproperties', {width: 298});
+	aggregrid.render();
+	setUpMetadataMenu(aggregrid, "aggregrid");
+	aggregrid.getColumnModel().setColumnWidth(0,60);
+	aggregrid.setSource({
+		"rdf:type": "http://www.openarchives.org/ore/terms/Aggregation"
+	});
+	var nodegrid = new Ext.grid.PropertyGrid('nodeproperties', {width: 298});
+	nodegrid.render();
+	nodegrid.on("propertychange", function(source, recid, newval, oldval) {
+		//var the_fig = lookupFigure(source["Resource"]);
+		if (recid == 'Resource'){
+			// the URL of the resource has changed
+			if (newval && newval != '') {
+				theval = newval
+			} else theval = "about:blank";
+			if (workflowLookup[theval]){
+				alert ("A resource node already exists for " + theval);
+				selectedFigure.setContent("about:blank");
+			} else {
+				workflowLookup[theval] = selectedFigure.getId();				
+			}
+			delete workflowLookup[oldval];
+		}
+		selectedFigure.updateMetadata(source);
+	});
+	setUpMetadataMenu(nodegrid,"nodegrid");
+	
+	// Create the node graph (workflow)
+	var workflow = new draw2d.Workflow("drawingarea");
+	var workflowLookup = {};
+	var onturl = "chrome://oaiorebuilder/content/frbr-core.rdf";
+
+	workflow.getCommandStack().addCommandStackEventListener(new oaiorebuilder.CommandListener());
+	var center = new Ext.ContentPanel('resourcemap', {
+		title: 'OAI-ORE Graph'
+	});
+  	var ontrelationships = {};
+	// TODO: Need a real graph layout algorithm - these functions will do for now 
+	var dummylayoutx = 50;
+   	var dummylayouty=50;
+	var nodewidth = 220;
+	var nodeheight = 170;
+	var nodespacing = 40;
+	var maxx = 400;
+   	function nextXY(){
+		if (dummylayoutx > maxx){
+			dummylayoutx = 50;
+			dummylayouty += nodeheight + nodespacing;
+		} else {
+			dummylayoutx += nodewidth + nodespacing;
+		}
+   	}
+   function lookupFigure(theURL){
+   	var figid = workflowLookup[theURL ];
+	return workflow.getDocument().getFigure(figid);
+   }
+   function addFigure(theURL){
+   		var fig = addFigureXY(theURL,dummylayoutx, dummylayouty);
+		if (fig != null) {
+			nextXY();
+		}
+   }
+   function addFigureXY(theURL,x,y){
+   	var fig = null;
+	if (workflowLookup[theURL] == null) {
+		fig = new oaiorebuilder.ResourceFigure();
+		fig.setDimension(220, 170);
+		fig.setTitle("Resource");
+		fig.setContent(theURL);
+		workflow.addFigure(fig, x, y);
+		workflowLookup[theURL] = fig.getId();
+	}
+	return fig;
+   }
+   
+	GraphBuilder = function(){
+		var layout;
+		return {
+			init: function(){
+					
+				layout = new Ext.BorderLayout(document.body, {
+					 /* north: {
+						initialSize: 0,
+						split: false,
+						titlebar: false,
+						collapsible: false
+					},*/
+					east: {
+						split: true,
+						initialSize: 310,
+						minSize: 150,
+						maxSize: 320,
+						titlebar: true,
+						collapsible: true,
+						autoScroll: true,
+						animate: true,
+						fitToFrame: true
+					},
+					center: {
+						titlebar: true,
+						autoScroll: true,
+						fitToFrame: true
+					}
+				});
+
+				/*sidebarLayout = new Ext.BorderLayout('sidebar', {
+					north: {
+						split: false,
+						autoScroll: true,
+						collapsible: true,
+						titlebar: true,
+						fitToFrame: true
+					},
+					south: {
+						split:false,
+						autoScroll: true,
+						collapsible: true,
+						titlebar: true,
+						fitToFrame: true,
+						initialSize: 400
+					
+					}
+				})*/
+				/*layout.add('north', new Ext.ContentPanel('menubar', {}));*/
+				
+				var propertyPanel = new Ext.ContentPanel('properties',{title:'Properties'});
+				var propertytabs = new Ext.TabPanel('properties', {
+					title: 'Properties'
+				});
+				//var searchPanel = new Ext.ContentPanel('searcharea',{title: 'Search'});
+				//sidebarLayout.beginUpdate();
+				//sidebarLayout.add('north', propertyPanel);
+				//sidebarLayout.add('south', searchPanel);
+				//sidebarLayout.endUpdate();
+				layout.beginUpdate();
+				//layout.add('east', new Ext.NestedLayoutPanel(sidebarLayout, {}));
+				layout.add('east',propertyPanel);
+				layout.add('center', center);
+				layout.endUpdate();
+				
+				var contenttabs = new Ext.TabPanel ('resourcemap', {
+					title: 'Graph'
+				});
+				contenttabs.addTab('graph', 'Visualisation');
+				var rdftab = contenttabs.addTab('rdfarea', 'RDF');
+				rdftab.on("activate", showRDFHTML);
+				contenttabs.activate('graph');
+				
+				/* properties */	
+				propertytabs.addTab('remproperties', "Resource Map");
+				propertytabs.addTab('aggreproperties', "Aggregation");
+				propertytabs.addTab('nodeproperties', "Resource/Relationship");
+				propertytabs.activate('remproperties');
+				
+				workflow.scrollArea = document.getElementById("graph").parentNode;
+				/*var dragsource = new Ext.dd.DragSource("dragNode", {
+					ddGroup: 'TreeDD',
+					dragData: {
+						name: "resourceNode"
+					}
+				});*/
+				var droptarget = new Ext.dd.DropTarget("graph", {
+					ddGroup: 'TreeDD'
+				});
+				droptarget.notifyDrop = function(dd, e, data){
+					if (data.name) {
+						var xOffset = workflow.getAbsoluteX();
+						var yOffset = workflow.getAbsoluteY();
+						var scrollLeft = workflow.getScrollLeft();
+						var scrollTop = workflow.getScrollTop();
+						var theURL = document.getElementById("gotourl").value;
+						if (theURL != '') {
+							addFigureXY(theURL, e.xy[0] - xOffset + scrollLeft, e.xy[1] - yOffset + scrollTop);
+						}
+					}
+					return true;
+					
+				}
+			}
+			
+		};
+	}
+();
+		
+
+	Ext.EventManager.onDocumentReady(GraphBuilder.init, GraphBuilder, true);
+	/* Menubar now handled in firefox extension - code still here for debugging purposes */
+	/*var simpleToolbar = new Ext.Toolbar('menubar');
+	simpleToolbar.addButton({
+		id: 'loadrdf',
+		text: 'Load OAI-ORE RDF',
+		cls: 'x-btn-text-icon',
+		handler: loadRDF,
+		tooltip: 'Load a Resource Map from RDF'
+	});*/
+		
+	
+	window.parent.oaiorebuilder.loadPrefs();
+	var sellistener = new oaiorebuilder.SelectionProperties(workflow);
+	workflow.addSelectionListener(sellistener);
+	loadRelationshipsFromOntology();
+  </script>
+</body>
+</html>
