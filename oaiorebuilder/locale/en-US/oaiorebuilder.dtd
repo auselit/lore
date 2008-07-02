@@ -1,0 +1,15 @@
+<!ENTITY oaiorebuilder.label "oaiorebuilder">
+<!ENTITY oaiorebuilderContext.label "oaiorebuilder menu">
+<!ENTITY oaiorebuilderContext.accesskey "Y">
+<!ENTITY oaiorebuilderToolbar.label "OAI-ORE Builder">
+<!ENTITY oaiorebuilderToolbar.tooltip "Toggle oaiorebuilder">
+<!ENTITY oaiorebuilder.addNodeLabel "Add Resource">
+<!ENTITY oaiorebuilder.addNodeTip "Add the current URL to the resource map">
+<!ENTITY oaiorebuilder.loadRDFLabel "Load RDF URL">
+<!ENTITY oaiorebuilder.loadRDFFromReposLabel "Load RDF (from repository)">
+<!ENTITY oaiorebuilder.loadRDFTip "Load an OAI-ORE resource map from RDF URL">
+<!ENTITY oaiorebuilder.loadRDFFromReposTip "Load an OAI-ORE resource map from the RDF Repository">
+<!ENTITY oaiorebuilder.resetGraphLabel "Reset Graph">
+<!ENTITY oaiorebuilder.resetGraphTip "Reset to initial empty graph">
+<!ENTITY oaiorebuilder.saveRDFLabel "Save RDF">
+<!ENTITY oaiorebuilder.saveRDFTip "Save the resource map RDF to the RDF repository">

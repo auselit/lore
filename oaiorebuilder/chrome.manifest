@@ -1,0 +1,5 @@
+content	oaiorebuilder	content/
+locale	oaiorebuilder	en-US	locale/en-US/
+skin	oaiorebuilder	classic/1.0	skin/
+overlay	chrome://browser/content/browser.xul	chrome://oaiorebuilder/content/firefoxOverlay.xul
+style	chrome://global/content/customizeToolbar.xul	chrome://oaiorebuilder/skin/overlay.css
