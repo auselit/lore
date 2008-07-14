@@ -27,6 +27,7 @@
 			height:auto;
 		}
 		.x-date-picker {width: 200px}
+		.x-menu {overflow:auto; max-height:100%;}
 	</style> 
 	<!-- Ext (UI) scripts --> 
 	<script type="text/javascript" src="lib/ext/adapter/yui/yui-utilities.js"></script>
@@ -99,7 +100,7 @@
 		}
 		selectedFigure.updateMetadata(source);
 	});
-	setUpMetadataMenu(nodegrid,"nodegrid");
+
 	
 	// Create the node graph (workflow)
 	var workflow = new draw2d.Workflow("drawingarea");
@@ -275,6 +276,7 @@
 	var sellistener = new oaiorebuilder.SelectionProperties(workflow);
 	workflow.addSelectionListener(sellistener);
 	loadRelationshipsFromOntology();
+	setUpMetadataMenu(nodegrid,"nodegrid");
   </script>
 </body>
 </html>
