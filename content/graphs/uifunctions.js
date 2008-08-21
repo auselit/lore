@@ -289,7 +289,7 @@ function loadRelationshipsFromOntology(){
 			for (var i=0; i<relResult.length;i++){
 				tmp_resource_metadata[i] = relResult[i].subject;
 			}
-			resource_metadata_props.concat(tmp_resource_metadata);
+			resource_metadata_props = resource_metadata_props.concat(tmp_resource_metadata);
 		}, false, function(args){
 			alert(args.status + "\n" + args.contentType);
 			alert(args.content);
@@ -369,6 +369,11 @@ function setUpMetadataMenu (the_grid, gridname){
 	}
 	for (var i = 0; i < metadata_props.length; i++){
 		_make_menu_entry(metadataMenu, gridname, metadata_props[i]);
+	}
+	if (gridname == "nodegrid"){
+		for (var i = 0; i < resource_metadata_props.length; i++){
+			_make_menu_entry(metadataMenu, gridname, resource_metadata_props[i]);
+		}
 	}
 	the_grid.getView().hmenu.add({id: 
 		gridname + "metadata", text: "Add metadata", menu: metadataMenu});
