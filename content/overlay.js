@@ -13,10 +13,13 @@ var oaiorebuilder = {
 	oaiorebuilder.toggleBar();
   },
   onMenuItemCommand: function(e) {
-    var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+    /*var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                                   .getService(Components.interfaces.nsIPromptService);
     promptService.alert(window, this.strings.getString("helloMessageTitle"),
-                                this.strings.getString("helloMessage"));
+                                this.strings.getString("helloMessage"));*/
+	var show=document.getElementById("addresource-oaiorebuilder");
+	show.hidden = !(gContextMenu.onLink);
+	window.graphiframe.addFigure(gContextMenu.linkURL);
   },
   onToolbarButtonCommand: function(e) {
     this.toggleBar();

@@ -1,6 +1,5 @@
 <!ENTITY oaiorebuilder.label "oaiorebuilder">
-<!ENTITY oaiorebuilderContext.label "oaiorebuilder menu">
-<!ENTITY oaiorebuilderContext.accesskey "Y">
+<!ENTITY oaiorebuilderContext.label "Add resource to ORE map">
 <!ENTITY oaiorebuilderToolbar.label "OAI-ORE Builder">
 <!ENTITY oaiorebuilderToolbar.tooltip "Toggle oaiorebuilder">
 <!ENTITY oaiorebuilder.addNodeLabel "Add Resource">
