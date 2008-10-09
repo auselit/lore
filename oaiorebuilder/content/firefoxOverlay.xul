@@ -37,12 +37,16 @@
         </xul:vbox>
     </xul:vbox>
 	
- <!-- <xul:popup id="contentAreaContextMenu">
-    <xul:menuitem id="context-oaiorebuilder" label="&oaiorebuilderContext.label;"
+ <xul:popup id="contentAreaContextMenu">
+    <!--<xul:menuitem id="context-oaiorebuilder" label="&oaiorebuilderContext.label;"
               accesskey="&oaiorebuilderContext.accesskey;"
               insertafter="context-stop"
-              oncommand="oaiorebuilder.onMenuItemCommand(event)"/>
-  </xul:popup> -->
+              oncommand="oaiorebuilder.onMenuItemCommand(event)"/>-->
+    <xul:menuseparator id="oaioresep"/>
+    <xul:menuitem id="addresource-oaiorebuilder" label="&oaiorebuilderContext.label;"
+    oncommand="oaiorebuilder.onMenuItemCommand(event)"/>
+    
+  </xul:popup> 
   
   <xul:toolbarpalette id="BrowserToolbarPalette">
   <xul:toolbarbutton id="oaiorebuilder-toolbar-button"

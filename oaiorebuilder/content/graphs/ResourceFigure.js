@@ -150,7 +150,7 @@ oaiorebuilder.ResourceFigure.prototype.setMetadata=function(_4675)
 {
 	this.url=_4675;
 	this.metadataproperties["Resource"] = _4675;
-	this.metadataarea.innerHTML=_4675;
+	this.metadataarea.innerHTML="<a target='_blank' href='" + _4675 + "'>" + _4675 + "</a>";
 }
 
 oaiorebuilder.ResourceFigure.prototype.onDragstart=function(x,y){
