@@ -74,11 +74,10 @@ function createRDF(escape){
 			ltsymb = "&lt;";
 			nlsymb = "<br/>";
 		}
-		var remprops = grid.getSource();
-		var modifiedDate = remprops["dcterms:modified"];
-		if (!modifiedDate instanceof Date){
-			modifiedDate = new Date();
-		}
+		var remprops = grid.getSource();	
+		var modifiedDate = new Date();   	
+		remprops["dcterms:modified"] = modifiedDate;
+		grid.setSource(remprops);
 		var describes = remprops["ore:describes"];
 		var rdfabout = remprops["rdf:about"];
 		
