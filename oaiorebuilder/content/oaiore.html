@@ -28,6 +28,14 @@
 		}
 		.x-date-picker {width: 200px}
 		.x-menu {overflow:auto; max-height:100%;}
+		.mimeicon {list-style-position:inside;}
+		.mimeicon a {position:relative;top:-4px}
+		.pageicon {list-style-image: url(chrome://oaiorebuilder/skin/icons/page.gif);}
+		.imageicon {list-style-image: url(chrome://oaiorebuilder/skin/icons/image.png);}
+		.htmlicon {list-style-image: url(chrome://oaiorebuilder/skin/icons/page_html.gif);}
+		.videoicon {list-style-image: url(chrome://oaiorebuilder/skin/icons/film.png);}
+		.pdficon {list-style-image: url(chrome://oaiorebuilder/skin/icons/file_acrobat.gif);}
+		.audioicon {list-style-image: url(chrome://oaiorebuilder/skin/icons/page_sound.gif);}
 	</style> 
 	<!-- Ext (UI) scripts --> 
 	<script type="text/javascript" src="lib/ext/adapter/yui/yui-utilities.js"></script>
@@ -38,7 +46,7 @@
 	<!-- oaiorebuilder ui functions -->
 	<SCRIPT type="text/javascript" src="graphs/uifunctions.js"></SCRIPT>
 </head>
-<body>
+<body><!-- onLoad='addFigure("http://www.emsah.uq.edu.au/ASAL2007/design/image012.jpg");'-->
   <div id="menubar"></div>
   <div id="resourcemap"">
   	<div  id="graph" class="x-layout-active-content">
