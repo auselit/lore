@@ -1,11 +1,44 @@
+var oreLocationListener = {
+  QueryInterface: function(aIID)
+  {
+   if (aIID.equals(Components.interfaces.nsIWebProgressListener) ||
+       aIID.equals(Components.interfaces.nsISupportsWeakReference) ||
+       aIID.equals(Components.interfaces.nsISupports))
+     return this;
+   throw Components.results.NS_NOINTERFACE;
+  },
+
+  onLocationChange: function(aProgress, aRequest, aURI)
+  {
+    oaiorebuilder.updateOREBrowser(aURI);
+  },
+
+  onStateChange: function() {},
+  onProgressChange: function() {},
+  onStatusChange: function() {},
+  onSecurityChange: function() {},
+  onLinkIconAvailable: function() {}
+};
 var oaiorebuilder = {
-	
+  oldURL: null,
   onLoad: function() {
 	this.graphiframe = window.graphiframe;
     this.initialized = true;
     this.strings = document.getElementById("oaiorebuilder-strings");
-  },
+	gBrowser.addProgressListener(oreLocationListener,
+        Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
 
+  },
+  uninit: function(){
+  	gBrowser.removeProgressListener(oreLocationListener);
+
+  },
+  updateOREBrowser: function(aURI) {
+    if (aURI.spec == this.oldURL)
+      return;
+	  window.graphiframe.updateOREBrowser(aURI.spec);
+    this.oldURL = aURI.spec;
+  },
   showContextMenu1: function(event) {
     document.getElementById("context-oaiorebuilder").hidden = gContextMenu.onImage;
   },
@@ -104,3 +137,5 @@ var oaiorebuilder = {
 
 };
 window.addEventListener("load", function(e) { oaiorebuilder.onLoad(e); }, false);
+window.addEventListener("unload", function() {oaiorebuilder.uninit()}, false);
+
