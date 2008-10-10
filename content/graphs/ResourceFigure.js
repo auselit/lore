@@ -159,6 +159,7 @@ oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
 oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
 {
 	var mimetype = "text/html";
+	var handler = this;
 	try {
 		var req = new XMLHttpRequest();
 		req.open('GET', theurl, true); 
@@ -186,6 +187,8 @@ oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
 				}
 				else 
 					icontype += "pageicon";
+				if (mimetype && mimetype != "" && !handler.metadataproperties["dc:format"])
+					handler.metadataproperties["dc:format"] = mimetype;
 				document.getElementById(theurl + '-icon').className = icontype;
   			}
 		};
