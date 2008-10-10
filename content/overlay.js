@@ -13,13 +13,21 @@ var oaiorebuilder = {
 	oaiorebuilder.toggleBar();
   },
   onMenuItemCommand: function(e) {
-    /*var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                                  .getService(Components.interfaces.nsIPromptService);
-    promptService.alert(window, this.strings.getString("helloMessageTitle"),
-                                this.strings.getString("helloMessage"));*/
-	var show=document.getElementById("addresource-oaiorebuilder");
-	show.hidden = !(gContextMenu.onLink);
-	window.graphiframe.addFigure(gContextMenu.linkURL);
+	if (gContextMenu.onLink)
+		window.graphiframe.addFigure(gContextMenu.linkURL);		
+  },
+  onMenuPopup: function (e){
+  	gContextMenu.showItem('addimage-oaiorebuilder',gContextMenu.onImage);
+	gContextMenu.showItem('addlink-oaiorebuilder', gContextMenu.onLink);
+	gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink);
+	
+  },
+  onToolbarButtonCommand: function(e) {
+    this.toggleBar();
+  },
+  addImageMenuItemCommand: function(e) {
+  	if (gContextMenu.onImage)
+		window.graphiframe.addFigure(gContextMenu.imageURL);
   },
   onToolbarButtonCommand: function(e) {
     this.toggleBar();
