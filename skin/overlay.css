@@ -42,3 +42,16 @@
     padding: 0 0 0 4px;*/
 	list-style-image: url(chrome://oaiorebuilder/skin/oaioreicon-sm.png);
 }
+#save-rdf {
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/disk.png);
+}
+#reset-graph {
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/arrow_refresh.png);
+}
+#add-node {
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/application_add.png);
+}
+#load-rdf-repos{
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/world_go.png);
+}
+
