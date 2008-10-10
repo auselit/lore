@@ -14,9 +14,10 @@
 	
 
 // properties that can be applied to aggregations, resource maps or aggregated resources
-var metadata_props = ["dcterms:abstract","dcterms:audience",
+var metadata_props = ["dcterms:abstract",
+		"dcterms:audience","dc:creator","dcterms:created",
 		"dc:contributor","dc:coverage", "dc:description", "dc:format",
-		"dcterms:hasFormat", "dc:identifier","dc:language","dc:publisher",
+		"dcterms:hasFormat", "dc:identifier","dc:language","dcterms:modified","dc:publisher",
 		"dc:rights","dc:source","dc:subject","dc:title"];
 // properties that only make sense for aggregations
 var aggre_metadata_props = ["ore:similarTo", "ore:isDescribedBy", "dcterms:references", "dcterms:replaces", "foaf:logo"];
