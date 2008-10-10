@@ -25,11 +25,12 @@
   			 	<xul:menuitem id="oobMenuOptions" label="Options" oncommand="oaiorebuilder.openOptions()"/>
   			 	</xul:menupopup>
   			 </xul:toolbarbutton>
-   			 <xul:toolbarbutton id="add-node" tooltiptext="&oaiorebuilder.addNodeTip;" label="&oaiorebuilder.addNodeLabel;" oncommand="oaiorebuilder.addGraphNode();"/>
-   			 <xul:toolbarbutton id="load-rdf" tooltiptext="&oaiorebuilder.loadRDFTip;" label="&oaiorebuilder.loadRDFLabel;" oncommand="oaiorebuilder.loadRDF();"/>
-   			 <xul:toolbarbutton id="load-rdf-repos" tooltiptext="&oaiorebuilder.loadRDFFromReposTip;" label="&oaiorebuilder.loadRDFFromReposLabel;" oncommand="oaiorebuilder.loadRDFFromRepos();"/>
-   			 <xul:toolbarbutton id="reset-graph" tooltiptext="&oaiorebuilder.resetGraphTip;" label="&oaiorebuilder.resetGraphLabel;" oncommand="oaiorebuilder.resetGraph();"/>
-   			 <xul:toolbarbutton id="save-rdf" tooltiptext="&oaiorebuilder.saveRDFTip;" label="&oaiorebuilder.saveRDFLabel;" oncommand="oaiorebuilder.saveRDF();"/>
+   			 <xul:toolbarbutton id="add-node" tooltiptext="&oaiorebuilder.addNodeTip;"  oncommand="oaiorebuilder.addGraphNode();"/><!-- label="&oaiorebuilder.addNodeLabel;"-->
+   			 <!--<xul:toolbarbutton id="load-rdf" tooltiptext="&oaiorebuilder.loadRDFTip;" label="&oaiorebuilder.loadRDFLabel;" oncommand="oaiorebuilder.loadRDF();"/>-->
+   			 <xul:toolbarbutton id="load-rdf-repos" tooltiptext="&oaiorebuilder.loadRDFFromReposTip;"  oncommand="oaiorebuilder.loadRDFFromRepos();"/><!--label="&oaiorebuilder.loadRDFFromReposLabel;"-->
+   			 <xul:toolbarbutton id="save-rdf" tooltiptext="&oaiorebuilder.saveRDFTip;"  oncommand="oaiorebuilder.saveRDF();"/><!-- label="&oaiorebuilder.saveRDFLabel;"-->
+   			 <xul:toolbarbutton id="reset-graph" tooltiptext="&oaiorebuilder.resetGraphTip;"  oncommand="oaiorebuilder.resetGraph();"/><!-- label="&oaiorebuilder.resetGraphLabel;"-->
+   			 
    			 <!--<xul:toolbarbutton id="pop-out" label="Pop out" oncommand="oaiorebuilder.popOutWindow();"/>-->
  			</xul:toolbar>
 		</xul:toolbox>
@@ -37,15 +38,12 @@
         </xul:vbox>
     </xul:vbox>
 	
- <xul:popup id="contentAreaContextMenu">
-    <!--<xul:menuitem id="context-oaiorebuilder" label="&oaiorebuilderContext.label;"
-              accesskey="&oaiorebuilderContext.accesskey;"
-              insertafter="context-stop"
-              oncommand="oaiorebuilder.onMenuItemCommand(event)"/>-->
+ <xul:popup id="contentAreaContextMenu" onpopupshown="oaiorebuilder.onMenuPopup(event)">
     <xul:menuseparator id="oaioresep"/>
-    <xul:menuitem id="addresource-oaiorebuilder" label="&oaiorebuilderContext.label;"
+    <xul:menuitem id="addlink-oaiorebuilder" label="&oaiorebuilderContextLink.label;"
     oncommand="oaiorebuilder.onMenuItemCommand(event)"/>
-    
+    <xul:menuitem id="addimage-oaiorebuilder" label="&oaiorebuilderContextImage.label;"
+    oncommand="oaiorebuilder.addImageMenuItemCommand(event)"/>
   </xul:popup> 
   
   <xul:toolbarpalette id="BrowserToolbarPalette">
