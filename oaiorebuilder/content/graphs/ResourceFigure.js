@@ -136,21 +136,61 @@ oaiorebuilder.ResourceFigure.prototype.setTitle=function(title){
 };
 
 
-oaiorebuilder.ResourceFigure.prototype.setContent=function(_4674)
-{//this.iframearea.innerHTML="<iframe src='"+_4674+ "' style='border:none;' width='100%' height='100%'>";
-if (_4674 && _4674 != ""){
-	var theurl = _4674;
+oaiorebuilder.ResourceFigure.prototype.setContent=function(urlparam)
+{
+if (urlparam && urlparam != ""){
+	var theurl = urlparam;
 }
 else {var theurl = "about:blank";}
-this.iframearea.innerHTML="<object data='" + theurl + "' style='z-index:-9001' type='text/html' width='100%' height='100%'></object>";
 this.setMetadata(theurl);
+// Don't display PDFs in preview TODO this should be done from mime type not just file extension
+if (!theurl.contains(".pdf"))
+	this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
+this.setIcon(theurl);
 };
 
-oaiorebuilder.ResourceFigure.prototype.setMetadata=function(_4675)
+oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
 {
-	this.url=_4675;
-	this.metadataproperties["Resource"] = _4675;
-	this.metadataarea.innerHTML="<a target='_blank' href='" + _4675 + "'>" + _4675 + "</a>";
+	this.url=urlparam;
+	this.metadataproperties["Resource"] = urlparam;
+	this.metadataarea.innerHTML="<ul><li id='"+ urlparam + "-icon'>" +
+		"<a target='_blank' href='" + urlparam + "'>" + urlparam + "</a></li></ul>";
+}
+oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
+{
+	var mimetype = "text/html";
+	try {
+		var req = new XMLHttpRequest();
+		req.open('GET', theurl, true); 
+		req.onreadystatechange = function (aEvt) {
+  			if (req.readyState == 4) {
+				var mimetype = "";
+				try {
+      				mimetype = req.getResponseHeader('Content-Type');
+				} catch (e) {}
+				var icontype = "mimeicon ";
+				if (mimetype.contains("html"))
+					icontype += "htmlicon";
+				else if (mimetype.contains("image")){
+					icontype += "imageicon";
+					document.getElementById(theurl + "-data").style.width='auto';
+				}
+				else if (mimetype.contains("audio")) {
+					icontype += "audioicon";
+				}
+				else if (mimetype.contains("video") || mimetype.contains("flash")) 
+					icontype += "videoicon";
+				else if (mimetype.contains("pdf")) {
+					icontype += "pdficon";
+					document.getElementById(theurl + "-data")
+				}
+				else 
+					icontype += "pageicon";
+				document.getElementById(theurl + '-icon').className = icontype;
+  			}
+		};
+		req.send(null);
+	} catch (e) {}
 }
 
 oaiorebuilder.ResourceFigure.prototype.onDragstart=function(x,y){
@@ -187,7 +227,7 @@ oaiorebuilder.ResourceFigure.prototype.toggle=function(){
 	if(this.originalHeight==-1){
 		this.originalHeight=this.height;
 		this.iframearea.style.display="none";
-		this.setDimension(this.width,45);
+		this.setDimension(this.width,46);
 		this.setResizeable(false);}
 	else{
 		this.setDimension(this.width,this.originalHeight);
