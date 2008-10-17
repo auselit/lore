@@ -5,17 +5,17 @@
     xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 
-  
+
   <xul:script type="application/x-javascript" src="overlay.js"/>
-  
+
   <xul:stringbundleset id="stringbundleset">
     <xul:stringbundle id="oaiorebuilder-strings" src="chrome://oaiorebuilder/locale/oaiorebuilder.properties"/>
   </xul:stringbundleset>
 
-   
+
 	<xul:vbox align="stretch" id="appcontent" collapsed="false">
 	 	<xul:splitter id="oobContentSplitter" collapsed="false"/>
-	 	
+
         <xul:vbox flex="2" align="stretch" id="oobContentBox" collapsed="true" persist="height">
         <xul:toolbox>
   			<xul:toolbar id="graph-toolbar">
@@ -26,26 +26,26 @@
   			 	</xul:menupopup>
   			 </xul:toolbarbutton>
    			 <xul:toolbarbutton id="add-node" tooltiptext="&oaiorebuilder.addNodeTip;"  oncommand="oaiorebuilder.addGraphNode();"/><!-- label="&oaiorebuilder.addNodeLabel;"-->
-   			 <!--<xul:toolbarbutton id="load-rdf" tooltiptext="&oaiorebuilder.loadRDFTip;" label="&oaiorebuilder.loadRDFLabel;" oncommand="oaiorebuilder.loadRDF();"/>-->
+   			 <xul:toolbarbutton id="load-rdf" tooltiptext="&oaiorebuilder.loadRDFTip;"  oncommand="oaiorebuilder.loadRDF();"/><!-- label="&oaiorebuilder.loadRDFLabel;"-->
    			 <xul:toolbarbutton id="load-rdf-repos" tooltiptext="&oaiorebuilder.loadRDFFromReposTip;"  oncommand="oaiorebuilder.loadRDFFromRepos();"/><!--label="&oaiorebuilder.loadRDFFromReposLabel;"-->
    			 <xul:toolbarbutton id="save-rdf" tooltiptext="&oaiorebuilder.saveRDFTip;"  oncommand="oaiorebuilder.saveRDF();"/><!-- label="&oaiorebuilder.saveRDFLabel;"-->
    			 <xul:toolbarbutton id="reset-graph" tooltiptext="&oaiorebuilder.resetGraphTip;"  oncommand="oaiorebuilder.resetGraph();"/><!-- label="&oaiorebuilder.resetGraphLabel;"-->
-   			 
+
    			 <!--<xul:toolbarbutton id="pop-out" label="Pop out" oncommand="oaiorebuilder.popOutWindow();"/>-->
  			</xul:toolbar>
 		</xul:toolbox>
         <xul:iframe flex="3" height="500px" width="100%" src="chrome://oaiorebuilder/content/oaiore.html" name="graphiframe" id="graphiframe"/>
         </xul:vbox>
     </xul:vbox>
-	
+
  <xul:popup id="contentAreaContextMenu" onpopupshown="oaiorebuilder.onMenuPopup(event)">
     <xul:menuseparator id="oaioresep"/>
     <xul:menuitem id="addlink-oaiorebuilder" label="&oaiorebuilderContextLink.label;"
     oncommand="oaiorebuilder.onMenuItemCommand(event)"/>
     <xul:menuitem id="addimage-oaiorebuilder" label="&oaiorebuilderContextImage.label;"
     oncommand="oaiorebuilder.addImageMenuItemCommand(event)"/>
-  </xul:popup> 
-  
+  </xul:popup>
+
   <xul:toolbarpalette id="BrowserToolbarPalette">
   <xul:toolbarbutton id="oaiorebuilder-toolbar-button"
     label="&oaiorebuilderToolbar.label;"
@@ -53,7 +53,7 @@
     oncommand="oaiorebuilder.onToolbarButtonCommand()"
     class="toolbarbutton-1 chromeclass-toolbar-additional"/>
   </xul:toolbarpalette>
-  
+
   <xul:statusbar id="status-bar">
   		<xul:statusbarpanel id="oobStatusBar" onmousedown="oaiorebuilder.onClickStatusIcon(event);">
             <xul:image id="oaiorebuilderStatusIcon"/>

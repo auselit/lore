@@ -54,4 +54,7 @@
 #load-rdf-repos{
 	list-style-image: url(chrome://oaiorebuilder/skin/icons/world_go.png);
 }
+#load-rdf{
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/page_go.png);
+}
 
