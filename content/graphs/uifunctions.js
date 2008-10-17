@@ -1,6 +1,6 @@
-	/* 
+	/*
 	 * UI functions
-	 * 
+	 *
 	 * showRDFHTML: show RDF XML (as HTML) in RDF tab
 	 * createRDF: create RDF XML string
 	 * loadRDFFromRepos: load a resource map from the RDF repository
@@ -11,7 +11,7 @@
 	 * setrelonturl: set the url for the ontology for the relationships (connections)
 	 * setrdfrepos: set the url of the RDF repository
 	 */
-	
+
 
 // properties that can be applied to aggregations, resource maps or aggregated resources
 var metadata_props = ["dcterms:abstract",
@@ -74,36 +74,36 @@ function createRDF(escape){
 			ltsymb = "&lt;";
 			nlsymb = "<br/>";
 		}
-		var remprops = grid.getSource();	
-		var modifiedDate = new Date();   	
+		var remprops = grid.getSource();
+		var modifiedDate = new Date();
 		remprops["dcterms:modified"] = modifiedDate;
 		grid.setSource(remprops);
 		var describes = remprops["ore:describes"];
 		var rdfabout = remprops["rdf:about"];
-		
+
 		// RDF fragments
 		var rdfdescabout = "rdf:Description rdf:about=\"";
 		var closetag = "\">" + nlsymb;
 		var fullclosetag="\"/>" + nlsymb;
 		var rdfdescclose = "/rdf:Description>";
-		
+
 		// create RDF for resource map: modified and creator are required
    		var rdfxml = ltsymb + "?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + nlsymb +
    		ltsymb + "rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"" + nlsymb;
 		for (var pfx in namespaces) {
 			rdfxml += "xmlns:" + pfx + "=\"" + namespaces[pfx] + "\"" + nlsymb;
 		}
-		rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb + 
-   			ltsymb + rdfdescabout + rdfabout + closetag + 
-   			ltsymb + "ore:describes rdf:resource=\"" + describes + fullclosetag  + 
+		rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb +
+   			ltsymb + rdfdescabout + rdfabout + closetag +
+   			ltsymb + "ore:describes rdf:resource=\"" + describes + fullclosetag  +
    			ltsymb + "rdf:type rdf:resource=\"http://www.openarchives.org/ore/terms/ResourceMap\" />" + nlsymb +
-   			ltsymb + "dc:creator rdf:resource=\"" + remprops["dc:creator"] + fullclosetag + 
-   			ltsymb + "dcterms:modified rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">" + 
+   			ltsymb + "dc:creator rdf:resource=\"" + remprops["dc:creator"] + fullclosetag +
+   			ltsymb + "dcterms:modified rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">" +
 			modifiedDate.getFullYear() + "-" + (modifiedDate.getMonth() + 1) + "-" + modifiedDate.getDate() +
    			ltsymb + "/dcterms:modified>" + nlsymb;
 		var created = remprops["dcterms:created"];
 		if (created != null && created instanceof Date){
-			rdfxml += ltsymb + "dcterms:created rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">" + 
+			rdfxml += ltsymb + "dcterms:created rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">" +
 			created.getFullYear() + "-" + (created.getMonth() + 1) + "-" + created.getDate() +
 			ltsymb + "/dcterms:created>" + nlsymb;
 		}
@@ -111,12 +111,12 @@ function createRDF(escape){
 			rdfxml += _serialise_property(metadata_props[i], remprops, ltsymb, nlsymb);
 		}
 		rdfxml += ltsymb + rdfdescclose + nlsymb;
-		
+
 		// create RDF for aggregation
 		var aggreprops = aggregrid.getSource();
 		rdfxml += ltsymb + rdfdescabout + describes + closetag +
 		ltsymb + "rdf:type rdf:resource=\"" + aggreprops["rdf:type"] + fullclosetag;
-		// TODO: any other types for aggregation eg Journal Article	
+		// TODO: any other types for aggregation eg Journal Article
 
 		for (var i = 0; i < all_props.length; i++){
 			rdfxml += _serialise_property(all_props[i], aggreprops, ltsymb, nlsymb);
@@ -146,16 +146,16 @@ function createRDF(escape){
 				var relns = theconnector.edgens;
 				var relobj = theconnector.targetPort.parentNode.url.replace('&','&amp;');
 				resourcerdf += ltsymb + rdfdescabout + figurl +
-				closetag +  ltsymb + relpred + " xmlns=\""+ relns + 
+				closetag +  ltsymb + relpred + " xmlns=\""+ relns +
 				"\" rdf:resource=\"" + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
 			}
 		}
-		rdfxml += ltsymb + rdfdescclose + nlsymb;		
+		rdfxml += ltsymb + rdfdescclose + nlsymb;
 		rdfxml += resourcerdf;
 		rdfxml += ltsymb + "/rdf:RDF>";
 		return rdfxml;
 };
-   
+
 function _read_property(theRDF, props, subj, theProp){
 	// helper function for readRDF
 	var propInfo = theProp.split(":");
@@ -164,6 +164,7 @@ function _read_property(theRDF, props, subj, theProp){
 		props[theProp] = propresult[0].object;
 	}
 }
+
 function readRDF(rdfURL){
    	theRDF = new RDF();
    	theRDF.getRDFURL(rdfURL, function(){
@@ -198,7 +199,7 @@ function readRDF(rdfURL){
 			_read_property(theRDF, theprops, remurl, all_props[i]);
 		}
 		grid.setSource(theprops);
-		
+
 		// create a node figure for each aggregated resource
 		var aggregationID = remurl + "#aggregation";
 			aggregates = theRDF.Match(null, aggregationID, "http://www.openarchives.org/ore/terms/aggregates",null);
@@ -209,7 +210,7 @@ function readRDF(rdfURL){
 			// collect resource-resource relationships
 			var matches = theRDF.Match(null, resourceURL, null, null);
 			resourcerels = resourcerels.concat(matches);
-						
+
 		}
 		var workflowdoc = workflow.getDocument();
 		// create connection figures based on resource-resource relationships
@@ -241,13 +242,18 @@ function loadRDFFromRepos(){
 			prompt:true,
 			fn: function(btn, remID) {
 				if (btn == 'ok'){
-					var queryStr = reposURL + "/statements?context=<" + remID + ">";
-					readRDF(queryStr);
+					loadRDFFromID(remID);
 				}
 			}
 		})
 	} else if (reposURL && reposType == 'fedora'){alert("Loading from Fedora not yet implemented");}
 }
+
+function loadRDFFromID(remID){
+	var queryStr = reposURL + "/statements?context=<" + remID + ">";
+	readRDF(queryStr);
+}
+
 function loadRDF(){
    	Ext.Msg.show({
    		title: 'Load RDF',
@@ -261,7 +267,7 @@ function loadRDF(){
 		prompt: true
    	});
 }
-   
+
 
 function loadRelationshipsFromOntology(){
 	// populate connection context menu with relationship types from the ontology
@@ -270,7 +276,7 @@ function loadRelationshipsFromOntology(){
 
 		var owlobjprop = "http://www.w3.org/2002/07/owl#ObjectProperty";
 		var owldataprop = "http://www.w3.org/2002/07/owl#DatatypeProperty";
-		
+
 		var owltprop = "http://www.w3.org/2002/07/owl#TransitiveProperty";
 		var owlsprop = "http://www.w3.org/2002/07/owl#SymmetricProperty";
 		var rdftype = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
@@ -324,7 +330,7 @@ function saveRDFToRepository() {
 						}
 						xmlhttp.setRequestHeader("Content-Type", "application/rdf+xml");
 						xmlhttp.send(therdf);
-					} 
+					}
 					catch (e) {
 						xmlhttp = false;
 					}
@@ -338,7 +344,7 @@ function saveRDFToRepository() {
 function setdccreator(creator){
    	var remprops = grid.getSource();
 	remprops["dc:creator"] = creator;
-	grid.setSource(remprops);	
+	grid.setSource(remprops);
 }
 function setrelonturl(relonturl){
    onturl = relonturl;
@@ -358,7 +364,7 @@ function _make_menu_entry(menu, gridname, propname){
         text: propname,
         handler: new Function(funcstr)
     });
-} 
+}
 function setUpMetadataMenu (the_grid, gridname){
 	// create context menu to add additional metadata properties to property grid
 	var metadataMenu = new Ext.menu.Menu({id:gridname + "-metadata-menu"});
@@ -375,7 +381,7 @@ function setUpMetadataMenu (the_grid, gridname){
 			_make_menu_entry(metadataMenu, gridname, resource_metadata_props[i]);
 		}
 	}
-	the_grid.getView().hmenu.add({id: 
+	the_grid.getView().hmenu.add({id:
 		gridname + "metadata", text: "Add metadata", menu: metadataMenu});
 }
 

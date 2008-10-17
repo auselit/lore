@@ -1,7 +1,7 @@
 <html>
 <head>
-  <title>OAI-ORE Graph Builder</title> 
-  	<!-- graph drawing library scripts -->   
+  <title>OAI-ORE Graph Builder</title>
+  	<!-- graph drawing library scripts -->
   	<SCRIPT type="text/javascript" src='lib/wz_jsgraphics.js'></SCRIPT>
 	<SCRIPT type="text/javascript" src='lib/mootools.js'></SCRIPT>
 	<SCRIPT type="text/javascript" src='lib/moocanvas.js'></SCRIPT>
@@ -37,10 +37,12 @@
 		.videoicon {list-style-image: url(chrome://oaiorebuilder/skin/icons/film.png);}
 		.pdficon {list-style-image: url(chrome://oaiorebuilder/skin/icons/file_acrobat.gif);}
 		.audioicon {list-style-image: url(chrome://oaiorebuilder/skin/icons/page_sound.gif);}
-	</style> 
-	<!-- Ext (UI) scripts --> 
+		.oreresult {list-style-image: url(chrome://oaiorebuilder/skin/icons/action_go.gif);}
+		.orelink {font-style:italic; color: #51666b;}
+	</style>
+	<!-- Ext (UI) scripts -->
 	<script type="text/javascript" src="lib/ext/adapter/yui/yui-utilities.js"></script>
-	<script type="text/javascript" src="lib/ext/adapter/yui/ext-yui-adapter.js"></script>     
+	<script type="text/javascript" src="lib/ext/adapter/yui/ext-yui-adapter.js"></script>
 	<script type="text/javascript" src="lib/ext/ext-all.js"></script>
 	<!-- RDF parser -->
 	<SCRIPT type="text/javascript" src="lib/parser.js"></SCRIPT>
@@ -52,7 +54,7 @@
   <div id="resourcemap"">
   	<div  id="graph" class="x-layout-active-content">
       <div id="drawingarea">
-      </div>	
+      </div>
   	</div>
     <div id="rdfarea"></div>
 	</div>
@@ -66,7 +68,7 @@
   		<div id="oreresult"></div>
   	</div>
   </div>
-  
+
   <script type="text/javascript">
   	// property grids
   	var grid = new Ext.grid.PropertyGrid('remproperties', {width: 298});
@@ -105,14 +107,14 @@
 				alert ("A resource node already exists for " + theval);
 				selectedFigure.setContent("about:blank");
 			} else {
-				workflowLookup[theval] = selectedFigure.getId();				
+				workflowLookup[theval] = selectedFigure.getId();
 			}
 			delete workflowLookup[oldval];
 		}
 		selectedFigure.updateMetadata(source);
 	});
 
-	
+
 	// Create the node graph (workflow)
 	var workflow = new draw2d.Workflow("drawingarea");
 	var workflowLookup = {};
@@ -124,7 +126,7 @@
 	});
 	var south = new Ext.ContentPanel('searcharea', {title: 'Browse/Search'});
   	var ontrelationships = {};
-	// TODO: Need a real graph layout algorithm - these functions will do for now 
+	// TODO: Need a real graph layout algorithm - these functions will do for now
 	var dummylayoutx = 50;
    	var dummylayouty=50;
 	var nodewidth = 220;
@@ -132,21 +134,34 @@
 	var nodespacing = 40;
 	var maxx = 400;
 	function updateOREBrowser(contextURL){
-		document.getElementById("oreresult").innerHTML = "ORE objects matching " + contextURL + ":";
-		var escapedurl = escape(contextURL);
-		var queryurl = "http://localhost:8080/openrdf-sesame/repositories/OAIORETEST?" +
-		"queryLn=sparql&query=SELECT DISTINCT ?g WHERE { GRAPH ?g {{<" +
-		escapedurl + "> ?p ?o .} UNION { ?s ?p2 <" + escapedurl + ">}}}";
-		try {
-			var req = new XMLHttpRequest();
-			req.open('GET', queryurl, true); 
-			req.onreadystatechange = function (aEvt) {
-  				if (req.readyState == 4) {
-					document.getElementById("oreresult").innerHTML += req.responseText;
-				}
-			};
-			req.send(null);
-		} catch (e) {}
+		if (reposURL && reposType == 'sesame') {
+			document.getElementById("oreresult").innerHTML = "<p>ORE objects matching <span class='orelink'>" + contextURL + "</span>:</p>";
+			var escapedurl = escape(contextURL);
+			var queryurl = reposURL +
+			"?queryLn=sparql&query=SELECT DISTINCT ?g WHERE { GRAPH ?g {{<" +
+			escapedurl + "> ?p ?o .} UNION { ?s ?p2 <" + escapedurl + ">}}}";
+			try {
+				var req = new XMLHttpRequest();
+				req.open('GET', queryurl, true);
+				req.onreadystatechange = function (aEvt) {
+  					if (req.readyState == 4)
+  						if (req.responseText && req.status != 204 && req.status < 400){
+  							var resultarea = document.getElementById("oreresult");
+							resultarea.innerHTML += "<ul style='padding-top:3px;'>";
+							var xmldoc = req.responseXML;
+							var result = xmldoc.getElementsByTagNameNS("http://www.w3.org/2005/sparql-results#","uri");
+							for (var i = 0; i < result.length; i++) {
+								var remID = result[i].childNodes[0].nodeValue;
+								resultarea.innerHTML += "<li onclick=\"loadRDFFromID('"+remID+"')\" class='mimeicon oreresult'><a>" +  remID + "</a></li>";
+							}
+							resultarea.innerHTML += "</ul>";
+						}
+
+
+				};
+				req.send(null);
+			} catch (e) {}
+		}
 	}
    	function nextXY(){
 		if (dummylayoutx > maxx){
@@ -175,16 +190,16 @@
 		fig.setContent(theURL);
 		workflow.addFigure(fig, x, y);
 		workflowLookup[theURL] = fig.getId();
-		
+
 	}
 	return fig;
    }
-   
+
 	GraphBuilder = function(){
 		var layout;
 		return {
 			init: function(){
-					
+
 				layout = new Ext.BorderLayout(document.body, {
 					 /* north: {
 						initialSize: 0,
@@ -201,7 +216,7 @@
 						collapsible: true,
 						autoScroll: true,
 						animate: true,
-						fitToFrame: true		
+						fitToFrame: true
 					},
 					center: {
 						titlebar: true,
@@ -215,7 +230,7 @@
 						fitToFrame:true,
 						initialSize:70,
 						animate:true,
-						collapsedTitle: 'Browse/Search', 
+						collapsedTitle: 'Browse/Search',
 						collapsible:true,
 						collapsed:true
 					}
@@ -236,11 +251,11 @@
 						titlebar: true,
 						fitToFrame: true,
 						initialSize: 400
-					
+
 					}
 				})*/
 				/*layout.add('north', new Ext.ContentPanel('menubar', {}));*/
-				
+
 				var propertyPanel = new Ext.ContentPanel('properties',{title:'Properties'});
 				propertytabs = new Ext.TabPanel('properties', {
 					title: 'Properties'
@@ -256,7 +271,7 @@
 				layout.add('center', center);
 				layout.add('south', south);
 				layout.endUpdate();
-				
+
 				var contenttabs = new Ext.TabPanel ('resourcemap', {
 					title: 'Graph'
 				});
@@ -264,13 +279,13 @@
 				var rdftab = contenttabs.addTab('rdfarea', 'RDF');
 				rdftab.on("activate", showRDFHTML);
 				contenttabs.activate('graph');
-				
-				/* properties */	
+
+				/* properties */
 				propertytabs.addTab('remproperties', "Resource Map");
 				propertytabs.addTab('aggreproperties', "Aggregation");
 				propertytabs.addTab('nodeproperties', "Resource/Relationship");
 				propertytabs.activate('remproperties');
-				
+
 				workflow.scrollArea = document.getElementById("graph").parentNode;
 				/*var dragsource = new Ext.dd.DragSource("dragNode", {
 					ddGroup: 'TreeDD',
@@ -293,14 +308,14 @@
 						}
 					}
 					return true;
-					
+
 				}
 			}
-			
+
 		};
 	}
 ();
-		
+
 
 	Ext.EventManager.onDocumentReady(GraphBuilder.init, GraphBuilder, true);
 	/* Menubar now handled in firefox extension - code still here for debugging purposes */
@@ -312,8 +327,8 @@
 		handler: loadRDF,
 		tooltip: 'Load a Resource Map from RDF'
 	});*/
-		
-	
+
+
 	window.parent.oaiorebuilder.loadPrefs();
 	var sellistener = new oaiorebuilder.SelectionProperties(workflow);
 	workflow.addSelectionListener(sellistener);
