@@ -44,6 +44,8 @@
     oncommand="oaiorebuilder.onMenuItemCommand(event)"/>
     <xul:menuitem id="addimage-oaiorebuilder" label="&oaiorebuilderContextImage.label;"
     oncommand="oaiorebuilder.addImageMenuItemCommand(event)"/>
+    <xul:menuitem id="addbgimg-oaiorebuilder" label="&oaiorebuilderContextBGImage.label;"
+    oncommand="oaiorebuilder.addBGImageMenuItemCommand(event)"/>
   </xul:popup>
 
   <xul:toolbarpalette id="BrowserToolbarPalette">
