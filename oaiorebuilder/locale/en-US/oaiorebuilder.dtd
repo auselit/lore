@@ -1,6 +1,7 @@
 <!ENTITY oaiorebuilder.label "oaiorebuilder">
 <!ENTITY oaiorebuilderContextLink.label "Add linked resource to ORE map">
 <!ENTITY oaiorebuilderContextImage.label "Add image to ORE map">
+<!ENTITY oaiorebuilderContextBGImage.label "Add background image to ORE map">
 <!ENTITY oaiorebuilderToolbar.label "OAI-ORE Builder">
 <!ENTITY oaiorebuilderToolbar.tooltip "Toggle oaiorebuilder">
 <!ENTITY oaiorebuilder.addNodeLabel "Add Resource">

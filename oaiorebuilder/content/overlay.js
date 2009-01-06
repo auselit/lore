@@ -47,13 +47,14 @@ var oaiorebuilder = {
   },
   onMenuItemCommand: function(e) {
 	if (gContextMenu.onLink)
-		window.graphiframe.addFigure(gContextMenu.linkURL);		
+		window.graphiframe.addFigure(gContextMenu.linkURL);
   },
   onMenuPopup: function (e){
   	gContextMenu.showItem('addimage-oaiorebuilder',gContextMenu.onImage);
 	gContextMenu.showItem('addlink-oaiorebuilder', gContextMenu.onLink);
-	gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink);
-	
+	gContextMenu.showItem('addbgimg-oaiorebuilder',gContextMenu.hasBGImage);
+	gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
+
   },
   onToolbarButtonCommand: function(e) {
     this.toggleBar();
@@ -61,6 +62,10 @@ var oaiorebuilder = {
   addImageMenuItemCommand: function(e) {
   	if (gContextMenu.onImage)
 		window.graphiframe.addFigure(gContextMenu.imageURL);
+  },
+  addBGImageMenuItemCommand: function(e) {
+  	if (gContextMenu.hasBGImage)
+		window.graphiframe.addFigure(gContextMenu.bgImageURL);
   },
   onToolbarButtonCommand: function(e) {
     this.toggleBar();
@@ -74,7 +79,7 @@ var oaiorebuilder = {
 	}
   },
   loadRDF: function() {
-  	
+
   	window.graphiframe.loadRDF();
   },
   loadRDFFromRepos: function() {
@@ -84,16 +89,7 @@ var oaiorebuilder = {
   	window.graphiframe.saveRDFToRepository();
   },
   addGraphNode: function () {
-  	/*var txt = window.getBrowser().contentDocument.getSelection();
-	if (txt != null){
-		
-	}*/
-	/*if (window.arguments != null) {
-		window.graphiframe.addFigure(window.arguments[0].content.location.href)
-	}
-	else {*/
 		window.graphiframe.addFigure(window.content.location.href);
-	//}
   },
   resetGraph: function () {
   	window.graphiframe.location.reload(true);
@@ -102,7 +98,7 @@ var oaiorebuilder = {
 	window.open("chrome://oaiorebuilder/content/about.xul","", "chrome,centerscreen,modal");
   },
   openOptions: function () {
-  	 window.open("chrome://oaiorebuilder/content/options.xul", "", "chrome,centerscreen,modal"); 
+  	 window.open("chrome://oaiorebuilder/content/options.xul", "", "chrome,centerscreen,modal");
   },
   loadPrefs: function (){
   	 var prefservice = Components.classes["@mozilla.org/preferences-service;1"]

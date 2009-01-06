@@ -288,7 +288,8 @@ function loadRelationshipsFromOntology(){
 			var relResult = ontRDF.Match(null, null, rdftype, owlobjprop);
 			for (var i = 0; i < relResult.length; i++) {
 				var relresult = _splitTerm(relResult[i].subject);
-				ontrelationships[relresult.term] = relresult.ns;
+				if (!relresult.term.match("genid:"))
+					ontrelationships[relresult.term] = relresult.ns;
 			}
 			relResult = ontRDF.Match(null,null,rdftype,owldataprop);
 			var tmp_resource_metadata = new Array(relResult.length);
@@ -353,35 +354,47 @@ function setrdfrepos(rdfrepos, rdfrepostype){
 	reposURL = rdfrepos;
 	reposType = rdfrepostype;
 }
-function _make_menu_entry(menu, gridname, propname){
-// helper function for setUpMetadataMenu
-	var funcstr = "var props = " + gridname + ".getSource();"
-	funcstr += "if (props && !props[\"" + propname + "\"]){";
-	funcstr += "props[\"" + propname + "\"] = \"\";";
+function _make_menu_entry(menu, gridname, propname, op){
+	// helper function for setUpMetadataMenu
+	var funcstr = "";
+	funcstr += "var props = " + gridname + ".getSource();";
+	if (op == "add"){
+		funcstr += "if (props && !props[\"" + propname + "\"]){";
+		funcstr += "props[\"" + propname + "\"] = \"\";";
+	} else {
+		funcstr += "if (props && typeof props[\"" + propname + "\"] != \"undefined\"){";
+		funcstr += "delete props[\"" + propname + "\"];";
+	}
 	funcstr += gridname + ".setSource(props);}";
 	menu.add( {
-        id: menu.id + "-add-" + propname,
+        id: menu.id + "-" + op + "-" + propname,
         text: propname,
         handler: new Function(funcstr)
     });
 }
 function setUpMetadataMenu (the_grid, gridname){
-	// create context menu to add additional metadata properties to property grid
-	var metadataMenu = new Ext.menu.Menu({id:gridname + "-metadata-menu"});
+	// create context menu to add/remove additional metadata properties
+	var addMetadataMenu = new Ext.menu.Menu({id:gridname + "-add-metadata-menu"});
+	var remMetadataMenu = new Ext.menu.Menu({id:gridname + "-rem-metadata-menu"});
 	if (gridname == "aggregrid"){
 		for (var i = 0; i < aggre_metadata_props.length; i++){
-			_make_menu_entry(metadataMenu, gridname, aggre_metadata_props[i]);
+			_make_menu_entry(addMetadataMenu, gridname, aggre_metadata_props[i], "add");
+			_make_menu_entry(remMetadataMenu, gridname, aggre_metadata_props[i], "rem");
 		}
 	}
 	for (var i = 0; i < metadata_props.length; i++){
-		_make_menu_entry(metadataMenu, gridname, metadata_props[i]);
+		_make_menu_entry(addMetadataMenu, gridname, metadata_props[i], "add");
+		_make_menu_entry(remMetadataMenu, gridname, metadata_props[i], "rem");
 	}
 	if (gridname == "nodegrid"){
 		for (var i = 0; i < resource_metadata_props.length; i++){
-			_make_menu_entry(metadataMenu, gridname, resource_metadata_props[i]);
+			_make_menu_entry(addMetadataMenu, gridname, resource_metadata_props[i], "add");
+			_make_menu_entry(remMetadataMenu, gridname, resource_metadata_props[i], "rem");
 		}
 	}
 	the_grid.getView().hmenu.add({id:
-		gridname + "metadata", text: "Add metadata", menu: metadataMenu});
+		gridname + "-add-metadata", text: "Add metadata", menu: addMetadataMenu});
+	the_grid.getView().hmenu.add({id:
+		gridname + "-rem-metadata", text: "Remove metadata", menu: remMetadataMenu});
 }
 
