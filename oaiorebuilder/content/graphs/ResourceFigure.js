@@ -219,11 +219,15 @@ oaiorebuilder.ResourceFigure.prototype.setWorkflow=function(_4679){
 		this.inputPort=new oaiorebuilder.InputPort();
 		this.inputPort.setWorkflow(_4679);
 		this.inputPort.setName("input");
+		this.inputPort.setBackgroundColor(new draw2d.Color(255,204,51));
+		this.inputPort.setColor(new draw2d.Color(174,174,174));
 		this.addPort(this.inputPort,-5,this.height/2);
 		this.outputPort=new oaiorebuilder.OutputPort();
 		this.outputPort.setMaxFanOut(5);
 		this.outputPort.setWorkflow(_4679);
 		this.outputPort.setName("output");
+		this.outputPort.setBackgroundColor(new draw2d.Color(255,204,51));
+		this.outputPort.setColor(new draw2d.Color(174,174,174));
 		this.addPort(this.outputPort,this.width+5,this.height/2);}
 };
 oaiorebuilder.ResourceFigure.prototype.toggle=function(){
