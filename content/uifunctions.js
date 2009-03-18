@@ -545,7 +545,8 @@ function _updateAnnotationsSourceList(contextURL) {
 								if (!title || title == ''){
 									title = "Untitled";
 								}
-								var isLeaf = (replyList.length == 0);
+								//var isLeaf = (replyList.length == 0);
+								var isLeaf = true;
 								var tmpNode = new Ext.tree.TreeNode({
 										text : title,
 										iconCls : 'oreresult',
@@ -853,7 +854,7 @@ function Annotation (rdf)
      node = rdf.getElementsByTagNameNS(DC_NS, 'language');
      this.lang = safeGetFirstChildValue(node);
 
-     this.body = getAjaxRespSync(bodyURL);
+     //this.body = getAjaxRespSync(bodyURL);
    }
    catch (ex) {
      var st = "Error parsing RDF" + (this.id ? ' for ' + this.id : '') +
