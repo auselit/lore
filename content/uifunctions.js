@@ -852,9 +852,8 @@ function Annotation (rdf)
      
      node = rdf.getElementsByTagNameNS(DC_NS, 'language');
      this.lang = safeGetFirstChildValue(node);
-     
-     //var req = DANNO_PROXY + '?act=bget&url=' + this.bodyURL;
-     //this.body = getAjaxRespSync(req);
+
+     this.body = getAjaxRespSync(bodyURL);
    }
    catch (ex) {
      var st = "Error parsing RDF" + (this.id ? ' for ' + this.id : '') +
