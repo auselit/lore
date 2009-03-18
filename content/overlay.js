@@ -10,7 +10,9 @@ var oreLocationListener = {
 
   onLocationChange: function(aProgress, aRequest, aURI)
   {
+
     oaiorebuilder.updateOREBrowser(aURI);
+
   },
 
   onStateChange: function() {},
@@ -34,10 +36,11 @@ var oaiorebuilder = {
 
   },
   updateOREBrowser: function(aURI) {
-    if (aURI.spec == this.oldURL)
-      return;
-	  window.graphiframe.updateOREBrowser(aURI.spec);
-    this.oldURL = aURI.spec;
+  	if (aURI){
+    	if (aURI.spec == this.oldURL) return;
+		window.graphiframe.updateSourceLists(aURI.spec);
+    	this.oldURL = aURI.spec;
+  	}
   },
   showContextMenu1: function(event) {
     document.getElementById("context-oaiorebuilder").hidden = gContextMenu.onImage;
@@ -103,14 +106,16 @@ var oaiorebuilder = {
   loadPrefs: function (){
   	 var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
                       .getService(Components.interfaces.nsIPrefService);
-	 var oaiorebuilderprefs = prefservice.getBranch("extensions.oaiorebuilder.");
+	 var oaiorebuilderprefs = prefservice.getBranch("extensions.lore.");
 	 var dccreator = oaiorebuilderprefs.getCharPref("dccreator");
 	 var relonturl = oaiorebuilderprefs.getCharPref("relonturl");
 	 var rdfrepos = oaiorebuilderprefs.getCharPref("rdfrepos");
 	 var rdfrepostype = oaiorebuilderprefs.getCharPref("rdfrepostype");
+	 var annoserver = oaiorebuilderprefs.getCharPref("annoserver");
+	 
 	 window.graphiframe.setdccreator(dccreator);
 	 window.graphiframe.setrelonturl(relonturl);
-	 window.graphiframe.setrdfrepos(rdfrepos, rdfrepostype);
+	 window.graphiframe.setRepos(rdfrepos, rdfrepostype, annoserver);
   },
   popOutWindow: function (){
   	//oaiorebuilder.toggleBar();
@@ -124,7 +129,7 @@ var oaiorebuilder = {
   loadOntology: function() {
   	var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
                       .getService(Components.interfaces.nsIPrefService);
-	var oaiorebuilderprefs = prefservice.getBranch("extensions.oaiorebuilder.");
+	var oaiorebuilderprefs = prefservice.getBranch("extensions.lore.");
 	var relonturl = oaiorebuilderprefs.getCharPref("relonturl");
   	this.graphiframe.setrelonturl(relonturl);
 	this.graphiframe.loadRelationshipsFromOntology();

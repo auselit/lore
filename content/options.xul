@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <!DOCTYPE prefwindow SYSTEM "chrome://oaiorebuilder/locale/prefwindow.dtd">
-<prefwindow id="oaiorebuilderPreferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&prefwindow.title;">
-<!-- ondialogaccept="oaiorebuilder.loadOntology();">-->
+<prefwindow id="lore_preferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&prefwindow.title;">
 <script type="application/x-javascript" src="overlay.js"/>
-  <prefpane id="pane1" label="&pane1.title;" style="width:350px">
+  <prefpane id="pane1" label="&prefwindow.title;" style="width:350px">
     <preferences>
-      <preference id="relonturl1" name="extensions.oaiorebuilder.relonturl" type="unichar" />
-      <preference id="rdfrepos1" name="extensions.oaiorebuilder.rdfrepos" type="unichar"/>
-      <preference id="type1" name="extensions.oaiorebuilder.rdfrepostype" type="string"/>
-      <preference id="dccreator1" name="extensions.oaiorebuilder.dccreator" type="unichar"/>
+      <preference id="relonturl_pref" name="extensions.lore.relonturl" type="unichar" />
+      <preference id="rdfrepos_pref" name="extensions.lore.rdfrepos" type="unichar"/>
+      <preference id="typepref" name="extensions.lore.rdfrepostype" type="string"/>
+      <preference id="dccreator_pref" name="extensions.lore.dccreator" type="unichar"/>
+      <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
     </preferences>
-    <label accesskey="&dccreator.accesskey;" control="textdccreator">&dccreator.label;</label><textbox id="textdccreator" preference="dccreator1"/>
-    <label control="textrelonturl">&relonturl.label;</label><textbox id="textrelonturl" preference="relonturl1"/>
-    <label control="textrdfrepos">&rdfrepos.label;</label><textbox id="textrdfrepos" preference="rdfrepos1"/>
+    <label accesskey="&dccreator.accesskey;" control="text_dccreator">&dccreator.label;</label><textbox id="text_dccreator" preference="dccreator_pref"/>
+    <label control="text_relonturl">&relonturl.label;</label><textbox id="text_relonturl" preference="relonturl_pref"/>
+    <label control="text_rdfrepos">&rdfrepos.label;</label><textbox id="text_rdfrepos" preference="rdfrepos_pref"/>
     <groupbox>
   		<caption label="&rdfrepostype.label;"/>
-    	<radiogroup preference="type1">
-  			<radio id="sesameradio" label="sesame" value="sesame"/>
-  			<radio id="fedoraradio" label="fedora" value="fedora"/>
+    	<radiogroup preference="type_pref">
+  			<radio id="sesame_radio" label="sesame" value="sesame"/>
+  			<radio id="fedora_radio" label="fedora" value="fedora"/>
 		</radiogroup>
 	</groupbox>
+	<label control="text_annoserver">&annoserver.label;</label><textbox id="text_annoserver" preference="annoserver_pref"/>
   </prefpane>
 </prefwindow>

@@ -1,0 +1,3501 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY austlit "http://austlit.edu.au/owl/austlit.owl#" >
+    <!ENTITY p1 "http://www.owl-ontologies.com/assert.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
+    <!ENTITY xsp "http://www.owl-ontologies.com/2005/08/07/xsp.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://austlit.edu.au/owl/austlit.owl#"
+     xml:base="http://austlit.edu.au/owl/austlit.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:p1="http://www.owl-ontologies.com/assert.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:austlit="http://austlit.edu.au/owl/austlit.owl#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AustLitImageFullCaption -->
+
+    <owl:ObjectProperty rdf:about="#AustLitImageFullCaption">
+        <rdfs:label rdf:datatype="&xsd;string">Rf</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AustLitImageThumbnailCaption -->
+
+    <owl:ObjectProperty rdf:about="#AustLitImageThumbnailCaption">
+        <rdfs:label rdf:datatype="&xsd;string">Rt</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#BALACBRef -->
+
+    <owl:ObjectProperty rdf:about="#BALACBRef">
+        <rdfs:label rdf:datatype="&xsd;string">T6</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#NAASource -->
+
+    <owl:ObjectProperty rdf:about="#NAASource">
+        <rdfs:label rdf:datatype="&xsd;string">HB</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#abstract -->
+
+    <owl:ObjectProperty rdf:about="#abstract">
+        <rdfs:label rdf:datatype="&xsd;string">Q2</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#alternateName -->
+
+    <owl:ObjectProperty rdf:about="#alternateName">
+        <rdfs:label rdf:datatype="&xsd;string">N2</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Name"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#alternateTitle -->
+
+    <owl:ObjectProperty rdf:about="#alternateTitle">
+        <rdfs:label rdf:datatype="&xsd;string">F3</rdfs:label>
+        <rdfs:range rdf:resource="#Title"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#arrivedInAustralia -->
+
+    <owl:ObjectProperty rdf:about="#arrivedInAustralia">
+        <rdfs:label rdf:datatype="&xsd;string">P8</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Date"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#author -->
+
+    <owl:ObjectProperty rdf:about="#author">
+        <rdfs:label rdf:datatype="&xsd;string">E1</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#awardDetails -->
+
+    <owl:ObjectProperty rdf:about="#awardDetails">
+        <rdfs:label rdf:datatype="&xsd;string">Dj</rdfs:label>
+        <rdfs:range rdf:resource="#AwardDetails"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#banningAgent -->
+
+    <owl:ObjectProperty rdf:about="#banningAgent">
+        <rdfs:label rdf:datatype="&xsd;string">gZ</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#RelScope"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#bioSource -->
+
+    <owl:ObjectProperty rdf:about="#bioSource">
+        <rdfs:label rdf:datatype="&xsd;string">Q5</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#biography -->
+
+    <owl:ObjectProperty rdf:about="#biography">
+        <rdfs:label rdf:datatype="&xsd;string">Q3</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#birthName -->
+
+    <owl:ObjectProperty rdf:about="#birthName">
+        <rdfs:label rdf:datatype="&xsd;string">N4</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Name"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#birthOf -->
+
+    <owl:ObjectProperty rdf:about="#birthOf">
+        <rdfs:label rdf:datatype="&xsd;string">U1</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Birth"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#child -->
+
+    <owl:ObjectProperty rdf:about="#child">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string"
+            >NewHierarchy.child</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="#HierTopic"/>
+        <owl:inverseOf rdf:resource="#parent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#compiler -->
+
+    <owl:ObjectProperty rdf:about="#compiler">
+        <rdfs:label rdf:datatype="&xsd;string">E6</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#composer -->
+
+    <owl:ObjectProperty rdf:about="#composer">
+        <rdfs:label rdf:datatype="&xsd;string">E(</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#compositionPlace -->
+
+    <owl:ObjectProperty rdf:about="#compositionPlace">
+        <rdfs:label rdf:datatype="&xsd;string">Pk</rdfs:label>
+        <rdfs:range rdf:resource="#Place"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#containedAsPartOf -->
+
+    <owl:ObjectProperty rdf:about="#containedAsPartOf">
+        <rdfs:label rdf:datatype="&xsd;string">Ka</rdfs:label>
+        <rdfs:range rdf:resource="#Work"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#copyrightDate -->
+
+    <owl:ObjectProperty rdf:about="#copyrightDate">
+        <rdfs:label rdf:datatype="&xsd;string">Pb</rdfs:label>
+        <rdfs:range rdf:resource="#Date"/>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#creator -->
+
+    <owl:ObjectProperty rdf:about="#creator">
+        <rdfs:label rdf:datatype="&xsd;string">E</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#deathOf -->
+
+    <owl:ObjectProperty rdf:about="#deathOf">
+        <rdfs:label rdf:datatype="&xsd;string">U5</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Death"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#departedFromAustralia -->
+
+    <owl:ObjectProperty rdf:about="#departedFromAustralia">
+        <rdfs:label rdf:datatype="&xsd;string">P9</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Date"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#director -->
+
+    <owl:ObjectProperty rdf:about="#director">
+        <rdfs:label rdf:datatype="&xsd;string">E)</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#editor -->
+
+    <owl:ObjectProperty rdf:about="#editor">
+        <rdfs:label rdf:datatype="&xsd;string">E5</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#ethnicity -->
+
+    <owl:ObjectProperty rdf:about="#ethnicity">
+        <rdfs:label rdf:datatype="&xsd;string">P2</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Ethnicity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#firstKnownOverrideDate -->
+
+    <owl:ObjectProperty rdf:about="#firstKnownOverrideDate">
+        <rdfs:label rdf:datatype="&xsd;string">Dg</rdfs:label>
+        <rdfs:range rdf:resource="#Date"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#firstLineOfVerse -->
+
+    <owl:ObjectProperty rdf:about="#firstLineOfVerse">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">F4</rdfs:label>
+        <rdfs:range rdf:resource="#Title"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#form -->
+
+    <owl:ObjectProperty rdf:about="#form">
+        <rdfs:label rdf:datatype="&xsd;string">D2</rdfs:label>
+        <rdfs:range rdf:resource="#Form"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#genre -->
+
+    <owl:ObjectProperty rdf:about="#genre">
+        <rdfs:label rdf:datatype="&xsd;string">D3</rdfs:label>
+        <rdfs:range rdf:resource="#Genre"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasAffiliation -->
+
+    <owl:ObjectProperty rdf:about="#hasAffiliation">
+        <rdfs:label rdf:datatype="&xsd;string">Pa</rdfs:label>
+        <rdfs:range rdf:resource="#Affiliation"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasAffiliationNote -->
+
+    <owl:ObjectProperty rdf:about="#hasAffiliationNote">
+        <rdfs:label rdf:datatype="&xsd;string">Q8</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasBALCoauthorNote -->
+
+    <owl:ObjectProperty rdf:about="#hasBALCoauthorNote">
+        <rdfs:label rdf:datatype="&xsd;string">Q7</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasBALNote -->
+
+    <owl:ObjectProperty rdf:about="#hasBALNote">
+        <rdfs:label rdf:datatype="&xsd;string">Q9</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasCalculatedAffiliation -->
+
+    <owl:ObjectProperty rdf:about="#hasCalculatedAffiliation">
+        <rdfs:label rdf:datatype="&xsd;string">D0</rdfs:label>
+        <rdfs:range rdf:resource="#Scope"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasCensoredPeriod -->
+
+    <owl:ObjectProperty rdf:about="#hasCensoredPeriod">
+        <rdfs:label rdf:datatype="&xsd;string">HA</rdfs:label>
+        <rdfs:range rdf:resource="#Date"/>
+        <rdfs:domain rdf:resource="#RelScope"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasDate -->
+
+    <owl:ObjectProperty rdf:about="#hasDate">
+        <rdfs:label rdf:datatype="&xsd;string">V</rdfs:label>
+        <rdfs:range rdf:resource="#Date"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#AwardDetails"/>
+                    <rdf:Description rdf:about="#Event"/>
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#RelScope"/>
+                    <rdf:Description rdf:about="#Reprint"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasEditionInfo -->
+
+    <owl:ObjectProperty rdf:about="#hasEditionInfo">
+        <rdfs:label rdf:datatype="&xsd;string">Qj</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasExternalReference -->
+
+    <owl:ObjectProperty rdf:about="#hasExternalReference">
+        <rdfs:label rdf:datatype="&xsd;string">R1</rdfs:label>
+        <rdfs:range rdf:resource="#ExternalRef"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasFormOfExpression -->
+
+    <owl:ObjectProperty rdf:about="#hasFormOfExpression">
+        <rdfs:label rdf:datatype="&xsd;string">Dp</rdfs:label>
+        <rdfs:domain rdf:resource="#Expression"/>
+        <rdfs:range rdf:resource="#FormOfExpression"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasFurtherInformationNote -->
+
+    <owl:ObjectProperty rdf:about="#hasFurtherInformationNote">
+        <rdfs:label rdf:datatype="&xsd;string">Qf</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasHolding -->
+
+    <owl:ObjectProperty rdf:about="#hasHolding">
+        <rdfs:label rdf:datatype="&xsd;string">H1</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >When an agent has holdings, it&#39;s only for manuscript holdings eg collection of papers</rdfs:comment>
+        <rdfs:range rdf:resource="#LocalHoldingInfo"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasIssueDetails -->
+
+    <owl:ObjectProperty rdf:about="#hasIssueDetails">
+        <rdfs:label rdf:datatype="&xsd;string">I</rdfs:label>
+        <rdfs:range rdf:resource="#PeriodicalIssue"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasLanguage -->
+
+    <owl:ObjectProperty rdf:about="#hasLanguage">
+        <rdfs:label rdf:datatype="&xsd;string">Dm</rdfs:label>
+        <rdfs:domain rdf:resource="#Expression"/>
+        <rdfs:range rdf:resource="#Language"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasLimitedEditionInfo -->
+
+    <owl:ObjectProperty rdf:about="#hasLimitedEditionInfo">
+        <rdfs:label rdf:datatype="&xsd;string">Qk</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasNoteAtLowerLevel -->
+
+    <owl:ObjectProperty rdf:about="#hasNoteAtLowerLevel">
+        <rdfs:label rdf:datatype="&xsd;string">Q0</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPapersHeldNote -->
+
+    <owl:ObjectProperty rdf:about="#hasPapersHeldNote">
+        <rdfs:label rdf:datatype="&xsd;string">Qh</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeAdvertising -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeAdvertising">
+        <rdfs:label rdf:datatype="&xsd;string">HU</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeContinuedBy -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeContinuedBy">
+        <rdfs:label rdf:datatype="&xsd;string">HN</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeContinues -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeContinues">
+        <rdfs:label rdf:datatype="&xsd;string">HM</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeFreq -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeFreq">
+        <rdfs:label rdf:datatype="&xsd;string">HK</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeGraphics -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeGraphics">
+        <rdfs:label rdf:datatype="&xsd;string">HT</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeIndexes -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeIndexes">
+        <rdfs:label rdf:datatype="&xsd;string">HP</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeMergers -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeMergers">
+        <rdfs:label rdf:datatype="&xsd;string">HO</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopePrice -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopePrice">
+        <rdfs:label rdf:datatype="&xsd;string">HS</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeRange -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeRange">
+        <rdfs:label rdf:datatype="&xsd;string">HL</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeSize -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeSize">
+        <rdfs:label rdf:datatype="&xsd;string">HR</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeSubtitle -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeSubtitle">
+        <rdfs:label rdf:datatype="&xsd;string">HJ</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScopeSupplement -->
+
+    <owl:ObjectProperty rdf:about="#hasPerScopeSupplement">
+        <rdfs:label rdf:datatype="&xsd;string">HQ</rdfs:label>
+        <rdfs:domain rdf:resource="#RelScope"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPlace -->
+
+    <owl:ObjectProperty rdf:about="#hasPlace">
+        <rdfs:label rdf:datatype="&xsd;string">W1</rdfs:label>
+        <rdfs:domain rdf:resource="#Event"/>
+        <rdfs:range rdf:resource="#Place"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasRAAMName -->
+
+    <owl:ObjectProperty rdf:about="#hasRAAMName">
+        <rdfs:label rdf:datatype="&xsd;string">QR</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasRelatedTerm -->
+
+    <owl:ObjectProperty rdf:about="#hasRelatedTerm">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Sp</rdfs:label>
+        <rdfs:range rdf:resource="#HierTopic"/>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasRepresentationalAttribute -->
+
+    <owl:ObjectProperty rdf:about="#hasRepresentationalAttribute">
+        <rdfs:label rdf:datatype="&xsd;string">Dr</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#RepresentationalAttribute"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasReprint -->
+
+    <owl:ObjectProperty rdf:about="#hasReprint">
+        <rdfs:label rdf:datatype="&xsd;string">Dy</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Reprint"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasSubjectiveRank -->
+
+    <owl:ObjectProperty rdf:about="#hasSubjectiveRank">
+        <rdfs:label rdf:datatype="&xsd;string">Ds</rdfs:label>
+        <rdfs:range rdf:resource="#SubjectiveRank"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasSynonym -->
+
+    <owl:ObjectProperty rdf:about="#hasSynonym">
+        <rdfs:label rdf:datatype="&xsd;string">Sk</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="#HierTopic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasSynonymTitle -->
+
+    <owl:ObjectProperty rdf:about="#hasSynonymTitle">
+        <rdfs:label rdf:datatype="&xsd;string">F-</rdfs:label>
+        <rdfs:range rdf:resource="#Title"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasTargetUse -->
+
+    <owl:ObjectProperty rdf:about="#hasTargetUse">
+        <rdfs:label rdf:datatype="&xsd;string">Dt</rdfs:label>
+        <rdfs:range rdf:resource="#TargetUse"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasTitle -->
+
+    <owl:ObjectProperty rdf:about="#hasTitle">
+        <rdfs:label rdf:datatype="&xsd;string">F1</rdfs:label>
+        <rdfs:range rdf:resource="#Title"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasTitleAtLowerLevel -->
+
+    <owl:ObjectProperty rdf:about="#hasTitleAtLowerLevel">
+        <rdfs:label rdf:datatype="&xsd;string">F0</rdfs:label>
+        <rdfs:range rdf:resource="#Title"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasUQESpaceThumbnail -->
+
+    <owl:ObjectProperty rdf:about="#hasUQESpaceThumbnail">
+        <rdfs:label rdf:datatype="&xsd;string">R3</rdfs:label>
+        <rdfs:range rdf:resource="#ExternalRef"/>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasUnshownSynName -->
+
+    <owl:ObjectProperty rdf:about="#hasUnshownSynName">
+        <rdfs:label rdf:datatype="&xsd;string">NS</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Name"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hroot -->
+
+    <owl:ObjectProperty rdf:about="#hroot">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string"
+            >NewHierachyDefs.hroot</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Root of the topic tree</rdfs:comment>
+        <rdfs:range rdf:resource="#HierTopic"/>
+        <rdfs:domain rdf:resource="#HierarchyDefinition"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#illustrations -->
+
+    <owl:ObjectProperty rdf:about="#illustrations">
+        <rdfs:label rdf:datatype="&xsd;string">Qb</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#illustrator -->
+
+    <owl:ObjectProperty rdf:about="#illustrator">
+        <rdfs:label rdf:datatype="&xsd;string">E2</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#influencedByAgent -->
+
+    <owl:ObjectProperty rdf:about="#influencedByAgent">
+        <rdfs:label rdf:datatype="&xsd;string">G2</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#influencedByWork -->
+
+    <owl:ObjectProperty rdf:about="#influencedByWork">
+        <rdfs:label rdf:datatype="&xsd;string">G1</rdfs:label>
+        <rdfs:range rdf:resource="#Work"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#interviewer -->
+
+    <owl:ObjectProperty rdf:about="#interviewer">
+        <rdfs:label rdf:datatype="&xsd;string">E7</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isAgent -->
+
+    <owl:ObjectProperty rdf:about="#isAgent">
+        <rdfs:label rdf:datatype="&xsd;string">M0</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isAwardOf -->
+
+    <owl:ObjectProperty rdf:about="#isAwardOf">
+        <rdfs:label rdf:datatype="&xsd;string">DI</rdfs:label>
+        <rdfs:domain rdf:resource="#AwardDetails"/>
+        <rdfs:range rdf:resource="#AwardName"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isIssueOf -->
+
+    <owl:ObjectProperty rdf:about="#isIssueOf">
+        <rdfs:label rdf:datatype="&xsd;string">J</rdfs:label>
+        <rdfs:range rdf:resource="#Work"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isReviewOf -->
+
+    <owl:ObjectProperty rdf:about="#isReviewOf">
+        <rdfs:label rdf:datatype="&xsd;string">Da</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isSerialisedBy -->
+
+    <owl:ObjectProperty rdf:about="#isSerialisedBy">
+        <rdfs:label rdf:datatype="&xsd;string">GS</rdfs:label>
+        <rdfs:domain rdf:resource="#Expression"/>
+        <rdfs:range rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#lawConversion -->
+
+    <owl:ObjectProperty rdf:about="#lawConversion">
+        <rdfs:label rdf:datatype="&xsd;string">Qr</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#lawEditHistory -->
+
+    <owl:ObjectProperty rdf:about="#lawEditHistory">
+        <rdfs:label rdf:datatype="&xsd;string">Qo</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#lawFurtherDetails -->
+
+    <owl:ObjectProperty rdf:about="#lawFurtherDetails">
+        <rdfs:label rdf:datatype="&xsd;string">Qq</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#lawGenre -->
+
+    <owl:ObjectProperty rdf:about="#lawGenre">
+        <rdfs:label rdf:datatype="&xsd;string">Qm</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#lawLocationPapers -->
+
+    <owl:ObjectProperty rdf:about="#lawLocationPapers">
+        <rdfs:label rdf:datatype="&xsd;string">Qp</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#literaryNote -->
+
+    <owl:ObjectProperty rdf:about="#literaryNote">
+        <rdfs:label rdf:datatype="&xsd;string">QL</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#maintainerInitialsForBAL -->
+
+    <owl:ObjectProperty rdf:about="#maintainerInitialsForBAL">
+        <rdfs:label rdf:datatype="&xsd;string">Qg</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#name -->
+
+    <owl:ObjectProperty rdf:about="#name">
+        <rdfs:label rdf:datatype="&xsd;string">N1</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Name"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#nationality -->
+
+    <owl:ObjectProperty rdf:about="#nationality">
+        <rdfs:label rdf:datatype="&xsd;string">P3</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Nationality"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#note -->
+
+    <owl:ObjectProperty rdf:about="#note">
+        <rdfs:label rdf:datatype="&xsd;string">Q1</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#AwardDetails"/>
+                    <rdf:Description rdf:about="#AwardName"/>
+                    <rdf:Description rdf:about="#Event"/>
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#NewConcept"/>
+                    <rdf:Description rdf:about="#Place"/>
+                    <rdf:Description rdf:about="#RelScope"/>
+                    <rdf:Description rdf:about="#Reprint"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#noteMaintenance -->
+
+    <owl:ObjectProperty rdf:about="#noteMaintenance">
+        <rdfs:label rdf:datatype="&xsd;string">QI</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Date"/>
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#HierTopic"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#oldAustLitCDNote -->
+
+    <owl:ObjectProperty rdf:about="#oldAustLitCDNote">
+        <rdfs:label rdf:datatype="&xsd;string">Qt</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#otherFormats -->
+
+    <owl:ObjectProperty rdf:about="#otherFormats">
+        <rdfs:label rdf:datatype="&xsd;string">QG</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#pagination -->
+
+    <owl:ObjectProperty rdf:about="#pagination">
+        <rdfs:label rdf:datatype="&xsd;string">Qa</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#parent -->
+
+    <owl:ObjectProperty rdf:about="#parent">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string"
+            >NewHierarchy.parent</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="#HierTopic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#physicalDescription -->
+
+    <owl:ObjectProperty rdf:about="#physicalDescription">
+        <rdfs:label rdf:datatype="&xsd;string">Qe</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#playExtent -->
+
+    <owl:ObjectProperty rdf:about="#playExtent">
+        <rdfs:label rdf:datatype="&xsd;string">QE</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#printer -->
+
+    <owl:ObjectProperty rdf:about="#printer">
+        <rdfs:label rdf:datatype="&xsd;string">E9</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#producedOutput -->
+
+    <owl:ObjectProperty rdf:about="#producedOutput">
+        <rdfs:label rdf:datatype="&xsd;string">Z</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Produced output</rdfs:comment>
+        <rdfs:domain rdf:resource="#Event"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#productionDetails -->
+
+    <owl:ObjectProperty rdf:about="#productionDetails">
+        <rdfs:label rdf:datatype="&xsd;string">QF</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#publisher -->
+
+    <owl:ObjectProperty rdf:about="#publisher">
+        <rdfs:label rdf:datatype="&xsd;string">E8</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#relatedTo -->
+
+    <owl:ObjectProperty rdf:about="#relatedTo">
+        <rdfs:label rdf:datatype="&xsd;string">GA</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <owl:versionInfo rdf:datatype="&xsd;string"
+            >TODO: Domain and range must be equal, ie agent to agent, work to work</owl:versionInfo>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#seriesInfo -->
+
+    <owl:ObjectProperty rdf:about="#seriesInfo">
+        <rdfs:label rdf:datatype="&xsd;string">T4</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#seriesNumber -->
+
+    <owl:ObjectProperty rdf:about="#seriesNumber">
+        <rdfs:label rdf:datatype="&xsd;string">T9</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#settingSpatial -->
+
+    <owl:ObjectProperty rdf:about="#settingSpatial">
+        <rdfs:label rdf:datatype="&xsd;string">DF</rdfs:label>
+        <rdfs:range rdf:resource="#Place"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#settingTemporal -->
+
+    <owl:ObjectProperty rdf:about="#settingTemporal">
+        <rdfs:label rdf:datatype="&xsd;string">DG</rdfs:label>
+        <rdfs:range rdf:resource="#Date"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#shortUpdateHistory -->
+
+    <owl:ObjectProperty rdf:about="#shortUpdateHistory">
+        <rdfs:label rdf:datatype="&xsd;string">QA</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#sightedNote -->
+
+    <owl:ObjectProperty rdf:about="#sightedNote">
+        <rdfs:label rdf:datatype="&xsd;string">Hs</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#sourceExpression -->
+
+    <owl:ObjectProperty rdf:about="#sourceExpression">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.srceexprid</rdfs:label>
+        <rdfs:range rdf:resource="#Expression"/>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#sponsor -->
+
+    <owl:ObjectProperty rdf:about="#sponsor">
+        <rdfs:label rdf:datatype="&xsd;string">E4</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#storyteller -->
+
+    <owl:ObjectProperty rdf:about="#storyteller">
+        <rdfs:label rdf:datatype="&xsd;string">E-</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#subjectAgent -->
+
+    <owl:ObjectProperty rdf:about="#subjectAgent">
+        <rdfs:label rdf:datatype="&xsd;string">Di</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#subjectWork -->
+
+    <owl:ObjectProperty rdf:about="#subjectWork">
+        <rdfs:label rdf:datatype="&xsd;string">Dh</rdfs:label>
+        <rdfs:range rdf:resource="#Work"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#subtitle -->
+
+    <owl:ObjectProperty rdf:about="#subtitle">
+        <rdfs:label rdf:datatype="&xsd;string">F2</rdfs:label>
+        <rdfs:range rdf:resource="#Title"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#tempStmtOfResp -->
+
+    <owl:ObjectProperty rdf:about="#tempStmtOfResp">
+        <rdfs:label rdf:datatype="&xsd;string">Qw</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#tempSubjects -->
+
+    <owl:ObjectProperty rdf:about="#tempSubjects">
+        <rdfs:label rdf:datatype="&xsd;string">Qs</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#titleNote -->
+
+    <owl:ObjectProperty rdf:about="#titleNote">
+        <rdfs:label rdf:datatype="&xsd;string">T8</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#tmpAustlitUpdateInfo -->
+
+    <owl:ObjectProperty rdf:about="#tmpAustlitUpdateInfo">
+        <rdfs:label rdf:datatype="&xsd;string">Qx</rdfs:label>
+        <rdfs:range rdf:resource="#Text"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topic -->
+
+    <owl:ObjectProperty rdf:about="#topic">
+        <rdfs:label rdf:datatype="&xsd;string">D6</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#AwardName"/>
+                    <rdf:Description rdf:about="#NewConcept"/>
+                    <rdf:Description rdf:about="#Place"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicID -->
+
+    <owl:ObjectProperty rdf:about="#topicID">
+        <rdfs:label rdf:datatype="&xsd;string">Identifiers.tid</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The topic being identified</rdfs:comment>
+        <rdfs:domain rdf:resource="#Identifier"/>
+        <rdfs:range rdf:resource="#Topic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicSpatial -->
+
+    <owl:ObjectProperty rdf:about="#topicSpatial">
+        <rdfs:label rdf:datatype="&xsd;string">D8</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#NewConcept"/>
+                    <rdf:Description rdf:about="#Place"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicTemporal -->
+
+    <owl:ObjectProperty rdf:about="#topicTemporal">
+        <rdfs:label rdf:datatype="&xsd;string">D9</rdfs:label>
+        <rdfs:range rdf:resource="#Date"/>
+        <rdfs:domain rdf:resource="#Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#translator -->
+
+    <owl:ObjectProperty rdf:about="#translator">
+        <rdfs:label rdf:datatype="&xsd;string">E3</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Translation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#usedInput -->
+
+    <owl:ObjectProperty rdf:about="#usedInput">
+        <rdfs:label rdf:datatype="&xsd;string">Y</rdfs:label>
+        <rdfs:domain rdf:resource="#Event"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Expression"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#usesPsuedoAgent -->
+
+    <owl:ObjectProperty rdf:about="#usesPsuedoAgent">
+        <rdfs:label rdf:datatype="&xsd;string">M1</rdfs:label>
+        <rdfs:range rdf:resource="#Agent"/>
+        <rdfs:domain rdf:resource="#Agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#workType -->
+
+    <owl:ObjectProperty rdf:about="#workType">
+        <rdfs:label rdf:datatype="&xsd;string">D1</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="#WorkType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#writtenAs -->
+
+    <owl:ObjectProperty rdf:about="#writtenAs">
+        <rdfs:label rdf:datatype="&xsd;string">T2</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="#Text"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#BALEditorComplete -->
+
+    <owl:DatatypeProperty rdf:about="#BALEditorComplete">
+        <rdfs:label rdf:datatype="&xsd;string">T7</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#addedFlag -->
+
+    <owl:DatatypeProperty rdf:about="#addedFlag">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.addedFlag</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#awardDetailsSection -->
+
+    <owl:DatatypeProperty rdf:about="#awardDetailsSection">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >AwardDetails.section</rdfs:label>
+        <rdfs:domain rdf:resource="#AwardDetails"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#circa -->
+
+    <owl:DatatypeProperty rdf:about="#circa">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.circa</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Indicates if a date is circa - value of &#39;y&#39; is recorded only when true</rdfs:comment>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#content -->
+
+    <owl:DatatypeProperty rdf:about="#content">
+        <rdfs:label rdf:datatype="&xsd;string">Texts.content</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The text content</rdfs:comment>
+        <rdfs:domain rdf:resource="#Text"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#copyright -->
+
+    <owl:DatatypeProperty rdf:about="#copyright">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.copyright</rdfs:label>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#dateUncertain -->
+
+    <owl:DatatypeProperty rdf:about="#dateUncertain">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.uncertain</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Appears to be unused</rdfs:comment>
+        <rdfs:domain rdf:resource="#Date"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#dateUnspecifiedBySource -->
+
+    <owl:DatatypeProperty rdf:about="#dateUnspecifiedBySource">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Dates.unspecifiedbysource</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Indicates that date was unspecified, value of &#39;y&#39; recorded only when true</rdfs:comment>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#day -->
+
+    <owl:DatatypeProperty rdf:about="#day">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.day</rdfs:label>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#description -->
+
+    <owl:DatatypeProperty rdf:about="#description">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >ExternalRefs.description</rdfs:label>
+        <rdfs:domain rdf:resource="#ExternalRef"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#dontShowInBAL -->
+
+    <owl:DatatypeProperty rdf:about="#dontShowInBAL">
+        <rdfs:label rdf:datatype="&xsd;string">T3</rdfs:label>
+        <rdfs:domain rdf:resource="#Event"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#endYear -->
+
+    <owl:DatatypeProperty rdf:about="#endYear">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.endyear</rdfs:label>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#enrichment -->
+
+    <owl:DatatypeProperty rdf:about="#enrichment">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.enrichment</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#eraid -->
+
+    <owl:DatatypeProperty rdf:about="#eraid">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.eraid</rdfs:label>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#externalRefURL -->
+
+    <owl:DatatypeProperty rdf:about="#externalRefURL">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >ExternalRefs.URL</rdfs:label>
+        <rdfs:domain rdf:resource="#ExternalRef"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#freetext -->
+
+    <owl:DatatypeProperty rdf:about="#freetext">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >WorkFreeText.freetext, AgentFreeText.freetext</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#gender -->
+
+    <owl:DatatypeProperty rdf:about="#gender">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">female</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">male</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasDisplayPriority -->
+
+    <owl:DatatypeProperty rdf:about="#hasDisplayPriority">
+        <rdfs:label rdf:datatype="&xsd;string">T1</rdfs:label>
+        <rdfs:domain rdf:resource="#Event"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasPerScope -->
+
+    <owl:DatatypeProperty rdf:about="#hasPerScope">
+        <rdfs:label rdf:datatype="&xsd;string">HI</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hasSETISText -->
+
+    <owl:DatatypeProperty rdf:about="#hasSETISText">
+        <rdfs:label rdf:datatype="&xsd;string">f</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hiID -->
+
+    <owl:DatatypeProperty rdf:about="#hiID">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >LocalHoldingInfo.hiid</rdfs:label>
+        <rdfs:domain rdf:resource="#LocalHoldingInfo"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#hname -->
+
+    <owl:DatatypeProperty rdf:about="#hname">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string"
+            >NewHierarchyDefs.hname</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >name of the hierachy eg Spatial</rdfs:comment>
+        <rdfs:domain rdf:resource="#HierarchyDefinition"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#holdingCount -->
+
+    <owl:DatatypeProperty rdf:about="#holdingCount">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >LocalHoldingInfo.holdingCount</rdfs:label>
+        <rdfs:domain rdf:resource="#LocalHoldingInfo"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#id -->
+
+    <owl:DatatypeProperty rdf:about="#id">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >AustLit entity identifier</rdfs:comment>
+        <rdfs:domain rdf:resource="#AustLitEntity"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#idtype -->
+
+    <owl:DatatypeProperty rdf:about="#idtype">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Identifiers.idtype</rdfs:label>
+        <rdfs:domain rdf:resource="#Identifier"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#idvalue -->
+
+    <owl:DatatypeProperty rdf:about="#idvalue">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Identifiers.idvalue</rdfs:label>
+        <rdfs:domain rdf:resource="#Identifier"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isBALCollection -->
+
+    <owl:DatatypeProperty rdf:about="#isBALCollection">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gb</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isBanned -->
+
+    <owl:DatatypeProperty rdf:about="#isBanned">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gx</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Manifestation"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isBook -->
+
+    <owl:DatatypeProperty rdf:about="#isBook">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">O</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isCompletedForBAL -->
+
+    <owl:DatatypeProperty rdf:about="#isCompletedForBAL">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gd</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isExpat -->
+
+    <owl:DatatypeProperty rdf:about="#isExpat">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">P6</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isManuscript -->
+
+    <owl:DatatypeProperty rdf:about="#isManuscript">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Dx</rdfs:label>
+        <rdfs:domain rdf:resource="#Manifestation"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isModest -->
+
+    <owl:DatatypeProperty rdf:about="#isModest">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gm</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isNonALEG -->
+
+    <owl:DatatypeProperty rdf:about="#isNonALEG">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Ga</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Agent"/>
+                    <rdf:Description rdf:about="#Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isNotForBAL -->
+
+    <owl:DatatypeProperty rdf:about="#isNotForBAL">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gu</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isOrganisation -->
+
+    <owl:DatatypeProperty rdf:about="#isOrganisation">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Go</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isPeerReviewed -->
+
+    <owl:DatatypeProperty rdf:about="#isPeerReviewed">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Jp</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isRestricted -->
+
+    <owl:DatatypeProperty rdf:about="#isRestricted">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gy</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isStoryTeller -->
+
+    <owl:DatatypeProperty rdf:about="#isStoryTeller">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">P7</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isUncertainDate -->
+
+    <owl:DatatypeProperty rdf:about="#isUncertainDate">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gs</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Event"/>
+                    <rdf:Description rdf:about="#Expression"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isUncertainPlace -->
+
+    <owl:DatatypeProperty rdf:about="#isUncertainPlace">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gt</rdfs:label>
+        <rdfs:domain rdf:resource="#Event"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isUncertainPublisher -->
+
+    <owl:DatatypeProperty rdf:about="#isUncertainPublisher">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gr</rdfs:label>
+        <rdfs:domain rdf:resource="#Event"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#isVisitor -->
+
+    <owl:DatatypeProperty rdf:about="#isVisitor">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">P5</rdfs:label>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#lat1 -->
+
+    <owl:DatatypeProperty rdf:about="#lat1">
+        <rdfs:label rdf:datatype="&xsd;string">HierTopics.lat1</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Latitude</rdfs:comment>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#lat2 -->
+
+    <owl:DatatypeProperty rdf:about="#lat2">
+        <rdfs:label rdf:datatype="&xsd;string">HierTopics.lat2</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Latitude</rdfs:comment>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#linkPrompt -->
+
+    <owl:DatatypeProperty rdf:about="#linkPrompt">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >ExternalRefs.linkprompt</rdfs:label>
+        <rdfs:domain rdf:resource="#ExternalRef"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#localHoldingNote -->
+
+    <owl:DatatypeProperty rdf:about="#localHoldingNote">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >LocalHoldingInfo.note</rdfs:label>
+        <rdfs:domain rdf:resource="#LocalHoldingInfo"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#localID -->
+
+    <owl:DatatypeProperty rdf:about="#localID">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >LocalHoldingInfo.localid</rdfs:label>
+        <rdfs:domain rdf:resource="#LocalHoldingInfo"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#localLocCode -->
+
+    <owl:DatatypeProperty rdf:about="#localLocCode">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >LocalHoldingInfo.localLocCode</rdfs:label>
+        <rdfs:domain rdf:resource="#LocalHoldingInfo"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#long1 -->
+
+    <owl:DatatypeProperty rdf:about="#long1">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.long1</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Longitude</rdfs:comment>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#long2 -->
+
+    <owl:DatatypeProperty rdf:about="#long2">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.long2</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string">Longitude</rdfs:comment>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#manID -->
+
+    <owl:DatatypeProperty rdf:about="#manID">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.manid</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#month -->
+
+    <owl:DatatypeProperty rdf:about="#month">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.month</rdfs:label>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#mustBeDownloaded -->
+
+    <owl:DatatypeProperty rdf:about="#mustBeDownloaded">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string">Gc</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Event"/>
+                    <rdf:Description rdf:about="#Manifestation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#namePrefix -->
+
+    <owl:DatatypeProperty rdf:about="#namePrefix">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Names.nameprefix</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The first part of the name</rdfs:comment>
+        <rdfs:domain rdf:resource="#Name"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#nameSuffix -->
+
+    <owl:DatatypeProperty rdf:about="#nameSuffix">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Names.namesuffix</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The last part of the name</rdfs:comment>
+        <rdfs:domain rdf:resource="#Name"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#nameTitle -->
+
+    <owl:DatatypeProperty rdf:about="#nameTitle">
+        <rdfs:label rdf:datatype="&xsd;string">Names.nametitle</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Appears to be unused</rdfs:comment>
+        <rdfs:domain rdf:resource="#Name"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#nameType -->
+
+    <owl:DatatypeProperty rdf:about="#nameType">
+        <rdfs:label rdf:datatype="&xsd;string">Names.nametype</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Appears to be unused</rdfs:comment>
+        <rdfs:domain rdf:resource="#Name"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#normtit -->
+
+    <owl:DatatypeProperty rdf:about="#normtit">
+        <rdfs:label rdf:datatype="&xsd;string">Titles.normtit</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Normalised form of title</rdfs:comment>
+        <rdfs:domain rdf:resource="#Title"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#notForBAL -->
+
+    <owl:DatatypeProperty rdf:about="#notForBAL">
+        <rdfs:label rdf:datatype="&xsd;string">T5</rdfs:label>
+        <rdfs:domain rdf:resource="#Work"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#number -->
+
+    <owl:DatatypeProperty rdf:about="#number">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PeriodicalIssueDetails.nmber</rdfs:label>
+        <rdfs:domain rdf:resource="#PeriodicalIssue"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#pageInfo -->
+
+    <owl:DatatypeProperty rdf:about="#pageInfo">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.pageinfo</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#pageUncertain -->
+
+    <owl:DatatypeProperty rdf:about="#pageUncertain">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.pageuncertain</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#partManifestationSection -->
+
+    <owl:DatatypeProperty rdf:about="#partManifestationSection">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.section</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#partManifestationURL -->
+
+    <owl:DatatypeProperty rdf:about="#partManifestationURL">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.URL</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#period -->
+
+    <owl:DatatypeProperty rdf:about="#period">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PeriodicalIssueDetails.period</rdfs:label>
+        <rdfs:domain rdf:resource="#PeriodicalIssue"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#placing -->
+
+    <owl:DatatypeProperty rdf:about="#placing">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >AwardDetails.placing</rdfs:label>
+        <rdfs:domain rdf:resource="#AwardDetails"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#private -->
+
+    <owl:DatatypeProperty rdf:about="#private">
+        <rdfs:label rdf:datatype="&xsd;string">Texts.private</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Indicates if the text is private (ie displayed)</rdfs:comment>
+        <rdfs:domain rdf:resource="#Text"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#privateNote -->
+
+    <owl:DatatypeProperty rdf:about="#privateNote">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.privatenote</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#respToAsia -->
+
+    <owl:DatatypeProperty rdf:about="#respToAsia">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.htresptoasia</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#seq -->
+
+    <owl:DatatypeProperty rdf:about="#seq">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.seq, NewHierarchy.seq</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#sortName -->
+
+    <owl:DatatypeProperty rdf:about="#sortName">
+        <rdfs:label rdf:datatype="&xsd;string">Names.sortname</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The name in the form used for sorting (usually suffix, prefix)</rdfs:comment>
+        <rdfs:domain rdf:resource="#Name"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#sortpref -->
+
+    <owl:DatatypeProperty rdf:about="#sortpref">
+        <rdfs:label rdf:datatype="&xsd;string">Titles.sortpref</rdfs:label>
+        <rdfs:domain rdf:resource="#Title"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#sourceNote -->
+
+    <owl:DatatypeProperty rdf:about="#sourceNote">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PartManifestation.sourcenote</rdfs:label>
+        <rdfs:domain rdf:resource="#ManifestationAsPart"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#startYear -->
+
+    <owl:DatatypeProperty rdf:about="#startYear">
+        <rdfs:label rdf:datatype="&xsd;string">Dates.startyear</rdfs:label>
+        <rdfs:domain rdf:resource="#Date"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#subsection -->
+
+    <owl:DatatypeProperty rdf:about="#subsection">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >AwardDetails.subsection</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
+        <rdfs:domain rdf:resource="#AwardDetails"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#synFlag -->
+
+    <owl:DatatypeProperty rdf:about="#synFlag">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.htsynflag</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#tempstate -->
+
+    <owl:DatatypeProperty rdf:about="#tempstate">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.tempstate</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#title -->
+
+    <owl:DatatypeProperty rdf:about="#title">
+        <rdfs:label rdf:datatype="&xsd;string">Titles.title</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The content of the title</rdfs:comment>
+        <rdfs:domain rdf:resource="#Title"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicAltName -->
+
+    <owl:DatatypeProperty rdf:about="#topicAltName">
+        <rdfs:label rdf:datatype="&xsd;string">Topics.taltname</rdfs:label>
+        <rdfs:domain rdf:resource="#Topic"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicName -->
+
+    <owl:DatatypeProperty rdf:about="#topicName">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Topics.tname, Hiertopics.htname</rdfs:label>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#HierTopic"/>
+                    <rdf:Description rdf:about="#Topic"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicNameUpper -->
+
+    <owl:DatatypeProperty rdf:about="#topicNameUpper">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Topics.tnameupper, HierTopics.htnameupper</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The name in upper case</rdfs:comment>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#HierTopic"/>
+                    <rdf:Description rdf:about="#Topic"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicSearchName -->
+
+    <owl:DatatypeProperty rdf:about="#topicSearchName">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.htsearchname</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicSubType -->
+
+    <owl:DatatypeProperty rdf:about="#topicSubType">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.htsubtype</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#topicType -->
+
+    <owl:DatatypeProperty rdf:about="#topicType">
+        <rdfs:label rdf:datatype="&xsd;string">Topics.ttype</rdfs:label>
+        <rdfs:domain rdf:resource="#Topic"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#unselectable -->
+
+    <owl:DatatypeProperty rdf:about="#unselectable">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >HierTopics.unselectable</rdfs:label>
+        <rdfs:domain rdf:resource="#HierTopic"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#volume -->
+
+    <owl:DatatypeProperty rdf:about="#volume">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >PeriodicalIssueDetails.volume</rdfs:label>
+        <rdfs:domain rdf:resource="#PeriodicalIssue"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Affiliation -->
+
+    <owl:Class rdf:about="#Affiliation">
+        <rdfs:label rdf:datatype="&xsd;string">m</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:comment
+            >Indicates an affiliation with one of the research community subsets</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Agent -->
+
+    <owl:Class rdf:about="#Agent">
+        <rdfs:label rdf:datatype="&xsd;string">A</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">A</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >From FRBR, entity responsible for the intellectual or artistic content of works or expressions or the production of manifestations, or that is the subject of works or that influenced works</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AustLitAuthorId -->
+
+    <owl:Class rdf:about="#AustLitAuthorId">
+        <rdfs:label>A</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AustLitBRN -->
+
+    <owl:Class rdf:about="#AustLitBRN">
+        <rdfs:label>B</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AustLitEntity -->
+
+    <owl:Class rdf:about="#AustLitEntity">
+        <rdfs:comment
+            >Abstract superclass of all classes in the AustLit ontology</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AustLitImageFull -->
+
+    <owl:Class rdf:about="#AustLitImageFull">
+        <rdfs:label>If</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AustLitImageThumbnail -->
+
+    <owl:Class rdf:about="#AustLitImageThumbnail">
+        <rdfs:label>It</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AwardDetails -->
+
+    <owl:Class rdf:about="#AwardDetails">
+        <rdfs:label rdf:datatype="&xsd;string">k</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+        <rdfs:comment
+            >Details of an award placing</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#AwardName -->
+
+    <owl:Class rdf:about="#AwardName">
+        <rdfs:label rdf:datatype="&xsd;string">v</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#HierTopic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">v</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Birth -->
+
+    <owl:Class rdf:about="#Birth">
+        <rdfs:label>ZP</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Compilation -->
+
+    <owl:Class rdf:about="#Compilation">
+        <rdfs:label>ZB4</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Modification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Creation -->
+
+    <owl:Class rdf:about="#Creation">
+        <rdfs:label>ZA</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Date -->
+
+    <owl:Class rdf:about="#Date">
+        <rdfs:label rdf:datatype="&xsd;string">V</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+        <rdfs:comment
+            >Represents a date (may be specified by a range or with uncertainty)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Death -->
+
+    <owl:Class rdf:about="#Death">
+        <rdfs:label>ZQ</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#DirectoryEventLocation -->
+
+    <owl:Class rdf:about="#DirectoryEventLocation">
+        <rdfs:label>DS</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#DirectoryEventPriority -->
+
+    <owl:Class rdf:about="#DirectoryEventPriority">
+        <rdfs:label>DP</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#DirectoryEventType -->
+
+    <owl:Class rdf:about="#DirectoryEventType">
+        <rdfs:label>DT</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#EditSequence -->
+
+    <owl:Class rdf:about="#EditSequence">
+        <rdfs:label>z</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Edited -->
+
+    <owl:Class rdf:about="#Edited">
+        <rdfs:label>ZB5</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Modification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Embodiment -->
+
+    <owl:Class rdf:about="#Embodiment">
+        <rdfs:label>ZD</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Employed -->
+
+    <owl:Class rdf:about="#Employed">
+        <rdfs:label>ZR</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Ethnicity -->
+
+    <owl:Class rdf:about="#Ethnicity">
+        <rdfs:label rdf:datatype="&xsd;string">L</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">L</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment
+            >The ethnicity of an Agent</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Event -->
+
+    <owl:Class rdf:about="#Event">
+        <rdfs:label rdf:datatype="&xsd;string">Z</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:comment
+            >Something that happens to a Work or Agent, eg creation, birth, death etc</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Expression -->
+
+    <owl:Class rdf:about="#Expression">
+        <rdfs:label rdf:datatype="&xsd;string">E</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">E</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >From FRBR entity, the realisation of a Work</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#ExternalRef -->
+
+    <owl:Class rdf:about="#ExternalRef">
+        <rdfs:label rdf:datatype="&xsd;string">U</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+        <rdfs:comment
+            >Typically a URL to an external resource</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Extraction -->
+
+    <owl:Class rdf:about="#Extraction">
+        <rdfs:label>ZB2</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Modification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Form -->
+
+    <owl:Class rdf:about="#Form">
+        <rdfs:label rdf:datatype="&xsd;string">i</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">i</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Literary Form eg biography, essay, novel etc</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#FormOfExpression -->
+
+    <owl:Class rdf:about="#FormOfExpression">
+        <rdfs:label rdf:datatype="&xsd;string">q</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">q</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Expression form eg painting, image, dance etc</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Genre -->
+
+    <owl:Class rdf:about="#Genre">
+        <rdfs:label rdf:datatype="&xsd;string">j</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">j</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string">Literary genre</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#HierTopic -->
+
+    <owl:Class rdf:about="#HierTopic">
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#HierarchyDefinition -->
+
+    <owl:Class rdf:about="#HierarchyDefinition">
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Defines a hierarchical topic tree</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >NewHierarchyDefs table</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#ISBN -->
+
+    <owl:Class rdf:about="#ISBN">
+        <rdfs:label>I</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+        <rdfs:comment
+            >International Standard Book Number</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#ISSN -->
+
+    <owl:Class rdf:about="#ISSN">
+        <rdfs:label>S</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+        <rdfs:comment
+            >International Standard Serial Number</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Identifier -->
+
+    <owl:Class rdf:about="#Identifier">
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Alternate identifiers eg Austlit Agent id as opposed to identifier of topic representing Agent, ISBN etc</rdfs:comment>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Identifiers table</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Language -->
+
+    <owl:Class rdf:about="#Language">
+        <rdfs:label rdf:datatype="&xsd;string">y</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">y</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string">Human language</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#LocalHoldingInfo -->
+
+    <owl:Class rdf:about="#LocalHoldingInfo">
+        <rdfs:label rdf:datatype="&xsd;string">H</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#LocalImageId -->
+
+    <owl:Class rdf:about="#LocalImageId">
+        <rdfs:label>P</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#LuReesAuthorId -->
+
+    <owl:Class rdf:about="#LuReesAuthorId">
+        <rdfs:label>LA</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Manifestation -->
+
+    <owl:Class rdf:about="#Manifestation">
+        <rdfs:label rdf:datatype="&xsd;string">F</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">F</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >From FRBR entity, embodies an Expression</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#ManifestationAsPart -->
+
+    <owl:Class rdf:about="#ManifestationAsPart">
+        <rdfs:label rdf:datatype="&xsd;string">G</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Modification -->
+
+    <owl:Class rdf:about="#Modification">
+        <rdfs:label>ZB</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#NLAAmicusId -->
+
+    <owl:Class rdf:about="#NLAAmicusId">
+        <rdfs:label>NW</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#NLAAuthorId -->
+
+    <owl:Class rdf:about="#NLAAuthorId">
+        <rdfs:label>NA</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#NLAImageId -->
+
+    <owl:Class rdf:about="#NLAImageId">
+        <rdfs:label>NI</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#NLAKineticaId -->
+
+    <owl:Class rdf:about="#NLAKineticaId">
+        <rdfs:label>NK</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Name -->
+
+    <owl:Class rdf:about="#Name">
+        <rdfs:label rdf:datatype="&xsd;string">X</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Nationality -->
+
+    <owl:Class rdf:about="#Nationality">
+        <rdfs:label rdf:datatype="&xsd;string">M</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">M</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment
+            >The Nationality of an Agent</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#NewConcept -->
+
+    <owl:Class rdf:about="#NewConcept">
+        <rdfs:label rdf:datatype="&xsd;string">J</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#HierTopic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">J</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#PeriodicalIssue -->
+
+    <owl:Class rdf:about="#PeriodicalIssue">
+        <rdfs:label rdf:datatype="&xsd;string">W</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Place -->
+
+    <owl:Class rdf:about="#Place">
+        <rdfs:label rdf:datatype="&xsd;string">P</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#HierTopic"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Geographical Location</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Realisation -->
+
+    <owl:Class rdf:about="#Realisation">
+        <rdfs:label>ZC</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#RelScope -->
+
+    <owl:Class rdf:about="#RelScope">
+        <rdfs:label rdf:datatype="&xsd;string">p</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#RepresentationalAttribute -->
+
+    <owl:Class rdf:about="#RepresentationalAttribute">
+        <rdfs:label rdf:datatype="&xsd;string">r</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">r</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Format of representation eg text/html</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Reprint -->
+
+    <owl:Class rdf:about="#Reprint">
+        <rdfs:label rdf:datatype="&xsd;string">w</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">w</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Resident -->
+
+    <owl:Class rdf:about="#Resident">
+        <rdfs:label>ZS</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#SETISFulltextBRN -->
+
+    <owl:Class rdf:about="#SETISFulltextBRN">
+        <rdfs:label>F</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Scope -->
+
+    <owl:Class rdf:about="#Scope">
+        <rdfs:label rdf:datatype="&xsd;string">g</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">g</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A research community subset or search scope</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#SubjectiveRank -->
+
+    <owl:Class rdf:about="#SubjectiveRank">
+        <rdfs:label rdf:datatype="&xsd;string">s</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Ranking eg good, excellent etc</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Summarisation -->
+
+    <owl:Class rdf:about="#Summarisation">
+        <rdfs:label>ZB3</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Modification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#TargetUse -->
+
+    <owl:Class rdf:about="#TargetUse">
+        <rdfs:label rdf:datatype="&xsd;string">t</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >eg school, general, research</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Text -->
+
+    <owl:Class rdf:about="#Text">
+        <rdfs:label rdf:datatype="&xsd;string">T</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Title -->
+
+    <owl:Class rdf:about="#Title">
+        <rdfs:label rdf:datatype="&xsd;string">S</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+        <rdfs:comment
+            >Title or other leading text from a Work</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Topic -->
+
+    <owl:Class rdf:about="#Topic">
+        <rdfs:subClassOf rdf:resource="#AustLitEntity"/>
+        <rdfs:comment>Abstract class</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Translation -->
+
+    <owl:Class rdf:about="#Translation">
+        <rdfs:label>ZB1</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Modification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#Work -->
+
+    <owl:Class rdf:about="#Work">
+        <rdfs:label rdf:datatype="&xsd;string">C</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">C</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >From FRBR entity, an abstract intellectual or artistic output.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlit.owl#WorkType -->
+
+    <owl:Class rdf:about="#WorkType">
+        <rdfs:label rdf:datatype="&xsd;string">h</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Topic"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#topicType"/>
+                <owl:hasValue rdf:datatype="&xsd;string">h</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The type of Work eg anthology, single work, collection etc</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#Birth"/>
+            <rdf:Description rdf:about="#Creation"/>
+            <rdf:Description rdf:about="#Death"/>
+            <rdf:Description rdf:about="#Embodiment"/>
+            <rdf:Description rdf:about="#Employed"/>
+            <rdf:Description rdf:about="#Modification"/>
+            <rdf:Description rdf:about="#Realisation"/>
+            <rdf:Description rdf:about="#Resident"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#Compilation"/>
+            <rdf:Description rdf:about="#Edited"/>
+            <rdf:Description rdf:about="#Extraction"/>
+            <rdf:Description rdf:about="#Summarisation"/>
+            <rdf:Description rdf:about="#Translation"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#AustLitAuthorId"/>
+            <rdf:Description rdf:about="#AustLitBRN"/>
+            <rdf:Description rdf:about="#AustLitImageFull"/>
+            <rdf:Description rdf:about="#AustLitImageThumbnail"/>
+            <rdf:Description rdf:about="#DirectoryEventLocation"/>
+            <rdf:Description rdf:about="#DirectoryEventPriority"/>
+            <rdf:Description rdf:about="#DirectoryEventType"/>
+            <rdf:Description rdf:about="#EditSequence"/>
+            <rdf:Description rdf:about="#ISBN"/>
+            <rdf:Description rdf:about="#ISSN"/>
+            <rdf:Description rdf:about="#LocalImageId"/>
+            <rdf:Description rdf:about="#LuReesAuthorId"/>
+            <rdf:Description rdf:about="#NLAAmicusId"/>
+            <rdf:Description rdf:about="#NLAAuthorId"/>
+            <rdf:Description rdf:about="#NLAImageId"/>
+            <rdf:Description rdf:about="#NLAKineticaId"/>
+            <rdf:Description rdf:about="#SETISFulltextBRN"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#Affiliation"/>
+            <rdf:Description rdf:about="#Agent"/>
+            <rdf:Description rdf:about="#Ethnicity"/>
+            <rdf:Description rdf:about="#Event"/>
+            <rdf:Description rdf:about="#Expression"/>
+            <rdf:Description rdf:about="#Form"/>
+            <rdf:Description rdf:about="#FormOfExpression"/>
+            <rdf:Description rdf:about="#Genre"/>
+            <rdf:Description rdf:about="#Language"/>
+            <rdf:Description rdf:about="#Manifestation"/>
+            <rdf:Description rdf:about="#Nationality"/>
+            <rdf:Description rdf:about="#RelScope"/>
+            <rdf:Description rdf:about="#RepresentationalAttribute"/>
+            <rdf:Description rdf:about="#Reprint"/>
+            <rdf:Description rdf:about="#Scope"/>
+            <rdf:Description rdf:about="#SubjectiveRank"/>
+            <rdf:Description rdf:about="#TargetUse"/>
+            <rdf:Description rdf:about="#Work"/>
+            <rdf:Description rdf:about="#WorkType"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#AwardName"/>
+            <rdf:Description rdf:about="#NewConcept"/>
+            <rdf:Description rdf:about="#Place"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#AwardDetails"/>
+            <rdf:Description rdf:about="#Date"/>
+            <rdf:Description rdf:about="#ExternalRef"/>
+            <rdf:Description rdf:about="#HierTopic"/>
+            <rdf:Description rdf:about="#HierarchyDefinition"/>
+            <rdf:Description rdf:about="#Identifier"/>
+            <rdf:Description rdf:about="#LocalHoldingInfo"/>
+            <rdf:Description rdf:about="#ManifestationAsPart"/>
+            <rdf:Description rdf:about="#Name"/>
+            <rdf:Description rdf:about="#PeriodicalIssue"/>
+            <rdf:Description rdf:about="#Text"/>
+            <rdf:Description rdf:about="#Title"/>
+            <rdf:Description rdf:about="#Topic"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.972) http://owlapi.sourceforge.net -->
+

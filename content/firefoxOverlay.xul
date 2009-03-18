@@ -34,7 +34,7 @@
    			 <!--<xul:toolbarbutton id="pop-out" label="Pop out" oncommand="oaiorebuilder.popOutWindow();"/>-->
  			</xul:toolbar>
 		</xul:toolbox>
-        <xul:iframe flex="3" height="500px" width="100%" src="chrome://oaiorebuilder/content/oaiore.html" name="graphiframe" id="graphiframe"/>
+        <xul:iframe flex="3" height="500px" width="100%" src="chrome://oaiorebuilder/content/loreui.html" name="graphiframe" id="graphiframe"/>
         </xul:vbox>
     </xul:vbox>
 

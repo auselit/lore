@@ -1,4 +1,5 @@
-pref("extensions.oaiorebuilder.relonturl", "http://purl.org/vocab/frbr/frbr-core-20050810.rdf");
-pref("extensions.oaiorebuilder.dccreator","http//example.com/~johnsmith");
-pref("extensions.oaiorebuilder.rdfrepos", "http://localhost:8080/openrdf-sesame/repositories/OAIORETEST");
-pref("extensions.oaiorebuilder.rdfrepostype", "sesame");
+pref("extensions.lore.relonturl", "chrome://oaiorebuilder/content/ontologies/austlitoaiore.owl");
+pref("extensions.lore.dccreator","http//example.com/~johnsmith");
+pref("extensions.lore.rdfrepos", "http://localhost:8080/openrdf-sesame/repositories/OAIORETEST");
+pref("extensions.lore.rdfrepostype", "sesame");
+pref("extensions.lore.annoserver", "http://localhost:8081/danno/annotea");
