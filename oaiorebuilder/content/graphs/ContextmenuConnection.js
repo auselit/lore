@@ -8,7 +8,7 @@ oaiorebuilder.ContextmenuConnection=function()
 this.setTargetDecorator(new draw2d.ArrowConnectionDecorator());
 this.setRouter(new draw2d.BezierConnectionRouter());
 this.label = new draw2d.Label();
-this.addFigure(this.label, new draw2d.ManhattenMidpointLocator(this));
+this.addFigure(this.label, new draw2d.ManhattanMidpointLocator(this));
 this.setRelationshipType("http://purl.org/vocab/frbr/core#","partOf");
 this.sourcePort=null;this.targetPort=null;
 this.lineSegments=new Array();

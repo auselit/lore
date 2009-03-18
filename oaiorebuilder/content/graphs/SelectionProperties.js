@@ -31,16 +31,16 @@ oaiorebuilder.SelectionProperties.prototype.onSelectionChanged = function(/*:Fig
             }*/
 			
 			nodegrid.setSource(figure.metadataproperties);
-			propertytabs.activate('nodeproperties');
+			propertytabs.activate('relgrid');
 			//nodegrid.getColumnModel().setColumnWidth(0,70);
 		}
 		else if (figure.edgetype){
 			nodegrid.setSource({"relationship": figure.edgetype, "namespace": figure.edgens});
-			nodegrid.getColumnModel().setColumnWidth(0,80);
-			propertytabs.activate('nodeproperties');
+			//nodegrid.getColumnModel().setColumnWidth(0,80);
+			propertytabs.activate('relgrid');
 		}
 	} else {
 		nodegrid.setSource({});
-		propertytabs.activate('remproperties');
+		propertytabs.activate('remgrid');
 	}
 }

@@ -1,0 +1,777 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns="http://austlit.edu.au/owl/austlitore.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://austlit.edu.au/owl/austlitore.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Expression"/>
+  <owl:Class rdf:ID="Item"/>
+  <owl:Class rdf:ID="Agent"/>
+  <owl:Class rdf:ID="Event"/>
+  <owl:Class rdf:ID="Resource"/>
+  <owl:Class rdf:ID="Concept"/>
+  <owl:Class rdf:ID="Work"/>
+  <owl:Class rdf:ID="Place"/>
+  <owl:Class rdf:ID="Manifestation"/>
+  <owl:ObjectProperty rdf:ID="has_novelization">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_novelization_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_adaptation"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_publisher_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_publisher"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Agent"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_agent_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_sequel_to">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_sequel"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_sucessor_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_equivalent_to">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    <owl:inverseOf rdf:resource="#is_equivalent_to"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_participant">
+    <rdfs:range rdf:resource="#Event"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_participant_in"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Agent"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_annotated_edition_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_annotated_edition"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_edition_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_criticism">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_criticism_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_performance_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_performance"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_derived_from"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_coauthor_with">
+    <rdfs:subPropertyOf>
+      <owl:SymmetricProperty rdf:ID="collaborates_with"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_reproduction_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_reproduction"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_summary_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_summary"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_related_resource_of">
+    <rdfs:range rdf:resource="#Resource"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_related_resource"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_glossary">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_supplement"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_glossary_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_configuration">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_reconfiguration_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_abstract">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_abstract_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_summary"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_editor">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_agent"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_editor_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_summary">
+    <owl:inverseOf rdf:resource="#is_summary_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_constituents">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_aggregate_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_parody">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_imitation"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_parody_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_dramatization">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_dramatization_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_adaptation"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_representation">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_derivation"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_representation_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_imitation">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_imitation_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_derivation"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_expurgated_edition">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_edition"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_expurgated_edition_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_mentor_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_mentored_by"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:SymmetricProperty rdf:ID="is_related_to"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_annotation">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_annotation_on"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_index_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_index"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_supplement_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_version_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_version"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Work"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_derived_from"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_transcript_of">
+    <rdfs:subPropertyOf rdf:resource="#is_related_resource_of"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_transcript"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_image_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_image"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#is_related_resource_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_subset">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_part_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_subset_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_influenced_by">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="influences"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_translation">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_translation_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_derivation"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_abridged_edition_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_edition_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_abridged_edition"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_appendix_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_appendix"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_supplement_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_revision">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_derivation"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_revision_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_audio_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_audio"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#is_related_resource_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_digest">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_digest_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#has_summary"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_participant_in">
+    <rdfs:range rdf:resource="#Agent"/>
+    <rdfs:domain rdf:resource="#Event"/>
+    <owl:inverseOf rdf:resource="#has_participant"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_metadata_for">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_description_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_metadata"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_realization_of">
+    <rdfs:range rdf:resource="#Work"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_realized_through"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Expression"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_illustrator_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_illustrator"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_agent_of"/>
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="#Agent"/>
+    <rdfs:range rdf:resource="#Work"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_revision_of">
+    <owl:inverseOf rdf:resource="#has_revision"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_derived_from"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_producer_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_agent_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_producer"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_derivation">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_derived_from"/>
+    </owl:inverseOf>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Work"/>
+          <owl:Class rdf:about="#Expression"/>
+          <owl:Class rdf:about="#Manifestation"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Work"/>
+          <owl:Class rdf:about="#Expression"/>
+          <owl:Class rdf:about="#Manifestation"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_agent_of">
+    <rdfs:domain rdf:resource="#Agent"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#has_agent"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Work"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_screenplay_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_adaptation_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_screenplay"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_author_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_author"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#is_agent_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_related_resource">
+    <rdfs:domain rdf:resource="#Resource"/>
+    <owl:inverseOf rdf:resource="#is_related_resource_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_review">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_review_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_supplement">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_supplement_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_subset_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_part"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#has_subset"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_subject_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_as_subject"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Work"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_video">
+    <rdfs:subPropertyOf rdf:resource="#has_related_resource"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_video_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_copy_of">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_exemplified_by">
+    <rdfs:range rdf:resource="#Item"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_exemplification_of"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Manifestation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_aggregate_of">
+    <owl:inverseOf rdf:resource="#has_constituents"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_table_of_contents_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_table_of_contents"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#has_summary"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_novelization_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_adaptation_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#has_novelization"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_performance">
+    <rdfs:subPropertyOf rdf:resource="#has_derivation"/>
+    <owl:inverseOf rdf:resource="#is_performance_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_part">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_part_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_representation_of">
+    <owl:inverseOf rdf:resource="#has_representation"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_derived_from"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_description">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_description_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_related_papers">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="papers_relating_to"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#has_related_resource"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_glossary_of">
+    <owl:inverseOf rdf:resource="#has_glossary"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_supplement_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#papers_relating_to">
+    <owl:inverseOf rdf:resource="#has_related_papers"/>
+    <rdfs:subPropertyOf rdf:resource="#is_related_resource_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_annotated_edition">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_edition"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#is_annotated_edition_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_audio">
+    <owl:inverseOf rdf:resource="#is_audio_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_related_resource"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_criticism_of">
+    <owl:inverseOf rdf:resource="#has_criticism"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_reproduction">
+    <owl:inverseOf rdf:resource="#is_reproduction_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_review_of">
+    <owl:inverseOf rdf:resource="#has_review"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_reconfiguration_of">
+    <owl:inverseOf rdf:resource="#has_configuration"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_illustrated_edition">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_edition"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_illustrated_edition_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_transcript">
+    <owl:inverseOf rdf:resource="#is_transcript_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_related_resource"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_owned_by">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_owner"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_custodian_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_table_of_contents">
+    <owl:inverseOf rdf:resource="#is_table_of_contents_of"/>
+    <rdfs:subPropertyOf rdf:resource="#is_summary_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_description_of">
+    <owl:inverseOf rdf:resource="#has_description"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_index">
+    <rdfs:subPropertyOf rdf:resource="#has_supplement"/>
+    <owl:inverseOf rdf:resource="#is_index_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_translator_of">
+    <rdfs:subPropertyOf rdf:resource="#is_agent_of"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_translator"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_adaptation">
+    <rdfs:subPropertyOf rdf:resource="#has_derivation"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_adaptation_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_annotation_on">
+    <owl:inverseOf rdf:resource="#has_annotation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_illustrator">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_agent"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#is_illustrator_of"/>
+    <rdfs:domain rdf:resource="#Work"/>
+    <rdfs:range rdf:resource="#Agent"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_edition">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_edition_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#has_derivation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_translator">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_agent"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#is_translator_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_sucessor">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_sucessor_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_expurgated_edition_of">
+    <owl:inverseOf rdf:resource="#has_expurgated_edition"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_edition_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_abridged_edition">
+    <rdfs:subPropertyOf rdf:resource="#has_edition"/>
+    <owl:inverseOf rdf:resource="#is_abridged_edition_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_mentored_by">
+    <rdfs:subPropertyOf>
+      <owl:SymmetricProperty rdf:about="#is_related_to"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#is_mentor_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_exemplification_of">
+    <rdfs:domain rdf:resource="#Item"/>
+    <owl:inverseOf rdf:resource="#is_exemplified_by"/>
+    <rdfs:range rdf:resource="#Manifestation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_custodian_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_custodian"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#is_agent_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_owner">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_agent"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#is_owned_by"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_part_of">
+    <owl:inverseOf rdf:resource="#has_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_as_subject">
+    <owl:inverseOf rdf:resource="#is_subject_of"/>
+    <rdfs:domain rdf:resource="#Work"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_imitation_of">
+    <owl:inverseOf rdf:resource="#has_imitation"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_derived_from"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_editor_of">
+    <rdfs:subPropertyOf rdf:resource="#is_agent_of"/>
+    <owl:inverseOf rdf:resource="#has_editor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_version">
+    <owl:inverseOf rdf:resource="#is_version_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_derivation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_image">
+    <owl:inverseOf rdf:resource="#is_image_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_related_resource"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_parody_of">
+    <rdfs:subPropertyOf rdf:resource="#is_imitation_of"/>
+    <owl:inverseOf rdf:resource="#has_parody"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_dramatization_of">
+    <owl:inverseOf rdf:resource="#has_dramatization"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_adaptation_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_metadata">
+    <rdfs:subPropertyOf rdf:resource="#has_description"/>
+    <owl:inverseOf rdf:resource="#is_metadata_for"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_excerpt">
+    <rdfs:subPropertyOf rdf:resource="#is_part_of"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_excerpt_from"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_excerpt_from">
+    <owl:inverseOf rdf:resource="#has_excerpt"/>
+    <rdfs:subPropertyOf rdf:resource="#has_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_agent">
+    <rdfs:domain rdf:resource="#Work"/>
+    <owl:inverseOf rdf:resource="#is_agent_of"/>
+    <rdfs:range rdf:resource="#Agent"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_sequel">
+    <owl:inverseOf rdf:resource="#is_sequel_to"/>
+    <rdfs:subPropertyOf rdf:resource="#has_sucessor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_abstract_of">
+    <owl:inverseOf rdf:resource="#has_abstract"/>
+    <rdfs:subPropertyOf rdf:resource="#is_summary_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_derived_from">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Manifestation"/>
+          <owl:Class rdf:about="#Work"/>
+          <owl:Class rdf:about="#Expression"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Work"/>
+          <owl:Class rdf:about="#Expression"/>
+          <owl:Class rdf:about="#Manifestation"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <owl:inverseOf rdf:resource="#has_derivation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_video_of">
+    <rdfs:subPropertyOf rdf:resource="#is_related_resource_of"/>
+    <owl:inverseOf rdf:resource="#has_video"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_author">
+    <rdfs:subPropertyOf rdf:resource="#has_agent"/>
+    <owl:inverseOf rdf:resource="#is_author_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_appendix">
+    <owl:inverseOf rdf:resource="#is_appendix_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_supplement"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_referenced_by">
+    <rdfs:subPropertyOf rdf:resource="#is_influenced_by"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="references"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_custodian">
+    <owl:inverseOf rdf:resource="#is_custodian_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_owner"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_illustrated_edition_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_edition_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#has_illustrated_edition"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_adaptation_of">
+    <rdfs:subPropertyOf rdf:resource="#is_derived_from"/>
+    <owl:inverseOf rdf:resource="#has_adaptation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_edition_of">
+    <rdfs:subPropertyOf rdf:resource="#is_derived_from"/>
+    <owl:inverseOf rdf:resource="#has_edition"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_embodiment_of">
+    <rdfs:range rdf:resource="#Expression"/>
+    <rdfs:domain rdf:resource="#Manifestation"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_embodied_in"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_sucessor_of">
+    <owl:inverseOf rdf:resource="#has_sucessor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_translation_of">
+    <owl:inverseOf rdf:resource="#has_translation"/>
+    <rdfs:subPropertyOf rdf:resource="#is_derived_from"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_publisher">
+    <owl:inverseOf rdf:resource="#is_publisher_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_agent"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_screenplay">
+    <owl:inverseOf rdf:resource="#is_screenplay_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_adaptation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#influences">
+    <owl:inverseOf rdf:resource="#is_influenced_by"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_supplement_of">
+    <owl:inverseOf rdf:resource="#has_supplement"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_producer">
+    <rdfs:subPropertyOf rdf:resource="#has_agent"/>
+    <owl:inverseOf rdf:resource="#is_producer_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#references">
+    <owl:inverseOf rdf:resource="#is_referenced_by"/>
+    <rdfs:subPropertyOf rdf:resource="#influences"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_embodied_in">
+    <rdfs:range rdf:resource="#Manifestation"/>
+    <rdfs:domain rdf:resource="#Expression"/>
+    <owl:inverseOf rdf:resource="#is_embodiment_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_realized_through">
+    <rdfs:domain rdf:resource="#Work"/>
+    <rdfs:range rdf:resource="#Expression"/>
+    <owl:inverseOf rdf:resource="#is_realization_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_digest_of">
+    <owl:inverseOf rdf:resource="#has_digest"/>
+    <rdfs:subPropertyOf rdf:resource="#is_summary_of"/>
+  </owl:ObjectProperty>
+  <owl:SymmetricProperty rdf:about="#is_related_to">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#Agent"/>
+    <rdfs:range rdf:resource="#Agent"/>
+    <owl:inverseOf rdf:resource="#is_related_to"/>
+  </owl:SymmetricProperty>
+  <owl:SymmetricProperty rdf:about="#collaborates_with">
+    <owl:inverseOf rdf:resource="#collaborates_with"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="#is_related_to"/>
+  </owl:SymmetricProperty>
+  <owl:SymmetricProperty rdf:ID="is_family_member_of">
+    <rdfs:subPropertyOf rdf:resource="#is_related_to"/>
+    <owl:inverseOf rdf:resource="#is_family_member_of"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:SymmetricProperty>
+  <owl:SymmetricProperty rdf:ID="is_acquaintance_of">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="#is_related_to"/>
+    <owl:inverseOf rdf:resource="#is_acquaintance_of"/>
+  </owl:SymmetricProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 504)  http://protege.stanford.edu -->

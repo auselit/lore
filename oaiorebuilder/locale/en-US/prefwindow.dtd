@@ -1,5 +1,4 @@
-<!ENTITY prefwindow.title "oaiorebuilder preferences">
-<!ENTITY pane1.title "oaiorebuilder preferences">
+<!ENTITY prefwindow.title "LORE preferences">
 <!ENTITY relonturl.label "Relationship Ontology URL:">
 <!ENTITY relonturl.accesskey "U">
 <!ENTITY relontns.label "Relationship Ontology Namespace:">
@@ -10,4 +9,5 @@
 <!ENTITY relontprefix.accesskey "P">
 <!ENTITY dccreator.label "Creator:">
 <!ENTITY dccreator.accesskey "C">
+<!ENTITY annoserver.label "Annotation Server URL:">
 

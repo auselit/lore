@@ -1,10 +1,5 @@
 <?xml version="1.0"?>
 
-<!DOCTYPE window [
-<!ENTITY % oaiorebuilderDTD SYSTEM "chrome://oaiorebuilder/locale/oaiorebuilder.dtd">
-%oaiorebuilderDTD;
-]>
-
 <bindings xmlns="http://www.mozilla.org/xbl"
     xmlns:xbl="http://www.mozilla.org/xbl"
     xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
