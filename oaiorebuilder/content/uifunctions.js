@@ -320,8 +320,10 @@ function readRDF(rdfURL) {
 						oreGraph.addFigure(c);
 					} else if (srcfig) {
 						// not a node relationship, show in the property grid
-						srcfig.metadataproperties[_nsprefix(relresult.ns)
+						if (!relresult.ns.match(LORE_LAYOUT_NS)){
+							srcfig.metadataproperties[_nsprefix(relresult.ns)
 								+ relresult.term] = resourcerels[j].object;
+						}
 					}
 				}
 				loreInfo("Resource map loaded");

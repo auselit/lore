@@ -34,6 +34,7 @@ var loreviews = Ext.getCmp("loreviews");
 var oreGraph;
 var oreGraphLookup = {};
 var oreGraphCommandListener;
+var oreGraphSelectionListener;
 var selectedFigure; // last selected figure - updated by SelectionProperties.js
 var dummylayoutx = 50;
 var dummylayouty = 50;
@@ -163,16 +164,17 @@ function initProperties(){
 function initGraphicalView(){
 	oreGraphLookup = {};
 	if (oreGraph){
-		oreGraph.getCommandStack().removeCommandStackEventListener(commandListener);
+		oreGraph.getCommandStack().removeCommandStackEventListener(oreGraphCommandListener);
+		oreGraph.removeSelectionListener(oreGraphSelectionListener);
 		oreGraph.clear();
 	} else {
 		oreGraph = new draw2d.Workflow("drawingarea");
 		oreGraph.scrollArea = document.getElementById("drawingarea").parentNode;
-		var sellistener = new oaiorebuilder.SelectionProperties(oreGraph);
-		oreGraph.addSelectionListener(sellistener);
 	}
-	commandListener = new oaiorebuilder.CommandListener();
-	oreGraph.getCommandStack().addCommandStackEventListener(commandListener);
+	oreGraphSelectionListener = new oaiorebuilder.SelectionProperties(oreGraph);
+	oreGraph.addSelectionListener(oreGraphSelectionListener);
+	oreGraphCommandListener = new oaiorebuilder.CommandListener();
+	oreGraph.getCommandStack().addCommandStackEventListener(oreGraphCommandListener);
 	selectedFigure = null;
 	dummylayoutx = 50;
 	dummylayouty = 50;	
