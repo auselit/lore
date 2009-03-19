@@ -32,7 +32,7 @@ var loreviews = Ext.getCmp("loreviews");
 
 // Global variables for graphical view
 var oreGraph;
-var oreGraphLookup;
+var oreGraphLookup = {};
 var oreGraphCommandListener;
 var selectedFigure; // last selected figure - updated by SelectionProperties.js
 var dummylayoutx = 50;
@@ -71,7 +71,8 @@ var namespaces = {
 	"dc" : "http://purl.org/dc/elements/1.1/",
 	"dcterms" : "http://purl.org/dc/terms/",
 	"ore" : "http://www.openarchives.org/ore/terms/",
-	"foaf" : "http://xmlns.com/foaf/0.1/"
+	"foaf" : "http://xmlns.com/foaf/0.1/",
+	"layout" : "http://maenad.itee.uq.edu.au/lore/layout.owl#"
 };
 
 function _make_menu_entry(menu, gridname, propname, op) {
@@ -160,10 +161,10 @@ function initProperties(){
  * Initialise the graphical view
  */
 function initGraphicalView(){
+	oreGraphLookup = {};
 	if (oreGraph){
 		oreGraph.getCommandStack().removeCommandStackEventListener(commandListener);
 		oreGraph.clear();
-		
 	} else {
 		oreGraph = new draw2d.Workflow("drawingarea");
 		oreGraph.scrollArea = document.getElementById("drawingarea").parentNode;
@@ -172,7 +173,6 @@ function initGraphicalView(){
 	}
 	commandListener = new oaiorebuilder.CommandListener();
 	oreGraph.getCommandStack().addCommandStackEventListener(commandListener);
-	oreGraphLookup = {};
 	selectedFigure = null;
 	dummylayoutx = 50;
 	dummylayouty = 50;	

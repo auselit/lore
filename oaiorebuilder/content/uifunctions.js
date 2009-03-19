@@ -31,7 +31,7 @@ var ANNOTATION_TYPE_NS = "http://www.w3.org/2000/10/annotationType#";
 var THREAD_NS          = "http://www.w3.org/2001/03/thread#";
 var REPLY_TYPE_NS      = "http://www.w3.org/2001/12/replyType#";
 var XHTML_NS           = "http://www.w3.org/1999/xhtml";
-		
+var LORE_LAYOUT_NS     = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
 /**
  * Render the current resource map as RDF/XML in the RDF view
  */
@@ -194,6 +194,15 @@ function createRDF(escape) {
 				}
 			}
 		}
+		/* persist node layout */
+		resourcerdf += ltsymb + rdfdescabout + figurl + closetag + 
+			ltsymb + "layout:x>" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb +
+			ltsymb + "layout:y>" + fig.y + ltsymb + "/" + "layout:y>" + nlsymb + 
+			ltsymb + "layout:width>" + fig.width + ltsymb + "/" + "layout:width>" + nlsymb +
+			ltsymb + "layout:height>" + fig.height + ltsymb + "/" + "layout:height>" + nlsymb +
+			ltsymb + "layout:originalHeight>" + fig.originalHeight + ltsymb + "/" + "layout:originalHeight>" + nlsymb +
+			ltsymb + rdfdescclose + nlsymb;
+		
 		var outgoingconnections = fig.getPorts().get(1).getConnections();
 		for (var j = 0; j < outgoingconnections.getSize(); j++) {
 			var theconnector = outgoingconnections.get(j);
@@ -276,10 +285,23 @@ function readRDF(rdfURL) {
 				var resourcerels = new Array(0);
 				for (var i = 0; i < aggregates.length; i++) {
 					var resourceURL = aggregates[i].object;
-					addFigure(resourceURL);
-					// collect resource-resource relationships
+					// lookup layout info
+					var x = theRDF.getSingleObject(null,resourceURL,LORE_LAYOUT_NS+"x", null);
+					var y = theRDF.getSingleObject(null, resourceURL, LORE_LAYOUT_NS+"y", null);
+					var width = theRDF.getSingleObject(null, resourceURL, LORE_LAYOUT_NS+"width", null);
+					var height = theRDF.getSingleObject(null,resourceURL,LORE_LAYOUT_NS+"height", null);
+					var originalHeight = theRDF.getSingleObject(null,resourceURL,LORE_LAYOUT_NS+"originalHeight", null);
+					if (x && y){
+						var fig = addFigureXY(resourceURL, parseInt(x), parseInt(y));
+						fig.originalHeight = parseInt(originalHeight);
+						fig.setDimension(parseInt(width), parseInt(height))
+					} else {
+						addFigure(resourceURL);
+					}
+					// collect all predicates
 					var matches = theRDF.Match(null, resourceURL, null, null);
 					resourcerels = resourcerels.concat(matches);
+					
 
 				}
 				//var oreGraphDoc = oreGraph.getDocument();
@@ -621,7 +643,7 @@ function _updateCompoundObjectsSourceList(contextURL) {
 										leaf : true
 									});
 							remstreeroot.appendChild(tmpNode);
-							tmpNode.on('click', function(node) {
+							tmpNode.on('dblclick', function(node) {
 										loadRDFFromID(node.text);
 									});
 						}
