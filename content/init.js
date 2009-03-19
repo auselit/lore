@@ -22,7 +22,7 @@
 var propertytabs = Ext.getCmp("propertytabs");
 var grid = Ext.getCmp("remgrid");
 var aggregrid = Ext.getCmp('aggregrid');
-var nodegrid = Ext.getCmp('relgrid');
+var nodegrid = Ext.getCmp('nodegrid');
 var lorestatus = Ext.getCmp('lorestatus');
 var rdftab = Ext.getCmp("remrdfview");
 rdftab.on("activate", showRDFHTML);
@@ -115,6 +115,10 @@ function setUpMetadataMenu(the_grid, gridname) {
 	var remMetadataMenu = new Ext.menu.Menu({
 				id : gridname + "-rem-metadata-menu"
 			});
+	for (var i = 0; i < metadata_props.length; i++) {
+		_make_menu_entry(addMetadataMenu, gridname, metadata_props[i], "add");
+		_make_menu_entry(remMetadataMenu, gridname, metadata_props[i], "rem");
+	}
 	if (gridname == "aggregrid") {
 		for (var i = 0; i < aggre_metadata_props.length; i++) {
 			_make_menu_entry(addMetadataMenu, gridname,
@@ -123,10 +127,7 @@ function setUpMetadataMenu(the_grid, gridname) {
 					aggre_metadata_props[i], "rem");
 		}
 	}
-	for (var i = 0; i < metadata_props.length; i++) {
-		_make_menu_entry(addMetadataMenu, gridname, metadata_props[i], "add");
-		_make_menu_entry(remMetadataMenu, gridname, metadata_props[i], "rem");
-	}
+
 	if (gridname == "nodegrid") {
 		for (var i = 0; i < resource_metadata_props.length; i++) {
 			_make_menu_entry(addMetadataMenu, gridname,
