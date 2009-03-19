@@ -16,7 +16,8 @@ this.metadataproperties = {"Resource" : this.url};
 this.cornerHeight=14.5;
 draw2d.Node.call(this);
 this.setDimension(250,150);
-this.originalHeight=-1;};
+this.originalHeight=-1;
+};
 
 oaiorebuilder.ResourceFigure.prototype=new draw2d.Node;
 oaiorebuilder.ResourceFigure.prototype.type="oaiorebuilder.ResourceFigure";
@@ -33,7 +34,6 @@ item.style.margin="0px";
 item.style.padding="0px";
 item.style.outline="none";
 item.style.zIndex=""+draw2d.Figure.ZOrderBaseIndex;
-
 this.top_left=document.createElement("div");
 this.top_left.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat top left";
 this.top_left.style.position="absolute";
@@ -68,7 +68,7 @@ this.bottom_right.style.fontSize="2px";this.header=document.createElement("div")
 this.header.style.position="absolute";this.header.style.left=this.cornerWidth+"px";
 this.header.style.top="0px";this.header.style.height=(this.cornerHeight)+"px";
 this.header.style.backgroundColor="#e5e5e5";
-this.header.style.color="#333341";
+this.header.style.color="#333333";
 this.header.style.borderTop="1px solid #aeaeae";
 this.header.style.fontSize="10px";
 this.header.style.textAlign="center";
@@ -93,6 +93,7 @@ this.textarea.style.overflow="hidden";
 this.textarea.style.fontSize="9pt";
 this.metadataarea = document.createElement("div");
 this.metadataarea.style.paddingLeft="3px";
+this.metadataarea.style.color="#333333";
 this.metadataarea.style.borderBottom="1px solid #aeaeae";
 this.iframearea = document.createElement("div");
 this.iframearea.style.border="none";
@@ -216,18 +217,20 @@ oaiorebuilder.ResourceFigure.prototype.setCanDrag=function(flag){
 oaiorebuilder.ResourceFigure.prototype.setWorkflow=function(_4679){
 	draw2d.Node.prototype.setWorkflow.call(this,_4679);
 	if(_4679!=null&&this.inputPort==null){
+		var orange = new draw2d.Color(255,204,51);
+		var grey = new draw2d.Color(174,174,174);
 		this.inputPort=new oaiorebuilder.InputPort();
 		this.inputPort.setWorkflow(_4679);
 		this.inputPort.setName("input");
-		this.inputPort.setBackgroundColor(new draw2d.Color(255,204,51));
-		this.inputPort.setColor(new draw2d.Color(174,174,174));
+		this.inputPort.setBackgroundColor(orange);
+		this.inputPort.setColor(grey);
 		this.addPort(this.inputPort,-5,this.height/2);
 		this.outputPort=new oaiorebuilder.OutputPort();
 		this.outputPort.setMaxFanOut(5);
 		this.outputPort.setWorkflow(_4679);
 		this.outputPort.setName("output");
-		this.outputPort.setBackgroundColor(new draw2d.Color(255,204,51));
-		this.outputPort.setColor(new draw2d.Color(174,174,174));
+		this.outputPort.setBackgroundColor(orange);
+		this.outputPort.setColor(grey);
 		this.addPort(this.outputPort,this.width+5,this.height/2);}
 };
 oaiorebuilder.ResourceFigure.prototype.toggle=function(){
@@ -236,7 +239,7 @@ oaiorebuilder.ResourceFigure.prototype.toggle=function(){
 		this.iframearea.style.display="none";
 		var newHeight = this.metadataarea.offsetHeight + this.header.offsetHeight + this.footer.offsetHeight - 4;
 		this.setDimension(this.width,newHeight);
-		this.setResizeable(false);
+		//this.setResizeable(false);
 		this.top_left.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleplus.gif) no-repeat top left";
 		this.top_right.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleplus.gif) no-repeat top right";
 		this.bottom_left.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleplus.gif) no-repeat bottom left";
@@ -246,7 +249,7 @@ oaiorebuilder.ResourceFigure.prototype.toggle=function(){
 		this.setDimension(this.width,this.originalHeight);
 		this.iframearea.style.display="block";
 		this.originalHeight=-1;
-		this.setResizeable(true);
+		//this.setResizeable(true);
 		this.top_left.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat top left";
 		this.top_right.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat top right";
 		this.bottom_left.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat bottom left";
