@@ -524,7 +524,6 @@ function loreError(message) {
  * @param {} theTree The tree to clear
  */
 function _clearTree(treeRoot){
-	
 	treeRoot.eachChild(function(node) {
 		if (node) {
 			node.purgeListeners();
@@ -550,8 +549,8 @@ function _updateAnnotationsSourceList(contextURL) {
 				if (req.readyState == 4)
 					if (req.responseText && req.status != 204
 							&& req.status < 400) {
-						var treeRoot = annotationstree.getRootNode();
-						_clearTree(treeRoot);
+						
+						_clearTree(annotationstreeroot);
 						var resultNodes = {};
 						var xmldoc = req.responseXML;
 						if (xmldoc) {
@@ -586,13 +585,13 @@ function _updateAnnotationsSourceList(contextURL) {
           							}
         						}*/
       
-								treeRoot.appendChild(tmpNode);
+								annotationstreeroot.appendChild(tmpNode);
 								/*tmpNode.on('click', function(node) {
 										loadRDFFromID(node.text);
 								});*/
 							}
-							if (!treeRoot.isExpanded()) {
-								treeRoot.expand();
+							if (!annotationstreeroot.isExpanded()) {
+								annotationstreeroot.expand();
 							}
 						}
 					}
@@ -623,13 +622,7 @@ function _updateCompoundObjectsSourceList(contextURL) {
 				if (req.readyState == 4)
 					if (req.responseText && req.status != 204
 							&& req.status < 400) {
-						var remstreeroot = remstree.getRootNode();
-						remstreeroot.eachChild(function(node) {
-									if (node) {
-										node.purgeListeners();
-										node.remove();
-									}
-								});
+						_clearTree(remstreeroot);
 						var xmldoc = req.responseXML;
 						var result = {};
 						if (xmldoc) {
