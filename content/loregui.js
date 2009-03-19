@@ -18,7 +18,6 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
 Ext.namespace("lore");
-Ext.reg('propertygrid', Ext.grid.PropertyGrid);
 
 lore.gui_spec = {
 	layout : "border",
@@ -157,35 +156,17 @@ lore.gui_spec = {
 								
 								items : [{
 											xtype : "treepanel",
-											id: "annotationstree",
+											id: "sourcestree",
 											animate : true,
 											autoScroll : true,
+											rootVisible:false,
 											containerScroll : true,
 											border : false,
-											root : new Ext.tree.TreeNode({
-														text : 'Annotations',
-														draggable : false,
-														iconCls : "tree-anno"
-													}),
+											root: new Ext.tree.TreeNode({}),
 											dropConfig : {
 												appendOnly : true
 											}
-										}, {
-											xtype : "treepanel",
-											id: "remstree",
-											animate : true,
-											autoScroll : true,
-											containerScroll : true,
-											border : false,
-											root : new Ext.tree.TreeNode({
-														text : 'Compound Objects',
-														draggable : false,
-														iconCls : "tree-ore"
-													}),
-											dropConfig : {
-												appendOnly : true
-											}
-										}]
+								}]
 							}, {
 								region : "south",
 								split : true,
@@ -199,6 +180,7 @@ lore.gui_spec = {
 									xtype: 'propertygrid',
 									title: 'Resource Map',
 									id: "remgrid",
+									enableColumnHide: false,
 									enableHdMenu: true,
 									autoExpandColumn: 1,
 									autoWidth: true,

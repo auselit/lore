@@ -26,10 +26,22 @@ var nodegrid = Ext.getCmp('relgrid');
 var lorestatus = Ext.getCmp('lorestatus');
 var rdftab = Ext.getCmp("remrdfview");
 rdftab.on("activate", showRDFHTML);
-var remstree = Ext.getCmp("remstree");
-var annotationstree = Ext.getCmp("annotationstree");
 var loreviews = Ext.getCmp("loreviews");
-
+var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
+var annotationstreeroot = new Ext.tree.TreeNode({
+	id: "annotationstree",
+	text: 'Annotations',
+	draggable: false,
+	iconCls: "tree-anno"
+});
+var remstreeroot = new Ext.tree.TreeNode({
+	id: "remstree",
+	text: 'Compound Objects',
+	draggable: false,
+	iconCls: "tree-ore"
+});
+sourcestreeroot.appendChild(annotationstreeroot);
+sourcestreeroot.appendChild(remstreeroot);
 // Global variables for graphical view
 var oreGraph;
 var oreGraphLookup = {};
@@ -184,10 +196,10 @@ initProperties();
 initOntologies();
 initGraphicalView();
 
-/*
- * setUpMetadataMenu(grid, "grid"); setUpMetadataMenu(aggregrid, "aggregrid");
- * setUpMetadataMenu(nodegrid,"nodegrid");
- */
+setUpMetadataMenu(grid, "grid"); 
+setUpMetadataMenu(aggregrid, "aggregrid");
+setUpMetadataMenu(nodegrid,"nodegrid");
+ 
 nodegrid.on("propertychange", function(source, recid, newval, oldval) {
 	// var the_fig = lookupFigure(source["Resource"]);
 	if (recid == 'Resource') {
