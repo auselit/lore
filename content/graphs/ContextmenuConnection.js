@@ -5,14 +5,19 @@
 var oaiorebuilder = {}
 oaiorebuilder.ContextmenuConnection=function()
 {draw2d.Connection.call(this);
-this.setTargetDecorator(new draw2d.ArrowConnectionDecorator());
+var grey = new draw2d.Color(174,174,174);
+var darkgrey = new draw2d.Color(51,51,51);
+var theArrow = new draw2d.ArrowConnectionDecorator();
+theArrow.setColor(grey);
+this.setTargetDecorator(theArrow);
 this.setRouter(new draw2d.BezierConnectionRouter());
 this.label = new draw2d.Label();
+this.label.setColor(darkgrey);
 this.addFigure(this.label, new draw2d.ManhattanMidpointLocator(this));
 this.setRelationshipType("http://purl.org/vocab/frbr/core#","partOf");
 this.sourcePort=null;this.targetPort=null;
 this.lineSegments=new Array();
-this.setColor(new draw2d.Color(54,54,54));
+this.setColor(grey);
 this.setLineWidth(1);
 };
 oaiorebuilder.ContextmenuConnection.prototype=new draw2d.Connection();
@@ -20,7 +25,7 @@ oaiorebuilder.ContextmenuConnection.prototype.setRelationshipType=function(ename
 {this.edgetype=etype;
 this.edgens=enamespace;
 nodegrid.setSource({"Relationship":etype, "Schema": enamespace});
-nodegrid.getColumnModel().setColumnWidth(0,70);
+//nodegrid.getColumnModel().setColumnWidth(0,70);
 this.label.setText(etype);
 };
 oaiorebuilder.ContextmenuConnection.prototype.setOntologyRelationships=function(r){
