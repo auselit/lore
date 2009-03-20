@@ -31,13 +31,13 @@ oaiorebuilder.SelectionProperties.prototype.onSelectionChanged = function(/*:Fig
             }*/
 			
 			nodegrid.setSource(figure.metadataproperties);
-			propertytabs.activate('relgrid');
+			propertytabs.activate('nodegrid');
 			//nodegrid.getColumnModel().setColumnWidth(0,70);
 		}
 		else if (figure.edgetype){
 			nodegrid.setSource({"relationship": figure.edgetype, "namespace": figure.edgens});
 			//nodegrid.getColumnModel().setColumnWidth(0,80);
-			propertytabs.activate('relgrid');
+			propertytabs.activate('nodegrid');
 		}
 	} else {
 		nodegrid.setSource({});

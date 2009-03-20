@@ -63,10 +63,10 @@
 .x-date-picker {
 	width: 200px;
 }		
-/*.x-menu {
+.x-menu {
 	overflow:auto; 
-	max-height:100%;
-}*/
+	max-height:50%;
+}
 
 /* mimetype icons for node views */
 .mimeicon {
