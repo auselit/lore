@@ -82,18 +82,18 @@ lore.gui_spec = {
 												id : "compoundobjecteditor",
 												autoScroll: true,
 												items: [{
-														title: "Graph View",
+														title: "Graph",
 														xtype: "panel",
 														id: "drawingarea",
 														autoWidth: true
 															
 													}, {
-														title: "Table of Contents",
+														title: "Summary",
 														xtype: "panel",
 														id: "remlistview"														
 														
 													}, {
-														title: "RDF/XML View",
+														title: "RDF/XML",
 														xtype: "panel",
 														id: "remrdfview"		
 													}		
@@ -173,7 +173,6 @@ lore.gui_spec = {
 								height: 200,
           						xtype : "tabpanel",
 								id: "propertytabs",
-								
 								enableTabScroll:true,
  								defaults: {autoScroll:true},
 
@@ -182,7 +181,6 @@ lore.gui_spec = {
 									title: 'Resource Map',
 									id: "remgrid",
 									autoWidth: true,
-									autoHeight: true,
    									viewConfig : {
         								forceFit:true,
         								scrollOffset: 0
@@ -195,7 +193,6 @@ lore.gui_spec = {
 									title: 'Aggregation',
 									id: "aggregrid",
 									autoWidth: true,
-									autoHeight: true,
    									viewConfig : {
         								forceFit:true,
         								scrollOffset: 0
@@ -209,7 +206,6 @@ lore.gui_spec = {
 									title: "Resource/Relationship",
 									id: "nodegrid",
 									autoWidth: true,
-									autoHeight: true,
    									viewConfig : {
         								forceFit:true,
         								scrollOffset: 0

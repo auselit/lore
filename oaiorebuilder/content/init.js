@@ -129,7 +129,7 @@ function init(){
 	setUpMetadataMenu(grid, "grid"); 
 	setUpMetadataMenu(aggregrid, "aggregrid");
 	setUpMetadataMenu(nodegrid,"nodegrid");
- 
+ 	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
 }
 
