@@ -173,7 +173,7 @@ lore.gui_spec = {
 								height: 200,
           						xtype : "tabpanel",
 								id: "propertytabs",
-								listeners: {contextmenu : onContextMenu},
+								
 								enableTabScroll:true,
  								defaults: {autoScroll:true},
 
