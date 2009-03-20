@@ -17,31 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 // Global variables for accessing Ext components
-var propertytabs = Ext.getCmp("propertytabs");
-var grid = Ext.getCmp("remgrid");
-var aggregrid = Ext.getCmp('aggregrid');
-var nodegrid = Ext.getCmp('nodegrid');
-var lorestatus = Ext.getCmp('lorestatus');
-var rdftab = Ext.getCmp("remrdfview");
-rdftab.on("activate", showRDFHTML);
-var loreviews = Ext.getCmp("loreviews");
-var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
-var annotationstreeroot = new Ext.tree.TreeNode({
-	id: "annotationstree",
-	text: 'Annotations',
-	draggable: false,
-	iconCls: "tree-anno"
-});
-var remstreeroot = new Ext.tree.TreeNode({
-	id: "remstree",
-	text: 'Compound Objects',
-	draggable: false,
-	iconCls: "tree-ore"
-});
-sourcestreeroot.appendChild(annotationstreeroot);
-sourcestreeroot.appendChild(remstreeroot);
+var propertytabs;
+var grid;
+var aggregrid;
+var nodegrid;
+var lorestatus;
+var rdftab;
+var loreviews;
+var sourcestreeroot;
+var annotationstreeroot;
+var remstreeroot;
+
 // Global variables for graphical view
 var oreGraph;
 var oreGraphLookup = {};
@@ -88,6 +76,63 @@ var namespaces = {
 	"layout" : "http://maenad.itee.uq.edu.au/lore/layout.owl#"
 };
 
+function init(){
+	propertytabs = Ext.getCmp("propertytabs");
+	
+	grid = Ext.getCmp("remgrid");
+	aggregrid = Ext.getCmp('aggregrid');
+	nodegrid = Ext.getCmp('nodegrid');
+	lorestatus = Ext.getCmp('lorestatus');
+	rdftab = Ext.getCmp("remrdfview");
+	rdftab.on("activate", showRDFHTML);
+	loreviews = Ext.getCmp("loreviews");
+	
+	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
+	annotationstreeroot = new Ext.tree.TreeNode({
+		id: "annotationstree",
+		text: 'Annotations',
+		draggable: false,
+		iconCls: "tree-anno"
+	});
+	remstreeroot = new Ext.tree.TreeNode({
+		id: "remstree",
+		text: 'Compound Objects',
+		draggable: false,
+		iconCls: "tree-ore"
+	});
+	sourcestreeroot.appendChild(annotationstreeroot);
+	sourcestreeroot.appendChild(remstreeroot);
+	
+	initProperties();
+	initOntologies();
+	initGraphicalView();
+
+	nodegrid.on("propertychange", function(source, recid, newval, oldval) {
+		// var the_fig = lookupFigure(source["Resource"]);
+		if (recid == 'Resource') {
+			// the URL of the resource has changed
+			if (newval && newval != '') {
+				theval = newval
+			} else
+				theval = "about:blank";
+				if (oreGraphLookup[theval]) {
+				loreWarning("Cannot change resource URL: a node already exists for " + theval);
+				// TODO: don't update values in this case
+			} else {
+				oreGraphLookup[theval] = selectedFigure.getId();
+			}
+			delete oreGraphLookup[oldval];
+		}
+		selectedFigure.updateMetadata(source);
+	});
+	
+	setUpMetadataMenu(grid, "grid"); 
+	setUpMetadataMenu(aggregrid, "aggregrid");
+	setUpMetadataMenu(nodegrid,"nodegrid");
+ 
+	loreInfo("Welcome to LORE");
+}
+
 function _make_menu_entry(menu, gridname, propname, op) {
 	// helper function for setUpMetadataMenu
 	var funcstr = "";
@@ -108,7 +153,7 @@ function _make_menu_entry(menu, gridname, propname, op) {
 			});
 }
 function setUpMetadataMenu(the_grid, gridname) {
-	// create context menu to add/remove additional metadata properties
+	// create menu to add/remove additional metadata properties
 	var addMetadataMenu = new Ext.menu.Menu({
 				id : gridname + "-add-metadata-menu"
 			});
@@ -136,17 +181,16 @@ function setUpMetadataMenu(the_grid, gridname) {
 					resource_metadata_props[i], "rem");
 		}
 	}
-	the_grid.getView().hmenu.add({
-				id : gridname + "-add-metadata",
-				text : "Add metadata",
-				menu : addMetadataMenu
-			});
-	the_grid.getView().hmenu.add({
-				id : gridname + "-rem-metadata",
-				text : "Remove metadata",
-				menu : remMetadataMenu
-			});
-
+	
+	var tbar = the_grid.getTopToolbar();
+	var addbtn = tbar[0];
+	var rembtn = tbar[1];
+	if (addbtn){
+		addbtn.menu = addMetadataMenu;
+	}
+	if (rembtn){
+		rembtn.menu = remMetadataMenu;
+	}
 }
 
 function initOntologies(){
@@ -193,34 +237,9 @@ function initGraphicalView(){
 	dummylayouty = 50;	
 }
 
-initProperties();
-initOntologies();
-initGraphicalView();
 
-setUpMetadataMenu(grid, "grid"); 
-setUpMetadataMenu(aggregrid, "aggregrid");
-setUpMetadataMenu(nodegrid,"nodegrid");
- 
-nodegrid.on("propertychange", function(source, recid, newval, oldval) {
-	// var the_fig = lookupFigure(source["Resource"]);
-	if (recid == 'Resource') {
-		// the URL of the resource has changed
-		if (newval && newval != '') {
-			theval = newval
-		} else
-			theval = "about:blank";
-		if (oreGraphLookup[theval]) {
-			loreWarning("Cannot change resource URL: a node already exists for " + theval);
-			// TODO: don't update values in this case
-		} else {
-			oreGraphLookup[theval] = selectedFigure.getId();
-		}
-		delete oreGraphLookup[oldval];
-	}
-	selectedFigure.updateMetadata(source);
-});
-loreInfo("Welcome to LORE");
 
+Ext.EventManager.onDocumentReady(init);
 /*
 var dragsource = new Ext.dd.DragSource("dragNode", {
 			ddGroup : 'TreeDD',

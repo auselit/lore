@@ -173,6 +173,7 @@ lore.gui_spec = {
 								height: 200,
           						xtype : "tabpanel",
 								id: "propertytabs",
+								listeners: {contextmenu : onContextMenu},
 								enableTabScroll:true,
  								defaults: {autoScroll:true},
 
@@ -180,56 +181,48 @@ lore.gui_spec = {
 									xtype: 'propertygrid',
 									title: 'Resource Map',
 									id: "remgrid",
-									enableColumnHide: false,
-									enableHdMenu: true,
-									autoExpandColumn: 1,
 									autoWidth: true,
 									autoHeight: true,
-									viewConfig: {
-										forceFit: true,
-										scrollOffset: 0
-									}					
-          							},        {
+   									viewConfig : {
+        								forceFit:true,
+        								scrollOffset: 0
+    								},
+									tbar: [
+										new Ext.Button({text: "Add property"}),
+										new Ext.Button({text: "Remove property"})]
+          							},{
 									xtype: 'propertygrid',
 									title: 'Aggregation',
 									id: "aggregrid",
-									enableHdMenu: true,
-									enableColumnHide: false,
-									autoExpandColumn: 1,
 									autoWidth: true,
 									autoHeight: true,
-									viewConfig: {
-										forceFit: true,
-										scrollOffset: 0
-									}				
+   									viewConfig : {
+        								forceFit:true,
+        								scrollOffset: 0
+    								},
+									tbar: [
+									new Ext.Button({text: "Add property"}),
+									new Ext.Button({text: "Remove property"})]
+											
           							}, {
               						xtype: "propertygrid",
 									title: "Resource/Relationship",
 									id: "nodegrid",
-									enableHdMenu: true,
-									enableColumnHide: false,
-									autoExpandColumn: 1,
 									autoWidth: true,
 									autoHeight: true,
-									viewConfig: {
-										forceFit: true,
-										scrollOffset: 0
-									}
-          							},{
+   									viewConfig : {
+        								forceFit:true,
+        								scrollOffset: 0
+    								},
+									tbar: [
+									new Ext.Button({text: "Add property"}),
+									new Ext.Button({text: "Remove property"})]	
+          							}/*,{
               						xtype: "propertygrid",
 									title: "Annotation",
-									id: "annogrid",
-									enableHdMenu: true,
-									enableColumnHide: false,
-									autoExpandColumn: 1,
-									autoWidth: true,
-									autoHeight: true,
-									viewConfig: {
-										forceFit: true,
-										scrollOffset: 0
-									}
-          						}],
-          						activeTab : 0
+									id: "annogrid"
+          							}*/
+								]
       						}]					
 					}]
 			}]
