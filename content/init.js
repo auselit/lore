@@ -25,6 +25,7 @@ var aggregrid;
 var nodegrid;
 var lorestatus;
 var rdftab;
+var annotationstab;
 var loreviews;
 var sourcestreeroot;
 var annotationstreeroot;
@@ -85,6 +86,7 @@ function init(){
 	lorestatus = Ext.getCmp('lorestatus');
 	rdftab = Ext.getCmp("remrdfview");
 	rdftab.on("activate", showRDFHTML);
+	annotationstab = Ext.getCmp("annotationslist");
 	loreviews = Ext.getCmp("loreviews");
 	
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
