@@ -143,10 +143,6 @@ function createRDF(escape) {
 			+ "rdf:type rdf:resource=\"http://www.openarchives.org/ore/terms/ResourceMap\" />"
 			+ nlsymb
 			+ ltsymb
-			+ "dc:creator rdf:resource=\""
-			+ remprops["dc:creator"]
-			+ fullclosetag
-			+ ltsymb
 			+ "dcterms:modified rdf:datatype=\"http://www.w3.org/2001/XMLSchema#date\">"
 			+ modifiedDate.getFullYear() + "-" + (modifiedDate.getMonth() + 1)
 			+ "-" + modifiedDate.getDate() + ltsymb + "/dcterms:modified>"
@@ -159,8 +155,11 @@ function createRDF(escape) {
 				+ created.getDate() + ltsymb + "/dcterms:created>" + nlsymb;
 	}
 	for (var i = 0; i < metadata_props.length; i++) {
-		rdfxml += _serialise_property(metadata_props[i], remprops, ltsymb,
+		var theprop = metadata_props[i];
+		if (theprop != 'dcterms:modified'){
+			rdfxml += _serialise_property(theprop, remprops, ltsymb,
 				nlsymb);
+		}
 	}
 	rdfxml += ltsymb + rdfdescclose + nlsymb;
 
@@ -549,8 +548,6 @@ function _updateAnnotationsSourceList(contextURL) {
 				if (req.readyState == 4)
 					if (req.responseText && req.status != 204
 							&& req.status < 400) {
-						
-						_clearTree(annotationstreeroot);
 						var resultNodes = {};
 						var xmldoc = req.responseXML;
 						if (xmldoc) {
@@ -558,8 +555,14 @@ function _updateAnnotationsSourceList(contextURL) {
 								"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 								"Description");
 						}
+						_clearTree(annotationstreeroot);
 						if (resultNodes.length > 0){
+							// clear the tree - seems to be a bug where it doesn't clear
+							_clearTree(annotationstreeroot);
+							var ds = annotationstab.getStore();
+							// todo: clear the annotations list
 							var annotations = orderByDate(resultNodes);
+							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
 								var annoID = annotations[i].id;
 								/*var xmldoc2 = getAnnotationsRDF(annoID, true);
@@ -586,15 +589,18 @@ function _updateAnnotationsSourceList(contextURL) {
         						}*/
       
 								annotationstreeroot.appendChild(tmpNode);
-								/*tmpNode.on('click', function(node) {
-										loadRDFFromID(node.text);
-								});*/
-							}
-							if (!annotationstreeroot.isExpanded()) {
-								annotationstreeroot.expand();
-							}
+								tmpNode.on('dblclick', function(node) {
+										loreviews.activate("annotationslist");
+							});
+							
+							ds.loadData(annotations);		
+						}
+						
+						if (!annotationstreeroot.isExpanded()) {
+							annotationstreeroot.expand();
 						}
 					}
+				}
 			};
 			req.send(null);
 		} catch (e) {
