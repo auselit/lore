@@ -556,11 +556,12 @@ function _updateAnnotationsSourceList(contextURL) {
 								"Description");
 						}
 						_clearTree(annotationstreeroot);
+						var ds = annotationstab.getStore();
+						ds.removeAll();
+						
 						if (resultNodes.length > 0){
 							// clear the tree - seems to be a bug where it doesn't clear
 							_clearTree(annotationstreeroot);
-							var ds = annotationstab.getStore();
-							// todo: clear the annotations list
 							var annotations = orderByDate(resultNodes);
 							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
