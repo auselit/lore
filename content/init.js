@@ -119,7 +119,7 @@ function init(){
 				theval = "about:blank";
 				if (oreGraphLookup[theval]) {
 				loreWarning("Cannot change resource URL: a node already exists for " + theval);
-				// TODO: don't update values in this case
+				selectedFigure.setContent("about:blank");
 			} else {
 				oreGraphLookup[theval] = selectedFigure.getId();
 			}
