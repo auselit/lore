@@ -1,16 +1,16 @@
-<!ENTITY oaiorebuilder.label "oaiorebuilder">
-<!ENTITY oaiorebuilderContextLink.label "Add linked resource to ORE map">
-<!ENTITY oaiorebuilderContextImage.label "Add image to ORE map">
-<!ENTITY oaiorebuilderContextBGImage.label "Add background image to ORE map">
-<!ENTITY oaiorebuilderToolbar.label "OAI-ORE Builder">
-<!ENTITY oaiorebuilderToolbar.tooltip "Toggle oaiorebuilder">
+<!ENTITY oaiorebuilder.label "LORE">
+<!ENTITY oaiorebuilderContextLink.label "Add linked resource to ORE object">
+<!ENTITY oaiorebuilderContextImage.label "Add image to ORE object">
+<!ENTITY oaiorebuilderContextBGImage.label "Add background image to ORE object">
+<!ENTITY oaiorebuilderToolbar.label "LORE">
+<!ENTITY oaiorebuilderToolbar.tooltip "Toggle LORE">
 <!ENTITY oaiorebuilder.addNodeLabel "Add Resource">
-<!ENTITY oaiorebuilder.addNodeTip "Add the current URL to the resource map">
+<!ENTITY oaiorebuilder.addNodeTip "Add the current URL to the compound object">
 <!ENTITY oaiorebuilder.loadRDFLabel "Load RDF URL">
 <!ENTITY oaiorebuilder.loadRDFFromReposLabel "Load RDF (from repository)">
-<!ENTITY oaiorebuilder.loadRDFTip "Load an OAI-ORE resource map from RDF file URL">
-<!ENTITY oaiorebuilder.loadRDFFromReposTip "Load an OAI-ORE resource map from the RDF Repository">
+<!ENTITY oaiorebuilder.loadRDFTip "Load an OAI-ORE compound object from RDF file URL">
+<!ENTITY oaiorebuilder.loadRDFFromReposTip "Load an OAI-ORE compound object from the RDF Repository">
 <!ENTITY oaiorebuilder.resetGraphLabel "Reset Graph">
-<!ENTITY oaiorebuilder.resetGraphTip "Reset to initial empty graph">
+<!ENTITY oaiorebuilder.resetGraphTip "Reset Graph UI">
 <!ENTITY oaiorebuilder.saveRDFLabel "Save RDF">
-<!ENTITY oaiorebuilder.saveRDFTip "Save the resource map RDF to the RDF repository">
+<!ENTITY oaiorebuilder.saveRDFTip "Save the compound object to the RDF repository">
