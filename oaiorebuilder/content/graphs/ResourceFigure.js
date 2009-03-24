@@ -152,9 +152,20 @@ else {var theurl = "about:blank";}
 this.setIcon(theurl);
 this.setMetadata(theurl);
 // Don't display PDFs in preview
-if (this.metadataproperties["dc:format"] && !this.metadataproperties["dc:format"].contains("pdf")){
-	this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
-} 
+var mimetype = this.metadataproperties["dc:format"];
+if (mimetype && mimetype.contains("application/rdf+xml")){
+	// resource is most likely to be a compound object - don't display contents
+	// TODO: allow annotations as contained objects as well
+	
+	this.iframearea.innerHTML="<div class='orelink' id='" + this.id + "-data'><a href='#' onclick=\"readRDF('"+ theurl + "');\">Compound Object: <br><img src='../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
+	var identifierURI = getOREIdentifier(theurl);
+	
+	this.metadataarea.innerHTML="<ul><li class='mimeicon oreicon'>" + identifierURI + "</li></ul>";
+	
+} else if (mimetype && !mimetype.contains("pdf")){
+		this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
+}
+
 };
 
 oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
@@ -164,6 +175,7 @@ oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
 	
 	this.metadataarea.innerHTML="<ul><li class='" + this.icontype + "' id='"+ this.id + "-icon'>" +
 		"<a target='_blank' href='" + urlparam + "'>" + urlparam + "</a></li></ul>";
+	
 }
 oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
 {
@@ -254,6 +266,9 @@ oaiorebuilder.ResourceFigure.prototype.updateMetadata=function(source){
 	this.metadataproperties = source;
 	if (source["Resource"] != this.url) {
 		this.setContent(source["Resource"]);
+	}
+	if (source["dc:title"]){
+		this.setTitle(source["dc:title"]);
 	}
 };
 oaiorebuilder.ResourceFigure.prototype.createPlusMinusIcon=function(){

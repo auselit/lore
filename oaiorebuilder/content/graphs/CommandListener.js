@@ -11,6 +11,7 @@ oaiorebuilder.CommandListener.prototype.stackChanged=function(event){
 	var details=event.getDetails();
 	var comm = event.getCommand();
 	var comm_fig = comm.figure;
+	oreGraphModified = true;
 	if(0!=(details&(draw2d.CommandStack.POST_EXECUTE)))
 	{
 		if(comm instanceof draw2d.CommandDelete){

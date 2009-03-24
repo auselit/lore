@@ -323,6 +323,9 @@ function readRDF(rdfURL) {
 							srcfig.metadataproperties[_nsprefix(relresult.ns)
 								+ relresult.term] = resourcerels[j].object;
 						}
+						if (relresult.term == "title"){
+							srcfig.setTitle(resourcerels[j].object);
+						}					
 					}
 				}
 				loreInfo("Resource map loaded");
@@ -360,6 +363,25 @@ function loadRDFFromID(remID) {
 
 	var queryStr = reposURL + "/statements?context=<" + remID + ">";
 	readRDF(queryStr);
+}
+/**
+ * Takes a repository access URI and returns the resource map identifier
+ * This is only necessary until we implement proper access of resource maps via their identifier URI
+ * @param {} theurl
+ * @return {}
+ */
+function getOREIdentifier(theurl){
+	//Example of the url : http://austlit.edu.au/openrdf-sesame/repositories/lore/statements?context=<http://austlit.edu.au>
+	var result;
+	if (theurl) {
+		result = theurl.substring((theurl.indexOf('<')+1), (theurl.length - 1));
+	}
+	if (result){
+		return result;
+	}
+	else {
+		return theurl;
+	}
 }
 /**
  * Load a resource map directly from a URL - prompt the user to enter the URL
@@ -403,6 +425,7 @@ function loadRelationshipsFromOntology() {
 					}
 					resource_metadata_props = resource_metadata_props
 							.concat(tmp_resource_metadata);
+					resource_metadata_props.sort();
 				}, false, function(args) {
 					loreWarning(args.status + "\n" + args.contentType + " "
 							+ args.content);
@@ -591,6 +614,7 @@ function _updateAnnotationsSourceList(contextURL) {
       
 								annotationstreeroot.appendChild(tmpNode);
 								tmpNode.on('dblclick', function(node) {
+									//TODO: prompt first
 										loreviews.activate("annotationslist");
 							});
 							
