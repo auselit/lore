@@ -149,10 +149,10 @@ if (urlparam && urlparam != ""){
 	var theurl = urlparam;
 }
 else {var theurl = "about:blank";}
-this.setMetadata(theurl);
 this.setIcon(theurl);
+this.setMetadata(theurl);
 // Don't display PDFs in preview
-if (!this.metadataproperties["dc:format"].contains("pdf")){
+if (this.metadataproperties["dc:format"] && !this.metadataproperties["dc:format"].contains("pdf")){
 	this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
 } 
 };
@@ -161,46 +161,39 @@ oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
 {
 	this.url=urlparam;
 	this.metadataproperties["Resource"] = urlparam;
-	this.metadataarea.innerHTML="<ul><li id='"+ urlparam + "-icon'>" +
+	
+	this.metadataarea.innerHTML="<ul><li class='" + this.icontype + "' id='"+ this.id + "-icon'>" +
 		"<a target='_blank' href='" + urlparam + "'>" + urlparam + "</a></li></ul>";
 }
 oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
 {
 	var mimetype = "text/html";
-	var handler = this;
 	try {
 		var req = new XMLHttpRequest();
 		req.open('GET', theurl, false); 
 		req.send(null);
-		
-		var mimetype = "";
-		try {
-      		mimetype = req.getResponseHeader('Content-Type');
-		} catch (e) {}
-		var icontype = "mimeicon ";
+		var mimetype = req.getResponseHeader('Content-Type');
+		this.icontype = "mimeicon ";
 		if (mimetype.contains("html"))
-			icontype += "htmlicon";
+			this.icontype += "htmlicon";
 		else if (mimetype.contains("image")){
-			icontype += "imageicon";
+			this.icontype += "imageicon";
 			document.getElementById(theurl + "-data").style.width='auto';
 		}
 		else if (mimetype.contains("audio")) {
-			icontype += "audioicon";
+			this.icontype += "audioicon";
 		}
 		else if (mimetype.contains("video") || mimetype.contains("flash")) 
-			icontype += "videoicon";
+			this.icontype += "videoicon";
 		else if (mimetype.contains("pdf")) {
-			icontype += "pdficon";
-			document.getElementById(theurl + "-data")
+			this.icontype += "pdficon";
 		}
-		else 
-			icontype += "pageicon";
-		if (mimetype && mimetype != "" && !handler.metadataproperties["dc:format"])
-			handler.metadataproperties["dc:format"] = mimetype;
-			document.getElementById(theurl + '-icon').className = icontype;
-  			
-		
-		
+		else {
+			this.icontype += "pageicon";
+		}
+		if (mimetype && mimetype != ""){
+			this.metadataproperties["dc:format"] = mimetype;
+		}
 	} catch (e) {}
 }
 
