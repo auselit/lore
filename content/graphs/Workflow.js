@@ -101,3 +101,36 @@ draw2d.Workflow.prototype.showResizeHandles=function(/*:draw2d.Figure*/ figure)
     this.moveFront(this.resizeHandle8);
   }
 }
+/**
+ * @param {draw2d.Line} line The line for the resize handles.
+ * @private
+ **/
+draw2d.Workflow.prototype.showLineResizeHandles=function(/*:draw2d.Line*/ figure )
+{
+  var blue = new draw2d.Color(217,232,251);
+  var brightblue = new draw2d.Color(170,204,246);
+  var resizeWidthHalf = this.resizeHandleStart.getWidth()/2;
+  var resizeHeightHalf= this.resizeHandleStart.getHeight()/2;
+  var startPoint = figure.getStartPoint();
+  var endPoint   = figure.getEndPoint();
+  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandleStart,startPoint.x-resizeWidthHalf,startPoint.y-resizeWidthHalf);
+  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandleEnd,endPoint.x-resizeWidthHalf,endPoint.y-resizeWidthHalf);
+  this.resizeHandleStart.setCanDrag(figure.isResizeable());
+  this.resizeHandleEnd.setCanDrag(figure.isResizeable());
+  if(figure.isResizeable())
+  {
+    this.resizeHandleStart.setBackgroundColor(blue);
+    this.resizeHandleStart.setColor(brightblue);
+    this.resizeHandleEnd.setBackgroundColor(blue);
+    this.resizeHandleEnd.setColor(brightblue);
+    // required for reconnect of connections
+   this.resizeHandleStart.draggable.targets= this.dropTargets;
+   this.resizeHandleEnd.draggable.targets= this.dropTargets;
+
+  }
+  else
+  {
+    this.resizeHandleStart.setBackgroundColor(null);
+    this.resizeHandleEnd.setBackgroundColor(null);
+  }
+}
