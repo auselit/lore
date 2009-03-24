@@ -566,6 +566,9 @@ function _updateAnnotationsSourceList(contextURL) {
  if (annoURL){
  	var queryURL = annoURL + "?w3c_annotates=" + contextURL;
  	loreInfo("Loading annotations for " + contextURL);
+ 	_clearTree(annotationstreeroot);
+	var ds = annotationstab.getStore();
+	ds.removeAll();
  	try {
 			var req = new XMLHttpRequest();
 			req.open('GET', queryURL, true);
@@ -580,9 +583,7 @@ function _updateAnnotationsSourceList(contextURL) {
 								"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 								"Description");
 						}
-						_clearTree(annotationstreeroot);
-						var ds = annotationstab.getStore();
-						ds.removeAll();
+						
 						
 						if (resultNodes.length > 0){
 							// clear the tree - seems to be a bug where it doesn't clear
