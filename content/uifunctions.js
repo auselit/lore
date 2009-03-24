@@ -178,7 +178,7 @@ function createRDF(escape) {
 	var resourcerdf = "";
 	for (var i = 0; i < allfigures.getSize(); i++) {
 		var fig = allfigures.get(i);
-		var figurl = fig.url.replace('&', '&amp;');
+		var figurl = fig.url.replace('&', '&amp;').replace('<','%3C').replace('>','%3E');
 		rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
 				+ fullclosetag;
 		// create RDF for resources in aggregation
@@ -371,9 +371,10 @@ function loadRDFFromID(remID) {
  * @param {} theurl
  * @return {}
  */
-function getOREIdentifier(theurl){
+function getOREIdentifier(url){
 	//Example of the url : http://austlit.edu.au/openrdf-sesame/repositories/lore/statements?context=<http://austlit.edu.au>
 	var result;
+	var theurl = url.replace('%3C','<').replace('%3E','>');
 	if (theurl) {
 		result = theurl.substring((theurl.indexOf('<')+1), (theurl.length - 1));
 	}

@@ -149,10 +149,13 @@ if (urlparam && urlparam != ""){
 	var theurl = urlparam;
 }
 else {var theurl = "about:blank";}
+
 this.setIcon(theurl);
+
 this.setMetadata(theurl);
 // Don't display PDFs in preview
 var mimetype = this.metadataproperties["dc:format"];
+if (!mimetype) mimetype = "text/html";
 if (mimetype && mimetype.contains("application/rdf+xml")){
 	// resource is most likely to be a compound object - don't display contents
 	// TODO: allow annotations as contained objects as well
@@ -162,9 +165,12 @@ if (mimetype && mimetype.contains("application/rdf+xml")){
 	
 	this.metadataarea.innerHTML="<ul><li class='mimeicon oreicon'>" + identifierURI + "</li></ul>";
 	
+} else if (mimetype && mimetype.contains("image")){
+	this.iframearea.innerHTML="<img id='" + theurl + "-data' src='" + theurl + "' style='z-index:-9001' height='95%'>";
+
 } else if (mimetype && !mimetype.contains("pdf")){
-		this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
-}
+	this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
+} 
 
 };
 
@@ -184,29 +190,27 @@ oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
 		var req = new XMLHttpRequest();
 		req.open('GET', theurl, false); 
 		req.send(null);
-		var mimetype = req.getResponseHeader('Content-Type');
+		mimetype = req.getResponseHeader('Content-Type');
 		this.icontype = "mimeicon ";
 		if (mimetype.contains("html"))
 			this.icontype += "htmlicon";
 		else if (mimetype.contains("image")){
 			this.icontype += "imageicon";
 			document.getElementById(theurl + "-data").style.width='auto';
-		}
-		else if (mimetype.contains("audio")) {
+		} else if (mimetype.contains("audio")) {
 			this.icontype += "audioicon";
-		}
-		else if (mimetype.contains("video") || mimetype.contains("flash")) 
+		}else if (mimetype.contains("video") || mimetype.contains("flash")) 
 			this.icontype += "videoicon";
 		else if (mimetype.contains("pdf")) {
 			this.icontype += "pdficon";
-		}
-		else {
+		}else {
 			this.icontype += "pageicon";
 		}
-		if (mimetype && mimetype != ""){
-			this.metadataproperties["dc:format"] = mimetype;
-		}
+		
+		
+		
 	} catch (e) {}
+	this.metadataproperties["dc:format"] = mimetype;
 }
 
 oaiorebuilder.ResourceFigure.prototype.onDragstart=function(x,y){
