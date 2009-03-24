@@ -30,6 +30,7 @@ var loreviews;
 var sourcestreeroot;
 var annotationstreeroot;
 var remstreeroot;
+var welcometab;
 
 // Global variables for graphical view
 var oreGraph;
@@ -80,7 +81,6 @@ var namespaces = {
 
 function init(){
 	propertytabs = Ext.getCmp("propertytabs");
-	
 	grid = Ext.getCmp("remgrid");
 	//aggregrid = Ext.getCmp('aggregrid');
 	nodegrid = Ext.getCmp('nodegrid');
@@ -89,6 +89,7 @@ function init(){
 	rdftab.on("activate", showRDFHTML);
 	annotationstab = Ext.getCmp("annotationslist");
 	loreviews = Ext.getCmp("loreviews");
+	welcometab = Ext.getCmp("welcome");
 	
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	annotationstreeroot = new Ext.tree.TreeNode({
@@ -103,6 +104,7 @@ function init(){
 		draggable: false,
 		iconCls: "tree-ore"
 	});
+	_clearTree(sourcestreeroot);
 	sourcestreeroot.appendChild(annotationstreeroot);
 	sourcestreeroot.appendChild(remstreeroot);
 	
@@ -151,6 +153,9 @@ function init(){
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
 	updateSourceLists(window.top.getBrowser().selectedBrowser.contentWindow.location.href);
+	
+	//welcometab.body.update("<p>foo</p>");
+	
 }
 
 function _make_menu_entry(menu, gridname, propname, op) {
@@ -261,6 +266,5 @@ function initGraphicalView(){
 
 
 Ext.EventManager.onDocumentReady(init);
-
 
 
