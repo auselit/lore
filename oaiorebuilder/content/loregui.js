@@ -172,7 +172,7 @@ lore.gui_spec = {
                 
                 items: [{
                     xtype: 'propertygrid',
-                    title: 'Resource Map',
+                    title: 'Compound Object',
                     id: "remgrid",
                     autoWidth: true,
                     viewConfig: {
@@ -184,7 +184,7 @@ lore.gui_spec = {
                     }), new Ext.Button({
                         text: "Remove property"
                     })]
-                }, {
+                },/* {
                     xtype: 'propertygrid',
                     title: 'Aggregation',
                     id: "aggregrid",
@@ -199,7 +199,7 @@ lore.gui_spec = {
                         text: "Remove property"
                     })]
                 
-                }, {
+                },*/ {
                     xtype: "propertygrid",
                     title: "Resource/Relationship",
                     id: "nodegrid",

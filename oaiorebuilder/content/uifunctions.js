@@ -164,7 +164,8 @@ function createRDF(escape) {
 	rdfxml += ltsymb + rdfdescclose + nlsymb;
 
 	// create RDF for aggregation
-	var aggreprops = aggregrid.getSource();
+	//var aggreprops = aggregrid.getSource();
+	var aggreprops = {"rdf:type" : "http://www.openarchives.org/ore/terms/Aggregation"};
 	rdfxml += ltsymb + rdfdescabout + describes + closetag + ltsymb
 			+ "rdf:type rdf:resource=\"" + aggreprops["rdf:type"]
 			+ fullclosetag;
@@ -599,7 +600,7 @@ function _updateAnnotationsSourceList(contextURL) {
 								//var isLeaf = (replyList.length == 0);
 								var isLeaf = true;
 								var tmpNode = new Ext.tree.TreeNode({
-										text : title,
+										text :  title + " <span style='font-style:italic'>(" + annotations[i].creator +")</span>",
 										iconCls : 'oreresult',
 										leaf: isLeaf	
 								});
