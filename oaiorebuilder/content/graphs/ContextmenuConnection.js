@@ -36,12 +36,18 @@ oaiorebuilder.ContextmenuConnection.prototype.getContextMenu=function()
 	// ontrelationships is global - set up by main html page
 	var menu=new draw2d.Menu();
 	var oThis = this;
+	// sort the menu entries
+	var keys = [];
  	for (rel in ontrelationships){
+		keys.push(rel);
+ 	}
+ 	keys.sort();
+ 	for (var i =0; i< keys.length; i++){
+ 		var rel = keys[i];
 		var enamespace=ontrelationships[rel];
 		var etype = rel;
 		var functionstr = "oThis.setRelationshipType(\"" + enamespace + "\", \"" +  etype + "\");"
 		var thefunc = eval ("(function () {" + functionstr + "})");
-		
  		menu.appendMenuItem(new draw2d.MenuItem(rel,null, thefunc));
  	}
 	return menu;
