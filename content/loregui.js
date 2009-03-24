@@ -35,11 +35,13 @@ lore.gui_spec = {
                 items: [{
                     xtype: "ddtabpanel",
                     id: "loreviews",
+					deferredRender: false,
                     items: [{
                         xtype: "panel",
                         title: "Welcome",
                         id: "welcome",
-                        html: "<div><h1>LORE: Literature Object Reuse and Exchange</h1><ul ><li>Create a new compound object</li><li>Annotate current resource</li></ul></div>",
+						autoWidth: true,
+						autoScroll: true,
                         closable: true,
                         iconCls: "welcome-icon"
                     
@@ -98,6 +100,7 @@ lore.gui_spec = {
                         xtype: "tabpanel",
                         title: "Compound Object Editor",
                         id: "compoundobjecteditor",
+						deferredRender: false,
                         autoScroll: true,
                         items: [{
                             title: "Graph",
@@ -109,6 +112,7 @@ lore.gui_spec = {
                             title: "Summary",
                             xtype: "panel",
                             id: "remlistview"
+
                         
                         }, {
                             title: "RDF/XML",
