@@ -115,10 +115,13 @@ lore.gui_spec = {
                             xtype: "panel",
                             id: "remrdfview"
                         }],
-                        activeTab: 0
-                    }],
-                    activeTab: 2
-                }]
+                        activeTab: "drawingarea"
+                    }
+					],
+                    activeTab: "compoundobjecteditor"
+					
+                }
+				]
             }, {
                 region: "south",
                 xtype: "statusbar",
