@@ -34,6 +34,7 @@ var remstreeroot;
 // Global variables for graphical view
 var oreGraph;
 var oreGraphLookup = {};
+var oreGraphModified = false;
 var oreGraphCommandListener;
 var oreGraphSelectionListener;
 var selectedFigure; // last selected figure - updated by SelectionProperties.js
@@ -111,6 +112,7 @@ function init(){
 
 	nodegrid.on("propertychange", function(source, recid, newval, oldval) {
 		// var the_fig = lookupFigure(source["Resource"]);
+		oreGraphModified = true;
 		if (recid == 'Resource') {
 			// the URL of the resource has changed
 			if (newval && newval != '') {
@@ -124,6 +126,10 @@ function init(){
 				oreGraphLookup[theval] = selectedFigure.getId();
 			}
 			delete oreGraphLookup[oldval];
+		}
+		if (recid == 'dc:title'){
+			// update figure title
+			selectedFigure.setTitle(newval);
 		}
 		selectedFigure.updateMetadata(source);
 	});

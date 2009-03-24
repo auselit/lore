@@ -94,6 +94,9 @@
 .audioicon {
 	list-style-image: url(chrome://oaiorebuilder/skin/icons/page_sound.gif);
 }
+.oreicon {
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/oaioreicon-sm.png); padding-top:2px;
+}
 
 /* Source tree styles */
 .tree-anno {
@@ -110,7 +113,9 @@
 	display:none;
 }
 .orelink {
-	font-style:italic; color: #51666b;
+	font-style:italic; 
+	color: #51666b; 
+	padding:10px;	
 }
 
 /* status bar styles */
