@@ -144,15 +144,17 @@ oaiorebuilder.ResourceFigure.prototype.setTitle=function(title){
 
 oaiorebuilder.ResourceFigure.prototype.setContent=function(urlparam)
 {
+
 if (urlparam && urlparam != ""){
 	var theurl = urlparam;
 }
 else {var theurl = "about:blank";}
 this.setMetadata(theurl);
-// Don't display PDFs in preview TODO this should be done from mime type not just file extension
-if (!theurl.contains(".pdf"))
-	this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
 this.setIcon(theurl);
+// Don't display PDFs in preview
+if (!this.metadataproperties["dc:format"].contains("pdf")){
+	this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
+} 
 };
 
 oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
@@ -168,37 +170,37 @@ oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
 	var handler = this;
 	try {
 		var req = new XMLHttpRequest();
-		req.open('GET', theurl, true); 
-		req.onreadystatechange = function (aEvt) {
-  			if (req.readyState == 4) {
-				var mimetype = "";
-				try {
-      				mimetype = req.getResponseHeader('Content-Type');
-				} catch (e) {}
-				var icontype = "mimeicon ";
-				if (mimetype.contains("html"))
-					icontype += "htmlicon";
-				else if (mimetype.contains("image")){
-					icontype += "imageicon";
-					document.getElementById(theurl + "-data").style.width='auto';
-				}
-				else if (mimetype.contains("audio")) {
-					icontype += "audioicon";
-				}
-				else if (mimetype.contains("video") || mimetype.contains("flash")) 
-					icontype += "videoicon";
-				else if (mimetype.contains("pdf")) {
-					icontype += "pdficon";
-					document.getElementById(theurl + "-data")
-				}
-				else 
-					icontype += "pageicon";
-				if (mimetype && mimetype != "" && !handler.metadataproperties["dc:format"])
-					handler.metadataproperties["dc:format"] = mimetype;
-				document.getElementById(theurl + '-icon').className = icontype;
-  			}
-		};
+		req.open('GET', theurl, false); 
 		req.send(null);
+		
+		var mimetype = "";
+		try {
+      		mimetype = req.getResponseHeader('Content-Type');
+		} catch (e) {}
+		var icontype = "mimeicon ";
+		if (mimetype.contains("html"))
+			icontype += "htmlicon";
+		else if (mimetype.contains("image")){
+			icontype += "imageicon";
+			document.getElementById(theurl + "-data").style.width='auto';
+		}
+		else if (mimetype.contains("audio")) {
+			icontype += "audioicon";
+		}
+		else if (mimetype.contains("video") || mimetype.contains("flash")) 
+			icontype += "videoicon";
+		else if (mimetype.contains("pdf")) {
+			icontype += "pdficon";
+			document.getElementById(theurl + "-data")
+		}
+		else 
+			icontype += "pageicon";
+		if (mimetype && mimetype != "" && !handler.metadataproperties["dc:format"])
+			handler.metadataproperties["dc:format"] = mimetype;
+			document.getElementById(theurl + '-icon').className = icontype;
+  			
+		
+		
 	} catch (e) {}
 }
 
