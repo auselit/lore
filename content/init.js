@@ -82,7 +82,7 @@ function init(){
 	propertytabs = Ext.getCmp("propertytabs");
 	
 	grid = Ext.getCmp("remgrid");
-	aggregrid = Ext.getCmp('aggregrid');
+	//aggregrid = Ext.getCmp('aggregrid');
 	nodegrid = Ext.getCmp('nodegrid');
 	lorestatus = Ext.getCmp('lorestatus');
 	rdftab = Ext.getCmp("remrdfview");
@@ -93,13 +93,13 @@ function init(){
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	annotationstreeroot = new Ext.tree.TreeNode({
 		id: "annotationstree",
-		text: 'Annotations',
+		text: "Annotations",
 		draggable: false,
 		iconCls: "tree-anno"
 	});
 	remstreeroot = new Ext.tree.TreeNode({
 		id: "remstree",
-		text: 'Compound Objects',
+		text: "Compound Objects",
 		draggable: false,
 		iconCls: "tree-ore"
 	});
@@ -133,9 +133,20 @@ function init(){
 		}
 		selectedFigure.updateMetadata(source);
 	});
-	
+	grid.on("beforeedit",function(e){
+		//don't allow these fields to be edited
+		if(e.record.id == "ore:describes" || e.record.id == "rdf:type"){
+			e.cancel = true;
+		}
+	});
+	nodegrid.on("beforeedit", function(e){
+		// don't allow format field to be edited
+		if (e.record.id == "dc:format"){
+			e.cancel = true;
+		}
+	});
 	setUpMetadataMenu(grid, "grid"); 
-	setUpMetadataMenu(aggregrid, "aggregrid");
+	//setUpMetadataMenu(aggregrid, "aggregrid");
 	setUpMetadataMenu(nodegrid,"nodegrid");
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
@@ -220,9 +231,10 @@ function initProperties(){
 			"dcterms:created" : today,
 			"rdf:type" : "http://www.openarchives.org/ore/terms/ResourceMap"
 	});
-	aggregrid.setSource({
+/*	aggregrid.setSource({
 			"rdf:type" : "http://www.openarchives.org/ore/terms/Aggregation"
 	});
+*/
 }
 /**
  * Initialise the graphical view
