@@ -586,6 +586,7 @@ function _updateAnnotationsSourceList(contextURL) {
 							// clear the tree - seems to be a bug where it doesn't clear
 							_clearTree(annotationstreeroot);
 							var annotations = orderByDate(resultNodes);
+							ds.loadData(annotations);
 							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
 								var annoID = annotations[i].id;
@@ -616,9 +617,9 @@ function _updateAnnotationsSourceList(contextURL) {
 								tmpNode.on('dblclick', function(node) {
 									//TODO: prompt first
 										loreviews.activate("annotationslist");
-							});
+								});
 							
-							ds.loadData(annotations);		
+									
 						}
 						
 						if (!annotationstreeroot.isExpanded()) {
@@ -629,7 +630,6 @@ function _updateAnnotationsSourceList(contextURL) {
 			};
 			req.send(null);
 		} catch (e) {
-		
 	}
  }
 }
@@ -671,7 +671,27 @@ function _updateCompoundObjectsSourceList(contextURL) {
 							remstreeroot.appendChild(tmpNode);
 							tmpNode.on('dblclick', function(node) {
 										loadRDFFromID(node.text);
-									});
+							});
+							
+							tmpNode.on('contextmenu', function(node,e){
+								tmpNode.contextmenu = new Ext.menu.Menu({
+		        					id : remID + "-add-metadata-menu"
+								});
+								tmpNode.contextmenu.add({
+									text : "Add to resource map",
+									handler : function(evt){
+										addFigure(reposURL + "/statements?context=<" + node.text + ">");
+									}
+								});
+								tmpNode.contextmenu.add({
+									text : "Load in Compound Object Editor",
+									handler : function (evt){
+										loadRDFFromID(node.text);
+									}
+								});
+    							tmpNode.contextmenu.showAt(e.xy);
+							});
+							
 						}
 						if (!remstreeroot.isExpanded()) {
 							remstreeroot.expand();

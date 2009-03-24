@@ -139,6 +139,7 @@ function init(){
 	setUpMetadataMenu(nodegrid,"nodegrid");
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
+	updateSourceLists(window.top.getBrowser().selectedBrowser.contentWindow.location.href);
 }
 
 function _make_menu_entry(menu, gridname, propname, op) {
@@ -248,28 +249,6 @@ function initGraphicalView(){
 
 
 Ext.EventManager.onDocumentReady(init);
-/*
-var dragsource = new Ext.dd.DragSource("dragNode", {
-			ddGroup : 'TreeDD',
-			dragData : {
-				name : "resourceNode"
-			}
-		});
-var droptarget = new Ext.dd.DropTarget("graph", {
-			ddGroup : 'TreeDD'
-		});
-droptarget.notifyDrop = function(dd, e, data) {
-	if (data.name) {
-		var xOffset = oreGraph.getAbsoluteX();
-		var yOffset = oreGraph.getAbsoluteY();
-		var scrollLeft = oreGraph.getScrollLeft();
-		var scrollTop = oreGraph.getScrollTop();
-		var theURL = document.getElementById("gotourl").value;
-		if (theURL != '') {
-			addFigureXY(theURL, e.xy[0] - xOffset + scrollLeft, e.xy[1]
-							- yOffset + scrollTop);
-		}
-	}
-	return true;
-}
-*/
+
+
+
