@@ -550,7 +550,8 @@ function _clearTree(treeRoot){
 	treeRoot.eachChild(function(node) {
 		if (node) {
 			node.purgeListeners();
-			node.remove();
+			_clearTree(node);
+			node.cascade(function(n2) {n2.remove();});
 		}
 	});
 }
@@ -923,7 +924,7 @@ function Annotation (rdf)
      node = rdf.getElementsByTagNameNS(DC_NS, 'language');
      this.lang = safeGetFirstChildValue(node);
 
-     //this.body = getAjaxRespSync(bodyURL);
+     
    }
    catch (ex) {
      var st = "Error parsing RDF" + (this.id ? ' for ' + this.id : '') +
