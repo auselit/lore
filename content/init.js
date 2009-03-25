@@ -168,7 +168,7 @@ function init(){
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
 	updateSourceLists(window.top.getBrowser().selectedBrowser.contentWindow.location.href);
-	welcometab.body.update("<p>LORE: Literature Object Re-use and Exchange</p>");
+	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1><p>This page will provide basic getting started information</p>");
 	
 }
 
