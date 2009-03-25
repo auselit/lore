@@ -24,13 +24,16 @@ var grid;
 var aggregrid;
 var nodegrid;
 var lorestatus;
-var rdftab;
-var annotationstab;
 var loreviews;
 var sourcestreeroot;
 var annotationstreeroot;
 var remstreeroot;
 var welcometab;
+var annotationstab;
+var compoundobjecttab;
+var rdftab;
+var summarytab;
+
 
 // Global variables for graphical view
 var oreGraph;
@@ -90,6 +93,9 @@ function init(){
 	annotationstab = Ext.getCmp("annotationslist");
 	loreviews = Ext.getCmp("loreviews");
 	welcometab = Ext.getCmp("welcome");
+	summarytab = Ext.getCmp("remlistview");
+	summarytab.on("activate", showCompoundObjectSummary);
+	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	annotationstreeroot = new Ext.tree.TreeNode({
@@ -153,8 +159,7 @@ function init(){
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
 	updateSourceLists(window.top.getBrowser().selectedBrowser.contentWindow.location.href);
-	
-	//welcometab.body.update("<p>foo</p>");
+	welcometab.body.update("<p>LORE: Literature Object Re-use and Exchange</p>");
 	
 }
 

@@ -36,9 +36,20 @@ var LORE_LAYOUT_NS     = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
  * Render the current resource map as RDF/XML in the RDF view
  */
 function showRDFHTML() {
-	document.getElementById('remrdfview').innerHTML = createRDF(true);
+	rdftab.body.update(createRDF(true));
 }
 
+function showCompoundObjectSummary() {
+	var newsummary = "<div><p>List of contents:</p><ul>";
+	var allfigures = oreGraph.getDocument().getFigures();
+	for (var i = 0; i < allfigures.getSize(); i++) {
+		var fig = allfigures.get(i);
+		var figurl = fig.url.replace('&', '&amp;');
+		newsummary += "<li><a target='_blank' href='" + figurl + "'>" + figurl + "</a></li>";
+	}
+	newsummary += "</ul></div>";
+	summarytab.body.update(newsummary);
+}
 /**
  * Helper function for createRDF that serialises a property to RDF/XML
  * @param {} propname The name of the property to serialise
@@ -634,6 +645,7 @@ function _updateAnnotationsSourceList(contextURL) {
 			};
 			req.send(null);
 		} catch (e) {
+			loreWarning("Unable to retrieve annotations");
 	}
  }
 }
@@ -704,6 +716,7 @@ function _updateCompoundObjectsSourceList(contextURL) {
 			};
 			req.send(null);
 		} catch (e) {
+			loreWarning("Unable to retrieve compound objects");
 		}
 	}
 }
@@ -755,7 +768,7 @@ function addFigureXY(theURL, x, y) {
 		fig.setContent(theURL);
 		oreGraph.addFigure(fig, x, y);
 		oreGraphLookup[theURL] = fig.getId();
-
+		compoundobjecttab.activate("drawingarea");
 	} else {
 		loreWarning("Resource is already in resource map: " + theURL);
 	}
@@ -770,9 +783,30 @@ function addFigure(theURL) {
 	if (fig != null) {
 		nextXY();
 	}
+	
 }
 
+function createSMIL(){
+	try {
+		var stylesheetURL = "chrome://oaiorebuilder/content/stylesheets/ORE2SMIL.xsl";
+		var xsltproc = new XSLTProcessor();
 
+		// get the stylesheet
+		var xhr = new XMLHttpRequest();
+		xhr.overrideMimeType('text/xml');
+		xhr.open("GET",stylesheetURL,false);
+		xhr.send(null);
+		var stylesheetDoc = xhr.responseXML;
+		xsltproc.importStyleSheet(stylesheetDoc);
+	
+		// get the compound object xml
+		var theRDF = createRDF(false);
+		var parser = new DOMParser();
+		var rdfDoc = parser.parseFromString(theRDF,"text/xml");
+	} catch (e){
+		loreWarning("Unable to generate SMIL");
+	}
+}
 
 /* Functions from dannotate.js follow */
 
@@ -949,7 +983,7 @@ function orderByDate (nodeList)
       tmp[j] = new Annotation(nodeList.item(j));
     }
     catch (ex) {
-      alert(ex.toString());
+      loreError(ex.toString());
     }
   }
   return tmp.length == 1 ? tmp : 
