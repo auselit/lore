@@ -144,14 +144,15 @@
 	top: 0;
 	left: 0;
 }
-#welcome {
+#welcome, #remlistview {
 	padding: 20px;
 }
-#welcome * ul li {
+#welcome * ul li, #remlistview * ul li {
 	margin-left:10px;
 	list-style-position: inside;
 	list-style-type: square;
 }
+
 .welcome-icon {
     background-image: url(../skin/icons/oaioreicon-sm.png) !important;
 }
