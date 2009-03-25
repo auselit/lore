@@ -28,7 +28,7 @@
 		</head>
 		<body>
 			<seq dur="indefinite">
-				<par id="slideshow" repeatCount="10">
+				<par id="slideshow" repeatCount="50">
 					<seq>
 						<xsl:apply-templates select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates"/>
 					</seq>
