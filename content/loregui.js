@@ -115,6 +115,12 @@ lore.gui_spec = {
 
                         
                         }, {
+                            title: "SMIL",
+                            xtype: "panel",
+                            id: "remsmilview"
+
+                        
+                        },{
                             title: "RDF/XML",
                             xtype: "panel",
                             id: "remrdfview"

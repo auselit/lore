@@ -33,7 +33,7 @@ var annotationstab;
 var compoundobjecttab;
 var rdftab;
 var summarytab;
-
+var smiltab;
 
 // Global variables for graphical view
 var oreGraph;
@@ -82,6 +82,13 @@ var namespaces = {
 	"layout" : "http://maenad.itee.uq.edu.au/lore/layout.owl#"
 };
 
+// Extension 
+const extid = "oaiorebuilder@maenad.itee.uq.edu.au";
+var extension = Components.classes["@mozilla.org/extensions/manager;1"]
+		.getService(Components.interfaces.nsIExtensionManager)
+		.getInstallLocation(extid)
+		.getItemLocation(extid);
+
 function init(){
 	propertytabs = Ext.getCmp("propertytabs");
 	grid = Ext.getCmp("remgrid");
@@ -95,6 +102,8 @@ function init(){
 	welcometab = Ext.getCmp("welcome");
 	summarytab = Ext.getCmp("remlistview");
 	summarytab.on("activate", showCompoundObjectSummary);
+	smiltab = Ext.getCmp("remsmilview");
+	smiltab.on("activate",showSMIL);
 	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
