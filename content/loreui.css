@@ -167,5 +167,5 @@
  	font-size: smaller;
 }
 #remsmilview * a {
-	color: #2c5798;
+	color: #2c5798 !important;
 }
