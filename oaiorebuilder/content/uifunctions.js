@@ -53,17 +53,17 @@ function showCompoundObjectSummary() {
 function showSMIL(){
 	var allfigures = oreGraph.getDocument().getFigures();
 	var numfigs = allfigures.getSize();
-	var smilcontents = "";
+	var smilcontents = "<p><a href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
 	if (numfigs > 0) {
 		var smilpath = createSMIL(); // generate the new smil file into oresmil.xsl
 		//var smilcontents = "<p>SMIL:</p><embed height='500' width='500' "+
 		//	"src='chrome://oaiorebuilder/content/kellypics.smil' type='application/x-ambulant-smil'/><script type='text/javascript'>//document.embeds[0].startPlayer();</script>";
-		smilcontents = "<p><a target='_blank' href='file://" + smilpath + "'>Launch SMIL presentation in a new window</a>";
+		smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p><a target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a>";
 		
 		
 		
 	} else {
-		smilcontents = "<p>Please add some resources the compound object before generating the SMIL presentation</p>"
+		smilcontents += "<p>Once you have added some resources to the current compound object a SMIL presentation will be available here.</p>"
 	}
 	smiltab.body.update(smilcontents);
 }
