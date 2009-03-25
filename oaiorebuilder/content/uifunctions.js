@@ -50,6 +50,23 @@ function showCompoundObjectSummary() {
 	newsummary += "</ul></div>";
 	summarytab.body.update(newsummary);
 }
+function showSMIL(){
+	var allfigures = oreGraph.getDocument().getFigures();
+	var numfigs = allfigures.getSize();
+	var smilcontents = "";
+	if (numfigs > 0) {
+		var smilpath = createSMIL(); // generate the new smil file into oresmil.xsl
+		//var smilcontents = "<p>SMIL:</p><embed height='500' width='500' "+
+		//	"src='chrome://oaiorebuilder/content/kellypics.smil' type='application/x-ambulant-smil'/><script type='text/javascript'>//document.embeds[0].startPlayer();</script>";
+		smilcontents = "<p><a target='_blank' href='file://" + smilpath + "'>Launch SMIL presentation in a new window</a>";
+		
+		
+		
+	} else {
+		smilcontents = "<p>Please add some resources the compound object before generating the SMIL presentation</p>"
+	}
+	smiltab.body.update(smilcontents);
+}
 /**
  * Helper function for createRDF that serialises a property to RDF/XML
  * @param {} propname The name of the property to serialise
@@ -797,17 +814,48 @@ function createSMIL(){
 		xhr.open("GET",stylesheetURL,false);
 		xhr.send(null);
 		var stylesheetDoc = xhr.responseXML;
-		xsltproc.importStyleSheet(stylesheetDoc);
-	
+		xsltproc.importStylesheet(stylesheetDoc);
+		xsltproc.setParameter(null, "indent", "yes");
 		// get the compound object xml
 		var theRDF = createRDF(false);
 		var parser = new DOMParser();
 		var rdfDoc = parser.parseFromString(theRDF,"text/xml");
+		var resultDoc = xsltproc.transformToFragment(rdfDoc, document);
+		var serializer = new XMLSerializer();
+		writeFile(serializer.serializeToString(resultDoc), "oresmil.smil");
+		var htmlwrapper = "<HTML><HEAD><TITLE>SMIL Slideshow</TITLE></HEAD>" +
+			"<BODY BGCOLOR=\"#000000\"><CENTER>" +
+			"<embed height=\"100%\" width=\"100%\" src=\"oresmil.smil\" type=\"application/x-ambulant-smil\"/>" +
+  			"</CENTER></BODY></HTML>";
+		return writeFile(htmlwrapper, "playsmil.html");
+		
 	} catch (e){
-		loreWarning("Unable to generate SMIL");
+		loreWarning("Unable to generate SMIL: " + e.toString());
 	}
 }
 
+function writeFile(content, fileName){
+		try {
+			netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+			var fileBase = extension.path + "\\content\\";
+			var filePath =  fileBase + fileName;
+			var file = Components.classes["@mozilla.org/file/local;1"]
+				.createInstance(Components.interfaces.nsILocalFile);
+				file.initWithPath(filePath);
+			if(file.exists() == false) 
+			{
+				file.create( Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 420);
+			}
+			var stream = Components.classes["@mozilla.org/network/file-output-stream;1"]
+				.createInstance(Components.interfaces.nsIFileOutputStream);
+			stream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
+			stream.write(content, content.length);
+			stream.close();
+			return filePath;
+		} catch (e) {
+			alert("Unable to create SMIL result: " + e.toString());
+		}
+}
 /* Functions from dannotate.js follow */
 
 /**

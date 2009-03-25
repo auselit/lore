@@ -68,9 +68,10 @@
 	<xsl:template match="rdf:Description[contains(dc:format,'text/html')]" mode="preview">
 		<xsl:variable name="about" select="@rdf:about"/>
 		<xsl:variable name="title" select="//rdf:Description[@rdf:about = $about]/dc:title"/>
-          <text region="img_r" type="text/html" dur="2s">
-          	<xsl:attribute name="src">
-          		<xsl:text>data:,</xsl:text>
+          <smilText region="img_r" type="text/html" dur="2s">
+          <xsl:text>Online resource: </xsl:text>
+          	<!--  <xsl:attribute name="src">
+          		<xsl:text>data:,Online%20Resource:</xsl:text>-->
           		<xsl:choose>
           			<xsl:when test="$title">
           				<xsl:value-of select="$title"/>
@@ -79,9 +80,9 @@
           				<xsl:text>(Link)</xsl:text>
           			</xsl:otherwise>
           		</xsl:choose>
-          	</xsl:attribute>
+          	<!--  </xsl:attribute>-->
           	<area href="{$about}" external="true"/>
-          </text>		
+          </smilText>		
 	</xsl:template>
 	
 	<!--  show images -->
