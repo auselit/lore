@@ -62,6 +62,8 @@ lore.gui_spec = {
                             }, {
                                 name: 'title'
                             }, {
+								name: 'body'
+							}, {
                                 name: 'modified'
                             }, {
                                 name: 'type'
@@ -83,6 +85,10 @@ lore.gui_spec = {
                             sortable: true,
                             dataIndex: 'title'
                         }, {
+							header: 'Body',
+							dataIndex: 'body',
+							hidden: false
+						}, {
                             header: 'Modified',
                             dataIndex: 'modified',
                             hidden: true

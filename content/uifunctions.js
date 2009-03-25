@@ -936,6 +936,7 @@ function getAjaxRespSync (uri)
     case 'application/xml':  return req.responseXML;
     case 'application/html': return req.responseText;
     case 'application/text': return escapeHTML(req.responseText);
+    case 'application/xhtml+xml': return req.responseText; // should probably return XML
   }
   throw new Error('No usable response.\nContent is "' + rtype + '"' +
                   '\nRequest:\n' + uri + '\n' + req.responseText);
@@ -1015,7 +1016,8 @@ function Annotation (rdf)
      
      node = rdf.getElementsByTagNameNS(DC_NS, 'language');
      this.lang = safeGetFirstChildValue(node);
-
+      
+     this.body = getAjaxRespSync(this.bodyURL);
      
    }
    catch (ex) {
