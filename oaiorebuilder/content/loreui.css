@@ -144,7 +144,7 @@
 	top: 0;
 	left: 0;
 }
-#welcome, #remlistview {
+#welcome, #remlistview, #remsmilview {
 	padding: 20px;
 }
 #welcome * ul li, #remlistview * ul li {
@@ -165,4 +165,7 @@
  	color: #51666b;
  	font-family: "Courier New" courier monospace;
  	font-size: smaller;
+}
+#remsmilview * a {
+	color: #2c5798;
 }
