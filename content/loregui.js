@@ -159,6 +159,11 @@ lore.gui_spec = {
 							style: 'margin-left:10px;margin-top:10px;',
 							defaults: {width: 600},
 							items: [{
+								fieldLabel: 'ID',
+								name: 'id', 
+								hidden: true,
+								hideLabel: true
+							},{
 								fieldLabel: 'Annotates',
 								name: 'resource', 
 								readOnly: true, 
