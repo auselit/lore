@@ -51,6 +51,9 @@
 #add-node {
 	list-style-image: url(chrome://oaiorebuilder/skin/icons/application_add.png);
 }
+#add-annotation {
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/user_comment.png);
+}
 #load-rdf-repos{
 	list-style-image: url(chrome://oaiorebuilder/skin/icons/world_go.png);
 }
