@@ -34,6 +34,7 @@ var compoundobjecttab;
 var rdftab;
 var summarytab;
 var smiltab;
+var currentURL;
 
 // Global variables for graphical view
 var oreGraph;
@@ -167,7 +168,8 @@ function init(){
 	setUpMetadataMenu(nodegrid,"nodegrid");
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
-	updateSourceLists(window.top.getBrowser().selectedBrowser.contentWindow.location.href);
+	this.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
+	updateSourceLists(this.currentURL);
 	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1><p>This page will provide basic getting started information</p>");
 	
 }
