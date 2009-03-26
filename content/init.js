@@ -120,18 +120,25 @@ function init(){
 		annotabsm.clearSelections();
 	});
 	updannobtn.on('click', function(btn,e){
-		annotationsform.submit({
-			url: '',
-			params: {
-				
+		var annoID = annotationsform.findField('id').value;
+		var annoIndex = annotabds.findBy(function(record, id){
+			return (annoID == record.json.id);
+		});
+		var anno = annotabds.getAt(annoIndex);
+		// TODO update anno with properties from form
+		// TODO update annotabds with properties from form
+		// PUT annotation with anno as RDF
+		/*Ext.Ajax.request({
+			url: annoID,
+			success: function(){
+				loreInfo('Annotation updated');
+				// process received urls of updated anno and body
 			},
-			success: function(form,action){
-				alert("ok");
+			failure: function(){
+				loreWarning('Unable to update annotation');
 			},
-			failure: function(form,action) {
-				alert("not ok");
-			}
-		})
+			method: "PUT"
+		});*/
 	});
 	delannobtn.on('click', function(btn,e){
 		try {
