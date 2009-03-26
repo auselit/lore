@@ -46,62 +46,200 @@ lore.gui_spec = {
                         iconCls: "welcome-icon"
                     
                     }, {
-                        id: "annotationslist",
-                        title: "Annotations",
-                        xtype: "grid",
-                        border: false,
-                        stripeRows: true,
-                        viewConfig: {
-                            forceFit: true
-                        },
-                        ds: new Ext.data.JsonStore({
-                            fields: [{
-                                name: 'created'
-                            }, {
-                                name: 'creator'
-                            }, {
-                                name: 'title'
-                            }, {
-								name: 'body'
+						xtype: "form",
+						id: "annotationslistform",
+						title: "Annotations", 
+						layout: 'border',
+						items: [{
+							region: "north",
+							split:true,
+                        	id: "annotationslist",
+                        	xtype: "grid",
+                        	autoWidth: true,
+							autoScroll: true,
+                        	stripeRows: true,
+                        	viewConfig: {
+                            	forceFit: true
+                        	},
+                        	ds: new Ext.data.JsonStore({
+                           		fields: [{
+                                	name: 'created'
+                            	}, {
+                                	name: 'creator'
+                            	}, {
+                                	name: 'title'
+                            	}, {
+									name: 'body'
+								}, {
+                                	name: 'modified'
+                            	}, {
+                                	name: 'type'
+                            	}, {
+                                	name: 'lang'
+                            	}, {
+									name: 'resource'
+								}, { 
+									name: 'id'
+								}, {
+									name: 'context'
+								}, {
+									name :'isReply'
+								}, {
+									name: 'bodyURL'
+								}, {
+									name: 'about'
+								}, {
+									name: 'original'
+								}, {
+									name: 'revised'
+								}, {
+									name: 'originalcontext'
+								}, {
+									name: 'revisedcontext'
+								}, {
+									name: 'revisionagent'
+								}, {
+									name: 'revisionplace'
+								},{
+									name: 'revisiondate'
+								} 
+								],
+                            	data: {}
+                        	}),
+                        	cm: new Ext.grid.ColumnModel([{
+                            	header: 'Date created',
+                            	sortable: true,
+                            	dataIndex: 'created'
+                        	}, {
+                            	header: 'Creator',
+                            	sortable: true,
+                            	dataIndex: 'creator'
+								
+                        	}, {
+                           		header: 'Title',
+                            	sortable: true,
+                            	dataIndex: 'title'
+                        	}, {
+								header: 'Body',
+								dataIndex: 'body',
+								hidden: false
 							}, {
-                                name: 'modified'
-                            }, {
-                                name: 'type'
-                            }, {
-                                name: 'language'
-                            }],
-                            data: {}
-                        }),
-                        cm: new Ext.grid.ColumnModel([{
-                            header: 'Date created',
-                            sortable: true,
-                            dataIndex: 'created'
-                        }, {
-                            header: 'Creator',
-                            sortable: true,
-                            dataIndex: 'creator'
-                        }, {
-                            header: 'Title',
-                            sortable: true,
-                            dataIndex: 'title'
-                        }, {
-							header: 'Body',
-							dataIndex: 'body',
-							hidden: false
-						}, {
-                            header: 'Modified',
-                            dataIndex: 'modified',
-                            hidden: true
-                        }, {
-                            header: 'Type',
-                            dataIndex: 'type',
-                            hidden: true
-                        }, {
-                            header: 'Language',
-                            dataIndex: 'language',
-                            hidden: true
-                        }])
-                    
+                            	header: 'Date Modified',
+                            	dataIndex: 'modified',
+                            	hidden: true
+                        	}, {
+                            	header: 'Type',
+                            	dataIndex: 'type',
+                            	hidden: true
+                        	}, {
+                            	header: 'Lang',
+                            	dataIndex: 'lang',
+                            	hidden: true,
+								width: 40
+								
+                        	}]),
+							sm: new Ext.grid.RowSelectionModel({
+	                			singleSelect: true,
+	                			listeners: {
+	                    			rowselect: function(sm, row, rec) { 										Ext.getCmp("annotationslistform").getForm().loadRecord(rec);
+	                    			}
+	                			}
+	            			})
+                    	}, {
+							region : "center",
+            				xtype: 'fieldset',
+							id: 'annotationsform',
+            				labelWidth: 75,
+            				title:'Update annotation:',
+							defaultType: 'textfield',
+            				autoHeight: true,
+							border: false,
+							labelAlign: 'right',
+							buttonAlign: 'left',
+							style: 'margin-left:10px;margin-top:10px;',
+							defaults: {width: 600},
+							items: [{
+								fieldLabel: 'Annotates',
+								name: 'resource', 
+								readOnly: true, 
+								style: 'background:none;border:none'
+							},{
+								fieldLabel: 'Context',
+								name: 'context',
+								readOnly: true,
+								style: 'background:none;border:none'
+							},{
+								fieldLabel: 'Original',
+								name: 'original',
+								readOnly: true,
+								style: 'background:none;border:none',
+								hidden: true,
+								hideLabel: true
+							},{
+								fieldLabel: 'Revised',
+								name: 'revised',
+								readOnly: true,
+								style: 'background:none;border:none',
+								hidden: true,
+								hideLabel: true
+							},{
+								fieldLabel: 'Original Context',
+								name: 'originalcontext',
+								readOnly: true,
+								style: 'background:none;border:none',
+								hidden: true,
+								hideLabel: true
+							},{
+								fieldLabel: 'Revised Context',
+								name: 'revisedcontext',
+								readOnly: true,
+								style: 'background:none;border:none',
+								hidden: true,
+								hideLabel: true
+							},
+							{
+								//xtype: "combobox",
+								fieldLabel: 'Type',
+								name: 'type'
+                        		//hiddenName:'type',
+                       			/*store: new Ext.data.SimpleStore({
+                           		 	fields: ['abbrtype', 'qualifiedtype'],
+                            		data : [
+										['Comment','fullcomment'],
+										['Explantation','fullexplanation']]
+                        		}),
+                        		valueField:'qualifiedtype',
+                        		displayField:'abbrtype',*/
+                        		//typeAhead: true                        		
+							},
+							{
+                				fieldLabel: 'Title',
+                				name: 'title'
+            				},{
+                				fieldLabel: 'Creator',
+               					name: 'creator'
+            				},{
+                				fieldLabel: 'Body',
+								xtype: 'htmleditor',
+                				name: 'body'
+								
+								
+            				}/*,{
+                				//xtype: 'datefield',
+                				fieldLabel: 'Created',
+                				name: 'created'
+            				}*/],
+							buttons: [{
+           						text: 'Update Annotation',
+								id: 'updannobtn'
+        					}, {
+								text: 'Delete Annotation',
+								id: 'delannobtn'
+							},{
+            					text: 'Cancel',
+								id: 'cancelupdbtn'
+        					}]
+						}]
                     }, {
                         xtype: "tabpanel",
                         title: "Compound Object Editor",
