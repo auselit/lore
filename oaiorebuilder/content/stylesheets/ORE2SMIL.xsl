@@ -22,9 +22,11 @@
 					title="Slideshow" />
 				<region id="img_r" left="15" top="10" width="100%" height="400px"
 					background-color="#ffffff" />
-				<region id="txt_r" left="15" top="465" width="100%"
+				<region id="txt_r" left="15" top="465" width="700px"
 					background-color="#ffffff" z-index="3" />
 			</layout>
+			<transition id="fade1" dur="2s"  type="fade" />
+			
 		</head>
 		<body>
 			<seq dur="indefinite">
@@ -49,7 +51,7 @@
 	<xsl:template match="rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
 			<xsl:variable name="aggregates" select="@rdf:resource"/>
 			<par dur="2s">
-			<smilText textFontWeight="bold" region="txt_r">
+			<smilText textFontSize="9px" textFontWeight="bold" region="txt_r">
 				<!--  <xsl:text>URL: </xsl:text><xsl:value-of select="$aggregates"/><br/>-->
 				<xsl:for-each select="//rdf:Description[@rdf:about = $aggregates]">
 					<xsl:variable name="theChild" select="child::node()[local-name()!='format' and namespace-uri()!='http://maenad.itee.uq.edu.au/lore/layout.owl#']"/>
@@ -88,7 +90,7 @@
 	<!--  show images -->
 	<xsl:template match="rdf:Description[contains(dc:format,'image')]" mode="preview">
 		<xsl:variable name="about" select="@rdf:about"/>
-		<img fit="meet" region = "img_r" src="{$about}" type="{dc:format}"/>
+		<img  fit="meet" region = "img_r" src="{$about}" type="{dc:format}"/>
 	</xsl:template>
 	
 	
