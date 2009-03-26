@@ -153,6 +153,8 @@ function init(){
 				},
 				method: "DELETE"
 			});
+			annotationsform.items.each(function(item, index, len){item.reset();});
+			annotabsm.clearSelections();
 		} catch (ex){ loreWarning("Problems deleting annotation: " + ex.toString());}
 	});
 	
