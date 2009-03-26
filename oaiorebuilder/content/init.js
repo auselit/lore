@@ -31,6 +31,7 @@ var remstreeroot;
 var welcometab;
 var annotationstab;
 var annotabsm;
+var annotabds;
 var annotationsform;
 var compoundobjecttab;
 var rdftab;
@@ -110,12 +111,49 @@ function init(){
 	smiltab.on("activate",showSMIL);
 	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	annotabsm = annotationstab.getSelectionModel();
+	annotabds = annotationstab.getStore();
 	var delannobtn = Ext.getCmp("delannobtn");
 	var updannobtn = Ext.getCmp("updannobtn");
 	var cancelupdbtn = Ext.getCmp("cancelupdbtn");
 	cancelupdbtn.on('click', function(btn,e){
 		annotationsform.items.each(function(item, index, len){item.reset();});
 		annotabsm.clearSelections();
+	});
+	updannobtn.on('click', function(btn,e){
+		annotationsform.submit({
+			url: '',
+			params: {
+				
+			},
+			success: function(form,action){
+				alert("ok");
+			},
+			failure: function(form,action) {
+				alert("not ok");
+			}
+		})
+	});
+	delannobtn.on('click', function(btn,e){
+		try {
+			// remove the annotation from the UI
+			var annoID = annotationsform.findField('id').value;
+			var annoIndex = annotabds.findBy(function(record, id){
+				return (annoID == record.json.id);
+			});
+			annotabds.remove(annotabds.getAt(annoIndex));
+			annotationstreeroot.findChild('id',annoID).remove();
+			// remove the annotation from the server
+			Ext.Ajax.request({
+				url: annoID,
+				success: function(){
+					loreInfo('Annotation deleted');
+				},
+				failure: function(){
+					loreWarning('Unable to delete annotation');
+				},
+				method: "DELETE"
+			});
+		} catch (ex){ loreWarning("Problems deleting annotation: " + ex.toString());}
 	});
 	
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();

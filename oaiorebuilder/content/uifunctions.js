@@ -597,8 +597,7 @@ function _clearTree(treeRoot){
  */
 function _updateAnnotationsSourceList(contextURL) {
  _clearTree(annotationstreeroot);
- var ds = annotationstab.getStore();
- ds.removeAll();
+ annotabds.removeAll();
  // Update annotations source tree with matching annotations
  if (annoURL){
  	var queryURL = annoURL + "?w3c_annotates=" + contextURL;
@@ -620,7 +619,7 @@ function _updateAnnotationsSourceList(contextURL) {
 
 						if (resultNodes.length > 0){
 							var annotations = orderByDate(resultNodes);
-							ds.loadData(annotations);
+							annotabds.loadData(annotations);
 							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
 								var annoID = annotations[i].id;
@@ -651,7 +650,10 @@ function _updateAnnotationsSourceList(contextURL) {
 								annotationstreeroot.appendChild(tmpNode);
 								tmpNode.on('dblclick', function(node) {
 									loreviews.activate("annotationslistform");
-									annotabsm.selectRow(node.attributes.rowIndex);
+									var annoIndex = annotabds.findBy(function(record, id){
+										return (node.id == record.json.id);
+									});
+									annotabsm.selectRow(annoIndex);
 								});
 								tmpNode.on('contextmenu', function(node,e){
 									tmpNode.contextmenu = new Ext.menu.Menu({
@@ -882,6 +884,14 @@ function writeFile(content, fileName){
 			alert("Unable to create SMIL result: " + e.toString());
 		}
 }
+function dumpValues(record){
+	var res="";
+	for(k in record){
+		res += k + ": " + record[k] + ";\n";
+	}
+	alert(res);
+}
+
 /* Functions from dannotate.js follow */
 
 /**
