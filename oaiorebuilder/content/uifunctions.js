@@ -32,13 +32,17 @@ var THREAD_NS          = "http://www.w3.org/2001/03/thread#";
 var REPLY_TYPE_NS      = "http://www.w3.org/2001/12/replyType#";
 var XHTML_NS           = "http://www.w3.org/1999/xhtml";
 var LORE_LAYOUT_NS     = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
+var REVISION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
+
 /**
  * Render the current resource map as RDF/XML in the RDF view
  */
 function showRDFHTML() {
 	rdftab.body.update(createRDF(true));
 }
-
+function addAnnotation(){
+	alert("clicked on add annotation button");
+}
 function showCompoundObjectSummary() {
 	var newsummary = "<div><p>List of contents:</p><ul>";
 	var allfigures = oreGraph.getDocument().getFigures();
@@ -596,6 +600,7 @@ function _clearTree(treeRoot){
  * @param {} contextURL The escaped URL
  */
 function _updateAnnotationsSourceList(contextURL) {
+  this.currentURL = contextURL; // store the contextURL
 	// Update annotations source tree with matching annotations
  if (annoURL){
  	var queryURL = annoURL + "?w3c_annotates=" + contextURL;
@@ -603,6 +608,7 @@ function _updateAnnotationsSourceList(contextURL) {
  	_clearTree(annotationstreeroot);
 	var ds = annotationstab.getStore();
 	ds.removeAll();
+	var sm = annotationstab.getSelectionModel();
  	try {
 			var req = new XMLHttpRequest();
 			req.open('GET', queryURL, true);
@@ -636,6 +642,8 @@ function _updateAnnotationsSourceList(contextURL) {
 								//var isLeaf = (replyList.length == 0);
 								var isLeaf = true;
 								var tmpNode = new Ext.tree.TreeNode({
+										id: annoID,
+										rowIndex: i,
 										text :  title + " <span style='font-style:italic'>(" + annotations[i].creator +")</span>",
 										iconCls : 'oreresult',
 										leaf: isLeaf	
@@ -649,14 +657,32 @@ function _updateAnnotationsSourceList(contextURL) {
             
           							}
         						}*/
-      
+      							
 								annotationstreeroot.appendChild(tmpNode);
 								tmpNode.on('dblclick', function(node) {
-									//TODO: prompt first
-										loreviews.activate("annotationslist");
+									loreviews.activate("annotationslistform");
+									sm.selectRow(node.attributes.rowIndex);
 								});
-							
-									
+								tmpNode.on('contextmenu', function(node,e){
+									tmpNode.contextmenu = new Ext.menu.Menu({
+		        					id : node.id + "-context-menu"
+								});
+								tmpNode.contextmenu.add({
+									text : "Add to compound object",
+									handler : function(evt){
+										addFigure(node.id);
+									}
+								});
+								
+								tmpNode.contextmenu.add({
+									text : "Update annotation",
+									handler : function (evt){
+											loreviews.activate("annotationslistform");
+											sm.selectRow(node.attributes.rowIndex);
+								}});
+    							tmpNode.contextmenu.showAt(e.xy);
+    							
+							});		
 						}
 						
 						if (!annotationstreeroot.isExpanded()) {
@@ -704,6 +730,7 @@ function _updateCompoundObjectsSourceList(contextURL) {
 							var remID = result[i].childNodes[0].nodeValue;
 							var tmpNode = new Ext.tree.TreeNode({
 										text : remID,
+										id: remID,
 										iconCls : 'oreresult',
 										leaf : true
 									});
@@ -714,18 +741,18 @@ function _updateCompoundObjectsSourceList(contextURL) {
 							
 							tmpNode.on('contextmenu', function(node,e){
 								tmpNode.contextmenu = new Ext.menu.Menu({
-		        					id : remID + "-add-metadata-menu"
+		        					id : node.id + "-context-menu"
 								});
 								tmpNode.contextmenu.add({
-									text : "Add to resource map",
+									text : "Add to compound object",
 									handler : function(evt){
-										addFigure(reposURL + "/statements?context=<" + node.text + ">");
+										addFigure(reposURL + "/statements?context=<" + node.id + ">");
 									}
 								});
 								tmpNode.contextmenu.add({
 									text : "Load in Compound Object Editor",
 									handler : function (evt){
-										loadRDFFromID(node.text);
+										loadRDFFromID(node.id);
 									}
 								});
     							tmpNode.contextmenu.showAt(e.xy);
@@ -1019,6 +1046,27 @@ function Annotation (rdf)
       
      this.body = getAjaxRespSync(this.bodyURL);
      
+    //Additional fields for revision annotations only 
+     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised');
+     if(node[0]){
+     	attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
+     	this.revised = attr.nodeValue;
+     }
+     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original');
+     if(node[0]){
+     	attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
+     	this.original = attr.nodeValue;
+     }
+     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original-context');
+     this.originalcontext = safeGetFirstChildValue(node);
+     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised-context');
+     this.revisedcontext = safeGetFirstChildValue(node);
+     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-agent');
+     this.revisionagent = safeGetFirstChildValue(node);
+     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-place');
+     this.revisionplace = safeGetFirstChildValue(node);
+     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-date');
+     this.revisiondate = safeGetFirstChildValue(node);
    }
    catch (ex) {
      var st = "Error parsing RDF" + (this.id ? ' for ' + this.id : '') +
