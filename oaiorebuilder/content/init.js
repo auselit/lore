@@ -30,6 +30,8 @@ var annotationstreeroot;
 var remstreeroot;
 var welcometab;
 var annotationstab;
+var annotabsm;
+var annotationsform;
 var compoundobjecttab;
 var rdftab;
 var summarytab;
@@ -99,6 +101,7 @@ function init(){
 	rdftab = Ext.getCmp("remrdfview");
 	rdftab.on("activate", showRDFHTML);
 	annotationstab = Ext.getCmp("annotationslist");
+	annotationsform = Ext.getCmp("annotationslistform").getForm();
 	loreviews = Ext.getCmp("loreviews");
 	welcometab = Ext.getCmp("welcome");
 	summarytab = Ext.getCmp("remlistview");
@@ -106,6 +109,14 @@ function init(){
 	smiltab = Ext.getCmp("remsmilview");
 	smiltab.on("activate",showSMIL);
 	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
+	annotabsm = annotationstab.getSelectionModel();
+	var delannobtn = Ext.getCmp("delannobtn");
+	var updannobtn = Ext.getCmp("updannobtn");
+	var cancelupdbtn = Ext.getCmp("cancelupdbtn");
+	cancelupdbtn.on('click', function(btn,e){
+		annotationsform.items.each(function(item, index, len){item.reset();});
+		annotabsm.clearSelections();
+	});
 	
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	annotationstreeroot = new Ext.tree.TreeNode({

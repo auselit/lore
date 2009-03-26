@@ -585,13 +585,9 @@ function loreError(message) {
  * @param {} theTree The tree to clear
  */
 function _clearTree(treeRoot){
-	treeRoot.eachChild(function(node) {
-		if (node) {
-			node.purgeListeners();
-			_clearTree(node);
-			node.cascade(function(n2) {n2.remove();});
-		}
-	});
+	while(treeRoot.firstChild) {
+		treeRoot.removeChild(treeRoot.firstChild);
+	} 
 }
 
 /**
@@ -600,15 +596,13 @@ function _clearTree(treeRoot){
  * @param {} contextURL The escaped URL
  */
 function _updateAnnotationsSourceList(contextURL) {
-  this.currentURL = contextURL; // store the contextURL
-	// Update annotations source tree with matching annotations
+ _clearTree(annotationstreeroot);
+ var ds = annotationstab.getStore();
+ ds.removeAll();
+ // Update annotations source tree with matching annotations
  if (annoURL){
  	var queryURL = annoURL + "?w3c_annotates=" + contextURL;
  	loreInfo("Loading annotations for " + contextURL);
- 	_clearTree(annotationstreeroot);
-	var ds = annotationstab.getStore();
-	ds.removeAll();
-	var sm = annotationstab.getSelectionModel();
  	try {
 			var req = new XMLHttpRequest();
 			req.open('GET', queryURL, true);
@@ -623,11 +617,8 @@ function _updateAnnotationsSourceList(contextURL) {
 								"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 								"Description");
 						}
-						
-						
+
 						if (resultNodes.length > 0){
-							// clear the tree - seems to be a bug where it doesn't clear
-							_clearTree(annotationstreeroot);
 							var annotations = orderByDate(resultNodes);
 							ds.loadData(annotations);
 							var annogriddata = [];
@@ -642,11 +633,11 @@ function _updateAnnotationsSourceList(contextURL) {
 								//var isLeaf = (replyList.length == 0);
 								var isLeaf = true;
 								var tmpNode = new Ext.tree.TreeNode({
-										id: annoID,
-										rowIndex: i,
-										text :  title + " <span style='font-style:italic'>(" + annotations[i].creator +")</span>",
-										iconCls : 'oreresult',
-										leaf: isLeaf	
+									id: annoID,
+									rowIndex: i,
+									text :  title + " <span style='font-style:italic'>(" + annotations[i].creator +")</span>",
+									iconCls : 'oreresult',
+									leaf: isLeaf	
 								});
 								
        							/*if (replyList.length > 0) {
@@ -657,11 +648,10 @@ function _updateAnnotationsSourceList(contextURL) {
             
           							}
         						}*/
-      							
 								annotationstreeroot.appendChild(tmpNode);
 								tmpNode.on('dblclick', function(node) {
 									loreviews.activate("annotationslistform");
-									sm.selectRow(node.attributes.rowIndex);
+									annotabsm.selectRow(node.attributes.rowIndex);
 								});
 								tmpNode.on('contextmenu', function(node,e){
 									tmpNode.contextmenu = new Ext.menu.Menu({
@@ -678,11 +668,12 @@ function _updateAnnotationsSourceList(contextURL) {
 									text : "Update annotation",
 									handler : function (evt){
 											loreviews.activate("annotationslistform");
-											sm.selectRow(node.attributes.rowIndex);
+											annotabsm.selectRow(node.attributes.rowIndex);
 								}});
     							tmpNode.contextmenu.showAt(e.xy);
     							
-							});		
+							});	
+							
 						}
 						
 						if (!annotationstreeroot.isExpanded()) {
@@ -703,7 +694,7 @@ function _updateAnnotationsSourceList(contextURL) {
  * @param {} contextURL The escaped URL
  */
 function _updateCompoundObjectsSourceList(contextURL) {
-	
+	_clearTree(remstreeroot);
 	if (reposURL && reposType == 'sesame') {
 		var escapedURL = escape(contextURL);
 		var queryURL = reposURL
@@ -717,11 +708,10 @@ function _updateCompoundObjectsSourceList(contextURL) {
 				if (req.readyState == 4)
 					if (req.responseText && req.status != 204
 							&& req.status < 400) {
-						_clearTree(remstreeroot);
+						
 						var xmldoc = req.responseXML;
 						var result = {};
 						if (xmldoc) {
-							_clearTree(remstreeroot);
 							result = xmldoc.getElementsByTagNameNS(
 									"http://www.w3.org/2005/sparql-results#",
 									"uri");
@@ -776,6 +766,7 @@ function _updateCompoundObjectsSourceList(contextURL) {
  * @param {} contextURL The URL of the resource currently loaded in the browser
  */
 function updateSourceLists(contextURL) {
+	this.currentURL = contextURL; // store the contextURL
 	_updateAnnotationsSourceList(contextURL);
 	_updateCompoundObjectsSourceList(contextURL);
 }
