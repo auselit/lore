@@ -88,6 +88,9 @@ var oaiorebuilder = {
   loadRDFFromRepos: function() {
   	window.graphiframe.loadRDFFromRepos();
   },
+  addAnnotation: function () {
+  	window.graphiframe.addAnnotation();
+  },
   saveRDF: function () {
   	window.graphiframe.saveRDFToRepository();
   },
