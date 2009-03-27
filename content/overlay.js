@@ -98,10 +98,7 @@ var oaiorebuilder = {
 		window.graphiframe.addFigure(window.content.location.href);
   },
   resetGraph: function () {
-  	var aMarker = window.graphiframe.annoMarker
-  	if (aMarker){
-		aMarker.style.display="none";
-	}
+  	window.graphiframe.hideMarker();
   	window.graphiframe.location.reload(true);
   },
   openAbout: function (){

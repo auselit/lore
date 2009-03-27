@@ -130,8 +130,6 @@ function showSMIL(){
 	var smilcontents = "<p><a href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
 	if (numfigs > 0) {
 		var smilpath = createSMIL(); // generate the new smil file into oresmil.xsl
-		//var smilcontents = "<p>SMIL:</p><embed height='500' width='500' "+
-		//	"src='chrome://oaiorebuilder/content/kellypics.smil' type='application/x-ambulant-smil'/><script type='text/javascript'>//document.embeds[0].startPlayer();</script>";
 		smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p>" +
 				"<a onclick='launchWindow(this.href);return(false);' target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a>";	
 	} else {
@@ -979,6 +977,14 @@ String.prototype.escapeHTML = function () {
                 replace(/"/g,'&quot;')                                         
         );                                                                     
 };
+String.prototype.unescapeHTML = function (){
+	return(                                                                 
+            this.replace(/&amp;/g,'&').                                         
+                replace(/&gt;/g,'>').                                           
+                replace(/&lt;/g,'<').                                           
+                replace(/&quot;/g,'"')                                         
+        );    
+}
 /**
  * Quick and nasty function to tidy up html produced by html editor so that 
  * it is valid XML for inclusion into RDF XML
@@ -1293,6 +1299,12 @@ function orderByDate (nodeList)
   }
   return tmp.length == 1 ? tmp : 
          tmp.sort(function(a,b){return (a.created > b.created ? 1 : -1)});
+}
+function hideMarker(){
+	if (annoMarker){
+			// hide the marker
+			annoMarker.style.display="none";
+		}
 }
 /**
  * Inserts a marker after a selection range
