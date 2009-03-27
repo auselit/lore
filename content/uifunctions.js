@@ -88,6 +88,16 @@ function getXPathForSelection ()
   }
   return xp;
 }
+/**
+ * Get the Range defined by an XPath/Xpointer (restricted to subset of
+ * expressions understood by Anozilla).
+ * modified from dannotate.js
+ */
+function getSelectionForXPath (xp)
+{
+	var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+    return m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
+}
 
 /**
  * Displays a list of resource URIs contained in the compound object
@@ -1283,4 +1293,66 @@ function orderByDate (nodeList)
   }
   return tmp.length == 1 ? tmp : 
          tmp.sort(function(a,b){return (a.created > b.created ? 1 : -1)});
+}
+/**
+ * Inserts a marker after a selection range
+ * for an annotation provided it does not already exist.
+ * modified from dannotate.js
+ * @param hRange W3C Range object for annotation selection
+ * @return inserted marker node
+ */
+function decorate (hRange, annoID, context, color)
+{
+  var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+  var nodeToInsert;
+  if (!mainwindow.document.getElementById(annoID)) {
+    var targetNode = null;
+    
+    targetNode = findAnchorNode(hRange, annoID, context);
+    
+    // Visual marker is an img
+    nodeToInsert = mainwindow.document.createElementNS(XHTML_NS, "span");
+  	m_xps.markElement(nodeToInsert);
+    m_xps.markElementHide(nodeToInsert);
+    nodeToInsert.innerHTML = "<span style='color:"+ color +"'>***</span>";
+
+    targetNode.appendChild(nodeToInsert);
+  }
+  return nodeToInsert;
+}
+/**
+ * Finds or creates a node to which our annotation marker may be attached.
+ * If the end of selection range lies within a text node, split it at after the
+ * end of the selection and insert a zero length span tag which becomes the
+ * marker node to which the visible "footnote" is attached.
+ * If the XPath selection is an Element node, that becomes the marker node.
+ * modified from dannotate.js
+ * @param range
+ * @param ano
+ * @return
+ */
+function findAnchorNode (range, annoID, context)
+{
+  var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+  
+  var endNode = range.endContainer;
+  var parent = endNode.parentNode;
+  var node = endNode;
+  
+  if (endNode.nodeType != node.TEXT_NODE) {
+    node = parent;
+  }
+  else {
+    var xpath = context;
+    if (xpath.toLowerCase().indexOf('string-range') > 0) {
+      var nextTextNode = endNode.splitText(range.endOffset);
+      var markerNode = mainwindow.document.createElementNS(XHTML_NS, "span");
+      // In case we need to locate them, the empty snap tags get
+      // an ID related to the annotation ID with an 'A-' prefix.
+      markerNode.id = 'A-' + annoID;
+      parent.insertBefore(markerNode, nextTextNode);
+      node = markerNode;
+    }
+  }
+  return node;
 }
