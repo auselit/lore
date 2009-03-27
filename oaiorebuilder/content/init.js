@@ -63,6 +63,8 @@ var reposURL; // compound object repository
 var reposType; // type of compound object repository (eg sesame)
 var annoURL; // annotation server
 
+var annoMarker;
+
 // properties that can be applied to aggregations, resource maps or aggregated
 // resources
 var metadata_props = ["dcterms:abstract", "dcterms:audience", "dc:creator",
@@ -113,6 +115,10 @@ function init(){
 	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	annotabsm = annotationstab.getSelectionModel();
 	annotabsm.on('rowdeselect', function(sm, row, rec) {
+		if (annoMarker){
+			// hide the marker
+			annoMarker.style.display="none";
+		}
 		// update grid from form
 		if (annotationsform.isDirty()){
 			//loreWarning("You did not save your annotation changes!");
@@ -122,6 +128,10 @@ function init(){
 	annotabsm.on('rowselect', function(sm, row, rec) {
 		// load grid values into form
  		annotationsform.loadRecord(rec);
+ 		// add a marker to indicate context	
+ 		var idx = rec.data.context.indexOf('#');
+    	var sel = getSelectionForXPath(rec.data.context.substring(idx + 1));
+    	annoMarker = decorate(sel, rec.data.id, rec.data.context,'red');	
 	});
 	annotabds = annotationstab.getStore();
 	var delannobtn = Ext.getCmp("delannobtn");
@@ -303,7 +313,9 @@ function init(){
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
 	this.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
-	updateSourceLists(this.currentURL);
+	if(this.currentURL && this.currentURL != 'about:blank' && this.currentURL != ''){
+		updateSourceLists(this.currentURL);
+	}
 	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1><p>This page will provide basic getting started information</p>");
 	
 }
