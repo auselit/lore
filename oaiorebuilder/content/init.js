@@ -115,10 +115,7 @@ function init(){
 	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	annotabsm = annotationstab.getSelectionModel();
 	annotabsm.on('rowdeselect', function(sm, row, rec) {
-		if (annoMarker){
-			// hide the marker
-			annoMarker.style.display="none";
-		}
+		hideMarker();
 		// update grid from form
 		if (annotationsform.isDirty()){
 			//loreWarning("You did not save your annotation changes!");
@@ -150,6 +147,7 @@ function init(){
 		if (annoIndex > 0){
 			annotabds.remove(annotabds.getAt(annoIndex));
 		}
+		hideMarker();
 	});
 	
 	updannobtn.on('click', function(btn,e){
@@ -247,6 +245,7 @@ function init(){
 			}
 			annotationsform.items.each(function(item, index, len){item.reset();});
 			annotabsm.clearSelections();
+			hideMarker();
 		} catch (ex){ loreWarning("Problems deleting annotation: " + ex.toString());}
 	});
 	
