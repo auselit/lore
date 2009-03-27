@@ -56,6 +56,7 @@ var maxx = 400;
 // Global variables for relationship ontology
 var onturl;
 var ontrelationships;
+var defaultCreator;
 
 // repository access URLs
 var reposURL; // compound object repository
@@ -111,55 +112,129 @@ function init(){
 	smiltab.on("activate",showSMIL);
 	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	annotabsm = annotationstab.getSelectionModel();
+	annotabsm.on('rowdeselect', function(sm, row, rec) {
+		// update grid from form
+		if (annotationsform.isDirty()){
+			//loreWarning("You did not save your annotation changes!");
+			//annotationsform.updateRecord(rec);
+		}
+	});
+	annotabsm.on('rowselect', function(sm, row, rec) {
+		// load grid values into form
+ 		annotationsform.loadRecord(rec);
+	});
 	annotabds = annotationstab.getStore();
 	var delannobtn = Ext.getCmp("delannobtn");
 	var updannobtn = Ext.getCmp("updannobtn");
 	var cancelupdbtn = Ext.getCmp("cancelupdbtn");
+	
 	cancelupdbtn.on('click', function(btn,e){
+		// reset all annotation form items to empty
 		annotationsform.items.each(function(item, index, len){item.reset();});
 		annotabsm.clearSelections();
+		
+		// if this is a new annotation, delete the new template annotation
+		var annoIndex = annotabds.findBy(function(record, id){
+			return (!record.json.id);
+		});
+		if (annoIndex > 0){
+			annotabds.remove(annotabds.getAt(annoIndex));
+		}
 	});
+	
 	updannobtn.on('click', function(btn,e){
 		var annoID = annotationsform.findField('id').value;
-		var annoIndex = annotabds.findBy(function(record, id){
-			return (annoID == record.json.id);
-		});
-		var anno = annotabds.getAt(annoIndex);
-		// TODO update anno with properties from form
-		// TODO update annotabds with properties from form
-		// PUT annotation with anno as RDF
-		/*Ext.Ajax.request({
-			url: annoID,
-			success: function(){
-				loreInfo('Annotation updated');
-				// process received urls of updated anno and body
-			},
-			failure: function(){
-				loreWarning('Unable to update annotation');
-			},
-			method: "PUT"
-		});*/
-	});
-	delannobtn.on('click', function(btn,e){
-		try {
-			// remove the annotation from the UI
-			var annoID = annotationsform.findField('id').value;
+		if (!annoID){
+			// get the annotation contents
+			var annoIndex = annotabds.findBy(function(record, id){
+				return (!record.json.id);
+			});
+			var anno = annotabds.getAt(annoIndex);
+			// update anno with properties from form
+			annotationsform.updateRecord(anno);
+			annotabds.commitChanges();
+			var annoRDF = createAnnotationRDF(anno.data);
+			
+			// create new annotation
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST",annoURL,true);
+			xhr.setRequestHeader('Content-Type',  "application/rdf+xml");
+			xhr.setRequestHeader('Content-Length', annoRDF.length);
+			xhr.onreadystatechange = function(){
+				if (xhr.readyState == 4) {
+					if (xhr.status == 201) {
+						loreInfo('Annotation created');
+						updateSourceLists(currentURL);
+						annotationsform.items.each(function(item, index, len){item.reset();});
+						annotabsm.clearSelections();
+					} else {
+						loreInfo('Unable to create annotation: '+ xhr.statusText);
+					}
+				}
+			};
+			xhr.send(annoRDF);	
+		}
+		else {
+			// update existing annotation
+			if (!annotationsform.isDirty()){
+				loreInfo('Annotation content not modified: Annotation will not be updated');
+				return;
+			}
+			// get the annotation contents
 			var annoIndex = annotabds.findBy(function(record, id){
 				return (annoID == record.json.id);
 			});
-			annotabds.remove(annotabds.getAt(annoIndex));
-			annotationstreeroot.findChild('id',annoID).remove();
-			// remove the annotation from the server
-			Ext.Ajax.request({
-				url: annoID,
-				success: function(){
-					loreInfo('Annotation deleted');
-				},
-				failure: function(){
-					loreWarning('Unable to delete annotation');
-				},
-				method: "DELETE"
+			var anno = annotabds.getAt(annoIndex);
+			// update anno with properties from form
+			annotationsform.updateRecord(anno);
+			annotabds.commitChanges();
+		
+			// Update the annotation on the server via HTTP PUT
+			var annoRDF = createAnnotationRDF(anno.data);
+			var xhr = new XMLHttpRequest();
+			xhr.open("PUT",annoID,true);
+			xhr.setRequestHeader('Content-Type',  "application/xml");
+			xhr.onreadystatechange = function(){
+				if (xhr.readyState == 4) {
+					if (xhr.status == 200) {
+						loreInfo('Annotation updated');
+					} else {
+						loreInfo('Unable to update annotation: '+ xhr.statusText);
+					}
+				}
+			};
+			xhr.send(annoRDF);
+		}
+	});
+	
+	delannobtn.on('click', function(btn,e){
+		try {
+			// remove the annotation from the annotations tab
+			var annoID = annotationsform.findField('id').value;
+			var annoIndex = annotabds.findBy(function(record, id){
+				if (annoID){
+					return (annoID == record.json.id);
+				} else {
+					return (!record.json.id);
+				}
 			});
+			annotabds.remove(annotabds.getAt(annoIndex));
+			
+			if (annoID){ // annoID is null if it's a new annotation
+				// remove from the source tree
+				annotationstreeroot.findChild('id',annoID).remove();
+				// remove the annotation from the server
+				Ext.Ajax.request({
+					url: annoID,
+					success: function(){
+						loreInfo('Annotation deleted');
+					},
+					failure: function(){
+						loreWarning('Unable to delete annotation');
+					},
+					method: "DELETE"
+				});
+			}
 			annotationsform.items.each(function(item, index, len){item.reset();});
 			annotabsm.clearSelections();
 		} catch (ex){ loreWarning("Problems deleting annotation: " + ex.toString());}
@@ -187,7 +262,7 @@ function init(){
 	initGraphicalView();
 
 	nodegrid.on("propertychange", function(source, recid, newval, oldval) {
-		// var the_fig = lookupFigure(source["Resource"]);
+		// update the metadataproperties recorded in the figure for that node
 		oreGraphModified = true;
 		if (recid == 'Resource') {
 			// the URL of the resource has changed
@@ -209,6 +284,7 @@ function init(){
 		}
 		selectedFigure.updateMetadata(source);
 	});
+	
 	grid.on("beforeedit",function(e){
 		//don't allow these fields to be edited
 		if(e.record.id == "ore:describes" || e.record.id == "rdf:type"){
