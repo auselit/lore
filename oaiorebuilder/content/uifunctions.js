@@ -33,6 +33,7 @@ var REPLY_TYPE_NS      = "http://www.w3.org/2001/12/replyType#";
 var XHTML_NS           = "http://www.w3.org/1999/xhtml";
 var LORE_LAYOUT_NS     = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
 var REVISION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
+var m_xps = new XPointerService();  // Instance of hacked Mozdev XPointer service
 
 /**
  * Render the current resource map as RDF/XML in the RDF view
@@ -40,24 +41,79 @@ var REVISION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annot
 function showRDFHTML() {
 	rdftab.body.update(createRDF(true));
 }
+/**
+ * Launch create annotation form with context and annotates filled in from current browser resource
+ */
 function addAnnotation(){
-	alert("clicked on add annotation button");
+	var anno = {
+		resource : currentURL,
+		context : getXPathForSelection(),
+		creator: defaultCreator,
+		created: new Date(),
+		modified: new Date(),
+		body: "",
+		title: "New Annotation",
+		type: "http://www.w3.org/2000/10/annotationType#Comment",
+		lang: "en"
+	}
+	annotabds.loadData([anno],true);
+	// get the annotation record
+	var annoIndex = annotabds.findBy(function(record, id){
+			return (!record.json.id);
+	});
+	// select the row to load into the editor
+	annotabsm.selectRow(annoIndex);
 }
+
+
+/**
+ * This fn depends on a hacked version of nsXpointerService being loaded by the browser
+ * before this script is loaded from tags in the page being annotated.
+ * modified from dannotate.js
+ * @return XPath/XPointer statement for selected text, or '' if no selection.
+ */
+function getXPathForSelection ()
+{
+  var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+  var xp = '';
+  try {
+    seln = mainwindow.getSelection();
+    if (seln != null) {
+      select = seln.getRangeAt(0);
+      xp = m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
+    }
+  }
+  catch (ex) {
+    alert('XPath create failed\n' + ex.toString());
+  }
+  return xp;
+}
+
+/**
+ * Displays a list of resource URIs contained in the compound object
+ */
 function showCompoundObjectSummary() {
 	var newsummary = "<div><p>List of contents:</p><ul>";
 	var allfigures = oreGraph.getDocument().getFigures();
 	for (var i = 0; i < allfigures.getSize(); i++) {
 		var fig = allfigures.get(i);
-		var figurl = fig.url.replace('&', '&amp;');
+		var figurl = fig.url.escapeHTML();
 		newsummary += "<li><a target='_blank' href='" + figurl + "'>" + figurl + "</a></li>";
 	}
 	newsummary += "</ul></div>";
 	summarytab.body.update(newsummary);
 }
+/**
+ * Launch a small window for SMIL slideshow
+ * @param {} url
+ */
 function launchWindow(url) {
 	newwindow=window.open(url,'name','height=650,width=800,top=200,left=250,resizable');
 	if (window.focus) {newwindow.focus()}
 } 
+/**
+ * Generate a SMIL presentation and display a link to launch it
+ */
 function showSMIL(){
 	var allfigures = oreGraph.getDocument().getFigures();
 	var numfigs = allfigures.getSize();
@@ -67,10 +123,7 @@ function showSMIL(){
 		//var smilcontents = "<p>SMIL:</p><embed height='500' width='500' "+
 		//	"src='chrome://oaiorebuilder/content/kellypics.smil' type='application/x-ambulant-smil'/><script type='text/javascript'>//document.embeds[0].startPlayer();</script>";
 		smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p>" +
-				"<a onclick='launchWindow(this.href);return(false);' target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a>";
-		
-		
-		
+				"<a onclick='launchWindow(this.href);return(false);' target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a>";	
 	} else {
 		smilcontents += "<p>Once you have added some resources to the current compound object a SMIL presentation will be available here.</p>"
 	}
@@ -90,7 +143,7 @@ function _serialise_property(propname, properties, ltsymb, nlsymb) {
 	if (propval != null && propval != '') {
 		result = ltsymb + propname + ">";
 		if (nlsymb == "<br/>") {
-			result += escapeHTML(propval + "");
+			result += propval.escapeHTML();
 		} else {
 			result += propval;
 		}
@@ -129,6 +182,7 @@ function _nsprefix(ns) {
 			return prefix + ":";
 	}
 }
+
 /**
  * Create the RDF/XML of the current resource map
  * @param {} escape Boolean indicating whether to escape the results for rendering as HTML
@@ -215,7 +269,7 @@ function createRDF(escape) {
 	var resourcerdf = "";
 	for (var i = 0; i < allfigures.getSize(); i++) {
 		var fig = allfigures.get(i);
-		var figurl = fig.url.replace('&', '&amp;').replace('<','%3C').replace('>','%3E');
+		var figurl = fig.url.replace('<','%3C').replace('>','%3E').escapeHTML();
 		rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
 				+ fullclosetag;
 		// create RDF for resources in aggregation
@@ -245,8 +299,7 @@ function createRDF(escape) {
 			var theconnector = outgoingconnections.get(j);
 			var relpred = theconnector.edgetype;
 			var relns = theconnector.edgens;
-			var relobj = theconnector.targetPort.parentNode.url.replace('&',
-					'&amp;');
+			var relobj = theconnector.targetPort.parentNode.url.escapeHTML();
 			resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
 					+ relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
 					+ relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
@@ -528,6 +581,7 @@ function setdccreator(creator) {
 	var remprops = grid.getSource();
 	remprops["dc:creator"] = creator;
 	grid.setSource(remprops);
+	defaultCreator = creator;
 }
 /**
  * Set the global variable storing the relationship ontology
@@ -828,7 +882,10 @@ function addFigure(theURL) {
 	}
 	
 }
-
+/**
+ * Use XSLT to generate a smil file from the compound object, plus create an HTML wrapper
+ * @return {} The file name of the wrapper file
+ */
 function createSMIL(){
 	try {
 		var stylesheetURL = "chrome://oaiorebuilder/content/stylesheets/ORE2SMIL.xsl";
@@ -861,7 +918,12 @@ function createSMIL(){
 		loreWarning("Unable to generate SMIL: " + e.toString());
 	}
 }
-
+/**
+ * Write file content to fileName in the extensions content folder
+ * @param {} content
+ * @param {} fileName
+ * @return {}
+ */
 function writeFile(content, fileName){
 		try {
 			netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
@@ -884,6 +946,10 @@ function writeFile(content, fileName){
 			alert("Unable to create SMIL result: " + e.toString());
 		}
 }
+/**
+ * Utility function to display all keys, values for an object
+ * @param {} record
+ */
 function dumpValues(record){
 	var res="";
 	for(k in record){
@@ -891,11 +957,44 @@ function dumpValues(record){
 	}
 	alert(res);
 }
-
-/* Functions from dannotate.js follow */
-
+/**
+ * Escape characters for HTML display
+ * @return {}
+ */
+String.prototype.escapeHTML = function () {                                       
+        return(                                                                 
+            this.replace(/&/g,'&amp;').                                         
+                replace(/>/g,'&gt;').                                           
+                replace(/</g,'&lt;').                                           
+                replace(/"/g,'&quot;')                                         
+        );                                                                     
+};
+/**
+ * Quick and nasty function to tidy up html produced by html editor so that 
+ * it is valid XML for inclusion into RDF XML
+ * @return {}
+ */
+String.prototype.tidyHTML = function (){
+	var res = this;
+	if (res.match("<title>") && res.match("</title>")){
+		var res1 = res.substring(0,(res.indexOf('<title>')));
+		var res2 = res.substring((res.indexOf('</title>')+8), res.length);
+		res = res1 + res2;
+	}
+	while (res.match('<br xmlns')){
+		res = res.replace('<br xmlns="http://www.w3.org/1999/xhtml">', '<br />');
+	}
+	while (res.match('<br>')){
+		res = res.replace('<br>','<br />');
+	}
+	if (res.match('nbsp')){
+		res = res.replace('&nbsp;',' ');
+	}
+	return res;
+}
 /**
  * Returns value of first child of first node, or default value if provided.
+ * Unchanged from dannotate.js
  */
 function safeGetFirstChildValue (node, defaultValue)
 {
@@ -906,11 +1005,11 @@ function safeGetFirstChildValue (node, defaultValue)
 
 /**
  * Get annotation body value.
- * modified from dannotate.js
+ * modified from dannotate.js getAjaxRespSync
  * @param uri Fully formed request against Danno annotation server
  * @return Server response as text or XML document.
  */
-function getAjaxRespSync (uri) 
+function getBodyContent(uri) 
 {
   var req = null;
   try {
@@ -932,17 +1031,12 @@ function getAjaxRespSync (uri)
   } 
 
   rtype = req.getResponseHeader('Content-Type');
-//alert('POST Headers:\n'+req.getAllResponseHeaders());
   if (rtype == null) {
-    // FIXME: Safari sometimes does no set the Content-Type, so for now,
-    // try to intuit it thru the text.
-//alert('null content-type. Headers:\n'+req.getAllResponseHeaders());
      var txt = req.responseText;
      var doc = null;
      if (txt && (txt.indexOf(':RDF') > 0)) {
        doc = req.responseXML;
-       if ((doc == null) && (typeof DOMParser != 'undefined')) {
-         //alert('parsing:\n'+txt);           
+       if ((doc == null) && (typeof DOMParser != 'undefined')) {          
          var parser = new DOMParser();
          doc = parser.parseFromString(txt, 'application/xml');
        }
@@ -957,22 +1051,33 @@ function getAjaxRespSync (uri)
   }
   if (rtype.indexOf(';') > 0) {
     // strip any charset encoding etc
-    // FIXME: What to do with Annozilla bodies of application/xhtml+xml ?
     rtype = rtype.substring(0, rtype.indexOf(';'));
   }
-  switch (rtype) {
-    case 'application/xml':  return req.responseXML;
-    case 'application/html': return req.responseText;
-    case 'application/text': return escapeHTML(req.responseText);
-    case 'application/xhtml+xml': return req.responseText; // should probably return XML
+  var serializer = new XMLSerializer();
+  var bodyContent = "";
+  var result = "";
+  if (rtype == 'application/xml' || rtype == 'application/xhtml+xml'){
+    	bodyContent = req.responseXML.getElementsByTagName('body');
+    	if (bodyContent[0]){
+			result = serializer.serializeToString(bodyContent[0]);
+    	} else {
+    		result = req.responseText.tidyHTML();
+    	}
+  } else {
+  		// messy but will have to do for now
+    	result = req.responseText.tidyHTML();
+    	
   }
-  throw new Error('No usable response.\nContent is "' + rtype + '"' +
+    
+    return result;
+  
+  throw new Error('No usable body.\nContent is "' + rtype + '"' +
                   '\nRequest:\n' + uri + '\n' + req.responseText);
 }
 
 /**
  * Class wrapper for an RDF annotation provides access to values
- *  - modified from dannotate.js
+ *  modified from dannotate.js
  * @param rdf Root element of an RDF annotation returned by Danno
  */
 function Annotation (rdf)
@@ -993,14 +1098,21 @@ function Annotation (rdf)
       attr = node[i].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
         tmp = attr.nodeValue;
         if (tmp.indexOf(ANNOTATION_TYPE_NS) == 0) {
-           this.type = tmp.substr(ANNOTATION_TYPE_NS.length);
+           //this.type = tmp.substr(ANNOTATION_TYPE_NS.length);
+        	this.type = tmp;
         }
         else if (tmp.indexOf(REPLY_TYPE_NS) == 0) {
-            this.type = tmp.substr(REPLY_TYPE_NS.length);
+            //this.type = tmp.substr(REPLY_TYPE_NS.length);
+            this.type = tmp;
+        }
+        else if (tmp.indexOf(REVISION_ANNOTATION_NS) == 0){
+        	//this.type = tmp.substr(REVISION_ANNOTATION_NS.length);
+        	this.type = tmp;
         }
         else if (tmp.indexOf(THREAD_NS) == 0) {
           isReply = true;
         }
+        
      }
      this.isReply = isReply;
      
@@ -1044,8 +1156,9 @@ function Annotation (rdf)
      
      node = rdf.getElementsByTagNameNS(DC_NS, 'language');
      this.lang = safeGetFirstChildValue(node);
-      
-     this.body = getAjaxRespSync(this.bodyURL);
+     
+     // body stores the contents of the html body tag as text
+     this.body = getBodyContent(this.bodyURL);
      
     //Additional fields for revision annotations only 
      node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised');
@@ -1076,9 +1189,84 @@ function Annotation (rdf)
    }
 }
 
+function createAnnotationRDF(anno)
+{
+	var rdfxml = "<?xml version=\"1.0\" ?>";
+	rdfxml += '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">';
+    rdfxml += '<rdf:Description';
+    if (anno.id){
+    	rdfxml += ' rdf:about="' + anno.id + '"';
+    }
+    rdfxml +=
+    	'><rdf:type rdf:resource="http://www.w3.org/2000/10/annotation-ns#Annotation"/>';
+    if (anno.type){
+		rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
+    }
+	rdfxml += '<annotates xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' + anno.resource + '"/>';
+	if (anno.lang){
+		rdfxml += '<language xmlns="http://purl.org/dc/elements/1.0/">'+ anno.lang + '</language>';
+	}
+	if (anno.title){
+		rdfxml += '<title xmlns="http://purl.org/dc/elements/1.0/">' + anno.title + '</title>';
+	}
+	if (anno.creator){
+		rdfxml += '<creator xmlns="http://purl.org/dc/elements/1.0/">'+ anno.creator + '</creator>';
+	}
+	if (!anno.created){
+		anno.created = new Date();
+	}
+	// TODO: format date strings
+	rdfxml += '<created xmlns="http://www.w3.org/2000/10/annotation-ns#">'+ anno.created.toString() + '</created>';
+	anno.modified = new Date();
+	rdfxml += '<modified xmlns="http://www.w3.org/2000/10/annotation-ns#">' + anno.modified.toString() + '</modified>';
+	if (anno.context){
+		rdfxml += '<context xmlns="http://www.w3.org/2000/10/annotation-ns#">' + anno.context + '</context>';
+	}
+	if (anno.originalcontext){
+		rdfxml += '<original-context xmlns="">' + anno.originalcontext + '</original-context>';
+	}
+	if (anno.revisedcontext){
+		rdfxml += '<revised-context xmlns="h">' + anno.revisedcontext + '</revised-context>';
+	}
+	if (anno.revisionagent){
+		rdfxml += '<revision-agent xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
+		+ anno.revisionagent + '</revision-agent>';
+	}
+	if (anno.revisionplace){
+		rdfxml += '<revision-place xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
+		+ anno.revisionplace + '</revision-place>';
+	
+	}
+	if (anno.revisiondate){
+		rdfxml += '<revision-date xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
+		+ anno.revisiondate + '</revision-date>';
+	}
+	if (anno.original){
+		rdfxml += '<original xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
+		+ anno.original + '</original>';
+	}
+	if (anno.revised){
+		rdfxml += '<revised xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
+		+ anno.revised + '</revised>';
+	}
+     
+	if (anno.body){
+		rdfxml += '<body xmlns="http://www.w3.org/2000/10/annotation-ns#"><rdf:Description>'
+    		+ '<ContentType xmlns="http://www.w3.org/1999/xx/http#">text/html</ContentType>'
+    		+ '<Body xmlns="http://www.w3.org/1999/xx/http#" rdf:parseType="Literal">'
+			+ '<html><head><title>' + (anno.title? anno.title : 'Annotation') + '</title></head>'
+			+ '<body>'
+			+ anno.body.tidyHTML()
+			+ '</body></html>'
+			+ '</Body></rdf:Description>'
+		+ '</body>';
+	}
+  	rdfxml += '</rdf:Description>'+ '</rdf:RDF>';
+	return rdfxml;
+}
 /**
  * Creates an array of Annotations from a list of RDF nodes in ascending date
- * created order
+ * created order - unchanged from dannotate.js
  * @param nodeList Raw RDF list in arbitrary order
  * @return ordered array of Annotations
  */
@@ -1095,35 +1283,4 @@ function orderByDate (nodeList)
   }
   return tmp.length == 1 ? tmp : 
          tmp.sort(function(a,b){return (a.created > b.created ? 1 : -1)});
-}
-
-/**
- * Escapes a string using HTML entities
- * @param {} st The string to be escaped
- * @return {}
- */
-function escapeHTML(st) {
-	var txt = st;
-	var atom = st.split('&');
-	if (atom.length > 1) {
-		txt = atom[0];
-		for (var i = 1; i < atom.length; i++) {
-			txt += '&amp;' + atom[i];
-		}
-	}
-	atom = txt.split('<');
-	if (atom.length > 1) {
-		txt = atom[0];
-		for (var i = 1; i < atom.length; i++) {
-			txt += '&lt;' + atom[i];
-		}
-	}
-	atom = txt.split('>');
-	if (atom.length > 1) {
-		txt = atom[0];
-		for (var i = 1; i < atom.length; i++) {
-			txt += '&gt;' + atom[i];
-		}
-	}
-	return txt;
 }

@@ -58,9 +58,14 @@ lore.gui_spec = {
                         	autoWidth: true,
 							autoScroll: true,
                         	stripeRows: true,
-                        	viewConfig: {
-                            	forceFit: true
-                        	},
+                        	view: new Ext.grid.GridView({
+									forceFit: true,
+									getRowClass: function(rec){
+										if (!rec.data.id) {
+											return "newanno";
+										}
+									}
+							}),	
                         	ds: new Ext.data.JsonStore({
                            		fields: [{
                                 	name: 'created'
@@ -139,20 +144,16 @@ lore.gui_spec = {
 								
                         	}]),
 							sm: new Ext.grid.RowSelectionModel({
-	                			singleSelect: true,
-	                			listeners: {
-	                    			rowselect: function(sm, row, rec) { 										Ext.getCmp("annotationslistform").getForm().loadRecord(rec);
-	                    			}
-	                			}
+	                			singleSelect: true	
 	            			})
                     	}, {
 							region : "center",
             				xtype: 'fieldset',
+							autoScroll: true,
 							id: 'annotationsform',
             				labelWidth: 75,
-            				title:'Update annotation:',
+            				title:'Annotation details:',
 							defaultType: 'textfield',
-            				autoHeight: true,
 							border: false,
 							labelAlign: 'right',
 							buttonAlign: 'left',
@@ -235,7 +236,7 @@ lore.gui_spec = {
                 				name: 'created'
             				}*/],
 							buttons: [{
-           						text: 'Update Annotation',
+           						text: 'Save Annotation',
 								id: 'updannobtn'
         					}, {
 								text: 'Delete Annotation',
