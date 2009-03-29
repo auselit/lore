@@ -45,9 +45,12 @@ function showRDFHTML() {
  * Launch create annotation form with context and annotates filled in from current browser resource
  */
 function addAnnotation(){
+	var currentContext = getXPathForSelection();
 	var anno = {
 		resource : currentURL,
-		context : getXPathForSelection(),
+		original: currentURL,
+		context : currentContext,
+		originalcontext : currentContext,
 		creator: defaultCreator,
 		created: new Date(),
 		modified: new Date(),
@@ -63,6 +66,7 @@ function addAnnotation(){
 	});
 	// select the row to load into the editor
 	annotabsm.selectRow(annoIndex);
+	loreviews.activate("annotationslistform");
 }
 
 
@@ -84,7 +88,7 @@ function getXPathForSelection ()
     }
   }
   catch (ex) {
-    alert('XPath create failed\n' + ex.toString());
+    loreWarning('XPath create failed\n' + ex.toString());
   }
   return xp;
 }
@@ -659,7 +663,12 @@ function _clearTree(treeRoot){
  */
 function _updateAnnotationsSourceList(contextURL) {
  _clearTree(annotationstreeroot);
- annotabds.removeAll();
+ //annotabds.removeAll();
+ annotabds.each(function(rec){
+ 	if (rec.data.id){
+		annotabds.remove(rec);
+	}
+ });
  // Update annotations source tree with matching annotations
  if (annoURL){
  	var queryURL = annoURL + "?w3c_annotates=" + contextURL;
@@ -681,7 +690,7 @@ function _updateAnnotationsSourceList(contextURL) {
 
 						if (resultNodes.length > 0){
 							var annotations = orderByDate(resultNodes);
-							annotabds.loadData(annotations);
+							annotabds.loadData(annotations,true);
 							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
 								var annoID = annotations[i].id;
@@ -739,7 +748,7 @@ function _updateAnnotationsSourceList(contextURL) {
 							});	
 							
 						}
-						
+	
 						if (!annotationstreeroot.isExpanded()) {
 							annotationstreeroot.expand();
 						}
@@ -951,7 +960,7 @@ function writeFile(content, fileName){
 			stream.close();
 			return filePath;
 		} catch (e) {
-			alert("Unable to create SMIL result: " + e.toString());
+			loreWarning("Unable to create SMIL result: " + e.toString());
 		}
 }
 /**
@@ -997,11 +1006,14 @@ String.prototype.tidyHTML = function (){
 		var res2 = res.substring((res.indexOf('</title>')+8), res.length);
 		res = res1 + res2;
 	}
-	while (res.match('<br xmlns')){
-		res = res.replace('<br xmlns="http://www.w3.org/1999/xhtml">', '<br />');
+	while (res.match('<br xmlns"'+ XHTML_NS + '">')){
+		res = res.replace('<br xmlns="' + XHTML_NS + '">', '<br />');
 	}
 	while (res.match('<br>')){
 		res = res.replace('<br>','<br />');
+	}
+	while (res.match('</br>')){
+		res = res.replace('</br>',' ');
 	}
 	if (res.match('nbsp')){
 		res = res.replace('&nbsp;',' ');
@@ -1106,13 +1118,16 @@ function Annotation (rdf)
    
    try {
      attr = rdf.getAttributeNodeNS(RDF_SYNTAX_NS, 'about');
-     this.id = attr.nodeValue;
-     
+	 if (attr) {
+	 	this.id = attr.nodeValue;
+	 } 
      var isReply = false;
      node = rdf.getElementsByTagNameNS(RDF_SYNTAX_NS, 'type');
      for (var i = 0; i < node.length; i++) {
-      attr = node[i].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
-        tmp = attr.nodeValue;
+     	attr = node[i].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
+	  	if (attr) {
+			tmp = attr.nodeValue;
+		}
         if (tmp.indexOf(ANNOTATION_TYPE_NS) == 0) {
            //this.type = tmp.substr(ANNOTATION_TYPE_NS.length);
         	this.type = tmp;
@@ -1135,22 +1150,29 @@ function Annotation (rdf)
      if (! this.isReply) {
        node = rdf.getElementsByTagNameNS(ANNOTATION_NS, 'annotates');
        attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
-       this.resource = attr.nodeValue;
+	   if (attr) {
+	   	this.resource = attr.nodeValue;
+	   }
        this.about = null;
      }
      else {
        node = rdf.getElementsByTagNameNS(THREAD_NS, 'root');
        attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
-       this.resource = attr.nodeValue;
+	   if (attr) {
+	   	this.resource = attr.nodeValue;
+	   }
        node = rdf.getElementsByTagNameNS(THREAD_NS, 'inReplyTo');
        attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
-       this.about = attr.nodeValue;
+	   if (attr) {
+	   	this.about = attr.nodeValue;
+	   }
      }
      
      node = rdf.getElementsByTagNameNS(ANNOTATION_NS, 'body');
      attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
-     this.bodyURL = attr.nodeValue;
-     
+	 if (attr) {
+	 	this.bodyURL = attr.nodeValue;
+	 } 
      node = rdf.getElementsByTagNameNS(ANNOTATION_NS, 'created');
      this.created = safeGetFirstChildValue(node);
      node = rdf.getElementsByTagNameNS(ANNOTATION_NS, 'modified');
@@ -1177,26 +1199,32 @@ function Annotation (rdf)
      this.body = getBodyContent(this.bodyURL);
      
     //Additional fields for revision annotations only 
-     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised');
-     if(node[0]){
-     	attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
-     	this.revised = attr.nodeValue;
-     }
-     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original');
-     if(node[0]){
-     	attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
-     	this.original = attr.nodeValue;
-     }
-     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original-context');
-     this.originalcontext = safeGetFirstChildValue(node);
-     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised-context');
-     this.revisedcontext = safeGetFirstChildValue(node);
-     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-agent');
-     this.revisionagent = safeGetFirstChildValue(node);
-     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-place');
-     this.revisionplace = safeGetFirstChildValue(node);
-     node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-date');
-     this.revisiondate = safeGetFirstChildValue(node);
+	if (this.type.match(REVISION_ANNOTATION_NS)) {
+		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised');
+		if (node[0]) {
+			attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
+			if (attr) {
+				this.revised = attr.nodeValue;
+			}
+		}
+		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original');
+		if (node[0]) {
+			attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
+			if (attr) {
+				this.original = attr.nodeValue;
+			}
+		}
+		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original-context');
+		this.originalcontext = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised-context');
+		this.revisedcontext = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-agent');
+		this.revisionagent = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-place');
+		this.revisionplace = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-date');
+		this.revisiondate = safeGetFirstChildValue(node);
+	}
    }
    catch (ex) {
      var st = "Error parsing RDF" + (this.id ? ' for ' + this.id : '') +
@@ -1219,6 +1247,10 @@ function createAnnotationRDF(anno)
 		rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
     }
 	rdfxml += '<annotates xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' + anno.resource + '"/>';
+	// also send revised as annotates for backwards compatability with older clients
+	/*if (anno.revised){
+		rdfxml += '<annotates xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' + anno.revised + '"/>';	
+	}*/
 	if (anno.lang){
 		rdfxml += '<language xmlns="http://purl.org/dc/elements/1.0/">'+ anno.lang + '</language>';
 	}
@@ -1238,39 +1270,44 @@ function createAnnotationRDF(anno)
 	if (anno.context){
 		rdfxml += '<context xmlns="http://www.w3.org/2000/10/annotation-ns#">' + anno.context + '</context>';
 	}
-	if (anno.originalcontext){
-		rdfxml += '<original-context xmlns="">' + anno.originalcontext + '</original-context>';
+	if (anno.type == REVISION_ANNOTATION_NS + "RevisionAnnotation") {
+		if (anno.originalcontext) {
+			rdfxml += '<original-context xmlns="'+ REVISION_ANNOTATION_NS + '">' + anno.originalcontext + '</original-context>';
+		}
+		if (anno.revisedcontext) {
+			rdfxml += '<revised-context xmlns="' + REVISION_ANNOTATION_NS + '">' + anno.revisedcontext + '</revised-context>';
+		}
+		if (anno.revisionagent) {
+			rdfxml += '<revision-agent xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' +
+			anno.revisionagent +
+			'</revision-agent>';
+		}
+		if (anno.revisionplace) {
+			rdfxml += '<revision-place xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' +
+			anno.revisionplace +
+			'</revision-place>';
+		}
+		if (anno.revisiondate) {
+			rdfxml += '<revision-date xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' +
+			anno.revisiondate +
+			'</revision-date>';
+		}
+		if (anno.original) {
+			rdfxml += '<original xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#" rdf:resource="' +
+			anno.original +
+			'"/>';
+		}
+		if (anno.revised) {
+			rdfxml += '<revised xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#" rdf:resource="' +
+			anno.revised +
+			'"/>';
+		}
 	}
-	if (anno.revisedcontext){
-		rdfxml += '<revised-context xmlns="h">' + anno.revisedcontext + '</revised-context>';
-	}
-	if (anno.revisionagent){
-		rdfxml += '<revision-agent xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
-		+ anno.revisionagent + '</revision-agent>';
-	}
-	if (anno.revisionplace){
-		rdfxml += '<revision-place xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
-		+ anno.revisionplace + '</revision-place>';
-	
-	}
-	if (anno.revisiondate){
-		rdfxml += '<revision-date xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
-		+ anno.revisiondate + '</revision-date>';
-	}
-	if (anno.original){
-		rdfxml += '<original xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
-		+ anno.original + '</original>';
-	}
-	if (anno.revised){
-		rdfxml += '<revised xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">' 
-		+ anno.revised + '</revised>';
-	}
-     
 	if (anno.body){
 		rdfxml += '<body xmlns="http://www.w3.org/2000/10/annotation-ns#"><rdf:Description>'
-    		+ '<ContentType xmlns="http://www.w3.org/1999/xx/http#">text/html</ContentType>'
+    		+ '<ContentType xmlns="http://www.w3.org/1999/xx/http#">application/xhtml+xml</ContentType>'
     		+ '<Body xmlns="http://www.w3.org/1999/xx/http#" rdf:parseType="Literal">'
-			+ '<html><head><title>' + (anno.title? anno.title : 'Annotation') + '</title></head>'
+			+ '<html xmlns="' + XHTML_NS + '"><head><title>' + (anno.title? anno.title : 'Annotation') + '</title></head>'
 			+ '<body>'
 			+ anno.body.tidyHTML()
 			+ '</body></html>'
@@ -1368,3 +1405,39 @@ function findAnchorNode (range, annoID, context)
   }
   return node;
 }
+
+function setVisibilityFormField(fieldName, hide){
+	var thefield = annotationsform.findField(fieldName);
+		if (thefield) {
+			var cont = thefield.container.up('div.x-form-item');
+			cont.enableDisplayMode();
+			
+			if (hide && cont.isVisible()) {
+				cont.slideOut();
+			} else if (!hide && !cont.isVisible()){
+				cont.slideIn();
+			}
+		}
+}
+function hideFormFields(fieldNameArr){
+	for (var i = 0; i < fieldNameArr.length; i++) {
+		setVisibilityFormField(fieldNameArr[i], true);
+	}
+}
+function showFormFields(fieldNameArr){
+	for (var i = 0; i < fieldNameArr.length; i++) {
+		setVisibilityFormField(fieldNameArr[i], false);
+	}
+}
+function setRevisionFormUI(revision){
+	var nonRevisionFields = ['context', 'resource'];
+	var revisionFields = ['original', 'revised', 'originalcontext', 'revisedcontext', 'revisionagent', 'revisionplace', 'revisiondate'];
+	if(revision){
+		hideFormFields(nonRevisionFields);
+		showFormFields(revisionFields);
+	} else {
+		showFormFields(nonRevisionFields);
+		hideFormFields(revisionFields);
+	}
+}
+

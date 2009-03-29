@@ -179,44 +179,49 @@ lore.gui_spec = {
 								name: 'original',
 								readOnly: true,
 								style: 'background:none;border:none',
-								hidden: true,
-								hideLabel: true
+								//hidden: true,
+								//hideLabel: true
 							},{
 								fieldLabel: 'Revised',
 								name: 'revised',
 								readOnly: true,
 								style: 'background:none;border:none',
-								hidden: true,
-								hideLabel: true
+								//hidden: true,
+								//hideLabel: true
 							},{
 								fieldLabel: 'Original Context',
 								name: 'originalcontext',
 								readOnly: true,
 								style: 'background:none;border:none',
-								hidden: true,
-								hideLabel: true
+								//hidden: true,
+								//hideLabel: true
 							},{
 								fieldLabel: 'Revised Context',
 								name: 'revisedcontext',
 								readOnly: true,
 								style: 'background:none;border:none',
-								hidden: true,
-								hideLabel: true
+								//hidden: true,
+								//hideLabel: true
 							},
 							{
-								//xtype: "combobox",
+								xtype: "combo",
+								id: "typecombo",
 								fieldLabel: 'Type',
-								name: 'type'
-                        		//hiddenName:'type',
-                       			/*store: new Ext.data.SimpleStore({
-                           		 	fields: ['abbrtype', 'qualifiedtype'],
+								name: 'type',
+                        		hiddenName:'type',
+                       			store: new Ext.data.SimpleStore({
+                           		 	fields: ['typename', 'qtype'],
                             		data : [
-										['Comment','fullcomment'],
-										['Explantation','fullexplanation']]
+       									 ['Comment',"http://www.w3.org/2000/10/annotationType#Comment"],
+										 ['Explanation',"http://www.w3.org/2000/10/annotationType#Explanation"],
+										 ['Revision',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#RevisionAnnotation"]
+									]
                         		}),
-                        		valueField:'qualifiedtype',
-                        		displayField:'abbrtype',*/
-                        		//typeAhead: true                        		
+                        		valueField:'qtype',
+                        		displayField:'typename',
+                        		typeAhead: true,
+								mode: 'local',
+								selectOnFocus: true                        		
 							},
 							{
                 				fieldLabel: 'Title',
@@ -237,14 +242,25 @@ lore.gui_spec = {
             				}*/],
 							buttons: [{
            						text: 'Save Annotation',
-								id: 'updannobtn'
+								id: 'updannobtn',
+								tooltip: 'Save the annotation to the repository'
         					}, {
 								text: 'Delete Annotation',
-								id: 'delannobtn'
+								id: 'delannobtn',
+								tooltip: 'Delete teh annotation from the repository - CANNOT BE UNDONE!'
 							},{
             					text: 'Cancel',
 								id: 'cancelupdbtn'
-        					}]
+        					},{
+								text: 'Update context',
+								id: 'updctxtbtn',
+								tooltip: 'Update the (original) context from the current selection in the main browser window'
+							}, {
+								text: 'Update revised context',
+								id: 'updrctxtbtn',
+								tooltip: 'Update the revised context from the current selection in the main browser window'
+							}
+							]
 						}]
                     }, {
                         xtype: "tabpanel",
@@ -379,6 +395,7 @@ lore.gui_spec = {
         }]
     }]
 };
-
-lore.main_window = new Ext.Viewport(lore.gui_spec);
-lore.main_window.show();
+try {
+	lore.main_window = new Ext.Viewport(lore.gui_spec);
+	lore.main_window.show();
+} catch (ex) {alert(ex.toString());}

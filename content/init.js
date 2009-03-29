@@ -116,24 +116,28 @@ function init(){
 	annotabsm = annotationstab.getSelectionModel();
 	annotabsm.on('rowdeselect', function(sm, row, rec) {
 		hideMarker();
-		// update grid from form
-		if (annotationsform.isDirty()){
-			//loreWarning("You did not save your annotation changes!");
-			//annotationsform.updateRecord(rec);
+		// update grid from form if it's a new annotation
+		if (annotationsform.isDirty() && !rec.data.id){
+			loreWarning("You haven't saved your new annotation!");
+			annotationsform.updateRecord(rec);
 		}
 	});
 	annotabsm.on('rowselect', function(sm, row, rec) {
 		// load grid values into form
  		annotationsform.loadRecord(rec);
  		// add a marker to indicate context	
- 		var idx = rec.data.context.indexOf('#');
-    	var sel = getSelectionForXPath(rec.data.context.substring(idx + 1));
-    	annoMarker = decorate(sel, rec.data.id, rec.data.context,'red');	
+		if (rec.data.context) {
+			var idx = rec.data.context.indexOf('#');
+			var sel = getSelectionForXPath(rec.data.context.substring(idx + 1));
+			annoMarker = decorate(sel, rec.data.id, rec.data.context, 'red');
+		}
 	});
 	annotabds = annotationstab.getStore();
 	var delannobtn = Ext.getCmp("delannobtn");
 	var updannobtn = Ext.getCmp("updannobtn");
 	var cancelupdbtn = Ext.getCmp("cancelupdbtn");
+	var updctxtbtn = Ext.getCmp("updctxtbtn");
+	var updrctxtbtn = Ext.getCmp("updrctxtbtn");
 	
 	cancelupdbtn.on('click', function(btn,e){
 		// reset all annotation form items to empty
@@ -152,17 +156,21 @@ function init(){
 	
 	updannobtn.on('click', function(btn,e){
 		var annoID = annotationsform.findField('id').value;
-		if (!annoID){
-			// get the annotation contents
-			var annoIndex = annotabds.findBy(function(record, id){
+		var annoIndex = annotabds.findBy(function(record, id){
+			if (annoID) {
+				return (annoID == record.json.id);
+			}
+			else {
 				return (!record.json.id);
-			});
-			var anno = annotabds.getAt(annoIndex);
-			// update anno with properties from form
-			annotationsform.updateRecord(anno);
-			annotabds.commitChanges();
-			var annoRDF = createAnnotationRDF(anno.data);
-			
+			}
+		});
+		// get the annotation contents
+		var anno = annotabds.getAt(annoIndex);
+		// update anno with properties from form
+		annotationsform.updateRecord(anno);
+		annotabds.commitChanges();
+		var annoRDF = createAnnotationRDF(anno.data);
+		if (!annoID){		
 			// create new annotation
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST",annoURL,true);
@@ -181,6 +189,7 @@ function init(){
 				}
 			};
 			xhr.send(annoRDF);	
+			annotabds.remove(anno);
 		}
 		else {
 			// update existing annotation
@@ -188,17 +197,7 @@ function init(){
 				loreInfo('Annotation content not modified: Annotation will not be updated');
 				return;
 			}
-			// get the annotation contents
-			var annoIndex = annotabds.findBy(function(record, id){
-				return (annoID == record.json.id);
-			});
-			var anno = annotabds.getAt(annoIndex);
-			// update anno with properties from form
-			annotationsform.updateRecord(anno);
-			annotabds.commitChanges();
-		
 			// Update the annotation on the server via HTTP PUT
-			var annoRDF = createAnnotationRDF(anno.data);
 			var xhr = new XMLHttpRequest();
 			xhr.open("PUT",annoID,true);
 			xhr.setRequestHeader('Content-Type',  "application/xml");
@@ -248,7 +247,47 @@ function init(){
 			hideMarker();
 		} catch (ex){ loreWarning("Problems deleting annotation: " + ex.toString());}
 	});
+
+	updctxtbtn.on('click', function(btn, e){
+			try {
+				var currentCtxt = getXPathForSelection();
+				var theField = annotationsform.findField('context');
+				theField.setValue(currentCtxt);
+				theField = annotationsform.findField('originalcontext');
+				theField.setValue(currentCtxt);
+				theField = annotationsform.findField('resource');
+				theField.setValue(currentURL);
+				theField = annotationsform.findField('original');
+				theField.setValue(currentURL);
+			} 
+			catch (ex) {
+				alert(ex.toString());
+			}
+	});
+	updrctxtbtn.on('click', function(btn, e){
+			try {
+				var currentCtxt = getXPathForSelection();
+				var theField = annotationsform.findField('revisedcontext');
+				theField.setValue(currentCtxt);
+				theField = annotationsform.findField('revised');
+				theField.setValue(currentURL);
+			} 
+			catch (ex) {
+				alert(ex.toString());
+			}
+	});
+	var typecombo = Ext.getCmp("typecombo");
+	setRevisionFormUI(false);
 	
+	typecombo.on('valid', function( combo){
+		var theVal = combo.getValue();
+			if (theVal == 'Revision') {
+				setRevisionFormUI(true);
+			}
+			else if (theVal == 'Comment'  || theVal =='Explanation'){
+				setRevisionFormUI(false);
+			}
+	});	    	           					    
 	sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	annotationstreeroot = new Ext.tree.TreeNode({
 		id: "annotationstree",
