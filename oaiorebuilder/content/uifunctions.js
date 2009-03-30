@@ -35,7 +35,7 @@ var LORE_LAYOUT_NS     = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
 var REVISION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
 var m_xps = new XPointerService();  // Instance of hacked Mozdev XPointer service
 
-// var consoleDebug = true;
+var consoleDebug = false;
 
 /**
  * Render the current resource map as RDF/XML in the RDF view
