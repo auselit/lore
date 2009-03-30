@@ -315,6 +315,9 @@ function createRDF(escape) {
 			resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
 					+ relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
 					+ relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
+			// caused problems	
+			//var relobj = theconnector.targetPort.parentNode.url.replace('<','%3C').replace('>','%3E').escapeHTML();
+			//resourcerdf += ltsymb + rdfdescabout + figurl.replace('<','%3C').replace('>','%3E').escapeHTML() + closetag + ltsymb
 		}
 	}
 	rdfxml += ltsymb + rdfdescclose + nlsymb;
@@ -804,6 +807,19 @@ function _updateCompoundObjectsSourceList(contextURL) {
 							remstreeroot.appendChild(tmpNode);
 							tmpNode.on('dblclick', function(node) {
 										loadRDFFromID(node.text);
+										var recentNode = new Ext.tree.TreeNode({
+											text: node.id,
+											iconCls: 'oreresult',
+											leaf: true
+										});
+										var childNodes = recenttreeroot.childNodes;
+										if (childNodes.length >= 5){
+											recenttreeroot.removeChild(recenttreeroot.firstChild);
+										}
+										recenttreeroot.appendChild(recentNode);
+										recentNode.on('dblclick', function(node){
+											loadRDFFromID(node.text);
+										});
 							});
 							
 							tmpNode.on('contextmenu', function(node,e){
