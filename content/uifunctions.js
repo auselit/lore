@@ -1515,9 +1515,14 @@ function onRevisionsShow(revisionsPanel) {
 }
 
 function onRevisionListingClick(listingPanel, rowIndex){
-	// alert (rowIndex);
-	setRevisionFrameURLs(revisionInformation[rowIndex].sourceURL, revisionInformation[rowIndex].targetURL);
-	setTimeout('highlightRevisionFrames (' + rowIndex + ')', REVISIONS_FRAME_LOAD_WAIT);
+	var locationChanged = setRevisionFrameURLs(revisionInformation[rowIndex].sourceURL, revisionInformation[rowIndex].targetURL);
+	
+	if (locationChanged) {
+    setTimeout('highlightRevisionFrames (' + rowIndex + ')', REVISIONS_FRAME_LOAD_WAIT);
+	}
+	else {
+		highlightRevisionFrames(rowIndex);
+	}
 	
 	try {
   	var detailsString = "";
@@ -1539,15 +1544,25 @@ function onRevisionListingClick(listingPanel, rowIndex){
 function setRevisionFrameURLs(sourceURL, targetURL) {
   var sourceFrame = document.getElementById("revisionSourceFrame");
   var targetFrame = document.getElementById("revisionTargetFrame");
+	var changeMade = false;
   
-  sourceFrame.src = sourceURL;
-  targetFrame.src = targetURL;
+  if (sourceFrame.src != sourceURL) {
+    sourceFrame.src = sourceURL;
+		changeMade = true;
+	}
+	
+	if (targetFrame.src != targetURL) {
+    targetFrame.src = targetURL;
+		changeMade = true;
+	}
   
   var sourceLabel = document.getElementById("revisionSourceLabel");
   var targetLabel = document.getElementById("revisionTargetLabel");
   
   sourceLabel.innerHTML = sourceURL;
   targetLabel.innerHTML = targetURL;
+	
+	return changeMade;
 }
 
 function scrollToElement(theElement, theWindow){
@@ -1568,8 +1583,8 @@ function highlightXPointer(xpointer, targetDocument, scrollToHighlight) {
   var sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
   
   var highlightNode = targetDocument.createElementNS(XHTML_NS, "span");
-  m_xps.markElement(highlightNode);
-  m_xps.markElementHide(highlightNode);
+  // m_xps.markElement(highlightNode);
+  // m_xps.markElementHide(highlightNode);
   highlightNode.style.backgroundColor = "yellow";
   sel.surroundContents(highlightNode);
   if (scrollToHighlight) {
@@ -1582,9 +1597,50 @@ function highlightXPointer(xpointer, targetDocument, scrollToHighlight) {
 function highlightRevisionFrames(revisionNumber) {
   var sourceFrame = document.getElementById("revisionSourceFrame");
   var targetFrame = document.getElementById("revisionTargetFrame");
+	
+	var sourceRevisionAlreadyPresent = false;
+	var targetRevisionAlreadyPresent = false;
 
-  highlightXPointer(revisionInformation[revisionNumber].sourceContext, sourceFrame.contentDocument, true);
-	highlightXPointer(revisionInformation[revisionNumber].targetContext, targetFrame.contentDocument, true);
+	try {
+  	for (var i = 0; i < revisionInformation.length; i++) {
+  		var annotationElement = sourceFrame.contentDocument.getElementById("ANNOTATION-" + i);
+  		
+  		if (annotationElement) {
+  			if (i == revisionNumber) {
+					annotationElement.style.backgroundColor = "yellow";
+					scrollToElement(annotationElement, sourceFrame.contentDocument.defaultView);
+					sourceRevisionAlreadyPresent = true;
+  			}
+				else {
+          annotationElement.style.backgroundColor = "";
+				}
+  		}
+  		
+  		annotationElement = targetFrame.contentDocument.getElementById("ANNOTATION-" + i);
+  		if (annotationElement) {
+        if (i == revisionNumber) {
+          annotationElement.style.backgroundColor = "yellow";
+          scrollToElement(annotationElement, targetFrame.contentDocument.defaultView);
+					targetRevisionAlreadyPresent = true;
+        }
+				else {
+          annotationElement.style.backgroundColor = "";
+				}
+  		}
+  	}
+		
+    if (!sourceRevisionAlreadyPresent) {
+      var sourceHighlightElement = highlightXPointer(revisionInformation[revisionNumber].sourceContext, sourceFrame.contentDocument, true);
+      sourceHighlightElement.id = "ANNOTATION-" + revisionNumber;
+		}
+		
+		if (!targetRevisionAlreadyPresent) {
+      var targetHighlightElement = highlightXPointer(revisionInformation[revisionNumber].targetContext, targetFrame.contentDocument, true);
+      targetHighlightElement.id = "ANNOTATION-" + revisionNumber;
+		}
+  } catch (error) {
+    alert (error);
+  }
 }
 
 function testRevisionMarkers() {
