@@ -123,8 +123,12 @@ function showCompoundObjectSummary() {
  * Launch a small window for SMIL slideshow
  * @param {} url
  */
-function launchWindow(url) {
-	newwindow=window.open(url,'name','height=650,width=800,top=200,left=250,resizable');
+function launchWindow(url, locbar) {
+	var winOpts = 'height=650,width=800,top=200,left=250,resizable';
+	if (locbar) {
+		winOpts += ',location=1';
+	}
+	newwindow=window.open(url,'name',winOpts);
 	if (window.focus) {newwindow.focus()}
 } 
 /**
@@ -137,7 +141,7 @@ function showSMIL(){
 	if (numfigs > 0) {
 		var smilpath = createSMIL(); // generate the new smil file into oresmil.xsl
 		smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p>" +
-				"<a onclick='launchWindow(this.href);return(false);' target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a>";	
+				"<a onclick='launchWindow(this.href, false);return(false);' target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a>";	
 	} else {
 		smilcontents += "<p>Once you have added some resources to the current compound object a SMIL presentation will be available here.</p>"
 	}
@@ -156,8 +160,10 @@ function _serialise_property(propname, properties, ltsymb, nlsymb) {
 	var propval = properties[propname];
 	if (propval != null && propval != '') {
 		result = ltsymb + propname + ">";
-		if (nlsymb == "<br/>") {
-			result += propval.escapeHTML();
+		if (nlsymb == "<br/>" && propval) {
+			try{
+				result += propval.toString().escapeHTML();
+			} catch (e) {loreWarning(e.toString());}
 		} else {
 			result += propval;
 		}

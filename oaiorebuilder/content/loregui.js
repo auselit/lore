@@ -177,6 +177,7 @@ lore.gui_spec = {
 							},{
 								fieldLabel: 'Original',
 								name: 'original',
+								id: 'originalfield',
 								readOnly: true,
 								style: 'background:none;border:none',
 								//hidden: true,
@@ -184,6 +185,7 @@ lore.gui_spec = {
 							},{
 								fieldLabel: 'Revised',
 								name: 'revised',
+								id: 'revisedfield',
 								readOnly: true,
 								style: 'background:none;border:none',
 								//hidden: true,
