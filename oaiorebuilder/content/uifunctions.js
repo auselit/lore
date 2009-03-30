@@ -1679,6 +1679,8 @@ function updateRevisionAnnotationList() {
 
   var revStoreData = [];
 	
+	revisionInformation = [];
+	
 	for (var i = 0; i < annotabds.data.items.length; i++) {
 		var revisionType = annotabds.data.items[i].data.type;
 		
