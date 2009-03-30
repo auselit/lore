@@ -38,7 +38,7 @@ var oaiorebuilder = {
   updateOREBrowser: function(aURI) {
   	if (aURI){
     	if (aURI.spec == this.oldURL) return;
-		window.graphiframe.updateSourceLists(aURI.spec);
+		  window.graphiframe.updateSourceLists(aURI.spec);
     	this.oldURL = aURI.spec;
   	}
   },
