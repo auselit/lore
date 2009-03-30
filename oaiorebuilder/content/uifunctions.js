@@ -706,6 +706,7 @@ function _updateAnnotationsSourceList(contextURL) {
 						if (resultNodes.length > 0){
 							var annotations = orderByDate(resultNodes);
 							annotabds.loadData(annotations,true);
+              updateRevisionAnnotationList();
 							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
 								var annoID = annotations[i].id;
@@ -773,8 +774,8 @@ function _updateAnnotationsSourceList(contextURL) {
 			req.send(null);
 		} catch (e) {
 			loreWarning("Unable to retrieve annotations");
-	}
- }
+   	}
+  }
 }
 /**
  * Helper function for updateSourceLists: updates the compound objects list
@@ -1482,7 +1483,7 @@ var FRAME_HEIGHT_CLEARANCE = 50;
 var LEFT_REVISION_CLEARANCE = 255;
 var TOP_REVISION_CLEARANCE = 31;
 
-var REVISIONS_FRAME_LOAD_WAIT = 1500;
+var REVISIONS_FRAME_LOAD_WAIT = 250;
 
 var TEST_XPATH_1 = 'xpointer(string-range(/html[1]/body[1]/div[1]/p[3], "", 92, 21))';
 var TEST_XPATH_2 = 'xpointer(start-point(string-range(/html[1]/body[1]/div[2]/p[2], "", 143, 1))/range-to(end-point(string-range(/html[1]/body[1]/div[2]/p[2], "", 188, 1))))';
@@ -1511,6 +1512,12 @@ function onRevisionsShow(revisionsPanel) {
   
   document.getElementById('revisionSourceFrame').style.width = sourcePanel.getSize().width - FRAME_WIDTH_CLEARANCE;
   document.getElementById('revisionSourceFrame').style.height = sourcePanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
+}
+
+function onRevisionListingClick(listingPanel, rowIndex) {
+	// alert (rowIndex);
+	setRevisionFrameURLs (revisionInformation[rowIndex].sourceURL, revisionInformation[rowIndex].targetURL);
+	setTimeout ('highlightRevisionFrames (' + rowIndex +')', REVISIONS_FRAME_LOAD_WAIT);
 }
 
 function setRevisionFrameURLs(sourceURL, targetURL) {
@@ -1556,6 +1563,14 @@ function highlightXPointer(xpointer, targetDocument, scrollToHighlight) {
   return highlightNode;
 }
 
+function highlightRevisionFrames(revisionNumber) {
+  var sourceFrame = document.getElementById("revisionSourceFrame");
+  var targetFrame = document.getElementById("revisionTargetFrame");
+
+  highlightXPointer(revisionInformation[revisionNumber].sourceContext, sourceFrame.contentDocument, true);
+	highlightXPointer(revisionInformation[revisionNumber].targetContext, targetFrame.contentDocument, true);
+}
+
 function testRevisionMarkers() {
   if (consoleDebug) console.debug('[testRevisionMarkers() begin]');
   var sourceFrame = document.getElementById("revisionSourceFrame");
@@ -1584,10 +1599,45 @@ function testParse() {
   if (consoleDebug) console.debug('[testParse() end]');
 }
 
+function updateRevisionAnnotationList() {
+	revisionStore.removeAll();
+	
+	// alert (annotabds.data.items.length);
+	// dumpValues (annotabds.data.items[0].data);
+
+  var revStoreData = [];
+	
+	for (var i = 0; i < annotabds.data.items.length; i++) {
+		var revisionType = annotabds.data.items[i].data.type;
+		
+		// alert (revisionType);
+		
+		if (revisionType != 'http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#RevisionAnnotation') {
+			continue;
+		}
+		// dumpValues(annotabds.data.items[i].data);
+		revStoreData.push ([annotabds.data.items[i].data.title]);
+		revisionInformation.push({
+			title: annotabds.data.items[i].data.title,
+      body: annotabds.data.items[i].data.body,
+      sourceURL: annotabds.data.items[i].data.original,
+      targetURL: annotabds.data.items[i].data.revised,
+      sourceContext: annotabds.data.items[i].data.originalcontext,
+      targetContext: annotabds.data.items[i].data.revisedcontext,
+		});
+	}
+	
+	setRevisionFrameURLs('about:blank', 'about:blank');
+	
+  revisionStore.loadData (revStoreData);	
+}
+
+var revisionInformation = [];
+
 var revisionStore = new Ext.data.SimpleStore({
   fields: [
    {name: "name"},
   ]
 });
 
-revisionStore.loadData([['Test Revision 1'], ['Test Revision 2']]);
+revisionStore.loadData([]);

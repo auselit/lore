@@ -374,8 +374,8 @@ function init(){
   // document.getElementById('revisionTargetFrame').src = document.getElementById('revisionTargetFrame').src;
   
   setRevisionFrameURLs ("http://www.austlit.edu.au/common/loredemo/", "http://www.austlit.edu.au/common/loredemo/");
-  setTimeout('testParse()', REVISIONS_FRAME_LOAD_WAIT);
-  setTimeout('testRevisionMarkers()', REVISIONS_FRAME_LOAD_WAIT + 500);
+  // setTimeout('testParse()', REVISIONS_FRAME_LOAD_WAIT);
+  // setTimeout('testRevisionMarkers()', REVISIONS_FRAME_LOAD_WAIT + 500);
 
   // setRevisionFrameURLs("about:blank","about:blank");
   
@@ -384,6 +384,9 @@ function init(){
   revisionsPanel.on("render", onRevisionsShow);
   revisionsPanel.on("show", onRevisionsShow);
   revisionsPanel.on("resize", onRevisionsShow);
+	
+	var revisionsListing = Ext.getCmp("revisionannotationlisting");
+	revisionsListing.on("rowclick", onRevisionListingClick);
   onRevisionsShow(revisionsPanel);
   
   // setTimeout('testParse()', REVISIONS_FRAME_LOAD_WAIT);
