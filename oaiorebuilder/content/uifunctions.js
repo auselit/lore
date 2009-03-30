@@ -35,6 +35,8 @@ var LORE_LAYOUT_NS     = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
 var REVISION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
 var m_xps = new XPointerService();  // Instance of hacked Mozdev XPointer service
 
+// var consoleDebug = true;
+
 /**
  * Render the current resource map as RDF/XML in the RDF view
  */
@@ -1432,39 +1434,153 @@ function findAnchorNode (range, annoID, context)
   }
   return node;
 }
-
 function setVisibilityFormField(fieldName, hide){
-	var thefield = annotationsform.findField(fieldName);
-		if (thefield) {
-			var cont = thefield.container.up('div.x-form-item');
-			cont.enableDisplayMode();
-			
-			if (hide && cont.isVisible()) {
-				cont.slideOut();
-			} else if (!hide && !cont.isVisible()){
-				cont.slideIn();
-			}
-		}
+  var thefield = annotationsform.findField(fieldName);
+    if (thefield) {
+      var cont = thefield.container.up('div.x-form-item');
+      cont.enableDisplayMode();
+      
+      if (hide && cont.isVisible()) {
+        cont.slideOut();
+      } else if (!hide && !cont.isVisible()){
+        cont.slideIn();
+      }
+    }
 }
 function hideFormFields(fieldNameArr){
-	for (var i = 0; i < fieldNameArr.length; i++) {
-		setVisibilityFormField(fieldNameArr[i], true);
-	}
+  for (var i = 0; i < fieldNameArr.length; i++) {
+    setVisibilityFormField(fieldNameArr[i], true);
+  }
 }
 function showFormFields(fieldNameArr){
-	for (var i = 0; i < fieldNameArr.length; i++) {
-		setVisibilityFormField(fieldNameArr[i], false);
-	}
+  for (var i = 0; i < fieldNameArr.length; i++) {
+    setVisibilityFormField(fieldNameArr[i], false);
+  }
 }
 function setRevisionFormUI(revision){
-	var nonRevisionFields = ['context', 'resource'];
-	var revisionFields = ['original', 'revised', 'originalcontext', 'revisedcontext', 'revisionagent', 'revisionplace', 'revisiondate'];
-	if(revision){
-		hideFormFields(nonRevisionFields);
-		showFormFields(revisionFields);
-	} else {
-		showFormFields(nonRevisionFields);
-		hideFormFields(revisionFields);
-	}
+  var nonRevisionFields = ['context', 'resource'];
+  var revisionFields = ['original', 'revised', 'originalcontext', 'revisedcontext', 'revisionagent', 'revisionplace', 'revisiondate'];
+  if(revision){
+    hideFormFields(nonRevisionFields);
+    showFormFields(revisionFields);
+  } else {
+    showFormFields(nonRevisionFields);
+    hideFormFields(revisionFields);
+  }
 }
 
+var FRAME_WIDTH_CLEARANCE = 7;
+var FRAME_HEIGHT_CLEARANCE = 50;
+
+var LEFT_REVISION_CLEARANCE = 255;
+var TOP_REVISION_CLEARANCE = 31;
+
+var REVISIONS_FRAME_LOAD_WAIT = 1500;
+
+var TEST_XPATH_1 = 'xpointer(string-range(/html[1]/body[1]/div[1]/p[3], "", 92, 21))';
+var TEST_XPATH_2 = 'xpointer(start-point(string-range(/html[1]/body[1]/div[2]/p[2], "", 143, 1))/range-to(end-point(string-range(/html[1]/body[1]/div[2]/p[2], "", 188, 1))))';
+var TEST_XPATH_3 = 'string-range(/html[1]/body[1]/div[1]/p[3], "", 92, 21)';
+var TEST_XPATH_4 = 'xpointer(/html[1]/body[1]/div[1]/p[3])';
+var TEST_XPATH_5 = '/html[1]/body[1]/div[1]/p[3]';
+var TEST_XPATH_6 = 'GARBAGE';
+var TEST_XPATH_7 = 'xpointer(/html[1]/body[1])';
+
+var TEST_VALID_XPATH = 'xpointer(string-range(/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/h1[1], "", 4, 5))';
+var TEST_VALID_XPATH_LORECOMMON = 'xpointer(start-point(string-range(/html[1]/body[1]/div[1]/p[3], "", 134, 1))/range-to(end-point(string-range(/html[1]/body[1]/div[1]/p[3], "", 234, 1))))';
+var TEST_VALID_XPATH_LORECOMMON_2 = 'xpointer(start-point(string-range(/html[1]/body[1]/div[8]/p[2], "", 185, 1))/range-to(end-point(string-range(/html[1]/body[1]/div[8]/p[2], "", 333, 1))))';
+
+function onRevisionsShow(revisionsPanel) {
+  if (consoleDebug) console.debug("render!");
+  var targetPanel = Ext.getCmp("revisionannotationtarget");
+  var sourcePanel = Ext.getCmp("revisionannotationsource");
+  var listPanel = Ext.getCmp("revisionannotationlisting");
+  
+  targetPanel.setSize(targetPanel.getSize().width, revisionsPanel.getSize().height);
+  sourcePanel.setSize(sourcePanel.getSize().width, revisionsPanel.getSize().height);
+  listPanel.setSize(listPanel.getSize().width, revisionsPanel.getSize().height);
+  
+  document.getElementById('revisionTargetFrame').style.width = targetPanel.getSize().width - FRAME_WIDTH_CLEARANCE;
+  document.getElementById('revisionTargetFrame').style.height = targetPanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
+  
+  document.getElementById('revisionSourceFrame').style.width = sourcePanel.getSize().width - FRAME_WIDTH_CLEARANCE;
+  document.getElementById('revisionSourceFrame').style.height = sourcePanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
+}
+
+function setRevisionFrameURLs(sourceURL, targetURL) {
+	var sourceFrame = document.getElementById("revisionSourceFrame");
+	var targetFrame = document.getElementById("revisionTargetFrame");
+	
+	sourceFrame.src = sourceURL;
+	targetFrame.src = targetURL;
+	
+	var sourceLabel = document.getElementById("revisionSourceLabel");
+	var targetLabel = document.getElementById("revisionTargetLabel");
+	
+	sourceLabel.innerHTML = sourceURL;
+	targetLabel.innerHTML = targetURL;
+}
+
+function scrollToElement(theElement, theWindow){
+
+  var selectedPosX = 0;
+  var selectedPosY = 0;
+              
+  while(theElement != null){
+    selectedPosX += theElement.offsetLeft;
+    selectedPosY += theElement.offsetTop;
+    theElement = theElement.offsetParent;
+  }
+                                  
+ theWindow.scrollTo(selectedPosX,selectedPosY);
+}
+
+function highlightXPointer(xpointer, targetDocument, scrollToHighlight) {
+	var sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
+	
+	var highlightNode = targetDocument.createElementNS(XHTML_NS, "span");
+	m_xps.markElement(highlightNode);
+	m_xps.markElementHide(highlightNode);
+	highlightNode.style.backgroundColor = "yellow";
+	sel.surroundContents(highlightNode);
+	if (scrollToHighlight) {
+  	scrollToElement(highlightNode, targetDocument.defaultView);
+  }
+	
+	return highlightNode;
+}
+
+function testRevisionMarkers() {
+	if (consoleDebug) console.debug('[testRevisionMarkers() begin]');
+	var sourceFrame = document.getElementById("revisionSourceFrame");
+	
+  highlightXPointer(TEST_VALID_XPATH_LORECOMMON, sourceFrame.contentDocument, false);
+	highlightXPointer(TEST_VALID_XPATH_LORECOMMON_2, sourceFrame.contentDocument, true);
+	
+	if (consoleDebug) console.debug('[testRevisionMarkers() end]');
+}
+
+function testParse() {
+  if (consoleDebug) console.debug('[testParse() begin]'); 
+  var sourceFrame = document.getElementById('revisionSourceFrame');
+  var targetFrame = document.getElementById('revisionTargetFrame');
+	
+	if (consoleDebug) console.debug('Retrieved revision frame handles.');
+
+  if (targetFrame.contentDocument) {
+		if (consoleDebug) console.debug('Target frame has content document.');
+	}
+	// var sel = m_xps.parseXPointerToRange(TEST_VALID_XPATH, document);
+  var sel = m_xps.parseXPointerToRange(TEST_XPATH_4, targetFrame.contentDocument);
+	
+  if (consoleDebug) console.debug('Parse result: ');
+	if (consoleDebug) console.debug(sel);
+  if (consoleDebug) console.debug('[testParse() end]');
+}
+
+var revisionStore = new Ext.data.SimpleStore({
+  fields: [
+   {name: "name"},
+  ]
+});
+
+revisionStore.loadData([['Test Revision 1'], ['Test Revision 2']]);
