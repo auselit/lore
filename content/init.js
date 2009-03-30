@@ -363,25 +363,7 @@ function init(){
 		updateSourceLists(this.currentURL);
 	}
 	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1><p>This page will provide basic getting started information</p>");
-
-  // 'Remind' Firefox to render the revision iframes
-  // document.getElementById('revisionSourceFrame').src = document.getElementById('revisionSourceFrame').src;
-  // document.getElementById('revisionTargetFrame').src = document.getElementById('revisionTargetFrame').src;
-  
-  setRevisionFrameURLs ("http://www.austlit.edu.au/common/loredemo/", "http://www.austlit.edu.au/common/loredemo/");
-  setTimeout('testParse()', REVISIONS_FRAME_LOAD_WAIT);
-  setTimeout('testRevisionMarkers()', REVISIONS_FRAME_LOAD_WAIT + 500);
-
-	// setRevisionFrameURLs("about:blank","about:blank");
-  
-  var revisionsPanel = Ext.getCmp("revisionannotations");
-  // alert(cmp.getSize().height);
-  revisionsPanel.on("render", onRevisionsShow);
-  revisionsPanel.on("show", onRevisionsShow);
-  revisionsPanel.on("resize", onRevisionsShow);
-  onRevisionsShow(revisionsPanel);
 	
-  // setTimeout('testParse()', REVISIONS_FRAME_LOAD_WAIT);
 }
 
 function _make_menu_entry(menu, gridname, propname, op) {
