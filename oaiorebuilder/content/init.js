@@ -188,6 +188,7 @@ function init(){
 					}
 				}
 			};
+			//alert(annoRDF);
 			xhr.send(annoRDF);	
 			annotabds.remove(anno);
 		}
@@ -301,9 +302,16 @@ function init(){
 		draggable: false,
 		iconCls: "tree-ore"
 	});
+	recenttreeroot = new Ext.tree.TreeNode({
+		id: "recenttree",
+		text: "Recently opened",
+		draggable: false,
+		iconCls: "tree-ore"
+	});
 	_clearTree(sourcestreeroot);
 	sourcestreeroot.appendChild(annotationstreeroot);
 	sourcestreeroot.appendChild(remstreeroot);
+	sourcestreeroot.appendChild(recenttreeroot);
 	
 	initProperties();
 	initOntologies();
