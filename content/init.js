@@ -279,7 +279,12 @@ function init(){
 	});
 	var typecombo = Ext.getCmp("typecombo");
 	setRevisionFormUI(false);
-	
+	Ext.getCmp("revisedfield").on('specialkey',function(field){
+		launchWindow(field.value, true);
+	});
+	Ext.getCmp("originalfield").on('specialkey',function(field){
+		launchWindow(field.value);
+	});
 	typecombo.on('valid', function( combo){
 		var theVal = combo.getValue();
 			if (theVal == 'Revision') {
