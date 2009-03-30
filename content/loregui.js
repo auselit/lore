@@ -322,6 +322,7 @@ lore.gui_spec = {
 	                          id: "revisionannotationlisting",
 	                          title: "Revisions",
 														region: 'center',
+														split: true,
 	                          store: revisionStore,
 	                          autoExpandColumn: 'revisionName',
 	                          columns: [
@@ -330,6 +331,7 @@ lore.gui_spec = {
 	                        }, {
                             xtype: "panel",
                             id: "revisiondetails",
+														split: true,
                             region: 'south',
                             title: "Details",
 														height: 300,
