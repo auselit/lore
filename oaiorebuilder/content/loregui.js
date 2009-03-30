@@ -302,58 +302,8 @@ lore.gui_spec = {
 							autoScroll: true
                         }],
                         activeTab: "drawingarea"
-                     }, {
-                        xtype: "panel",
-                        title: "Revisions",
-                        id: "revisionannotations",
-                        // html: '<div id="window-test"></div>',
-                        deferredRender: false,
-                        layout: 'column',
-                        items: [
-                        {
-                          xtype: "grid",
-                          id: "revisionannotationlisting",
-                          title: "Revisions",
-                          columnWidth: 0.20,
-                          store: revisionStore,
-                          autoExpandColumn: 'revisionName',
-                          columns: [
-                            {id: 'revisionName', sortable: false, dataIndex: 'name'},
-                          ],
-                        },
-                        {
-                          xtype: "panel",
-                          id: "revisionannotationsource",
-                          title: "Revision Source",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionSourceLabel">about:blank</div><iframe onload="console.debug(\'Source load.\');" id="revisionSourceFrame" height="350px" width="490px" src="http://www.austlit.edu.au/common/loredemo"></iframe></div>',
-                          layout: "fit",
-                          /*
-                          floating: true,
-                          draggable: lore.dragHandler,
-                          width: 500,
-                          height: 400,
-                          x: 10,
-                          y: 10,
-                          */
-                          columnWidth: .40,
-                        },
-                        {
-                          xtype: "panel",
-                          id: "revisionannotationtarget",
-                          title: "Revision Target",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="revisionTargetFrame" height="350px" width="490px" src="http://www.austlit.edu.au/common/loredemo"></iframe></div>', 
-                          layout: "fit",
-                          /*
-                          floating: true,
-                          draggable: lore.dragHandler,
-                          width: 500,
-                          height: 400,
-                          x: 800,
-                          y: 10,
-                          */
-                          columnWidth: .40,
-                        }],
-                    }],
+                    }
+					],
                     activeTab: "compoundobjecteditor"
 					
                 }
