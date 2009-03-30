@@ -287,7 +287,7 @@ function createRDF(escape) {
 		// create RDF for resources in aggregation
 		// TODO: resource properties eg dcterms:hasFormat, ore:isAggregatedBy
 		for (var mprop in fig.metadataproperties) {
-			if (mprop != 'Resource') {
+			if (mprop != 'Resource' && !mprop.match('undefined')) {
 				var mpropval = fig.metadataproperties[mprop];
 				if (mpropval && mpropval != '') {
 					resourcerdf += ltsymb + rdfdescabout + figurl + closetag
@@ -413,7 +413,11 @@ function readRDF(rdfURL) {
 					var rel = resourcerels[j].predicate;
 					var relresult = _splitTerm(rel);
 					var srcfig = lookupFigure(resourcerels[j].subject);
+					if (!srcfig) { srcfig = lookupFigure(resourcerels[j].subject.replace('%3C','<').replace('%3F','>').unescapeHTML());}
+					
 					var tgtfig = lookupFigure(resourcerels[j].object);
+					if (!tgtfig) {tgtfig = lookupFigure(resourcerels[j].object.replace('%3C','<').replace('%3F','>').unescapeHTML());}
+					
 					if (srcfig && tgtfig) {
 						var c = new oaiorebuilder.ContextmenuConnection();
 						c.setSource(srcfig.getPort("output"));
@@ -1248,7 +1252,8 @@ function createAnnotationRDF(anno)
     }
 	rdfxml += '<annotates xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' + anno.resource + '"/>';
 	// also send revised as annotates for backwards compatability with older clients
-	/*if (anno.revised){
+	/* not currently supported in danno
+	 * if (anno.revised){
 		rdfxml += '<annotates xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' + anno.revised + '"/>';	
 	}*/
 	if (anno.lang){
@@ -1341,6 +1346,7 @@ function hideMarker(){
 	if (annoMarker){
 			// hide the marker
 			annoMarker.style.display="none";
+			annoMarker.innerHTML = "";
 		}
 }
 /**
@@ -1353,19 +1359,24 @@ function hideMarker(){
 function decorate (hRange, annoID, context, color)
 {
   var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
-  var nodeToInsert;
-  if (!mainwindow.document.getElementById(annoID)) {
-    var targetNode = null;
+  var mimetype = mainwindow.document.contentType;
+  if (mimetype.match("html")){
+  	var nodeToInsert;
+  	if (!mainwindow.document.getElementById(annoID)) {
+    	var targetNode = null;
     
-    targetNode = findAnchorNode(hRange, annoID, context);
-    
-    // Visual marker is an img
-    nodeToInsert = mainwindow.document.createElementNS(XHTML_NS, "span");
-  	m_xps.markElement(nodeToInsert);
-    m_xps.markElementHide(nodeToInsert);
-    nodeToInsert.innerHTML = "<span style='color:"+ color +"'>***</span>";
+    	targetNode = findAnchorNode(hRange, annoID, context);
+    	// Visual marker is an img
+    	nodeToInsert = mainwindow.document.createElementNS(XHTML_NS, "span");
+    	var nodeAttr = mainwindow.document.createAttribute('style');
+    	nodeAttr.value = 'display:inline;color:' + color;
+    	nodeToInsert.setAttributeNode(nodeAttr);
+  		m_xps.markElement(nodeToInsert);
+    	m_xps.markElementHide(nodeToInsert);
+    	nodeToInsert.innerHTML = "***";
 
-    targetNode.appendChild(nodeToInsert);
+    	targetNode.appendChild(nodeToInsert);
+  	}
   }
   return nodeToInsert;
 }

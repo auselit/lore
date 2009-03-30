@@ -230,6 +230,15 @@ lore.gui_spec = {
                 				fieldLabel: 'Creator',
                					name: 'creator'
             				},{
+								fieldLabel: 'Revision Agent',
+								name: 'revisionagent',	
+							},{
+								fieldLabel: 'Revision Place',
+								name: 'revisionplace',	
+							},{
+								fieldLabel: 'Revision Date',
+								name: 'revisiondate',	
+							},{
                 				fieldLabel: 'Body',
 								xtype: 'htmleditor',
                 				name: 'body'
@@ -289,7 +298,8 @@ lore.gui_spec = {
                         },{
                             title: "RDF/XML",
                             xtype: "panel",
-                            id: "remrdfview"
+                            id: "remrdfview",
+							autoScroll: true
                         }],
                         activeTab: "drawingarea"
                     }
