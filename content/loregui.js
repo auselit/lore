@@ -312,17 +312,30 @@ lore.gui_spec = {
                         deferredRender: false,
                         layout: 'column',
                         items: [
-                        {
-                          xtype: "grid",
-                          id: "revisionannotationlisting",
-                          title: "Revisions",
-                          columnWidth: 0.20,
-                          store: revisionStore,
-                          autoExpandColumn: 'revisionName',
-                          columns: [
-                            {id: 'revisionName', sortable: false, dataIndex: 'name'},
-                          ],
-                        },
+											  {
+												  xtype: "panel",
+													id: "revisionsleftcolumn",
+													columnWidth: 0.20,
+													layout: 'border',
+													items: [{
+	                          xtype: "grid",
+	                          id: "revisionannotationlisting",
+	                          title: "Revisions",
+														region: 'center',
+	                          store: revisionStore,
+	                          autoExpandColumn: 'revisionName',
+	                          columns: [
+	                            {id: 'revisionName', sortable: false, dataIndex: 'name'},
+	                          ],
+	                        }, {
+                            xtype: "panel",
+                            id: "revisiondetails",
+                            region: 'south',
+                            title: "Details",
+														height: 300,
+                            html: '<div style="font-family: arial, verdana, helvetica, sans-serif; font-size: smaller;" id="revisionsdetailstext"></div>',
+                          }],
+												},
                         {
                           xtype: "panel",
                           id: "revisionannotationsource",

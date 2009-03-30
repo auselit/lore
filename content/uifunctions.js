@@ -1501,7 +1501,7 @@ function onRevisionsShow(revisionsPanel) {
   if (consoleDebug) console.debug("render!");
   var targetPanel = Ext.getCmp("revisionannotationtarget");
   var sourcePanel = Ext.getCmp("revisionannotationsource");
-  var listPanel = Ext.getCmp("revisionannotationlisting");
+  var listPanel = Ext.getCmp("revisionsleftcolumn");
   
   targetPanel.setSize(targetPanel.getSize().width, revisionsPanel.getSize().height);
   sourcePanel.setSize(sourcePanel.getSize().width, revisionsPanel.getSize().height);
@@ -1514,10 +1514,26 @@ function onRevisionsShow(revisionsPanel) {
   document.getElementById('revisionSourceFrame').style.height = sourcePanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
 }
 
-function onRevisionListingClick(listingPanel, rowIndex) {
+function onRevisionListingClick(listingPanel, rowIndex){
 	// alert (rowIndex);
-	setRevisionFrameURLs (revisionInformation[rowIndex].sourceURL, revisionInformation[rowIndex].targetURL);
-	setTimeout ('highlightRevisionFrames (' + rowIndex +')', REVISIONS_FRAME_LOAD_WAIT);
+	setRevisionFrameURLs(revisionInformation[rowIndex].sourceURL, revisionInformation[rowIndex].targetURL);
+	setTimeout('highlightRevisionFrames (' + rowIndex + ')', REVISIONS_FRAME_LOAD_WAIT);
+	
+	try {
+  	var detailsString = "";
+  	
+  	detailsString += '<span style="font-weight: bold">Creator:</span> ' + revisionInformation[rowIndex].creator + "<br />";
+  	detailsString += '<span style="font-weight: bold">Created:</span> ' + revisionInformation[rowIndex].created + "<br />";
+  	detailsString += '<span style="font-weight: bold">Agent:</span> ' + revisionInformation[rowIndex].agent + "<br />";
+  	detailsString += '<span style="font-weight: bold">Place:</span> ' + revisionInformation[rowIndex].place + "<br />";
+  	detailsString += '<span style="font-weight: bold">Date:</span> ' + revisionInformation[rowIndex].date + "<br />";
+    detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span><br/> ' + revisionInformation[rowIndex].body + "<br />";
+  	
+  	var detailsDiv = document.getElementById('revisionsdetailstext');
+  	detailsDiv.innerHTML = detailsString;
+  } catch (error) {
+		alert (error);
+	}
 }
 
 function setRevisionFrameURLs(sourceURL, targetURL) {
@@ -1618,6 +1634,12 @@ function updateRevisionAnnotationList() {
 		// dumpValues(annotabds.data.items[i].data);
 		revStoreData.push ([annotabds.data.items[i].data.title]);
 		revisionInformation.push({
+			creator: annotabds.data.items[i].data.creator,
+			modified: annotabds.data.items[i].data.modified,
+      created: annotabds.data.items[i].data.created,
+      agent: annotabds.data.items[i].data.revisionagent,
+      place: annotabds.data.items[i].data.revisionplace,
+      date: annotabds.data.items[i].data.revisiondate,
 			title: annotabds.data.items[i].data.title,
       body: annotabds.data.items[i].data.body,
       sourceURL: annotabds.data.items[i].data.original,
