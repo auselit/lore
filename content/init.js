@@ -100,7 +100,13 @@ var extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getItemLocation(extid);
 
 function init(){
-	lorevisible = false;
+	
+	var contentBox = window.parent.document.getElementById('oobContentBox');
+	if (contentBox.getAttribute("collapsed") == "true") {
+		lorevisible = false;
+	} else {
+		lorevisible = true;
+	}
 	propertytabs = Ext.getCmp("propertytabs");
 	grid = Ext.getCmp("remgrid");
 	//aggregrid = Ext.getCmp('aggregrid');
