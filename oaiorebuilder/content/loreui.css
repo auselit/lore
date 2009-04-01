@@ -161,13 +161,15 @@
 	width: 99% !important;
 }
 #remrdfview {
- 	width: 99% ! important;
  	color: #51666b;
  	font-family: "Courier New" courier monospace;
- 	font-size: smaller;
+ 	font-size: 70%;
 }
-#welcome * a, #remsmilview * a {
+#welcome * a, #remsmilview * a, #remlistview * a {
 	color: #2c5798 !important;
+}
+#welcome * a:hover, #remsmilview * a:hover, #remlistview * a:hover {
+	text-decoration: underline;
 }
 .newanno td {
 	color: red !important;
