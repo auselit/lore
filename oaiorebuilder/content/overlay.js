@@ -77,8 +77,11 @@ var oaiorebuilder = {
   	var contentBox = document.getElementById('oobContentBox');
 	if (contentBox.getAttribute("collapsed") == "true") {
 		contentBox.setAttribute("collapsed", "false");
+		window.graphiframe.loreOpen();
+		
 	} else {
 		contentBox.setAttribute("collapsed", "true");
+		window.graphiframe.loreClose();
 	}
   },
   loadRDF: function() {

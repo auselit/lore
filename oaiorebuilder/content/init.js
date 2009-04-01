@@ -18,6 +18,8 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var lorevisible;
+
 // Global variables for accessing Ext components
 var propertytabs;
 var grid;
@@ -38,6 +40,7 @@ var rdftab;
 var summarytab;
 var smiltab;
 var currentURL;
+var loadedURL;
 
 // Global variables for graphical view
 var oreGraph;
@@ -97,6 +100,7 @@ var extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getItemLocation(extid);
 
 function init(){
+	lorevisible = false;
 	propertytabs = Ext.getCmp("propertytabs");
 	grid = Ext.getCmp("remgrid");
 	//aggregrid = Ext.getCmp('aggregrid');
@@ -364,10 +368,11 @@ function init(){
  	propertytabs.activate("remgrid");
 	loreInfo("Welcome to LORE");
 	this.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
-	if(this.currentURL && this.currentURL != 'about:blank' && this.currentURL != ''){
+	if(this.currentURL && this.currentURL != 'about:blank' 
+		&& this.currentURL != '' && lorevisible){
 		updateSourceLists(this.currentURL);
 	}
-	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1><p>This page will provide basic getting started information</p>");
+	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1><p>For more information about LORE, please see the <a target='_blank' href='http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/'>Aus-e-Lit</a> project page</p>");
 	
   // 'Remind' Firefox to render the revision iframes
   // document.getElementById('revisionSourceFrame').src = document.getElementById('revisionSourceFrame').src;
