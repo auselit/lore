@@ -880,7 +880,8 @@ function updateSourceLists(contextURL) {
 
 function loreOpen(){
 	lorevisible = true;
-	if (currentURL != loadedURL) {
+	if (currentURL && currentURL != 'about:blank' && currentURL != '' && 
+			(!loadedURL || currentURL != loadedURL)) {
 		updateSourceLists(currentURL);
 		loadedURL = currentURL;
 	}
@@ -1731,7 +1732,7 @@ var revisionInformation = [];
 
 var revisionStore = new Ext.data.SimpleStore({
   fields: [
-   {name: "name"},
+   {name: "name"}
   ]
 });
 
