@@ -109,7 +109,17 @@ function getSelectionForXPath (xp)
  * Displays a list of resource URIs contained in the compound object
  */
 function showCompoundObjectSummary() {
-	var newsummary = "<div><p>List of contents:</p><ul>";
+	var remprops = grid.getSource();
+	
+	var newsummary = "<table style='font-size:smaller;border:none'>" +
+			"<tr valign='top'><td><b>Compound object:</b></td><td>" + remprops["rdf:about"] + "</td></tr>";
+	if (remprops["dc:title"]){
+		newsummary += "<tr valign='top'><td><b>Title:</b></td><td>" + remprops["dc:title"] + "</td></tr>";
+	}
+	if (remprops["dc:description"]){
+		newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='80%'>" + remprops["dc:description"] + "</td></tr></table>";
+	}
+	newsummary += "<div style='font-size:smaller;padding-top:1em'><p><b>List of contents:</b></p><ul>";
 	var allfigures = oreGraph.getDocument().getFigures();
 	for (var i = 0; i < allfigures.getSize(); i++) {
 		var fig = allfigures.get(i);
