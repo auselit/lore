@@ -166,7 +166,7 @@
  	font-family: "Courier New" courier monospace;
  	font-size: smaller;
 }
-#remsmilview * a {
+#welcome * a, #remsmilview * a {
 	color: #2c5798 !important;
 }
 .newanno td {

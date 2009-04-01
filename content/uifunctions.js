@@ -140,8 +140,10 @@ function showSMIL(){
 	var smilcontents = "<p><a href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
 	if (numfigs > 0) {
 		var smilpath = createSMIL(); // generate the new smil file into oresmil.xsl
+		//var smil2path = extension.path + "\\content\\ss_v2.html";
 		smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p>" +
-				"<a onclick='launchWindow(this.href, false);return(false);' target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a>";	
+				"<a onclick='launchWindow(this.href, false);return(false);' target='_blank' href='file://" + smilpath + "'>Click here to launch the slideshow in a new window</a><br/>";
+		//smilcontents += "<br/><a onclick='launchWindow(this.href, false);return(false);' target='_blank' href='file://" + smil2path + "'>Click here for the experimental SMIL presentation</a>";
 	} else {
 		smilcontents += "<p>Once you have added some resources to the current compound object a SMIL presentation will be available here.</p>"
 	}
@@ -869,10 +871,23 @@ function _updateCompoundObjectsSourceList(contextURL) {
  */
 function updateSourceLists(contextURL) {
 	this.currentURL = contextURL; // store the contextURL
-	_updateAnnotationsSourceList(contextURL);
-	_updateCompoundObjectsSourceList(contextURL);
+	if (lorevisible) {
+		_updateAnnotationsSourceList(contextURL);
+		_updateCompoundObjectsSourceList(contextURL);
+		loadedURL = contextURL;
+	}
 }
 
+function loreOpen(){
+	lorevisible = true;
+	if (currentURL != loadedURL) {
+		updateSourceLists(currentURL);
+		loadedURL = currentURL;
+	}
+}
+function loreClose(){
+	lorevisible = false;
+}
 /* Graph related functions */
 /**
  * Updates global variables used for figure layout
