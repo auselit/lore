@@ -75,12 +75,15 @@ var oaiorebuilder = {
   },
   toggleBar: function () {
   	var contentBox = document.getElementById('oobContentBox');
+		var contentSplitter = document.getElementById('oobContentSplitter');
 	if (contentBox.getAttribute("collapsed") == "true") {
 		contentBox.setAttribute("collapsed", "false");
+		contentSplitter.setAttribute("collapsed", "false");
 		window.graphiframe.loreOpen();
 		
 	} else {
 		contentBox.setAttribute("collapsed", "true");
+		contentSplitter.setAttribute("collapsed", "true");
 		window.graphiframe.loreClose();
 	}
   },

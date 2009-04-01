@@ -1567,6 +1567,23 @@ function onRevisionListingClick(listingPanel, rowIndex){
 	}
 }
 
+/**
+ * Removes DOM node, but preserves its children by attaching them to the node's 
+ * parent instead.
+ * 
+ * Taken from code snippet on http://stackoverflow.com/questions/170004/how-to-remove-only-the-parent-element-and-not-its-child-elements-in-javascript .
+ * 
+ * @param DOMNode nodeToRemove
+ */
+function removeNodePreserveChildren(nodeToRemove) {
+  var fragment = document.createDocumentFragment();
+  while(nodeToRemove.firstChild) {
+    fragment.appendChild(nodeToRemove.firstChild);
+  }
+  nodeToRemove.parentNode.insertBefore(fragment, nodeToRemove);
+  nodeToRemove.parentNode.removeChild(nodeToRemove);
+}
+
 function setRevisionFrameURLs(sourceURL, targetURL) {
   var sourceFrame = document.getElementById("revisionSourceFrame");
   var targetFrame = document.getElementById("revisionTargetFrame");
