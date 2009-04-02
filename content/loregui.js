@@ -151,7 +151,7 @@ lore.gui_spec = {
             				xtype: 'fieldset',
 							autoScroll: true,
 							id: 'annotationsform',
-            				labelWidth: 75,
+            				labelWidth: 100,
             				title:'Annotation details:',
 							defaultType: 'textfield',
 							border: false,
@@ -175,7 +175,7 @@ lore.gui_spec = {
 								readOnly: true,
 								style: 'background:none;border:none'
 							},{
-								fieldLabel: 'Original',
+								fieldLabel: 'Original resource',
 								name: 'original',
 								id: 'originalfield',
 								readOnly: true,
@@ -183,7 +183,19 @@ lore.gui_spec = {
 								//hidden: true,
 								//hideLabel: true
 							},{
-								fieldLabel: 'Revised',
+								fieldLabel: 'Original Context Xpointer',
+								name: 'originalcontext',
+								readOnly: true,
+								style: 'background:none;border:none',
+								hidden: true,
+								hideLabel: true
+							},{
+								fieldLabel: 'Original selection',
+								name: 'ocontextdisp',
+								readOnly: true,
+								style: 'background:none;border:none'
+							},{
+								fieldLabel: 'Revised resource',
 								name: 'revised',
 								id: 'revisedfield',
 								readOnly: true,
@@ -191,19 +203,17 @@ lore.gui_spec = {
 								//hidden: true,
 								//hideLabel: true
 							},{
-								fieldLabel: 'Original Context',
-								name: 'originalcontext',
-								readOnly: true,
-								style: 'background:none;border:none',
-								//hidden: true,
-								//hideLabel: true
-							},{
-								fieldLabel: 'Revised Context',
+								fieldLabel: 'Revised Context Xpointer',
 								name: 'revisedcontext',
 								readOnly: true,
 								style: 'background:none;border:none',
-								//hidden: true,
-								//hideLabel: true
+								hidden: true,
+								hideLabel: true
+							},{
+								fieldLabel: 'Revised selection',
+								name: 'rcontextdisp',
+								readOnly: true,
+								style: 'background:none;border:none'
 							},
 							{
 								xtype: "combo",
@@ -258,7 +268,7 @@ lore.gui_spec = {
         					}, {
 								text: 'Delete Annotation',
 								id: 'delannobtn',
-								tooltip: 'Delete teh annotation from the repository - CANNOT BE UNDONE!'
+								tooltip: 'Delete the annotation from the repository - CANNOT BE UNDONE!'
 							},{
             					text: 'Cancel',
 								id: 'cancelupdbtn'
