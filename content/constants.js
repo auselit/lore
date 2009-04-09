@@ -75,3 +75,6 @@ var METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
 		"dc:format", "dcterms:hasFormat", "dc:identifier", "dc:language",
 		"dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
 		"dc:subject", "dc:title"];	
+
+var OPENCALAIS_KEY = "ab3yxw3ab4b2fyexwg44amns";
+var POWEREDBY_CALAIS = "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/Calais_icon.jpg'> Powered by Calais</a>";
