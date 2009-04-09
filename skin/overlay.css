@@ -60,4 +60,6 @@
 #load-rdf{
 	list-style-image: url(chrome://oaiorebuilder/skin/icons/page_go.png);
 }
-
+#text-mining {
+	list-style-image: url(chrome://oaiorebuilder/skin/icons/Calais_icon.jpg);
+}

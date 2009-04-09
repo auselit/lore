@@ -16,3 +16,4 @@
 <!ENTITY oaiorebuilder.saveRDFTip "Save the compound object to the RDF repository">
 <!ENTITY oaiorebuilder.addAnnotationLabel "Add annotation">
 <!ENTITY oaiorebuilder.addAnnotationTip "Add annotation on the current page">
+<!ENTITY oaiorebuilder.textMiningTip "Highlight people and places on the current page using Calais">
