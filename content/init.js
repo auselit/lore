@@ -39,7 +39,10 @@ var compoundobjecttab;
 var rdftab;
 var summarytab;
 var smiltab;
+var textminingtab;
 
+var annotimeline;
+var annoEventSource;
 
 // Global variables for graphical view
 var oreGraph;
@@ -135,6 +138,7 @@ function setUpMetadataMenu(the_grid, gridname){
  * Initialise the graphical view
  */
 function initGraphicalView(){
+	compoundobjecttab.activate("drawingarea");	
 	oreGraphLookup = {};
 	oreGraphModified = false;
 	if (oreGraph){
@@ -151,7 +155,8 @@ function initGraphicalView(){
 	oreGraph.getCommandStack().addCommandStackEventListener(oreGraphCommandListener);
 	selectedFigure = null;
 	dummylayoutx = NODE_SPACING;
-	dummylayouty = NODE_SPACING;	
+	dummylayouty = NODE_SPACING;
+
 }
 /**
  * Load domain ontology
@@ -212,7 +217,7 @@ function initExtComponents(){
 	summarytab = Ext.getCmp("remlistview");
 	smiltab = Ext.getCmp("remsmilview");
 	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
-	
+	textminingtab = Ext.getCmp("textmining");
 	// set up the sources tree
 	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	_clearTree(sourcestreeroot);
@@ -275,6 +280,36 @@ function initExtComponents(){
 		+ "<a target='_blank' href='http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/'>"
 		+ "Aus-e-Lit</a> project page</p>");
 }
+
+/**
+ * Create a Timeline visualisation
+ */
+function initTimeline(){
+	var tl = Ext.getCmp("annotimeline");
+	if (typeof Timeline !== "undefined") {
+		annoEventSource = new Timeline.DefaultEventSource();
+		var bandConfig = [Timeline.createBandInfo({
+			eventSource: annoEventSource,
+			width: "80%",
+			intervalUnit: Timeline.DateTime.MONTH,
+			intervalPixels: 100,
+			timeZone: 10
+		}), Timeline.createBandInfo({
+			eventSource: annoEventSource,
+			width: "20%",
+			intervalUnit: Timeline.DateTime.YEAR,
+			intervalPixels: 200,
+			timeZone: 10
+		})];
+		bandConfig[1].syncWith = 0;
+        bandConfig[1].highlight = true;
+		annotimeline = Timeline.create(document.getElementById("annotimeline"),bandConfig);
+		tl.on("resize", function(){annotimeline.layout();});
+		
+	}
+	
+}
+
 /**
  * Initialise LORE
  */
@@ -292,12 +327,15 @@ function init(){
 	initExtComponents();
 	initProperties();
 	initOntologies();
+	initTimeline();
 	initGraphicalView();
+	
 	loreInfo("Welcome to LORE");
 	if(currentURL && currentURL != 'about:blank' 
 		&& currentURL != '' && lorevisible){
 		updateSourceLists(currentURL);
 	}
+	//requestOpenCalaisMetadata();
 }
 
 Ext.EventManager.onDocumentReady(init);

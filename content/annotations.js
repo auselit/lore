@@ -356,6 +356,7 @@ function updateRevisionAnnotationList() {
 		// dumpValues(annotabds.data.items[i].data);
 		revStoreData.push ([annotabds.data.items[i].data.title]);
 		revisionInformation.push({
+			id: annotabds.data.items[i].data.id,
 			creator: annotabds.data.items[i].data.creator,
 			modified: annotabds.data.items[i].data.modified,
       created: annotabds.data.items[i].data.created,
@@ -384,12 +385,16 @@ function onRevisionsShow(revisionsPanel) {
   targetPanel.setSize(targetPanel.getSize().width, revisionsPanel.getSize().height);
   sourcePanel.setSize(sourcePanel.getSize().width, revisionsPanel.getSize().height);
   listPanel.setSize(listPanel.getSize().width, revisionsPanel.getSize().height);
-  
-  document.getElementById('revisionTargetFrame').style.width = targetPanel.getSize().width - FRAME_WIDTH_CLEARANCE;
-  document.getElementById('revisionTargetFrame').style.height = targetPanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
-  
-  document.getElementById('revisionSourceFrame').style.width = sourcePanel.getSize().width - FRAME_WIDTH_CLEARANCE;
-  document.getElementById('revisionSourceFrame').style.height = sourcePanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
+  var theFrame = document.getElementById('revisionTargetFrame');
+  theFrame.style.border = "none";
+  theFrame.style.borderTop = "2px solid #eeeeee";
+  theFrame.style.width = targetPanel.getSize().width - FRAME_WIDTH_CLEARANCE;
+  theFrame.style.height = targetPanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
+  theFrame = document.getElementById('revisionSourceFrame');
+  theFrame.style.border = "none";
+  theFrame.style.borderTop = "2px solid #eeeeee";
+  theFrame.style.width = sourcePanel.getSize().width - FRAME_WIDTH_CLEARANCE;
+  theFrame.style.height = sourcePanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
 }
 
 function highlightRevisionFrames(revisionNumber) {
@@ -663,7 +668,7 @@ function handleUpdateAnnotationRevisedContext(btn, e){
 
 function handleAnnotationTypeChange(combo){
 		var theVal = combo.getValue();
-			if (theVal == 'Revision') {
+			if (theVal == 'Variation') {
 				setRevisionFormUI(true);
 			}
 			else if (theVal == 'Comment'  || theVal =='Explanation'){
@@ -786,12 +791,32 @@ function _updateAnnotationsSourceList(contextURL) {
 							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
 								var annoID = annotations[i].id;
+								var annoType = annotations[i].type;
 								/*var xmldoc2 = getAnnotationsRDF(annoID, true);
         						var replyList = xmldoc2.getElementsByTagNameNS(RDF_SYNTAX_NS, 'Description');*/
 								var title = annotations[i].title;
 								if (!title || title == ''){
 									title = "Untitled";
 								}
+								if (annoEventSource){
+									
+    								var dateEvent = new Date();
+    								
+    								var evt = new Timeline.DefaultEventSource.Event(
+         dateEvent, //start
+         dateEvent, //end
+         dateEvent, //latestStart
+         dateEvent, //earliestEnd
+         true, //instant
+         "Event " + i, //text
+         "Description for Event " + i //description
+      );
+    									
+    									//annotations[i].body + " (" + annotations[i].creator + ")");
+    								
+    								annoEventSource.add(evt);
+    								//alert(evt.getText());
+    							}
 								//var isLeaf = (replyList.length == 0);
 								var isLeaf = true;
 								var tmpNode = new Ext.tree.TreeNode({
@@ -811,8 +836,10 @@ function _updateAnnotationsSourceList(contextURL) {
           							}
         						}*/
 								annotationstreeroot.appendChild(tmpNode);
+								
 								tmpNode.on('dblclick', function(node) {
-									loreviews.activate("annotationslistform");
+									loreviews.activate("annotationstab");
+									Ext.getCmp("annotationstab").activate("annotationslistform");
 									var annoIndex = annotabds.findBy(function(record, id){
 										return (node.id == record.json.id);
 									});
@@ -832,9 +859,19 @@ function _updateAnnotationsSourceList(contextURL) {
 								tmpNode.contextmenu.add({
 									text : "Update annotation",
 									handler : function (evt){
-											loreviews.activate("annotationslistform");
+											loreviews.activate("annotationstab");
+											Ext.getCmp("annotationstab").activate("annotationslistform");
 											annotabsm.selectRow(node.attributes.rowIndex);
 								}});
+								if (annoType == REVISION_ANNOTATION_NS + "RevisionAnnotation"){
+									tmpNode.contextmenu.add({
+									text : "Show in Variations View",
+									handler : function (evt){
+											loreviews.activate("annotationstab");
+											Ext.getCmp("annotationstab").activate("revisionannotations");
+											// TODO: make it easier to select the annotation in the revisions listing
+									}});
+								}
     							tmpNode.contextmenu.showAt(e.xy);
     							
 							});	

@@ -42,6 +42,9 @@ var oaiorebuilder = {
     	this.oldURL = aURI.spec;
   	}
   },
+  doTextMining: function() {
+  	window.graphiframe.requestOpenCalaisMetadata();
+  },
   showContextMenu1: function(event) {
     document.getElementById("context-oaiorebuilder").hidden = gContextMenu.onImage;
   },

@@ -144,7 +144,7 @@
 	top: 0;
 	left: 0;
 }
-#welcome, #remlistview, #remsmilview {
+#welcome, #remlistview, #remsmilview, #textmining {
 	padding: 20px;
 }
 #welcome * ul li, #remlistview * ul li {
@@ -165,12 +165,22 @@
  	font-family: "Courier New" courier monospace;
  	font-size: 70%;
 }
-#welcome * a, #remsmilview * a, #remlistview * a {
+#welcome * a, #remsmilview * a, #remlistview * a, #textmining * a {
 	color: #2c5798 !important;
+}
+#textmining * a {
+	font-size:smaller;
 }
 #welcome * a:hover, #remsmilview * a:hover, #remlistview * a:hover {
 	text-decoration: underline;
 }
 .newanno td {
 	color: red !important;
+}
+#annotimeline{
+	height:100%;
+	width:100%;
+}
+.timeline-copyright {
+	display:none;
 }

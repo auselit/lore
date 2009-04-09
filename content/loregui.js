@@ -46,251 +46,325 @@ lore.gui_spec = {
                         iconCls: "welcome-icon"
                     
                     }, {
-						xtype: "form",
-						id: "annotationslistform",
-						title: "Annotations", 
-						layout: 'border',
+						xtype: "tabpanel",
+						title: "Annotations",
+						id: "annotationstab",
+						deferredRender: false,
+						activeTab: "annotationslistform",
 						items: [{
-							region: "north",
-							split:true,
-                        	id: "annotationslist",
-                        	xtype: "grid",
-                        	autoWidth: true,
-							autoScroll: true,
-                        	stripeRows: true,
-                        	view: new Ext.grid.GridView({
+							xtype: "form",
+							id: "annotationslistform",
+							title: "Annotation List",
+							layout: 'border',
+							items: [{
+								region: "north",
+								split: true,
+								id: "annotationslist",
+								xtype: "grid",
+								autoWidth: true,
+								autoScroll: true,
+								stripeRows: true,
+								view: new Ext.grid.GridView({
 									forceFit: true,
 									getRowClass: function(rec){
 										if (!rec.data.id) {
 											return "newanno";
 										}
 									}
-							}),	
-                        	ds: new Ext.data.JsonStore({
-                           		fields: [{
-                                	name: 'created'
-                            	}, {
-                                	name: 'creator'
-                            	}, {
-                                	name: 'title'
-                            	}, {
+								}),
+								ds: new Ext.data.JsonStore({
+									fields: [{
+										name: 'created'
+									}, {
+										name: 'creator'
+									}, {
+										name: 'title'
+									}, {
+										name: 'body'
+									}, {
+										name: 'modified'
+									}, {
+										name: 'type'
+									}, {
+										name: 'lang'
+									}, {
+										name: 'resource'
+									}, {
+										name: 'id'
+									}, {
+										name: 'context'
+									}, {
+										name: 'isReply'
+									}, {
+										name: 'bodyURL'
+									}, {
+										name: 'about'
+									}, {
+										name: 'original'
+									}, {
+										name: 'revised'
+									}, {
+										name: 'originalcontext'
+									}, {
+										name: 'revisedcontext'
+									}, {
+										name: 'revisionagent'
+									}, {
+										name: 'revisionplace'
+									}, {
+										name: 'revisiondate'
+									}],
+									data: {}
+								}),
+								cm: new Ext.grid.ColumnModel([{
+									header: 'Date created',
+									sortable: true,
+									dataIndex: 'created'
+								}, {
+									header: 'Creator',
+									sortable: true,
+									dataIndex: 'creator'
+								
+								}, {
+									header: 'Title',
+									sortable: true,
+									dataIndex: 'title'
+								}, {
+									header: 'Body',
+									dataIndex: 'body',
+									hidden: false
+								}, {
+									header: 'Date Modified',
+									dataIndex: 'modified',
+									hidden: true
+								}, {
+									header: 'Type',
+									dataIndex: 'type',
+									hidden: true
+								}, {
+									header: 'Lang',
+									dataIndex: 'lang',
+									hidden: true,
+									width: 40
+								
+								}]),
+								sm: new Ext.grid.RowSelectionModel({
+									singleSelect: true
+								})
+							}, {
+								region: "center",
+								xtype: 'fieldset',
+								autoScroll: true,
+								id: 'annotationsform',
+								labelWidth: 100,
+								title: 'Annotation details:',
+								defaultType: 'textfield',
+								border: false,
+								labelAlign: 'right',
+								buttonAlign: 'left',
+								style: 'margin-left:10px;margin-top:10px;',
+								defaults: {
+									width: 600
+								},
+								items: [{
+									fieldLabel: 'ID',
+									name: 'id',
+									hidden: true,
+									hideLabel: true
+								}, {
+									fieldLabel: 'Annotates',
+									name: 'resource',
+									readOnly: true,
+									style: 'background:none;border:none'
+								}, {
+									fieldLabel: 'Context',
+									name: 'context',
+									readOnly: true,
+									style: 'background:none;border:none'
+								}, {
+									fieldLabel: 'Original resource',
+									name: 'original',
+									id: 'originalfield',
+									readOnly: true,
+									style: 'background:none;border:none',
+								//hidden: true,
+								//hideLabel: true
+								}, {
+									fieldLabel: 'Original Context Xpointer',
+									name: 'originalcontext',
+									readOnly: true,
+									style: 'background:none;border:none',
+									hidden: true,
+									hideLabel: true
+								}, {
+									fieldLabel: 'Original selection',
+									name: 'ocontextdisp',
+									readOnly: true,
+									style: 'background:none;border:none'
+								}, {
+									fieldLabel: 'Revised resource',
+									name: 'revised',
+									id: 'revisedfield',
+									readOnly: true,
+									style: 'background:none;border:none',
+								//hidden: true,
+								//hideLabel: true
+								}, {
+									fieldLabel: 'Revised Context Xpointer',
+									name: 'revisedcontext',
+									readOnly: true,
+									style: 'background:none;border:none',
+									hidden: true,
+									hideLabel: true
+								}, {
+									fieldLabel: 'Revised selection',
+									name: 'rcontextdisp',
+									readOnly: true,
+									style: 'background:none;border:none'
+								}, {
+									xtype: "combo",
+									id: "typecombo",
+									fieldLabel: 'Type',
+									name: 'type',
+									hiddenName: 'type',
+									store: new Ext.data.SimpleStore({
+										fields: ['typename', 'qtype'],
+										data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"], ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#RevisionAnnotation"]]
+									}),
+									valueField: 'qtype',
+									displayField: 'typename',
+									typeAhead: true,
+									mode: 'local',
+									selectOnFocus: true
+								}, {
+									fieldLabel: 'Title',
+									name: 'title'
+								}, {
+									fieldLabel: 'Creator',
+									name: 'creator'
+								}, {
+									fieldLabel: 'Variation Agent',
+									name: 'revisionagent',
+								}, {
+									fieldLabel: 'Variation Place',
+									name: 'revisionplace',
+								}, {
+									fieldLabel: 'Variation Date',
+									name: 'revisiondate',
+								}, {
+									fieldLabel: 'Body',
+									xtype: 'htmleditor',
 									name: 'body'
-								}, {
-                                	name: 'modified'
-                            	}, {
-                                	name: 'type'
-                            	}, {
-                                	name: 'lang'
-                            	}, {
-									name: 'resource'
-								}, { 
-									name: 'id'
-								}, {
-									name: 'context'
-								}, {
-									name :'isReply'
-								}, {
-									name: 'bodyURL'
-								}, {
-									name: 'about'
-								}, {
-									name: 'original'
-								}, {
-									name: 'revised'
-								}, {
-									name: 'originalcontext'
-								}, {
-									name: 'revisedcontext'
-								}, {
-									name: 'revisionagent'
-								}, {
-									name: 'revisionplace'
-								},{
-									name: 'revisiondate'
-								} 
+								
+								
+								}			/*,{
+			 //xtype: 'datefield',
+			 fieldLabel: 'Created',
+			 name: 'created'
+			 }*/
 								],
-                            	data: {}
-                        	}),
-                        	cm: new Ext.grid.ColumnModel([{
-                            	header: 'Date created',
-                            	sortable: true,
-                            	dataIndex: 'created'
-                        	}, {
-                            	header: 'Creator',
-                            	sortable: true,
-                            	dataIndex: 'creator'
-								
-                        	}, {
-                           		header: 'Title',
-                            	sortable: true,
-                            	dataIndex: 'title'
-                        	}, {
-								header: 'Body',
-								dataIndex: 'body',
-								hidden: false
-							}, {
-                            	header: 'Date Modified',
-                            	dataIndex: 'modified',
-                            	hidden: true
-                        	}, {
-                            	header: 'Type',
-                            	dataIndex: 'type',
-                            	hidden: true
-                        	}, {
-                            	header: 'Lang',
-                            	dataIndex: 'lang',
-                            	hidden: true,
-								width: 40
-								
-                        	}]),
-							sm: new Ext.grid.RowSelectionModel({
-	                			singleSelect: true	
-	            			})
-                    	}, {
-							region : "center",
-            				xtype: 'fieldset',
-							autoScroll: true,
-							id: 'annotationsform',
-            				labelWidth: 100,
-            				title:'Annotation details:',
-							defaultType: 'textfield',
-							border: false,
-							labelAlign: 'right',
-							buttonAlign: 'left',
-							style: 'margin-left:10px;margin-top:10px;',
-							defaults: {width: 600},
-							items: [{
-								fieldLabel: 'ID',
-								name: 'id', 
-								hidden: true,
-								hideLabel: true
-							},{
-								fieldLabel: 'Annotates',
-								name: 'resource', 
-								readOnly: true, 
-								style: 'background:none;border:none'
-							},{
-								fieldLabel: 'Context',
-								name: 'context',
-								readOnly: true,
-								style: 'background:none;border:none'
-							},{
-								fieldLabel: 'Original resource',
-								name: 'original',
-								id: 'originalfield',
-								readOnly: true,
-								style: 'background:none;border:none',
-								//hidden: true,
-								//hideLabel: true
-							},{
-								fieldLabel: 'Original Context Xpointer',
-								name: 'originalcontext',
-								readOnly: true,
-								style: 'background:none;border:none',
-								hidden: true,
-								hideLabel: true
-							},{
-								fieldLabel: 'Original selection',
-								name: 'ocontextdisp',
-								readOnly: true,
-								style: 'background:none;border:none'
-							},{
-								fieldLabel: 'Revised resource',
-								name: 'revised',
-								id: 'revisedfield',
-								readOnly: true,
-								style: 'background:none;border:none',
-								//hidden: true,
-								//hideLabel: true
-							},{
-								fieldLabel: 'Revised Context Xpointer',
-								name: 'revisedcontext',
-								readOnly: true,
-								style: 'background:none;border:none',
-								hidden: true,
-								hideLabel: true
-							},{
-								fieldLabel: 'Revised selection',
-								name: 'rcontextdisp',
-								readOnly: true,
-								style: 'background:none;border:none'
-							},
-							{
-								xtype: "combo",
-								id: "typecombo",
-								fieldLabel: 'Type',
-								name: 'type',
-                        		hiddenName:'type',
-                       			store: new Ext.data.SimpleStore({
-                           		 	fields: ['typename', 'qtype'],
-                            		data : [
-       									 ['Comment',"http://www.w3.org/2000/10/annotationType#Comment"],
-										 ['Explanation',"http://www.w3.org/2000/10/annotationType#Explanation"],
-										 ['Revision',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#RevisionAnnotation"]
-									]
-                        		}),
-                        		valueField:'qtype',
-                        		displayField:'typename',
-                        		typeAhead: true,
-								mode: 'local',
-								selectOnFocus: true                        		
-							},
-							{
-                				fieldLabel: 'Title',
-                				name: 'title'
-            				},{
-                				fieldLabel: 'Creator',
-               					name: 'creator'
-            				},{
-								fieldLabel: 'Revision Agent',
-								name: 'revisionagent',	
-							},{
-								fieldLabel: 'Revision Place',
-								name: 'revisionplace',	
-							},{
-								fieldLabel: 'Revision Date',
-								name: 'revisiondate',	
-							},{
-                				fieldLabel: 'Body',
-								xtype: 'htmleditor',
-                				name: 'body'
-								
-								
-            				}/*,{
-                				//xtype: 'datefield',
-                				fieldLabel: 'Created',
-                				name: 'created'
-            				}*/],
-							buttons: [{
-           						text: 'Save Annotation',
-								id: 'updannobtn',
-								tooltip: 'Save the annotation to the repository'
-        					}, {
-								text: 'Delete Annotation',
-								id: 'delannobtn',
-								tooltip: 'Delete the annotation from the repository - CANNOT BE UNDONE!'
-							},{
-            					text: 'Cancel',
-								id: 'cancelupdbtn'
-        					},{
-								text: 'Update context',
-								id: 'updctxtbtn',
-								tooltip: 'Update the (original) context from the current selection in the main browser window'
-							}, {
-								text: 'Update revised context',
-								id: 'updrctxtbtn',
-								tooltip: 'Update the revised context from the current selection in the main browser window'
-							}
-							]
-						}]
+								buttons: [{
+									text: 'Save Annotation',
+									id: 'updannobtn',
+									tooltip: 'Save the annotation to the repository'
+								}, {
+									text: 'Delete Annotation',
+									id: 'delannobtn',
+									tooltip: 'Delete the annotation from the repository - CANNOT BE UNDONE!'
+								}, {
+									text: 'Cancel',
+									id: 'cancelupdbtn'
+								}, {
+									text: 'Update context',
+									id: 'updctxtbtn',
+									tooltip: 'Update the (original) context from the current selection in the main browser window'
+								}, {
+									text: 'Update revised context',
+									id: 'updrctxtbtn',
+									tooltip: 'Update the revised context from the current selection in the main browser window'
+								}]
+							}]
+						}, {
+                        xtype: "panel",
+                        title: "Variations",
+                        id: "revisionannotations",
+                        // html: '<div id="window-test"></div>',
+                        deferredRender: false,
+                        layout: 'column',
+                        items: [
+											  {
+												  xtype: "panel",
+													id: "revisionsleftcolumn",
+													columnWidth: 0.20,
+													layout: 'border',
+													items: [{
+	                          xtype: "grid",
+	                          id: "revisionannotationlisting",
+	                          title: "Variation Annotations",
+														region: 'center',
+														split: true,
+	                          store: revisionStore,
+	                          autoExpandColumn: 'revisionName',
+	                          columns: [
+	                            {id: 'revisionName', sortable: false, dataIndex: 'name'},
+	                          ],
+	                        }, {
+                            xtype: "panel",
+                            id: "revisiondetails",
+							split: true,
+                            region: 'south',
+                            title: "Details",
+							height: 200,
+                            html: '<div style="font-family: arial, verdana, helvetica, sans-serif; font-size: smaller;" id="revisionsdetailstext"></div>',
+                          }],
+												},
+                        {
+                          xtype: "panel",
+                          id: "revisionannotationsource",
+                          title: "Original Resource",
+                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionSourceLabel">about:blank</div><iframe onload="console.debug(\'Source load.\');" id="revisionSourceFrame" height="350px" width="490px" src="about:blank"></iframe></div>',
+                          layout: "fit",
+						  autoScroll: true,
+                          /*
+                          floating: true,
+                          draggable: lore.dragHandler,
+                          width: 500,
+                          height: 400,
+                          x: 10,
+                          y: 10,
+                          */
+                          columnWidth: .40,
+                        },
+                        {
+                          xtype: "panel",
+                          id: "revisionannotationtarget",
+                          title: "Variant Resource",
+                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="revisionTargetFrame" height="350px" width="490px" src="about:blank"></iframe></div>', 
+                          layout: "fit",
+						  autoScroll: true,
+                          /*
+                          floating: true,
+                          draggable: lore.dragHandler,
+                          width: 500,
+                          height: 400,
+                          x: 800,
+                          y: 10,
+                          */
+                          columnWidth: .40,
+                        }],
                     }, {
+							title: "Annotation Timeline",
+							xtype: "panel",
+							id: "annotimeline"
+						}]
+					}, {
                         xtype: "tabpanel",
-                        title: "Compound Object Editor",
+                        title: "Compound Object",
                         id: "compoundobjecteditor",
 						deferredRender: false,
                         autoScroll: true,
                         items: [{
-                            title: "Graph",
+                            title: "Graph Editor",
                             xtype: "panel",
                             id: "drawingarea",
                             autoWidth: true
@@ -311,76 +385,18 @@ lore.gui_spec = {
                             title: "RDF/XML",
                             xtype: "panel",
                             id: "remrdfview",
-							autoScroll: true
+							autoScroll: true,
+							closable: true
                         }],
                         activeTab: "drawingarea"
                      }, {
-                        xtype: "panel",
-                        title: "Revisions",
-                        id: "revisionannotations",
-                        // html: '<div id="window-test"></div>',
-                        deferredRender: false,
-                        layout: 'column',
-                        items: [
-											  {
-												  xtype: "panel",
-													id: "revisionsleftcolumn",
-													columnWidth: 0.20,
-													layout: 'border',
-													items: [{
-	                          xtype: "grid",
-	                          id: "revisionannotationlisting",
-	                          title: "Revisions",
-														region: 'center',
-														split: true,
-	                          store: revisionStore,
-	                          autoExpandColumn: 'revisionName',
-	                          columns: [
-	                            {id: 'revisionName', sortable: false, dataIndex: 'name'},
-	                          ],
-	                        }, {
-                            xtype: "panel",
-                            id: "revisiondetails",
-														split: true,
-                            region: 'south',
-                            title: "Details",
-														height: 300,
-                            html: '<div style="font-family: arial, verdana, helvetica, sans-serif; font-size: smaller;" id="revisionsdetailstext"></div>',
-                          }],
-												},
-                        {
-                          xtype: "panel",
-                          id: "revisionannotationsource",
-                          title: "Revision Source",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionSourceLabel">about:blank</div><iframe onload="console.debug(\'Source load.\');" id="revisionSourceFrame" height="350px" width="490px" src="http://www.austlit.edu.au/common/loredemo"></iframe></div>',
-                          layout: "fit",
-                          /*
-                          floating: true,
-                          draggable: lore.dragHandler,
-                          width: 500,
-                          height: 400,
-                          x: 10,
-                          y: 10,
-                          */
-                          columnWidth: .40,
-                        },
-                        {
-                          xtype: "panel",
-                          id: "revisionannotationtarget",
-                          title: "Revision Target",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="revisionTargetFrame" height="350px" width="490px" src="http://www.austlit.edu.au/common/loredemo"></iframe></div>', 
-                          layout: "fit",
-                          /*
-                          floating: true,
-                          draggable: lore.dragHandler,
-                          width: 500,
-                          height: 400,
-                          x: 800,
-                          y: 10,
-                          */
-                          columnWidth: .40,
-                        }],
-                    }],
+					
+					title: "Text mining",
+					id: "textmining",
+					closable: true,
+					autoWidth: true,
+					autoScroll:true
+				}],
                     activeTab: "compoundobjecteditor"
 					
                 }
