@@ -24,14 +24,17 @@
           </xul:toolbarbutton>
 
           <xul:toolbarseparator />
-
+          <xul:toolbarbutton id="add-annotation" tooltiptext="&oaiorebuilder.addAnnotationTip;"  oncommand="oaiorebuilder.addAnnotation();"/>
+          <xul:toolbarseparator />
           <xul:toolbarbutton id="add-node" tooltiptext="&oaiorebuilder.addNodeTip;"  oncommand="oaiorebuilder.addGraphNode();"/><!-- label="&oaiorebuilder.addNodeLabel;"-->
           <xul:toolbarbutton id="load-rdf" tooltiptext="&oaiorebuilder.loadRDFTip;"  oncommand="oaiorebuilder.loadRDF();"/><!-- label="&oaiorebuilder.loadRDFLabel;"-->
           <xul:toolbarbutton id="load-rdf-repos" tooltiptext="&oaiorebuilder.loadRDFFromReposTip;"  oncommand="oaiorebuilder.loadRDFFromRepos();"/><!--label="&oaiorebuilder.loadRDFFromReposLabel;"-->
           <xul:toolbarbutton id="save-rdf" tooltiptext="&oaiorebuilder.saveRDFTip;"  oncommand="oaiorebuilder.saveRDF();"/><!-- label="&oaiorebuilder.saveRDFLabel;"-->
           <xul:toolbarbutton id="reset-graph" tooltiptext="&oaiorebuilder.resetGraphTip;"  oncommand="oaiorebuilder.resetGraph();"/><!-- label="&oaiorebuilder.resetGraphLabel;"-->
           <xul:toolbarseparator />
-          <xul:toolbarbutton id="add-annotation" tooltiptext="&oaiorebuilder.addAnnotationTip;"  oncommand="oaiorebuilder.addAnnotation();"/>
+
+          <xul:toolbarbutton id="text-mining" tooltiptext="&oaiorebuilder.textMiningTip;"  oncommand="oaiorebuilder.doTextMining();"/>
+          
           <!--<xul:toolbarbutton id="pop-out" label="Pop out" oncommand="oaiorebuilder.popOutWindow();"/>-->
 
         </xul:toolbar>
