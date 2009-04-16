@@ -358,7 +358,7 @@ lore.gui_spec = {
 							id: "annotimeline"
 						}]
 					}, {
-                        xtype: "tabpanel",
+                        xtype: "ddtabpanel",
                         title: "Compound Object",
                         id: "compoundobjecteditor",
 						deferredRender: false,
@@ -381,12 +381,6 @@ lore.gui_spec = {
                             id: "remsmilview"
 
                         
-                        },{
-                            title: "RDF/XML",
-                            xtype: "panel",
-                            id: "remrdfview",
-							autoScroll: true,
-							closable: true
                         }],
                         activeTab: "drawingarea"
                      }, {
