@@ -846,33 +846,37 @@ function _updateAnnotationsSourceList(contextURL) {
 									annotabsm.selectRow(annoIndex);
 								});
 								tmpNode.on('contextmenu', function(node,e){
-									tmpNode.contextmenu = new Ext.menu.Menu({
-		        					id : node.id + "-context-menu"
-								});
-								tmpNode.contextmenu.add({
-									text : "Add to compound object",
-									handler : function(evt){
-										addFigure(node.id);
+									if (!node.contextmenu){
+										node.contextmenu = new Ext.menu.Menu({
+											id: node.id + "-context-menu"
+										});
+										node.contextmenu.add({
+											text: "Add to compound object",
+											handler: function(evt){
+												addFigure(node.id);
+											}
+										});
+										
+										node.contextmenu.add({
+											text: "Update annotation",
+											handler: function(evt){
+												loreviews.activate("annotationstab");
+												Ext.getCmp("annotationstab").activate("annotationslistform");
+												annotabsm.selectRow(node.attributes.rowIndex);
+											}
+										});
+										if (annoType == REVISION_ANNOTATION_NS + "RevisionAnnotation") {
+											node.contextmenu.add({
+												text: "Show in Variations View",
+												handler: function(evt){
+													loreviews.activate("annotationstab");
+													Ext.getCmp("annotationstab").activate("revisionannotations");
+												// TODO: make it easier to select the annotation in the revisions listing
+												}
+											});
+										}
 									}
-								});
-								
-								tmpNode.contextmenu.add({
-									text : "Update annotation",
-									handler : function (evt){
-											loreviews.activate("annotationstab");
-											Ext.getCmp("annotationstab").activate("annotationslistform");
-											annotabsm.selectRow(node.attributes.rowIndex);
-								}});
-								if (annoType == REVISION_ANNOTATION_NS + "RevisionAnnotation"){
-									tmpNode.contextmenu.add({
-									text : "Show in Variations View",
-									handler : function (evt){
-											loreviews.activate("annotationstab");
-											Ext.getCmp("annotationstab").activate("revisionannotations");
-											// TODO: make it easier to select the annotation in the revisions listing
-									}});
-								}
-    							tmpNode.contextmenu.showAt(e.xy);
+    								node.contextmenu.showAt(e.xy);
     							
 							});	
 							
