@@ -133,7 +133,8 @@ String.prototype.escapeHTML = function () {
             this.replace(/&/g,'&amp;').                                         
                 replace(/>/g,'&gt;').                                           
                 replace(/</g,'&lt;').                                           
-                replace(/"/g,'&quot;')                                         
+                replace(/"/g,'&quot;').
+				replace(/'/g,'&apos;')                                         
         );                                                                     
 };
 /**
@@ -174,7 +175,9 @@ String.prototype.tidyHTML = function (){
 	return res;
 };
 
-
+String.prototype.normalize = function() {
+	return this.replace(/^\s*|\s(?=\s)|\s*$/g, "");
+}
 
 function highlightXPointer(xpointer, targetDocument, scrollToHighlight) {
   var sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
