@@ -244,7 +244,24 @@ function initExtComponents(){
 	sourcestreeroot.appendChild(recenttreeroot);
 	
 	// set up event handlers
-	rdftab.on("activate", showRDFHTML);
+	if (rdftab) {
+		rdftab.on("activate", updateRDFHTML);
+	}
+	compoundobjecttab.on("beforeremove", closeRDFView);
+	// create a context menu for the compound object tab to hide/show RDF/XML Tab
+	compoundobjecttab.contextmenu = new Ext.menu.Menu({
+		  id : "co-context-menu"
+	});
+	compoundobjecttab.contextmenu.add({
+			text : "Show RDF/XML",
+			handler : openRDFView
+	});
+	loreviews.on("contextmenu", function (tabpanel, panel, e){
+		if (panel.id == 'compoundobjecteditor') {
+			compoundobjecttab.contextmenu.showAt(e.xy);
+		}
+	});
+	
 	summarytab.on("activate", showCompoundObjectSummary);
 	smiltab.on("activate",showSMIL);
 	
