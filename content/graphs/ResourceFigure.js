@@ -151,7 +151,6 @@ if (urlparam && urlparam != ""){
 else {var theurl = "about:blank";}
 
 this.setIcon(theurl);
-
 this.setMetadata(theurl);
 // Don't display PDFs in preview
 var mimetype = this.metadataproperties["dc:format"];
@@ -221,9 +220,13 @@ oaiorebuilder.ResourceFigure.prototype.onDragstart=function(x,y){
 		this.toggle();
 		return false;
 	}
+	// don't allow move by dragging within iframe
+	if (x < 0 || y < 0){return false;}
 	if(this.originalHeight==-1){
 		if(this.canDrag==true&&x<parseInt(this.header.style.width)&&y<parseInt(this.header.style.height)){return true;}
-	}else{return _4677;}};
+	}else{return _4677;}
+};
+		
 oaiorebuilder.ResourceFigure.prototype.setCanDrag=function(flag){
 	draw2d.Node.prototype.setCanDrag.call(this,flag);
 	this.html.style.cursor="";
@@ -254,6 +257,7 @@ oaiorebuilder.ResourceFigure.prototype.toggle=function(){
 	if(this.originalHeight==-1){
 		this.originalHeight=this.height;
 		this.iframearea.style.display="none";
+		
 		var newHeight = this.metadataarea.offsetHeight + this.header.offsetHeight + this.footer.offsetHeight - 4;
 		this.setDimension(this.width,newHeight);
 		//this.setResizeable(false);
