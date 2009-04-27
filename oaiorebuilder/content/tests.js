@@ -11,22 +11,22 @@ var TEST_VALID_XPATH_LORECOMMON = 'xpointer(start-point(string-range(/html[1]/bo
 var TEST_VALID_XPATH_LORECOMMON_2 = 'xpointer(start-point(string-range(/html[1]/body[1]/div[8]/p[2], "", 185, 1))/range-to(end-point(string-range(/html[1]/body[1]/div[8]/p[2], "", 333, 1))))';
 
 
-function testRevisionMarkers() {
-  if (consoleDebug) console.debug('[testRevisionMarkers() begin]');
-  var sourceFrame = document.getElementById("revisionSourceFrame");
+function testVariationMarkers() {
+  if (consoleDebug) console.debug('[testVariationMarkers() begin]');
+  var sourceFrame = document.getElementById("variationSourceFrame");
   
   highlightXPointer(TEST_VALID_XPATH_LORECOMMON, sourceFrame.contentDocument, false);
   highlightXPointer(TEST_VALID_XPATH_LORECOMMON_2, sourceFrame.contentDocument, true);
   
-  if (consoleDebug) console.debug('[testRevisionMarkers() end]');
+  if (consoleDebug) console.debug('[testVariationMarkers() end]');
 }
 
 function testParse() {
   if (consoleDebug) console.debug('[testParse() begin]'); 
-  var sourceFrame = document.getElementById('revisionSourceFrame');
-  var targetFrame = document.getElementById('revisionTargetFrame');
+  var sourceFrame = document.getElementById('variationSourceFrame');
+  var targetFrame = document.getElementById('variationTargetFrame');
   
-  if (consoleDebug) console.debug('Retrieved revision frame handles.');
+  if (consoleDebug) console.debug('Retrieved variation frame handles.');
 
   if (targetFrame.contentDocument) {
     if (consoleDebug) console.debug('Target frame has content document.');

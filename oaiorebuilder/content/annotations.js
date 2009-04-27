@@ -19,15 +19,15 @@
  */
 
 
-var revisionInformation = [];
+var variationInformation = [];
 
-var revisionStore = new Ext.data.SimpleStore({
+var variationStore = new Ext.data.SimpleStore({
   fields: [
    {name: "name"}
   ]
 });
 
-revisionStore.loadData([]);
+variationStore.loadData([]);
 /**
  * Class wrapper for an RDF annotation provides access to values
  *  modified from dannotate.js
@@ -61,8 +61,7 @@ function Annotation (rdf)
             //this.type = tmp.substr(REPLY_TYPE_NS.length);
             this.type = tmp;
         }
-        else if (tmp.indexOf(REVISION_ANNOTATION_NS) == 0){
-        	//this.type = tmp.substr(REVISION_ANNOTATION_NS.length);
+        else if (tmp.indexOf(VARIATION_ANNOTATION_NS) == 0){
         	this.type = tmp;
         }
         else if (tmp.indexOf(THREAD_NS) == 0) {
@@ -123,32 +122,37 @@ function Annotation (rdf)
      // body stores the contents of the html body tag as text
      this.body = getBodyContent(this.bodyURL);
      
-    //Additional fields for revision annotations only 
-	if (this.type.match(REVISION_ANNOTATION_NS)) {
-		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised');
+    //Additional fields for variation annotations only 
+	if (this.type.match(VARIATION_ANNOTATION_NS)) {
+		node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'variant');
+		if (node.length == 0) { node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'revised');}
 		if (node[0]) {
 			attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
 			if (attr) {
-				this.revised = attr.nodeValue;
+				this.variant = attr.nodeValue;
 			}
 		}
-		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original');
+		node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'original');
 		if (node[0]) {
 			attr = node[0].getAttributeNodeNS(RDF_SYNTAX_NS, 'resource');
 			if (attr) {
 				this.original = attr.nodeValue;
 			}
 		}
-		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'original-context');
+		node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'original-context');
 		this.originalcontext = safeGetFirstChildValue(node);
-		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revised-context');
-		this.revisedcontext = safeGetFirstChildValue(node);
-		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-agent');
-		this.revisionagent = safeGetFirstChildValue(node);
-		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-place');
-		this.revisionplace = safeGetFirstChildValue(node);
-		node = rdf.getElementsByTagNameNS(REVISION_ANNOTATION_NS, 'revision-date');
-		this.revisiondate = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'variant-context');
+		if (node.length == 0){node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'revised-context');}
+		this.variantcontext = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'variation-agent');
+		if (node.length == 0) {node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'revision-agent');}
+		this.variationagent = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'variation-place');
+		if (node.length == 0) {node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'revision-place');}
+		this.variationplace = safeGetFirstChildValue(node);
+		node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'variation-date');
+		if (node.length == 0) {node = rdf.getElementsByTagNameNS(VARIATION_ANNOTATION_NS, 'revision-date');}
+		this.variationdate = safeGetFirstChildValue(node);
 	}
    }
    catch (ex) {
@@ -199,11 +203,11 @@ function createAnnotationRDF(anno)
     if (anno.type){
 		rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
     }
-	rdfxml += '<annotates xmlns="' + ANNOTATION_NS  + '" rdf:resource="' + anno.resource + '"/>';
-	// also send revised as annotates for backwards compatability with older clients
+	rdfxml += '<annotates xmlns="' + ANNOTATION_NS  + '" rdf:resource="' + anno.resource.replace(/&/g,'&amp;') + '"/>';
+	// also send variant as annotates for backwards compatability with older clients
 	/* not currently supported in danno
-	 * if (anno.revised){
-		rdfxml += '<annotates xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' + anno.revised + '"/>';	
+	 * if (anno.variant){
+		rdfxml += '<annotates xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' + anno.variant + '"/>';	
 	}*/
 	if (anno.lang){
 		rdfxml += '<language xmlns="'+ DC10_NS+'">'+ anno.lang + '</language>';
@@ -224,36 +228,36 @@ function createAnnotationRDF(anno)
 	if (anno.context){
 		rdfxml += '<context xmlns="' + ANNOTATION_NS + '">' + anno.context + '</context>';
 	}
-	if (anno.type == REVISION_ANNOTATION_NS + "RevisionAnnotation") {
+	if (anno.type == VARIATION_ANNOTATION_NS + "VariationAnnotation") {
 		if (anno.originalcontext) {
-			rdfxml += '<original-context xmlns="'+ REVISION_ANNOTATION_NS + '">' + anno.originalcontext + '</original-context>';
+			rdfxml += '<original-context xmlns="'+ VARIATION_ANNOTATION_NS + '">' + anno.originalcontext + '</original-context>';
 		}
-		if (anno.revisedcontext) {
-			rdfxml += '<revised-context xmlns="' + REVISION_ANNOTATION_NS + '">' + anno.revisedcontext + '</revised-context>';
+		if (anno.variantcontext) {
+			rdfxml += '<variant-context xmlns="' + VARIATION_ANNOTATION_NS + '">' + anno.variantcontext + '</variant-context>';
 		}
-		if (anno.revisionagent) {
-			rdfxml += '<revision-agent xmlns="' + REVISION_ANNOTATION_NS + '">' +
-			anno.revisionagent +
-			'</revision-agent>';
+		if (anno.variationagent) {
+			rdfxml += '<variation-agent xmlns="' + VARIATION_ANNOTATION_NS + '">' +
+			anno.variationagent +
+			'</variation-agent>';
 		}
-		if (anno.revisionplace) {
-			rdfxml += '<revision-place xmlns="' + REVISION_ANNOTATION_NS + '">' +
-			anno.revisionplace +
-			'</revision-place>';
+		if (anno.variationplace) {
+			rdfxml += '<variation-place xmlns="' + VARIATION_ANNOTATION_NS + '">' +
+			anno.variationplace +
+			'</variation-place>';
 		}
-		if (anno.revisiondate) {
-			rdfxml += '<revision-date xmlns="' + REVISION_ANNOTATION_NS + '">' +
-			anno.revisiondate +
-			'</revision-date>';
+		if (anno.variationdate) {
+			rdfxml += '<variation-date xmlns="' + VARIATION_ANNOTATION_NS + '">' +
+			anno.variationdate +
+			'</variation-date>';
 		}
 		if (anno.original) {
-			rdfxml += '<original xmlns="'+ REVISION_ANNOTATION_NS +'" rdf:resource="' +
+			rdfxml += '<original xmlns="'+ VARIATION_ANNOTATION_NS +'" rdf:resource="' +
 			anno.original +
 			'"/>';
 		}
-		if (anno.revised) {
-			rdfxml += '<revised xmlns="'+ REVISION_ANNOTATION_NS + '" rdf:resource="' +
-			anno.revised +
+		if (anno.variant) {
+			rdfxml += '<variant xmlns="'+ VARIATION_ANNOTATION_NS + '" rdf:resource="' +
+			anno.variant +
 			'"/>';
 		}
 	}
@@ -270,6 +274,7 @@ function createAnnotationRDF(anno)
 		+ '</body>';
 	}
   	rdfxml += '</rdf:Description>'+ '</rdf:RDF>';
+  	alert(rdfxml);
 	return rdfxml;
 } 
 
@@ -324,95 +329,95 @@ function showFormFields(fieldNameArr){
 		setVisibilityFormField(fieldNameArr[i], false);
 	}
 }
-function setRevisionFormUI(revision){
-	var nonRevisionFields = ['context', 'resource'];
-	var revisionFields = ['original', 'revised', 'originalcontext', 'ocontextdisp','revisedcontext', 'rcontextdisp','revisionagent', 'revisionplace', 'revisiondate'];
-	if(revision){
-		hideFormFields(nonRevisionFields);
-		showFormFields(revisionFields);
+function setAnnotationFormUI(variation){
+	var nonVariationFields = ['context', 'resource'];
+	var variationFields = ['original', 'variant', 'originalcontext', 'ocontextdisp','variantcontext', 'rcontextdisp','variationagent', 'variationplace', 'variationdate'];
+	if(variation){
+		hideFormFields(nonVariationFields);
+		showFormFields(variationFields);
 	} else {
-		showFormFields(nonRevisionFields);
-		hideFormFields(revisionFields);
+		showFormFields(nonVariationFields);
+		hideFormFields(variationFields);
 	}
 }
-function updateRevisionAnnotationList() {
-	revisionStore.removeAll();
+function updateVariationAnnotationList() {
+	variationStore.removeAll();
 	
 	// alert (annotabds.data.items.length);
 	// dumpValues (annotabds.data.items[0].data);
 
   var revStoreData = [];
 	
-	revisionInformation = [];
+	variationInformation = [];
 	
 	for (var i = 0; i < annotabds.data.items.length; i++) {
-		var revisionType = annotabds.data.items[i].data.type;
+		var variationType = annotabds.data.items[i].data.type;
 		
-		// alert (revisionType);
+		// alert (variationType);
 		
-		if (revisionType != REVISION_ANNOTATION_NS + 'RevisionAnnotation') {
+		if (variationType != VARIATION_ANNOTATION_NS + 'VariationAnnotation') {
 			continue;
 		}
 		// dumpValues(annotabds.data.items[i].data);
 		revStoreData.push ([annotabds.data.items[i].data.title]);
-		revisionInformation.push({
+		variationInformation.push({
 			id: annotabds.data.items[i].data.id,
 			creator: annotabds.data.items[i].data.creator,
 			modified: annotabds.data.items[i].data.modified,
       created: annotabds.data.items[i].data.created,
-      agent: annotabds.data.items[i].data.revisionagent,
-      place: annotabds.data.items[i].data.revisionplace,
-      date: annotabds.data.items[i].data.revisiondate,
+      agent: annotabds.data.items[i].data.variationagent,
+      place: annotabds.data.items[i].data.variationplace,
+      date: annotabds.data.items[i].data.variationdate,
 			title: annotabds.data.items[i].data.title,
       body: annotabds.data.items[i].data.body,
       sourceURL: annotabds.data.items[i].data.original,
-      targetURL: annotabds.data.items[i].data.revised,
+      targetURL: annotabds.data.items[i].data.variant,
       sourceContext: annotabds.data.items[i].data.originalcontext,
-      targetContext: annotabds.data.items[i].data.revisedcontext
+      targetContext: annotabds.data.items[i].data.variantcontext
 		});
 	}
 	
-	setRevisionFrameURLs('about:blank', 'about:blank');
+	setVariationFrameURLs('about:blank', 'about:blank');
 	
-  revisionStore.loadData (revStoreData);	
+  variationStore.loadData (revStoreData);	
 }
-function onRevisionsShow(revisionsPanel) {
+function onVariationsShow(variationsPanel) {
   if (consoleDebug) {console.debug("render!");}
-  var targetPanel = Ext.getCmp("revisionannotationtarget");
-  var sourcePanel = Ext.getCmp("revisionannotationsource");
-  var listPanel = Ext.getCmp("revisionsleftcolumn");
+  var targetPanel = Ext.getCmp("variationannotationtarget");
+  var sourcePanel = Ext.getCmp("variationannotationsource");
+  var listPanel = Ext.getCmp("variationsleftcolumn");
   
-  targetPanel.setSize(targetPanel.getSize().width, revisionsPanel.getSize().height);
-  sourcePanel.setSize(sourcePanel.getSize().width, revisionsPanel.getSize().height);
-  listPanel.setSize(listPanel.getSize().width, revisionsPanel.getSize().height);
-  var theFrame = document.getElementById('revisionTargetFrame');
+  targetPanel.setSize(targetPanel.getSize().width, variationsPanel.getSize().height);
+  sourcePanel.setSize(sourcePanel.getSize().width, variationsPanel.getSize().height);
+  listPanel.setSize(listPanel.getSize().width, variationsPanel.getSize().height);
+  var theFrame = document.getElementById('variationTargetFrame');
   theFrame.style.border = "none";
   theFrame.style.borderTop = "2px solid #eeeeee";
   theFrame.style.width = targetPanel.getSize().width - FRAME_WIDTH_CLEARANCE;
   theFrame.style.height = targetPanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
-  theFrame = document.getElementById('revisionSourceFrame');
+  theFrame = document.getElementById('variationSourceFrame');
   theFrame.style.border = "none";
   theFrame.style.borderTop = "2px solid #eeeeee";
   theFrame.style.width = sourcePanel.getSize().width - FRAME_WIDTH_CLEARANCE;
   theFrame.style.height = sourcePanel.getSize().height - FRAME_HEIGHT_CLEARANCE;
 }
 
-function highlightRevisionFrames(revisionNumber) {
-  var sourceFrame = document.getElementById("revisionSourceFrame");
-  var targetFrame = document.getElementById("revisionTargetFrame");
+function highlightVariationFrames(variationNumber) {
+  var sourceFrame = document.getElementById("variationSourceFrame");
+  var targetFrame = document.getElementById("variationTargetFrame");
 	
-	var sourceRevisionAlreadyPresent = false;
-	var targetRevisionAlreadyPresent = false;
+	var sourceVariationAlreadyPresent = false;
+	var targetVariationAlreadyPresent = false;
 
 	try {
-  	for (var i = 0; i < revisionInformation.length; i++) {
+  	for (var i = 0; i < variationInformation.length; i++) {
   		var annotationElement = sourceFrame.contentDocument.getElementById("ANNOTATION-" + i);
   		
   		if (annotationElement) {
-  			if (i == revisionNumber) {
+  			if (i == variationNumber) {
 					annotationElement.style.backgroundColor = "yellow";
 					scrollToElement(annotationElement, sourceFrame.contentDocument.defaultView);
-					sourceRevisionAlreadyPresent = true;
+					sourceVariationAlreadyPresent = true;
   			}
 				else {
           annotationElement.style.backgroundColor = "";
@@ -421,10 +426,10 @@ function highlightRevisionFrames(revisionNumber) {
   		
   		annotationElement = targetFrame.contentDocument.getElementById("ANNOTATION-" + i);
   		if (annotationElement) {
-        if (i == revisionNumber) {
+        if (i == variationNumber) {
           annotationElement.style.backgroundColor = "yellow";
           scrollToElement(annotationElement, targetFrame.contentDocument.defaultView);
-					targetRevisionAlreadyPresent = true;
+					targetVariationAlreadyPresent = true;
         }
 				else {
           annotationElement.style.backgroundColor = "";
@@ -432,49 +437,49 @@ function highlightRevisionFrames(revisionNumber) {
   		}
   	}
 		
-    if (!sourceRevisionAlreadyPresent) {
-      var sourceHighlightElement = highlightXPointer(revisionInformation[revisionNumber].sourceContext, sourceFrame.contentDocument, true);
-      sourceHighlightElement.id = "ANNOTATION-" + revisionNumber;
+    if (!sourceVariationAlreadyPresent) {
+      var sourceHighlightElement = highlightXPointer(variationInformation[variationNumber].sourceContext, sourceFrame.contentDocument, true);
+      sourceHighlightElement.id = "ANNOTATION-" + variationNumber;
 		}
 		
-		if (!targetRevisionAlreadyPresent) {
-      var targetHighlightElement = highlightXPointer(revisionInformation[revisionNumber].targetContext, targetFrame.contentDocument, true);
-      targetHighlightElement.id = "ANNOTATION-" + revisionNumber;
+		if (!targetVariationAlreadyPresent) {
+      var targetHighlightElement = highlightXPointer(variationInformation[variationNumber].targetContext, targetFrame.contentDocument, true);
+      targetHighlightElement.id = "ANNOTATION-" + variationNumber;
 		}
   } catch (error) {
     alert (error);
   }
 }
-function onRevisionListingClick(listingPanel, rowIndex){
-	var locationChanged = setRevisionFrameURLs(revisionInformation[rowIndex].sourceURL, revisionInformation[rowIndex].targetURL);
+function onVariationListingClick(listingPanel, rowIndex){
+	var locationChanged = setVariationFrameURLs(variationInformation[rowIndex].sourceURL, variationInformation[rowIndex].targetURL);
 	
 	if (locationChanged) {
-    setTimeout('highlightRevisionFrames (' + rowIndex + ')', REVISIONS_FRAME_LOAD_WAIT);
+    setTimeout('highlightVariationFrames (' + rowIndex + ')', VARIATIONS_FRAME_LOAD_WAIT);
 	}
 	else {
-		highlightRevisionFrames(rowIndex);
+		highlightVariationFrames(rowIndex);
 	}
 	
 	try {
   	var detailsString = "";
   	
-  	detailsString += '<span style="font-weight: bold">Creator:</span> ' + revisionInformation[rowIndex].creator + "<br />";
-  	detailsString += '<span style="font-weight: bold">Created:</span> ' + revisionInformation[rowIndex].created + "<br />";
-  	detailsString += '<span style="font-weight: bold">Agent:</span> ' + revisionInformation[rowIndex].agent + "<br />";
-  	detailsString += '<span style="font-weight: bold">Place:</span> ' + revisionInformation[rowIndex].place + "<br />";
-  	detailsString += '<span style="font-weight: bold">Date:</span> ' + revisionInformation[rowIndex].date + "<br />";
-    detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span><br/> ' + revisionInformation[rowIndex].body + "<br />";
+  	detailsString += '<span style="font-weight: bold">Creator:</span> ' + variationInformation[rowIndex].creator + "<br />";
+  	detailsString += '<span style="font-weight: bold">Created:</span> ' + variationInformation[rowIndex].created + "<br />";
+  	detailsString += '<span style="font-weight: bold">Agent:</span> ' + variationInformation[rowIndex].agent + "<br />";
+  	detailsString += '<span style="font-weight: bold">Place:</span> ' + variationInformation[rowIndex].place + "<br />";
+  	detailsString += '<span style="font-weight: bold">Date:</span> ' + variationInformation[rowIndex].date + "<br />";
+    detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span><br/> ' + variationInformation[rowIndex].body + "<br />";
   	
-  	var detailsDiv = document.getElementById('revisionsdetailstext');
+  	var detailsDiv = document.getElementById('variationsdetailstext');
   	detailsDiv.innerHTML = detailsString;
   } catch (error) {
 		alert (error);
 	}
 }
 
-function setRevisionFrameURLs(sourceURL, targetURL) {
-  var sourceFrame = document.getElementById("revisionSourceFrame");
-  var targetFrame = document.getElementById("revisionTargetFrame");
+function setVariationFrameURLs(sourceURL, targetURL) {
+  var sourceFrame = document.getElementById("variationSourceFrame");
+  var targetFrame = document.getElementById("variationTargetFrame");
 	var changeMade = false;
   
   if (sourceFrame.src != sourceURL) {
@@ -487,8 +492,8 @@ function setRevisionFrameURLs(sourceURL, targetURL) {
 		changeMade = true;
 	}
   
-  var sourceLabel = document.getElementById("revisionSourceLabel");
-  var targetLabel = document.getElementById("revisionTargetLabel");
+  var sourceLabel = document.getElementById("variationSourceLabel");
+  var targetLabel = document.getElementById("variationTargetLabel");
   
   sourceLabel.innerHTML = sourceURL;
   targetLabel.innerHTML = targetURL;
@@ -510,9 +515,9 @@ function handleAnnotationSelection(sm, row, rec) {
 		// load grid values into form
  		annotationsform.loadRecord(rec);
  		// add a marker to indicate context
- 		// TODO: check first whether the currentURL is the original or revised resource (assuming original for now)
+ 		// TODO: check first whether the currentURL is the original or variant resource (assuming original for now)
  		// TODO: hide the context text if it's not relevant (ie not on currentURL)
- 		// TODO: show revised context text if the currentURL is the revised resource
+ 		// TODO: show variant context text if the currentURL is the variant resource
 		if (rec.data.context) {
 			var idx = rec.data.context.indexOf('#');
 			var currentCtxt = rec.data.context.substring(idx + 1);
@@ -651,12 +656,12 @@ function handleUpdateAnnotationContext(btn, e){
 				alert(ex.toString());
 			}
 }
-function handleUpdateAnnotationRevisedContext(btn, e){
+function handleUpdateAnnotationVariantContext(btn, e){
 			try {
 				var currentCtxt = getXPathForSelection();
-				var theField = annotationsform.findField('revisedcontext');
+				var theField = annotationsform.findField('variantcontext');
 				theField.setValue(currentCtxt);
-				theField = annotationsform.findField('revised');
+				theField = annotationsform.findField('variant');
 				theField.setValue(currentURL);
 				theField = annotationsform.findField('rcontextdisp');
 				theField.setValue('"' + getSelectionText(currentCtxt) + '"');
@@ -669,10 +674,10 @@ function handleUpdateAnnotationRevisedContext(btn, e){
 function handleAnnotationTypeChange(combo){
 		var theVal = combo.getValue();
 			if (theVal == 'Variation') {
-				setRevisionFormUI(true);
+				setAnnotationFormUI(true);
 			}
 			else if (theVal == 'Comment'  || theVal =='Explanation'){
-				setRevisionFormUI(false);
+				setAnnotationFormUI(false);
 			}
 }
 function launchFieldWindow (field){
@@ -787,7 +792,7 @@ function _updateAnnotationsSourceList(contextURL) {
 						if (resultNodes.length > 0){
 							var annotations = orderByDate(resultNodes);
 							annotabds.loadData(annotations,true);
-              				updateRevisionAnnotationList();
+              				updateVariationAnnotationList();
 							var annogriddata = [];
 							for (var i = 0; i < annotations.length; i++) {
 								var annoID = annotations[i].id;
@@ -865,13 +870,13 @@ function _updateAnnotationsSourceList(contextURL) {
 												annotabsm.selectRow(node.attributes.rowIndex);
 											}
 										});
-										if (annoType == REVISION_ANNOTATION_NS + "RevisionAnnotation") {
+										if (annoType == VARIATION_ANNOTATION_NS + "VariationAnnotation") {
 											node.contextmenu.add({
 												text: "Show in Variations View",
 												handler: function(evt){
 													loreviews.activate("annotationstab");
-													Ext.getCmp("annotationstab").activate("revisionannotations");
-												// TODO: make it easier to select the annotation in the revisions listing
+													Ext.getCmp("annotationstab").activate("variationannotations");
+												// TODO: make it easier to select the annotation in the variations listing
 												}
 											});
 										}

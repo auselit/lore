@@ -272,24 +272,22 @@ function initExtComponents(){
 	Ext.getCmp("updannobtn").on('click', handleSaveAnnotationChanges);
 	Ext.getCmp("delannobtn").on('click', handleDeleteAnnotation);
 	Ext.getCmp("updctxtbtn").on('click', handleUpdateAnnotationContext);
-	Ext.getCmp("updrctxtbtn").on('click', handleUpdateAnnotationRevisedContext);
+	Ext.getCmp("updrctxtbtn").on('click', handleUpdateAnnotationVariantContext);
 	
-	Ext.getCmp("revisedfield").on('specialkey',launchFieldWindow);
+	Ext.getCmp("variantfield").on('specialkey',launchFieldWindow);
 	Ext.getCmp("originalfield").on('specialkey',launchFieldWindow);
 	
 	Ext.getCmp("typecombo").on('valid', handleAnnotationTypeChange);
-	setRevisionFormUI(false);
+	setAnnotationFormUI(false);
 		
-	// set up revisions panel
-	var revisionsPanel = Ext.getCmp("revisionannotations");
-  	revisionsPanel.on("render", onRevisionsShow);
-  	revisionsPanel.on("show", onRevisionsShow);
-  	revisionsPanel.on("resize", onRevisionsShow);    
-	var revisionsListing = Ext.getCmp("revisionannotationlisting");
-	revisionsListing.on("rowclick", onRevisionListingClick);
-    onRevisionsShow(revisionsPanel);
-	//setRevisionFrameURLs ("http://www.austlit.edu.au/common/loredemo/",
-	// "http://www.austlit.edu.au/common/loredemo/");
+	// set up variation annotations panel
+	var variationsPanel = Ext.getCmp("variationannotations");
+  	variationsPanel.on("render", onVariationsShow);
+  	variationsPanel.on("show", onVariationsShow);
+  	variationsPanel.on("resize", onVariationsShow);    
+	var variationsListing = Ext.getCmp("variationannotationlisting");
+	variationsListing.on("rowclick", onVariationListingClick);
+    onVariationsShow(variationsPanel);
 	
 	// set up welcome tab contents
 	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1>" 

@@ -32,7 +32,7 @@ var ANNOTATION_NS          = "http://www.w3.org/2000/10/annotation-ns#";
 var ANNOTATION_TYPE_NS     = "http://www.w3.org/2000/10/annotationType#";
 var THREAD_NS              = "http://www.w3.org/2001/03/thread#";
 var REPLY_TYPE_NS          = "http://www.w3.org/2001/12/replyType#";
-var REVISION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
+var VARIATION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
 var LORE_LAYOUT_NS         = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
 var SPARQLRESULTS_NS       = "http://www.w3.org/2005/sparql-results#";
 var HTTP_NS                = "http://www.w3.org/1999/xx/http#";
@@ -62,12 +62,12 @@ var NODE_HEIGHT = 170;
 var NODE_SPACING = 40;
 var MAX_X = 400;
 
-// Revisions view
+// Variations view
 var FRAME_WIDTH_CLEARANCE = 7;
 var FRAME_HEIGHT_CLEARANCE = 50;
-var LEFT_REVISION_CLEARANCE = 255;
-var TOP_REVISION_CLEARANCE = 31;
-var REVISIONS_FRAME_LOAD_WAIT = 250;
+var LEFT_VARIATION_CLEARANCE = 255;
+var TOP_VARIATION_CLEARANCE = 31;
+var VARIATIONS_FRAME_LOAD_WAIT = 250;
 
 // Default list of properties that can be specified for resource maps or aggregated resources
 var METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
