@@ -72,18 +72,18 @@
 		<xsl:variable name="title" select="//rdf:Description[@rdf:about = $about]/dc:title"/>
           <smilText region="img_r" type="text/html" dur="2s">
           <xsl:text>Online resource: </xsl:text>
-          	<!--  <xsl:attribute name="src">
-          		<xsl:text>data:,Online%20Resource:</xsl:text>-->
-          		<xsl:choose>
+          		  <xsl:choose>
           			<xsl:when test="$title">
-          				<xsl:value-of select="$title"/>
+          				<xsl:value-of select="$title"/><xsl:text> (</xsl:text>
+          				<xsl:value-of select="$about"/><xsl:text>)</xsl:text>
           			</xsl:when>
           			<xsl:otherwise>
-          				<xsl:text>(Link)</xsl:text>
-          			</xsl:otherwise>
+          				<xsl:value-of select="$about"/>
+          			  </xsl:otherwise>
           		</xsl:choose>
-          	<!--  </xsl:attribute>-->
-          	<area href="{$about}" external="true"/>
+          	<area external="true">
+          	<xsl:attribute name="href"><xsl:value-of select="$about"/> </xsl:attribute>
+          	</area>
           </smilText>		
 	</xsl:template>
 	
@@ -120,4 +120,7 @@
 	</xsl:template>
 	<xsl:template match="rdf:Description" mode="head">
 	</xsl:template>
+	<!-- 
+	http://images.pageglimpse.com/v1/thumbnails?url=http://austlit.edu.au/&size=large&devkey=4344f19f7e0f9a31e1e590c66c1c0d05
+	 -->
 </xsl:stylesheet>
