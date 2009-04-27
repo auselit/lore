@@ -67,13 +67,14 @@ function showCompoundObjectSummary() {
 	var remprops = grid.getSource();
 	
 	var newsummary = "<table style='font-size:smaller;border:none'>" +
-			"<tr valign='top'><td><b>Compound object:</b></td><td>" + remprops["rdf:about"] + "</td></tr>";
+			"<tr valign='top'><td width='20%'><b>Compound object:</b></td><td>" + remprops["rdf:about"] + "</td></tr>";
 	if (remprops["dc:title"]){
-		newsummary += "<tr valign='top'><td><b>Title:</b></td><td>" + remprops["dc:title"] + "</td></tr>";
+		newsummary += "<tr valign='top'><td width='20%'><b>Title:</b></td><td>" + remprops["dc:title"] + "</td></tr>";
 	}
 	if (remprops["dc:description"]){
-		newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='80%'>" + remprops["dc:description"] + "</td></tr></table>";
+		newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='80%'>" + remprops["dc:description"] + "</td></tr>";
 	}
+	newsummary += "</table>";
 	newsummary += "<div style='padding-top:1em'><p><b>List of contents:</b></p><ul>";
 	var allfigures = oreGraph.getDocument().getFigures();
 	for (var i = 0; i < allfigures.getSize(); i++) {
