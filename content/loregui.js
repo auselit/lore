@@ -33,16 +33,14 @@ lore.gui_spec = {
                 border: false,
                 layout: "fit",
                 items: [{
-                    xtype: "ddtabpanel",
+                    xtype: "tabpanel",
                     id: "loreviews",
 					deferredRender: false,
                     items: [{
-                        xtype: "panel",
                         title: "Welcome",
                         id: "welcome",
 						autoWidth: true,
 						autoScroll: true,
-                        closable: true,
                         iconCls: "welcome-icon"
                     
                     }, {
@@ -102,17 +100,17 @@ lore.gui_spec = {
 									}, {
 										name: 'original'
 									}, {
-										name: 'revised'
+										name: 'variant'
 									}, {
 										name: 'originalcontext'
 									}, {
-										name: 'revisedcontext'
+										name: 'variantcontext'
 									}, {
-										name: 'revisionagent'
+										name: 'variationagent'
 									}, {
-										name: 'revisionplace'
+										name: 'variationplace'
 									}, {
-										name: 'revisiondate'
+										name: 'variationdate'
 									}],
 									data: {}
 								}),
@@ -120,7 +118,7 @@ lore.gui_spec = {
 									header: 'Date created',
 									sortable: true,
 									dataIndex: 'created'
-								}, {
+								}, { 
 									header: 'Creator',
 									sortable: true,
 									dataIndex: 'creator'
@@ -202,22 +200,22 @@ lore.gui_spec = {
 									readOnly: true,
 									style: 'background:none;border:none'
 								}, {
-									fieldLabel: 'Revised resource',
-									name: 'revised',
-									id: 'revisedfield',
+									fieldLabel: 'Variant resource',
+									name: 'variant',
+									id: 'variantfield',
 									readOnly: true,
 									style: 'background:none;border:none',
 								//hidden: true,
 								//hideLabel: true
 								}, {
-									fieldLabel: 'Revised Context Xpointer',
-									name: 'revisedcontext',
+									fieldLabel: 'Variant Context Xpointer',
+									name: 'variantcontext',
 									readOnly: true,
 									style: 'background:none;border:none',
 									hidden: true,
 									hideLabel: true
 								}, {
-									fieldLabel: 'Revised selection',
+									fieldLabel: 'Variant selection',
 									name: 'rcontextdisp',
 									readOnly: true,
 									style: 'background:none;border:none'
@@ -229,7 +227,7 @@ lore.gui_spec = {
 									hiddenName: 'type',
 									store: new Ext.data.SimpleStore({
 										fields: ['typename', 'qtype'],
-										data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"], ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#RevisionAnnotation"]]
+										data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"], ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"]]
 									}),
 									valueField: 'qtype',
 									displayField: 'typename',
@@ -244,24 +242,20 @@ lore.gui_spec = {
 									name: 'creator'
 								}, {
 									fieldLabel: 'Variation Agent',
-									name: 'revisionagent',
+									name: 'variationagent',
 								}, {
 									fieldLabel: 'Variation Place',
-									name: 'revisionplace',
+									name: 'variationplace',
 								}, {
 									fieldLabel: 'Variation Date',
-									name: 'revisiondate',
+									name: 'variationdate',
 								}, {
 									fieldLabel: 'Body',
 									xtype: 'htmleditor',
 									name: 'body'
 								
 								
-								}			/*,{
-			 //xtype: 'datefield',
-			 fieldLabel: 'Created',
-			 name: 'created'
-			 }*/
+								}		
 								],
 								buttons: [{
 									text: 'Save Annotation',
@@ -279,50 +273,50 @@ lore.gui_spec = {
 									id: 'updctxtbtn',
 									tooltip: 'Update the (original) context from the current selection in the main browser window'
 								}, {
-									text: 'Update revised context',
+									text: 'Update variant context',
 									id: 'updrctxtbtn',
-									tooltip: 'Update the revised context from the current selection in the main browser window'
+									tooltip: 'Update the variant context from the current selection in the main browser window'
 								}]
 							}]
 						}, {
                         xtype: "panel",
                         title: "Variations",
-                        id: "revisionannotations",
+                        id: "variationannotations",
                         // html: '<div id="window-test"></div>',
                         deferredRender: false,
                         layout: 'column',
                         items: [
 											  {
 												  xtype: "panel",
-													id: "revisionsleftcolumn",
+													id: "variationsleftcolumn",
 													columnWidth: 0.20,
 													layout: 'border',
 													items: [{
 	                          xtype: "grid",
-	                          id: "revisionannotationlisting",
+	                          id: "variationannotationlisting",
 	                          title: "Variation Annotations",
 														region: 'center',
 														split: true,
-	                          store: revisionStore,
-	                          autoExpandColumn: 'revisionName',
+	                          store: variationStore,
+	                          autoExpandColumn: 'variationName',
 	                          columns: [
-	                            {id: 'revisionName', sortable: false, dataIndex: 'name'},
+	                            {id: 'variationName', sortable: false, dataIndex: 'name'},
 	                          ],
 	                        }, {
                             xtype: "panel",
-                            id: "revisiondetails",
+                            id: "variationdetails",
 							split: true,
                             region: 'south',
                             title: "Details",
 							height: 200,
-                            html: '<div style="font-family: arial, verdana, helvetica, sans-serif; font-size: smaller;" id="revisionsdetailstext"></div>',
+                            html: '<div style="font-family: arial, verdana, helvetica, sans-serif; font-size: smaller;" id="variationsdetailstext"></div>',
                           }],
 												},
                         {
                           xtype: "panel",
-                          id: "revisionannotationsource",
+                          id: "variationannotationsource",
                           title: "Original Resource",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionSourceLabel">about:blank</div><iframe onload="console.debug(\'Source load.\');" id="revisionSourceFrame" height="350px" width="490px" src="about:blank"></iframe></div>',
+                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationSourceLabel">about:blank</div><iframe onload="console.debug(\'Source load.\');" id="variationSourceFrame" height="350px" width="490px" src="about:blank"></iframe></div>',
                           layout: "fit",
 						  autoScroll: true,
                           /*
@@ -337,9 +331,9 @@ lore.gui_spec = {
                         },
                         {
                           xtype: "panel",
-                          id: "revisionannotationtarget",
+                          id: "variationannotationtarget",
                           title: "Variant Resource",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="revisionTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="revisionTargetFrame" height="350px" width="490px" src="about:blank"></iframe></div>', 
+                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="variationTargetFrame" height="350px" width="490px" src="about:blank"></iframe></div>', 
                           layout: "fit",
 						  autoScroll: true,
                           /*
@@ -358,7 +352,7 @@ lore.gui_spec = {
 							id: "annotimeline"
 						}]
 					}, {
-                        xtype: "ddtabpanel",
+                        xtype: "tabpanel",
                         title: "Compound Object",
                         id: "compoundobjecteditor",
 						deferredRender: false,
@@ -387,7 +381,6 @@ lore.gui_spec = {
 					
 					title: "Text mining",
 					id: "textmining",
-					closable: true,
 					autoWidth: true,
 					autoScroll:true
 				}],
@@ -417,7 +410,6 @@ lore.gui_spec = {
             layout: "border",
             items: [{
                 region: "center",
-                
                 items: [{
                     xtype: "treepanel",
                     id: "sourcestree",
@@ -457,22 +449,7 @@ lore.gui_spec = {
                     }), new Ext.Button({
                         text: "Remove property"
                     })]
-                },/* {
-                    xtype: 'propertygrid',
-                    title: 'Aggregation',
-                    id: "aggregrid",
-                    autoWidth: true,
-                    viewConfig: {
-                        forceFit: true,
-                        scrollOffset: 0
-                    },
-                    tbar: [new Ext.Button({
-                        text: "Add property"
-                    }), new Ext.Button({
-                        text: "Remove property"
-                    })]
-                
-                },*/ {
+                }, {
                     xtype: "propertygrid",
                     title: "Resource/Relationship",
                     id: "nodegrid",
@@ -495,4 +472,4 @@ lore.gui_spec = {
 try {
 	lore.main_window = new Ext.Viewport(lore.gui_spec);
 	lore.main_window.show();
-} catch (ex) {alert(ex.toString());}
+} catch (ex) {dumpValues(ex);}
