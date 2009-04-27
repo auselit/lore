@@ -10,9 +10,7 @@ var oreLocationListener = {
 
   onLocationChange: function(aProgress, aRequest, aURI)
   {
-
     oaiorebuilder.updateOREBrowser(aURI);
-
   },
 
   onStateChange: function() {},
@@ -25,11 +23,22 @@ var oaiorebuilder = {
   oldURL: null,
   onLoad: function() {
 	this.graphiframe = window.graphiframe;
-    this.initialized = true;
-    this.strings = document.getElementById("oaiorebuilder-strings");
+	this.resetGraph();
+	this.initialized = true;
+	this.strings = document.getElementById("oaiorebuilder-strings");
+	this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
+ 	    .getService(Components.interfaces.nsIPrefService)
+		.getBranch("extensions.lore.");
 	gBrowser.addProgressListener(oreLocationListener,
         Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
-
+	this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+	this.prefs.addObserver("", this, false);
+  },
+  observe: function(subject, topic, data){
+  	if (topic != "nsPref:changed"){
+  		return;
+  	}
+  	this.loadPrefs();
   },
   uninit: function(){
   	gBrowser.removeProgressListener(oreLocationListener);
@@ -117,18 +126,17 @@ var oaiorebuilder = {
   	 window.open("chrome://oaiorebuilder/content/options.xul", "", "chrome,centerscreen,modal");
   },
   loadPrefs: function (){
-  	 var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
-                      .getService(Components.interfaces.nsIPrefService);
-	 var oaiorebuilderprefs = prefservice.getBranch("extensions.lore.");
-	 var dccreator = oaiorebuilderprefs.getCharPref("dccreator");
-	 var relonturl = oaiorebuilderprefs.getCharPref("relonturl");
-	 var rdfrepos = oaiorebuilderprefs.getCharPref("rdfrepos");
-	 var rdfrepostype = oaiorebuilderprefs.getCharPref("rdfrepostype");
-	 var annoserver = oaiorebuilderprefs.getCharPref("annoserver");
+  	if (this.prefs){
+	 var dccreator = this.prefs.getCharPref("dccreator");
+	 var relonturl = this.prefs.getCharPref("relonturl");
+	 var rdfrepos = this.prefs.getCharPref("rdfrepos");
+	 var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
+	 var annoserver = this.prefs.getCharPref("annoserver");
 	 
 	 window.graphiframe.setdccreator(dccreator);
 	 window.graphiframe.setrelonturl(relonturl);
 	 window.graphiframe.setRepos(rdfrepos, rdfrepostype, annoserver);
+  	}
   },
   popOutWindow: function (){
   	//oaiorebuilder.toggleBar();
