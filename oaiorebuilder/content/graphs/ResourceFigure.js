@@ -123,7 +123,7 @@ if(this.top_left!=null)
 	this.textarea.style.width=(this.width-2)+"px";
 	this.iframearea.style.width=(this.width-3) + "px";
 	this.textarea.style.height=(this.height-this.cornerHeight*2)+"px";
-	this.iframearea.style.height=(this.height - this.cornerHeight*2 - 11) + "px";
+	this.iframearea.style.height=(this.height - this.cornerHeight*2 - 20) + "px";
 	this.header.style.width=(this.width-this.cornerWidth*2)+"px";
 	this.footer.style.width=(this.width-this.cornerWidth*2)+"px";
 	this.footer.style.top=(this.height-this.cornerHeight)+"px";
@@ -168,7 +168,7 @@ if (mimetype && mimetype.contains("application/rdf+xml")){
 	this.iframearea.innerHTML="<img id='" + theurl + "-data' src='" + theurl + "' style='z-index:-9001' height='95%'>";
 
 } else if (mimetype && !mimetype.contains("pdf")){
-	this.iframearea.innerHTML="<object id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
+	this.iframearea.innerHTML="<object name='" + theurl + "-data' id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
 } 
 
 };
