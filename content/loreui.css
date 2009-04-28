@@ -144,8 +144,11 @@
 	top: 0;
 	left: 0;
 }
-#welcome, #remlistview, #remsmilview, #textmining {
-	padding: 20px;
+#remlistview, #remsmilview, #textmining {
+	padding-left: 20px;	
+}
+#remlistview table, #remsmilview div, #textmining div {
+	padding-top:20px;
 }
 #welcome * ul li, #remlistview * ul li {
 	margin-left:10px;
@@ -156,7 +159,7 @@
 .welcome-icon {
     background-image: url(../skin/icons/oaioreicon-sm.png) !important;
 }
-#drawingarea {
+#drawingareadiv {
 	position:relative;
 	width: 99% !important;
 }
@@ -174,6 +177,7 @@
 #welcome * a:hover, #remsmilview * a:hover, #remlistview * a:hover {
 	text-decoration: underline;
 }
+#welcome iframe {border:none;}
 .newanno td {
 	color: red !important;
 }
@@ -183,4 +187,8 @@
 }
 .timeline-copyright {
 	display:none;
+}
+#variationdetails {
+	font-size:smaller;
+	padding: 5px;
 }

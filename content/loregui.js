@@ -18,7 +18,7 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 Ext.namespace("lore");
-
+var vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
 lore.gui_spec = {
     layout: "border",
     items: [{
@@ -35,6 +35,7 @@ lore.gui_spec = {
                 items: [{
                     xtype: "tabpanel",
                     id: "loreviews",
+					plugins : vismode,
 					deferredRender: false,
                     items: [{
                         title: "Welcome",
@@ -302,15 +303,7 @@ lore.gui_spec = {
 	                          columns: [
 	                            {id: 'variationName', sortable: false, dataIndex: 'name'},
 	                          ],
-	                        }, {
-                            xtype: "panel",
-                            id: "variationdetails",
-							split: true,
-                            region: 'south',
-                            title: "Details",
-							height: 200,
-                            html: '<div style="font-family: arial, verdana, helvetica, sans-serif; font-size: smaller;" id="variationsdetailstext"></div>',
-                          }],
+	                        }],
 												},
                         {
                           xtype: "panel",
@@ -356,24 +349,26 @@ lore.gui_spec = {
                         title: "Compound Object",
                         id: "compoundobjecteditor",
 						deferredRender: false,
-                        autoScroll: true,
+                        plugins : vismode,
+						defaults : {plugins: vismode},
                         items: [{
                             title: "Graph Editor",
                             xtype: "panel",
                             id: "drawingarea",
-                            autoWidth: true
-                        
+							autoScroll: true, 
+							html: "<div id='drawingareadiv'></div>"  
                         }, {
                             title: "Summary",
                             xtype: "panel",
-                            id: "remlistview"
-
-                        
+                            id: "remlistview",
+							autoScroll: true
+        					
                         }, {
                             title: "SMIL",
                             xtype: "panel",
-                            id: "remsmilview"
-
+                            id: "remsmilview",
+							autoScroll: true
+							
                         
                         }],
                         activeTab: "drawingarea"
@@ -463,7 +458,16 @@ lore.gui_spec = {
                     }), new Ext.Button({
                         text: "Remove property"
                     })]
-                }                
+                },
+				{
+					xtype: "panel",
+					title: "Annotation details",
+					id: "variationdetails",
+					autoWidth: true,
+					viewConfig: {
+						forceFit: true
+					}
+				}                
                 ]
             }]
         }]

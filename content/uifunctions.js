@@ -198,23 +198,11 @@ function createRDF(escape) {
 	for (var pfx in NAMESPACES) {
 		rdfxml += "xmlns:" + pfx + "=\"" + NAMESPACES[pfx] + "\"" + nlsymb;
 	}
-	rdfxml += "xml:base = \""
-			+ rdfabout
-			+ "\">"
-			+ nlsymb
-			+ ltsymb
-			+ rdfdescabout
-			+ rdfabout
-			+ closetag
-			+ ltsymb
-			+ "ore:describes rdf:resource=\""
-			+ describes
-			+ fullclosetag
-			+ ltsymb
-			+ 'rdf:type rdf:resource="' + RESOURCE_MAP + '" />'
-			+ nlsymb
-			+ ltsymb
-			+ 'dcterms:modified rdf:datatype="' + XMLSCHEMA_NS + 'date">'
+	rdfxml += "xml:base = \"" + rdfabout + "\">"
+			+ nlsymb + ltsymb + rdfdescabout + rdfabout + closetag
+			+ ltsymb + "ore:describes rdf:resource=\"" + describes + fullclosetag
+			+ ltsymb + 'rdf:type rdf:resource="' + RESOURCE_MAP + '" />'
+			+ nlsymb + ltsymb + 'dcterms:modified rdf:datatype="' + XMLSCHEMA_NS + 'date">'
 			+ modifiedDate.getFullYear() + "-" + (modifiedDate.getMonth() + 1)
 			+ "-" + modifiedDate.getDate() + ltsymb + "/dcterms:modified>"
 			+ nlsymb;
@@ -266,14 +254,24 @@ function createRDF(escape) {
 			}
 		}
 		/* persist node layout */
+		var objframe = window.frames[fig.url + "-data"];
 		resourcerdf += ltsymb + rdfdescabout + figurl + closetag + 
 			ltsymb + "layout:x>" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb +
 			ltsymb + "layout:y>" + fig.y + ltsymb + "/" + "layout:y>" + nlsymb + 
 			ltsymb + "layout:width>" + fig.width + ltsymb + "/" + "layout:width>" + nlsymb +
 			ltsymb + "layout:height>" + fig.height + ltsymb + "/" + "layout:height>" + nlsymb +
-			ltsymb + "layout:originalHeight>" + fig.originalHeight + ltsymb + "/" + "layout:originalHeight>" + nlsymb +
-			ltsymb + rdfdescclose + nlsymb;
-		
+			ltsymb + "layout:originalHeight>" + fig.originalHeight + 
+				ltsymb + "/" + "layout:originalHeight>" + nlsymb;
+		if (objframe) {
+			resourcerdf +=
+			ltsymb + "layout:scrollx>" + objframe.scrollX + 
+				ltsymb + "/" + "layout:scrollx>" + nlsymb +
+			ltsymb + "layout:scrolly>" + objframe.scrollY + 
+				ltsymb + "/" + "layout:scrolly>" + nlsymb;
+		}
+		resourcerdf +=	ltsymb + rdfdescclose + nlsymb;	
+	
+
 		var outgoingconnections = fig.getPorts().get(1).getConnections();
 		for (var j = 0; j < outgoingconnections.getSize(); j++) {
 			var theconnector = outgoingconnections.get(j);
