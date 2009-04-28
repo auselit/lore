@@ -50,6 +50,22 @@
     
 
 
+    <!-- http://maenad.itee.uq.edu.au/lore/layout.owl#scrollx -->
+
+    <owl:DatatypeProperty rdf:about="#scrollx">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://maenad.itee.uq.edu.au/lore/layout.owl#scrolly -->
+
+    <owl:DatatypeProperty rdf:about="#scrolly">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://maenad.itee.uq.edu.au/lore/layout.owl#width -->
 
     <owl:DatatypeProperty rdf:about="#width">
