@@ -146,8 +146,8 @@ function initGraphicalView(){
 		oreGraph.removeSelectionListener(oreGraphSelectionListener);
 		oreGraph.clear();
 	} else {
-		oreGraph = new draw2d.Workflow("drawingarea");
-		oreGraph.scrollArea = document.getElementById("drawingarea").parentNode;
+		oreGraph = new draw2d.Workflow("drawingareadiv");
+		oreGraph.scrollArea = document.getElementById("drawingarea");
 	}
 	oreGraphSelectionListener = new oaiorebuilder.SelectionProperties(oreGraph);
 	oreGraph.addSelectionListener(oreGraphSelectionListener);
@@ -290,10 +290,8 @@ function initExtComponents(){
     onVariationsShow(variationsPanel);
 	
 	// set up welcome tab contents
-	welcometab.body.update("<h1>LORE: Literature Object Re-use and Exchange</h1>" 
-		+ "<p>For more information about LORE, please see the "
-		+ "<a target='_blank' href='http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/'>"
-		+ "Aus-e-Lit</a> project page</p>");
+	welcometab.body.update("<iframe height='100%' width='100%' src='chrome://oaiorebuilder/content/welcome.html'></iframe>");
+	
 }
 
 /**

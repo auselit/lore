@@ -470,10 +470,11 @@ function onVariationListingClick(listingPanel, rowIndex){
   	detailsString += '<span style="font-weight: bold">Date:</span> ' + variationInformation[rowIndex].date + "<br />";
     detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span><br/> ' + variationInformation[rowIndex].body + "<br />";
   	
-  	var detailsDiv = document.getElementById('variationsdetailstext');
-  	detailsDiv.innerHTML = detailsString;
+    propertytabs.activate("variationdetails");
+  	Ext.getCmp("variationdetails").body.update(detailsString);
+  	
   } catch (error) {
-		alert (error);
+		loreWarning(error);
 	}
 }
 
@@ -653,7 +654,7 @@ function handleUpdateAnnotationContext(btn, e){
 				theField.setValue('"' + getSelectionText(currentCtxt) + '"');	
 			} 
 			catch (ex) {
-				alert(ex.toString());
+				loreWarning(ex.toString());
 			}
 }
 function handleUpdateAnnotationVariantContext(btn, e){
@@ -667,7 +668,7 @@ function handleUpdateAnnotationVariantContext(btn, e){
 				theField.setValue('"' + getSelectionText(currentCtxt) + '"');
 			} 
 			catch (ex) {
-				alert(ex.toString());
+				loreWarning(ex.toString());
 			}
 }
 
