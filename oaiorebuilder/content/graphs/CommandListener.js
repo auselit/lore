@@ -1,33 +1,34 @@
 /**
- * Listens for commands such as delete, undo, redo and updates the oreGraphLookup object that is used
+ * Listens for commands such as delete, undo, redo and updates the graph lookup object that is used
  * to map resource URLs to figure IDs
  **/
-oaiorebuilder.CommandListener=function(){
+lore.ore.graph.CommandListener=function(){
 draw2d.CommandStackEventListener.call(this);};
-oaiorebuilder.CommandListener.prototype=new draw2d.CommandStackEventListener;
-oaiorebuilder.CommandListener.prototype.type="oaiorebuilder.CommandListener";
-oaiorebuilder.CommandListener.prototype.stackChanged=function(event){
-	// remove the url from oreGraphLookup if node is deleted, add it back if it is undone
+lore.ore.graph.CommandListener.prototype=new draw2d.CommandStackEventListener;
+lore.ore.graph.CommandListener.prototype.type="lore.ore.graph.CommandListener";
+lore.ore.graph.CommandListener.prototype.stackChanged=function(event){
+	lore.debug.ore("CommandListener stackChanged", event);
+	// remove the url from lookup if node is deleted, add it back if it is undone
 	var details=event.getDetails();
 	var comm = event.getCommand();
 	var comm_fig = comm.figure;
-	oreGraphModified = true;
+	lore.ore.graph.modified = true;
 	if(0!=(details&(draw2d.CommandStack.POST_EXECUTE)))
 	{
 		if(comm instanceof draw2d.CommandDelete){
-			delete oreGraphLookup[comm_fig.url];
+			delete lore.ore.graph.lookup[comm_fig.url];
 		}
 	}
 	else{if(0!=(details&(draw2d.CommandStack.POST_UNDO)))
 	{
 		if(comm instanceof draw2d.CommandDelete){
-			oreGraphLookup[comm_fig.url] = comm_fig.getId();
+			lore.ore.graph.lookup[comm_fig.url] = comm_fig.getId();
 		}
 	}
 	else{if(0!=(details&(draw2d.CommandStack.POST_REDO)))
 	{
 		if(comm instanceof draw2d.CommandDelete){
-			delete oreGraphLookup[comm_gif.url];
+			delete lore.ore.graph.lookup[comm_gif.url];
 		}
 	}}}
 };

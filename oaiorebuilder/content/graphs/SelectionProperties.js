@@ -1,17 +1,18 @@
 /* Updates the properties views when nodes or connections are selected
  * 
  */
-oaiorebuilder.SelectionProperties=function(/*:workflow*/ workflow)
+lore.ore.graph.SelectionProperties=function(/*:workflow*/ workflow)
 {
    this.workflow = workflow;
    
 }
 
 /** @private **/
-oaiorebuilder.SelectionProperties.prototype.type="oaiorebuilder.SelectionProperties";
-oaiorebuilder.SelectionProperties.prototype.onSelectionChanged = function(/*:Figure*/figure){
+lore.ore.graph.SelectionProperties.prototype.type="lore.ore.graph.SelectionProperties";
+lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Figure*/figure){
 	if (figure != null) {
-		selectedFigure = figure;
+		lore.debug.ore("User selected figure in graph editor", figure);
+		lore.ore.graph.selectedFigure = figure;
 		if (figure.metadataproperties) {
 			/*var ports = figure.getPorts();
 			var incomingconnections = ports.get(0).getConnections();
@@ -30,17 +31,16 @@ oaiorebuilder.SelectionProperties.prototype.onSelectionChanged = function(/*:Fig
 			   	//eval("props." + relpred + "=\"" + relobj + "\";");
             }*/
 			
-			nodegrid.setSource(figure.metadataproperties);
-			propertytabs.activate('nodegrid');
-			//nodegrid.getColumnModel().setColumnWidth(0,70);
+			lore.ui.nodegrid.setSource(figure.metadataproperties);
+			lore.ui.propertytabs.activate('nodegrid');
 		}
 		else if (figure.edgetype){
-			nodegrid.setSource({"relationship": figure.edgetype, "namespace": figure.edgens});
-			//nodegrid.getColumnModel().setColumnWidth(0,80);
-			propertytabs.activate('nodegrid');
+			lore.ui.nodegrid.setSource({"relationship": figure.edgetype, "namespace": figure.edgens});
+			lore.ui.propertytabs.activate('nodegrid');
 		}
 	} else {
-		nodegrid.setSource({});
-		propertytabs.activate('remgrid');
+		lore.ui.nodegrid.setSource({});
+		lore.ui.propertytabs.activate('remgrid');
+		lore.debug.ore("User deselected figure in graph editor");
 	}
 }

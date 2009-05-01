@@ -9,20 +9,22 @@
  * 
  */
 
-oaiorebuilder.ResourceFigure=function()
+lore.ore.graph.ResourceFigure=function()
 {this.cornerWidth=15;
 this.originalHeight=-1;
 this.url = "";
+this.scrollx = 0;
+this.scrolly = 0;
 this.metadataproperties = {"Resource" : this.url};
 this.cornerHeight=14.5;
 draw2d.Node.call(this);
 this.setDimension(250,150);
 };
 
-oaiorebuilder.ResourceFigure.prototype=new draw2d.Node;
-oaiorebuilder.ResourceFigure.prototype.type="oaiorebuilder.ResourceFigure";
+lore.ore.graph.ResourceFigure.prototype=new draw2d.Node;
+lore.ore.graph.ResourceFigure.prototype.type="lore.ore.graph.ResourceFigure";
 
-oaiorebuilder.ResourceFigure.prototype.createHTMLElement=function()
+lore.ore.graph.ResourceFigure.prototype.createHTMLElement=function()
 {var item=document.createElement("div");
 item.id=this.id;
 item.style.position="absolute";
@@ -112,7 +114,7 @@ item.appendChild(this.footer);
 item.appendChild(this.bottom_right);
 return item;};
 
-oaiorebuilder.ResourceFigure.prototype.setDimension=function(w,h)
+lore.ore.graph.ResourceFigure.prototype.setDimension=function(w,h)
 {draw2d.Node.prototype.setDimension.call(this,w,h);
 if(this.top_left!=null)
 {
@@ -137,12 +139,12 @@ if(this.inputPort!=null){
 }
 
 };
-oaiorebuilder.ResourceFigure.prototype.setTitle=function(title){
+lore.ore.graph.ResourceFigure.prototype.setTitle=function(title){
 	this.header.innerHTML=title;
 };
 
 
-oaiorebuilder.ResourceFigure.prototype.setContent=function(urlparam)
+lore.ore.graph.ResourceFigure.prototype.setContent=function(urlparam)
 {
 
 if (urlparam && urlparam != ""){
@@ -159,8 +161,8 @@ if (mimetype && mimetype.contains("application/rdf+xml")){
 	// resource is most likely to be a compound object - don't display contents
 	// TODO: allow annotations as contained objects as well
 	
-	this.iframearea.innerHTML="<div class='orelink' id='" + this.id + "-data'><a href='#' onclick=\"readRDF('"+ theurl + "');\">Compound Object: <br><img src='../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
-	var identifierURI = getOREIdentifier(theurl);
+	this.iframearea.innerHTML="<div class='orelink' id='" + this.id + "-data'><a href='#' onclick=\"lore.ore.readRDF('"+ theurl + "');\">Compound Object: <br><img src='../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
+	var identifierURI = lore.ore.getOREIdentifier(theurl);
 	
 	this.metadataarea.innerHTML="<ul><li class='mimeicon oreicon'>" + identifierURI + "</li></ul>";
 	
@@ -170,10 +172,9 @@ if (mimetype && mimetype.contains("application/rdf+xml")){
 } else if (mimetype && !mimetype.contains("pdf")){
 	this.iframearea.innerHTML="<object name='" + theurl + "-data' id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
 } 
-
 };
 
-oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
+lore.ore.graph.ResourceFigure.prototype.setMetadata=function(urlparam)
 {
 	this.url=urlparam;
 	this.metadataproperties["Resource"] = urlparam;
@@ -182,7 +183,7 @@ oaiorebuilder.ResourceFigure.prototype.setMetadata=function(urlparam)
 		"<a target='_blank' href='" + urlparam + "'>" + urlparam + "</a></li></ul>";
 	
 }
-oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
+lore.ore.graph.ResourceFigure.prototype.setIcon=function(theurl)
 {
 	var mimetype = "text/html";
 	try {
@@ -212,7 +213,7 @@ oaiorebuilder.ResourceFigure.prototype.setIcon=function(theurl)
 	this.metadataproperties["dc:format"] = mimetype;
 }
 
-oaiorebuilder.ResourceFigure.prototype.onDragstart=function(x,y){
+lore.ore.graph.ResourceFigure.prototype.onDragstart=function(x,y){
 	var _4677=draw2d.Node.prototype.onDragstart.call(this,x,y);
 	if(this.header==null){return false;}
 	if(y<this.cornerHeight&&x<this.width&&x>(this.width-this.cornerWidth))
@@ -227,24 +228,24 @@ oaiorebuilder.ResourceFigure.prototype.onDragstart=function(x,y){
 	}else{return _4677;}
 };
 		
-oaiorebuilder.ResourceFigure.prototype.setCanDrag=function(flag){
+lore.ore.graph.ResourceFigure.prototype.setCanDrag=function(flag){
 	draw2d.Node.prototype.setCanDrag.call(this,flag);
 	this.html.style.cursor="";
 	if(this.header==null){return;}
 	if(flag){this.header.style.cursor="move";}else{this.header.style.cursor="";}
 };
-oaiorebuilder.ResourceFigure.prototype.setWorkflow=function(_4679){
+lore.ore.graph.ResourceFigure.prototype.setWorkflow=function(_4679){
 	draw2d.Node.prototype.setWorkflow.call(this,_4679);
 	if(_4679!=null&&this.inputPort==null){
 		var orange = new draw2d.Color(255,204,51);
 		var grey = new draw2d.Color(174,174,174);
-		this.inputPort=new oaiorebuilder.InputPort();
+		this.inputPort=new lore.ore.graph.InputPort();
 		this.inputPort.setWorkflow(_4679);
 		this.inputPort.setName("input");
 		this.inputPort.setBackgroundColor(orange);
 		this.inputPort.setColor(grey);
 		this.addPort(this.inputPort,-5,this.height/2);
-		this.outputPort=new oaiorebuilder.OutputPort();
+		this.outputPort=new lore.ore.graph.OutputPort();
 		this.outputPort.setMaxFanOut(5);
 		this.outputPort.setWorkflow(_4679);
 		this.outputPort.setName("output");
@@ -253,7 +254,7 @@ oaiorebuilder.ResourceFigure.prototype.setWorkflow=function(_4679){
 		this.addPort(this.outputPort,this.width+5,this.height/2);}
 };
 
-oaiorebuilder.ResourceFigure.prototype.toggle=function(){
+lore.ore.graph.ResourceFigure.prototype.toggle=function(){
 	if(this.originalHeight==-1){
 		this.originalHeight=this.height;
 		this.iframearea.style.display="none";
@@ -270,7 +271,7 @@ oaiorebuilder.ResourceFigure.prototype.toggle=function(){
 	}
 	this.createPlusMinusIcon();
 };
-oaiorebuilder.ResourceFigure.prototype.updateMetadata=function(source){
+lore.ore.graph.ResourceFigure.prototype.updateMetadata=function(source){
 	this.metadataproperties = source;
 	if (source["Resource"] != this.url) {
 		this.setContent(source["Resource"]);
@@ -279,14 +280,14 @@ oaiorebuilder.ResourceFigure.prototype.updateMetadata=function(source){
 		this.setTitle(source["dc:title"]);
 	}
 };
-oaiorebuilder.ResourceFigure.prototype.createPlusMinusIcon=function(){
+lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon=function(){
 	if (this.originalHeight==-1){
 		this.top_right.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat top right";
 	} else {
 		this.top_right.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleplus.gif) no-repeat top right";
 	}
 }
-/*oaiorebuilder.ResourceFigure.prototype.getContextMenu=function()
+/*lore.ore.graph.ResourceFigure.prototype.getContextMenu=function()
 {
   var menu =new draw2d.Menu();
   var oThis = this;

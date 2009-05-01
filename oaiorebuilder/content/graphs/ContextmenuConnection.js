@@ -2,8 +2,7 @@
  * Connection figure that provides a context menu to set the connection type
  * The types are sourced from ontrelationships, which is populated from an ontology (see uifunctions.js)
  */
-var oaiorebuilder = {}
-oaiorebuilder.ContextmenuConnection=function()
+lore.ore.graph.ContextmenuConnection=function()
 {draw2d.Connection.call(this);
 var grey = new draw2d.Color(174,174,174);
 var darkgrey = new draw2d.Color(51,51,51);
@@ -20,31 +19,26 @@ this.lineSegments=new Array();
 this.setColor(grey);
 this.setLineWidth(1);
 };
-oaiorebuilder.ContextmenuConnection.prototype=new draw2d.Connection();
-oaiorebuilder.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype)
+lore.ore.graph.ContextmenuConnection.prototype=new draw2d.Connection();
+lore.ore.graph.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype)
 {this.edgetype=etype;
 this.edgens=enamespace;
-nodegrid.setSource({"Relationship":etype, "Schema": enamespace});
-//nodegrid.getColumnModel().setColumnWidth(0,70);
+lore.ui.nodegrid.setSource({"Relationship":etype, "Schema": enamespace});
 this.label.setText(etype);
 };
-oaiorebuilder.ContextmenuConnection.prototype.setOntologyRelationships=function(r){
-	this.ontrelationships = r;
-};
-oaiorebuilder.ContextmenuConnection.prototype.getContextMenu=function()
+lore.ore.graph.ContextmenuConnection.prototype.getContextMenu=function()
 {
-	// ontrelationships is global - set up by main html page
 	var menu=new draw2d.Menu();
 	var oThis = this;
 	// sort the menu entries
 	var keys = [];
- 	for (rel in ontrelationships){
+ 	for (rel in lore.ore.ontrelationships){
 		keys.push(rel);
  	}
  	keys.sort();
  	for (var i =0; i< keys.length; i++){
  		var rel = keys[i];
-		var enamespace=ontrelationships[rel];
+		var enamespace=lore.ore.ontrelationships[rel];
 		var etype = rel;
 		var functionstr = "oThis.setRelationshipType(\"" + enamespace + "\", \"" +  etype + "\");"
 		var thefunc = eval ("(function () {" + functionstr + "})");
