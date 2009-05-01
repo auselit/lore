@@ -5,7 +5,7 @@
     xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <xul:script type="application/x-javascript" src="overlay.js"/>
-
+  <xul:script type="application/x-javascript" src="tracing.js"/>
   <xul:stringbundleset id="stringbundleset">
     <xul:stringbundle id="oaiorebuilder-strings" src="chrome://oaiorebuilder/locale/oaiorebuilder.properties"/>
   </xul:stringbundleset>

@@ -24,9 +24,9 @@
  
  /**
  * Display all keys, values for an object
- * @param {} obj
+ * @param {} obj to dump
  */
-function dumpValues(obj){
+lore.util.dumpValues = function(obj){
 	var res="";
 	for(var k in obj){
 		res += k + ": " + obj[k] + ";\n";
@@ -42,7 +42,7 @@ function dumpValues(obj){
  * 
  * @param DOMNode nodeToRemove
  */
-function removeNodePreserveChildren(nodeToRemove) {
+lore.util.removeNodePreserveChildren = function(nodeToRemove) {
   var fragment = document.createDocumentFragment();
   while(nodeToRemove.firstChild) {
     fragment.appendChild(nodeToRemove.firstChild);
@@ -55,7 +55,7 @@ function removeNodePreserveChildren(nodeToRemove) {
  * Returns value of first child of first node, or default value if provided.
  * Unchanged from dannotate.js
  */
-function safeGetFirstChildValue (node, defaultValue)
+lore.util.safeGetFirstChildValue = function(node, defaultValue)
 {
   return ((node.length > 0) && (node[0] != null) && node[0].firstChild) ?
            node[0].firstChild.nodeValue : defaultValue ? defaultValue : '';
@@ -66,7 +66,7 @@ function safeGetFirstChildValue (node, defaultValue)
  * @param {} theElement
  * @param {} theWindow
  */
-function scrollToElement(theElement, theWindow){
+lore.util.scrollToElement = function(theElement, theWindow){
 
   var selectedPosX = 0;
   var selectedPosY = 0;
@@ -85,7 +85,7 @@ function scrollToElement(theElement, theWindow){
  * @param {} url The URL to launch
  * @param {} locbar Boolean: whether to show location bar
  */
-function launchWindow(url, locbar) {
+lore.util.launchWindow = function(url, locbar) {
 	var winOpts = 'height=650,width=800,top=200,left=250,resizable';
 	if (locbar) {
 		winOpts += ',location=1';
@@ -97,15 +97,14 @@ function launchWindow(url, locbar) {
 
 /**
  * Write file content to fileName in the extensions content folder
- * Expects a global variable 'extension'
  * @param {} content
  * @param {} fileName
  * @return {}
  */
-function writeFile(content, fileName){
+lore.util.writeFile = function(content, fileName){
 		try {
 			netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-			var fileBase = extension.path + "\\content\\";
+			var fileBase = lore.ui.extension.path + "\\content\\";
 			var filePath =  fileBase + fileName;
 			var file = Components.classes["@mozilla.org/file/local;1"]
 				.createInstance(Components.interfaces.nsILocalFile);
@@ -123,6 +122,77 @@ function writeFile(content, fileName){
 		} catch (e) {
 			throw new Error("Unable to write to file: " + e.toString());
 		}
+}
+/**
+ * Highlight part of a document
+ * @param {} xpointer Context to highlight (as xpointer)
+ * @param {} targetDocument The document in which to highlight
+ * @param {} scrollToHighlight Boolean indicating whether to scroll
+ */
+lore.util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlight) {
+  var sel = lore.m_xps.parseXPointerToRange(xpointer, targetDocument);
+  
+  var highlightNode = targetDocument.createElementNS(lore.constants.XHTML_NS, "span");
+  // lore.m_xps.markElement(highlightNode);
+  // lore.m_xps.markElementHide(highlightNode);
+  highlightNode.style.backgroundColor = "yellow";
+  sel.surroundContents(highlightNode);
+  if (scrollToHighlight) {
+    lore.util.scrollToElement(highlightNode, targetDocument.defaultView);
+  }
+  
+  return highlightNode;
+}
+/**
+ * Get the Range defined by an XPath/Xpointer (restricted to subset of
+ * expressions understood by Anozilla).
+ * modified from dannotate.js
+ */
+lore.util.getSelectionForXPath = function(xp)
+{
+	var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+    return lore.m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
+}
+/**
+ * This fn depends on a hacked version of nsXpointerService being loaded by the browser
+ * before this script is loaded from tags in the page being annotated.
+ * modified from dannotate.js
+ * @return XPath/XPointer statement for selected text, or '' if no selection.
+ */
+lore.util.getXPathForSelection = function()
+{
+  var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+  var xp = '';
+  try {
+    var seln = mainwindow.getSelection();
+    if (seln != null) {
+      var select = seln.getRangeAt(0);
+      xp = lore.m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
+    }
+  }
+  catch (ex) {
+    throw new Error('XPath create failed\n' + ex.toString());
+  }
+  return xp;
+}
+/**
+ * Return the text contents of a selection
+ * @param {} currentCtxt
+ * @return {} The selection contents
+ */
+lore.util.getSelectionText = function(currentCtxt){
+	var selText = "";
+	if (currentCtxt){
+		var idx = currentCtxt.indexOf('#');
+		var sel = lore.util.getSelectionForXPath(currentCtxt.substring(idx + 1));
+		selText = sel.toString();
+		if (selText){
+			if (selText.length > 100){
+				selText = selText.substring(0,100) + "...";
+			}
+		}
+	}
+	return selText;
 }
 /**
  * Escape characters for HTML display
@@ -160,8 +230,8 @@ String.prototype.tidyHTML = function (){
 		var res2 = res.substring((res.indexOf('</title>')+8), res.length);
 		res = res1 + res2;
 	}
-	while (res.match('<br xmlns"'+ XHTML_NS + '">')){
-		res = res.replace('<br xmlns="' + XHTML_NS + '">', '<br />');
+	while (res.match('<br xmlns"'+ lore.constants.XHTML_NS + '">')){
+		res = res.replace('<br xmlns="' + lore.constants.XHTML_NS + '">', '<br />');
 	}
 	while (res.match('<br>')){
 		res = res.replace('<br>','<br />');
@@ -174,73 +244,10 @@ String.prototype.tidyHTML = function (){
 	}
 	return res;
 };
-
+/**
+ * normalize spaces in a string
+ * @return {}
+ */
 String.prototype.normalize = function() {
 	return this.replace(/^\s*|\s(?=\s)|\s*$/g, "");
-}
-
-function highlightXPointer(xpointer, targetDocument, scrollToHighlight) {
-  var sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
-  
-  var highlightNode = targetDocument.createElementNS(XHTML_NS, "span");
-  // m_xps.markElement(highlightNode);
-  // m_xps.markElementHide(highlightNode);
-  highlightNode.style.backgroundColor = "yellow";
-  sel.surroundContents(highlightNode);
-  if (scrollToHighlight) {
-    scrollToElement(highlightNode, targetDocument.defaultView);
-  }
-  
-  return highlightNode;
-}
-/**
- * Get the Range defined by an XPath/Xpointer (restricted to subset of
- * expressions understood by Anozilla).
- * modified from dannotate.js
- */
-function getSelectionForXPath (xp)
-{
-	var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
-    return m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
-}
-/**
- * This fn depends on a hacked version of nsXpointerService being loaded by the browser
- * before this script is loaded from tags in the page being annotated.
- * modified from dannotate.js
- * @return XPath/XPointer statement for selected text, or '' if no selection.
- */
-function getXPathForSelection ()
-{
-  var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
-  var xp = '';
-  try {
-    var seln = mainwindow.getSelection();
-    if (seln != null) {
-      var select = seln.getRangeAt(0);
-      xp = m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
-    }
-  }
-  catch (ex) {
-    throw new Error('XPath create failed\n' + ex.toString());
-  }
-  return xp;
-}
-/**
- * Return the text contents of a selection
- * @param {} currentCtxt
- * @return {} The selection contents
- */
-function getSelectionText(currentCtxt){
-	var selText = "";
-	if (currentCtxt){
-		var idx = currentCtxt.indexOf('#');
-		var sel = getSelectionForXPath(currentCtxt.substring(idx + 1));
-		selText = sel.toString();
-		if (selText){
-			if (selText.length > 100){
-				selText = selText.substring(0,100) + "...";
-			}
-		}
-	}
-	return selText;
 }

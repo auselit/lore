@@ -17,9 +17,9 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
-Ext.namespace("lore");
-var vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
-lore.gui_spec = {
+
+lore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
+lore.ui.gui_spec = {
     layout: "border",
     items: [{
         region: "center",
@@ -35,7 +35,7 @@ lore.gui_spec = {
                 items: [{
                     xtype: "tabpanel",
                     id: "loreviews",
-					plugins : vismode,
+					plugins : lore.ui.vismode,
 					deferredRender: false,
                     items: [{
                         title: "Welcome",
@@ -298,7 +298,7 @@ lore.gui_spec = {
 	                          title: "Variation Annotations",
 														region: 'center',
 														split: true,
-	                          store: variationStore,
+	                          store: lore.anno.variationStore,
 	                          autoExpandColumn: 'variationName',
 	                          columns: [
 	                            {id: 'variationName', sortable: false, dataIndex: 'name'},
@@ -349,14 +349,13 @@ lore.gui_spec = {
                         title: "Compound Object",
                         id: "compoundobjecteditor",
 						deferredRender: false,
-                        plugins : vismode,
-						defaults : {plugins: vismode},
+                        plugins : lore.ui.vismode,
+						defaults : {plugins: lore.ui.vismode},
                         items: [{
                             title: "Graph Editor",
                             xtype: "panel",
                             id: "drawingarea",
-							autoScroll: true, 
-							html: "<div id='drawingareadiv'></div>"  
+							autoScroll: true  
                         }, {
                             title: "Summary",
                             xtype: "panel",
@@ -394,7 +393,7 @@ lore.gui_spec = {
     }   
     , {
         region: "west",
-        title: "Sources and Properties",
+        title: "LORE",
         border: false,
         width: 250,
         minWidth: 100,
@@ -474,6 +473,8 @@ lore.gui_spec = {
     }]
 };
 try {
-	lore.main_window = new Ext.Viewport(lore.gui_spec);
-	lore.main_window.show();
-} catch (ex) {dumpValues(ex);}
+	lore.ui.main_window = new Ext.Viewport(lore.ui.gui_spec);
+	lore.ui.main_window.show();
+} catch (ex) {
+	lore.debug.ui("Exception creating lore UI", ex);
+}

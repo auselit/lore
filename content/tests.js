@@ -15,8 +15,8 @@ function testVariationMarkers() {
   if (consoleDebug) console.debug('[testVariationMarkers() begin]');
   var sourceFrame = document.getElementById("variationSourceFrame");
   
-  highlightXPointer(TEST_VALID_XPATH_LORECOMMON, sourceFrame.contentDocument, false);
-  highlightXPointer(TEST_VALID_XPATH_LORECOMMON_2, sourceFrame.contentDocument, true);
+  lore.util.highlightXPointer(TEST_VALID_XPATH_LORECOMMON, sourceFrame.contentDocument, false);
+  lore.util.highlightXPointer(TEST_VALID_XPATH_LORECOMMON_2, sourceFrame.contentDocument, true);
   
   if (consoleDebug) console.debug('[testVariationMarkers() end]');
 }
@@ -31,8 +31,8 @@ function testParse() {
   if (targetFrame.contentDocument) {
     if (consoleDebug) console.debug('Target frame has content document.');
   }
-  // var sel = m_xps.parseXPointerToRange(TEST_VALID_XPATH, document);
-  var sel = m_xps.parseXPointerToRange(TEST_XPATH_4, targetFrame.contentDocument);
+  // var sel = lore.m_xps.parseXPointerToRange(TEST_VALID_XPATH, document);
+  var sel = lore.m_xps.parseXPointerToRange(TEST_XPATH_4, targetFrame.contentDocument);
   
   if (consoleDebug) console.debug('Parse result: ');
   if (consoleDebug) console.debug(sel);

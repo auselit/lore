@@ -159,9 +159,9 @@
 .welcome-icon {
     background-image: url(../skin/icons/oaioreicon-sm.png) !important;
 }
-#drawingareadiv {
+#drawingarea {
 	position:relative;
-	width: 99% !important;
+	overflow:auto;
 }
 #remrdfview {
  	color: #51666b;

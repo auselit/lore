@@ -47,12 +47,14 @@ var oaiorebuilder = {
   updateOREBrowser: function(aURI) {
   	if (aURI){
     	if (aURI.spec == this.oldURL) return;
-		  window.graphiframe.updateSourceLists(aURI.spec);
-    	this.oldURL = aURI.spec;
+    	if (typeof(window.graphiframe.lore.ui.updateSourceLists) == 'function'){
+		  window.graphiframe.lore.ui.updateSourceLists(aURI.spec);
+		  this.oldURL = aURI.spec;
+    	}
   	}
   },
   doTextMining: function() {
-  	window.graphiframe.requestOpenCalaisMetadata();
+  	window.graphiframe.lore.textm.requestOpenCalaisMetadata();
   },
   showContextMenu1: function(event) {
     document.getElementById("context-oaiorebuilder").hidden = gContextMenu.onImage;
@@ -62,7 +64,7 @@ var oaiorebuilder = {
   },
   onMenuItemCommand: function(e) {
 	if (gContextMenu.onLink)
-		window.graphiframe.addFigure(gContextMenu.linkURL);
+		window.graphiframe.lore.ore.graph.addFigure(gContextMenu.linkURL);
   },
   onMenuPopup: function (e){
   	gContextMenu.showItem('addimage-oaiorebuilder',gContextMenu.onImage);
@@ -76,11 +78,11 @@ var oaiorebuilder = {
   },
   addImageMenuItemCommand: function(e) {
   	if (gContextMenu.onImage)
-		window.graphiframe.addFigure(gContextMenu.imageURL);
+		window.graphiframe.lore.ore.graph.addFigure(gContextMenu.imageURL);
   },
   addBGImageMenuItemCommand: function(e) {
   	if (gContextMenu.hasBGImage)
-		window.graphiframe.addFigure(gContextMenu.bgImageURL);
+		window.graphiframe.lore.ore.graph.addFigure(gContextMenu.bgImageURL);
   },
   onToolbarButtonCommand: function(e) {
     this.toggleBar();
@@ -91,32 +93,32 @@ var oaiorebuilder = {
 	if (contentBox.getAttribute("collapsed") == "true") {
 		contentBox.setAttribute("collapsed", "false");
 		contentSplitter.setAttribute("collapsed", "false");
-		window.graphiframe.loreOpen();
+		window.graphiframe.lore.ui.loreOpen();
 		
 	} else {
 		contentBox.setAttribute("collapsed", "true");
 		contentSplitter.setAttribute("collapsed", "true");
-		window.graphiframe.loreClose();
+		window.graphiframe.lore.ui.loreClose();
 	}
   },
   loadRDF: function() {
 
-  	window.graphiframe.loadRDF();
+  	window.graphiframe.lore.ore.loadRDF();
   },
   loadRDFFromRepos: function() {
-  	window.graphiframe.loadRDFFromRepos();
+  	window.graphiframe.lore.ore.loadRDFFromRepos();
   },
   addAnnotation: function () {
-  	window.graphiframe.addAnnotation();
+  	window.graphiframe.lore.anno.addAnnotation();
   },
   saveRDF: function () {
-  	window.graphiframe.saveRDFToRepository();
+  	window.graphiframe.lore.ore.saveRDFToRepository();
   },
   addGraphNode: function () {
-		window.graphiframe.addFigure(window.content.location.href);
+		window.graphiframe.lore.ore.graph.addFigure(window.content.location.href);
   },
   resetGraph: function () {
-  	window.graphiframe.hideMarker();
+  	window.graphiframe.lore.anno.hideMarker();
   	window.graphiframe.location.reload(true);
   },
   openAbout: function (){
@@ -133,9 +135,9 @@ var oaiorebuilder = {
 	 var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
 	 var annoserver = this.prefs.getCharPref("annoserver");
 	 
-	 window.graphiframe.setdccreator(dccreator);
-	 window.graphiframe.setrelonturl(relonturl);
-	 window.graphiframe.setRepos(rdfrepos, rdfrepostype, annoserver);
+	 window.graphiframe.lore.ui.setdccreator(dccreator);
+	 window.graphiframe.lore.ore.setrelonturl(relonturl);
+	 window.graphiframe.lore.ui.setRepos(rdfrepos, rdfrepostype, annoserver);
   	}
   },
   popOutWindow: function (){
@@ -152,8 +154,8 @@ var oaiorebuilder = {
                       .getService(Components.interfaces.nsIPrefService);
 	var oaiorebuilderprefs = prefservice.getBranch("extensions.lore.");
 	var relonturl = oaiorebuilderprefs.getCharPref("relonturl");
-  	this.graphiframe.setrelonturl(relonturl);
-	this.graphiframe.loadRelationshipsFromOntology();
+  	this.graphiframe.lore.ore.setrelonturl(relonturl);
+	this.graphiframe.lore.ore.loadRelationshipsFromOntology();
 	return true;
   }
 

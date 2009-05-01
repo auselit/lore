@@ -18,64 +18,13 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var consoleDebug = false;
-var lorevisible;
-
-// Global variables for accessing Ext components
-var propertytabs;
-var grid;
-var aggregrid;
-var nodegrid;
-var lorestatus;
-var loreviews;
-var annotationstreeroot;
-var remstreeroot;
-var welcometab;
-var annotationstab;
-var annotabsm;
-var annotabds;
-var annotationsform;
-var compoundobjecttab;
-var rdftab;
-var summarytab;
-var smiltab;
-var textminingtab;
-
-var annotimeline;
-var annoEventSource;
-
-// Global variables for graphical view
-var oreGraph;
-var oreGraphLookup = {};
-var oreGraphModified;
-var oreGraphCommandListener;
-var oreGraphSelectionListener;
-var selectedFigure; // last selected figure - updated by SelectionProperties.js
-var dummylayoutx;
-var dummylayouty;
-
-// Global variables for relationship ontology
-var onturl;
-var ontrelationships;
-var resource_metadata_props = [];
-var all_props = METADATA_PROPS;
-
-// repository access URLs
-var reposURL; // compound object repository
-var reposType; // type of compound object repository (eg sesame)
-var annoURL; // annotation server
-
-var annoMarker;
-var currentURL;
-var loadedURL;
-var defaultCreator;
-var m_xps; // Instance of hacked Mozdev XPointer service
-
 // Reference to the Extension 
-var extension = Components.classes["@mozilla.org/extensions/manager;1"]
+lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
-		.getInstallLocation(EXTENSION_ID)
-		.getItemLocation(EXTENSION_ID);
+		.getInstallLocation(lore.constants.EXTENSION_ID)
+		.getItemLocation(lore.constants.EXTENSION_ID);
+
+
 /**
  * Helper function for setUpMetadataMenu
  * @param {Object} menu
@@ -83,7 +32,7 @@ var extension = Components.classes["@mozilla.org/extensions/manager;1"]
  * @param {Object} propname
  * @param {Object} op
  */
-function _make_menu_entry(menu, gridname, propname, op) {
+lore.ui._make_menu_entry = function(menu, gridname, propname, op) {
 	var funcstr = "";
 	funcstr += "var props = " + gridname + ".getSource();";
 	if (op == "add") {
@@ -106,21 +55,21 @@ function _make_menu_entry(menu, gridname, propname, op) {
  * @param {Object} the_grid The property grid object on which to create the menus
  * @param {Object} gridname The display name of the property grid
  */
-function setUpMetadataMenu(the_grid, gridname){
+lore.ui.setUpMetadataMenu = function(the_grid, gridname){
     var addMetadataMenu = new Ext.menu.Menu({
         id: gridname + "-add-metadata-menu"
     });
     var remMetadataMenu = new Ext.menu.Menu({
         id: gridname + "-rem-metadata-menu"
     });
-    for (var i = 0; i < METADATA_PROPS.length; i++) {
-        _make_menu_entry(addMetadataMenu, gridname, METADATA_PROPS[i], "add");
-        _make_menu_entry(remMetadataMenu, gridname, METADATA_PROPS[i], "rem");
+    for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
+        lore.ui._make_menu_entry(addMetadataMenu, gridname, lore.ore.METADATA_PROPS[i], "add");
+        lore.ui._make_menu_entry(remMetadataMenu, gridname, lore.ore.METADATA_PROPS[i], "rem");
     }
-    if (gridname == "nodegrid") {
-        for (var i = 0; i < resource_metadata_props.length; i++) {
-            _make_menu_entry(addMetadataMenu, gridname, resource_metadata_props[i], "add");
-            _make_menu_entry(remMetadataMenu, gridname, resource_metadata_props[i], "rem");
+    if (gridname == "lore.ui.nodegrid") {
+        for (var i = 0; i < lore.resource_metadata_props.length; i++) {
+            lore.ui._make_menu_entry(addMetadataMenu, gridname, lore.resource_metadata_props[i], "add");
+            lore.ui._make_menu_entry(remMetadataMenu, gridname, lore.resource_metadata_props[i], "rem");
         }
     } 
     var tbar = the_grid.getTopToolbar();
@@ -137,178 +86,176 @@ function setUpMetadataMenu(the_grid, gridname){
 /**
  * Initialise the graphical view
  */
-function initGraphicalView(){
-	compoundobjecttab.activate("drawingarea");	
-	oreGraphLookup = {};
-	oreGraphModified = false;
-	if (oreGraph){
-		oreGraph.getCommandStack().removeCommandStackEventListener(oreGraphCommandListener);
-		oreGraph.removeSelectionListener(oreGraphSelectionListener);
-		oreGraph.clear();
+lore.ui.initGraphicalView = function () {
+	lore.ui.compoundobjecttab.activate("drawingarea");	
+	lore.ore.graph.lookup = {};
+	lore.ore.graph.modified = false;
+	if (lore.ore.graph.Graph){
+		lore.ore.graph.Graph.getCommandStack().removeCommandStackEventListener(lore.ore.graph.gCommandListener);
+		lore.ore.graph.Graph.removeSelectionListener(lore.ore.graph.gSelectionListener);
+		lore.ore.graph.Graph.clear();
 	} else {
-		oreGraph = new draw2d.Workflow("drawingareadiv");
-		oreGraph.scrollArea = document.getElementById("drawingarea");
+		lore.ore.graph.Graph = new draw2d.Workflow("drawingarea");
+		lore.ore.graph.Graph.scrollArea = document.getElementById("drawingarea");
 	}
-	oreGraphSelectionListener = new oaiorebuilder.SelectionProperties(oreGraph);
-	oreGraph.addSelectionListener(oreGraphSelectionListener);
-	oreGraphCommandListener = new oaiorebuilder.CommandListener();
-	oreGraph.getCommandStack().addCommandStackEventListener(oreGraphCommandListener);
-	selectedFigure = null;
-	dummylayoutx = NODE_SPACING;
-	dummylayouty = NODE_SPACING;
+	lore.ore.graph.gSelectionListener = new lore.ore.graph.SelectionProperties(lore.ore.graph.Graph);
+	lore.ore.graph.Graph.addSelectionListener(lore.ore.graph.gSelectionListener);
+	lore.ore.graph.gCommandListener = new lore.ore.graph.CommandListener();
+	lore.ore.graph.Graph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
+	lore.ore.graph.selectedFigure = null; // last selected figure - updated by SelectionProperties.js
+	lore.ore.graph.dummylayoutx = lore.ore.NODE_SPACING;
+	lore.ore.graph.dummylayouty = lore.ore.NODE_SPACING;
 
 }
 /**
  * Load domain ontology
  */
-function initOntologies(){
-	ontrelationships = {};
+lore.ui.initOntologies = function (){
+	lore.ore.ontrelationships = {};
 	window.parent.oaiorebuilder.loadPrefs();
-	loadRelationshipsFromOntology();
+	lore.ore.loadRelationshipsFromOntology();
 }
 /**
  * Initialise property grids and set up listeners
  */
-function initProperties(){
+lore.ui.initProperties = function (){
 	var today = new Date();
-	grid.setSource({
+	lore.ui.grid.setSource({
 		"rdf:about" : "http://example.org/rem",
 		"ore:describes" : "#aggregation",
 		"dc:creator" : "",
 		"dcterms:modified" : today,
 		"dcterms:created" : today,
-		"rdf:type" : RESOURCE_MAP
+		"rdf:type" : lore.constants.RESOURCE_MAP
 	});
-	nodegrid.on("propertychange", handleNodePropertyChange);
+	lore.ui.nodegrid.on("propertychange", lore.ore.handleNodePropertyChange);
 	
-	grid.on("beforeedit",function(e){
+	lore.ui.grid.on("beforeedit",function(e){
 		//don't allow these fields to be edited
 		if(e.record.id == "ore:describes" || e.record.id == "rdf:type"){
 			e.cancel = true;
 		}
 	});
-	nodegrid.on("beforeedit", function(e){
+	lore.ui.nodegrid.on("beforeedit", function(e){
 		// don't allow format field to be edited
 		if (e.record.id == "dc:format"){
 			e.cancel = true;
 		}
 	});
 
-	setUpMetadataMenu(grid, "grid"); 
-	setUpMetadataMenu(nodegrid,"nodegrid");
-	propertytabs.activate("remgrid");	           					    
+	lore.ui.setUpMetadataMenu(lore.ui.grid, "lore.ui.grid"); 
+	lore.ui.setUpMetadataMenu(lore.ui.nodegrid,"lore.ui.nodegrid");
+	lore.ui.propertytabs.activate("remgrid");	           					    
 }
 /**
  * Initialise the Extjs UI components and listeners
  */
-function initExtComponents(){
+lore.ui.initExtComponents = function (){
 	// set up glocal variable references to main UI components
-	propertytabs = Ext.getCmp("propertytabs");
-	grid = Ext.getCmp("remgrid");
-	nodegrid = Ext.getCmp('nodegrid');
-	lorestatus = Ext.getCmp('lorestatus');
-	rdftab = Ext.getCmp("remrdfview");
-	annotationstab = Ext.getCmp("annotationslist");
-	annotabsm = annotationstab.getSelectionModel();
-	annotabds = annotationstab.getStore();
-	annotationsform = Ext.getCmp("annotationslistform").getForm();
-	loreviews = Ext.getCmp("loreviews");
-	welcometab = Ext.getCmp("welcome");
-	summarytab = Ext.getCmp("remlistview");
-	smiltab = Ext.getCmp("remsmilview");
-	compoundobjecttab = Ext.getCmp("compoundobjecteditor");
-	textminingtab = Ext.getCmp("textmining");
+	lore.ui.propertytabs = Ext.getCmp("propertytabs");
+	lore.ui.grid = Ext.getCmp("remgrid");
+	lore.ui.nodegrid = Ext.getCmp('nodegrid');
+	lore.ui.lorestatus = Ext.getCmp('lorestatus');
+	lore.ui.rdftab = Ext.getCmp("remrdfview");
+	lore.anno.annotabsm = Ext.getCmp("annotationslist").getSelectionModel();
+	lore.anno.annotabds = Ext.getCmp("annotationslist").getStore();
+	lore.ui.annotationsform = Ext.getCmp("annotationslistform").getForm();
+	lore.ui.loreviews = Ext.getCmp("loreviews");
+	lore.ui.welcometab = Ext.getCmp("welcome");
+	lore.ui.summarytab = Ext.getCmp("remlistview");
+	lore.ui.smiltab = Ext.getCmp("remsmilview");
+	lore.ui.compoundobjecttab = Ext.getCmp("compoundobjecteditor");
+	lore.ui.textminingtab = Ext.getCmp("textmining");
 	// set up the sources tree
 	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
-	_clearTree(sourcestreeroot);
-	annotationstreeroot = new Ext.tree.TreeNode({
+	lore.ui._clearTree(sourcestreeroot);
+	lore.ui.annotationstreeroot = new Ext.tree.TreeNode({
 		id: "annotationstree",
 		text: "Annotations",
 		draggable: false,
 		iconCls: "tree-anno"
 	});
-	remstreeroot = new Ext.tree.TreeNode({
+	lore.ui.remstreeroot = new Ext.tree.TreeNode({
 		id: "remstree",
 		text: "Compound Objects",
 		draggable: false,
 		iconCls: "tree-ore"
 	});
-	recenttreeroot = new Ext.tree.TreeNode({
+	lore.ui.recenttreeroot = new Ext.tree.TreeNode({
 		id: "recenttree",
 		text: "Recently opened",
 		draggable: false,
 		iconCls: "tree-ore"
 	});
-	sourcestreeroot.appendChild(annotationstreeroot);
-	sourcestreeroot.appendChild(remstreeroot);
-	sourcestreeroot.appendChild(recenttreeroot);
+	sourcestreeroot.appendChild(lore.ui.annotationstreeroot);
+	sourcestreeroot.appendChild(lore.ui.remstreeroot);
+	sourcestreeroot.appendChild(lore.ui.recenttreeroot);
 	
 	// set up event handlers
-	if (rdftab) {
-		rdftab.on("activate", updateRDFHTML);
+	if (lore.ui.rdftab) {
+		lore.ui.rdftab.on("activate", lore.ore.updateRDFHTML);
 	}
-	compoundobjecttab.on("beforeremove", closeRDFView);
+	lore.ui.compoundobjecttab.on("beforeremove", lore.ore.closeRDFView);
 	// create a context menu for the compound object tab to hide/show RDF/XML Tab
-	compoundobjecttab.contextmenu = new Ext.menu.Menu({
+	lore.ui.compoundobjecttab.contextmenu = new Ext.menu.Menu({
 		  id : "co-context-menu"
 	});
-	compoundobjecttab.contextmenu.add({
+	lore.ui.compoundobjecttab.contextmenu.add({
 			text : "Show RDF/XML",
-			handler : openRDFView
+			handler : lore.ore.openRDFView
 	});
-	loreviews.on("contextmenu", function (tabpanel, panel, e){
+	lore.ui.loreviews.on("contextmenu", function (tabpanel, panel, e){
 		if (panel.id == 'compoundobjecteditor') {
-			compoundobjecttab.contextmenu.showAt(e.xy);
+			lore.ui.compoundobjecttab.contextmenu.showAt(e.xy);
 		}
 	});
 	
-	summarytab.on("activate", showCompoundObjectSummary);
-	smiltab.on("activate",showSMIL);
+	lore.ui.summarytab.on("activate", lore.ore.showCompoundObjectSummary);
+	lore.ui.smiltab.on("activate",lore.ore.showSMIL);
 	
-	annotabsm.on('rowdeselect', handleAnnotationDeselection);
-	annotabsm.on('rowselect', handleAnnotationSelection);
+	lore.anno.annotabsm.on('rowdeselect', lore.anno.handleAnnotationDeselection);
+	lore.anno.annotabsm.on('rowselect', lore.anno.handleAnnotationSelection);
 	
-	Ext.getCmp("cancelupdbtn").on('click', handleCancelAnnotationEdit);
-	Ext.getCmp("updannobtn").on('click', handleSaveAnnotationChanges);
-	Ext.getCmp("delannobtn").on('click', handleDeleteAnnotation);
-	Ext.getCmp("updctxtbtn").on('click', handleUpdateAnnotationContext);
-	Ext.getCmp("updrctxtbtn").on('click', handleUpdateAnnotationVariantContext);
+	Ext.getCmp("cancelupdbtn").on('click', lore.anno.handleCancelAnnotationEdit);
+	Ext.getCmp("updannobtn").on('click', lore.anno.handleSaveAnnotationChanges);
+	Ext.getCmp("delannobtn").on('click', lore.anno.handleDeleteAnnotation);
+	Ext.getCmp("updctxtbtn").on('click', lore.anno.handleUpdateAnnotationContext);
+	Ext.getCmp("updrctxtbtn").on('click', lore.anno.handleUpdateAnnotationVariantContext);
 	
-	Ext.getCmp("variantfield").on('specialkey',launchFieldWindow);
-	Ext.getCmp("originalfield").on('specialkey',launchFieldWindow);
+	Ext.getCmp("variantfield").on('specialkey',lore.anno.launchFieldWindow);
+	Ext.getCmp("originalfield").on('specialkey',lore.anno.launchFieldWindow);
 	
-	Ext.getCmp("typecombo").on('valid', handleAnnotationTypeChange);
-	setAnnotationFormUI(false);
+	Ext.getCmp("typecombo").on('valid', lore.anno.handleAnnotationTypeChange);
+	lore.anno.setAnnotationFormUI(false);
 		
 	// set up variation annotations panel
 	var variationsPanel = Ext.getCmp("variationannotations");
-  	variationsPanel.on("render", onVariationsShow);
-  	variationsPanel.on("show", onVariationsShow);
-  	variationsPanel.on("resize", onVariationsShow);    
+  	variationsPanel.on("render", lore.anno.onVariationsShow);
+  	variationsPanel.on("show", lore.anno.onVariationsShow);
+  	variationsPanel.on("resize", lore.anno.onVariationsShow);    
 	var variationsListing = Ext.getCmp("variationannotationlisting");
-	variationsListing.on("rowclick", onVariationListingClick);
-    onVariationsShow(variationsPanel);
+	variationsListing.on("rowclick", lore.anno.onVariationListingClick);
+    lore.anno.onVariationsShow(variationsPanel);
 	
 	// set up welcome tab contents
-	welcometab.body.update("<iframe height='100%' width='100%' src='chrome://oaiorebuilder/content/welcome.html'></iframe>");
-	
+	lore.ui.welcometab.body.update("<iframe height='100%' width='100%' src='chrome://oaiorebuilder/content/welcome.html'></iframe>");
 }
 
 /**
  * Create a Timeline visualisation
  */
-function initTimeline(){
+lore.ui.initTimeline = function (){
 	var tl = Ext.getCmp("annotimeline");
 	if (typeof Timeline !== "undefined") {
-		annoEventSource = new Timeline.DefaultEventSource();
+		lore.anno.annoEventSource = new Timeline.DefaultEventSource();
 		var bandConfig = [Timeline.createBandInfo({
-			eventSource: annoEventSource,
+			eventSource: lore.anno.annoEventSource,
 			width: "80%",
 			intervalUnit: Timeline.DateTime.MONTH,
 			intervalPixels: 100,
 			timeZone: 10
 		}), Timeline.createBandInfo({
-			eventSource: annoEventSource,
+			eventSource: lore.anno.annoEventSource,
 			width: "20%",
 			intervalUnit: Timeline.DateTime.YEAR,
 			intervalPixels: 200,
@@ -316,8 +263,8 @@ function initTimeline(){
 		})];
 		bandConfig[1].syncWith = 0;
         bandConfig[1].highlight = true;
-		annotimeline = Timeline.create(document.getElementById("annotimeline"),bandConfig);
-		tl.on("resize", function(){annotimeline.layout();});
+		lore.anno.annotimeline = Timeline.create(document.getElementById("annotimeline"), bandConfig);
+		tl.on("resize", function(){lore.anno.annotimeline.layout();});
 		
 	}
 	
@@ -326,31 +273,33 @@ function initTimeline(){
 /**
  * Initialise LORE
  */
-function init(){
+lore.ui.init = function (){
 	
-	m_xps = new XPointerService();  
-	currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
-	 
+
+	lore.m_xps = new XPointerService();
+	lore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
+	lore.resource_metadata_props = [];
+	lore.all_props = lore.ore.METADATA_PROPS;
 	if (window.parent.document.getElementById('oobContentBox')
 								.getAttribute("collapsed") == "true") {
-		lorevisible = false;
+		lore.ui.lorevisible = false;
 	} else {
-		lorevisible = true;
+		lore.ui.lorevisible = true;
 	}
-	initExtComponents();
-	initProperties();
-	initOntologies();
-	initTimeline();
-	initGraphicalView();
+	lore.ui.initExtComponents();
+	lore.ui.initProperties();
+	lore.ui.initOntologies();
+	lore.ui.initTimeline();
+	lore.ui.initGraphicalView();
 	
-	loreInfo("Welcome to LORE");
-	if(currentURL && currentURL != 'about:blank' 
-		&& currentURL != '' && lorevisible){
-		updateSourceLists(currentURL);
+	lore.ui.loreInfo("Welcome to LORE");
+	if(lore.ui.currentURL && lore.ui.currentURL != 'about:blank' 
+		&& lore.ui.currentURL != '' && lore.ui.lorevisible){
+		lore.ui.updateSourceLists(lore.ui.currentURL);
 	}
-	//requestOpenCalaisMetadata();
+	lore.debug.ui("LORE init complete", this); 
 }
 
-Ext.EventManager.onDocumentReady(init);
+Ext.EventManager.onDocumentReady(lore.ui.init);
 
 
