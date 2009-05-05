@@ -390,9 +390,10 @@ lore.anno.onVariationsShow= function(variationsPanel) {
 }
 
 lore.anno.highlightVariationFrames = function(variationNumber) {
+		
   var sourceFrame = document.getElementById("variationSourceFrame");
   var targetFrame = document.getElementById("variationTargetFrame");
-	
+  
 	var sourceVariationAlreadyPresent = false;
 	var targetVariationAlreadyPresent = false;
 
@@ -468,11 +469,26 @@ lore.anno.onVariationListingClick = function(listingPanel, rowIndex){
 	}
 }
 
+lore.anno.handleFrameLoad = function(e){
+	var sourceFrame = document.getElementById("variationSourceFrame");
+  	var targetFrame = document.getElementById("variationTargetFrame");
+  	if (e.target == sourceFrame){
+  		lore.debug.anno("variations source frame loaded",e);
+  	} else if (e.target == targetFrame){
+  		lore.debug.anno("variations target frame loaded",e);
+  	} else {
+  		lore.debug.anno("frame loaded",e);
+  	}
+}
+
 lore.anno.setVariationFrameURLs = function(sourceURL, targetURL) {
   var sourceFrame = document.getElementById("variationSourceFrame");
   var targetFrame = document.getElementById("variationTargetFrame");
   var changeMade = false;
-  
+   
+  lore.debug.anno("set variation urls: " + sourceURL + " " + targetURL);
+
+	
   if (sourceFrame.src != sourceURL) {
     sourceFrame.src = sourceURL;
 		changeMade = true;
