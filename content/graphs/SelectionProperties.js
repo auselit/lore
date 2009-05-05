@@ -41,6 +41,5 @@ lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Fi
 	} else {
 		lore.ui.nodegrid.setSource({});
 		lore.ui.propertytabs.activate('remgrid');
-		lore.debug.ore("User deselected figure in graph editor");
 	}
 }

@@ -120,7 +120,8 @@ lore.util.writeFile = function(content, fileName){
 			stream.close();
 			return filePath;
 		} catch (e) {
-			throw new Error("Unable to write to file: " + e.toString());
+			lore.debug.ui("Unable to write to file: " + fileName, e);
+			throw new Error("Unable to write to file" + e.toString());
 		}
 }
 /**

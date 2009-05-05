@@ -227,8 +227,8 @@ lore.ore.createRDF=function(escape) {
 			+ fullclosetag;
 	// TODO: any other types for aggregation eg Journal Article
 
-	for (i = 0; i < lore.all_props.length; i++) {
-		rdfxml += lore.ore._serialise_property(lore.all_props[i], aggreprops, ltsymb, nlsymb);
+	for (i = 0; i < lore.ore.all_props.length; i++) {
+		rdfxml += lore.ore._serialise_property(lore.ore.all_props[i], aggreprops, ltsymb, nlsymb);
 	}
 	var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
 	var resourcerdf = "";
@@ -343,14 +343,14 @@ lore.ore.readRDF=function(rdfURL) {
 					"rdf:type" : lore.constants.RESOURCE_MAP
 				};
 				// TODO: perhaps should read any property, not just those in the list?
-				for (var i = 0; i < lore.all_props.length; i++) {
-					lore.ore._read_property(theRDF, theprops, remurl, lore.all_props[i]);
+				for (var i = 0; i < lore.ore.all_props.length; i++) {
+					lore.ore._read_property(theRDF, theprops, remurl, lore.ore.all_props[i]);
 				}
 				lore.ui.grid.setSource(theprops);
 
 				// create a node figure for each aggregated resource
 				var aggregationID = remurl + "#aggregation";
-				aggregates = theRDF.Match(null, aggregationID,
+				var aggregates = theRDF.Match(null, aggregationID,
 						lore.constants.ORETERMS_NS + "aggregates",
 						null);
 				var resourcerels = [];
@@ -491,7 +491,7 @@ lore.ore.loadRDF=function() {
  */
 lore.ore.loadRelationshipsFromOntology=function() {
 	// Properties for aggregated resources (also populated from ontology)
-	lore.resource_metadata_props = ["rdf:type", "ore:isAggregatedBy"];
+	lore.ore.resource_metadata_props = ["rdf:type", "ore:isAggregatedBy"];
 	if (lore.ore.onturl) {	
 		var ontRDF = new RDF();
 		lore.ore.ontrelationships = {};
@@ -512,10 +512,10 @@ lore.ore.loadRelationshipsFromOntology=function() {
 					for (i = 0; i < relResult.length; i++) {
 						tmp_resource_metadata[i] = relResult[i].subject;
 					}
-					lore.resource_metadata_props = lore.resource_metadata_props.concat(tmp_resource_metadata);
-					lore.resource_metadata_props.sort();
-					lore.all_props = lore.ore.METADATA_PROPS.concat(lore.resource_metadata_props);
-					lore.all_props.sort();
+					lore.ore.resource_metadata_props = lore.ore.resource_metadata_props.concat(tmp_resource_metadata);
+					lore.ore.resource_metadata_props.sort();
+					lore.ore.all_props = lore.ore.METADATA_PROPS.concat(lore.ore.resource_metadata_props);
+					lore.ore.all_props.sort();
 				}, false, function(args) {
 					lore.ui.loreWarning(args.status + "\n" + args.contentType + " "
 							+ args.content);

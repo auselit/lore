@@ -72,21 +72,14 @@ lore.ui.gui_spec = {
 									}
 								}),
 								ds: new Ext.data.JsonStore({
-									fields: [{
-										name: 'created'
-									}, {
-										name: 'creator'
-									}, {
-										name: 'title'
-									}, {
-										name: 'body'
-									}, {
-										name: 'modified'
-									}, {
-										name: 'type'
-									}, {
-										name: 'lang'
-									}, {
+									fields: [
+										{name: 'created'}, 
+										{name: 'creator'}, 
+										{name: 'title'}, 
+										{name: 'body'}, 
+										{name: 'modified'}, 
+										{name: 'type'}, 
+										{name: 'lang'}, {
 										name: 'resource'
 									}, {
 										name: 'id'
@@ -185,9 +178,7 @@ lore.ui.gui_spec = {
 									name: 'original',
 									id: 'originalfield',
 									readOnly: true,
-									style: 'background:none;border:none',
-								//hidden: true,
-								//hideLabel: true
+									style: 'background:none;border:none'
 								}, {
 									fieldLabel: 'Original Context Xpointer',
 									name: 'originalcontext',
@@ -205,9 +196,7 @@ lore.ui.gui_spec = {
 									name: 'variant',
 									id: 'variantfield',
 									readOnly: true,
-									style: 'background:none;border:none',
-								//hidden: true,
-								//hideLabel: true
+									style: 'background:none;border:none'
 								}, {
 									fieldLabel: 'Variant Context Xpointer',
 									name: 'variantcontext',
@@ -243,13 +232,13 @@ lore.ui.gui_spec = {
 									name: 'creator'
 								}, {
 									fieldLabel: 'Variation Agent',
-									name: 'variationagent',
+									name: 'variationagent'
 								}, {
 									fieldLabel: 'Variation Place',
-									name: 'variationplace',
+									name: 'variationplace'
 								}, {
 									fieldLabel: 'Variation Date',
-									name: 'variationdate',
+									name: 'variationdate'
 								}, {
 									fieldLabel: 'Body',
 									xtype: 'htmleditor',
@@ -301,26 +290,19 @@ lore.ui.gui_spec = {
 	                          store: lore.anno.variationStore,
 	                          autoExpandColumn: 'variationName',
 	                          columns: [
-	                            {id: 'variationName', sortable: false, dataIndex: 'name'},
-	                          ],
-	                        }],
+	                            {id: 'variationName', sortable: false, dataIndex: 'name'}
+	                          ]
+	                        }]
 												},
                         {
                           xtype: "panel",
                           id: "variationannotationsource",
                           title: "Original Resource",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationSourceLabel">about:blank</div><iframe onload="console.debug(\'Source load.\');" id="variationSourceFrame" height="350px" width="490px" src="about:blank"></iframe></div>',
+                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationSourceLabel">about:blank</div><iframe onload="lore.debug.anno(\'Source load.\',this);" id="variationSourceFrame" name="variationsource" height="350px" width="490px" src="about:blank"></iframe></div>',
                           layout: "fit",
 						  autoScroll: true,
-                          /*
-                          floating: true,
-                          draggable: lore.dragHandler,
-                          width: 500,
-                          height: 400,
-                          x: 10,
-                          y: 10,
-                          */
-                          columnWidth: .40,
+                         
+                          columnWidth: .40
                         },
                         {
                           xtype: "panel",
@@ -337,8 +319,8 @@ lore.ui.gui_spec = {
                           x: 800,
                           y: 10,
                           */
-                          columnWidth: .40,
-                        }],
+                          columnWidth: .40
+                        }]
                     }, {
 							title: "Annotation Timeline",
 							xtype: "panel",
