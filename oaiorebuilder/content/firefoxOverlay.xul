@@ -31,7 +31,8 @@
           <xul:toolbarbutton id="text-mining" tooltiptext="&oaiorebuilder.textMiningTip;"  oncommand="oaiorebuilder.doTextMining();"/>
         </xul:toolbar>
       </xul:toolbox>
-      <xul:iframe flex="3" height="500px" width="100%" src="chrome://oaiorebuilder/content/loreui.html" name="graphiframe" id="graphiframe"/>
+      <xul:tooltip id="aHTMLTooltip" onpopupshowing="return oaiorebuilder.fillInHTMLTooltip(document.tooltipNode);" />
+      <xul:iframe tooltip="aHTMLTooltip" flex="3" height="500px" width="100%" src="chrome://oaiorebuilder/content/loreui.html" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
   </xul:vbox>
   <xul:popup id="contentAreaContextMenu" onpopupshown="oaiorebuilder.onMenuPopup(event)">

@@ -157,7 +157,34 @@ var oaiorebuilder = {
   	this.graphiframe.lore.ore.setrelonturl(relonturl);
 	this.graphiframe.lore.ore.loadRelationshipsFromOntology();
 	return true;
-  }
+  },
+  fillInHTMLTooltip: function(tipElement) {
+    // From http://forums.mozillazine.org/viewtopic.php?f=19&t=561451&start=0&st=0&sk=t&sd=a
+    var retVal = false;
+    if (tipElement.namespaceURI == "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul") {
+        return retVal;
+    }
+    const XLinkNS = "http://www.w3.org/1999/xlink";
+    var titleText = null;
+    var XLinkTitleText = null;
+    while (!titleText && !XLinkTitleText && tipElement) {
+        if (tipElement.nodeType == Node.ELEMENT_NODE) {
+            titleText = tipElement.getAttribute("title");
+            XLinkTitleText = tipElement.getAttributeNS(XLinkNS, "title");
+        }
+        tipElement = tipElement.parentNode;
+    }
+    var texts = [titleText, XLinkTitleText];
+    var tipNode = document.getElementById("aHTMLTooltip");
+    for (var i = 0; i < texts.length; ++i) {
+        var t = texts[i];
+        if (t && t.search(/\S/) >= 0) {
+            tipNode.setAttribute("label", t.replace(/\s+/g, " "));
+            retVal = true;
+        }
+    }
+    return retVal;
+}
 
 };
 window.addEventListener("load", function(e) { oaiorebuilder.onLoad(e); }, false);
