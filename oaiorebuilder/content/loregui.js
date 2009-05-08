@@ -376,6 +376,7 @@ lore.ui.gui_spec = {
     , {
         region: "west",
         title: "LORE",
+        id: "loresidebar",
         border: false,
         width: 250,
         minWidth: 100,
@@ -386,20 +387,18 @@ lore.ui.gui_spec = {
             layout: "border",
             items: [{
                 region: "center",
-                items: [{
-                    xtype: "treepanel",
-                    id: "sourcestree",
-                    animate: true,
-                    autoScroll: true,
-                    rootVisible: false,
-                    containerScroll: true,
-                    border: false,
-                    root: new Ext.tree.TreeNode({}),
-                    dropConfig: {
-                        appendOnly: true
-                    }
-                
-                }]
+                xtype: "treepanel",
+                id: "sourcestree",
+                animate: true,
+                autoScroll: true,
+                fitToFrame: true,
+                rootVisible: false,
+                containerScroll: true,
+                border: false,
+                root: new Ext.tree.TreeNode({}),
+                dropConfig: {
+                    appendOnly: true
+                }    
             }, {
                 region: "south",
                 split: true,
@@ -442,8 +441,8 @@ lore.ui.gui_spec = {
                 },
 				{
 					xtype: "panel",
-					title: "Annotation details",
-					id: "variationdetails",
+					title: "Annotation summary",
+					id: "annotationsummary",
 					autoWidth: true,
 					viewConfig: {
 						forceFit: true
