@@ -58,7 +58,7 @@ Changes since 0.37 - Added postRDFURL for Carlos Strozzi
 
 
 /* Modified for use in OAI-ORE Builder firefox extension 
- * Modifications are flagged by oaiorebuilder in the comments
+ * Modifications are flagged by LORE in the comments
  * Anna Gerber, UQ ITEE eResearch, May 2008
  */
 
@@ -270,7 +270,7 @@ function RDF() {
 		 GetTriples();
 	 }
  }
- // oaiorebuilder: Added a method to get the xml base
+ // LORE: Added a method to get the xml base
 function getXMLBase(){
 	return xmld.getAttribute('xml:base');
 }
@@ -868,7 +868,7 @@ function HTTP() {
 			 xmlhttp.open("GET",url,true);
 			 xmlhttp.onreadystatechange=function() {
 				 if (xmlhttp.readyState==4) {
-				 	// oaiorebuilder: allow status to be 0 when running in firefox extension
+				 	// LORE: allow status to be 0 when running in firefox extension
 					if (xmlhttp.status == 200 || xmlhttp.status == 0) {
 						fn({status:xmlhttp.status,content:xmlhttp.responseText,
 									domcontent:xmlhttp.responseXML,
