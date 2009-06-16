@@ -1,38 +1,38 @@
-var oreLocationListener = {
-  QueryInterface: function(aIID)
-  {
-   if (aIID.equals(Components.interfaces.nsIWebProgressListener) ||
+var loreoverlay = {
+  oreLocationListener : {
+    QueryInterface: function(aIID)
+    {
+     if (aIID.equals(Components.interfaces.nsIWebProgressListener) ||
        aIID.equals(Components.interfaces.nsISupportsWeakReference) ||
        aIID.equals(Components.interfaces.nsISupports))
-     return this;
-   throw Components.results.NS_NOINTERFACE;
+        return this;
+     throw Components.results.NS_NOINTERFACE;
+    },
+    onLocationChange: function(aProgress, aRequest, aURI)
+    {
+        loreoverlay.updateOREBrowser(aURI);
+    },
+    onStateChange: function() {},
+    onProgressChange: function() {},
+    onStatusChange: function() {},
+    onSecurityChange: function() {},
+    onLinkIconAvailable: function() {}
   },
-
-  onLocationChange: function(aProgress, aRequest, aURI)
-  {
-    oaiorebuilder.updateOREBrowser(aURI);
-  },
-
-  onStateChange: function() {},
-  onProgressChange: function() {},
-  onStatusChange: function() {},
-  onSecurityChange: function() {},
-  onLinkIconAvailable: function() {}
-};
-var oaiorebuilder = {
   oldURL: null,
   onLoad: function() {
 	this.graphiframe = window.graphiframe;
-	this.resetGraph();
+    if (this.graphiframe){
+	   this.resetGraph();
+       gBrowser.addProgressListener(this.oreLocationListener,
+           Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
+       this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
+        .getService(Components.interfaces.nsIPrefService)
+        .getBranch("extensions.lore.");
+       this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+       this.prefs.addObserver("", this, false);
+    }
 	this.initialized = true;
-	this.strings = document.getElementById("oaiorebuilder-strings");
-	this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
- 	    .getService(Components.interfaces.nsIPrefService)
-		.getBranch("extensions.lore.");
-	gBrowser.addProgressListener(oreLocationListener,
-        Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
-	this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
-	this.prefs.addObserver("", this, false);
+	this.strings = document.getElementById("lore-strings");
   },
   observe: function(subject, topic, data){
   	if (topic != "nsPref:changed"){
@@ -41,35 +41,36 @@ var oaiorebuilder = {
   	this.loadPrefs();
   },
   uninit: function(){
-  	gBrowser.removeProgressListener(oreLocationListener);
-
+    if (this.graphiframe){
+  	 gBrowser.removeProgressListener(this.oreLocationListener);
+    }
   },
   updateOREBrowser: function(aURI) {
   	if (aURI){
     	if (aURI.spec == this.oldURL) return;
-    	if (typeof(window.graphiframe.lore.ui.updateSourceLists) == 'function'){
+    	if (window.graphiframe.lore && typeof(window.graphiframe.lore.ui.updateSourceLists) == 'function'){
 		  window.graphiframe.lore.ui.updateSourceLists(aURI.spec);
 		  this.oldURL = aURI.spec;
     	}
   	}
   },
   doTextMining: function() {
-  	window.graphiframe.lore.textm.requestOpenCalaisMetadata();
+  	window.graphiframe.lore.textm.requestTextMiningMetadata();
   },
   showContextMenu1: function(event) {
-    document.getElementById("context-oaiorebuilder").hidden = gContextMenu.onImage;
+    document.getElementById("context-lore").hidden = gContextMenu.onImage;
   },
   onClickStatusIcon: function(event){
-	oaiorebuilder.toggleBar();
+	this.toggleBar();
   },
   onMenuItemCommand: function(e) {
 	if (gContextMenu.onLink)
 		window.graphiframe.lore.ore.graph.addFigure(gContextMenu.linkURL);
   },
   onMenuPopup: function (e){
-  	gContextMenu.showItem('addimage-oaiorebuilder',gContextMenu.onImage);
-	gContextMenu.showItem('addlink-oaiorebuilder', gContextMenu.onLink);
-	gContextMenu.showItem('addbgimg-oaiorebuilder',gContextMenu.hasBGImage);
+  	gContextMenu.showItem('addimage-lore',gContextMenu.onImage);
+	gContextMenu.showItem('addlink-lore', gContextMenu.onLink);
+	gContextMenu.showItem('addbgimg-lore',gContextMenu.hasBGImage);
 	gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
 
   },
@@ -104,12 +105,16 @@ var oaiorebuilder = {
   loadRDF: function() {
 
   	window.graphiframe.lore.ore.loadRDF();
-  },
+  }/*,
   loadRDFFromRepos: function() {
   	window.graphiframe.lore.ore.loadRDFFromRepos();
-  },
+  }*/
+  ,
   addAnnotation: function () {
   	window.graphiframe.lore.anno.addAnnotation();
+  },
+  showAnnotations: function (){
+    window.graphiframe.lore.anno.showAllAnnotations();
   },
   saveRDF: function () {
   	window.graphiframe.lore.ore.saveRDFToRepository();
@@ -122,10 +127,10 @@ var oaiorebuilder = {
   	window.graphiframe.location.reload(true);
   },
   openAbout: function (){
-	window.open("chrome://oaiorebuilder/content/about.xul","", "chrome,centerscreen,modal");
+	window.open("chrome://lore/content/about.xul","", "chrome,centerscreen,modal");
   },
   openOptions: function () {
-  	 window.open("chrome://oaiorebuilder/content/options.xul", "", "chrome,centerscreen,modal");
+  	 window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
   },
   loadPrefs: function (){
   	if (this.prefs){
@@ -134,26 +139,38 @@ var oaiorebuilder = {
 	 var rdfrepos = this.prefs.getCharPref("rdfrepos");
 	 var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
 	 var annoserver = this.prefs.getCharPref("annoserver");
+     var disable_tm = this.prefs.getBoolPref("disable_textmining");
+     var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
+     var disable_anno = this.prefs.getBoolPref("disable_annotations"); 
+      
+	 // hide or show XUL toolbar buttons depending on prefs
+     document.getElementById('text-mining').hidden = disable_tm; 
+     document.getElementById('tmsep').hidden = disable_tm;
+     
+     document.getElementById('annsep').hidden = disable_anno;
+     document.getElementById('add-annotation').hidden = disable_anno;
+     document.getElementById('show-annotations').hidden = disable_anno;
 	 
-	 window.graphiframe.lore.ui.setdccreator(dccreator);
+     document.getElementById('cosep').hidden = disable_co;
+     document.getElementById('add-node').hidden = disable_co;
+     document.getElementById('save-rdf').hidden = disable_co;
+     document.getElementById('load-rdf').hidden = disable_co;
+     
+     window.graphiframe.lore.ui.setdccreator(dccreator);
 	 window.graphiframe.lore.ore.setrelonturl(relonturl);
 	 window.graphiframe.lore.ui.setRepos(rdfrepos, rdfrepostype, annoserver);
+  // hide or show related Ext UI depending on prefs
+     window.graphiframe.lore.ui.disableUIFeatures({'disable_textmining': disable_tm, 
+        'disable_annotations': disable_anno, 
+        'disable_compoundobjects': disable_co});
+     
   	}
-  },
-  popOutWindow: function (){
-  	//oaiorebuilder.toggleBar();
-	/*var winmediator = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-				.getService(Components.interfaces.nsIWindowMediator);*/
-    var winFeatures = "titlebar=yes,scrollbars=yes,resizable,dialog=no,centerscreen";
-    var parentWindow = (!window.opener || window.opener.closed) ? window : window.opener;
-    var win = parentWindow.openDialog("chrome://oaiorebuilder/content/oaiorebuilderwindow.xul", "_blank", winFeatures, window);
-    return win;
   },
   loadOntology: function() {
   	var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
                       .getService(Components.interfaces.nsIPrefService);
-	var oaiorebuilderprefs = prefservice.getBranch("extensions.lore.");
-	var relonturl = oaiorebuilderprefs.getCharPref("relonturl");
+	var loreprefs = prefservice.getBranch("extensions.lore.");
+	var relonturl = loreprefs.getCharPref("relonturl");
   	this.graphiframe.lore.ore.setrelonturl(relonturl);
 	this.graphiframe.lore.ore.loadRelationshipsFromOntology();
 	return true;
@@ -187,6 +204,6 @@ var oaiorebuilder = {
 }
 
 };
-window.addEventListener("load", function(e) { oaiorebuilder.onLoad(e); }, false);
-window.addEventListener("unload", function() {oaiorebuilder.uninit()}, false);
+window.addEventListener("load", function(e) { loreoverlay.onLoad(e); }, false);
+window.addEventListener("unload", function() {loreoverlay.uninit()}, false);
 
