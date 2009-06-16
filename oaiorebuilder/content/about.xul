@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<!DOCTYPE dialog SYSTEM "chrome://oaiorebuilder/locale/about.dtd">
-<dialog title="&about; oaiorebuilder" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<!DOCTYPE dialog SYSTEM "chrome://lore/locale/about.dtd">
+<dialog title="&about; lore" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 <groupbox align="center" orient="horizontal">
 <vbox>
-  <text value="OAI-ORE Builder" style="font-weight: bold; font-size: x-large;"/>
-  <text value="&version; 0.1"/>
+  <text value="LORE" style="font-weight: bold; font-size: x-large;"/>
+  <text value="&version; 0.2"/>
   <separator class="thin"/>
   <text value="&createdBy;" style="font-weight: bold;"/>
   <text value="UQ ITEE eResearch"/>
