@@ -26,7 +26,7 @@ Firebug.LoreTracingModel = extend(Firebug.Module,
         var doc = rootNode.ownerDocument;
         if ($("loreTracingStyles", doc))
             return;
-        var styleSheet = createStyleSheet(doc, "chrome://oaiorebuilder/skin/tracing.css");
+        var styleSheet = createStyleSheet(doc, "chrome://lore/skin/tracing.css");
         styleSheet.setAttribute("id", "loreTracingStyles");
 	    addStyleSheet(doc, styleSheet);
     },
