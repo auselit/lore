@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build config for build.sh
-APP_NAME=oaiorebuilder
+APP_NAME=lore
 CHROME_PROVIDERS="content locale skin"
 CLEAN_UP=1
 ROOT_FILES=
