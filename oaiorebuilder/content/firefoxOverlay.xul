@@ -1,59 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="chrome://oaiorebuilder/skin/overlay.css" type="text/css"?>
-<!DOCTYPE overlay SYSTEM "chrome://oaiorebuilder/locale/oaiorebuilder.dtd">
-<xul:overlay id="oaiorebuilder-overlay" xmlns="http://www.w3.org/1999/xhtml"
+<?xml-stylesheet href="chrome://lore/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://lore/locale/lore.dtd">
+<xul:overlay id="lore-overlay" xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <xul:script type="application/x-javascript" src="overlay.js"/>
   <xul:script type="application/x-javascript" src="tracing.js"/>
   <xul:stringbundleset id="stringbundleset">
-    <xul:stringbundle id="oaiorebuilder-strings" src="chrome://oaiorebuilder/locale/oaiorebuilder.properties"/>
+    <xul:stringbundle id="lore-strings" src="chrome://lore/locale/lore.properties"/>
   </xul:stringbundleset>
   <xul:vbox id="appcontent">
     <xul:splitter id="oobContentSplitter" collapsed="true"/>
     <xul:vbox flex="2" align="stretch" id="oobContentBox" collapsed="true" persist="height">
       <xul:toolbox>
         <xul:toolbar id="graph-toolbar">
-          <xul:toolbarbutton id="oobMenuButton" type="menu">
-            <xul:menupopup>
-              <xul:menuitem id="oobMenuAbout" label="About" oncommand="oaiorebuilder.openAbout()"/>
-              <xul:menuitem id="oobMenuOptions" label="Options" oncommand="oaiorebuilder.openOptions()"/>
-            </xul:menupopup>
+          <xul:toolbarbutton id="oobMenuButton" tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()">
+            <!--xul:menupopup>
+              <xul:menuitem id="oobMenuAbout" label="About" oncommand="loreoverlay.openAbout()"/>
+              <xul:menuitem id="oobMenuOptions" label="Options" oncommand="loreoverlay.openOptions()"/>
+            </xul:menupopup-->
           </xul:toolbarbutton>
-          <xul:toolbarseparator />
-          <xul:toolbarbutton id="add-annotation" tooltiptext="&oaiorebuilder.addAnnotationTip;"  oncommand="oaiorebuilder.addAnnotation();"/>
-          <xul:toolbarseparator />
-          <xul:toolbarbutton id="add-node" tooltiptext="&oaiorebuilder.addNodeTip;"  oncommand="oaiorebuilder.addGraphNode();"/><!-- label="&oaiorebuilder.addNodeLabel;"-->
-          <xul:toolbarbutton id="load-rdf" tooltiptext="&oaiorebuilder.loadRDFTip;"  oncommand="oaiorebuilder.loadRDF();"/><!-- label="&oaiorebuilder.loadRDFLabel;"-->
-          <xul:toolbarbutton id="load-rdf-repos" tooltiptext="&oaiorebuilder.loadRDFFromReposTip;"  oncommand="oaiorebuilder.loadRDFFromRepos();"/><!--label="&oaiorebuilder.loadRDFFromReposLabel;"-->
-          <xul:toolbarbutton id="save-rdf" tooltiptext="&oaiorebuilder.saveRDFTip;"  oncommand="oaiorebuilder.saveRDF();"/><!-- label="&oaiorebuilder.saveRDFLabel;"-->
-          <xul:toolbarbutton id="reset-graph" tooltiptext="&oaiorebuilder.resetGraphTip;"  oncommand="oaiorebuilder.resetGraph();"/><!-- label="&oaiorebuilder.resetGraphLabel;"-->
-          <xul:toolbarseparator />
-          <xul:toolbarbutton id="text-mining" tooltiptext="&oaiorebuilder.textMiningTip;"  oncommand="oaiorebuilder.doTextMining();"/>
+          <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
+          <xul:toolbarseparator id="annsep" />
+          <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
+          <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/>
+          <xul:toolbarseparator id="cosep"/>
+          <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/><!-- label="&lore.addNodeLabel;"-->
+          <xul:toolbarbutton id="load-rdf" tooltiptext="&lore.loadRDFTip;"  oncommand="loreoverlay.loadRDF();"/><!-- label="&lore.loadRDFLabel;"-->
+          <!--xul:toolbarbutton id="load-rdf-repos" tooltiptext="&lore.loadRDFFromReposTip;"  oncommand="loreoverlay.loadRDFFromRepos();"/--><!--label="&lore.loadRDFFromReposLabel;"-->
+          <xul:toolbarbutton id="save-rdf" tooltiptext="&lore.saveRDFTip;"  oncommand="loreoverlay.saveRDF();"/><!-- label="&lore.saveRDFLabel;"-->
+          
+          <xul:toolbarseparator id="tmsep"/>
+          <xul:toolbarbutton id="text-mining" tooltiptext="&lore.textMiningTip;"  oncommand="loreoverlay.doTextMining();"/>
+          <xul:toolbarseparator/>
+          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/><!-- label="&lore.resetGraphLabel;"-->
         </xul:toolbar>
       </xul:toolbox>
-      <xul:tooltip id="aHTMLTooltip" onpopupshowing="return oaiorebuilder.fillInHTMLTooltip(document.tooltipNode);" />
-      <xul:iframe tooltip="aHTMLTooltip" flex="3" height="500px" width="100%" src="chrome://oaiorebuilder/content/loreui.html" name="graphiframe" id="graphiframe"/>
+      <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
+      <xul:iframe tooltip="aHTMLTooltip" flex="3" height="450px" width="100%" src="chrome://lore/content/loreui.html" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
   </xul:vbox>
-  <xul:popup id="contentAreaContextMenu" onpopupshown="oaiorebuilder.onMenuPopup(event)">
+  <xul:popup id="contentAreaContextMenu" onpopupshown="loreoverlay.onMenuPopup(event)">
     <xul:menuseparator id="oaioresep"/>
-    <xul:menuitem id="addlink-oaiorebuilder" label="&oaiorebuilderContextLink.label;"
-        oncommand="oaiorebuilder.onMenuItemCommand(event)"/>
-    <xul:menuitem id="addimage-oaiorebuilder" label="&oaiorebuilderContextImage.label;"
-        oncommand="oaiorebuilder.addImageMenuItemCommand(event)"/>
-    <xul:menuitem id="addbgimg-oaiorebuilder" label="&oaiorebuilderContextBGImage.label;"
-        oncommand="oaiorebuilder.addBGImageMenuItemCommand(event)"/>
+    <xul:menuitem id="addlink-lore" label="&loreContextLink.label;"
+        oncommand="loreoverlay.onMenuItemCommand(event)"/>
+    <xul:menuitem id="addimage-lore" label="&loreContextImage.label;"
+        oncommand="loreoverlay.addImageMenuItemCommand(event)"/>
+    <xul:menuitem id="addbgimg-lore" label="&loreContextBGImage.label;"
+        oncommand="loreoverlay.addBGImageMenuItemCommand(event)"/>
   </xul:popup>
   <xul:toolbarpalette id="BrowserToolbarPalette">
-    <xul:toolbarbutton id="oaiorebuilder-toolbar-button"
-      label="&oaiorebuilderToolbar.label;"
-      tooltiptext="&oaiorebuilderToolbar.tooltip;"
-      oncommand="oaiorebuilder.onToolbarButtonCommand()"
+    <xul:toolbarbutton id="lore-toolbar-button"
+      label="&loreToolbar.label;"
+      tooltiptext="&loreToolbar.tooltip;"
+      oncommand="loreoverlay.onToolbarButtonCommand()"
       class="toolbarbutton-1 chromeclass-toolbar-additional"/>
   </xul:toolbarpalette>
   <xul:statusbar id="status-bar">
-    <xul:statusbarpanel id="oobStatusBar" onmousedown="oaiorebuilder.onClickStatusIcon(event);">
-      <xul:image id="oaiorebuilderStatusIcon"/>
+    <xul:statusbarpanel id="oobStatusBar" onmousedown="loreoverlay.onClickStatusIcon(event);">
+      <xul:image id="loreStatusIcon"/>
     </xul:statusbarpanel>
   </xul:statusbar>
 </xul:overlay>
