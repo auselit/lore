@@ -1,8 +1,8 @@
-#content	oaiorebuilder	jar:chrome/oaiorebuilder@maenad.itee.uq.edu.au.jar!/content/
-#locale	oaiorebuilder	en-US	jar:chrome/oaiorebuilder@maenad.itee.uq.edu.au.jar!/locale/en-US/
-#skin	oaiorebuilder	classic/1.0	jar:chrome/oaiorebuilder@maenad.itee.uq.edu.au.jar!/skin/
-content	oaiorebuilder	content/ 
-locale	oaiorebuilder	en-US	 locale/en-US/
-skin	oaiorebuilder	classic/1.0	 skin/ 
-overlay	chrome://browser/content/browser.xul	chrome://oaiorebuilder/content/firefoxOverlay.xul
-style	chrome://global/content/customizeToolbar.xul	chrome://oaiorebuilder/skin/overlay.css
+#content	lore	jar:chrome/lore@maenad.itee.uq.edu.au.jar!/content/
+#locale	lore	en-US	jar:chrome/lore@maenad.itee.uq.edu.au.jar!/locale/en-US/
+#skin	lore	classic/1.0	jar:chrome/lore@maenad.itee.uq.edu.au.jar!/skin/
+content	lore	content/ 
+locale	lore	en-US	 locale/en-US/
+skin	lore	classic/1.0	 skin/ 
+overlay	chrome://browser/content/browser.xul	chrome://lore/content/firefoxOverlay.xul
+style	chrome://global/content/customizeToolbar.xul	chrome://lore/skin/overlay.css
