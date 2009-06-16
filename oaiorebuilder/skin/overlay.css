@@ -1,18 +1,18 @@
 
-#oaiorebuilder-toolbar-button
+#lore-toolbar-button
 {
-  list-style-image: url("chrome://oaiorebuilder/skin/oaioreicon-sm.png");
+  list-style-image: url("chrome://lore/skin/oaioreicon-sm.png");
   -moz-image-region: rect(0px 24px 24px 0px);
 }
-#oaiorebuilder-toolbar-button:hover
+#lore-toolbar-button:hover
 {
   -moz-image-region: rect(24px 24px 48px  0px);
 }
-[iconsize="small"] #oaiorebuilder-toolbar-button
+[iconsize="small"] #lore-toolbar-button
 {
   -moz-image-region: rect( 0px 40px 16px 24px);
 }
-[iconsize="small"] #oaiorebuilder-toolbar-button:hover
+[iconsize="small"] #lore-toolbar-button:hover
 {
   -moz-image-region: rect(24px 40px 40px 24px);
 }
@@ -20,11 +20,11 @@
     cursor: pointer;
 }
 
-#oaiorebuilderStatusIcon {
-    list-style-image: url(chrome://oaiorebuilder/skin/oaioreicon-sm.png);
+#loreStatusIcon {
+    list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
 }
 #oobContentBox {
-    /*-moz-binding: url("chrome://oaiorebuilder/content/bindings.xml#contentBox");*/
+    /*-moz-binding: url("chrome://lore/content/bindings.xml#contentBox");*/
     height: 270px;
 }
 
@@ -40,26 +40,32 @@
 #oobMenuButton {
 	/*margin: 0 4px 0 0;
     padding: 0 0 0 4px;*/
-	list-style-image: url(chrome://oaiorebuilder/skin/oaioreicon-sm.png);
+	list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
 }
 #save-rdf {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/disk.png);
+	list-style-image: url(chrome://lore/skin/icons/disk.png);
 }
 #reset-graph {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/arrow_refresh.png);
+	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
 }
 #add-node {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/application_add.png);
+	list-style-image: url(chrome://lore/skin/icons/application_add.png);
 }
 #add-annotation {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/user_comment.png);
+	list-style-image: url(chrome://lore/skin/icons/comment_add.png);
+}
+#show-annotations {
+	list-style-image: url(chrome://lore/skin/icons/comment_yellow.gif);	
 }
 #load-rdf-repos{
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/world_go.png);
+	list-style-image: url(chrome://lore/skin/icons/world_go.png);
 }
 #load-rdf{
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/page_go.png);
+	list-style-image: url(chrome://lore/skin/icons/page_go.png);
 }
 #text-mining {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/Calais_icon.jpg);
+	list-style-image: url(chrome://lore/skin/icons/Calais_icon.jpg);
+}
+#show-prefs {
+	list-style-image: url(chrome://lore/skin/icons/cog.png);
 }
