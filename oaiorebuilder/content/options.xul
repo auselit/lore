@@ -1,26 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<!DOCTYPE prefwindow SYSTEM "chrome://oaiorebuilder/locale/prefwindow.dtd">
+<?xml-stylesheet href="chrome://lore/skin/overlay.css" type="text/css"?>
+<!DOCTYPE prefwindow SYSTEM "chrome://lore/locale/prefwindow.dtd">
 <prefwindow id="lore_preferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&prefwindow.title;">
-<script type="application/x-javascript" src="overlay.js"/>
-  <prefpane id="pane1" label="&prefwindow.title;" style="width:350px">
+  <prefpane image="chrome://lore/skin/icons/user.png" id="general-pref" label="&general.label;" style="width:350px">
+    <preferences>
+      <preference id="dccreator_pref" name="extensions.lore.dccreator" type="unichar"/>
+      <preference id="disable_anno" name="extensions.lore.disable_annotations" type="bool"/>
+      <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
+      <preference id="disable_tm" name="extensions.lore.disable_textmining" type="bool"/>
+    </preferences>
+    <label accesskey="&dccreator.accesskey;" control="text_dccreator">&dccreator.label;</label><textbox id="text_dccreator" preference="dccreator_pref"/>
+    <groupbox>
+        <caption label="&ui.label;"/>
+        <checkbox label="&disable_anno.label;" preference="disable_anno"/>
+        <checkbox label="&disable_co.label;" preference="disable_co"/>
+        <checkbox label="&disable_tm.label;" preference="disable_tm"/>
+    </groupbox>
+  </prefpane>
+  <prefpane image="chrome://lore/skin/icons/wrench_orange.png" id="expert-pref" label="&expert.label;" style="width:350px">
     <preferences>
       <preference id="relonturl_pref" name="extensions.lore.relonturl" type="unichar" />
       <preference id="rdfrepos_pref" name="extensions.lore.rdfrepos" type="unichar"/>
       <preference id="typepref" name="extensions.lore.rdfrepostype" type="string"/>
-      <preference id="dccreator_pref" name="extensions.lore.dccreator" type="unichar"/>
       <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
     </preferences>
-    <label accesskey="&dccreator.accesskey;" control="text_dccreator">&dccreator.label;</label><textbox id="text_dccreator" preference="dccreator_pref"/>
-    <label control="text_relonturl">&relonturl.label;</label><textbox id="text_relonturl" preference="relonturl_pref"/>
-    <label control="text_rdfrepos">&rdfrepos.label;</label><textbox id="text_rdfrepos" preference="rdfrepos_pref"/>
     <groupbox>
-  		<caption label="&rdfrepostype.label;"/>
-    	<radiogroup preference="type_pref">
-  			<radio id="sesame_radio" label="sesame" value="sesame"/>
-  			<radio id="fedora_radio" label="fedora" value="fedora"/>
-		</radiogroup>
-	</groupbox>
-	<label control="text_annoserver">&annoserver.label;</label><textbox id="text_annoserver" preference="annoserver_pref"/>
+        <caption label="&anno.label;"/>
+        <label control="text_annoserver">&annoserver.label;</label><textbox id="text_annoserver" preference="annoserver_pref"/>
+    </groupbox>
+    <groupbox>
+        <caption label="&co.label;"/>
+        <label control="text_relonturl">&relonturl.label;</label><textbox id="text_relonturl" preference="relonturl_pref"/>
+        <label control="text_rdfrepos">&rdfrepos.label;</label><textbox id="text_rdfrepos" preference="rdfrepos_pref"/>
+        <groupbox>
+            <caption label="&rdfrepostype.label;"/>
+           <radiogroup preference="type_pref">
+               <radio id="sesame_radio" label="&sesame.label;" value="sesame"/>
+               <radio id="fedora_radio" label="&fedora.label;" value="fedora"/>
+          </radiogroup>
+        </groupbox>
+    </groupbox>
   </prefpane>
+  <script type="application/x-javascript" src="overlay.js"/>
 </prefwindow>
