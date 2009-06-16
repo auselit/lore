@@ -29,7 +29,7 @@ Ext.namespace(
     "lore.debug"
 );
 
-lore.constants.EXTENSION_ID = "oaiorebuilder@maenad.itee.uq.edu.au";
+lore.constants.EXTENSION_ID = "lore@maenad.itee.uq.edu.au";
 
 // XML Namespaces
 lore.constants.XHTML_NS                = "http://www.w3.org/1999/xhtml";
@@ -55,8 +55,8 @@ lore.constants.NAMESPACES = {
     "dc10"    : lore.constants.DC10_NS,
     "dcterms" : lore.constants.DCTERMS_NS,
     "ore"     : lore.constants.ORETERMS_NS,
-    "foaf"    : lore.FOAF_NS,
-    "layout"  : lore.LORE_LAYOUT_NS
+    "foaf"    : lore.constants.FOAF_NS,
+    "layout"  : lore.constants.LORE_LAYOUT_NS
 };
 
 // RDF/OWL
@@ -80,6 +80,10 @@ lore.ore.NODE_WIDTH   = 220;
 lore.ore.NODE_HEIGHT  = 170;
 lore.ore.NODE_SPACING = 40;
 lore.ore.MAX_X        = 400;
+
+// Annotation query strings
+lore.anno.REPLY_TREE = "?w3c_reply_tree=";
+lore.anno.ANNOTATES = "?w3c_annotates=";
 
 // Variations view defaults
 lore.anno.FRAME_WIDTH_CLEARANCE      = 7;
