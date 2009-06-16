@@ -1,0 +1,23 @@
+<!ENTITY lore.label "LORE">
+<!ENTITY loreContextLink.label "Add linked resource to ORE object">
+<!ENTITY loreContextImage.label "Add image to ORE object">
+<!ENTITY loreContextBGImage.label "Add background image to ORE object">
+<!ENTITY loreToolbar.label "LORE">
+<!ENTITY loreToolbar.tooltip "Toggle LORE">
+<!ENTITY lore.addNodeLabel "Add Resource">
+<!ENTITY lore.addNodeTip "Add the current URL to the compound object">
+<!ENTITY lore.loadRDFLabel "Load RDF URL">
+<!ENTITY lore.loadRDFFromReposLabel "Load RDF (from repository)">
+<!ENTITY lore.loadRDFTip "Load an OAI-ORE compound object from URL">
+<!ENTITY lore.loadRDFFromReposTip "Load an OAI-ORE compound object from the RDF Repository">
+<!ENTITY lore.resetGraphLabel "Reset Graph">
+<!ENTITY lore.resetGraphTip "Reset UI">
+<!ENTITY lore.saveRDFLabel "Save RDF">
+<!ENTITY lore.saveRDFTip "Save the compound object to the RDF repository">
+<!ENTITY lore.addAnnotationLabel "Add annotation">
+<!ENTITY lore.addAnnotationTip "Add annotation on the current page">
+<!ENTITY lore.showAnnotationsTip "Highlight all annotations on the current page">
+<!ENTITY lore.textMiningTip "Highlight people and places on the current page using Calais">
+<!ENTITY lore.addAnnotationTip "Add annotation on the current page">
+<!ENTITY lore.showPrefsTip "View or edit LORE preferences">
+<!ENTITY lore.showAboutTip "About LORE">
