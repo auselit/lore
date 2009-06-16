@@ -166,7 +166,7 @@ lore.util.getXPathForSelection = function()
   var xp = '';
   try {
     var seln = mainwindow.getSelection();
-    if (seln != null) {
+    if (seln) {
       var select = seln.getRangeAt(0);
       xp = lore.m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
     }
@@ -195,6 +195,29 @@ lore.util.getSelectionText = function(currentCtxt){
 	}
 	return selText;
 }
+/**
+ * Split a URL identifier into namespace and term
+ * 
+ * @param {String} theurl The URL identifier to split
+ * @return {Object} A JSON object with properties ns (the namespace) and term
+ *         (the unqualified term)
+ */
+lore.util.splitTerm = function(theurl) {
+	var result = {};
+	// try splitting on #
+	var termsplit = theurl.split("#");
+	if (termsplit.length > 1) {
+		result.ns = (termsplit[0] + "#");
+		result.term = termsplit[1];
+	} else {
+		// split after last slash
+		var lastSlash = theurl.lastIndexOf('/');
+		result.ns = theurl.substring(0, lastSlash + 1);
+		result.term = theurl.substring(lastSlash + 1);
+	}
+	return result;
+}
+
 /**
  * Escape characters for HTML display
  * @return {}

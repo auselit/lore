@@ -53,18 +53,20 @@ lore.ui.gui_spec = {
 						items: [{
 							xtype: "form",
 							id: "annotationslistform",
-							title: "Annotation List",
+							title: "Annotation Editor",
 							layout: 'border',
 							items: [{
 								region: "north",
 								split: true,
 								id: "annotationslist",
 								xtype: "grid",
+                                height:90,
 								autoWidth: true,
 								autoScroll: true,
 								stripeRows: true,
 								view: new Ext.grid.GridView({
 									forceFit: true,
+                                    
 									getRowClass: function(rec){
 										if (!rec.data.id) {
 											return "newanno";
@@ -149,7 +151,7 @@ lore.ui.gui_spec = {
 								autoScroll: true,
 								id: 'annotationsform',
 								labelWidth: 100,
-								title: 'Annotation details:',
+								title: 'Edit Annotation details:',
 								defaultType: 'textfield',
 								border: false,
 								labelAlign: 'right',
@@ -162,7 +164,8 @@ lore.ui.gui_spec = {
 									fieldLabel: 'ID',
 									name: 'id',
 									hidden: true,
-									hideLabel: true
+									hideLabel: true,
+                                    style: {padding:0,margin:0}
 								}, {
 									fieldLabel: 'Annotates',
 									name: 'resource',
@@ -172,7 +175,10 @@ lore.ui.gui_spec = {
 									fieldLabel: 'Context',
 									name: 'context',
 									readOnly: true,
-									style: 'background:none;border:none'
+                                    hidden: true,
+                                    hideLabel: true,
+									style: 'background:none;border:none',
+                                    style: {padding:0,margin:0}
 								}, {
 									fieldLabel: 'Original resource',
 									name: 'original',
@@ -185,10 +191,11 @@ lore.ui.gui_spec = {
 									readOnly: true,
 									style: 'background:none;border:none',
 									hidden: true,
-									hideLabel: true
+									hideLabel: true,
+                                    style: {padding:0,margin:0}
 								}, {
-									fieldLabel: 'Original selection',
-									name: 'ocontextdisp',
+									fieldLabel: 'Selection',
+									name: 'contextdisp',
 									readOnly: true,
 									style: 'background:none;border:none'
 								}, {
@@ -203,7 +210,8 @@ lore.ui.gui_spec = {
 									readOnly: true,
 									style: 'background:none;border:none',
 									hidden: true,
-									hideLabel: true
+									hideLabel: true,
+                                    style: {padding:0,margin:0}
 								}, {
 									fieldLabel: 'Variant selection',
 									name: 'rcontextdisp',
@@ -328,13 +336,13 @@ lore.ui.gui_spec = {
 						}]
 					}, {
                         xtype: "tabpanel",
-                        title: "Compound Object",
+                        title: "Compound Objects",
                         id: "compoundobjecteditor",
 						deferredRender: false,
                         plugins : lore.ui.vismode,
 						defaults : {plugins: lore.ui.vismode},
                         items: [{
-                            title: "Graph Editor",
+                            title: "Editor",
                             xtype: "panel",
                             id: "drawingarea",
 							autoScroll: true  
@@ -351,6 +359,10 @@ lore.ui.gui_spec = {
 							autoScroll: true
 							
                         
+                        },{
+                            title: "Explore",
+                            id: "remexploreview",
+                            autoScroll:true
                         }],
                         activeTab: "drawingarea"
                      }, {
@@ -454,6 +466,7 @@ lore.ui.gui_spec = {
     }]
 };
 try {
+    //lore.debug.ui("lore height is " + innerHeight);
 	lore.ui.main_window = new Ext.Viewport(lore.ui.gui_spec);
 	lore.ui.main_window.show();
 } catch (ex) {

@@ -77,40 +77,47 @@
 	top:-4px;
 }
 .pageicon {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/page.gif);
+	list-style-image: url(chrome://lore/skin/icons/page.gif);
 }
 .imageicon {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/image.png);
+	list-style-image: url(chrome://lore/skin/icons/image.png);
 }
 .htmlicon {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/page_html.gif);
+	list-style-image: url(chrome://lore/skin/icons/page_html.gif);
 }
 .videoicon {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/film.png);
+	list-style-image: url(chrome://lore/skin/icons/film.png);
 }
 .pdficon {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/file_acrobat.gif);
+	list-style-image: url(chrome://lore/skin/icons/file_acrobat.gif);
 }
 .audioicon {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/page_sound.gif);
+	list-style-image: url(chrome://lore/skin/icons/page_sound.gif);
 }
 .oreicon {
-	list-style-image: url(chrome://oaiorebuilder/skin/icons/oaioreicon-sm.png); padding-top:2px;
+	list-style-image: url(chrome://lore/skin/icons/oaioreicon-sm.png); padding-top:2px;
 }
 
 /* Source tree styles */
+
 .tree-anno {
-    background-image: url(../skin/icons/user_comment.png) !important;
-    width: 15px
+    /*background-image: url(../skin/icons/user_comment.png) !important;
+    width: 15px*/
+    display:none;
 }
 .tree-ore {
-    background-image: url(../skin/icons/oaioreicon-sm.png) !important;
-    width: 15px
+    /*background-image: url(../skin/icons/oaioreicon-sm.png) !important;
+    width: 15px*/
+    display:none;
 }
-
-.x-tree-node-leaf .oreresult {
-	/*background-image: url(chrome://oaiorebuilder/skin/icons/action_go.gif);*/
-	display:none;
+.x-tree-node .oreresult {
+	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png);
+}
+.x-tree-node .anno-icon {
+	background-image: url(chrome://lore/skin/icons/comment.png);
+}
+.x-tree-node .annoreply-icon {
+	background-image: url(chrome://lore/skin/icons/comments.png);
 }
 .orelink {
 	font-style:italic; 
@@ -162,6 +169,7 @@
 #drawingarea {
 	position:relative;
 	overflow:auto;
+	width:100%;
 }
 #remrdfview {
  	color: #51666b;
@@ -188,7 +196,11 @@
 .timeline-copyright {
 	display:none;
 }
+.timeline-event-icon img {
+	margin-left: -5px;
+}
 #variationdetails {
 	font-size:smaller;
 	padding: 5px;
 }
+.x-hide-label {padding:0;margin:0}
