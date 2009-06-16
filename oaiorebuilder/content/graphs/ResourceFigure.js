@@ -64,9 +64,9 @@ this.bottom_right.style.height=(this.cornerHeight-1)+"px";
 this.bottom_right.style.left="0px";
 this.bottom_right.style.top="0px";
 this.bottom_right.style.fontSize="2px";this.header=document.createElement("div");
-this.top_left.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat top left";
-this.bottom_left.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat bottom left";
-this.bottom_right.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat bottom right";
+this.top_left.style.background="url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left";
+this.bottom_left.style.background="url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left";
+this.bottom_right.style.background="url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom right";
 this.createPlusMinusIcon();
 this.header.style.position="absolute";
 this.header.style.left=this.cornerWidth+"px";
@@ -282,9 +282,9 @@ lore.ore.graph.ResourceFigure.prototype.updateMetadata=function(source){
 };
 lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon=function(){
 	if (this.originalHeight==-1){
-		this.top_right.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleminus.gif) no-repeat top right";
+		this.top_right.style.background="url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
 	} else {
-		this.top_right.style.background="url(chrome://oaiorebuilder/skin/resourcenodecircleplus.gif) no-repeat top right";
+		this.top_right.style.background="url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right";
 	}
 }
 /*lore.ore.graph.ResourceFigure.prototype.getContextMenu=function()
