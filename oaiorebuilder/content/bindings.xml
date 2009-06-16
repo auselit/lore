@@ -5,7 +5,7 @@
     <binding id="contentBox">
         <implementation>
             <destructor>
-                <![CDATA[oaiorebuilder.shutdown();]]>
+                <![CDATA[loreoverlay.shutdown();]]>
             </destructor>
         </implementation>
         <content>
