@@ -33,7 +33,10 @@ lore.textm.handleOpenCalaisMetadata = function(resp) {
     // load into an object
     var jsonObj;
     lore.ui.textminingtab.body.update(res + lore.textm.POWEREDBY_CALAIS);
-    eval("jsonObj = " + res);
+    var nativeJSON = Components.classes["@mozilla.org/dom/json;1"]
+                 .createInstance(Components.interfaces.nsIJSON);
+
+    var jsonObj = nativeJSON.decode(res);
 
 }
 /**
