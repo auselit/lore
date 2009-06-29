@@ -147,13 +147,15 @@ lore.ui.clearTree = function(treeRoot) {
  */
 lore.ui.updateSourceLists = function(contextURL) {
 	lore.ui.currentURL = contextURL; // store the contextURL
+     
 	if (lore.ui.lorevisible) {
-        if (!lore.ui.disabled.disable_annotations){
+       
+        //if (!lore.ui.disabled || !lore.ui.disabled.disable_annotations){
 		  lore.anno.updateAnnotationsSourceList(contextURL);
-        }
-        if (!lore.ui.disabled.disable_compoundobjects){
+        //}
+        //if (!lore.ui.disabled || !lore.ui.disabled.disable_compoundobjects){
 		  lore.ore.updateCompoundObjectsSourceList(contextURL);
-        }
+        //}
 		lore.ui.loadedURL = contextURL;
 	}
 }

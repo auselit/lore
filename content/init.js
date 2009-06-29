@@ -33,6 +33,7 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
  *            gridname The display name of the property grid
  */
 lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
+    lore.debug.ui("set up metadata menu",lore.ore.METADATA_PROPS);
 	var make_menu_entry = function(menu, gridname, propname, op) {
 		var funcstr = "";
 		funcstr += "var props = " + gridname + ".getSource();";
@@ -71,9 +72,8 @@ lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
 					lore.ore.resource_metadata_props[i], "rem");
 		}
 	}
-	var tbar = the_grid.getTopToolbar();
-	var addbtn = tbar[0];
-	var rembtn = tbar[1];
+	var addbtn = Ext.getCmp('maddbtn');
+	var rembtn = Ext.getCmp('mrembtn');
 	if (addbtn) {
 		addbtn.menu = addMetadataMenu;
 	}
@@ -118,8 +118,14 @@ lore.ui.initGraphicalView = function() {
  */
 lore.ui.initOntologies = function() {
 	lore.ore.ontrelationships = {};
+    
+    try{
 	window.parent.loreoverlay.loadPrefs();
+    } catch (ex){
+        alert(ex.toString());
+    }
 	lore.ore.loadRelationshipsFromOntology();
+    
 }
 /**
  * Initialise property grids and set up listeners
@@ -150,6 +156,7 @@ lore.ui.initProperties = function() {
 					e.cancel = true;
 				}
 			});
+    
 	lore.ui.setUpMetadataMenu(lore.ui.grid, "lore.ui.grid");
 	lore.ui.setUpMetadataMenu(lore.ui.nodegrid, "lore.ui.nodegrid");
 	lore.ui.propertytabs.activate("remgrid");
@@ -163,14 +170,15 @@ lore.ui.initExtComponents = function() {
 	lore.ui.grid = Ext.getCmp("remgrid");
 	lore.ui.nodegrid = Ext.getCmp('nodegrid');
 	lore.ui.lorestatus = Ext.getCmp('lorestatus');
-	lore.ui.rdftab = Ext.getCmp("remrdfview");
 	lore.anno.annotabsm = Ext.getCmp("annotationslist").getSelectionModel();
 	lore.anno.annotabds = Ext.getCmp("annotationslist").getStore();
 	lore.ui.annotationsform = Ext.getCmp("annotationslistform").getForm();
 	lore.ui.loreviews = Ext.getCmp("loreviews");
 	lore.ui.welcometab = Ext.getCmp("welcome");
 	lore.ui.summarytab = Ext.getCmp("remlistview");
-	lore.ui.smiltab = Ext.getCmp("remsmilview");
+	var smiltab = Ext.getCmp("remsmilview");
+    var rdftab = Ext.getCmp("remrdfview");
+    lore.ui.exploretab = Ext.getCmp("remexploreview");
 	lore.ui.compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	lore.ui.textminingtab = Ext.getCmp("textmining");
 	// set up the sources tree
@@ -199,33 +207,52 @@ lore.ui.initExtComponents = function() {
 	sourcestreeroot.appendChild(lore.ui.recenttreeroot);
 
 	// set up event handlers
-	if (lore.ui.rdftab) {
-		lore.ui.rdftab.on("activate", lore.ore.updateRDFHTML);
-	}
-	lore.ui.compoundobjecttab.on("beforeremove", lore.ore.closeRDFView);
+	lore.ui.compoundobjecttab.on("beforeremove", lore.ore.closeView);
 	// create a context menu for the compound object tab to hide/show RDF/XML
 	// Tab
 	lore.ui.compoundobjecttab.contextmenu = new Ext.menu.Menu({
 				id : "co-context-menu"
 			});
 	lore.ui.compoundobjecttab.contextmenu.add({
-				text : "Show RDF/XML",
-				handler : lore.ore.openRDFView
-			});
+		text : "Show RDF/XML",
+		handler : lore.ore.openRDFView
+	});
+    lore.ui.compoundobjecttab.contextmenu.add({
+        text: "Show SMIL",
+        handler : lore.ore.openSMILView
+    });
 	lore.ui.loreviews.on("contextmenu", function(tabpanel, panel, e) {
 				if (panel.id == 'compoundobjecteditor') {
 					lore.ui.compoundobjecttab.contextmenu.showAt(e.xy);
 				}
 			});
 	lore.ui.summarytab.on("activate", lore.ore.showCompoundObjectSummary);
-	lore.ui.smiltab.on("activate", lore.ore.showSMIL);
+    if (rdftab) {
+        rdftab.on("activate", lore.ore.updateRDFHTML);
+    }
+    if (smiltab){
+	   smiltab.on("activate", lore.ore.showSMIL);
+    }
+    if (lore.ui.exploretab){
+        lore.ui.exploretab.on("activate", lore.ore.showExploreUI);
+    }
 	lore.anno.annotabsm
 			.on('rowdeselect', lore.anno.handleAnnotationDeselection);
 	lore.anno.annotabsm.on('rowselect', lore.anno.handleAnnotationSelection);
 	Ext.getCmp("cancelupdbtn")
 			.on('click', lore.anno.handleCancelAnnotationEdit);
 	Ext.getCmp("updannobtn").on('click', lore.anno.handleSaveAnnotationChanges);
-	Ext.getCmp("delannobtn").on('click', lore.anno.handleDeleteAnnotation);
+	Ext.getCmp("delannobtn").on('click', function (){
+       Ext.Msg.show({
+        title:'Delete annotation',
+        msg: 'Are you sure you want to delete this annotation forever?',
+        buttons: Ext.Msg.YESNO,
+        fn: function(btn) {if(btn == 'yes')lore.anno.handleDeleteAnnotation();},
+        animEl: 'delannobtn',
+        icon: Ext.Msg.QUESTION
+       });
+    
+    });
 	Ext.getCmp("updctxtbtn").on('click',
 			lore.anno.handleUpdateAnnotationContext);
 	Ext.getCmp("updrctxtbtn").on('click',
@@ -283,7 +310,6 @@ lore.ui.initTimeline = function() {
 						})];
 		bandConfig[1].syncWith = 0;
 		bandConfig[1].highlight = true;
-        
 		lore.anno.annotimeline = Timeline.create(document
 						.getElementById("annotimeline"), bandConfig, Timeline.HORIZONTAL);
 		tl.on("resize", function() {
@@ -296,6 +322,13 @@ lore.ui.initTimeline = function() {
  * Initialise LORE
  */
 lore.ui.init = function() {
+    lore.ui.disabled = {};
+    
+    lore.ui.vars=[]; for(var v in this){lore.ui.vars.push(v);} lore.ui.vars.sort();
+
+    lore.debug.ui("vars (" + lore.ui.vars.length + ")", lore.ui.vars);
+    
+    try{
 	lore.m_xps = new XPointerService();
 	lore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 	lore.ore.resource_metadata_props = [];
@@ -307,16 +340,20 @@ lore.ui.init = function() {
 		lore.ui.lorevisible = true;
 	}
 	lore.ui.initExtComponents();
-	lore.ui.initProperties();
-	lore.ui.initOntologies();
-	lore.ui.initTimeline();
+    lore.ui.initProperties();
+    lore.ui.initOntologies();
+    lore.ui.initTimeline();
 	lore.ui.initGraphicalView();
 	lore.ui.loreInfo("Welcome to LORE");
+    
 	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank'
-			&& lore.ui.currentURL != '' && lore.ui.lorevisible) {
+			&& lore.ui.currentURL != '' && lore.ui.lorevisible) {          
 		lore.ui.updateSourceLists(lore.ui.currentURL);
 	}
 	lore.debug.ui("LORE init complete", this);
+    } catch (e) {
+        lore.debug.ui("exception in init",e);
+    }
 }
 
 Ext.EventManager.onDocumentReady(lore.ui.init);

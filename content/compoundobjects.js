@@ -22,7 +22,7 @@
  * Render the current resource map as RDF/XML in the RDF view
  */
 lore.ore.updateRDFHTML = function() {
-    lore.ui.rdftab.body.update(lore.ore.createRDF(true));
+    Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
 }
 /**
  * Remove listeners and reference to RDF View if it is closed
@@ -30,19 +30,23 @@ lore.ore.updateRDFHTML = function() {
  * @param {Object} tabpanel
  * @param {Object} panel
  */
-lore.ore.closeRDFView = function(tabpanel, panel) {
+lore.ore.closeView = function(tabpanel, panel) {
+    lore.debug.ore("close view " + panel.id,panel);
     // remove listeners
+    var tab = Ext.getCmp(panel.id);
     if (panel.id == 'remrdfview') {
-        lore.ui.rdftab.un("activate", lore.ore.updateRDFHTML);
-        lore.ui.rdftab.un("close", lore.ore.closeRDFView);
-        lore.ui.rdftab = null;
+        tab.un("activate", lore.ore.updateRDFHTML);     
     }
+    if (panel.id == 'remsmilview') {
+        tab.un("activate", lore.ore.showSMIL);   
+    }
+    return true;
 }
 /**
  * Create or show the RDF View
  */
 lore.ore.openRDFView = function() {
-    lore.ui.loreviews.activate("compoundobjecteditor");
+    /*lore.ui.loreviews.activate("compoundobjecteditor");
     if (!lore.ui.rdftab) {
         lore.ui.compoundobjecttab.add({
                     title : 'RDF/XML',
@@ -53,13 +57,36 @@ lore.ore.openRDFView = function() {
 
         lore.ui.rdftab = Ext.getCmp('remrdfview');
         lore.ui.rdftab.on("activate", lore.ore.updateRDFHTML);
-        lore.ui.rdftab.on("close", lore.ore.closeRDFView);
+        lore.ui.rdftab.on("close", lore.ore.closeView);
         lore.ore.updateRDFHTML();
     } else {
         lore.ui.compoundobjecttab.activate('remrdfview');
+    }*/
+    lore.debug.ore("open rdf view");
+    lore.ore.openView("remrdfview","RDF/XML",lore.ore.updateRDFHTML);
+}
+lore.ore.openSMILView = function() {
+    lore.debug.ore("open smil view");
+    lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
+}
+lore.ore.openView = function (panelid,paneltitle,activationhandler){
+    lore.ui.loreviews.activate("compoundobjecteditor");
+    var tab = Ext.getCmp(panelid);
+    if (!tab) {
+        lore.ui.compoundobjecttab.add({
+            title : paneltitle,
+            id : panelid,
+            autoScroll : true,
+            closable : true
+        }).show();
+        tab = Ext.getCmp(panelid);
+        tab.on("activate", activationhandler);
+        activationhandler();
+    }
+    else {
+        lore.ui.compoundobjectab.activate(panelid);
     }
 }
-
 /**
  * Displays a summary of the resource URIs contained in the compound object
  */
@@ -88,11 +115,13 @@ lore.ore.showCompoundObjectSummary = function() {
     }
     newsummary += "</ul></div>";
     lore.ui.summarytab.body.update(newsummary);
+    lore.ui.loreInfo("Displaying a summary of compound object contents");
 }
 /**
  * Generate a SMIL presentation and display a link to launch it
  */
 lore.ore.showSMIL = function() {
+    
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
     var smilcontents = "<p><a title='smil test hover' href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
@@ -106,7 +135,41 @@ lore.ore.showSMIL = function() {
     } else {
         smilcontents += "<p>Once you have added some resources to the current compound object a SMIL presentation will be available here.</p>";
     }
-    lore.ui.smiltab.body.update(smilcontents);
+    Ext.getCmp("remsmilview").body.update(smilcontents);
+    lore.ui.loreInfo("Display a multimedia presentation generated from the compound object contents");
+}
+
+/**
+ * Generate a visualisation to explore compound object connections
+ */
+lore.ore.showExploreUI = function(){
+    try{
+    if(!lore.ore.exploreInit){
+        var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
+        + "<script type='text/javascript' src='chrome://lore/content/graphs/lore_explore.js'></script>"
+        + "<a id='explorereset' style='font-size:x-small;color:#51666b' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM);'>RESET VISUALISATION</a>"
+        + "<div id='infovis'></div>";
+        
+        /*+ "<script type=\"text/javascript\">"+
+        + "try{lore.ore.explore.showInExploreView(\"" + lore.ore.currentREM + "\");} catch (e) {"
+        + "lore.debug.ore('error with explore view', e);}</script>";*/
+        lore.ui.exploretab.body.update(contents,true);
+        if (lore.ore.currentREM){
+            lore.ore.exploreInit = lore.ore.currentREM;
+            lore.ore.explore.showInExploreView(lore.ore.currentREM);
+        } else {
+            lore.ore.exploreInit = "about:blank";
+        }
+        lore.debug.ore("initialised explore view",lore.ore.exploreInit);
+    } else if (lore.ore.exploreInit != lore.ore.currentREM) {
+        lore.ore.explore.showInExploreView(lore.ore.currentREM);
+        lore.debug.ore("show in explore view", lore.ore.currentREM);
+    } else {
+        lore.debug.ore("refresh explore view");
+        lore.ore.explore.rg.refresh();
+    }
+    }catch(e){lore.debug.ore("error in showExploreUI",e);}
+    lore.ui.loreInfo("Click on the nodes to explore connections between compound objects.");
 }
 /**
  * Stores basic metadata about a compound object for the results listing
@@ -452,9 +515,12 @@ lore.ore.readRDF = function(rdfURL) {
                         }
                     }
                 }
-                lore.ui.loreInfo("Resource map loaded");
+                lore.ui.loreInfo("Loading compound object");
+                lore.ore.currentREM = rdfURL;
+                //var title = theprops["dc:title"] ? theprops["dc:title"] : "Untitled";
                 var recentNode = new Ext.tree.TreeNode({
-                    text : rdfURL,
+                    text : 'title',
+                    id: rdfURL,
                     iconCls : 'oreresult',
                     leaf : true
                 });
@@ -467,9 +533,52 @@ lore.ore.readRDF = function(rdfURL) {
                 recentNode.on('dblclick', function(node) {
                     lore.ore.readRDF(node.text);
                 });
+                recentNode.on('click',lore.ore.selectRemSource);
             });
 }
-
+lore.ore.attachREMEvents = function(node){
+    node.on('click',function(node){
+        lore.ui.propertytabs.activate("remgrid");
+        // TODO: show details but disable editing if not lore.ore.currentREM
+    });
+    node.on('dblclick', function(node) {
+         lore.ore.readRDF(node.id);
+    });
+    node.on('contextmenu', function(node, e) {
+        node.select();
+        if (!node.contextmenu) {
+            node.contextmenu = new Ext.menu.Menu({
+                        id : node.id + "-context-menu"
+                    });
+           node.contextmenu.add({
+                text : "Edit compound object",
+                handler : function(evt) {
+                    lore.ore.readRDF(node.id);
+                }
+            });
+            /*node.contextmenu.add({
+                text : "Delete compound object",
+                handler : function(evt) {
+                    
+                }
+            });*/
+            node.contextmenu.add({
+                text : "Add as node in compound object editor",
+                handler : function(evt) {
+                    lore.ore.graph
+                            .addFigure(lore.ore.reposURL
+                                    + "/statements?context=<"
+                                    + node.id + ">");
+                }
+            });
+            
+        }
+        node.contextmenu.showAt(e.xy);
+    });
+}
+lore.ore.selectRemSource = function(node){
+    
+}
 /**
  * Takes a repository access URI and returns the resource map identifier This is
  * only necessary until we implement proper access of resource maps via their
@@ -501,7 +610,7 @@ lore.ore.loadRDF = function() {
     Ext.Msg.show({
                 title : 'Load RDF',
                 buttons : Ext.MessageBox.OKCANCEL,
-                msg : 'Please enter RDF file URL:',
+                msg : 'Please enter the URL of the compound object:',
                 fn : function(btn, theurl) {
                     if (btn == 'ok') {
                         lore.ore.readRDF(theurl);
@@ -546,6 +655,7 @@ lore.ore.loadRelationshipsFromOntology = function() {
                 }, false, function(args) {
                     lore.ui.loreWarning(args.status + "\n" + args.contentType
                             + " " + args.content);
+                    lore.debug.ore("error loading relationships ontology",args);
                 });
     }
 }
@@ -612,7 +722,11 @@ lore.ore.saveRDFToRepository = function() {
  */
 lore.ore.setrelonturl = function(relonturl) {
     lore.ore.onturl = relonturl;
-    lore.ore.loadRelationshipsFromOntology();
+    try{
+        lore.ore.loadRelationshipsFromOntology();
+    } catch (ex){
+        lore.debug.ore("exception in setrelonturl", ex);
+    }
 }
 /**
  * Helper function for updateSourceLists: updates the compound objects list with
@@ -625,6 +739,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
     lore.ui.clearTree(lore.ui.remstreeroot);
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         var escapedURL = escape(contextURL);
+        // TODO: Fedora support
         var queryURL = lore.ore.reposURL
             + "?queryLn=sparql&query=" 
             + "select distinct ?g ?a ?c ?t where { graph ?g {{<" 
@@ -658,18 +773,26 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                                         leaf : true
                                     });
                             lore.ui.remstreeroot.appendChild(tmpNode);
-                            tmpNode.on('dblclick', function(node) {
-                                lore.ore.readRDF(node.id);
-                                
+                            /*tmpNode.on('dblclick', function(node) {
+                                lore.ore.readRDF(node.id);    
                             });
-
+                            tmpNode.on('click',function(node){
+                                lore.ui.propertytabs.activate("remgrid"); 
+                            });
                             tmpNode.on('contextmenu', function(node, e) {
+                                node.select();
                                 if (!node.contextmenu) {
                                     node.contextmenu = new Ext.menu.Menu({
                                                 id : node.id + "-context-menu"
                                             });
+                                   node.contextmenu.add({
+                                        text : "Edit compound object",
+                                        handler : function(evt) {
+                                            lore.ore.readRDF(node.id);
+                                        }
+                                    });
                                     node.contextmenu.add({
-                                        text : "Add to compound object",
+                                        text : "Add as node in compound object editor",
                                         handler : function(evt) {
                                             lore.ore.graph
                                                     .addFigure(lore.ore.reposURL
@@ -677,15 +800,11 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                                                             + node.id + ">");
                                         }
                                     });
-                                    node.contextmenu.add({
-                                        text : "Load in Compound Object Editor",
-                                        handler : function(evt) {
-                                            lore.ore.readRDF(node.id);
-                                        }
-                                    });
+                                    
                                 }
                                 node.contextmenu.showAt(e.xy);
-                            });
+                            });*/
+                            lore.ore.attachREMEvents(tmpNode);
 
                         }
                         if (!lore.ui.remstreeroot.isExpanded()) {
@@ -836,3 +955,51 @@ lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
     }
     lore.ore.graph.selectedFigure.updateMetadata(source);
 }
+lore.ore.graph.dummyBatchDialog = function(){
+    // dummy dialog for OR09 challenge
+
+    var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+    .getService(Components.interfaces.nsIWindowMediator);
+    var mainWindow = wm.getMostRecentWindow("navigator:browser");
+        var thebrowser = mainWindow.getBrowser();
+    var num = thebrowser.browsers.length;
+    var thehtml = "<div style='border:1px solid black; padding:10px; margin:10px;background-color:white'>";
+    for (var i = 0; i < num; i++) {
+        var b = thebrowser.getBrowserAtIndex(i);
+        try {
+        //alert(b.currentURI.spec); // dump URLs of all open tabs to console
+        thehtml += "<input type='checkbox' checked='checked'> " + b.currentURI.spec + "<br/>";
+        } catch(e) {
+        Components.utils.reportError(e);
+        }
+    }
+    thehtml += "</div>";
+    
+    var win = new Ext.Window({
+                //applyTo     : 'hello-win',
+                layout      : 'fit',
+                width       : 500,
+                height      : 300,
+                closeAction :'hide',
+                plain       : true,
+        
+        html: "<p>Create a compound object using the following content:</p>" + 
+        thehtml + 
+        "<input type='checkbox' checked='checked'> Create relationships from browser history<br/>" +
+        "<input type='checkbox' checked='checked'> Tag automatically using text-mining service<br/>",
+                buttons: [{
+            text     : 'OK',
+            handler: function(){
+                win.hide();
+            }
+            },{
+            text     : 'Cancel',
+            handler  : function(){
+                win.hide();
+            }
+            }]
+            });
+    
+    win.show();
+
+    }

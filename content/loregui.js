@@ -51,6 +51,10 @@ lore.ui.gui_spec = {
 						deferredRender: false,
 						activeTab: "annotationslistform",
 						items: [{
+                            title: "Annotation Timeline",
+                            xtype: "panel",
+                            id: "annotimeline"
+                        },{
 							xtype: "form",
 							id: "annotationslistform",
 							title: "Annotation Editor",
@@ -148,76 +152,20 @@ lore.ui.gui_spec = {
 							}, {
 								region: "center",
 								xtype: 'fieldset',
+                                layout: 'form',
 								autoScroll: true,
 								id: 'annotationsform',
 								labelWidth: 100,
-								title: 'Edit Annotation details:',
+								title: 'Edit Annotation:',
 								defaultType: 'textfield',
 								border: false,
 								labelAlign: 'right',
-								buttonAlign: 'left',
+								buttonAlign: 'right',
 								style: 'margin-left:10px;margin-top:10px;',
 								defaults: {
 									width: 600
 								},
 								items: [{
-									fieldLabel: 'ID',
-									name: 'id',
-									hidden: true,
-									hideLabel: true,
-                                    style: {padding:0,margin:0}
-								}, {
-									fieldLabel: 'Annotates',
-									name: 'resource',
-									readOnly: true,
-									style: 'background:none;border:none'
-								}, {
-									fieldLabel: 'Context',
-									name: 'context',
-									readOnly: true,
-                                    hidden: true,
-                                    hideLabel: true,
-									style: 'background:none;border:none',
-                                    style: {padding:0,margin:0}
-								}, {
-									fieldLabel: 'Original resource',
-									name: 'original',
-									id: 'originalfield',
-									readOnly: true,
-									style: 'background:none;border:none'
-								}, {
-									fieldLabel: 'Original Context Xpointer',
-									name: 'originalcontext',
-									readOnly: true,
-									style: 'background:none;border:none',
-									hidden: true,
-									hideLabel: true,
-                                    style: {padding:0,margin:0}
-								}, {
-									fieldLabel: 'Selection',
-									name: 'contextdisp',
-									readOnly: true,
-									style: 'background:none;border:none'
-								}, {
-									fieldLabel: 'Variant resource',
-									name: 'variant',
-									id: 'variantfield',
-									readOnly: true,
-									style: 'background:none;border:none'
-								}, {
-									fieldLabel: 'Variant Context Xpointer',
-									name: 'variantcontext',
-									readOnly: true,
-									style: 'background:none;border:none',
-									hidden: true,
-									hideLabel: true,
-                                    style: {padding:0,margin:0}
-								}, {
-									fieldLabel: 'Variant selection',
-									name: 'rcontextdisp',
-									readOnly: true,
-									style: 'background:none;border:none'
-								}, {
 									xtype: "combo",
 									id: "typecombo",
 									fieldLabel: 'Type',
@@ -230,6 +178,8 @@ lore.ui.gui_spec = {
 									valueField: 'qtype',
 									displayField: 'typename',
 									typeAhead: true,
+                                    triggerAction: 'all',
+                                    forceSelection: true,
 									mode: 'local',
 									selectOnFocus: true
 								}, {
@@ -248,33 +198,99 @@ lore.ui.gui_spec = {
 									fieldLabel: 'Variation Date',
 									name: 'variationdate'
 								}, {
+                                    fieldLabel: 'ID',
+                                    name: 'id',
+                                    hidden: true,
+                                    hideLabel: true,
+                                    style: {padding:0,margin:0}
+                                }, {
+                                    fieldLabel: 'Annotates',
+                                    name: 'resource',
+                                    readOnly: true,
+                                    style: 'background:none;border:none;font-size:90%;',
+                                    labelStyle: 'font-size:90%;'
+                                    
+                                }, {
+                                    fieldLabel: 'Context',
+                                    name: 'context',
+                                    readOnly: true,
+                                    hidden: true,
+                                    hideLabel: true,
+                                    style: 'background:none;border:none',
+                                    style: {padding:0,margin:0}
+                                }, {
+                                    fieldLabel: 'Original resource',
+                                    name: 'original',
+                                    id: 'originalfield',
+                                    readOnly: true,
+                                    style: 'background:none;border:none;font-size:90%',
+                                    labelStyle: 'font-size:90%'
+                                }, {
+                                    fieldLabel: 'Original Context Xpointer',
+                                    name: 'originalcontext',
+                                    readOnly: true,
+                                    style: 'background:none;border:none',
+                                    hidden: true,
+                                    hideLabel: true,
+                                    style: {padding:0,margin:0}
+                                }, {
+                                    fieldLabel: 'Selection',
+                                    name: 'contextdisp',
+                                    readOnly: true,
+                                    style: 'background:none;border:none;font-size:90%',
+                                    labelStyle: 'font-size:90%;'
+                                }, {
+                                    fieldLabel: 'Variant resource',
+                                    name: 'variant',
+                                    id: 'variantfield',
+                                    readOnly: true,
+                                    style: 'background:none;border:none;font-size:90%',
+                                    labelStyle: 'font-size:90%'
+                                }, {
+                                    fieldLabel: 'Variant Context Xpointer',
+                                    name: 'variantcontext',
+                                    readOnly: true,
+                                    style: 'background:none;border:none',
+                                    hidden: true,
+                                    hideLabel: true,
+                                    style: {padding:0,margin:0}
+                                }, {
+                                    fieldLabel: 'Variant selection',
+                                    name: 'rcontextdisp',
+                                    readOnly: true,
+                                    style: 'background:none;border:none;font-size:90%',
+                                    labelStyle: 'font-size:90%'
+                                }, {
 									fieldLabel: 'Body',
 									xtype: 'htmleditor',
 									name: 'body'
+                                    //enableSourceEdit: false    should really disable this but while debugging it is useful
 								
 								
 								}		
 								],
 								buttons: [{
+                                    text: 'Update selection',
+                                    id: 'updctxtbtn',
+                                    tooltip: 'Set the context of the annotation to be the current selection from the main browser window'
+                                },  {
+                                    text: 'Update variant selection',
+                                    id: 'updrctxtbtn',
+                                    hidden: true,
+                                    tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
+                                }, {
+                                    text: 'Delete Annotation',
+                                    id: 'delannobtn',
+                                    tooltip: 'Delete the annotation - CANNOT BE UNDONE'
+                                },{
 									text: 'Save Annotation',
 									id: 'updannobtn',
 									tooltip: 'Save the annotation to the repository'
 								}, {
-									text: 'Delete Annotation',
-									id: 'delannobtn',
-									tooltip: 'Delete the annotation from the repository - CANNOT BE UNDONE!'
-								}, {
-									text: 'Cancel',
-									id: 'cancelupdbtn'
-								}, {
-									text: 'Update context',
-									id: 'updctxtbtn',
-									tooltip: 'Update the (original) context from the current selection in the main browser window'
-								}, {
-									text: 'Update variant context',
-									id: 'updrctxtbtn',
-									tooltip: 'Update the variant context from the current selection in the main browser window'
-								}]
+                                    text: 'Cancel',
+                                    id: 'cancelupdbtn',
+                                    tooltip: 'Cancel - changes will be discarded'
+                                }]
 							}]
 						}, {
                         xtype: "panel",
@@ -329,11 +345,7 @@ lore.ui.gui_spec = {
                           */
                           columnWidth: .40
                         }]
-                    }, {
-							title: "Annotation Timeline",
-							xtype: "panel",
-							id: "annotimeline"
-						}]
+                    }]
 					}, {
                         xtype: "tabpanel",
                         title: "Compound Objects",
@@ -352,18 +364,18 @@ lore.ui.gui_spec = {
                             id: "remlistview",
 							autoScroll: true
         					
-                        }, {
+                        }, /*{
                             title: "SMIL",
                             xtype: "panel",
                             id: "remsmilview",
-							autoScroll: true
-							
+							autoScroll: true,
+							closable: true
                         
-                        },{
+                        },*//*{
                             title: "Explore",
                             id: "remexploreview",
                             autoScroll:true
-                        }],
+                        }*/],
                         activeTab: "drawingarea"
                      }, {
 					
@@ -417,6 +429,7 @@ lore.ui.gui_spec = {
                 height: 200,
                 xtype: "tabpanel",
                 id: "propertytabs",
+                deferredRender: false,
                 enableTabScroll: true,
                 defaults: {
                     autoScroll: true
@@ -432,8 +445,10 @@ lore.ui.gui_spec = {
                         scrollOffset: 0
                     },
                     tbar: [new Ext.Button({
+                        id: "maddbtn",
                         text: "Add property"
                     }), new Ext.Button({
+                        id: "mrembtn",
                         text: "Remove property"
                     })]
                 }, {

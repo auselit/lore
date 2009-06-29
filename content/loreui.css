@@ -173,7 +173,7 @@
 }
 #remrdfview {
  	color: #51666b;
- 	font-family: "Courier New" courier monospace;
+ 	font-family: courier monospace;
  	font-size: 70%;
 }
 #welcome * a, #remsmilview * a, #remlistview * a, #textmining * a {
@@ -203,4 +203,19 @@
 	font-size:smaller;
 	padding: 5px;
 }
+.x-form-item {margin-bottom:2px}
 .x-hide-label {padding:0;margin:0}
+#delannobtn .x-btn-center .x-btn-text {
+	color:red;
+}
+/* explore */
+.node {
+	font-size:0.8em;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color:#51666b;
+	font-weight:bold;
+	cursor:pointer;
+	padding:2px;
+}
+#infovis {width: 100%; height:100%;}
+.timeline-event-bubble-body {max-height:140px;overflow:auto;}
