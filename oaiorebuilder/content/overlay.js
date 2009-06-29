@@ -142,7 +142,6 @@ var loreoverlay = {
      var disable_tm = this.prefs.getBoolPref("disable_textmining");
      var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
      var disable_anno = this.prefs.getBoolPref("disable_annotations"); 
-      
 	 // hide or show XUL toolbar buttons depending on prefs
      document.getElementById('text-mining').hidden = disable_tm; 
      document.getElementById('tmsep').hidden = disable_tm;
@@ -159,12 +158,12 @@ var loreoverlay = {
      window.graphiframe.lore.ui.setdccreator(dccreator);
 	 window.graphiframe.lore.ore.setrelonturl(relonturl);
 	 window.graphiframe.lore.ui.setRepos(rdfrepos, rdfrepostype, annoserver);
-  // hide or show related Ext UI depending on prefs
+     // hide or show related Ext UI depending on prefs
      window.graphiframe.lore.ui.disableUIFeatures({'disable_textmining': disable_tm, 
         'disable_annotations': disable_anno, 
         'disable_compoundobjects': disable_co});
      
-  	}
+    }
   },
   loadOntology: function() {
   	var prefservice = Components.classes["@mozilla.org/preferences-service;1"]

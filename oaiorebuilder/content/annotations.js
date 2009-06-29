@@ -193,7 +193,9 @@ lore.anno.Annotation = function(rdf) {
 						+ (this.id ? ' for ' + this.id : ''), ex);
 	}
     this.toString = function(){
-        return "Annotation[" + this.id + "," + (this.modified? this.modified : this.created) + "]";
+        return "Annotation [" + this.id + "," 
+        + (this.modified? this.modified : this.created) + "," 
+        + lore.util.splitTerm(this.type).term + "]";
     }
 }
 
@@ -202,7 +204,6 @@ lore.anno.Annotation = function(rdf) {
  * current browser resource
  */
 lore.anno.addAnnotation = function() {
-
 	var currentContext = "";
     try {
         currentContext = lore.util.getXPathForSelection();
@@ -228,15 +229,54 @@ lore.anno.addAnnotation = function() {
 				return (!record.json.id);
 			});
 	// select the row to load into the editor
-	lore.anno.annotabsm.selectRow(annoIndex);
 	lore.ui.loreviews.activate("annotationstab");
-    
+    Ext.getCmp("annotationstab").activate("annotationslistform");
+    lore.anno.annotabsm.selectRow(annoIndex);
+    Ext.getCmp("annotationslist").view.focusRow(annoIndex);
+    lore.ui.loreInfo("Fill in annotation details and then select 'Save Annotation'");
+}
+/** 
+ * Create a new annotation which is a reply to annoid
+ * @param {} annoid
+ */
+lore.anno.replyAnno = function(annoid){
+    var currentContext = "";
+    try {
+        currentContext = lore.util.getXPathForSelection();
+    } catch (e) {
+        lore.debug.anno("exception creating xpath for new annotation",e);
+    }
+    var anno = {
+        resource : annoid,
+        isReply: true,
+        original : lore.ui.currentURL,
+        context : currentContext,
+        originalcontext : currentContext,
+        creator : lore.defaultCreator,
+        created : new Date(),
+        modified : new Date(),
+        body : "",
+        title : "New Reply",
+        type : lore.constants.ANNOTATION_TYPE_NS + "Comment",
+        lang : "en"
+    };
+    lore.anno.annotabds.loadData([anno], true);
+    // get the annotation record
+    var annoIndex = lore.anno.annotabds.findBy(function(record, id) {
+                return (!record.json.id);
+            });
+    // select the row to load into the editor
+    lore.ui.loreviews.activate("annotationstab");
+    Ext.getCmp("annotationstab").activate("annotationslistform");
+    lore.anno.annotabsm.selectRow(annoIndex);
+    Ext.getCmp("annotationslist").view.focusRow(annoIndex);
+    lore.ui.loreInfo("Fill in annotation details and then select 'Save Annotation'");
 }
 /**
  * Highlight all annotations on the current page
  */
 lore.anno.showAllAnnotations = function(){
-    alert("not yet implemented");
+    lore.ui.loreWarning("Highlighting all annotations is currently disabled");
 }
 lore.anno.createAnnotationRDF = function(anno) {
 	var rdfxml = "<?xml version=\"1.0\" ?>";
@@ -245,13 +285,23 @@ lore.anno.createAnnotationRDF = function(anno) {
 	if (anno.id) {
 		rdfxml += ' rdf:about="' + anno.id + '"';
 	}
-	rdfxml += '><rdf:type rdf:resource="' + lore.constants.ANNOTATION_NS
-			+ 'Annotation"/>';
-	if (anno.type) {
+    rdfxml += ">";
+    if (anno.isReply){
+        rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
+    } 
+    if (anno.type) {
+        rdfxml += '<rdf:type rdf:resource="' + lore.constants.ANNOTATION_NS
+            + 'Annotation"/>';
 		rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
 	}
-	rdfxml += '<annotates xmlns="' + lore.constants.ANNOTATION_NS
+    
+    if (anno.isReply){
+      rdfxml += '<inReplyTo xmlns="http://www.w3.org/2001/12/replyType" rdf:resource="' + anno.resource.replace(/&/g, '&amp;') + '"/>';
+      rdfxml += '<root xmlns="http://www.w3.org/2001/12/replyType" rdf:resource="' + anno.resource.replace(/&/g, '&amp;') + '"/>';
+    } else {
+	   rdfxml += '<annotates xmlns="' + lore.constants.ANNOTATION_NS
 			+ '" rdf:resource="' + anno.resource.replace(/&/g, '&amp;') + '"/>';
+    }
 	// also send variant as annotates for backwards compatability with older
 	// clients
 	/*
@@ -518,7 +568,7 @@ lore.anno.onVariationListingClick = function(listingPanel, rowIndex) {
 	}
 
 	try {
-		var detailsString = "";
+		/*var detailsString = "";
 
 		detailsString += '<span style="font-weight: bold">Creator:</span> '
 				+ lore.anno.variationInformation[rowIndex].creator + "<br />";
@@ -535,6 +585,8 @@ lore.anno.onVariationListingClick = function(listingPanel, rowIndex) {
 
 		lore.ui.propertytabs.activate("annotationsummary");
 		Ext.getCmp("annotationsummary").body.update(detailsString);
+        */
+        lore.anno.updateAnnotationSummary(lore.anno.variationInformation[rowIndex],true);
 
 	} catch (error) {
 
@@ -542,7 +594,24 @@ lore.anno.onVariationListingClick = function(listingPanel, rowIndex) {
 
 	}
 }
+lore.anno.updateAnnotationSummary = function (annodata){
+    var detailsString = "";
 
+    detailsString += '<span style="font-weight: bold">Creator:</span> '+ annodata.creator + "<br />";
+    detailsString += '<span style="font-weight: bold">Created:</span> '+ annodata.created + "<br />";
+    if (annodata.type == lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation"){
+        lore.debug.anno("variation annotation summary",annodata);
+        detailsString += '<span style="font-weight: bold">Agent:</span> '+ annodata.variationagent + "<br />";
+        detailsString += '<span style="font-weight: bold">Place:</span> '+ annodata.variationplace + "<br />";
+        detailsString += '<span style="font-weight: bold">Date:</span> '+ annodata.variationdate + "<br />";
+    }
+    detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span><br/> '
+                + annodata.body + "<br />";
+
+    lore.ui.propertytabs.activate("annotationsummary");
+    Ext.getCmp("annotationsummary").body.update(detailsString);
+
+}
 lore.anno.handleFrameLoad = function(e) {
 	var sourceFrame = document.getElementById("variationSourceFrame");
 	var targetFrame = document.getElementById("variationTargetFrame");
@@ -558,17 +627,22 @@ lore.anno.handleFrameLoad = function(e) {
 lore.anno.setVariationFrameURLs = function(sourceURL, targetURL) {
 	var changeMade = false;
 	var setFrameLabel = function(label, url) {
-		if (url == "about:blank") {
+        if (url.match("austlit.edu.au/")) {
+            label.update(url);
+        } else {
 			label.update(" ");
-		} else {
-			label.update(url);
 		}
+        
 	};
 	var setFrameURL = function(frame, url) {
-		if (frame.dom.src != url) {
+        // only allow content from the austlit server to be displayed for security reasons
+		if (frame.dom.src != url && url.match("austlit.edu.au/")) {
 			frame.dom.src = url;
 			changeMade = true;
-		}
+		} else if (frame.dom.src != url){
+            frame.dom.src = "about:blank";
+            changeMade = true;
+        }
 	};
 	setFrameURL(Ext.get("variationSourceFrame"), sourceURL);
 	setFrameURL(Ext.get("variationTargetFrame"), targetURL);
@@ -590,22 +664,39 @@ lore.anno.handleAnnotationSelection = function(sm, row, rec) {
 	// load annotation grid values into form
 	lore.ui.annotationsform.loadRecord(rec);
 	// add a marker to indicate context
-	// TODO: check first whether the currentURL is the original or variant
-	// resource (assuming original for now)
-	// TODO: hide the context text if it's not relevant (ie not on currentURL)
-	// TODO: show variant context text if the currentURL is the variant resource
-	if (rec.data.context) {
-		var idx = rec.data.context.indexOf('#');
-		var currentCtxt = rec.data.context.substring(idx + 1);
-		var sel = lore.util.getSelectionForXPath(currentCtxt);
+    var idx, currentCtxt, sel;
+    var ctxtField = lore.ui.annotationsform.findField('contextdisp');
+    var vCtxtField = lore.ui.annotationsform.findField('rcontextdisp');
+	if (rec.data.context && (rec.data.resource == lore.ui.currentURL)) {
+        lore.debug.anno("highlighting annotation context", rec);
+		idx = rec.data.context.indexOf('#');
+		currentCtxt = rec.data.context.substring(idx + 1);
+		sel = lore.util.getSelectionForXPath(currentCtxt);
 		lore.anno.annoMarker = lore.util.highlightXPointer(currentCtxt,
 				window.top.getBrowser().selectedBrowser.contentWindow.document,
 				true);
 		// display contents of context
-		var ctxtField = lore.ui.annotationsform.findField('contextdisp');
 		ctxtField.setValue('"' + lore.util.getSelectionText(currentCtxt) + "'");
-	}
-
+        lore.anno.setVisibilityFormField('contextdisp', false);
+	} else {
+        ctxtField.setValue("");
+        lore.anno.setVisibilityFormField('contextdisp', true);
+    }
+    if (rec.data.variantcontext && (rec.data.variant == lore.ui.currentURL)){
+        lore.debug.anno("highlighting variation context", rec);
+        idx = rec.data.variantcontext.indexOf('#');
+        currentCtxt = rec.data.variantcontext.substring(idx + 1);
+        sel = lore.util.getSelectionForXPath(currentCtxt);
+        lore.anno.annoMarker = lore.util.highlightXPointer(currentCtxt,
+                window.top.getBrowser().selectedBrowser.contentWindow.document,
+                true);
+        // display contents of context
+        vCtxtField.setValue('"' + lore.util.getSelectionText(currentCtxt) + "'");
+        lore.anno.setVisibilityFormField('rcontextdisp', false);
+    } else {
+        vCtxtField.setValue("");
+        lore.anno.setVisibilityFormField('rcontextdisp', true);
+    }
 }
 
 lore.anno.handleCancelAnnotationEdit = function(btn, e) {
@@ -657,18 +748,18 @@ lore.anno.handleSaveAnnotationChanges = function(btn, e) {
 							});
 					lore.anno.annotabsm.clearSelections();
 				} else {
-					lore.ui.loreInfo('Unable to create annotation: '
-							+ xhr.statusText);
+					lore.ui.loreInfo('Unable to create annotation');
+                    lore.debug.anno('Unable to create annotation',xhr.statusText);
 				}
 			}
 		};
 		xhr.send(annoRDF);
+        lore.debug.anno("RDF of new annotation",annoRDF);
 		lore.anno.annotabds.remove(anno);
 	} else {
 		// update existing annotation
 		if (!lore.ui.annotationsform.isDirty()) {
-			lore.ui
-					.loreInfo('Annotation content not modified: Annotation will not be updated');
+			lore.ui.loreInfo('Annotation content not modified: Annotation will not be updated');
 			return;
 		}
 		// Update the annotation on the server via HTTP PUT
@@ -678,13 +769,16 @@ lore.anno.handleSaveAnnotationChanges = function(btn, e) {
 			if (xhr.readyState == 4) {
 				if (xhr.status == 200) {
 					lore.ui.loreInfo('Annotation updated');
+                    lore.debug.anno('Annotation updated',xhr);
+                    //lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
 				} else {
-					lore.ui.loreInfo('Unable to update annotation: '
-							+ xhr.statusText);
+					lore.ui.loreInfo('Unable to update annotation');
+                    lore.debug.anno('Unable to update annotation',xhr);
 				}
 			}
 		};
 		xhr.send(annoRDF);
+        lore.debug.anno("RDF of updated annotation",annoRDF);
 	}
 }
 lore.anno.handleDeleteAnnotation = function(btn, e) {
@@ -698,18 +792,22 @@ lore.anno.handleDeleteAnnotation = function(btn, e) {
 						return (!record.json.id);
 					}
 				});
-		lore.anno.annotabds.remove(lore.anno.annotabds.getAt(annoIndex));
+        if (annoIndex >= 0) {
+		  lore.anno.annotabds.remove(lore.anno.annotabds.getAt(annoIndex));
+        }
 		if (annoID) { // annoID is null if it's a new annotation
 			// remove from the source tree
-			lore.ui.annotationstreeroot.findChild('id', annoID).remove();
+            var annonode = lore.ui.annotationstreeroot.findChild('id', annoID);
+            if (annonode) annonode.remove();
 			// remove the annotation from the server
 			Ext.Ajax.request({
 						url : annoID,
-						success : function() {
+						success : function(resp) {
+                            lore.debug.anno('Annotation deleted', resp);
 							lore.ui.loreInfo('Annotation deleted');
 						},
-						failure : function(resp) {
-							lore.debug.anno("Annotation deletion failed", resp);
+						failure : function(resp, opts) {
+							lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
 							lore.ui.loreWarning('Unable to delete annotation');
 						},
 						method : "DELETE"
@@ -722,7 +820,7 @@ lore.anno.handleDeleteAnnotation = function(btn, e) {
 		lore.anno.hideMarker();
 	} catch (ex) {
 		lore.debug.anno("Exception when deleting annotation", ex);
-		lore.ui.loreWarning("Unable to delete annotation: ");
+		lore.ui.loreWarning("Unable to delete annotation");
 	}
 }
 lore.anno.handleUpdateAnnotationContext = function(btn, e) {
@@ -853,7 +951,7 @@ lore.anno.updateAnnotationsSourceList = function(theURL) {
     }
 	// Get annotations for theURL
 	if (lore.anno.annoURL) {
-		var queryURL = lore.anno.annoURL + lore.anno.ANNOTATES + theURL;
+		var queryURL = lore.anno.annoURL + lore.anno.ANNOTATES + escape(theURL);
 		lore.ui.loreInfo("Loading annotations for " + theURL);
 		Ext.Ajax.request({
 			url: queryURL,
@@ -867,6 +965,62 @@ lore.anno.updateAnnotationsSourceList = function(theURL) {
 		});	
 	}
 }
+/**
+ * Replaces default function for generating contents of timeline bubbles
+ * @param {} elmt
+ * @param {} theme
+ * @param {} labeller
+ */
+Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function (elmt, theme, labeller) {  
+        var doc = elmt.ownerDocument;
+        var title = this.getText();
+        var link = this.getLink();
+        var image = this.getImage();
+    
+        if (image != null) {
+            var img = doc.createElement("img");
+            img.src = image;
+        
+            theme.event.bubble.imageStyler(img);
+            elmt.appendChild(img);
+        }
+    
+        var divTitle = doc.createElement("div");
+        var textTitle = doc.createTextNode(title);
+        if (link != null) {
+            var a = doc.createElement("a");
+            a.href = link;
+            a.appendChild(textTitle);
+            divTitle.appendChild(a);
+        } else {
+            divTitle.appendChild(textTitle);
+        }
+        theme.event.bubble.titleStyler(divTitle);
+        elmt.appendChild(divTitle);
+    
+        var divBody = doc.createElement("div");
+        this.fillDescription(divBody);
+        theme.event.bubble.bodyStyler(divBody);
+        elmt.appendChild(divBody);
+    
+        var divTime = doc.createElement("div");
+        this.fillTime(divTime, labeller);
+        divTime.style.fontSize = 'smaller';
+        divTime.style.color = '#aaa';
+        elmt.appendChild(divTime);
+    
+        var divOps = doc.createElement("div");
+        divOps.style.paddingTop = '5px';
+        var divOpsInner = "<a style='color:orange;font-size:smaller' href='#' "
+                + "onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.editAnno(\"" 
+                + this._eventID +"\")'>EDIT</a> | "
+                + "<a style='color:orange;font-size:smaller' href='#' "
+                + "onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.replyAnno(\"" 
+                + this._eventID +"\")'>REPLY</a>";
+        divOps.innerHTML = divOpsInner;
+        elmt.appendChild(divOps);
+};  
+
 lore.anno.addAnnoToTimeline = function(anno, title){
     lore.debug.anno(anno.toString(),anno);
    if (lore.anno.annoEventSource) {
@@ -874,23 +1028,48 @@ lore.anno.addAnnoToTimeline = function(anno, title){
     if (anno.isReply){
         annoicon = "comments.png";
     }
-    
       var dateEvent = new Date();
       dateEvent = Date.parseDate(anno.created, "c");
       var evt = new Timeline.DefaultEventSource.Event({instant: true,
         icon: "chrome://lore/skin/icons/" + annoicon,
         start: dateEvent,
         text: title,
+        id: anno.id,
         eventID: anno.id,
         caption: lore.util.splitTerm(anno.type).term + " by "  + anno.creator + ", " + dateEvent.format("j/n/Y H:m"),
-        description: "<span style='font-size:small;color:#51666b;'>" + lore.util.splitTerm(anno.type).term + " by " + anno.creator + "</span><br/>" + anno.body
-        //description: "is reply to: "
+        description: "<span style='font-size:small;color:#51666b;'>" + lore.util.splitTerm(anno.type).term 
+        + " by " + anno.creator + "</span><br/>" + anno.body
+        //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.editAnno(\"" + anno.id +"\")'>EDIT</a> | "
+        //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.replyAnno(\"" + anno.id +"\")'>REPLY</a>"
       });
       lore.anno.annoEventSource.add(evt);       
       lore.anno.annotimeline.getBand(0).setCenterVisibleDate(evt.getStart());
       
    }
 }
+lore.anno.getAnnoData = function(annoid){
+    var annoIndex = lore.anno.annotabds.findBy(
+    function(record, id) {
+         return (annoid == record.json.id);
+    });
+    return lore.anno.annotabds.getAt(annoIndex);
+}
+/**
+ * Open an annotation in the editor
+ * @param {} annoid The id of the anotation to open
+ */
+lore.anno.editAnno = function (annoid){
+    lore.ui.loreviews.activate("annotationstab");
+    Ext.getCmp("annotationstab").activate("annotationslistform");
+    var annoIndex = lore.anno.annotabds.findBy(
+    function(record, id) {
+         return (annoid == record.json.id);
+    });
+    lore.anno.annotabsm.selectRow(annoIndex);
+    Ext.getCmp("annotationslist").view.focusRow(annoIndex);
+    lore.ui.loreInfo("Edit the annotation and then select 'Save Annotation'");
+}
+
 lore.anno.handleAnnotationsLoaded = function (resp){		
 	var resultNodes = {};
 	var xmldoc = resp.responseXML;
@@ -926,6 +1105,7 @@ lore.anno.handleAnnotationsLoaded = function (resp){
 			var tmpNode = new Ext.tree.TreeNode({
 				id : annoID,
 				rowIndex : i,
+                annoType: annoType,
 				text : title
                     + " <span style='font-style:italic'>("
 					+ anno.creator + ")</span>",
@@ -934,52 +1114,7 @@ lore.anno.handleAnnotationsLoaded = function (resp){
 			});
 
 			lore.ui.annotationstreeroot.appendChild(tmpNode);
-            tmpNode.on('click', function(node){
-               lore.ui.propertytabs.activate("annotationsummary"); 
-            });
-			tmpNode.on('dblclick', function(node) {
-				lore.ui.loreviews.activate("annotationstab");
-				Ext.getCmp("annotationstab").activate("annotationslistform");
-				var annoIndex = lore.anno.annotabds.findBy(
-					function(record, id) {
-						return (node.id == record.json.id);
-				});
-				lore.anno.annotabsm.selectRow(annoIndex);
-			});
-			tmpNode.on('contextmenu', function(node, e) {
-				if (!node.contextmenu) {
-					node.contextmenu = new Ext.menu.Menu({
-						id : node.id + "-context-menu"
-					});
-					node.contextmenu.add({
-						text : "Add to compound object",
-						handler : function(evt) {
-							lore.ore.graph.addFigure(node.id);
-						}
-					});
-					node.contextmenu.add({
-						text : "Edit annotation",
-						handler : function(evt) {
-							lore.ui.loreviews.activate("annotationstab");
-							Ext.getCmp("annotationstab").activate("annotationslistform");
-							lore.anno.annotabsm.selectRow(node.attributes.rowIndex);
-						}
-					});
-					if (annoType == lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation") {
-						node.contextmenu.add({
-							text : "Show in Variations View",
-							handler : function(evt) {
-								lore.ui.loreviews.activate("annotationstab");
-								Ext.getCmp("annotationstab").activate("variationannotations");
-								// TODO: make it easier to
-								// select the annotation in
-								// the variations listing
-							}
-						});
-					}
-				}
-				node.contextmenu.showAt(e.xy);
-			});
+            lore.anno.attachAnnoEvents(tmpNode);
 		}
 		if (!lore.ui.annotationstreeroot.isExpanded()) {
 			lore.ui.annotationstreeroot.expand();
@@ -987,35 +1122,104 @@ lore.anno.handleAnnotationsLoaded = function (resp){
         lore.anno.annotimeline.layout();
 	}	
 }
+
+lore.anno.attachAnnoEvents = function(annoNode){
+    annoNode.on('contextmenu',function(node,ev){
+       node.select();
+       lore.anno.updateAnnotationSummary(lore.anno.getAnnoData(node.id).data);
+    });
+    annoNode.on('click', function(node,ev) {
+        lore.ui.propertytabs.activate("annotationsummary"); 
+        lore.anno.updateAnnotationSummary(lore.anno.getAnnoData(node.id).data);
+    });
+    annoNode.on('dblclick', function(node,ev){
+        // TODO: detect double click
+        lore.ui.propertytabs.activate("annotationsummary"); 
+        lore.ui.loreviews.activate("annotationstab");
+        Ext.getCmp("annotationstab").activate("annotimeline");
+        var band = lore.anno.annotimeline.getBand(0);
+        band.closeBubble();
+        band.showBubbleForEvent(node.id);
+    });
+    annoNode.on('contextmenu', function(node, e) {
+        if (!node.contextmenu) {
+           node.contextmenu = new Ext.menu.Menu({
+                id : node.id + "-context-menu"
+           });
+           node.contextmenu.add({
+               text : "Show in Timeline",
+               handler : function(evt) { 
+                  lore.ui.loreviews.activate("annotationstab");
+                  Ext.getCmp("annotationstab").activate("annotimeline");
+                  var band = lore.anno.annotimeline.getBand(0);
+                  band.closeBubble();
+                  band.showBubbleForEvent(node.id);
+               }
+           });
+           node.contextmenu.add({
+               text : "Reply to annotation",
+               handler : function(evt) {
+                   lore.anno.replyAnno(node.id);
+               }
+           });
+           node.contextmenu.add({
+               text : "Edit annotation",
+               handler : function(evt) {          
+                  lore.anno.editAnno(node.id);
+               }
+           });
+           
+           node.contextmenu.add({
+               text : "Add as node in compound object editor",
+               handler : function(evt) {
+                    lore.ore.graph.addFigure(node.id);
+               }
+           });
+           if (node.annoType == lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation") {
+               node.contextmenu.add({
+                  text : "Show in Variations View",
+                  handler : function(evt) {
+                      lore.ui.loreviews.activate("annotationstab");
+                      Ext.getCmp("annotationstab").activate("variationannotations");
+                         // TODO: make it easier to
+                         // select the annotation in
+                         // the variations listing
+                   }
+                });
+            }
+        }
+        node.contextmenu.showAt(e.xy);
+    });
+}
+
 lore.anno.handleAnnotationRepliesLoaded = function(resp, opt) {
 	var replyList = resp.responseXML.getElementsByTagNameNS(
 		lore.constants.RDF_SYNTAX_NS, 'Description');
 	var isLeaf = (replyList.length == 0);
 	if (!isLeaf) {
         var annoURL = opt.url.substring((lore.anno.annoURL + lore.anno.REPLY_TREE).length);
-        lore.debug.anno("handle annotation replies for " + annoURL, resp);
+        //lore.debug.anno("handle annotation replies for " + annoURL, resp);
         var replyLookup = {};
         replyLookup[annoURL] = lore.ui.annotationstreeroot.findChild("id", annoURL);
         replies = lore.anno.orderByDate(replyList);
+        lore.anno.annotabds.loadData(replies, true);
         for (var j = 0; j < replies.length; j++){
-            lore.debug.anno("reply details", replies[j]);
+            lore.debug.anno("Reply " + replies[j].toString(), replies[j]);
             var title = replies[j].title;
             if (!title || title == '') {
                 title = "Untitled reply";
             }
             lore.anno.addAnnoToTimeline(replies[j], title);
-            
             var tmpNode = new Ext.tree.TreeNode({
                 id : replies[j].id,
+                annoType: "reply",
                 text : title + " <span style='font-style:italic'>("
                     + replies[j].creator + ")</span>",
                 iconCls : 'annoreply-icon', 
                 qtip: lore.util.splitTerm(replies[j].type).term + " by " 
-                    + replies[j].creator + ", " + Date.parseDate(replies[j].created, 'c').format("j/n/Y H:m")
-                
-                
+                    + replies[j].creator + ", " + Date.parseDate(replies[j].created, 'c').format("j/n/Y H:m") 
             });
-            
+            lore.anno.attachAnnoEvents(tmpNode);
             var parentNode = replyLookup[replies[j].about];
             if (parentNode){
                 parentNode.appendChild(tmpNode);
