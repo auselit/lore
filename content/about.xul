@@ -12,8 +12,6 @@
   <separator class="thin"/>
   <text value="Credits" style="font-weight: bold;"/>
   <text style='font-size:smaller' value="Icons from http://famfamfam.com/lab/icons/silk"/>
-  <text style='font-size:smaller' value="RDF Library http://www.jibbering.com/rdf-parser/"/>
-  <text style='font-size:smaller' value="Graph Library http://draw2d.org/draw2d/"/>
 </vbox>
 </groupbox>
 </dialog>
