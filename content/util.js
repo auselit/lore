@@ -217,6 +217,21 @@ lore.util.splitTerm = function(theurl) {
 	}
 	return result;
 }
+lore.util.findChildRecursively=function(tree,attribute, value) {
+    var cs = tree.childNodes;
+    for(var i = 0, len = cs.length; i < len; i++) {
+        if(cs[i].attributes[attribute] == value){
+            return cs[i];
+        }
+        else {
+            // Find it in this tree
+            if(found = lore.util.findChildRecursively(cs[i], attribute, value)) {
+                return found;
+            }
+        }
+    }
+    return null;
+} 
 
 /**
  * Escape characters for HTML display
