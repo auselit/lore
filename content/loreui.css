@@ -189,6 +189,9 @@
 .newanno td {
 	color: red !important;
 }
+.x-grid3-col-3 {
+	height: 1em;
+}
 #annotimeline{
 	height:100%;
 	width:100%;

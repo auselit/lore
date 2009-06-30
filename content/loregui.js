@@ -128,7 +128,7 @@ lore.ui.gui_spec = {
 									sortable: true,
 									dataIndex: 'title'
 								}, {
-									header: 'Body',
+									header: 'Body (preview)',
 									dataIndex: 'body',
 									hidden: false
 								}, {

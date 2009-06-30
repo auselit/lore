@@ -278,6 +278,8 @@ lore.anno.replyAnno = function(annoid){
 lore.anno.showAllAnnotations = function(){
     lore.ui.loreWarning("Highlighting all annotations is currently disabled");
 }
+
+
 lore.anno.createAnnotationRDF = function(anno) {
 	var rdfxml = "<?xml version=\"1.0\" ?>";
 	rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.RDF_SYNTAX_NS + '">';
@@ -296,8 +298,17 @@ lore.anno.createAnnotationRDF = function(anno) {
 	}
     
     if (anno.isReply){
-      rdfxml += '<inReplyTo xmlns="http://www.w3.org/2001/12/replyType" rdf:resource="' + anno.resource.replace(/&/g, '&amp;') + '"/>';
-      rdfxml += '<root xmlns="http://www.w3.org/2001/12/replyType" rdf:resource="' + anno.resource.replace(/&/g, '&amp;') + '"/>';
+      rdfxml += '<inReplyTo xmlns="'+ lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
+      var rootannonode = lore.util.findChildRecursively(lore.ui.annotationstreeroot,'id',anno.resource);
+      if (rootannonode){
+        while (rootannonode.getDepth() > 2){
+            rootannonode = rootannonode.parentNode;
+        }
+        rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + rootannonode.id + '"/>';
+      } else {
+        rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
+      }
+      
     } else {
 	   rdfxml += '<annotates xmlns="' + lore.constants.ANNOTATION_NS
 			+ '" rdf:resource="' + anno.resource.replace(/&/g, '&amp;') + '"/>';
@@ -566,46 +577,22 @@ lore.anno.onVariationListingClick = function(listingPanel, rowIndex) {
 	} else {
 		lore.anno.highlightVariationFrames(rowIndex);
 	}
+    lore.anno.updateAnnotationSummary(lore.anno.variationInformation[rowIndex],true);
 
-	try {
-		/*var detailsString = "";
-
-		detailsString += '<span style="font-weight: bold">Creator:</span> '
-				+ lore.anno.variationInformation[rowIndex].creator + "<br />";
-		detailsString += '<span style="font-weight: bold">Created:</span> '
-				+ lore.anno.variationInformation[rowIndex].created + "<br />";
-		detailsString += '<span style="font-weight: bold">Agent:</span> '
-				+ lore.anno.variationInformation[rowIndex].variationagent + "<br />";
-		detailsString += '<span style="font-weight: bold">Place:</span> '
-				+ lore.anno.variationInformation[rowIndex].variationplace + "<br />";
-		detailsString += '<span style="font-weight: bold">Date:</span> '
-				+ lore.anno.variationInformation[rowIndex].variationdate + "<br />";
-		detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span><br/> '
-				+ lore.anno.variationInformation[rowIndex].body + "<br />";
-
-		lore.ui.propertytabs.activate("annotationsummary");
-		Ext.getCmp("annotationsummary").body.update(detailsString);
-        */
-        lore.anno.updateAnnotationSummary(lore.anno.variationInformation[rowIndex],true);
-
-	} catch (error) {
-
-		lore.debug.anno("Exception displaying variation annotation", error);
-
-	}
 }
 lore.anno.updateAnnotationSummary = function (annodata){
     var detailsString = "";
 
     detailsString += '<span style="font-weight: bold">Creator:</span> '+ annodata.creator + "<br />";
-    detailsString += '<span style="font-weight: bold">Created:</span> '+ annodata.created + "<br />";
+    
+    detailsString += '<span style="font-weight: bold">Created:</span> '+ Date.parseDate(annodata.created, 'c').format("j/n/Y H:m") + "<br />";
     if (annodata.type == lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation"){
         lore.debug.anno("variation annotation summary",annodata);
         detailsString += '<span style="font-weight: bold">Agent:</span> '+ annodata.variationagent + "<br />";
         detailsString += '<span style="font-weight: bold">Place:</span> '+ annodata.variationplace + "<br />";
         detailsString += '<span style="font-weight: bold">Date:</span> '+ annodata.variationdate + "<br />";
     }
-    detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span><br/> '
+    detailsString += '<br/><span style="font-weight: bold;">Description:</span><br/> '
                 + annodata.body + "<br />";
 
     lore.ui.propertytabs.activate("annotationsummary");
@@ -797,7 +784,7 @@ lore.anno.handleDeleteAnnotation = function(btn, e) {
         }
 		if (annoID) { // annoID is null if it's a new annotation
 			// remove from the source tree
-            var annonode = lore.ui.annotationstreeroot.findChild('id', annoID);
+            var annonode = lore.util.findChildRecursively(lore.ui.annotationstreeroot,'id', annoID);
             if (annonode) annonode.remove();
 			// remove the annotation from the server
 			Ext.Ajax.request({
@@ -941,6 +928,7 @@ lore.anno.getBodyContent = function(uri) {
 lore.anno.updateAnnotationsSourceList = function(theURL) {
     // clear the old annotations - only remove annotations with an id (don't clear a new annotation)
 	lore.ui.clearTree(lore.ui.annotationstreeroot);
+    Ext.getCmp("annotationsummary").body.update("");
 	lore.anno.annotabds.each(function(rec) {
 		if (rec.data.id) {
 			lore.anno.annotabds.remove(rec);
@@ -1200,7 +1188,7 @@ lore.anno.handleAnnotationRepliesLoaded = function(resp, opt) {
         var annoURL = opt.url.substring((lore.anno.annoURL + lore.anno.REPLY_TREE).length);
         //lore.debug.anno("handle annotation replies for " + annoURL, resp);
         var replyLookup = {};
-        replyLookup[annoURL] = lore.ui.annotationstreeroot.findChild("id", annoURL);
+        replyLookup[annoURL] = lore.util.findChildRecursively(lore.ui.annotationstreeroot,"id", annoURL);
         replies = lore.anno.orderByDate(replyList);
         lore.anno.annotabds.loadData(replies, true);
         for (var j = 0; j < replies.length; j++){
