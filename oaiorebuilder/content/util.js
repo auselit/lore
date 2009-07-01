@@ -86,7 +86,7 @@ lore.util.scrollToElement = function(theElement, theWindow){
  * @param {} locbar Boolean: whether to show location bar
  */
 lore.util.launchWindow = function(url, locbar) {
-	var winOpts = 'height=650,width=800,top=200,left=250,resizable';
+	var winOpts = 'height=650,width=800,top=200,left=250,resizable,scrollbars=yes';
 	if (locbar) {
 		winOpts += ',location=1';
 	}
