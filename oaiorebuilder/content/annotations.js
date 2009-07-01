@@ -589,7 +589,7 @@ lore.anno.genDescription = function(annodata) {
 		return bodyText; // this case shouldn't happen
 	}
 	
-	var imglink = "<a xmlns=\""+ lore.constants.XHTML_NS + "\" href=\"javascript:lore.util.launchWindow('" +
+	var imglink = "<a title='Show annotation body in separate window' xmlns=\""+ lore.constants.XHTML_NS + "\" href=\"javascript:lore.util.launchWindow('" +
 	 annodata.bodyURL + "',false);\" ><img xmlns=\"" + lore.constants.XHTML_NS + "\" src='/skin/icons/page_go.png' /></a><br />";
 	bodyText = bodyText.substring(0, ind) + imglink + bodyText.substring(ind);
 
@@ -676,16 +676,22 @@ lore.anno.handleAnnotationSelection = function(sm, row, rec) {
     var ctxtField = lore.ui.annotationsform.findField('contextdisp');
     var vCtxtField = lore.ui.annotationsform.findField('rcontextdisp');
 	if (rec.data.context && (rec.data.resource == lore.ui.currentURL)) {
-        lore.debug.anno("highlighting annotation context", rec);
 		idx = rec.data.context.indexOf('#');
 		currentCtxt = rec.data.context.substring(idx + 1);
-		sel = lore.util.getSelectionForXPath(currentCtxt);
-		lore.anno.annoMarker = lore.util.highlightXPointer(currentCtxt,
+        lore.debug.anno("highlighting annotation context: " + currentCtxt, rec);
+        try {
+            sel = lore.util.getSelectionForXPath(currentCtxt);
+		    lore.anno.annoMarker = lore.util.highlightXPointer(currentCtxt,
 				window.top.getBrowser().selectedBrowser.contentWindow.document,
 				true);
-		// display contents of context
-		ctxtField.setValue('"' + lore.util.getSelectionText(currentCtxt) + "'");
-        lore.anno.setVisibilityFormField('contextdisp', false);
+		      // display contents of context
+		     ctxtField.setValue('"' + lore.util.getSelectionText(currentCtxt) + "'");
+             lore.anno.setVisibilityFormField('contextdisp', false); 
+        }
+        catch (ex) {
+            lore.debug.anno("exception displaying/highlighting context",ex);
+            lore.anno.setVisibilityFormField('contextdisp', true);
+        }
 	} else {
         ctxtField.setValue("");
         lore.anno.setVisibilityFormField('contextdisp', true);
@@ -969,7 +975,7 @@ lore.anno.updateAnnotationsSourceList = function(theURL) {
 			success: lore.anno.handleAnnotationsLoaded,
 			failure: function(resp, opt){
 				lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
-                lore.ui.loreWarning("Unable to retrieve annotations");
+                lore.ui.loreInfo("No annotations found for the current page");
             }
 		});	
 	}
