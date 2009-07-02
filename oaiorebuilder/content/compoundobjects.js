@@ -764,47 +764,18 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                         }
                         for (var i = 0; i < result.length; i++) {
                             var theobj = new lore.ore.CompObjListing(result[i]);
-                            lore.debug.ore("processing compound object", theobj);
-                            var tmpNode = new Ext.tree.TreeNode({
+                            if (!lore.ui.remstreeroot.findChild('id',theobj.uri)){
+                               lore.debug.ore("processing compound object", theobj);
+                               var tmpNode = new Ext.tree.TreeNode({
                                         text : theobj.title,
                                         id : theobj.uri,
                                         qtip: "Created by " + theobj.creator + ", " + theobj.created,
                                         iconCls : 'oreresult',
                                         leaf : true
-                                    });
-                            lore.ui.remstreeroot.appendChild(tmpNode);
-                            /*tmpNode.on('dblclick', function(node) {
-                                lore.ore.readRDF(node.id);    
-                            });
-                            tmpNode.on('click',function(node){
-                                lore.ui.propertytabs.activate("remgrid"); 
-                            });
-                            tmpNode.on('contextmenu', function(node, e) {
-                                node.select();
-                                if (!node.contextmenu) {
-                                    node.contextmenu = new Ext.menu.Menu({
-                                                id : node.id + "-context-menu"
-                                            });
-                                   node.contextmenu.add({
-                                        text : "Edit compound object",
-                                        handler : function(evt) {
-                                            lore.ore.readRDF(node.id);
-                                        }
-                                    });
-                                    node.contextmenu.add({
-                                        text : "Add as node in compound object editor",
-                                        handler : function(evt) {
-                                            lore.ore.graph
-                                                    .addFigure(lore.ore.reposURL
-                                                            + "/statements?context=<"
-                                                            + node.id + ">");
-                                        }
-                                    });
-                                    
-                                }
-                                node.contextmenu.showAt(e.xy);
-                            });*/
-                            lore.ore.attachREMEvents(tmpNode);
+                                });
+                               lore.ui.remstreeroot.appendChild(tmpNode);
+                               lore.ore.attachREMEvents(tmpNode);
+                            }
 
                         }
                         if (!lore.ui.remstreeroot.isExpanded()) {
