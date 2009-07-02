@@ -295,7 +295,7 @@ lore.ui.initTimeline = function() {
                             theme: theme,
 							width : "90%",
 							intervalUnit : Timeline.DateTime.WEEK,
-							intervalPixels : 80,
+							intervalPixels : 100,
 							timeZone : 10,
                             layout: "original"
 						}), Timeline.createBandInfo({
@@ -304,7 +304,7 @@ lore.ui.initTimeline = function() {
                             //showEventText:  false,
 							width : "10%",
 							intervalUnit : Timeline.DateTime.MONTH,
-							intervalPixels : 345,
+							intervalPixels : 430,
 							timeZone : 10,
                             layout: "overview"
 						})];
