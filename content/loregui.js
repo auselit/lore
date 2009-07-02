@@ -263,6 +263,9 @@ lore.ui.gui_spec = {
                                 }, {
 									fieldLabel: 'Body',
 									xtype: 'htmleditor',
+                                    plugins: [
+                                        new Ext.ux.form.HtmlEditor.Img()
+                                    ],
 									name: 'body'
                                     //enableSourceEdit: false    should really disable this but while debugging it is useful
 								
@@ -364,7 +367,7 @@ lore.ui.gui_spec = {
                             id: "remlistview",
 							autoScroll: true
         					
-                        }, /*{
+                        } /*,{
                             title: "SMIL",
                             xtype: "panel",
                             id: "remsmilview",

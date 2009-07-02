@@ -192,6 +192,9 @@
 .x-grid3-col-3 {
 	height: 1em;
 }
+.x-edit-img {
+	background-image: url(../skin/icons/picture_add.png) !important;
+}
 #annotimeline{
 	height:100%;
 	width:100%;
