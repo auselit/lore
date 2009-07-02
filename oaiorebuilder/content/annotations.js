@@ -986,7 +986,7 @@ lore.anno.updateAnnotationsSourceList = function(theURL) {
  * @param {} theme
  * @param {} labeller
  */
-Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function (elmt, theme, labeller) {  
+Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function (elmt, theme, labeller) {
         var doc = elmt.ownerDocument;
         var title = this.getText();
         var link = this.getLink();
@@ -1034,6 +1034,14 @@ Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function (elmt, the
                 + this._eventID +"\")'>REPLY</a>";
         divOps.innerHTML = divOpsInner;
         elmt.appendChild(divOps);
+        // select annotation in editor to trigger highlighting
+        lore.anno.hideMarker();
+        var annoid = this._eventID;
+        var annoIndex = lore.anno.annotabds.findBy(
+        function(record, id) {
+            return (annoid == record.json.id);
+        });
+        lore.anno.annotabsm.selectRow(annoIndex);
 };  
 
 lore.anno.addAnnoToTimeline = function(anno, title){
@@ -1053,7 +1061,7 @@ lore.anno.addAnnoToTimeline = function(anno, title){
         eventID: anno.id,
         caption: lore.util.splitTerm(anno.type).term + " by "  + anno.creator + ", " + dateEvent.format("j/n/Y H:m"),
         description: "<span style='font-size:small;color:#51666b;'>" + lore.util.splitTerm(anno.type).term 
-        + " by " + anno.creator + "</span><br/>" + lore.anno.genDescription(anno) 
+        + " by " + anno.creator + "</span> " + lore.anno.genDescription(anno) 
         //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.editAnno(\"" + anno.id +"\")'>EDIT</a> | "
         //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.replyAnno(\"" + anno.id +"\")'>REPLY</a>"
       });
