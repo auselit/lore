@@ -457,7 +457,9 @@ lore.anno.setAnnotationFormUI = function(variation) {
 	if (variation) {
 		lore.anno.hideFormFields(nonVariationFields);
 		lore.anno.showFormFields(variationFields);
+        Ext.getCmp('updrctxtbtn').setVisible(true);
 	} else {
+        Ext.getCmp('updrctxtbtn').setVisible(false);
 		lore.anno.hideFormFields(variationFields);
         lore.anno.showFormFields(nonVariationFields);
 	}

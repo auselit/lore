@@ -38,18 +38,11 @@ lore.ui.gui_spec = {
 					plugins : lore.ui.vismode,
 					deferredRender: false,
                     items: [{
-                        title: "Welcome",
-                        id: "welcome",
-						autoWidth: true,
-						autoScroll: true,
-                        iconCls: "welcome-icon"
-                    
-                    }, {
 						xtype: "tabpanel",
 						title: "Annotations",
 						id: "annotationstab",
 						deferredRender: false,
-						activeTab: "annotationslistform",
+						activeTab: "annotimeline",
 						items: [{
                             title: "Annotation Timeline",
                             xtype: "panel",
@@ -273,15 +266,15 @@ lore.ui.gui_spec = {
 								}		
 								],
 								buttons: [{
-                                    text: 'Update selection',
-                                    id: 'updctxtbtn',
-                                    tooltip: 'Set the context of the annotation to be the current selection from the main browser window'
-                                },  {
                                     text: 'Update variant selection',
                                     id: 'updrctxtbtn',
                                     hidden: true,
                                     tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
                                 }, {
+                                    text: 'Update selection',
+                                    id: 'updctxtbtn',
+                                    tooltip: 'Set the context of the annotation to be the current selection from the main browser window'
+                                },  {
                                     text: 'Delete Annotation',
                                     id: 'delannobtn',
                                     tooltip: 'Delete the annotation - CANNOT BE UNDONE'
@@ -386,8 +379,15 @@ lore.ui.gui_spec = {
 					id: "textmining",
 					autoWidth: true,
 					autoScroll:true
-				}],
-                    activeTab: "compoundobjecteditor"
+				},{
+                        title: "Using LORE",
+                        id: "welcome",
+                        autoWidth: true,
+                        autoScroll: true,
+                        iconCls: "welcome-icon"
+                    
+                    }],
+                    activeTab: "annotationstab"
 					
                 }
 				]
