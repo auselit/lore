@@ -33,7 +33,6 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
  *            gridname The display name of the property grid
  */
 lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
-    lore.debug.ui("set up metadata menu",lore.ore.METADATA_PROPS);
 	var make_menu_entry = function(menu, gridname, propname, op) {
 		var funcstr = "";
 		funcstr += "var props = " + gridname + ".getSource();";
@@ -72,8 +71,9 @@ lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
 					lore.ore.resource_metadata_props[i], "rem");
 		}
 	}
-	var addbtn = Ext.getCmp('maddbtn');
-	var rembtn = Ext.getCmp('mrembtn');
+    var tbar = the_grid.getTopToolbar(); 
+    var addbtn = tbar.items.itemAt(0); 
+    var rembtn = tbar.items.itemAt(1); 
 	if (addbtn) {
 		addbtn.menu = addMetadataMenu;
 	}
