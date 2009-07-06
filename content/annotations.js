@@ -289,11 +289,14 @@ lore.anno.showAllAnnotations = function(){
 		}
 		return domObj;
 	}
-		
+	
+	
+
+
    	lore.anno.annotabds.each(function highlightAnnotations(rec){
    		try {
 				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), selAllStyle);
-   		
+   				
 				if (domContainer) {
 					lore.anno.multiSelAnno.push(domContainer);
 				}
@@ -470,15 +473,25 @@ lore.anno.orderByDate = function(nodeList) {
 }
 
 lore.anno.hideMarker = function() {
-	if (lore.anno.curAnnoMarkers ) {
-		for (var i = 0; i < lore.anno.curAnnoMarkers.length; i++) {
-			lore.anno.hideMarkerFromXP(lore.anno.curAnnoMarkers[i]);
+	try {
+		if (lore.anno.curAnnoMarkers) {
+			for (var i = 0; i < lore.anno.curAnnoMarkers.length; i++) {
+				lore.anno.hideMarkerFromXP(lore.anno.curAnnoMarkers[i]);
+			}
 		}
+	} catch(ex) { 
+		lore.debug.anno("hide marker failure: " + ex, ex );
 	}
 }
 
 lore.anno.hideMarkerFromXP = function(domObj){
-			lore.util.removeNodePreserveChildren(domObj);		
+	// this is silly but the parent node disappears
+	// in certain circumstances, so can't use this for the moment
+	// lore.util.removeNodePreserveChildren(domObj);
+	domObj.style.textDecoration= "inherit";
+	domObj.style.backgroundColor = "transparent";
+	
+			
 }
 
 lore.anno.setVisibilityFormField = function(fieldName, hide) {
@@ -731,9 +744,9 @@ lore.anno.highlightAnnotation = function(currentCtxt, extraStyle) {
 		lore.debug.anno("highlighting annotation context: " + currentCtxt, currentCtxt);
 		var domObj = lore.util.highlightXPointer(currentCtxt, window.top.getBrowser().selectedBrowser.contentWindow.document, true);
 		if ( domObj && extraStyle) {
+			
 			domObj = extraStyle(domObj);
 		}
-		lore.debug.anno("the domobj that's highlighted ", domObj);
 		return domObj;
 		
 	} else {
