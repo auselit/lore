@@ -26,7 +26,7 @@
 	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#tag">
   		<rdfs:label xml:lang="en">tag</rdfs:label>
   		<rdfs:comment>Tag to characterise the annotation content</rdfs:comment>
-		<rdfs:domain rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#ScholarlyAnnotation"/>
+		<rdfs:domain rdf:resource="http://www.w3.org/2000/10/annotation-ns#Annotation"/>
   		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
 	</rdf:Property>
 
