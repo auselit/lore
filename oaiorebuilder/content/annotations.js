@@ -19,6 +19,8 @@
  */
 
 lore.anno.variationInformation = [];
+lore.anno.multiSelAnno = new Array();
+
 
 lore.anno.variationStore = new Ext.data.SimpleStore({
 			fields : [{
@@ -276,7 +278,54 @@ lore.anno.replyAnno = function(annoid){
  * Highlight all annotations on the current page
  */
 lore.anno.showAllAnnotations = function(){
-    lore.ui.loreWarning("Highlighting all annotations is currently disabled");
+ 
+  if (lore.anno.multiSelAnno.length == 0) {
+  	// toggle to highlight all
+   
+   	var curSelRec = lore.anno.annotabsm.getSelected();
+	var selAllStyle = function( domObj) {
+		if ( domObj ) {
+			domObj.style.textDecoration = "inherit";
+		}
+		return domObj;
+	}
+		
+   	lore.anno.annotabds.each(function highlightAnnotations(rec){
+   		try {
+				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), selAllStyle);
+   		
+				if (domContainer) {
+					lore.anno.multiSelAnno.push(domContainer);
+				}
+   		} 
+   		catch (ex) {
+   			lore.debug.anno("Error during highlight all: " + ex, rec);
+   		}
+   		
+   		if (rec.data.variantcontext) {
+   			try {
+   				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), selAllStyle);
+				if ( domContainer) {
+					lore.anno.multiSelAnno.push(domContainer);
+				}
+   			} 
+   			catch (ex) {
+   				lore.debug.anno("Error during highlight all for variant: " + ex, rec);
+   			}
+   		}
+   	});
+   } else {
+   		// unhighlight
+		lore.debug.anno("Unhighlighting all annotations", lore.anno.multiSelAnno);
+		for ( var i = 0; i < lore.anno.multiSelAnno.length;i++) {
+			try {
+				lore.anno.hideMarkerFromXP(lore.anno.multiSelAnno[i]);
+			} catch (ex) {
+				lore.debug.anno("Error unhighlighting: " + ex, lore.anno.multiSelAnno[i]);
+			}
+		}
+		lore.anno.multiSelAnno = new Array();
+   }
 }
 
 
@@ -421,11 +470,17 @@ lore.anno.orderByDate = function(nodeList) {
 }
 
 lore.anno.hideMarker = function() {
-	if (lore.anno.annoMarker) {
-		// hide the marker
-		lore.anno.annoMarker.style.backgroundColor = "transparent";
+	if (lore.anno.curAnnoMarkers ) {
+		for (var i = 0; i < lore.anno.curAnnoMarkers.length; i++) {
+			lore.anno.hideMarkerFromXP(lore.anno.curAnnoMarkers[i]);
+		}
 	}
 }
+
+lore.anno.hideMarkerFromXP = function(domObj){
+			lore.util.removeNodePreserveChildren(domObj);		
+}
+
 lore.anno.setVisibilityFormField = function(fieldName, hide) {
 	var thefield = lore.ui.annotationsform.findField(fieldName);
 	if (thefield) {
@@ -670,22 +725,46 @@ lore.anno.handleAnnotationDeselection = function(sm, row, rec) {
 	}
 }
 
+lore.anno.highlightAnnotation = function(currentCtxt, extraStyle) {
+	if (currentCtxt) {
+		var idx, marker = null;
+		lore.debug.anno("highlighting annotation context: " + currentCtxt, currentCtxt);
+		var domObj = lore.util.highlightXPointer(currentCtxt, window.top.getBrowser().selectedBrowser.contentWindow.document, true);
+		if ( domObj && extraStyle) {
+			domObj = extraStyle(domObj);
+		}
+		lore.debug.anno("the domobj that's highlighted ", domObj);
+		return domObj;
+		
+	} else {
+		return null;
+	}
+}
+
+lore.anno.setCurAnnoStyle = function (domObj) {
+		domObj.style.textDecoration = "underline";
+		return domObj;
+	}
+
 lore.anno.handleAnnotationSelection = function(sm, row, rec) {
 	// load annotation grid values into form
 	lore.ui.annotationsform.loadRecord(rec);
+	
 	// add a marker to indicate context
     var idx, currentCtxt, sel;
     var ctxtField = lore.ui.annotationsform.findField('contextdisp');
     var vCtxtField = lore.ui.annotationsform.findField('rcontextdisp');
+	
+	lore.anno.curAnnoMarkers = new Array();
+	
 	if (rec.data.context && (rec.data.resource == lore.ui.currentURL)) {
-		idx = rec.data.context.indexOf('#');
-		currentCtxt = rec.data.context.substring(idx + 1);
-        lore.debug.anno("highlighting annotation context: " + currentCtxt, rec);
+		
         try {
-            sel = lore.util.getSelectionForXPath(currentCtxt);
-		    lore.anno.annoMarker = lore.util.highlightXPointer(currentCtxt,
-				window.top.getBrowser().selectedBrowser.contentWindow.document,
-				true);
+			currentCtxt = lore.util.normalizeXPointer(rec.data.context);
+			
+			lore.anno.curAnnoMarkers.push(lore.anno.highlightAnnotation(currentCtxt,
+			lore.anno.setCurAnnoStyle));
+
 		      // display contents of context
 		     ctxtField.setValue('"' + lore.util.getSelectionText(currentCtxt) + "'");
              lore.anno.setVisibilityFormField('contextdisp', false); 
@@ -700,12 +779,10 @@ lore.anno.handleAnnotationSelection = function(sm, row, rec) {
     }
     if (rec.data.variantcontext && (rec.data.variant == lore.ui.currentURL)){
         lore.debug.anno("highlighting variation context", rec);
-        idx = rec.data.variantcontext.indexOf('#');
-        currentCtxt = rec.data.variantcontext.substring(idx + 1);
-        sel = lore.util.getSelectionForXPath(currentCtxt);
-        lore.anno.annoMarker = lore.util.highlightXPointer(currentCtxt,
-                window.top.getBrowser().selectedBrowser.contentWindow.document,
-                true);
+        
+		currentCtxt = lore.util.normalizeXPointer(rec.data.variantcontext);
+		lore.anno.curAnnoMarkers.push(lore.anno.highlightAnnotation(currentCtxt, lore.anno.setCurAnnoStyle));
+		
         // display contents of context
         vCtxtField.setValue('"' + lore.util.getSelectionText(currentCtxt) + "'");
         lore.anno.setVisibilityFormField('rcontextdisp', false);
