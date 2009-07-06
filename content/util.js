@@ -124,6 +124,12 @@ lore.util.writeFile = function(content, fileName){
 			throw new Error("Unable to write to file" + e.toString());
 		}
 }
+
+lore.util.normalizeXPointer = function(xp) {
+	var idx = xp.indexOf('#');
+	return xp.substring(idx + 1);
+}
+
 /**
  * Highlight part of a document
  * @param {} xpointer Context to highlight (as xpointer)
@@ -153,6 +159,11 @@ lore.util.getSelectionForXPath = function(xp)
 {
 	var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
     return lore.m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
+}
+
+lore.util.getNodeForXPath = function(xp) {
+	var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+	return lore.m_xps.parseXPointerToNode(xp, mainwindow);
 }
 /**
  * This fn depends on a hacked version of nsXpointerService being loaded by the browser
