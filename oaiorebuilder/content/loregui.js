@@ -78,33 +78,22 @@ lore.ui.gui_spec = {
 										{name: 'body'}, 
 										{name: 'modified'}, 
 										{name: 'type'}, 
-										{name: 'lang'}, {
-										name: 'resource'
-									}, {
-										name: 'id'
-									}, {
-										name: 'context'
-									}, {
-										name: 'isReply'
-									}, {
-										name: 'bodyURL'
-									}, {
-										name: 'about'
-									}, {
-										name: 'original'
-									}, {
-										name: 'variant'
-									}, {
-										name: 'originalcontext'
-									}, {
-										name: 'variantcontext'
-									}, {
-										name: 'variationagent'
-									}, {
-										name: 'variationplace'
-									}, {
-										name: 'variationdate'
-									}],
+										{name: 'lang'},
+                                        {name: 'resource'},
+                                        {name: 'id'},
+                                        {name: 'context'},
+                                        {name: 'isReply'},
+                                        {name: 'bodyURL'},
+                                        {name: 'about'},
+                                        {name: 'original'},
+                                        {name: 'variant'},
+                                        {name: 'originalcontext'},
+                                        {name: 'variantcontext'},
+                                        {name: 'variationagent'},
+                                        {name: 'variationplace'},
+                                        {name: 'variationdate'},
+                                        {name: 'tags'}
+                                        ],
 									data: {}
 								}),
 								cm: new Ext.grid.ColumnModel([{
@@ -253,7 +242,35 @@ lore.ui.gui_spec = {
                                     readOnly: true,
                                     style: 'background:none;border:none;font-size:90%',
                                     labelStyle: 'font-size:90%'
-                                }, {
+                                },    {
+                                    id:'tagselector',
+                                    xtype:'superboxselect',
+                                    allowBlank: true,
+                                    msgTarget: 'under',
+                                    allowAddNewData: true,
+                                    fieldLabel: 'Tags',
+                                    emptyText: 'Type or select tags',
+                                    resizable: true,
+                                    name: 'tags',
+                                    store: new Ext.data.SimpleStore({
+                                        fields: ['id', 'name'],
+                                        data: lore.anno.thesaurus                
+                                    }),
+                                    mode: 'local',
+                                    displayField: 'name',
+                                    valueField: 'id',
+                                    extraItemCls: 'x-tag',
+                                    listeners: {
+                                        newitem: function(bs,v){
+	                                        v = v.slice(0,1).toUpperCase() + v.slice(1).toLowerCase();
+	                                        var newObj = {
+	                                            id: v,
+	                                            name: v
+	                                        };
+	                                        bs.addItem(newObj);
+	                                    }
+                                    }
+                                },{
 									fieldLabel: 'Body',
 									xtype: 'htmleditor',
                                     plugins: [
@@ -261,9 +278,8 @@ lore.ui.gui_spec = {
                                     ],
 									name: 'body'
                                     //enableSourceEdit: false    should really disable this but while debugging it is useful
-								
-								
-								}		
+								}
+                             
 								],
 								buttons: [{
                                     text: 'Update variant selection',

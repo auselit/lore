@@ -214,6 +214,7 @@
 #delannobtn .x-btn-center .x-btn-text {
 	color:red;
 }
+.x-combo-list, .x-combo-list-inner {min-width:200px;}
 /* explore */
 .node {
 	font-size:0.8em;

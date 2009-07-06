@@ -129,6 +129,26 @@ lore.anno.Annotation = function(rdf) {
 		// body stores the contents of the html body tag as text
 		this.body = lore.anno.getBodyContent(this.bodyURL);
 
+        // get tags
+        this.tags = "";
+        node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'tag');
+        for (var j = 0; j < node.length; j++) {
+            var tagval = "";
+            attr = node[j].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS,'resource');
+            if (attr) {
+                // a thesaurus tag
+                tagval = attr.nodeValue;
+            } else {
+                // a freeform tag - make sure it's added to the list of tags
+               tagval = node[j].firstChild.nodeValue;
+               Ext.getCmp('tagselector').fireEvent('newitem', Ext.getCmp('tagselector'), tagval);
+            }
+            if (tagval){
+                if (j > 0) this.tags += ",";
+                this.tags += tagval;
+            }
+        }
+                    
 		// Additional fields for variation annotations only
 		if (this.type.match(lore.constants.VARIATION_ANNOTATION_NS)) {
 			node = rdf.getElementsByTagNameNS(
@@ -446,6 +466,19 @@ lore.anno.createAnnotationRDF = function(anno) {
 				+ '<body>' + anno.body.tidyHTML() + '</body></html>'
 				+ '</Body></rdf:Description>' + '</body>';
 	}
+    if (anno.tags) {
+        var tagsarray = anno.tags.split(',');
+        lore.debug.anno("tags are", tagsarray);
+        for (var ti = 0; ti < tagsarray.length; ti ++) {
+            var thetag = tagsarray[ti].escapeHTML();
+            rdfxml += '<tag xmlns="' + lore.constants.VARIATION_ANNOTATION_NS + '"';
+            if (thetag.contains("http://austlit.edu.au/run?ex=ShowThes")) {
+                rdfxml+= ' resource="' + thetag + '"/>';
+            } else {
+                rdfxml += '>' + thetag + '</tag>';
+            }
+        }
+    } 
 	rdfxml += '</rdf:Description>' + '</rdf:RDF>';
 	return rdfxml;
 }
