@@ -130,6 +130,22 @@ lore.util.normalizeXPointer = function(xp) {
 	return xp.substring(idx + 1);
 }
 
+lore.util.readChromeFile = function(path) {
+	  try {
+        var url = "chrome://lore" + path;
+	
+	    var xhr = new XMLHttpRequest();
+        xhr.overrideMimeType('text/javascript');
+  	
+	    xhr.open("GET", url, false);
+        xhr.send(null);
+		return xhr.responseText;
+    } catch (e) {
+        lore.debug.ui("Unable to read resource file: " + e.toString());
+    }
+
+}
+
 /**
  * Highlight part of a document
  * @param {} xpointer Context to highlight (as xpointer)
