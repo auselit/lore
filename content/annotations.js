@@ -298,9 +298,15 @@ lore.anno.replyAnno = function(annoid){
 lore.anno.genTipForAnnotation = function(annodata, domContainer) {
 		try {
 			var uid = annodata.id;
-			var obj = document.createElement("div");
+			var obj = document.createElement("span");
 			obj.setAttribute("id", uid);
 			obj.innerHTML = lore.anno.genDescription(annodata, true);
+			/*obj.style.visibility = "hidden";
+			obj.style.overflow = "hidden";
+			obj.style.width = 0;
+			obj.style.height = 0;
+			obj.style.zindex = 1010;*/
+			
 			
 			var doc = window.top.getBrowser().selectedBrowser.contentWindow.document;
 			var tipContainer = doc.getElementById("tipcontainer");
@@ -309,7 +315,10 @@ lore.anno.genTipForAnnotation = function(annodata, domContainer) {
 			// if first time a tip is created			
 			if (tipContainer == null) {
 				tipContainer = doc.createElement("div");
-				tipContainer.setAttribute("id", "tipcontainer");
+				tipContainer.id="tipcontainer";
+				tipContainer.style.width = 0;
+				tipContainer.style.height= 0;
+				tipContainer.style.overflow = "hidden";
 				tipContainer.style.visibility = "hidden";
 				doc.body.appendChild(tipContainer);
 				
