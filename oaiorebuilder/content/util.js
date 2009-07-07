@@ -270,6 +270,17 @@ String.prototype.unescapeHTML = function (){
         );    
 };
 /**
+ * Basic HTML Sanitizer using Firefox's parseFragment
+ * @param {Object} html
+ */
+lore.util.sanitizeHTML = function(html) {
+    var serializer = new XMLSerializer();
+    var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
+        .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
+        .parseFragment(html, false, null, document.body);  
+    return serializer.serializeToString(fragment);
+}
+/**
  * Quick and nasty function to tidy up html string so that it is valid XML
  * @return {}
  */

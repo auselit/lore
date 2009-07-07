@@ -456,6 +456,7 @@ lore.anno.createAnnotationRDF = function(anno) {
 		}
 	}
 	if (anno.body) {
+        anno.body = lore.util.sanitizeHTML(anno.body);
 		rdfxml += '<body xmlns="' + lore.constants.ANNOTATION_NS
 				+ '"><rdf:Description>' + '<ContentType xmlns="'
 				+ lore.constants.HTTP_NS
@@ -463,7 +464,7 @@ lore.anno.createAnnotationRDF = function(anno) {
 				+ lore.constants.HTTP_NS + '" rdf:parseType="Literal">'
 				+ '<html xmlns="' + lore.constants.XHTML_NS + '"><head><title>'
 				+ (anno.title ? anno.title : 'Annotation') + '</title></head>'
-				+ '<body>' + anno.body.tidyHTML() + '</body></html>'
+				+ '<body>' + anno.body + '</body></html>'
 				+ '</Body></rdf:Description>' + '</body>';
 	}
     if (anno.tags) {
@@ -1081,11 +1082,7 @@ lore.anno.getBodyContent = function(uri) {
 		bodyText = req.responseText;
 	}
     if (bodyText) {
-        // Sanitize HTML content
-        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
-                          .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
-                          .parseFragment(bodyText, false, null, bodyContent[0]);  
-        return serializer.serializeToString(fragment);
+        return lore.util.sanitizeHTML(bodyText);
     }
     lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
     return "";

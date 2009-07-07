@@ -205,6 +205,22 @@
 .timeline-event-icon img {
 	margin-left: -5px;
 }
+.timeline-event-bubble-body {
+	max-height:140px;
+	overflow:auto;
+}
+.timeline-event-bubble-body * ul, #annotationsummary * ul {
+	list-style-position:inside;
+	list-style-type: disc;
+}
+.timeline-event-bubble-body * ol, #annotationsummary * ol {
+	list-style-position:inside;
+	list-style-type:decimal;
+}
+.timeline-event-bubble-body * a, #annotationsummary * a {
+	color: #2c5798;
+	text-decoration: underline;
+}
 #variationdetails {
 	font-size:smaller;
 	padding: 5px;
@@ -225,4 +241,4 @@
 	padding:2px;
 }
 #infovis {width: 100%; height:100%;}
-.timeline-event-bubble-body {max-height:140px;overflow:auto;}
+
