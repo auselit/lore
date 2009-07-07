@@ -711,18 +711,9 @@ lore.anno.genTagList = function(annodata) {
     return bodyText;
 }
 lore.anno.genDescription = function(annodata) {
-
-	var bodyText = annodata.body;
-	var ind = bodyText.indexOf(">")+1;
-	if ( ind == -1) {
-		return bodyText; // this case shouldn't happen
-	}
-	
 	var imglink = "<a title='Show annotation body in separate window' xmlns=\""+ lore.constants.XHTML_NS + "\" href=\"javascript:lore.util.launchWindow('" +
 	 annodata.bodyURL + "',false);\" ><img xmlns=\"" + lore.constants.XHTML_NS + "\" src='/skin/icons/page_go.png' /></a><br />";
-	bodyText = bodyText.substring(0, ind) + imglink + bodyText.substring(ind);
-
-	return bodyText;
+	return imglink + annodata.body;
 }
 
 lore.anno.updateAnnotationSummary = function (annodata){
@@ -1077,18 +1068,25 @@ lore.anno.getBodyContent = function(uri) {
 	var serializer = new XMLSerializer();
 	var bodyContent = "";
 	var result = "";
-	if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') {
+    var bodyText = "";
+	if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') { 
 		bodyContent = req.responseXML.getElementsByTagName('body');
+
 		if (bodyContent[0]) {
-			return serializer.serializeToString(bodyContent[0]);
+			bodyText = serializer.serializeToString(bodyContent[0]);
 		} else {
-			return req.responseText.tidyHTML();
+			bodyText = req.responseText.tidyHTML();
 		}
 	} else {
-		// messy but will have to do for now
-		return req.responseText.tidyHTML();
-
+		bodyText = req.responseText;
 	}
+    if (bodyText) {
+        // Sanitize HTML content
+        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
+                          .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
+                          .parseFragment(bodyText, false, null, bodyContent[0]);  
+        return serializer.serializeToString(fragment);
+    }
     lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
     return "";
 }
