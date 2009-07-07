@@ -1075,7 +1075,7 @@ lore.anno.getBodyContent = function(uri) {
 		if (bodyContent[0]) {
 			bodyText = serializer.serializeToString(bodyContent[0]);
 		} else {
-			bodyText = req.responseText.tidyHTML();
+			bodyText = req.responseText;
 		}
 	} else {
 		bodyText = req.responseText;
