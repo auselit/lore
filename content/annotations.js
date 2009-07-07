@@ -714,7 +714,7 @@ lore.anno.genTagList = function(annodata) {
 lore.anno.genDescription = function(annodata) {
 	var imglink = "<a title='Show annotation body in separate window' xmlns=\""+ lore.constants.XHTML_NS + "\" href=\"javascript:lore.util.launchWindow('" +
 	 annodata.bodyURL + "',false);\" ><img xmlns=\"" + lore.constants.XHTML_NS + "\" src='/skin/icons/page_go.png' /></a><br />";
-	return imglink + annodata.body;
+	return imglink + lore.util.externalizeLinks(annodata.body);
 }
 
 lore.anno.updateAnnotationSummary = function (annodata){
