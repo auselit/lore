@@ -294,42 +294,94 @@ lore.anno.replyAnno = function(annoid){
     Ext.getCmp("annotationslist").view.focusRow(annoIndex);
     lore.ui.loreInfo("Fill in annotation details and then select 'Save Annotation'");
 }
+
+lore.anno.genTipForAnnotation = function(annodata, domContainer) {
+		try {
+			var uid = annodata.id;
+			var obj = document.createElement("div");
+			obj.setAttribute("id", uid);
+			obj.innerHTML = lore.anno.genDescription(annodata, true);
+			
+			var doc = window.top.getBrowser().selectedBrowser.contentWindow.document;
+			var tipContainer = doc.getElementById("tipcontainer");
+
+			// create the tip container and import the script onto the page
+			// if first time a tip is created			
+			if (tipContainer == null) {
+				tipContainer = doc.createElement("div");
+				tipContainer.setAttribute("id", "tipcontainer");
+				tipContainer.style.visibility = "hidden";
+				doc.body.appendChild(tipContainer);
+				
+				// load the script into a string
+				var buffer = lore.util.readChromeFile("/content/lib/wz_tooltip.js");
+				var script = doc.createElement("script");
+				script.type = "text/javascript";
+				script.innerHTML = buffer;
+				
+				doc.getElementsByTagName("head")[0].appendChild(script);
+			}
+			
+			// add tip to the container
+			if (doc.getElementById(uid) == null) {
+				tipContainer.appendChild(obj);
+			}
+			else {
+				tipContainer.replaceChild(obj, doc.getElementById(uid));
+			}
+
+			// set events via DOM so that events are handled in the context of the content window
+			// and not the extension
+			domContainer.setAttribute("onmouseover", "TagToTip('" + uid + "',CLOSEBTN, true, SHADOW, true, BGCOLOR, '#ffffff', BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" + annodata.title + "');");
+			domContainer.setAttribute("onmouseout", "UnTip();");
+		} 
+		catch (ex) {
+			lore.debug.anno("Tip creation failure: " + ex, ex);
+		}
+	}
+	
 /**
  * Highlight all annotations on the current page
  */
 lore.anno.showAllAnnotations = function(){
  
-  if (lore.anno.multiSelAnno.length == 0) {
+   if (lore.anno.multiSelAnno.length == 0) {
   	// toggle to highlight all
-   
-   	var curSelRec = lore.anno.annotabsm.getSelected();
-	var selAllStyle = function( domObj) {
+
+	// set text to inherit for select all fields   
+ 	var selAllStyle = function( domObj) {
 		if ( domObj ) {
 			domObj.style.textDecoration = "inherit";
 		}
 		return domObj;
 	}
 	
-	
-
-
    	lore.anno.annotabds.each(function highlightAnnotations(rec){
-   		try {
+   		if (rec.data.context) {
+			try {
 				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), selAllStyle);
-   				
-				if (domContainer) {
+				// 'attach' annotation description bubble
+				if (domContainer != null) {
 					lore.anno.multiSelAnno.push(domContainer);
+					// create the tip div in the content window						
+					lore.anno.genTipForAnnotation(rec.data, domContainer);
 				}
-   		} 
-   		catch (ex) {
-   			lore.debug.anno("Error during highlight all: " + ex, rec);
-   		}
+				else {
+					lore.debug.anno("domContainer null for context: " + rec.data.context, rec);
+				}
+			} 
+			catch (ex) {
+				lore.debug.anno("Error during highlight all: " + ex, rec);
+			}
+		}
    		
    		if (rec.data.variantcontext) {
    			try {
    				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), selAllStyle);
 				if ( domContainer) {
 					lore.anno.multiSelAnno.push(domContainer);
+					// create the tip div in the content window						
+					lore.anno.genTipForAnnotation(rec.data, domContainer);
 				}
    			} 
    			catch (ex) {
@@ -346,7 +398,9 @@ lore.anno.showAllAnnotations = function(){
 			} catch (ex) {
 				lore.debug.anno("Error unhighlighting: " + ex, lore.anno.multiSelAnno[i]);
 			}
+			
 		}
+		// clear selection info
 		lore.anno.multiSelAnno = new Array();
    }
 }
@@ -524,6 +578,8 @@ lore.anno.hideMarkerFromXP = function(domObj){
 	// lore.util.removeNodePreserveChildren(domObj);
 	domObj.style.textDecoration= "inherit";
 	domObj.style.backgroundColor = "transparent";
+	domObj.removeAttribute("onmouseover");
+	domObj.removeAttribute("onmouseout");
 	
 			
 }
