@@ -277,8 +277,15 @@ lore.util.sanitizeHTML = function(html) {
     var serializer = new XMLSerializer();
     var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
         .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
-        .parseFragment(html, false, null, document.body);  
+        .parseFragment(html, false, null, document.body);
     return serializer.serializeToString(fragment);
+}
+/**
+ * Add target="_blank" to all links in an html string
+ * @param {Object} html
+ */
+lore.util.externalizeLinks = function(html){
+	return html.replace(/<A /g,'<A target="_blank" '); 
 }
 /**
  * Quick and nasty function to tidy up html string so that it is valid XML
