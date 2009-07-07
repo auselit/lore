@@ -472,7 +472,7 @@ lore.anno.createAnnotationRDF = function(anno) {
         for (var ti = 0; ti < tagsarray.length; ti ++) {
             var thetag = tagsarray[ti].escapeHTML();
             rdfxml += '<tag xmlns="' + lore.constants.VARIATION_ANNOTATION_NS + '"';
-            if (thetag.contains("http://austlit.edu.au/run?ex=ShowThes")) {
+            if (thetag.indexOf("http://") == 0) {
                 rdfxml+= ' resource="' + thetag + '"/>';
             } else {
                 rdfxml += '>' + thetag + '</tag>';
@@ -683,7 +683,33 @@ lore.anno.onVariationListingClick = function(listingPanel, rowIndex) {
     lore.anno.updateAnnotationSummary(lore.anno.variationInformation[rowIndex],true);
 
 }
-
+lore.anno.genTagList = function(annodata) {
+    var bodyText = "";
+     if (annodata.tags){
+        bodyText += '<span style="font-size:smaller;color:#51666b">Tags: ';
+        var tagarray = annodata.tags.split(',');
+        for (var ti=0; ti < tagarray.length; ti++){
+            var thetag = tagarray[ti];
+            if (thetag.indexOf('http://') == 0) {
+                try{
+                    var tagname = thetag;
+                    Ext.getCmp('tagselector').store.findBy(function (rec){
+                        if (rec.data.id == thetag) {
+                            tagname = rec.data.name;
+                        }
+                    });
+                    bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
+                } catch (e) {
+                    lore.debug.anno("unable to find tag name for " + thetag,e);
+                }
+            } else {
+                bodyText += thetag + ", ";
+            }
+        }
+        bodyText += "</span>";
+    }
+    return bodyText;
+}
 lore.anno.genDescription = function(annodata) {
 
 	var bodyText = annodata.body;
@@ -711,14 +737,9 @@ lore.anno.updateAnnotationSummary = function (annodata){
         detailsString += '<span style="font-weight: bold">Place:</span> '+ annodata.variationplace + "<br />";
         detailsString += '<span style="font-weight: bold">Date:</span> '+ annodata.variationdate + "<br />";
     }
-	
-	
-	
-	
     detailsString += '<br/><span style="font-weight: bold; font-style: italic">Description:</span> '
-                + lore.anno.genDescription( annodata) + "<br />";
-                
-
+                + lore.anno.genDescription( annodata) + "<br />";            
+    detailsString += lore.anno.genTagList(annodata);
     lore.ui.propertytabs.activate("annotationsummary");
     Ext.getCmp("annotationsummary").body.update(detailsString);
 
@@ -1186,7 +1207,7 @@ lore.anno.addAnnoToTimeline = function(anno, title){
         eventID: anno.id,
         caption: lore.util.splitTerm(anno.type).term + " by "  + anno.creator + ", " + dateEvent.format("j/n/Y H:m"),
         description: "<span style='font-size:small;color:#51666b;'>" + lore.util.splitTerm(anno.type).term 
-        + " by " + anno.creator + "</span> " + lore.anno.genDescription(anno) 
+        + " by " + anno.creator + "</span> "  + lore.anno.genDescription(anno) + "<br />" + lore.anno.genTagList(anno)
         //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.editAnno(\"" + anno.id +"\")'>EDIT</a> | "
         //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.replyAnno(\"" + anno.id +"\")'>REPLY</a>"
       });
