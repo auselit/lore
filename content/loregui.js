@@ -276,8 +276,10 @@ lore.ui.gui_spec = {
                                     plugins: [
                                         new Ext.ux.form.HtmlEditor.Img()
                                     ],
-									name: 'body'
-                                    //enableSourceEdit: false    should really disable this but while debugging it is useful
+									name: 'body',
+                                    enableFont: false,
+                                    enableColors: false,
+                                    enableSourceEdit: false   
 								}
                              
 								],
