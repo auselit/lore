@@ -22,14 +22,15 @@ lore.anno.variationInformation = [];
 lore.anno.multiSelAnno = new Array();
 lore.anno.colourForOwner = new Array();
 lore.anno.colourCount = 0;
-lore.anno.colourLookup = new Array ( /*"#FF0000",*/ "#0000FF", "#00FF00",
+lore.anno.colourLookup = new Array ( "#00FF00",
 									 "#FFFF00", "#00FFFF", "#FF00FF",
 									 "#FF8000", "#80FF00", "#00FF80",
 									 "#0080FF", "#8000FF", "#FF0080",
 									 "#FFC000", "#C0FF00", "#00FFC0",
 									 "#00C0FF", "#C000FF", "#FF00C0",
 									 "#FF4000", "#40FF00", "#00FF40",
-									 "#0040FF", "#4000FF", "#FF0040");
+									 "#0040FF", "#4000FF", "#FF0040",
+									 "#0000FF" /*, "#FF0000",*/);
 									 
 									 
 
