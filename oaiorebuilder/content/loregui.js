@@ -346,7 +346,7 @@ lore.ui.gui_spec = {
                           xtype: "panel",
                           id: "variationannotationtarget",
                           title: "Variant Resource",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="variationTargetFrame" height="350px" width="490px" src="about:blank"></iframe></div>', 
+                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="variationTargetFrame" name="variationtarget" height="350px" width="490px" src="about:blank"></iframe></div>', 
                           layout: "fit",
 						  autoScroll: true,
                           /*

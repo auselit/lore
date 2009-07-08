@@ -814,6 +814,11 @@ lore.anno.handleFrameLoad = function(e) {
         }
 	} else if (e.target == targetFrame) {
 		lore.debug.anno("variations target frame loaded", e);
+        try {
+            lore.util.externalizeDomLinks(window.frames["variationtarget"].document.body);
+        } catch (ex) {
+            lore.debug.anno("handleFrameLoad externalizing links",ex);
+        }
 	} else {
 		//lore.debug.anno("frame loaded", e);
 	}
