@@ -20,6 +20,19 @@
 
 lore.anno.variationInformation = [];
 lore.anno.multiSelAnno = new Array();
+lore.anno.colourForOwner = new Array();
+lore.anno.colourCount = 0;
+lore.anno.colourLookup = new Array ( /*"#FF0000",*/ "#0000FF", "#00FF00",
+									 "#FFFF00", "#00FFFF", "#FF00FF",
+									 "#FF8000", "#80FF00", "#00FF80",
+									 "#0080FF", "#8000FF", "#FF0080",
+									 "#FFC000", "#C0FF00", "#00FFC0",
+									 "#00C0FF", "#C000FF", "#FF00C0",
+									 "#FF4000", "#40FF00", "#00FF40",
+									 "#0040FF", "#4000FF", "#FF0040");
+									 
+									 
+
 
 
 lore.anno.variationStore = new Ext.data.SimpleStore({
@@ -212,6 +225,7 @@ lore.anno.Annotation = function(rdf) {
 								'revision-date');
 			}
 			this.variationdate = lore.util.safeGetFirstChildValue(node);
+			
 		}
 	} catch (ex) {
 		lore.debug.anno("Error parsing RDF"
@@ -365,7 +379,7 @@ lore.anno.showAllAnnotations = function(){
    	lore.anno.annotabds.each(function highlightAnnotations(rec){
    		if (rec.data.context) {
 			try {
-				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), selAllStyle);
+				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.anno.getCreatorColour(rec.data.creator), selAllStyle);
 				// 'attach' annotation description bubble
 				if (domContainer != null) {
 					lore.anno.multiSelAnno.push(domContainer);
@@ -383,7 +397,7 @@ lore.anno.showAllAnnotations = function(){
    		
    		if (rec.data.variantcontext) {
    			try {
-   				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), selAllStyle);
+   				var domContainer = lore.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), lore.anno.getCreatorColour(rec.data.creator), selAllStyle);
 				if ( domContainer) {
 					lore.anno.multiSelAnno.push(domContainer);
 					// create the tip div in the content window						
@@ -860,11 +874,29 @@ lore.anno.handleAnnotationDeselection = function(sm, row, rec) {
 	}
 }
 
-lore.anno.highlightAnnotation = function(currentCtxt, extraStyle) {
+lore.anno.getCreatorColour = function (creator) {
+	
+	creator = creator.replace(/\s+$/,""); //rtrim
+	
+	var colour = lore.anno.colourForOwner[creator];
+	if ( !colour) {
+		if (lore.anno.colourCount < lore.anno.colourLookup.length) {
+			colour = lore.anno.colourLookup[lore.anno.colourCount++];
+		}
+		else {
+			// back up
+			colour = lore.util.generateColour(196, 196, 196, 240, 240, 240);
+		}
+		lore.anno.colourForOwner[creator] = colour;
+	}
+	return colour;
+}
+
+lore.anno.highlightAnnotation = function(currentCtxt, colour, extraStyle) {
 	if (currentCtxt) {
 		var idx, marker = null;
 		lore.debug.anno("highlighting annotation context: " + currentCtxt, currentCtxt);
-		var domObj = lore.util.highlightXPointer(currentCtxt, window.top.getBrowser().selectedBrowser.contentWindow.document, true);
+		var domObj = lore.util.highlightXPointer(currentCtxt, window.top.getBrowser().selectedBrowser.contentWindow.document, true, colour);
 		if ( domObj && extraStyle) {
 			
 			domObj = extraStyle(domObj);
@@ -873,6 +905,16 @@ lore.anno.highlightAnnotation = function(currentCtxt, extraStyle) {
 		
 	} else {
 		return null;
+	}
+}
+
+lore.anno.updateHighlightFields = function(fields, colour) {
+	if (fields.length) {
+		for (var i = 0; i < fields.length; i++) {
+			fields[i].style.backgroundColor = colour;
+		}
+	} else {
+		fields.style.backgroundColor = colour;
 	}
 }
 
@@ -897,7 +939,7 @@ lore.anno.handleAnnotationSelection = function(sm, row, rec) {
         try {
 			currentCtxt = lore.util.normalizeXPointer(rec.data.context);
 			
-			lore.anno.curAnnoMarkers.push(lore.anno.highlightAnnotation(currentCtxt,
+			lore.anno.curAnnoMarkers.push(lore.anno.highlightAnnotation(currentCtxt, lore.anno.getCreatorColour(rec.data.creator),
 			lore.anno.setCurAnnoStyle));
 
 		      // display contents of context
@@ -916,7 +958,7 @@ lore.anno.handleAnnotationSelection = function(sm, row, rec) {
         lore.debug.anno("highlighting variation context", rec);
         
 		currentCtxt = lore.util.normalizeXPointer(rec.data.variantcontext);
-		lore.anno.curAnnoMarkers.push(lore.anno.highlightAnnotation(currentCtxt, lore.anno.setCurAnnoStyle));
+		lore.anno.curAnnoMarkers.push(lore.anno.highlightAnnotation(currentCtxt, lore.anno.getCreatorColour(rec.data.creator), lore.anno.setCurAnnoStyle));
 		
         // display contents of context
         vCtxtField.setValue('"' + lore.util.getSelectionText(currentCtxt) + "'");
@@ -1008,7 +1050,25 @@ lore.anno.handleSaveAnnotationChanges = function(btn, e) {
 		xhr.send(annoRDF);
         lore.debug.anno("RDF of updated annotation",annoRDF);
 	}
+	// maybe need to replace this with firing event that when annotation 
+	// is saved or 'cleaned' that UI elements are updated i.e highlight fields
+	// are updated ( i.e the colour may change as it's based of creator name),
+	// the annotation summary window needs to be updated etc.
+	lore.anno.updateUIElements(anno);
 }
+
+lore.anno.updateUIElements = function (rec) {
+	// update the highlighted fields colour in the event the creator is changed
+	// the colour is identified by the creator's name
+	lore.anno.updateHighlightFields(lore.anno.curAnnoMarkers, lore.anno.getCreatorColour(rec.data.creator));
+	if ( lore.anno.multiSelAnno.length > 0 ) {
+		// hide then reshow 
+		lore.anno.showAllAnnotations();
+		lore.anno.showAllAnnotations();
+	}
+	
+}
+
 lore.anno.handleDeleteAnnotation = function(btn, e) {
 	try {
 		// remove the annotation from the annotations tab
@@ -1319,6 +1379,7 @@ lore.anno.handleAnnotationsLoaded = function (resp){
 	}
 	if (resultNodes.length > 0) {
 		var annotations = lore.anno.orderByDate(resultNodes);
+	
 		lore.anno.annotabds.loadData(annotations, true);
 		lore.anno.updateVariationAnnotationList();
 		var annogriddata = [];
@@ -1326,6 +1387,7 @@ lore.anno.handleAnnotationsLoaded = function (resp){
             var anno = annotations[i];
 			var annoID = anno.id;
 			var annoType = anno.type;
+			
 			// get annotation replies
 			Ext.Ajax.request({
 				disableCaching : false, // without this the request was failing
