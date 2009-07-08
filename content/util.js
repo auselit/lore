@@ -294,7 +294,11 @@ lore.util.sanitizeHTML = function(html) {
     var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
         .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
         .parseFragment(html, false, null, document.body);
-    return serializer.serializeToString(fragment);
+	if (fragment) {
+		return serializer.serializeToString(fragment);
+	} else {
+		return "";
+	}
 }
 /**
  * Add target="_blank" to all links in an html string

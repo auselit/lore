@@ -97,11 +97,13 @@ lore.anno.Annotation = function(rdf) {
 		}
 
 		node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'body');
-		attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS,
+        if (node[0]){
+		  attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS,
 				'resource');
-		if (attr) {
+		  if (attr) {
 			this.bodyURL = attr.nodeValue;
-		}
+		  }
+        }
 		node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS,
 				'created');
 		this.created = lore.util.safeGetFirstChildValue(node);
@@ -127,8 +129,9 @@ lore.anno.Annotation = function(rdf) {
 		this.lang = lore.util.safeGetFirstChildValue(node);
 
 		// body stores the contents of the html body tag as text
-		this.body = lore.anno.getBodyContent(this.bodyURL);
-
+        if (this.bodyURL){
+		  this.body = lore.anno.getBodyContent(this.bodyURL);
+        }
         // get tags
         this.tags = "";
         node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'tag');
