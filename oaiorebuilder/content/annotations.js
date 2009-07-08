@@ -301,12 +301,6 @@ lore.anno.genTipForAnnotation = function(annodata, domContainer) {
 			var obj = document.createElement("span");
 			obj.setAttribute("id", uid);
 			obj.innerHTML = lore.anno.genDescription(annodata, true);
-			/*obj.style.visibility = "hidden";
-			obj.style.overflow = "hidden";
-			obj.style.width = 0;
-			obj.style.height = 0;
-			obj.style.zindex = 1010;*/
-			
 			
 			var doc = window.top.getBrowser().selectedBrowser.contentWindow.document;
 			var tipContainer = doc.getElementById("tipcontainer");
@@ -776,7 +770,11 @@ lore.anno.genTagList = function(annodata) {
     }
     return bodyText;
 }
-lore.anno.genDescription = function(annodata) {
+lore.anno.genDescription = function(annodata, noimglink) {
+	if ( noimglink && noimglink == true){
+		return lore.util.externalizeLinks(annodata.body); 
+	}
+	
 	var imglink = "<a title='Show annotation body in separate window' xmlns=\""+ lore.constants.XHTML_NS + "\" href=\"javascript:lore.util.launchWindow('" +
 	 annodata.bodyURL + "',false);\" ><img xmlns=\"" + lore.constants.XHTML_NS + "\" src='/skin/icons/page_go.png' /></a><br />";
 	return imglink + lore.util.externalizeLinks(annodata.body);
