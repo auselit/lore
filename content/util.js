@@ -125,11 +125,20 @@ lore.util.writeFile = function(content, fileName){
 		}
 }
 
+/**
+ * Remove any artifacts from the XPath
+ * @param {} xp
+ */
 lore.util.normalizeXPointer = function(xp) {
 	var idx = xp.indexOf('#');
 	return xp.substring(idx + 1);
 }
 
+/**
+ * Read a file that exists in the LORE extension
+ * Path supplied is relative to <profile>/lore
+ * @param {} path
+ */
 lore.util.readChromeFile = function(path) {
 	  try {
         var url = "chrome://lore" + path;
@@ -147,18 +156,44 @@ lore.util.readChromeFile = function(path) {
 }
 
 /**
+ * Generate random colour and return as hex string
+ * If one or more arguments aren't supplied min fields wil default to 0
+ * and max fields will default to 255
+ * @param {Object} mr min red
+ * @param {Object} mg min green
+ * @param {Object} mb min blue
+ * @param {Object} mxr max red
+ * @param {Object} mxg max green
+ * @param {Object} mxb max blue
+ */
+lore.util.generateColour = function(mr,mg,mb,mxr, mxg, mxb) {
+	var min = new Array( (mr ? mr: 0), (mg ? mg: 0), (mb ? mb: 0) );
+	var max = new Array( (mxr ? mxr: 255), (mxg ? mxg: 255), (mxb ? mxb: 255) );
+	
+	var rgb = new Array(3);
+	for (var i = 0; i < rgb.length; i++) {
+		rgb[i] = Math.round(Math.random() * (max[i] - min[i])) + min[i];
+	}
+	var colour = rgb[0] + ( rgb[1] << 8) + (rgb[2] << 16);
+	return "#" + colour.toString(16);
+}
+/**
  * Highlight part of a document
  * @param {} xpointer Context to highlight (as xpointer)
  * @param {} targetDocument The document in which to highlight
  * @param {} scrollToHighlight Boolean indicating whether to scroll
  */
-lore.util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlight) {
+lore.util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlight, colour) {
   var sel = lore.m_xps.parseXPointerToRange(xpointer, targetDocument);
   
   var highlightNode = targetDocument.createElementNS(lore.constants.XHTML_NS, "span");
   // lore.m_xps.markElement(highlightNode);
   // lore.m_xps.markElementHide(highlightNode);
-  highlightNode.style.backgroundColor = "yellow";
+  if ( colour ) {
+  	highlightNode.style.backgroundColor = colour;
+  } else {
+  	highlightNode.style.backgroundColor = "yellow";
+	}
   sel.surroundContents(highlightNode);
   if (scrollToHighlight) {
     lore.util.scrollToElement(highlightNode, targetDocument.defaultView);
