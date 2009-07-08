@@ -804,6 +804,11 @@ lore.anno.handleFrameLoad = function(e) {
 	var targetFrame = document.getElementById("variationTargetFrame");
 	if (e.target == sourceFrame) {
 		lore.debug.anno("variations source frame loaded", e);
+        try {
+            lore.util.externalizeDomLinks(window.frames["variationsource"].document.body);
+        } catch (ex) {
+            lore.debug.anno("handleFrameLoad externalizing links",ex);
+        }
 	} else if (e.target == targetFrame) {
 		lore.debug.anno("variations target frame loaded", e);
 	} else {

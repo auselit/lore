@@ -303,6 +303,15 @@ lore.util.sanitizeHTML = function(html) {
 lore.util.externalizeLinks = function(html){
 	return html.replace(/<A /g,'<A target="_blank" '); 
 }
+lore.util.externalizeDomLinks = function(node){
+	var links = node.getElementsByTagName('a');
+	var attr;
+	for (var i=0; i < links.length; i++){
+		attr = node.ownerDocument.createAttribute('target');
+		attr.nodeValue = "_blank";
+		links[i].setAttributeNode(attr);
+	}
+}
 /**
  * Quick and nasty function to tidy up html string so that it is valid XML
  * @return {}
