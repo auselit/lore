@@ -202,18 +202,24 @@ lore.util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlig
   return highlightNode;
 }
 /**
+ * Return the window object of the content window
+ */
+lore.util.getContentWindow = function() {
+	return window.top.getBrowser().selectedBrowser.contentWindow;
+}
+/**
  * Get the Range defined by an XPath/Xpointer (restricted to subset of
  * expressions understood by Anozilla).
  * modified from dannotate.js
  */
 lore.util.getSelectionForXPath = function(xp)
 {
-	var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+	var mainwindow = lore.util.getContentWindow();
     return lore.m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
 }
 
 lore.util.getNodeForXPath = function(xp) {
-	var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+	var mainwindow = lore.util.getContentWindow();
 	return lore.m_xps.parseXPointerToNode(xp, mainwindow);
 }
 /**
@@ -224,7 +230,7 @@ lore.util.getNodeForXPath = function(xp) {
  */
 lore.util.getXPathForSelection = function()
 {
-  var mainwindow = window.top.getBrowser().selectedBrowser.contentWindow;
+  var mainwindow = lore.util.getContentWindow();
   var xp = '';
   try {
     var seln = mainwindow.getSelection();
