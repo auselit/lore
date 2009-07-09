@@ -24,12 +24,12 @@ lore.anno.colourForOwner = new Array();
 lore.anno.colourCount = 0;
 lore.anno.colourLookup = new Array ( "#00FF00",
 									 "#FFFF00", "#00FFFF", "#FF00FF",
-									 "#FF8000", "#80FF00", "#00FF80",
+									 "#FF8000", /*"#80FF00",*/ "#00FF80",
 									 "#0080FF", "#8000FF", "#FF0080",
 									 "#FFC000", "#C0FF00", "#00FFC0",
 									 "#00C0FF", "#C000FF", "#FF00C0",
-									 "#FF4000", "#40FF00", "#00FF40",
-									 "#0040FF", "#4000FF", "#FF0040",
+									 "#FF4000", /*"#40FF00", "#00FF40",*/
+									 "#0040FF", /*"#4000FF",*/ "#FF0040",
 									 "#0000FF" /*, "#FF0000",*/);
 									 
 									 
@@ -318,9 +318,15 @@ lore.anno.genTipForAnnotation = function(annodata, domContainer) {
 			var uid = annodata.id;
 			var obj = document.createElement("span");
 			obj.setAttribute("id", uid);
-			obj.innerHTML = lore.anno.genDescription(annodata, true);
+			var desc = "<span style='font-size:smaller;color:#51666b;'>" + lore.util.splitTerm(annodata.type).term 
+        		+ " by " + annodata.creator + "</span><br />";
+			desc += lore.anno.genDescription(annodata, true);
+			var d = Date.parseDate(annodata.created, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
+			desc +=  "<br /><span style=\"font-size:smaller;color:#aaa>"+ d +"</span><br />";
+			obj.innerHTML = desc ; 
 			
-			var doc = window.top.getBrowser().selectedBrowser.contentWindow.document;
+			
+			var doc = lore.util.getContentWindow().document;
 			var tipContainer = doc.getElementById("tipcontainer");
 
 			// create the tip container and import the script onto the page
@@ -353,7 +359,7 @@ lore.anno.genTipForAnnotation = function(annodata, domContainer) {
 
 			// set events via DOM so that events are handled in the context of the content window
 			// and not the extension
-			domContainer.setAttribute("onmouseover", "TagToTip('" + uid + "',CLOSEBTN, true, SHADOW, true, BGCOLOR, '#ffffff', BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" + annodata.title + "');");
+			domContainer.setAttribute("onmouseover", "TagToTip('" + uid + "',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" + annodata.title + "');");
 			domContainer.setAttribute("onmouseout", "UnTip();");
 		} 
 		catch (ex) {
@@ -803,7 +809,7 @@ lore.anno.updateAnnotationSummary = function (annodata){
 
     detailsString += '<span style="font-weight: bold">Creator:</span> '+ annodata.creator + "<br />";
     
-    detailsString += '<span style="font-weight: bold">Created:</span> '+ Date.parseDate(annodata.created, 'c').format("j/n/Y H:m") + "<br />";
+    detailsString += '<span style="font-weight: bold">Created:</span> '+ Date.parseDate(annodata.created, 'c').format("j/n/Y H:i:s \\G\\M\\T O") + "<br />";
     if (annodata.type == lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation"){
         lore.debug.anno("variation annotation summary",annodata);
         detailsString += '<span style="font-weight: bold">Agent:</span> '+ annodata.variationagent + "<br />";
@@ -897,7 +903,7 @@ lore.anno.highlightAnnotation = function(currentCtxt, colour, extraStyle) {
 	if (currentCtxt) {
 		var idx, marker = null;
 		lore.debug.anno("highlighting annotation context: " + currentCtxt, currentCtxt);
-		var domObj = lore.util.highlightXPointer(currentCtxt, window.top.getBrowser().selectedBrowser.contentWindow.document, true, colour);
+		var domObj = lore.util.highlightXPointer(currentCtxt, lore.util.getContentWindow().document, true, colour);
 		if ( domObj && extraStyle) {
 			
 			domObj = extraStyle(domObj);
