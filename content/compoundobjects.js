@@ -516,24 +516,22 @@ lore.ore.readRDF = function(rdfURL) {
                     }
                 }
                 lore.ui.loreInfo("Loading compound object");
-                lore.ore.currentREM = rdfURL;
-                //var title = theprops["dc:title"] ? theprops["dc:title"] : "Untitled";
+                lore.ore.currentREM = remurl;
+                var title = theprops["dc:title"] ? theprops["dc:title"] : "Untitled";
                 var recentNode = new Ext.tree.TreeNode({
-                    text : 'title',
-                    id: rdfURL,
+                    text : title,
+                    id: remurl + 'r',
+                    uri: remurl,
                     iconCls : 'oreresult',
                     leaf : true
                 });
+                lore.ore.attachREMEvents(recentNode);
                 var childNodes = lore.ui.recenttreeroot.childNodes;
                 if (childNodes.length >= 5) {
                     lore.ui.recenttreeroot
                         .removeChild(lore.ui.recenttreeroot.firstChild);
                 }
                 lore.ui.recenttreeroot.appendChild(recentNode);
-                recentNode.on('dblclick', function(node) {
-                    lore.ore.readRDF(node.text);
-                });
-                recentNode.on('click',lore.ore.selectRemSource);
             });
 }
 lore.ore.attachREMEvents = function(node){
@@ -542,18 +540,18 @@ lore.ore.attachREMEvents = function(node){
         // TODO: show details but disable editing if not lore.ore.currentREM
     });
     node.on('dblclick', function(node) {
-         lore.ore.readRDF(node.id);
+         lore.ore.readRDF(node.attributes.uri);
     });
     node.on('contextmenu', function(node, e) {
         node.select();
         if (!node.contextmenu) {
             node.contextmenu = new Ext.menu.Menu({
-                        id : node.id + "-context-menu"
+                        id : node.attributes.uri + "-context-menu"
                     });
            node.contextmenu.add({
                 text : "Edit compound object",
                 handler : function(evt) {
-                    lore.ore.readRDF(node.id);
+                    lore.ore.readRDF(node.attributes.uri);
                 }
             });
             /*node.contextmenu.add({
@@ -568,7 +566,7 @@ lore.ore.attachREMEvents = function(node){
                     lore.ore.graph
                             .addFigure(lore.ore.reposURL
                                     + "/statements?context=<"
-                                    + node.id + ">");
+                                    + node.attributes.uri + ">");
                 }
             });
             
@@ -576,9 +574,7 @@ lore.ore.attachREMEvents = function(node){
         node.contextmenu.showAt(e.xy);
     });
 }
-lore.ore.selectRemSource = function(node){
-    
-}
+
 /**
  * Takes a repository access URI and returns the resource map identifier This is
  * only necessary until we implement proper access of resource maps via their
@@ -769,6 +765,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                                var tmpNode = new Ext.tree.TreeNode({
                                         text : theobj.title,
                                         id : theobj.uri,
+                                        uri : theobj.uri,
                                         qtip: "Created by " + theobj.creator + ", " + theobj.created,
                                         iconCls : 'oreresult',
                                         leaf : true
