@@ -535,9 +535,9 @@ lore.anno.createAnnotationRDF = function(anno) {
 		rdfxml += '<body xmlns="' + lore.constants.ANNOTATION_NS
 				+ '"><rdf:Description>' + '<ContentType xmlns="'
 				+ lore.constants.HTTP_NS
-				+ '">application/xhtml+xml</ContentType>' + '<Body xmlns="'
+				+ '">text/html</ContentType>' + '<Body xmlns="'
 				+ lore.constants.HTTP_NS + '" rdf:parseType="Literal">'
-				+ '<html xmlns="' + lore.constants.XHTML_NS + '"><head><title>'
+				+ '<html xmlns="http://www.w3.org/TR/REC-html40"><head><title>'
 				+ (anno.title ? anno.title : 'Annotation') + '</title></head>'
 				+ '<body>' + anno.body + '</body></html>'
 				+ '</Body></rdf:Description>' + '</body>';
@@ -1209,14 +1209,13 @@ lore.anno.getBodyContent = function(uri) {
     var bodyText = "";
 	if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') { 
 		bodyContent = req.responseXML.getElementsByTagName('body');
-
 		if (bodyContent[0]) {
 			bodyText = serializer.serializeToString(bodyContent[0]);
 		} else {
-			bodyText = req.responseText;
+            bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
 		}
 	} else {
-		bodyText = req.responseText;
+        bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
 	}
     if (bodyText) {
         return lore.util.sanitizeHTML(bodyText);
