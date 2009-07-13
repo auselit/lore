@@ -63,10 +63,6 @@
 .x-date-picker {
 	width: 200px;
 }		
-.x-menu {
-	overflow:auto; 
-	max-height:50%;
-}
 
 /* mimetype icons for node views */
 .mimeicon {
@@ -100,14 +96,8 @@
 
 /* Source tree styles */
 
-.tree-anno {
-    /*background-image: url(../skin/icons/user_comment.png) !important;
-    width: 15px*/
-    display:none;
-}
-.tree-ore {
-    /*background-image: url(../skin/icons/oaioreicon-sm.png) !important;
-    width: 15px*/
+/* suppress icons for top level tree nodes */
+.tree-anno, .tree-ore {
     display:none;
 }
 .x-tree-node .oreresult {
@@ -140,17 +130,6 @@
 }
 
 /* main tabs content styles */
-.dd-arrow-down {
-	background-image: url(../skin/icons/arrow_down.png);
-	display: block;
-	visibility: visible;
-	z-index: 20000;
-	position: absolute;
-	width: 16px;
-	height: 16px;
-	top: 0;
-	left: 0;
-}
 #remlistview, #remsmilview, #textmining {
 	padding-left: 20px;	
 }
@@ -186,15 +165,25 @@
 	text-decoration: underline;
 }
 #welcome iframe {border:none;}
+
+/* Annotation editor styles */
 .newanno td {
 	color: red !important;
 }
-.x-grid3-col-3 {
-	height: 1em;
+.x-grid3-cell-inner {
+	height: 1.2em;
 }
 .x-edit-img {
 	background-image: url(../skin/icons/picture_add.png) !important;
 }
+.x-form-item {margin-bottom:2px}
+.x-hide-label {padding:0;margin:0}
+#delannobtn .x-btn-center .x-btn-text {
+	color:red;
+}
+.x-combo-list, .x-combo-list-inner {min-width:200px;}
+
+/* Annotation timeline styles */
 #annotimeline{
 	height:100%;
 	width:100%;
@@ -225,13 +214,8 @@
 	font-size:smaller;
 	padding: 5px;
 }
-.x-form-item {margin-bottom:2px}
-.x-hide-label {padding:0;margin:0}
-#delannobtn .x-btn-center .x-btn-text {
-	color:red;
-}
-.x-combo-list, .x-combo-list-inner {min-width:200px;}
-/* explore */
+
+/* Compound object explore view */
 .node {
 	font-size:0.8em;
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
