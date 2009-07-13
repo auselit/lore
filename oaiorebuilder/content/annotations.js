@@ -226,8 +226,10 @@ lore.anno.Annotation = function(rdf) {
 								'revision-date');
 			}
 			this.variationdate = lore.util.safeGetFirstChildValue(node);
-			
 		}
+        if (!this.original) {
+                this.original = this.resource;
+        }
 	} catch (ex) {
 		lore.debug.anno("Error parsing RDF"
 						+ (this.id ? ' for ' + this.id : ''), ex);
@@ -340,13 +342,8 @@ lore.anno.genTipForAnnotation = function(annodata, domContainer) {
 				tipContainer.style.visibility = "hidden";
 				doc.body.appendChild(tipContainer);
 				
-				// load the script into a string
-				var buffer = lore.util.readChromeFile("/content/lib/wz_tooltip.js");
-				var script = doc.createElement("script");
-				script.type = "text/javascript";
-				script.innerHTML = buffer;
+                lore.util.injectScript("content/lib/wz_tooltip.js",doc);
 				
-				doc.getElementsByTagName("head")[0].appendChild(script);
 			}
 			
 			// add tip to the container
@@ -359,7 +356,10 @@ lore.anno.genTipForAnnotation = function(annodata, domContainer) {
 
 			// set events via DOM so that events are handled in the context of the content window
 			// and not the extension
-			domContainer.setAttribute("onmouseover", "TagToTip('" + uid + "',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" + annodata.title + "');");
+			domContainer.setAttribute("onmouseover", "TagToTip('" + uid 
+                + "',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', " 
+                + "BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" 
+                + annodata.title.replace(/'/g,'&apos;') + "');");
 			domContainer.setAttribute("onmouseout", "UnTip();");
 		} 
 		catch (ex) {
@@ -615,13 +615,17 @@ lore.anno.setVisibilityFormField = function(fieldName, hide) {
 	var thefield = lore.ui.annotationsform.findField(fieldName);
 	if (thefield) {
 		var cont = thefield.container.up('div.x-form-item');
-		cont.enableDisplayMode();
-
-		if (hide && cont.isVisible()) {
+        cont.setDisplayed(false);
+		if (hide && cont.isVisible()) { 
 			cont.slideOut();
+            thefield.hide();
 		} else if (!hide && !cont.isVisible()) {
-			cont.slideIn();
+			thefield.hide();
+            cont.slideIn();
+            thefield.show();
+            cont.setDisplayed(true);
 		}
+
 	}
 }
 lore.anno.hideFormFields = function(fieldNameArr) {
@@ -795,13 +799,15 @@ lore.anno.genTagList = function(annodata) {
     return bodyText;
 }
 lore.anno.genDescription = function(annodata, noimglink) {
-	if ( noimglink && noimglink == true){
-		return lore.util.externalizeLinks(annodata.body); 
+    var res = "";
+	if (!noimglink){
+		res += "<a title='Show annotation body in separate window' xmlns=\""
+            + lore.constants.XHTML_NS + "\" href=\"javascript:lore.util.launchWindow('" 
+            + annodata.bodyURL + "',false);\" ><img xmlns=\"" + lore.constants.XHTML_NS 
+            + "\" src='/skin/icons/page_go.png' /></a><br />";
 	}
-	
-	var imglink = "<a title='Show annotation body in separate window' xmlns=\""+ lore.constants.XHTML_NS + "\" href=\"javascript:lore.util.launchWindow('" +
-	 annodata.bodyURL + "',false);\" ><img xmlns=\"" + lore.constants.XHTML_NS + "\" src='/skin/icons/page_go.png' /></a><br />";
-	return imglink + lore.util.externalizeLinks(annodata.body);
+	res += lore.util.externalizeLinks(annodata.body);
+    return res;
 }
 
 lore.anno.updateAnnotationSummary = function (annodata){
@@ -809,7 +815,7 @@ lore.anno.updateAnnotationSummary = function (annodata){
 
     detailsString += '<span style="font-weight: bold">Creator:</span> '+ annodata.creator + "<br />";
     
-    detailsString += '<span style="font-weight: bold">Created:</span> '+ Date.parseDate(annodata.created, 'c').format("j/n/Y H:i:s \\G\\M\\T O") + "<br />";
+    detailsString += '<span style="font-weight: bold">Created:</span> '+ Date.parseDate(annodata.created, 'c').format("j/n/Y H:i") + "<br />";
     if (annodata.type == lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation"){
         lore.debug.anno("variation annotation summary",annodata);
         detailsString += '<span style="font-weight: bold">Agent:</span> '+ annodata.variationagent + "<br />";
@@ -821,7 +827,6 @@ lore.anno.updateAnnotationSummary = function (annodata){
     detailsString += lore.anno.genTagList(annodata);
     lore.ui.propertytabs.activate("annotationsummary");
     Ext.getCmp("annotationsummary").body.update(detailsString);
-
 }
 lore.anno.handleFrameLoad = function(e) {
 	var sourceFrame = document.getElementById("variationSourceFrame");
@@ -1080,13 +1085,14 @@ lore.anno.handleDeleteAnnotation = function(btn, e) {
 	try {
 		// remove the annotation from the annotations tab
 		var annoID = lore.ui.annotationsform.findField('id').value;
+        lore.debug.anno("deleting " + annoID);
 		var annoIndex = lore.anno.annotabds.findBy(function(record, id) {
 					if (annoID) {
 						return (annoID == record.json.id);
 					} else {
 						return (!record.json.id);
 					}
-				});
+		});
         if (annoIndex >= 0) {
 		  lore.anno.annotabds.remove(lore.anno.annotabds.getAt(annoIndex));
         }
@@ -1094,23 +1100,31 @@ lore.anno.handleDeleteAnnotation = function(btn, e) {
 			// remove from the source tree
             var annonode = lore.util.findChildRecursively(lore.ui.annotationstreeroot,'id', annoID);
             if (annonode) annonode.remove();
+            // remove from timeline
+            
+            var evt = lore.anno.annoEventSource.getEvent(annoID);
+            if (evt) {
+                evt._eventID = "flagdelete";
+                lore.anno.scheduleTimelineLayout();
+            }
+            
 			// remove the annotation from the server
 			Ext.Ajax.request({
-						url : annoID,
-						success : function(resp) {
-                            lore.debug.anno('Annotation deleted', resp);
-							lore.ui.loreInfo('Annotation deleted');
-						},
-						failure : function(resp, opts) {
-							lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
-							lore.ui.loreWarning('Unable to delete annotation');
-						},
-						method : "DELETE"
-					});
+				url : annoID,
+				success : function(resp) {
+                    lore.debug.anno('Annotation deleted', resp);
+					lore.ui.loreInfo('Annotation deleted');
+				},
+				failure : function(resp, opts) {
+					lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
+					lore.ui.loreWarning('Unable to delete annotation');
+				},
+				method : "DELETE"
+			});
 		}
 		lore.ui.annotationsform.items.each(function(item, index, len) {
 					item.reset();
-				});
+		});
 		lore.anno.annotabsm.clearSelections();
 		lore.anno.hideMarker();
 	} catch (ex) {
@@ -1118,6 +1132,7 @@ lore.anno.handleDeleteAnnotation = function(btn, e) {
 		lore.ui.loreWarning("Unable to delete annotation");
 	}
 }
+
 lore.anno.handleUpdateAnnotationContext = function(btn, e) {
 	try {
 		var currentCtxt = lore.util.getXPathForSelection();
@@ -1342,12 +1357,11 @@ lore.anno.addAnnoToTimeline = function(anno, title){
         text: title,
         id: anno.id,
         eventID: anno.id,
-        caption: lore.util.splitTerm(anno.type).term + " by "  + anno.creator + ", " + dateEvent.format("j/n/Y H:m"),
+        caption: lore.util.splitTerm(anno.type).term + " by "  + anno.creator + ", " + dateEvent.format("j/n/Y H:i"),
         description: "<span style='font-size:small;color:#51666b;'>" + lore.util.splitTerm(anno.type).term 
         + " by " + anno.creator + "</span> "  + lore.anno.genDescription(anno) + "<br />" + lore.anno.genTagList(anno)
-        //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.editAnno(\"" + anno.id +"\")'>EDIT</a> | "
-        //+ "<a style='color:orange;font-size:smaller' href='#' onclick='lore.anno.annotimeline.getBand(0).closeBubble();lore.anno.replyAnno(\"" + anno.id +"\")'>REPLY</a>"
       });
+      
       lore.anno.annoEventSource.add(evt);       
       lore.anno.annotimeline.getBand(0).setCenterVisibleDate(evt.getStart());
       
@@ -1417,7 +1431,7 @@ lore.anno.handleAnnotationsLoaded = function (resp){
 				text : title
                     + " <span style='font-style:italic'>("
 					+ anno.creator + ")</span>",
-                qtip: lore.util.splitTerm(anno.type).term + " by " + anno.creator + ", " + Date.parseDate(anno.created, 'c').format("j/n/Y H:m"),
+                qtip: lore.util.splitTerm(anno.type).term + " by " + anno.creator + ", " + Date.parseDate(anno.created, 'c').format("j/n/Y H:i"),
 				iconCls : 'anno-icon'
 			});
 
@@ -1427,10 +1441,21 @@ lore.anno.handleAnnotationsLoaded = function (resp){
 		if (!lore.ui.annotationstreeroot.isExpanded()) {
 			lore.ui.annotationstreeroot.expand();
 		}
-        lore.anno.annotimeline.layout();
+        lore.anno.scheduleTimelineLayout();
 	}	
 }
-
+lore.anno.scheduleTimelineLayout = function() {
+    // Timeline needs to be visible to do layout otherwise it goes blank
+    // check if timeline is active tab, if not, do layout on next activation
+    var tltab = Ext.getCmp("annotimeline");
+    var activetab = Ext.getCmp("annotationstab").getActiveTab();
+    if (activetab == tltab){
+        lore.anno.annotimeline.layout();
+    } else {
+        tltab.on("activate", function () {lore.anno.annotimeline.layout();},this,{single: true});
+    }
+       
+}
 lore.anno.attachAnnoEvents = function(annoNode){
     annoNode.on('contextmenu',function(node,ev){
        node.select();
@@ -1525,7 +1550,7 @@ lore.anno.handleAnnotationRepliesLoaded = function(resp, opt) {
                     + replies[j].creator + ")</span>",
                 iconCls : 'annoreply-icon', 
                 qtip: lore.util.splitTerm(replies[j].type).term + " by " 
-                    + replies[j].creator + ", " + Date.parseDate(replies[j].created, 'c').format("j/n/Y H:m") 
+                    + replies[j].creator + ", " + Date.parseDate(replies[j].created, 'c').format("j/n/Y H:i") 
             });
             lore.anno.attachAnnoEvents(tmpNode);
             var parentNode = replyLookup[replies[j].about];
@@ -1538,5 +1563,5 @@ lore.anno.handleAnnotationRepliesLoaded = function(resp, opt) {
             }
         }
 	}
-    lore.anno.annotimeline.layout();
+    lore.anno.scheduleTimelineLayout();
 }
