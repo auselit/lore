@@ -97,8 +97,9 @@ lore.ui.loreInfo = function(message) {
 	lore.ui.lorestatus.setStatus({
 				text : message,
 				iconCls : 'info-icon',
-				clear : true
+				 clear : {wait: 3000}
 			});
+     
 }
 /**
  * Display an warning message in the status bar
@@ -110,7 +111,7 @@ lore.ui.loreWarning = function(message) {
 	lore.ui.lorestatus.setStatus({
 				text : message,
 				iconCls : 'warning-icon',
-				clear : true
+				clear : { wait : 3000}
 			});
 }
 /**
@@ -123,7 +124,7 @@ lore.ui.loreError = function(message) {
 	lore.ui.lorestatus.setStatus({
 				text : message,
 				iconCls : 'error-icon',
-				clear : true
+				clear : {wait: 3000}
 			});
 }
 
