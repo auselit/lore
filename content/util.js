@@ -136,12 +136,12 @@ lore.util.normalizeXPointer = function(xp) {
 
 /**
  * Read a file that exists in the LORE extension
- * Path supplied is relative to <profile>/lore
+ * Path supplied is relative to <profile>/lore/
  * @param {} path
  */
 lore.util.readChromeFile = function(path) {
 	  try {
-        var url = "chrome://lore" + path;
+        var url = "chrome://lore/" + path;
 	
 	    var xhr = new XMLHttpRequest();
         xhr.overrideMimeType('text/javascript');
@@ -152,9 +152,18 @@ lore.util.readChromeFile = function(path) {
     } catch (e) {
         lore.debug.ui("Unable to read resource file: " + e.toString());
     }
-
 }
-
+/** 
+ * Inject contents of local script into a document
+ * @param {} chromefile Path to chrome file
+ */
+lore.util.injectScript = function (chromefile,doc) {
+    var buffer = lore.util.readChromeFile(chromefile);
+    var script = doc.createElement("script");
+    script.type = "text/javascript";
+    script.innerHTML = buffer;
+    doc.getElementsByTagName("head")[0].appendChild(script);   
+}
 /**
  * Generate random colour and return as hex string
  * If one or more arguments aren't supplied min fields wil default to 0
