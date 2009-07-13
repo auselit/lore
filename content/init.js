@@ -242,16 +242,17 @@ lore.ui.initExtComponents = function() {
 	Ext.getCmp("cancelupdbtn")
 			.on('click', lore.anno.handleCancelAnnotationEdit);
 	Ext.getCmp("updannobtn").on('click', lore.anno.handleSaveAnnotationChanges);
-	Ext.getCmp("delannobtn").on('click', function (){
-       Ext.Msg.show({
+	Ext.getCmp("delannobtn").on('click', 
+    function (){
+       Ext.MessageBox.show({
         title:'Delete annotation',
         msg: 'Are you sure you want to delete this annotation forever?',
-        buttons: Ext.Msg.YESNO,
-        fn: function(btn) {if(btn == 'yes')lore.anno.handleDeleteAnnotation();},
-        animEl: 'delannobtn',
+        buttons: Ext.MessageBox.YESNO,
+        fn: function(btn) {
+            if(btn == 'yes') lore.anno.handleDeleteAnnotation();
+        },
         icon: Ext.Msg.QUESTION
        });
-    
     });
 	Ext.getCmp("updctxtbtn").on('click',
 			lore.anno.handleUpdateAnnotationContext);
@@ -308,13 +309,17 @@ lore.ui.initTimeline = function() {
 							timeZone : 10,
                             layout: "overview"
 						})];
+        
 		bandConfig[1].syncWith = 0;
 		bandConfig[1].highlight = true;
 		lore.anno.annotimeline = Timeline.create(document
 						.getElementById("annotimeline"), bandConfig, Timeline.HORIZONTAL);
 		tl.on("resize", function() {
-			lore.anno.annotimeline.layout();
+			lore.anno.scheduleTimelineLayout();
 		});
+        lore.anno.annotimeline.getBand(0).getEventPainter().setFilterMatcher(function(evt){
+            return !(evt._eventID == "flagdelete");
+        });
 	}
 }
 
