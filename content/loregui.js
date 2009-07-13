@@ -99,6 +99,8 @@ lore.ui.gui_spec = {
 								cm: new Ext.grid.ColumnModel([{
 									header: 'Date created',
 									sortable: true,
+                                    //xtype: 'datecolumn',
+                                    //format: '"D, d M Y H:i:s \\G\\M\\T O"',
 									dataIndex: 'created'
 								}, { 
 									header: 'Creator',
@@ -140,11 +142,11 @@ lore.ui.gui_spec = {
 								labelWidth: 100,
 								title: 'Edit Annotation:',
 								defaultType: 'textfield',
-								border: false,
 								labelAlign: 'right',
 								buttonAlign: 'right',
-								style: 'margin-left:10px;margin-top:10px;',
+								style: 'border:none; margin-left:10px;margin-top:10px;',
 								defaults: {
+                                    hideMode: 'display',
 									width: 600
 								},
 								items: [{
@@ -172,24 +174,28 @@ lore.ui.gui_spec = {
 									name: 'creator'
 								}, {
 									fieldLabel: 'Variation Agent',
-									name: 'variationagent'
+									name: 'variationagent',
+                                    hideParent:true
 								}, {
 									fieldLabel: 'Variation Place',
-									name: 'variationplace'
+									name: 'variationplace',
+                                    hideParent:true
 								}, {
 									fieldLabel: 'Variation Date',
-									name: 'variationdate'
+									name: 'variationdate',
+                                    hideParent:true
 								}, {
                                     fieldLabel: 'ID',
                                     name: 'id',
                                     hidden: true,
                                     hideLabel: true,
-                                    style: {padding:0,margin:0}
+                                    style: {padding:0,margin:0,display:'none'}
                                 }, {
                                     fieldLabel: 'Annotates',
                                     name: 'resource',
                                     readOnly: true,
-                                    style: 'background:none;border:none;font-size:90%;',
+                                    hideParent: true,
+                                    style: {background:'none',border:'none','font-size':'90%'},
                                     labelStyle: 'font-size:90%;'
                                     
                                 }, {
@@ -198,49 +204,46 @@ lore.ui.gui_spec = {
                                     readOnly: true,
                                     hidden: true,
                                     hideLabel: true,
-                                    style: 'background:none;border:none',
-                                    style: {padding:0,margin:0}
+                                    style: {background:'none',border:'none',padding:0,margin:0}
                                 }, {
                                     fieldLabel: 'Original resource',
                                     name: 'original',
                                     id: 'originalfield',
                                     readOnly: true,
-                                    style: 'background:none;border:none;font-size:90%',
+                                    style: {background:'none',border:'none','font-size':'90%'},
                                     labelStyle: 'font-size:90%'
                                 }, {
                                     fieldLabel: 'Original Context Xpointer',
                                     name: 'originalcontext',
                                     readOnly: true,
-                                    style: 'background:none;border:none',
+                                    style: {background:'none',border:'none',padding:0,margin:0},
                                     hidden: true,
-                                    hideLabel: true,
-                                    style: {padding:0,margin:0}
+                                    hideLabel: true
                                 }, {
                                     fieldLabel: 'Selection',
                                     name: 'contextdisp',
                                     readOnly: true,
-                                    style: 'background:none;border:none;font-size:90%',
+                                    style: {background:'none',border:'none','font-size':'90%'},
                                     labelStyle: 'font-size:90%;'
                                 }, {
                                     fieldLabel: 'Variant resource',
                                     name: 'variant',
                                     id: 'variantfield',
                                     readOnly: true,
-                                    style: 'background:none;border:none;font-size:90%',
+                                    style: {background:'none',border:'none','font-size':'90%'},
                                     labelStyle: 'font-size:90%'
                                 }, {
                                     fieldLabel: 'Variant Context Xpointer',
                                     name: 'variantcontext',
                                     readOnly: true,
-                                    style: 'background:none;border:none',
+                                    style: {background:'none',border:'none',padding:0,margin:0},
                                     hidden: true,
-                                    hideLabel: true,
-                                    style: {padding:0,margin:0}
+                                    hideLabel: true
                                 }, {
                                     fieldLabel: 'Variant selection',
                                     name: 'rcontextdisp',
                                     readOnly: true,
-                                    style: 'background:none;border:none;font-size:90%',
+                                    style: {background:'none',border:'none','font-size':'90%'},
                                     labelStyle: 'font-size:90%'
                                 },    {
                                     id:'tagselector',
