@@ -284,13 +284,7 @@ statusBar.setStatus({
             }
 
             c.threadId = this.activeThreadId;
-            lore.debug.ui("waiting " + wait, c);
-            try {
             this.clearStatus.defer(wait, this, [c]);
-            } catch (e)
-            {
-                lore.debug.ui("fail",e);
-            }
         }
         return this;
     },
@@ -317,17 +311,13 @@ statusBar.setStatus({
 
         var text = o.useDefaults ? this.defaultText : '',
             iconCls = o.useDefaults ? (this.defaultIconCls ? this.defaultIconCls : '') : '';
-        lore.debug.ui("clear status",o);
         
         if(o.anim){
-            try{
-                lore.debug.ui("fadeout",this.statusEl.getEl());
             this.statusEl.getEl().fadeOut({
                 remove: false,
                 useDisplay: true,
                 scope: this,
                 callback: function(){
-                    lore.debug.ui("fade callback");
                     this.setStatus({
 	                    text: text,
 	                    iconCls: iconCls
@@ -335,8 +325,6 @@ statusBar.setStatus({
                     this.statusEl.getEl().show();
                 }
             });
-            
-            } catch (ex){lore.debug.ui("problem",ex);}
         }else{
             // hide/show the el to avoid jumpy text or icon
             this.statusEl.hide();
