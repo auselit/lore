@@ -4,16 +4,8 @@
 	<property name="src.dir" value="." />
 	<property name="dist.dir" value="dist" />
 	<property name="app.name" value="lore@maenad.itee.uq.edu.au" />
-	<property name="app.id" value="${app.name}" /> <!-- extension id like: xxx@xxx.com -->
-	<property name="ff.dir" value="" />
+	<property name="app.id" value="${app.name}" /> 
 
-	<condition property="ff.present">
-		<and>
-			<isset property="ff.dir" />
-			<available file="${ff.dir}" type="dir" />
-		</and>
-	</condition>
-	
 	<target name="chrome">
 		<mkdir dir="${dist.dir}" />
 		<zip destfile="${dist.dir}/${app.name}.jar">
@@ -22,39 +14,27 @@
 				<include name="locale/**" />
 				<include name="skin/**" />
 				<exclude name="**/.*" />
-				<exclude name="**/CVS/**" />
+				<exclude name="**/.svn/**" />
 			</fileset>
 		</zip>
 	</target>
-
-	<target name="test.chrome" depends="chrome" if="ff.present">
-		<!-- copy to chrome directory -->
-		<copy file="${dist.dir}/${app.name}.jar" todir="${ff.dir}/chrome/chrome" overwrite="true" />
-		<copy file="${src.dir}/chrome.manifest" tofile="${ff.dir}/chrome/${app.name}.manifest" overwrite="true" />
-	</target>
-	
 		
 	<target name="dist" depends="chrome">
 		<zip destfile="${dist.dir}/${app.name}.xpi">
 			<zipfileset file="${dist.dir}/${app.name}.jar" prefix="chrome"/>
+			<zipfileset file="${src.dir}/chrome-jar.manifest" fullpath="chrome.manifest"/>
 			<fileset dir="${src.dir}">
-				<include name="chrome.manifest" />
+				<!--include name="chrome.manifest" /-->
 				<include name="install.rdf" />
 				<include name="defaults/**" />
 				<exclude name="**/.*" />
-				<exclude name="**/CVS/**" />
+				<exclude name="**/.svn/**" />
 			</fileset>
 		</zip>
 	</target>
 	
 	<target name="clean">
 		<delete dir="${dist.dir}" />
-	</target>
-
-	<target name="clean.ff"  if="ff.present">
-		<delete dir="${ff.dir}/extensions/${app.id}" failonerror="false" />
-		<delete file="${ff.dir}/chrome/${app.name}.manifest" failonerror="false" />
-		<delete file="${ff.dir}/chrome/chrome/${app.name}.jar" failonerror="false" />
 	</target>
 
 </project>
