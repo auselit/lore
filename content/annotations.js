@@ -96,18 +96,23 @@ lore.anno.Annotation = function(rdf) {
 			this.about = null;
 		} else {
 			node = rdf.getElementsByTagNameNS(lore.constants.THREAD_NS, 'root');
-			attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS,
+            if (node[0]){
+			   attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS,
 					'resource');
-			if (attr) {
-				this.resource = attr.nodeValue;
-			}
+            
+			   if (attr) {
+				  this.resource = attr.nodeValue;
+			   }
+            }
 			node = rdf.getElementsByTagNameNS(lore.constants.THREAD_NS,
 					'inReplyTo');
-			attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS,
+            if (node[0]) {
+			    attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS,
 					'resource');
-			if (attr) {
-				this.about = attr.nodeValue;
-			}
+			    if (attr) {
+				    this.about = attr.nodeValue;
+			    }
+            }
 		}
 
 		node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'body');
