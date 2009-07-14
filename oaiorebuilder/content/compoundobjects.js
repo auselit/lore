@@ -334,7 +334,8 @@ lore.ore.createRDF = function(escape) {
                 + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
                 + ltsymb + "layout:originalHeight>" + fig.originalHeight
                 + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
-        if (objframe) {
+        
+        if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
             resourcerdf += ltsymb + "layout:scrollx>" + objframe.scrollX
                     + ltsymb + "/" + "layout:scrollx>" + nlsymb + ltsymb
                     + "layout:scrolly>" + objframe.scrollY + ltsymb + "/"
