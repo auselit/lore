@@ -52,9 +52,14 @@
     <xul:toolbarbutton id="lore-toolbar-button"
       label="&loreToolbar.label;"
       tooltiptext="&loreToolbar.tooltip;"
-      oncommand="loreoverlay.onToolbarButtonCommand()"
-      class="toolbarbutton-1 chromeclass-toolbar-additional"/>
+      oncommand="loreoverlay.onToolbarButtonCommand()"/>
   </xul:toolbarpalette>
+   <xul:menupopup id="menu_ToolsPopup">
+    <xul:menuitem oncommand="loreoverlay.onToolbarButtonCommand()" 
+       type="checkbox" autoCheck="false" insertbefore="menu_preferences"
+       label="&loreToolbar.label;" id="lore-tools-item"/>
+    <xul:menuseparator id="lore-tools-sep1" insertbefore="menu_preferences" />
+  </xul:menupopup>
   <xul:statusbar id="status-bar">
     <xul:statusbarpanel id="oobStatusBar" onmousedown="loreoverlay.onClickStatusIcon(event);">
       <xul:image id="loreStatusIcon"/>

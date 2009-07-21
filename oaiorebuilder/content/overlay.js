@@ -10,9 +10,27 @@ var loreoverlay = {
     },
     onLocationChange: function(aProgress, aRequest, aURI)
     {
-        loreoverlay.updateOREBrowser(aURI);
+        if (aURI){
+	        if (aURI.spec == this.oldURL) return;
+	        if (window.graphiframe.lore && typeof(window.graphiframe.lore.ui.updateSourceLists) == 'function'){
+	          window.graphiframe.lore.ui.updateSourceLists(aURI.spec);
+	          this.oldURL = aURI.spec;
+	        }
+        }
     },
-    onStateChange: function() {},
+    onStateChange: function(aProgress, aRequest, stateFlags, status) {
+        var WPL = Components.interfaces.nsIWebProgressListener;
+        if (stateFlags & WPL.STATE_IS_DOCUMENT){
+                //alert("document");
+        }
+        if (stateFlags & WPL.STATE_IS_NETWORK){ // entire page has loaded
+            if (stateFlags & WPL.STATE_STOP){
+                if (window.graphiframe.lore && typeof(window.graphiframe.lore.ui.locationLoaded) == 'function'){
+                    window.graphiframe.lore.ui.locationLoaded();
+                }
+            }
+        }
+    },
     onProgressChange: function() {},
     onStatusChange: function() {},
     onSecurityChange: function() {},
@@ -24,7 +42,7 @@ var loreoverlay = {
     if (this.graphiframe){
 	   this.resetGraph();
        gBrowser.addProgressListener(this.oreLocationListener,
-           Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
+           Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
        this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
         .getService(Components.interfaces.nsIPrefService)
         .getBranch("extensions.lore.");
@@ -44,15 +62,6 @@ var loreoverlay = {
     if (this.graphiframe){
   	 gBrowser.removeProgressListener(this.oreLocationListener);
     }
-  },
-  updateOREBrowser: function(aURI) {
-  	if (aURI){
-    	if (aURI.spec == this.oldURL) return;
-    	if (window.graphiframe.lore && typeof(window.graphiframe.lore.ui.updateSourceLists) == 'function'){
-		  window.graphiframe.lore.ui.updateSourceLists(aURI.spec);
-		  this.oldURL = aURI.spec;
-    	}
-  	}
   },
   doTextMining: function() {
   	window.graphiframe.lore.textm.requestTextMiningMetadata();
@@ -74,9 +83,6 @@ var loreoverlay = {
 	gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
 
   },
-  onToolbarButtonCommand: function(e) {
-    this.toggleBar();
-  },
   addImageMenuItemCommand: function(e) {
   	if (gContextMenu.onImage)
 		window.graphiframe.lore.ore.graph.addFigure(gContextMenu.imageURL);
@@ -90,13 +96,16 @@ var loreoverlay = {
   },
   toggleBar: function () {
   	var contentBox = document.getElementById('oobContentBox');
-		var contentSplitter = document.getElementById('oobContentSplitter');
+    var contentSplitter = document.getElementById('oobContentSplitter');
+    var toolsMenuItem = document.getElementById('lore-tools-item');    
 	if (contentBox.getAttribute("collapsed") == "true") {
+        toolsMenuItem.setAttribute("checked", "true");
 		contentBox.setAttribute("collapsed", "false");
 		contentSplitter.setAttribute("collapsed", "false");
 		window.graphiframe.lore.ui.loreOpen();
 		
 	} else {
+        toolsMenuItem.removeAttribute("checked");
 		contentBox.setAttribute("collapsed", "true");
 		contentSplitter.setAttribute("collapsed", "true");
 		window.graphiframe.lore.ui.loreClose();
