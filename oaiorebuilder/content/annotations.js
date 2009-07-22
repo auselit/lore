@@ -300,8 +300,8 @@ lore.anno.replyAnno = function(annoid){
         context : currentContext,
         originalcontext : currentContext,
         creator : lore.defaultCreator,
-        created : new Date(),
-        modified : new Date(),
+        //created : new Date(),
+        //modified : new Date(),
         body : "",
         title : "New Reply",
         type : lore.constants.ANNOTATION_TYPE_NS + "Comment",
@@ -473,11 +473,10 @@ lore.anno.createAnnotationRDF = function(anno) {
     }
 	// also send variant as annotates for backwards compatability with older
 	// clients
-	/*
-	 * not currently supported in danno if (anno.variant){ rdfxml += '<annotates
-	 * xmlns="http://www.w3.org/2000/10/annotation-ns#" rdf:resource="' +
-	 * anno.variant + '"/>'; }
-	 */
+    if (anno.variant){
+        rdfxml += '<annotates xmlns="' + lore.constants.ANNOTATION_NS 
+        + '" rdf:resource="' + anno.variant.replace(/&/g,'&amp;') + '"/>'; 
+    }
 	if (anno.lang) {
 		rdfxml += '<language xmlns="' + lore.constants.DC10_NS + '">'
 				+ anno.lang + '</language>';
@@ -494,11 +493,11 @@ lore.anno.createAnnotationRDF = function(anno) {
 		anno.created = new Date();
 	}
 	// TODO: format date strings
-	rdfxml += '<created xmlns="' + lore.constants.ANNOTATION_NS + '">'
-			+ anno.created.toString() + '</created>';
-	anno.modified = new Date();
-	rdfxml += '<modified xmlns="' + lore.constants.ANNOTATION_NS + '">'
-			+ anno.modified.toString() + '</modified>';
+	//rdfxml += '<created xmlns="' + lore.constants.ANNOTATION_NS + '">'
+	//		+ anno.created.toString() + '</created>';
+	//anno.modified = new Date();
+	//rdfxml += '<modified xmlns="' + lore.constants.ANNOTATION_NS + '">'
+	//		+ anno.modified.toString() + '</modified>';
 	if (anno.context) {
 		rdfxml += '<context xmlns="' + lore.constants.ANNOTATION_NS + '">'
 				+ anno.context + '</context>';
@@ -858,7 +857,7 @@ lore.anno.handleFrameLoad = function(e) {
 lore.anno.setVariationFrameURLs = function(sourceURL, targetURL) {
 	var changeMade = false;
 	var setFrameLabel = function(label, url) {
-        if (url.match("austlit.edu.au/")) {
+        if (url.match("austlit.edu.au/") || url.match("localhost")) {
             label.update(url);
         } else {
 			label.update(" ");
@@ -867,7 +866,7 @@ lore.anno.setVariationFrameURLs = function(sourceURL, targetURL) {
 	};
 	var setFrameURL = function(frame, url) {
         // only allow content from the austlit server to be displayed for security reasons
-		if (frame.dom.src != url && url.match("austlit.edu.au/")) {
+		if (frame.dom.src != url && url.match("austlit.edu.au/")|| url.match("localhost")) {
 			frame.dom.src = url;
 			changeMade = true;
 		} else if (frame.dom.src != url){
@@ -1028,7 +1027,7 @@ lore.anno.handleSaveAnnotationChanges = function(btn, e) {
 			if (xhr.readyState == 4) {
 				if (xhr.status == 201) {
 					lore.ui.loreInfo('Annotation created');
-					lore.ui.updateSourceLists(lore.ui.currentURL);
+					lore.ui.updateAnnotationsSourceList(lore.ui.currentURL);
 					lore.ui.annotationsform.items.each(function(item, index,
 									len) {
 								item.reset();
