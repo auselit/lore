@@ -147,7 +147,7 @@ lore.ui.gui_spec = {
 								style: 'border:none; margin-left:10px;margin-top:10px;',
 								defaults: {
                                     hideMode: 'display',
-									width: 600
+                                    anchor: '-30'
 								},
 								items: [{
 									xtype: "combo",
@@ -282,7 +282,8 @@ lore.ui.gui_spec = {
 									name: 'body',
                                     enableFont: false,
                                     enableColors: false,
-                                    enableSourceEdit: false   
+                                    enableSourceEdit: false,
+                                    anchor: '-30 100%'
 								}
                              
 								],
