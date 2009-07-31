@@ -335,6 +335,52 @@ String.prototype.unescapeHTML = function (){
                 replace(/&quot;/g,'"')                                         
         );    
 };
+
+/**
+ * Creates a XUL iframe that has javascript and embedded objects disabled. 
+ * @param iframe DOM element 
+ * @param theurl URL to load
+ * @param exOnLoad callback function
+ 
+ */
+lore.util.createSecureIFrame = function(win, theurl, exOnLoad) {
+	var iframe = win.top.document.createElement("iframe"); // create a XUL iframe and embed it
+	
+	iframe.setAttribute("type", "content");
+	iframe.setAttribute("collapsed", true);
+	iframe.style.visibility = "visible";
+
+	iframe.addEventListener("load", function onLoadTrigger (event) {
+							try {
+								// once the document had loaded the iframe
+								// the docshell object will be created.
+								// dochsell must be set before loading the page
+								// so reload the page
+								
+								iframe.docShell.allowAuth = false;
+								//iframe.docShell.allowImages = false;
+								iframe.docShell.allowJavascript = false;
+								iframe.docShell.allowMetaRedirects = false;
+								iframe.docShell.allowPlugins = false;
+								// subframes inherit the permissons of the parents
+								//iframe.docShell.allowSubframes = false;
+								
+								iframe.removeEventListener("load", onLoadTrigger, true);
+								if (exOnLoad) {
+									lore.debug.ore("exOnLoad calling...");
+									exOnLoad();
+								}							
+								
+								iframe.setAttribute("src", theurl);
+							} catch (e ) {
+								lore.debug.ore("iframe(onload): " + e, e);
+							}
+		}, true);
+		
+	iframe.setAttribute("src", "about:blank");
+	return iframe;
+}
+
 /**
  * Basic HTML Sanitizer using Firefox's parseFragment
  * @param {Object} html
