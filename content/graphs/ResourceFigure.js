@@ -170,7 +170,33 @@ if (mimetype && mimetype.contains("application/rdf+xml")){
 	this.iframearea.innerHTML="<img id='" + theurl + "-data' src='" + theurl + "' style='z-index:-9001' height='95%'>";
 
 } else if (mimetype && !mimetype.contains("pdf")){
-	this.iframearea.innerHTML="<object name='" + theurl + "-data' id='" + theurl + "-data' data='" + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>";
+	try {
+		
+		var domObj = this.iframearea.firstChild;
+		if ( domObj ) {
+			this.iframearea.removeChild(domObj);
+		}
+
+		var iframe = lore.util.createSecureIFrame(window.top, theurl); 
+	/*	function () {
+			if ( this.scrollx != 0 || this.scrolly != 0 ) {
+				iframe.contentDocument.body.scrollLeft = this.scrollx;
+				iframe.contentDocument.body.scrollTop = this.scrolly;
+			}
+		});*/
+		
+		iframe.style.width = "100%";
+		iframe.style.height = "100%";
+		iframe.name = theurl + "-data";
+		iframe.id = theurl + "-data";
+		lore.debug.ore("set name to " + theurl + "-data");
+		iframe.style.zIndex = "-9001";
+		iframe.scrolling = "yes";
+		this.iframearea.appendChild(iframe);
+		
+	} catch (e) {
+		lore.debug.ore("iframe(general): " + e, e);
+	}
 } 
 };
 
@@ -271,12 +297,20 @@ lore.ore.graph.ResourceFigure.prototype.toggle=function(){
 	}
 	this.createPlusMinusIcon();
 };
+
+lore.ore.graph.clearFields = function () {
+	this.scrollx = 0;
+	this.scrolly = 0;
+}
+
 lore.ore.graph.ResourceFigure.prototype.updateMetadata=function(source){
 	this.metadataproperties = source;
 	if (source["Resource"] != this.url) {
+		clearFields();
 		this.setContent(source["Resource"]);
 	}
 	if (source["dc:title"]){
+		clearFields();
 		this.setTitle(source["dc:title"]);
 	}
 };
