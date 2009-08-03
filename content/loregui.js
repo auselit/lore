@@ -340,7 +340,7 @@ lore.ui.gui_spec = {
                           xtype: "panel",
                           id: "variationannotationsource",
                           title: "Original Resource",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationSourceLabel">about:blank</div><iframe onload="lore.debug.anno(\'Source load.\',this);" id="variationSourceFrame" name="variationsource" height="350px" width="490px" src="about:blank"></iframe></div>',
+                          html: '<div id="variationSourceParent"><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationSourceLabel">about:blank</div></div>',
                           layout: "fit",
 						  autoScroll: true,
                          
@@ -350,8 +350,8 @@ lore.ui.gui_spec = {
                           xtype: "panel",
                           id: "variationannotationtarget",
                           title: "Variant Resource",
-                          html: '<div><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationTargetLabel">about:blank</div><iframe onload="console.debug(\'Target load.\');" id="variationTargetFrame" name="variationtarget" height="350px" width="490px" src="about:blank"></iframe></div>', 
-                          layout: "fit",
+                          html: '<div id="variationTargetParent"><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationTargetLabel">about:blank</div></div>',
+						  layout: "fit",
 						  autoScroll: true,
                           /*
                           floating: true,
