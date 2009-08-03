@@ -382,6 +382,10 @@ lore.ui.gui_spec = {
                             id: "remlistview",
 							autoScroll: true
         					
+                        },{
+                            title: "Slideshow",
+                            id: "remslideview",
+                            autoScroll: true
                         } /*,{
                             title: "SMIL",
                             xtype: "panel",

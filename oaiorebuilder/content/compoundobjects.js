@@ -139,6 +139,21 @@ lore.ore.showSMIL = function() {
     lore.ui.loreInfo("Display a multimedia presentation generated from the compound object contents");
 }
 
+lore.ore.showSlideshow = function (){
+    var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
+    var numfigs = allfigures.getSize();
+    var sscontents = "";
+   
+    try{
+    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/stylesheets/ORE2Carousel.xsl",true);
+    var serializer = new XMLSerializer();
+    sscontents += serializer.serializeToString(resultDoc);
+    Ext.get("trailcarousel").update(sscontents);
+    lore.ui.carousel.reloadMarkup();
+    } catch (ex){
+        lore.debug.ore("adding slideshow",ex);
+    }
+}
 /**
  * Generate a visualisation to explore compound object connections
  */
@@ -856,6 +871,28 @@ lore.ore.graph.addFigure = function(theURL) {
     }
 
 }
+lore.ore.transformORERDF = function(stylesheetURL, fragment){
+
+    var xsltproc = new XSLTProcessor();
+    // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
+    var xhr = new XMLHttpRequest();
+    xhr.overrideMimeType('text/xml');
+    xhr.open("GET", stylesheetURL, false);
+    xhr.send(null);
+    var stylesheetDoc = xhr.responseXML;
+    xsltproc.importStylesheet(stylesheetDoc);
+    xsltproc.setParameter(null, "indent", "yes");
+    // get the compound object xml
+    var theRDF = lore.ore.createRDF(false);
+    var parser = new DOMParser();
+    var rdfDoc = parser.parseFromString(theRDF, "text/xml");
+    if (fragment){
+        return xsltproc.transformToFragment(rdfDoc, document);
+    } else {
+        return xsltproc.transformToDocument(rdfDoc, document);
+    }
+    
+}
 /**
  * Use XSLT to generate a smil file from the compound object, plus create an
  * HTML wrapper
@@ -864,7 +901,7 @@ lore.ore.graph.addFigure = function(theURL) {
  */
 lore.ore.createSMIL = function() {
     try {
-        var stylesheetURL = "chrome://lore/content/stylesheets/ORE2SMIL.xsl";
+        /*var stylesheetURL = "chrome://lore/content/stylesheets/ORE2SMIL.xsl";
         var xsltproc = new XSLTProcessor();
 
         // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
@@ -879,7 +916,8 @@ lore.ore.createSMIL = function() {
         var theRDF = lore.ore.createRDF(false);
         var parser = new DOMParser();
         var rdfDoc = parser.parseFromString(theRDF, "text/xml");
-        var resultDoc = xsltproc.transformToFragment(rdfDoc, document);
+        var resultDoc = xsltproc.transformToFragment(rdfDoc, document);*/
+        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/stylesheets/ORE2SMIL.xsl",true);
         var serializer = new XMLSerializer();
         lore.util.writeFile(serializer.serializeToString(resultDoc),
                 "oresmil.smil");
