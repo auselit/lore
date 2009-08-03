@@ -176,8 +176,7 @@ lore.ui.initExtComponents = function() {
 	lore.ui.loreviews = Ext.getCmp("loreviews");
 	lore.ui.welcometab = Ext.getCmp("welcome");
 	lore.ui.summarytab = Ext.getCmp("remlistview");
-	var smiltab = Ext.getCmp("remsmilview");
-    var rdftab = Ext.getCmp("remrdfview");
+	
     lore.ui.exploretab = Ext.getCmp("remexploreview");
 	lore.ui.compoundobjecttab = Ext.getCmp("compoundobjecteditor");
 	lore.ui.textminingtab = Ext.getCmp("textmining");
@@ -227,11 +226,23 @@ lore.ui.initExtComponents = function() {
 				}
 			});
 	lore.ui.summarytab.on("activate", lore.ore.showCompoundObjectSummary);
+    var smiltab = Ext.getCmp("remsmilview");
+    var rdftab = Ext.getCmp("remrdfview");
+    var slidetab = Ext.getCmp("remslideview");
     if (rdftab) {
         rdftab.on("activate", lore.ore.updateRDFHTML);
     }
     if (smiltab){
 	   smiltab.on("activate", lore.ore.showSMIL);
+    }
+    if (slidetab){
+        slidetab.on("activate",lore.ore.showSlideshow);
+        slidetab.body.update("<div id='trailcarousel'></div>");
+        lore.ui.carousel = new Ext.ux.Carousel('trailcarousel', {
+            itemSelector: 'div.item',
+            showPlayButton: true,
+            transitionType: 'fade'
+        });
     }
     if (lore.ui.exploretab){
         lore.ui.exploretab.on("activate", lore.ore.showExploreUI);
