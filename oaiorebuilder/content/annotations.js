@@ -680,27 +680,37 @@ lore.anno.onVariationsShow = function(variationsPanel) {
 	var targetPanel = Ext.getCmp("variationannotationtarget");
 	var sourcePanel = Ext.getCmp("variationannotationsource");
 	var listPanel = Ext.getCmp("variationsleftcolumn");
+	var srcframe, tgtframe;
+	try {
+	
+		srcframe = lore.anno.getVariationIFrame("variationSourceFrame", "variationsource", "variationSourceParent");
+		tgtframe = lore.anno.getVariationIFrame("variationTargetFrame", "variationtarget", "variationTargetParent");
+		
+		srcframe.width = tgtframe.width = "490px";
+		srcframe.height = tgtframe.height = "350px";
+		
+		targetPanel.setSize(targetPanel.getSize().width, variationsPanel.getSize().height);
+		sourcePanel.setSize(sourcePanel.getSize().width, variationsPanel.getSize().height);
+		listPanel.setSize(listPanel.getSize().width, variationsPanel.getSize().height);
+		var theFrame = tgtframe; 
+		theFrame.style.border = "none";
+		theFrame.style.borderTop = "2px solid #eeeeee";
 
-	targetPanel.setSize(targetPanel.getSize().width,
-			variationsPanel.getSize().height);
-	sourcePanel.setSize(sourcePanel.getSize().width,
-			variationsPanel.getSize().height);
-	listPanel.setSize(listPanel.getSize().width,
-			variationsPanel.getSize().height);
-	var theFrame = document.getElementById('variationTargetFrame');
-	theFrame.style.border = "none";
-	theFrame.style.borderTop = "2px solid #eeeeee";
-	theFrame.style.width = targetPanel.getSize().width
-			- lore.anno.FRAME_WIDTH_CLEARANCE;
-	theFrame.style.height = targetPanel.getSize().height
-			- lore.anno.FRAME_HEIGHT_CLEARANCE;
-	theFrame = document.getElementById('variationSourceFrame');
-	theFrame.style.border = "none";
-	theFrame.style.borderTop = "2px solid #eeeeee";
-	theFrame.style.width = sourcePanel.getSize().width
-			- lore.anno.FRAME_WIDTH_CLEARANCE;
-	theFrame.style.height = sourcePanel.getSize().height
-			- lore.anno.FRAME_HEIGHT_CLEARANCE;
+		theFrame.style.width = targetPanel.getSize().width -
+		lore.anno.FRAME_WIDTH_CLEARANCE;
+		theFrame.style.height = targetPanel.getSize().height -
+		lore.anno.FRAME_HEIGHT_CLEARANCE;
+		theFrame = srcframe; 
+		theFrame.style.border = "none";
+		theFrame.style.borderTop = "2px solid #eeeeee";
+		theFrame.style.width = sourcePanel.getSize().width -
+		lore.anno.FRAME_WIDTH_CLEARANCE;
+		theFrame.style.height = sourcePanel.getSize().height -
+		lore.anno.FRAME_HEIGHT_CLEARANCE;
+	} 
+	catch (e) {
+		lore.debug.anno("error: " + e, e);
+	}
 }
 
 lore.anno.highlightVariationFrames = function(variationNumber) {
@@ -710,7 +720,7 @@ lore.anno.highlightVariationFrames = function(variationNumber) {
 
 	var sourceVariationAlreadyPresent = false;
 	var targetVariationAlreadyPresent = false;
-
+	
 	try {
 		for (var i = 0; i < lore.anno.variationInformation.length; i++) {
 			var annotationElement = sourceFrame.contentDocument
@@ -838,20 +848,36 @@ lore.anno.handleFrameLoad = function(e) {
 	if (e.target == sourceFrame) {
 		lore.debug.anno("variations source frame loaded", e);
         try {
-            lore.util.externalizeDomLinks(window.frames["variationsource"].document.body);
+			if (sourceFrame.contentDocument) {
+				lore.util.externalizeDomLinks(sourceFrame.contentDocument.body);
+			}
         } catch (ex) {
             lore.debug.anno("handleFrameLoad externalizing links",ex);
         }
 	} else if (e.target == targetFrame) {
 		lore.debug.anno("variations target frame loaded", e);
         try {
-            lore.util.externalizeDomLinks(window.frames["variationtarget"].document.body);
+			if (targetFrame.contentDocument) {
+				lore.util.externalizeDomLinks(targetFrame.contentDocument.body);
+			}
         } catch (ex) {
             lore.debug.anno("handleFrameLoad externalizing links",ex);
         }
 	} else {
 		//lore.debug.anno("frame loaded", e);
 	}
+}
+
+lore.anno.getVariationIFrame = function(id, name, parent) {
+	
+	var iframe = document.getElementById(id);
+	if (!iframe) {
+		var iframe = lore.util.createXULIFrame(window.top)
+		iframe.id = id;
+		iframe.name = name;
+		document.getElementById(parent).appendChild(iframe);
+	}
+	return iframe;
 }
 
 lore.anno.setVariationFrameURLs = function(sourceURL, targetURL) {
@@ -864,18 +890,19 @@ lore.anno.setVariationFrameURLs = function(sourceURL, targetURL) {
 		}
         
 	};
-	var setFrameURL = function(frame, url) {
-        // only allow content from the austlit server to be displayed for security reasons
-		if (frame.dom.src != url && url.match("austlit.edu.au/")|| url.match("localhost")) {
-			frame.dom.src = url;
+	var setFrameURL = function(frame, url, id) {
+        
+		if (frame.dom.src != url ) { 
+			try {
+				lore.util.setSecureXULIFrameContent(frame.dom, url);
+			} catch (e) {
+				lore.debug.anno(e, e);
+			}
 			changeMade = true;
-		} else if (frame.dom.src != url){
-            frame.dom.src = "about:blank";
-            changeMade = true;
-        }
+		}
 	};
-	setFrameURL(Ext.get("variationSourceFrame"), sourceURL);
-	setFrameURL(Ext.get("variationTargetFrame"), targetURL);
+	setFrameURL(Ext.get("variationSourceFrame"), sourceURL, "variationSourceFrame");
+	setFrameURL(Ext.get("variationTargetFrame"), targetURL, "variationTargetFrame");
 	setFrameLabel(Ext.get("variationSourceLabel"), sourceURL);
 	setFrameLabel(Ext.get("variationTargetLabel"), targetURL);
 	return changeMade;
