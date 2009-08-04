@@ -94,7 +94,29 @@ lore.util.launchWindow = function(url, locbar) {
 	newwindow.focus();
 } 
 
+/**
+ * Returns a boolean value for determing if the platform is linux
+ */
+lore.util.isLinux = function() {
+	return (navigator.platform.toLowerCase().indexOf('linux') > -1);
+}
 
+/**
+ * Returns a boolean value for determing if the platform is mac
+ */
+
+lore.util.isMac = function() { 
+	return (navigator.platform.toLowerCase().indexOf('mac') > -1);
+}
+
+/**
+ * Returns a boolean value for determing if the platform is windows
+ */
+
+lore.util.isWindows = function () {
+	return (navigator.platform.toLowerCase().indexOf('win32') > -1);
+}	
+	
 /**
  * Write file content to fileName in the extensions content folder
  * @param {} content
