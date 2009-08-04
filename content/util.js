@@ -116,6 +116,21 @@ lore.util.isMac = function() {
 lore.util.isWindows = function () {
 	return (navigator.platform.toLowerCase().indexOf('win32') > -1);
 }	
+
+/**
+ * Return the file separator used by the OS
+ */
+lore.util.fSeparator = function () {
+	if ( lore.util.isWindows() ) {
+		return "\\";
+	} else if ( lore.util.isMac() || lore.util.isLinux() ) {
+		return "/";
+	} else {
+		// default to forward slash
+		lore.debug.ui("fSeparator: Could not determine platform, defaulting to '/'", navigator.platform);
+		return "/";
+	}
+}
 	
 /**
  * Write file content to fileName in the extensions content folder
