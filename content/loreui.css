@@ -109,6 +109,9 @@
 .x-tree-node .annoreply-icon {
 	background-image: url(chrome://lore/skin/icons/comments.png);
 }
+.x-tree-node-ct {
+	visibility: inherit !important;
+}
 .orelink {
 	font-style:italic; 
 	color: #51666b; 
@@ -217,10 +220,10 @@
 
 /* Compound object explore view */
 .node {
-	font-size:0.8em;
+	font-size:0.6em;
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
 	color:#51666b;
-	font-weight:bold;
+	font-weight:normal;
 	cursor:pointer;
 	padding:2px;
 }
