@@ -13,7 +13,35 @@
 	<xsl:strip-space elements="*"/>
 
 	<xsl:template match="/">
+		<xsl:apply-templates select="//rdf:Description[ore:describes]"/>
 		<xsl:apply-templates select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates"/>
+		
+	</xsl:template>
+	
+	<xsl:template match="rdf:Description[ore:describes]">
+		<!--  display title slide -->
+		<xsl:variable name="title">
+			<xsl:choose>
+				<xsl:when test="dc:title"><xsl:value-of select="dc:title"/></xsl:when>
+				<xsl:otherwise>Compound Object</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<div class="item" title="{$title} Slideshow">
+		<div style="text-align:left; padding:20px">
+		<xsl:for-each select="*">
+		<xsl:if test="text() and not (local-name() = 'creator' or local-name() = 'modified' or local-name() = 'created')">
+		<div style="padding-top:1em;">
+		<span style="font-weight:bold"><xsl:call-template name="capitalize-first"><xsl:with-param name="str" select="local-name()"/></xsl:call-template>: </span>
+		<xsl:value-of select="."/>
+		</div>
+		</xsl:if>	
+		</xsl:for-each>
+		
+		<div style="color:#51666b;padding-top:2em;font-size:smaller">This compound object was created by <xsl:value-of select="dc:creator"/>
+		on <xsl:value-of select="dcterms:created"/> 
+		<xsl:if test="dcterms:modified"> and last updated on <xsl:value-of select="dcterms:modified"/></xsl:if>.</div>
+		</div>
+		</div>
 	</xsl:template>
 	
 	<!--  display each aggregated resource -->
@@ -73,6 +101,13 @@
     	</xsl:choose>
 		</div>		
 	</xsl:template>
-	
+
 	<xsl:template match="rdf:Description" mode="preview"></xsl:template>
+	
+	<xsl:template name="capitalize-first">
+		<xsl:param name="str"/>
+		<xsl:variable name="up" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
+		<xsl:variable name="lo" select="'abcdefghijklmnopqrstuvwxyz'"/>
+		<xsl:value-of select="translate(substring($str,1,1),$lo,$up)"/><xsl:value-of select="substring($str,2)"/>
+	</xsl:template>
 </xsl:stylesheet>
