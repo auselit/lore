@@ -15,7 +15,7 @@ this.originalHeight=-1;
 this.url = "";
 this.scrollx = 0;
 this.scrolly = 0;
-this.metadataproperties = {"Resource" : this.url};
+this.metadataproperties = {"Resource" : this.url, "dc:title": ""};
 this.cornerHeight=14.5;
 draw2d.Node.call(this);
 this.setDimension(250,150);
@@ -151,9 +151,9 @@ if (urlparam && urlparam != ""){
 	var theurl = urlparam;
 }
 else {var theurl = "about:blank";}
-
-this.setIcon(theurl);
 this.setMetadata(theurl);
+this.setIcon(theurl);
+
 // Don't display PDFs in preview
 var mimetype = this.metadataproperties["dc:format"];
 if (!mimetype) mimetype = "text/html";
@@ -189,7 +189,7 @@ if (mimetype && mimetype.contains("application/rdf+xml")){
 		iframe.style.height = "100%";
 		iframe.name = theurl + "-data";
 		iframe.id = theurl + "-data";
-		lore.debug.ore("set name to " + theurl + "-data");
+		
 		iframe.style.zIndex = "-9001";
 		iframe.scrolling = "yes";
 		this.iframearea.appendChild(iframe);
