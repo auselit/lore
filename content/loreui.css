@@ -18,6 +18,9 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
+
 /* tool bar styles */
 .tb-new-obj {
     background-image: url(../skin/icons/oaioreicon-sm.png) !important;
@@ -109,9 +112,42 @@
 .x-tree-node .annoreply-icon {
 	background-image: url(chrome://lore/skin/icons/comments.png);
 }
+
+.x-tree-node .anno-view {
+	height: 16px !important;
+}
+.x-tree-node .anno-icon-launchWindow {
+	background-image: url(chrome://lore/skin/icons/page_go.png);
+	/*display:none;*/
+}
+.x-tree-node .anno-icon-splitter {
+	background-image: url(chrome://lore/skin/icons/application_tile_horizontal.png);
+	/*display:none;*/
+}
+
+.x-tree-node .anno-icon-timeline {
+	background-image: url(chrome://lore/skin/icons/chart_line.png);
+}
+
+/*.x-tree-selected .anno-icon-launchWindow, .x-tree-selected .anno-icon-splitter {
+	display: inline !important;
+}*/
+
+.x-tree-node a {
+	color:blue;
+	
+}
+
+/* #90 */
 .x-tree-node-ct {
 	visibility: inherit !important;
 }
+
+.x-tree-node a:hover {
+	color:blue;
+	text-decoration:underline;
+}
+
 .orelink {
 	font-style:italic; 
 	color: #51666b; 
@@ -169,9 +205,15 @@
 }
 #welcome iframe {border:none;}
 
+.annoreadonly {
+	border: 0;
+	background-color: red;
+	
+}
+
 /* Annotation editor styles */
-.newanno td {
-	color: red !important;
+.annochanged {
+	background-color: #ffcccc !important;
 }
 .x-grid3-cell-inner {
 	height: 1.2em;
@@ -190,6 +232,7 @@
 #annotimeline{
 	height:100%;
 	width:100%;
+	overflow-x:scroll; overflow-y:scroll;
 }
 .timeline-copyright {
 	display:none;
@@ -231,3 +274,78 @@
 
 #trailcarousel {height:100%;width:100%}
 
+.left-spacer4 {
+	padding-left: 4px;
+}
+.x-column-tree .x-panel-header {
+	padding: 3px 0px 0px 0px;
+	border-bottom-width: 0px;
+}
+
+.x-column-tree .x-panel-header .x-panel-header-text {
+	margin-left: 3px
+}
+
+.x-column-tree .x-tree-node {
+    zoom:1;
+}
+.x-column-tree .x-tree-node-el {
+    /*border-bottom:1px solid #eee; borders? */
+    zoom:1;
+}
+
+.x-column-tree  .x-tree-node a {
+    line-height:18px;
+    vertical-align:middle;
+}
+.x-column-tree  .x-tree-node a span{
+	
+}
+.x-column-tree  .x-tree-node .x-tree-selected a span{
+	background:transparent;
+	color:#000;
+}
+.x-tree-col {
+	/*overflow:hidden;*/
+    float:left;
+    padding:0 1px;
+    zoom:1;
+	whitespace:normal;
+}
+
+.x-tree-col-text, .x-tree-hd-text {
+    color:#888888;
+   
+/* overflow:hidden; 
+ * -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	*/
+	
+    padding:3px 3px 3px 5px;
+    white-space: normal;
+	
+    font:normal 11px arial, tahoma, helvetica, sans-serif;
+}
+
+/*
+ * Any images displayed in the column text are shrunk to thumbnail size
+ */
+.x-tree-col-text img {
+	width:64;
+	height:64;
+}
+
+.x-tree-headers {
+	/*margin-top: 3px;*/
+	background: #f9f9f9 url(chrome://lore/content/lib/ext/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
+	cursor:default;
+    zoom:1;
+}
+
+.x-tree-hd {
+    float:left;
+    overflow:hidden;
+    border-left:1px solid #eee;
+    border-right:1px solid #d0d0d0;
+}

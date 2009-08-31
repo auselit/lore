@@ -46,9 +46,9 @@ lore.ore.closeView = function(tabpanel, panel) {
  * Create or show the RDF View
  */
 lore.ore.openRDFView = function() {
-    /*lore.ui.loreviews.activate("compoundobjecteditor");
+    
     if (!lore.ui.rdftab) {
-        lore.ui.compoundobjecttab.add({
+        lore.ui.loreviews.add({
                     title : 'RDF/XML',
                     id : "remrdfview",
                     autoScroll : true,
@@ -60,8 +60,8 @@ lore.ore.openRDFView = function() {
         lore.ui.rdftab.on("close", lore.ore.closeView);
         lore.ore.updateRDFHTML();
     } else {
-        lore.ui.compoundobjecttab.activate('remrdfview');
-    }*/
+        lore.ui.loreviews.activate('remrdfview');
+    }
     lore.debug.ore("open rdf view");
     lore.ore.openView("remrdfview","RDF/XML",lore.ore.updateRDFHTML);
 }
@@ -70,10 +70,9 @@ lore.ore.openSMILView = function() {
     lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
 }
 lore.ore.openView = function (panelid,paneltitle,activationhandler){
-    lore.ui.loreviews.activate("compoundobjecteditor");
     var tab = Ext.getCmp(panelid);
     if (!tab) {
-        lore.ui.compoundobjecttab.add({
+        lore.ui.loreviews.add({
             title : paneltitle,
             id : panelid,
             autoScroll : true,
@@ -84,7 +83,7 @@ lore.ore.openView = function (panelid,paneltitle,activationhandler){
         activationhandler();
     }
     else {
-        lore.ui.compoundobjectab.activate(panelid);
+        lore.ui.loreviews.activate(panelid);
     }
 }
 /**
@@ -410,8 +409,8 @@ lore.ore.readRDF = function(rdfURL) {
     // reset the graphical view
     lore.ui.initGraphicalView();
 
-    lore.ui.loreviews.activate("compoundobjecteditor");
-    lore.ui.compoundobjecttab.activate("drawingarea");
+    
+    lore.ui.loreviews.activate("drawingarea");
     var theRDF = new RDF();
     theRDF.getRDFURL(rdfURL, function() {
                 var remurl = theRDF.Match(null, null,
@@ -850,8 +849,7 @@ lore.ore.graph.addFigureXY = function(theURL, x, y) {
         fig.setContent(theURL);
         lore.ore.graph.Graph.addFigure(fig, x, y);
         lore.ore.graph.lookup[theURL] = fig.getId();
-        lore.ui.loreviews.activate("compoundobjecteditor");
-        lore.ui.compoundobjecttab.activate("drawingarea");
+      	  lore.ui.loreviews.activate("drawingarea");
     } else {
         lore.ui.loreWarning("Resource is already in resource map: " + theURL);
     }
