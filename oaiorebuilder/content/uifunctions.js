@@ -18,47 +18,6 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-lore.ui.disableUIFeatures = function(opts) {
-    // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
-    lore.debug.ui("disable ui features?", opts);
-    lore.ui.disabled = opts;
-    var annotab = Ext.getCmp("annotationstab");
-    var tmtab = Ext.getCmp("textmining");
-    var cotab = Ext.getCmp("compoundobjecteditor");
-    if (opts.disable_textmining){
-        if(tmtab){
-            // remove text mining tab
-            lore.ui.loreviews.remove(lore.ui.textminingtab);
-        }
-    } else if (!tmtab){
-        window.location.reload(true); 
-    }
-    if (opts.disable_annotations){
-        if (annotab){
-            lore.ui.loreviews.remove(annotab);
-            // remove annotations node from tree
-            lore.ui.annotationstreeroot.remove();
-            // remove annotations detail propertypanel
-            lore.ui.propertytabs.remove(Ext.getCmp("annotationsummary"));
-        }
-    } else if (!annotab){
-        window.location.reload(true);
-    }
-    if (opts.disable_compoundobjects){
-        // remove compound object tab
-        if (cotab){
-           lore.ui.loreviews.remove(lore.ui.compoundobjecttab);
-           // remove source tree nodes
-           lore.ui.remstreeroot.remove();
-           lore.ui.recenttreeroot.remove();
-           // remove propertytabs
-           lore.ui.propertytabs.remove(lore.ui.grid);
-           lore.ui.propertytabs.remove(lore.ui.nodegrid);
-        }     
-    } else if (!cotab){
-        window.location.reload(true);
-    }
-}
 /**
  * Update the resource map dc:creator property
  * 
@@ -152,11 +111,15 @@ lore.ui.updateSourceLists = function(contextURL) {
 	if (lore.ui.lorevisible) {
        
         //if (!lore.ui.disabled || !lore.ui.disabled.disable_annotations){
-		  lore.anno.updateAnnotationsSourceList(contextURL);
+		if (lore.anno && lore.anno.updateAnnotationsSourceList) {
+			lore.anno.updateAnnotationsSourceList(contextURL);
+		}
         //}
         //if (!lore.ui.disabled || !lore.ui.disabled.disable_compoundobjects){
-		  lore.ore.updateCompoundObjectsSourceList(contextURL);
-        //}
+		if (lore.ore && lore.ore.updateCompoundObjectsSourceList) {
+			lore.ore.updateCompoundObjectsSourceList(contextURL);
+		}
+		//}
 		lore.ui.loadedURL = contextURL;
 	}
 }

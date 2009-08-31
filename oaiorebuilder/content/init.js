@@ -86,7 +86,8 @@ lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
  * Initialise the graphical view
  */
 lore.ui.initGraphicalView = function() {
-	lore.ui.compoundobjecttab.activate("drawingarea");
+	lore.ui.loreviews.activate("drawingarea");
+	
 	lore.ore.graph.lookup = {};
 	lore.ore.graph.modified = false;
 	if (lore.ore.graph.Graph) {
@@ -170,25 +171,17 @@ lore.ui.initExtComponents = function() {
 	lore.ui.grid = Ext.getCmp("remgrid");
 	lore.ui.nodegrid = Ext.getCmp('nodegrid');
 	lore.ui.lorestatus = Ext.getCmp('lorestatus');
-	lore.anno.annotabsm = Ext.getCmp("annotationslist").getSelectionModel();
-	lore.anno.annotabds = Ext.getCmp("annotationslist").getStore();
-	lore.ui.annotationsform = Ext.getCmp("annotationslistform").getForm();
 	lore.ui.loreviews = Ext.getCmp("loreviews");
 	lore.ui.welcometab = Ext.getCmp("welcome");
 	lore.ui.summarytab = Ext.getCmp("remlistview");
 	
     lore.ui.exploretab = Ext.getCmp("remexploreview");
-	lore.ui.compoundobjecttab = Ext.getCmp("compoundobjecteditor");
+	
 	lore.ui.textminingtab = Ext.getCmp("textmining");
 	// set up the sources tree
 	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	lore.ui.clearTree(sourcestreeroot);
-	lore.ui.annotationstreeroot = new Ext.tree.TreeNode({
-				id : "annotationstree",
-				text : "Annotations",
-				draggable : false,
-				iconCls : "tree-anno"
-			});
+	
 	lore.ui.remstreeroot = new Ext.tree.TreeNode({
 				id : "remstree",
 				text : "Compound Objects",
@@ -201,30 +194,26 @@ lore.ui.initExtComponents = function() {
 				draggable : false,
 				iconCls : "tree-ore"
 			});
-	sourcestreeroot.appendChild(lore.ui.annotationstreeroot);
+	
 	sourcestreeroot.appendChild(lore.ui.remstreeroot);
 	sourcestreeroot.appendChild(lore.ui.recenttreeroot);
 
 	// set up event handlers
-	lore.ui.compoundobjecttab.on("beforeremove", lore.ore.closeView);
+	//lore.ui.compoundobjecttab.on("beforeremove", lore.ore.closeView);
 	// create a context menu for the compound object tab to hide/show RDF/XML
 	// Tab
-	lore.ui.compoundobjecttab.contextmenu = new Ext.menu.Menu({
+	lore.ui.loreviews.contextmenu = new Ext.menu.Menu({
 				id : "co-context-menu"
 			});
-	lore.ui.compoundobjecttab.contextmenu.add({
+	lore.ui.loreviews.contextmenu.add({
 		text : "Show RDF/XML",
 		handler : lore.ore.openRDFView
 	});
-    lore.ui.compoundobjecttab.contextmenu.add({
-        text: "Show SMIL",
-        handler : lore.ore.openSMILView
-    });
-	lore.ui.loreviews.on("contextmenu", function(tabpanel, panel, e) {
-				if (panel.id == 'compoundobjecteditor') {
-					lore.ui.compoundobjecttab.contextmenu.showAt(e.xy);
-				}
-			});
+    lore.ui.loreviews.contextmenu.add({
+		text: "Show SMIL",
+		handler: lore.ore.openSMILView
+	});
+	
 	lore.ui.summarytab.on("activate", lore.ore.showCompoundObjectSummary);
     var smiltab = Ext.getCmp("remsmilview");
     var rdftab = Ext.getCmp("remrdfview");
@@ -247,45 +236,7 @@ lore.ui.initExtComponents = function() {
     if (lore.ui.exploretab){
         lore.ui.exploretab.on("activate", lore.ore.showExploreUI);
     }
-	lore.anno.annotabsm
-			.on('rowdeselect', lore.anno.handleAnnotationDeselection);
-	lore.anno.annotabsm.on('rowselect', lore.anno.handleAnnotationSelection);
-	Ext.getCmp("cancelupdbtn")
-			.on('click', lore.anno.handleCancelAnnotationEdit);
-	Ext.getCmp("updannobtn").on('click', lore.anno.handleSaveAnnotationChanges);
-	Ext.getCmp("delannobtn").on('click', 
-    function (){
-       Ext.MessageBox.show({
-        title:'Delete annotation',
-        msg: 'Are you sure you want to delete this annotation forever?',
-        buttons: Ext.MessageBox.YESNO,
-        fn: function(btn) {
-            if(btn == 'yes') lore.anno.handleDeleteAnnotation();
-        },
-        icon: Ext.Msg.QUESTION
-       });
-    });
-	Ext.getCmp("updctxtbtn").on('click',
-			lore.anno.handleUpdateAnnotationContext);
-	Ext.getCmp("updrctxtbtn").on('click',
-			lore.anno.handleUpdateAnnotationVariantContext);
-	Ext.getCmp("variantfield").on('specialkey', lore.anno.launchFieldWindow);
-	Ext.getCmp("originalfield").on('specialkey', lore.anno.launchFieldWindow);
-	Ext.getCmp("typecombo").on('valid', lore.anno.handleAnnotationTypeChange);
-	lore.anno.setAnnotationFormUI(false);
-
-	// set up variation annotations panel
-	var variationsPanel = Ext.getCmp("variationannotations");
-	variationsPanel.on("render", lore.anno.onVariationsShow);
-	variationsPanel.on("show", lore.anno.onVariationsShow);
-	variationsPanel.on("resize", lore.anno.onVariationsShow);
-	var variationsListing = Ext.getCmp("variationannotationlisting");
-	variationsListing.on("rowclick", lore.anno.onVariationListingClick);
-	lore.anno.onVariationsShow(variationsPanel);
-	// listen for frame load events (used to do highlighting in revision frames)
-	window.addEventListener("DOMFrameContentLoaded", lore.anno.handleFrameLoad,
-			true);
-
+	
 	// set up welcome tab contents
 	lore.ui.welcometab.body.update("<iframe height='100%' width='100%' "
 			+ "src='chrome://lore/content/welcome.html'></iframe>");
@@ -293,46 +244,6 @@ lore.ui.initExtComponents = function() {
     Ext.QuickTips.init();
 }
 
-/**
- * Create a Timeline visualisation
- */
-lore.ui.initTimeline = function() {
-	var tl = Ext.getCmp("annotimeline");
-	if (typeof Timeline !== "undefined" && !lore.ui.disabled.disable_annotations) {
-		lore.anno.annoEventSource = new Timeline.DefaultEventSource();
-        var theme = Timeline.ClassicTheme.create();
-        theme.event.bubble.width = 350;
-		var bandConfig = [Timeline.createBandInfo({
-							eventSource : lore.anno.annoEventSource,
-                            theme: theme,
-							width : "90%",
-							intervalUnit : Timeline.DateTime.WEEK,
-							intervalPixels : 100,
-							timeZone : 10,
-                            layout: "original"
-						}), Timeline.createBandInfo({
-							eventSource : lore.anno.annoEventSource,
-                            theme: theme,
-                            //showEventText:  false,
-							width : "10%",
-							intervalUnit : Timeline.DateTime.MONTH,
-							intervalPixels : 430,
-							timeZone : 10,
-                            layout: "overview"
-						})];
-        
-		bandConfig[1].syncWith = 0;
-		bandConfig[1].highlight = true;
-		lore.anno.annotimeline = Timeline.create(document
-						.getElementById("annotimeline"), bandConfig, Timeline.HORIZONTAL);
-		tl.on("resize", function() {
-			lore.anno.scheduleTimelineLayout();
-		});
-        lore.anno.annotimeline.getBand(0).getEventPainter().setFilterMatcher(function(evt){
-            return !(evt._eventID == "flagdelete");
-        });
-	}
-}
 
 /**
  * Initialise LORE
@@ -358,15 +269,15 @@ lore.ui.init = function() {
 	lore.ui.initExtComponents();
     lore.ui.initProperties();
     lore.ui.initOntologies();
-    lore.ui.initTimeline();
 	lore.ui.initGraphicalView();
 	lore.ui.loreInfo("Welcome to LORE");
     
 	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank'
 			&& lore.ui.currentURL != '' && lore.ui.lorevisible) {          
-		lore.ui.updateSourceLists(lore.ui.currentURL);
+		lore.ore.updateCompoundObjectsSourceList(lore.ui.currentURL);
+		lore.ui.loadedURL = lore.ui.currentURL;
 	}
-	lore.debug.ui("LORE init complete", this);
+	lore.debug.ui("LORE Compound Object init complete", this);
     } catch (e) {
         lore.debug.ui("exception in init",e);
     }

@@ -94,6 +94,13 @@ lore.util.launchWindow = function(url, locbar) {
 	newwindow.focus();
 } 
 
+lore.util.longDate = function ( adate ) {
+	return Date.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
+}
+
+lore.util.shortDate = function (adate ) {
+	return Date.parseDate(adate, 'c').format("d M Y H:i:s");
+}
 /**
  * Returns a boolean value for determing if the platform is linux
  */
@@ -230,22 +237,28 @@ lore.util.generateColour = function(mr,mg,mb,mxr, mxg, mxb) {
  * @param {} scrollToHighlight Boolean indicating whether to scroll
  */
 lore.util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlight, colour) {
-  var sel = lore.m_xps.parseXPointerToRange(xpointer, targetDocument);
-  
-  var highlightNode = targetDocument.createElementNS(lore.constants.XHTML_NS, "span");
-  // lore.m_xps.markElement(highlightNode);
-  // lore.m_xps.markElementHide(highlightNode);
-  if ( colour ) {
-  	highlightNode.style.backgroundColor = colour;
-  } else {
-  	highlightNode.style.backgroundColor = "yellow";
+ 	try {
+		var sel = lore.m_xps.parseXPointerToRange(xpointer, targetDocument);
+		
+		var highlightNode = targetDocument.createElementNS(lore.constants.XHTML_NS, "span");
+		// lore.m_xps.markElement(highlightNode);
+		// lore.m_xps.markElementHide(highlightNode);
+		if (colour) {
+			highlightNode.style.backgroundColor = colour;
+		}
+		else {
+			highlightNode.style.backgroundColor = "yellow";
+		}
+		sel.surroundContents(highlightNode);
+		if (scrollToHighlight) {
+			lore.util.scrollToElement(highlightNode, targetDocument.defaultView);
+		}
+		
+		return highlightNode;
+	} catch (e) {
+		lore.debug.ui(e,e);
+		return null;
 	}
-  sel.surroundContents(highlightNode);
-  if (scrollToHighlight) {
-    lore.util.scrollToElement(highlightNode, targetDocument.defaultView);
-  }
-  
-  return highlightNode;
 }
 /**
  * Return the window object of the content window
@@ -333,6 +346,7 @@ lore.util.splitTerm = function(theurl) {
 }
 lore.util.findChildRecursively=function(tree,attribute, value) {
     var cs = tree.childNodes;
+	
     for(var i = 0, len = cs.length; i < len; i++) {
         if(cs[i].attributes[attribute] == value){
             return cs[i];
@@ -346,6 +360,21 @@ lore.util.findChildRecursively=function(tree,attribute, value) {
     }
     return null;
 } 
+
+lore.util.findRecordById = function(store, xid) {
+	var ind = store.findBy(function(rec, id){
+			if ( !xid ) {
+				return !rec.json.id;
+			} else 	if (rec.json.id == xid) {
+				return true;
+			}
+		})
+	if (ind != -1) {
+		return store.getAt(ind);
+	} else {
+		return null;
+	}
+}
 
 /**
  * Escape characters for HTML display
@@ -433,14 +462,24 @@ lore.util.createSecureIFrame = function(win, theurl, extraFunc) {
  */
 lore.util.sanitizeHTML = function(html) {
     var serializer = new XMLSerializer();
+	
     var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
         .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
         .parseFragment(html, false, null, document.body);
 	if (fragment) {
-		return serializer.serializeToString(fragment);
+		//TODO: remove dodgey characters inserted by nsiScriptableUnescapeHTML
+		// it'd be interesting to see whether these characters are generated from the
+		// nsiScriptableUnescapeHTML function or whether they appear due to the way
+		// XMLserializers is accessing (i.e what properties used) the fragment's DOM 
+		
+		var buf = serializer.serializeToString(fragment);
+		// remove garbage
+		return buf.replace(/[\x80-\xff|\u0080-\uFFFF]*/g, '');
 	} else {
 		return "";
 	}
+	
+	
 }
 /**
  * Add target="_blank" to all links in an html string

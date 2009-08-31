@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://lore/skin/overlay.css" type="text/css"?>
+
+
 <!DOCTYPE overlay SYSTEM "chrome://lore/locale/lore.dtd">
 <xul:overlay id="lore-overlay" xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -8,11 +10,53 @@
   <xul:stringbundleset id="stringbundleset">
     <xul:stringbundle id="lore-strings" src="chrome://lore/locale/lore.properties"/>
   </xul:stringbundleset>
+  
   <xul:vbox id="appcontent">
-    <xul:splitter id="oobContentSplitter" collapsed="true"/>
-    <xul:vbox flex="2" align="stretch" id="oobContentBox" collapsed="true" persist="height">
+ 
+ 	<xul:tabbrowser id="content" flex="3" orient="horizontal" >
+ 	
+	 	<xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" orient="horizontal" collapsed = "true" />
+	 	
+	 	<xul:vbox id="oobAnnoVarContentBox" flex="2" height="100%" collapsed="true" >
+	 	<xul:label id = "oobAnnoVarContentLabel" value="Annotation Variation Resource: http://www.google.com" />
+	 	<xul:button id = "oobAnnoVarContentHideMe" label="Hide Me" onclick = "loreoverlay.hideVariationSplitter();" />
+	 	<xul:iframe id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
+	 	</xul:vbox>
+ 	
+	 	<xul:splitter id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" />
+	    
+	    <xul:vbox flex="2" id = "oobAnnoContentBox" collapsed="true" persist = "width">
+	    	
+		    <xul:toolbox>
+		    	
+		        <xul:toolbar id="anno-toolbar">
+		        <xul:label value="LORE Annotations" style="margin-top:5px;margin-right:10px;margin-left:5px;font-weight:bolder" />
+		          <xul:toolbarbutton id="oobMenuButton" tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()" />
+		          <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
+		          <xul:toolbarseparator id="annsep" />
+		          <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
+		          <xul:toolbarbutton id="remove-annotation" tooltiptext="&lore.removeAnnotationTip;" oncommand="loreoverlay.removeAnnotation();" />
+		          <xul:toolbarbutton id="edit-annotation" tooltiptext="&lore.editAnnotationTip;" oncommand="loreoverlay.editAnnotation();" />
+		          <xul:toolbarbutton id="reply-annotation" tooltiptext="&lore.replyAnnotationTip;" oncommand="loreoverlay.replyToAnnotation();" />
+		          
+		          <xul:toolbarbutton id="save-annotation" tooltiptext="&lore.saveAnnotationTip;" oncommand="loreoverlay.saveAnnotation();" />
+		          <xul:toolbarseparator id ="annsep2" />
+		          <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" />
+		          <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/>
+		          <xul:toolbarseparator id ="annsep3" />
+		          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="window.annographiframe.location.reload(true);"/><!-- label="&lore.resetGraphLabel;"-->
+		        </xul:toolbar>
+		     </xul:toolbox>
+	     	<xul:iframe tooltip="aHTMLTooltip" flex="3" height="100%" width="300px" src="chrome://lore/content/loreui_anno.html" name="annographiframe" id="annographiframe"/> 
+	    </xul:vbox>
+	    
+ 	</xul:tabbrowser>
+ 	
+    <xul:splitter id="oobContentSplitter" collapsed="true" orient="vertical" />
+    <xul:vbox flex="2" align="stretch" id="oobContentBox" collapsed="true" persist="height" width="100%">
       <xul:toolbox>
         <xul:toolbar id="graph-toolbar">
+         <xul:label value="LORE Compound Objects" style="margin-top:5px;margin-right:10px;margin-left:5px;font-weight:bolder" />
           <xul:toolbarbutton id="oobMenuButton" tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()">
             <!--xul:menupopup>
               <xul:menuitem id="oobMenuAbout" label="About" oncommand="loreoverlay.openAbout()"/>
@@ -20,9 +64,9 @@
             </xul:menupopup-->
           </xul:toolbarbutton>
           <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
-          <xul:toolbarseparator id="annsep" />
+         <!-- <xul:toolbarseparator id="annsep" />
           <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
-          <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/>
+          <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/> -->
           <xul:toolbarseparator id="cosep"/>
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/><!-- label="&lore.addNodeLabel;"-->
           <xul:toolbarbutton id="load-rdf" tooltiptext="&lore.loadRDFTip;"  oncommand="loreoverlay.loadRDF();"/><!-- label="&lore.loadRDFLabel;"-->
@@ -38,7 +82,10 @@
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
       <xul:iframe tooltip="aHTMLTooltip" flex="3" height="450px" width="100%" src="chrome://lore/content/loreui.html" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
+    
+         
   </xul:vbox>
+  
   <xul:popup id="contentAreaContextMenu" onpopupshown="loreoverlay.onMenuPopup(event)">
     <xul:menuseparator id="oaioresep"/>
     <xul:menuitem id="addlink-lore" label="&loreContextLink.label;"

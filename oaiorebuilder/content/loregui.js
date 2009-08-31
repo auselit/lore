@@ -21,7 +21,7 @@
 lore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
 lore.ui.gui_spec = {
     layout: "border",
-    items: [{
+    items: [{region:"north", layout: "fit"},{
         region: "center",
         layout: "fit",
         border: false,
@@ -37,341 +37,8 @@ lore.ui.gui_spec = {
                     id: "loreviews",
 					plugins : lore.ui.vismode,
 					deferredRender: false,
-                    items: [{
-						xtype: "tabpanel",
-						title: "Annotations",
-						id: "annotationstab",
-						deferredRender: false,
-						activeTab: "annotimeline",
-						items: [{
-                            title: "Annotation Timeline",
-                            xtype: "panel",
-                            id: "annotimeline"
-                        },{
-							xtype: "form",
-							id: "annotationslistform",
-							title: "Annotation Editor",
-							layout: 'border',
-							items: [{
-								region: "north",
-								split: true,
-								id: "annotationslist",
-								xtype: "grid",
-                                height:90,
-								autoWidth: true,
-								autoScroll: true,
-								stripeRows: true,
-								view: new Ext.grid.GridView({
-									forceFit: true,
-                                    
-									getRowClass: function(rec){
-										if (!rec.data.id) {
-											return "newanno";
-										}
-									}
-								}),
-								ds: new Ext.data.JsonStore({
-									fields: [
-										{name: 'created'}, 
-										{name: 'creator'}, 
-										{name: 'title'}, 
-										{name: 'body'}, 
-										{name: 'modified'}, 
-										{name: 'type'}, 
-										{name: 'lang'},
-                                        {name: 'resource'},
-                                        {name: 'id'},
-                                        {name: 'context'},
-                                        {name: 'isReply'},
-                                        {name: 'bodyURL'},
-                                        {name: 'about'},
-                                        {name: 'original'},
-                                        {name: 'variant'},
-                                        {name: 'originalcontext'},
-                                        {name: 'variantcontext'},
-                                        {name: 'variationagent'},
-                                        {name: 'variationplace'},
-                                        {name: 'variationdate'},
-                                        {name: 'tags'}
-                                        ],
-									data: {}
-								}),
-								cm: new Ext.grid.ColumnModel([{
-									header: 'Date created',
-									sortable: true,
-                                    //xtype: 'datecolumn',
-                                    //format: '"D, d M Y H:i:s \\G\\M\\T O"',
-									dataIndex: 'created'
-								}, { 
-									header: 'Creator',
-									sortable: true,
-									dataIndex: 'creator'
-								
-								}, {
-									header: 'Title',
-									sortable: true,
-									dataIndex: 'title'
-								}, {
-									header: 'Body (preview)',
-									dataIndex: 'body',
-									hidden: false
-								}, {
-									header: 'Date Modified',
-									dataIndex: 'modified',
-									hidden: true
-								}, {
-									header: 'Type',
-									dataIndex: 'type',
-									hidden: true
-								}, {
-									header: 'Lang',
-									dataIndex: 'lang',
-									hidden: true,
-									width: 40
-								
-								}]),
-								sm: new Ext.grid.RowSelectionModel({
-									singleSelect: true
-								})
-							}, {
-								region: "center",
-								xtype: 'fieldset',
-                                layout: 'form',
-								autoScroll: true,
-								id: 'annotationsform',
-								labelWidth: 100,
-								title: 'Edit Annotation:',
-								defaultType: 'textfield',
-								labelAlign: 'right',
-								buttonAlign: 'right',
-								style: 'border:none; margin-left:10px;margin-top:10px;',
-								defaults: {
-                                    hideMode: 'display',
-                                    anchor: '-30'
-								},
-								items: [{
-									xtype: "combo",
-									id: "typecombo",
-									fieldLabel: 'Type',
-									name: 'type',
-									hiddenName: 'type',
-									store: new Ext.data.SimpleStore({
-										fields: ['typename', 'qtype'],
-										data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"], ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"]]
-									}),
-									valueField: 'qtype',
-									displayField: 'typename',
-									typeAhead: true,
-                                    triggerAction: 'all',
-                                    forceSelection: true,
-									mode: 'local',
-									selectOnFocus: true
-								}, {
-									fieldLabel: 'Title',
-									name: 'title'
-								}, {
-									fieldLabel: 'Creator',
-									name: 'creator'
-								}, {
-									fieldLabel: 'Variation Agent',
-									name: 'variationagent',
-                                    hideParent:true
-								}, {
-									fieldLabel: 'Variation Place',
-									name: 'variationplace',
-                                    hideParent:true
-								}, {
-									fieldLabel: 'Variation Date',
-									name: 'variationdate',
-                                    hideParent:true
-								}, {
-                                    fieldLabel: 'ID',
-                                    name: 'id',
-                                    hidden: true,
-                                    hideLabel: true,
-                                    style: {padding:0,margin:0,display:'none'}
-                                }, {
-                                    fieldLabel: 'Annotates',
-                                    name: 'resource',
-                                    readOnly: true,
-                                    hideParent: true,
-                                    style: {background:'none',border:'none','font-size':'90%'},
-                                    labelStyle: 'font-size:90%;'
-                                    
-                                }, {
-                                    fieldLabel: 'Context',
-                                    name: 'context',
-                                    readOnly: true,
-                                    hidden: true,
-                                    hideLabel: true,
-                                    style: {background:'none',border:'none',padding:0,margin:0}
-                                }, {
-                                    fieldLabel: 'Original resource',
-                                    name: 'original',
-                                    id: 'originalfield',
-                                    readOnly: true,
-                                    style: {background:'none',border:'none','font-size':'90%'},
-                                    labelStyle: 'font-size:90%'
-                                }, {
-                                    fieldLabel: 'Original Context Xpointer',
-                                    name: 'originalcontext',
-                                    readOnly: true,
-                                    style: {background:'none',border:'none',padding:0,margin:0},
-                                    hidden: true,
-                                    hideLabel: true
-                                }, {
-                                    fieldLabel: 'Selection',
-                                    name: 'contextdisp',
-                                    readOnly: true,
-                                    style: {background:'none',border:'none','font-size':'90%'},
-                                    labelStyle: 'font-size:90%;'
-                                }, {
-                                    fieldLabel: 'Variant resource',
-                                    name: 'variant',
-                                    id: 'variantfield',
-                                    readOnly: true,
-                                    style: {background:'none',border:'none','font-size':'90%'},
-                                    labelStyle: 'font-size:90%'
-                                }, {
-                                    fieldLabel: 'Variant Context Xpointer',
-                                    name: 'variantcontext',
-                                    readOnly: true,
-                                    style: {background:'none',border:'none',padding:0,margin:0},
-                                    hidden: true,
-                                    hideLabel: true
-                                }, {
-                                    fieldLabel: 'Variant selection',
-                                    name: 'rcontextdisp',
-                                    readOnly: true,
-                                    style: {background:'none',border:'none','font-size':'90%'},
-                                    labelStyle: 'font-size:90%'
-                                },    {
-                                    id:'tagselector',
-                                    xtype:'superboxselect',
-                                    allowBlank: true,
-                                    msgTarget: 'under',
-                                    allowAddNewData: true,
-                                    fieldLabel: 'Tags',
-                                    emptyText: 'Type or select tags',
-                                    resizable: true,
-                                    name: 'tags',
-                                    store: new Ext.data.SimpleStore({
-                                        fields: ['id', 'name'],
-                                        data: lore.anno.thesaurus                
-                                    }),
-                                    mode: 'local',
-                                    displayField: 'name',
-                                    valueField: 'id',
-                                    extraItemCls: 'x-tag',
-                                    listeners: {
-                                        newitem: function(bs,v){
-	                                        v = v.slice(0,1).toUpperCase() + v.slice(1).toLowerCase();
-	                                        var newObj = {
-	                                            id: v,
-	                                            name: v
-	                                        };
-	                                        bs.addItem(newObj);
-	                                    }
-                                    }
-                                },{
-									fieldLabel: 'Body',
-									xtype: 'htmleditor',
-                                    plugins: [
-                                        new Ext.ux.form.HtmlEditor.Img()
-                                    ],
-									name: 'body',
-                                    enableFont: false,
-                                    enableColors: false,
-                                    enableSourceEdit: false,
-                                    anchor: '-30 100%'
-								}
-                             
-								],
-								buttons: [{
-                                    text: 'Update variant selection',
-                                    id: 'updrctxtbtn',
-                                    hidden: true,
-                                    tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
-                                }, {
-                                    text: 'Update selection',
-                                    id: 'updctxtbtn',
-                                    tooltip: 'Set the context of the annotation to be the current selection from the main browser window'
-                                },  {
-                                    text: 'Delete Annotation',
-                                    id: 'delannobtn',
-                                    tooltip: 'Delete the annotation - CANNOT BE UNDONE'
-                                },{
-									text: 'Save Annotation',
-									id: 'updannobtn',
-									tooltip: 'Save the annotation to the repository'
-								}, {
-                                    text: 'Cancel',
-                                    id: 'cancelupdbtn',
-                                    tooltip: 'Cancel - changes will be discarded'
-                                }]
-							}]
-						}, {
-                        xtype: "panel",
-                        title: "Variations",
-                        id: "variationannotations",
-                        // html: '<div id="window-test"></div>',
-                        deferredRender: false,
-                        layout: 'column',
-                        items: [
-											  {
-												  xtype: "panel",
-													id: "variationsleftcolumn",
-													columnWidth: 0.20,
-													layout: 'border',
-													items: [{
-	                          xtype: "grid",
-	                          id: "variationannotationlisting",
-	                          title: "Variation Annotations",
-														region: 'center',
-														split: true,
-	                          store: lore.anno.variationStore,
-	                          autoExpandColumn: 'variationName',
-	                          columns: [
-	                            {id: 'variationName', sortable: false, dataIndex: 'name'}
-	                          ]
-	                        }]
-												},
-                        {
-                          xtype: "panel",
-                          id: "variationannotationsource",
-                          title: "Original Resource",
-                          html: '<div id="variationSourceParent"><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationSourceLabel">about:blank</div></div>',
-                          layout: "fit",
-						  autoScroll: true,
-                         
-                          columnWidth: .40
-                        },
-                        {
-                          xtype: "panel",
-                          id: "variationannotationtarget",
-                          title: "Variant Resource",
-                          html: '<div id="variationTargetParent"><div style="font-family: arial, verdana, helvetica, sans-serif; font-style: italic; color: grey; font-size: smaller; padding: 2px; " id="variationTargetLabel">about:blank</div></div>',
-						  layout: "fit",
-						  autoScroll: true,
-                          /*
-                          floating: true,
-                          draggable: lore.dragHandler,
-                          width: 500,
-                          height: 400,
-                          x: 800,
-                          y: 10,
-                          */
-                          columnWidth: .40
-                        }]
-                    }]
-					}, {
-                        xtype: "tabpanel",
-                        title: "Compound Objects",
-                        id: "compoundobjecteditor",
-						deferredRender: false,
-                        plugins : lore.ui.vismode,
-						defaults : {plugins: lore.ui.vismode},
-                        items: [{
+                    items: [
+						{
                             title: "Editor",
                             xtype: "panel",
                             id: "drawingarea",
@@ -397,10 +64,10 @@ lore.ui.gui_spec = {
                             title: "Explore",
                             id: "remexploreview",
                             autoScroll:true
-                        }*/],
-                        activeTab: "drawingarea"
-                     }, {
-					
+                        }*///],
+                       //.. activeTab: "drawingarea"
+                    // }, {
+				,{	
 					title: "Text mining",
 					id: "textmining",
 					autoWidth: true,
@@ -413,8 +80,6 @@ lore.ui.gui_spec = {
                         iconCls: "welcome-icon"
                     
                     }],
-                    activeTab: "annotationstab"
-					
                 }
 				]
             }, {
@@ -428,7 +93,6 @@ lore.ui.gui_spec = {
     }   
     , {
         region: "west",
-        title: "LORE",
         id: "loresidebar",
         border: false,
         width: 250,
@@ -494,16 +158,7 @@ lore.ui.gui_spec = {
                     }), new Ext.Button({
                         text: "Remove property"
                     })]
-                },
-				{
-					xtype: "panel",
-					title: "Annotation summary",
-					id: "annotationsummary",
-					autoWidth: true,
-					viewConfig: {
-						forceFit: true
-					}
-				}                
+                }       
                 ]
             }]
         }]
@@ -513,6 +168,44 @@ try {
     //lore.debug.ui("lore height is " + innerHeight);
 	lore.ui.main_window = new Ext.Viewport(lore.ui.gui_spec);
 	lore.ui.main_window.show();
+	
 } catch (ex) {
 	lore.debug.ui("Exception creating lore UI", ex);
+}
+
+lore.ui.ore.disableUIFeatures = function(opts) {
+    // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
+    lore.debug.ui("LORE Compound Objects: disable ui features?", opts);
+    lore.ui.disabled = opts;
+    
+    var tmtab = Ext.getCmp("textmining");
+    var cotab = Ext.getCmp("loreviews");
+    if (opts.disable_textmining){
+        if(tmtab){
+            // remove text mining tab
+            lore.ui.loreviews.remove(lore.ui.textminingtab);
+			
+        }
+    } else if (!tmtab){
+        window.location.reload(true); 
+    }
+	
+    if (opts.disable_compoundobjects){
+        // remove compound object tab
+        if (cotab){
+           cotab.hide();
+           // remove source tree nodes
+           //lore.ui.remstreeroot.remove();
+           //lore.ui.recenttreeroot.remove();
+           // remove propertytabs
+           //lore.ui.propertytabs.remove(lore.ui.grid);
+           //lore.ui.propertytabs.remove(lore.ui.nodegrid);
+        }     
+    } else if (!cotab){
+       window.location.reload(true);
+    } else {
+		if ( !cotab.isVisible() ){
+			cotab.show();
+		}
+	}
 }
