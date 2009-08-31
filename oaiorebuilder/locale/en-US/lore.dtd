@@ -19,6 +19,13 @@
 <!ENTITY lore.saveRDFTip "Save the compound object to the repository">
 <!ENTITY lore.addAnnotationLabel "Add annotation">
 <!ENTITY lore.addAnnotationTip "Add annotation on the current page">
+<!ENTITY lore.editAnnotationLabel "Edit annotation">
+<!ENTITY lore.editAnnotationTip "Edit annotation on the current page">
+<!ENTITY lore.replyAnnotationLabel "Rely to annotation">
+<!ENTITY lore.replyAnnotationTip "Reply to annotation on the current page">
+<!ENTITY lore.removeAnnotationTip "Remove annotation on the current page">
+<!ENTITY lore.saveAnnotationTip "Save annotation on the current page">
+<!ENTITY lore.saveAllAnnotationsTip "Save all modified annotations on the current page">
 <!ENTITY lore.showAnnotationsTip "Highlight all annotations on the current page">
 <!ENTITY lore.textMiningTip "Highlight people and places on the current page using Calais">
 <!ENTITY lore.addAnnotationTip "Add annotation on the current page">
