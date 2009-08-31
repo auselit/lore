@@ -43,6 +43,25 @@
 #add-annotation {
 	list-style-image: url(chrome://lore/skin/icons/comment_add.png);
 }
+
+#remove-annotation {
+	list-style-image: url(chrome://lore/skin/icons/comment_delete.png);
+}
+
+#edit-annotation {
+	list-style-image: url(chrome://lore/skin/icons/comment_edit.png);
+}
+
+#reply-annotation {
+	list-style-image: url(chrome://lore/skin/icons/arrow_rotate_clockwise.png);
+}
+#save-annotation {
+	list-style-image: url(chrome://lore/skin/icons/disk.png);
+}
+
+#save-all-annotations {
+	list-style-image: url(chrome://lore/skin/icons/disk_multiple.png);
+}
 #show-annotations {
 	list-style-image: url(chrome://lore/skin/icons/comment_yellow.gif);	
 }
