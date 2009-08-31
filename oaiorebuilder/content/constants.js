@@ -22,11 +22,14 @@
 Ext.namespace(
     "lore.constants",
     "lore.ui", 
+	"lore.ui.anno",
+	"lore.ui.ore",
     "lore.util",
-    "lore.anno", 
-    "lore.ore.graph",
+    "lore.anno",
+	"lore.ore.graph",
     "lore.textm", 
-    "lore.debug"
+    "lore.debug",
+	"lore.store"
 );
 
 lore.constants.EXTENSION_ID = "lore@maenad.itee.uq.edu.au";
@@ -75,6 +78,10 @@ lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
     "dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
     "dc:subject", "dc:title"];  
         
+// Store constants
+lore.anno.ANNOTATIONS_STORE = "annotations";
+
+
 // Compound object editor graph view defaults
 lore.ore.NODE_WIDTH   = 220;
 lore.ore.NODE_HEIGHT  = 170;
