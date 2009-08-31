@@ -1,0 +1,79 @@
+<html>
+<!--
+ * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ *  
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit project.
+ *
+ * LORE is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
+-->
+    <head>
+		<!-- TODO: 
+		Need to have a common html file that's loaded in the javascript at the XUL level not at iframe level
+		  alternatively use Componentets.util.importJavascript to import it and then have it cached so that it only
+		  get loaded once by one of the iframes -->
+		
+        <!--  Ext scripts -->
+        <script type="text/javascript" src="lib/ext/adapter/jquery/jquery-1.3.2.min.js"></script>
+        <script type="text/javascript" src="lib/ext/adapter/jquery/ext-jquery-adapter.js"></script>
+        
+        <script type="text/javascript" src="lib/ext/ext-all.js"></script>
+        
+        <script type="text/javascript" src="lib/ext/ux/StatusBar.js"></script>
+        <script type="text/javascript" src="lib/ext/ux/uxvismode.js"></script>
+        <script type="text/javascript" src="lib/ext/ux/MidasCommand.js"></script>
+        <script type="text/javascript" src="lib/ext/ux/SuperBoxSelect.js"></script>
+        
+        <script type="text/javascript" src="constants.js"></script>
+        <script type="text/javascript" src="debug.js"></script>
+        
+		<!-- mozdev xpointer lib -->
+		<script type="text/javascript" src="lib/nsXPointerService.js"></script>
+		
+		<!-- graph drawing library scripts -->
+			
+		<!-- RDF parser -->
+		<script type="text/javascript" src="lib/parser.js"></script>
+		
+		<!-- UUID function -->
+		<script type="text/javascript" src="lib/Math.uuid.js"></script>
+		
+		<!--  Timeline -->
+		<script type="text/javascript" src="lib/timeline/timeline-api.js?bundle=true" ></script>
+	
+		<script type="text/javascript" src="util.js"></script>
+		<script type="text/javascript" src="store.js"></script>
+		<script type="text/javascript" src="uifunctions.js"></script>
+		<script type="text/javascript" src="annotations.js"></script>
+		<script type="text/javascript" src="annotations_view.js"></script>
+		<script type="text/javascript" src="textmining.js"></script>
+		
+        <!--  styles -->
+        <link rel="stylesheet" type="text/css" href="lib/ext/resources/css/ext-all.css"/>
+		<link rel="stylesheet" type="text/css" href="lib/ext/resources/css/xtheme-gray-extend.css"/>
+        <link rel="stylesheet" type="text/css" href="loreui.css"/>		
+        <link rel="stylesheet" type="text/css" href="lib/ext/ux/superboxselect.css"/>	
+		
+        <title>LORE</title>
+    </head>
+    <body>
+    	<script type="text/javascript" src="lib/wz_tooltip.js"></script> 
+    	<script type="text/javascript" src="ontologies/thesaurus.js"/></script>       		
+		<script type="text/javascript" src="annotations_view_init.js"></script> 
+		<script type="text/javascript" src="anno_init.js"></script>
+		
+		
+ 
+    </body>
+</html>
