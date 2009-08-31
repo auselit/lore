@@ -298,7 +298,7 @@ lore.ui.initExtComponents = function() {
  */
 lore.ui.initTimeline = function() {
 	var tl = Ext.getCmp("annotimeline");
-	if (typeof Timeline !== "undefined") {
+	if (typeof Timeline !== "undefined" && !lore.ui.disabled.disable_annotations) {
 		lore.anno.annoEventSource = new Timeline.DefaultEventSource();
         var theme = Timeline.ClassicTheme.create();
         theme.event.bubble.width = 350;
