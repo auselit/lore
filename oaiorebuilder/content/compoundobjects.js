@@ -93,8 +93,9 @@ lore.ore.showCompoundObjectSummary = function() {
     for (var i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
         var figurl = fig.url.escapeHTML();
-        newsummary += "<li><a target='_blank' href='" + figurl + "'>" + figurl
-                + "</a></li>";
+        var title = fig.metadataproperties["dc:title"];
+        newsummary += "<li>" + (title? title + ": " : "") + "<a target='_blank' href='" 
+            + figurl + "'>&lt;" + figurl + "&gt;</a></li>";
     }
     newsummary += "</ul></div>";
     lore.ui.summarytab.body.update(newsummary);
@@ -146,7 +147,7 @@ lore.ore.showExploreUI = function(){
         var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
         + "<script type='text/javascript' src='chrome://lore/content/graphs/lore_explore.js'></script>"
         + "<a id='explorereset' style='z-index:999;position:absolute;bottom:10px;left:10px;font-size:x-small;color:#51666b' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM,\"Current Compound Object\");'>RESET VISUALISATION</a>"
-        + "<div style='vertical-align:middle;height:1.5em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;' id='history'></div>"
+        + "<div style='vertical-align:middle;height:1.5em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;background-color:white;' id='history'></div>"
         + "<div id='infovis'></div>";
 
         
@@ -268,6 +269,10 @@ lore.ore.createRDF = function(escape) {
     if (monthString.length < 2){
         monthString = '0' + monthString;
     }
+    var dayString = modifiedDate.getDate() + "";
+    if (dayString.length < 2){
+        dayString = "0" + dayString;
+    }
     rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb + ltsymb
             + rdfdescabout + rdfabout + closetag + ltsymb
             + "ore:describes rdf:resource=\"" + describes + fullclosetag
@@ -275,7 +280,7 @@ lore.ore.createRDF = function(escape) {
             + '" />' + nlsymb + ltsymb + 'dcterms:modified rdf:datatype="'
             + lore.constants.XMLSCHEMA_NS + 'date">'
             + modifiedDate.getFullYear() + "-" + monthString
-            + "-" + modifiedDate.getDate() + ltsymb + "/dcterms:modified>"
+            + "-" + dayString + ltsymb + "/dcterms:modified>"
             + nlsymb;
     var created = remprops["dcterms:created"]; 
     if (created != null && created instanceof Date) {
@@ -283,10 +288,14 @@ lore.ore.createRDF = function(escape) {
         if (monthString.length < 2){
             monthString = '0' + monthString;
         }
+        dayString = created.getDate() + "";
+	    if (dayString.length < 2){
+	        dayString = "0" + dayString;
+	    }
         rdfxml += ltsymb + 'dcterms:created rdf:datatype="'
                 + lore.constants.XMLSCHEMA_NS + 'date">'
                 + created.getFullYear() + "-" + monthString + "-"
-                + created.getDate() + ltsymb + "/dcterms:created>" + nlsymb;
+                + dayString + ltsymb + "/dcterms:created>" + nlsymb;
     } 
     else if (created != null) {
         rdfxml += ltsymb + 'dcterms:created rdf:datatype="'
