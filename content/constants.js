@@ -59,7 +59,8 @@ lore.constants.NAMESPACES = {
     "dcterms" : lore.constants.DCTERMS_NS,
     "ore"     : lore.constants.ORETERMS_NS,
     "foaf"    : lore.constants.FOAF_NS,
-    "layout"  : lore.constants.LORE_LAYOUT_NS
+    "layout"  : lore.constants.LORE_LAYOUT_NS,
+	"rdf"	  : lore.constants.RDF_SYNTAX_NS
 };
 
 // RDF/OWL
