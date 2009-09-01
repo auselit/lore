@@ -100,7 +100,7 @@ lore.ui.initGraphicalView = function() {
 	} else {
 		lore.ore.graph.Graph = new draw2d.Workflow("drawingarea");
 		lore.ore.graph.Graph.scrollArea = document
-				.getElementById("drawingarea");
+				.getElementById("drawingarea").parentNode;
 	}
 	lore.ore.graph.gSelectionListener = new lore.ore.graph.SelectionProperties(lore.ore.graph.Graph);
 	lore.ore.graph.Graph

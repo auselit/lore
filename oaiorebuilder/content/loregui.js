@@ -37,6 +37,7 @@ lore.ui.gui_spec = {
                     id: "loreviews",
 					plugins : lore.ui.vismode,
 					deferredRender: false,
+                    autoScroll: true,
                     items: [
 						{
                             title: "Editor",
