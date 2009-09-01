@@ -70,6 +70,7 @@ lore.ore.openView = function (panelid,paneltitle,activationhandler){
         lore.ui.loreviews.activate(panelid);
     }
 }
+
 /**
  * Displays a summary of the resource URIs contained in the compound object
  */
@@ -127,12 +128,15 @@ lore.ore.showSlideshow = function (){
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
     var sscontents = "";
-   
+    var carouselel = Ext.get("trailcarousel");
     try{
-    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/stylesheets/ORE2Carousel.xsl",true);
+    var params = {
+    "width": carouselel.getWidth(),
+    "height": (carouselel.getHeight() - 29)}; // minus 29 to account for slide nav bar
+    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/stylesheets/ORE2Carousel.xsl",true, params);
     var serializer = new XMLSerializer();
     sscontents += serializer.serializeToString(resultDoc);
-    Ext.get("trailcarousel").update(sscontents);
+    carouselel.update(sscontents);
     lore.ui.carousel.reloadMarkup();
     } catch (ex){
         lore.debug.ore("adding slideshow",ex);
@@ -1071,7 +1075,7 @@ lore.ore.graph.addFigure = function(theURL) {
     }
     return fig;
 }
-lore.ore.transformORERDF = function(stylesheetURL, fragment){
+lore.ore.transformORERDF = function(stylesheetURL, fragment, params){
 
     var xsltproc = new XSLTProcessor();
     // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
@@ -1081,6 +1085,9 @@ lore.ore.transformORERDF = function(stylesheetURL, fragment){
     xhr.send(null);
     var stylesheetDoc = xhr.responseXML;
     xsltproc.importStylesheet(stylesheetDoc);
+    for (param in params){
+        xsltproc.setParameter(null,param,params[param]);
+    }
     xsltproc.setParameter(null, "indent", "yes");
     // get the compound object xml
     var theRDF = lore.ore.createRDF(false);

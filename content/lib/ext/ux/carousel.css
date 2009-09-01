@@ -38,7 +38,7 @@
 
 .ux-carousel-slide {
     float: left;
-    overflow: auto;
+    /*overflow: auto;*/
     text-align: center;
 }
 
@@ -111,7 +111,7 @@
     background-position: 0 0;
 }
 div.item {
-   padding-top: 29px;
+   margin-top: 29px;
 }
 div.item .desctitle {
 	font-style:normal;
@@ -122,19 +122,15 @@ div.item .desctitle {
 div.item .preview {
 	border:none;
 	float:left;
-	width:77%;
-	max-height:100%;
-	
 }
 div.itemdesc {
 	float:right;
-	height:100%;
-	width:20%;
 	text-align:left;
-	padding:0.5em;
+	padding:5px;
 	font-size:smaller;
 	font-style:italic;
 	color:black;
 	background-color:#d1ccc7;
+	overflow: auto;
 	
 } 
