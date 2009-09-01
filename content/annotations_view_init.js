@@ -46,9 +46,10 @@
 		});
 
 		lore.ui.anno.LOREColumnTreeNode = function(attributes){
-
+		
 			this.title = attributes.title || '';
-			this.info = attributes.info || '';
+			this.bheader = attributes.bheader || '';
+			this.bfooter = attributes.bfooter || '';
 			this.links = attributes.links || [];
 			this.nodeType = attributes.nodeType;
 			lore.ui.anno.LOREColumnTreeNode.superclass.constructor.call(this, attributes);
@@ -56,22 +57,39 @@
     
 		Ext.extend(lore.ui.anno.LOREColumnTreeNode, Ext.tree.TreeNode, {
 			
-			setText: function(title,info,text) {
-			
+			setText: function(title,bh,bf,text) {
 				var oldText = this.text;
 				var oldTitle = this.title;
-				var oldInfo = this.info;
+				var oldBh = this.bheader;
+				var oldBf = this.bfooter;
 		        this.title = title;
-				this.info = info;
-				this.text = text;
+				this.bheader = bh;
+				this.bfooter = bf;
 				this.attributes.title = title;
-				this.attributes.info = info;
+				this.attributes.bheader = bh;
+				this.attributes.bfooter = bf;
 				this.attributes.text = text;
         		
 				if(this.rendered){ // event without subscribing
-            		this.ui.onTextChange(this, title, info, text, oldTitle, oldInfo, oldText);
+            		this.ui.onTextChange(this, { title:title,
+												 bheader:bh,
+												 bfooter:bf,
+												 text:text,
+												 oldTitle: oldTitle,
+												 oldBHeader: bh,
+												 oldBFooter: bf,
+												 oldText: oldText });
+												 
+												 
         		}
-        		this.fireEvent('textchange', this, title, info, text, oldText);
+        		this.fireEvent('textchange', this,  { title:title,
+												 bheader:bh,
+												 bfooter:bf,
+												 text:text,
+												 oldTitle: oldTitle,
+												 oldBHeader: bh,
+												 oldBFooter: bf,
+												 oldText: oldText });
 			}
 			
 
@@ -82,11 +100,11 @@
 			// private
 			
 			focus: Ext.emptyFn,
-			onTextChange: function(node,title,info,text, oldtitle, oldinfo, oldtext) {
+			onTextChange: function( txtfields) {
 				 if(this.rendered){
-           			 this.textNode.innerHTML = text;
-					 this.titleNode.innerHTML = title;
-					 this.infoNode.innerHTML = info;
+           			 this.textNode.innerHTML = txtfields.text;
+					 this.titleNode.innerHTML = txtfields.title;
+					 this.bHeaderNode.innerHTML = txtfields.bheader;
        			 }
 			},
 			
@@ -114,8 +132,8 @@
 				 '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />', 
 				 '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon', (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), 
 				 '" unselectable="on" />', 
-				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div>',  n.title, '</div>', (n.info ? '<div>' + n.info + '</div>':'<span></span>'),
-				'<div style="width:100%" class="x-tree-col-text">', n.text, "</div></div></div>"];
+				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div>',  n.title, '</div>', (n.bheader ? '<div class="x-tree-node-bheader">' + n.bheader + '</div>':'<span></span>'),
+				'<div style="width:100%" class="x-tree-col-text">', n.text, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
 				
 				 for(var i = 1, len = cols.length; i < len; i++){
              		c = cols[i];
@@ -145,8 +163,10 @@
 				this.ecNode = cs[1];
 				this.iconNode = cs[2];
 				this.titleNode = cs[3].firstChild;
-				this.infoNode = this.titleNode.nextSibling;
-				this.anchor = this.textNode = this.infoNode.nextSibling;
+				this.bHeaderNode = this.titleNode.nextSibling;
+				this.anchor = this.textNode = this.bHeaderNode.nextSibling;
+				this.bFooterNode = this.textNode.nextSibling;
+				
 			}
 		});
 		

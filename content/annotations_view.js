@@ -45,8 +45,36 @@
 			
 		}
 		
-		lore.ui.anno.genAnnotationCaption = function(anno){
-			return lore.util.splitTerm(anno.type).term + " by " + anno.creator + ", " + lore.util.shortDate(anno.created);
+		lore.ui.anno.genAnnotationCaption = function(anno, formatStr){
+			var buf = '';
+			
+			
+			for ( var i=0; i < formatStr.length; i++) {
+				switch ( formatStr[i]) {
+					case 't': 
+						buf += lore.util.splitTerm(anno.type).term;
+						break;
+					case 'c':
+						buf += anno.creator
+						break;
+					case 'd':
+						buf += lore.util.shortDate(anno.created);
+						break;
+					case 'D':
+						buf += lore.util.longDate(anno.created);
+						break;
+					case '\\':
+						if ( i < formatStr.length -1 ) {
+							i++;
+							buf += formatStr[i];
+						}
+						break;
+					default:
+						buf += formatStr[i];
+				}
+			}
+		 
+			return buf;
 		}
 		
 		lore.ui.anno.getAnnoTitle = function(anno){
@@ -149,9 +177,11 @@
 		/** Timeline Functions **/
 		
 		lore.ui.anno.getTimelineDescription = function(anno){
-			return "<span style='font-size:small;color:#51666b;'>" + lore.util.splitTerm(anno.type).term +
-			" by " +
-			anno.creator +
+			return "<span style='font-size:small;color:#51666b;'>" 
+			// lore.util.splitTerm(anno.type).term +
+			//" by " +
+			//anno.creator +
+			+ lore.ui.anno.genAnnotationCaption(anno, 't by c') + 
 			"</span><br/> " +
 			lore.ui.anno.genDescription(anno) +
 			"<br />" +
@@ -190,8 +220,6 @@
 					
 					eventID: anno.id,
 					
-					caption: lore.ui.anno.genAnnotationCaption(anno),
-					
 					description: lore.ui.anno.getTimelineDescription(anno)
 				});
 				
@@ -206,7 +234,7 @@
 			var evt = lore.ui.anno.annoEventSource.getEvent(anno.id);
 			if (evt) {
 				evt.text = anno.title;
-				evt.caption = lore.ui.anno.genAnnotationCaption(anno);
+				evt.caption = lore.ui.anno.genAnnotationCaption(anno, 't by c');
 				evt.description = lore.ui.anno.getTimelineDescription(anno);
 				lore.ui.anno.scheduleTimelineLayout();
 			}
@@ -448,7 +476,7 @@
 					iconCls: 'anno-icon',
 					uiProvider: lore.ui.anno.LOREColumnTreeNodeUI,
 					links: nodeLinks,
-					qtip: lore.ui.anno.genAnnotationCaption(anno)
+					qtip:  lore.ui.anno.genAnnotationCaption(anno, 't by c, d')
 				});
 				
 				parent.appendChild(tmpNode);
@@ -461,19 +489,26 @@
 									 jscript: "lore.ui.anno.showSplitter('" + anno.id + "');"});
 				}
 				
-				tmpNode = new lore.ui.anno.LOREColumnTreeNode ( {
+				var replies = "";
+				if ( anno.replies ) {
+					var numreplies = lore.anno.calcNumReplies(anno);
+					replies = " (" +  numreplies + (numreplies==1 ? " reply":" replies") + ")";
+					 
+				}
+				
+				var args = {
 					id: anno.id,
 					nodeType: anno.type,
 					text: lore.ui.anno.genTreeNodeText(anno),
 					title: anno.title,
-					//info: "<span style='color:#aaaaaa;font-style:italic;'>" +
-					//lore.ui.anno.genAnnotationCaption(lore.anno.getAnnoData(anno.id).data) +
-					//		"</span>",
+					bheader: lore.ui.anno.genAnnotationCaption(anno, 'by c, d') + replies,
 					iconCls: 'anno-icon',
 					uiProvider: lore.ui.anno.LOREColumnTreeNodeUI,
 					links: nodeLinks,
-					qtip: lore.ui.anno.genAnnotationCaption(anno)
-				});
+					qtip: lore.ui.anno.genAnnotationCaption(anno, 't by c, d')
+				};
+				
+				tmpNode = new lore.ui.anno.LOREColumnTreeNode (args );
 				
 				if (anno.about) { // reply
 					parent = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', anno.about);
@@ -1034,11 +1069,13 @@
 						var anno = rec.data;
 						try {
 							lore.ui.anno.createAndInsertTreeNode(anno);
+													
 						} 
 						catch (e) {
 							lore.debug.anno("error loading: " + rec.id, e);
 						}
 					});
+					
 					lore.ui.anno.scheduleTimelineLayout();
 				}
 				
@@ -1100,7 +1137,9 @@
 						node.getUI().removeClass("annochanged");
 						
 					}
-				node.setText(rec.data.title,'',lore.ui.anno.genTreeNodeText(rec.data));
+				node.setText(rec.data.title,
+								lore.ui.anno.genAnnotationCaption(rec.data, 'by c, d'),
+								'', lore.ui.anno.genTreeNodeText(rec.data));
 				lore.ui.anno.updateAnnoInTimeline(rec.data);
 				lore.ui.anno.showAnnotation(rec, true);
 				
