@@ -251,9 +251,11 @@
 				parent.data.replies = [];
 			}
 			parent.data.replies.push(anno.id);
+			lore.anno.annods.fireEvent("update", lore.anno.annods, parent, Ext.data.Record.EDIT);
 		}
 		
 		lore.anno.annods.loadData([anno], true);
+		
 		return anno;
 	}
 	
@@ -341,21 +343,28 @@
 	lore.anno.deleteAnnotation = function(anno, resultCallback) {
 			// remove the annotation from the server
 			var existsInBackend = !lore.anno.isNewAnnotation(anno);
-			if (anno.isReply) {
-				var parent = lore.util.findRecordById(lore.anno.annods, anno.resource);
+			if (anno.data.isReply) {
+				lore.debug.anno("HERE!");
+				var parent = lore.util.findRecordById(lore.anno.annods, anno.data.resource);
 				var ind = -1;
-				for( var i=0;i< parent.replies.length;i++) {
-					if ( parent.replies[i] == anno.id ) {
+				for( var i=0;i< parent.data.replies.length;i++) {
+					if ( parent.data.replies[i] == anno.data.id ) {
 						ind = i;
 						break;
 					}
 				}
-				if ( ind!=-1 )
-					parent.replies.splice(ind,1);
+				if (ind != -1) {
+					lore.debug.anno("a",replies);
+					parent.data.replies.splice(ind, 1);
+					lore.debug.anno("b",replies);
+					lore.anno.annods.fireEvent("update", lore.anno.annods, parent, Ext.data.Record.EDIT);
+				}
 				else {
 					lore.debug.anno("Couldn't find reply annotation to remove from parent replies list: " + anno.id);
 				}
-			}				
+			}		else {
+				lore.debug.anno("fuck you");
+			}		
 			
 			lore.anno.annods.remove(anno);
 			if (existsInBackend) {
