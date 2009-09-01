@@ -79,7 +79,7 @@ lore.ui.gui_spec = {
                         autoScroll: true,
                         iconCls: "welcome-icon"
                     
-                    }],
+                    }]
                 }
 				]
             }, {
@@ -94,11 +94,13 @@ lore.ui.gui_spec = {
     , {
         region: "west",
         id: "loresidebar",
+        title: "LORE Compound Objects",
         border: false,
         width: 250,
         minWidth: 100,
         split: true,
         collapsible: true,
+        animCollapse: false, 
         layout: "fit",
         items: [{
             layout: "border",
@@ -119,7 +121,7 @@ lore.ui.gui_spec = {
             }, {
                 region: "south",
                 split: true,
-                height: 200,
+                height: 150,
                 xtype: "tabpanel",
                 id: "propertytabs",
                 deferredRender: false,
@@ -127,7 +129,7 @@ lore.ui.gui_spec = {
                 defaults: {
                     autoScroll: true
                 },
-                
+                fitToFrame: true,
                 items: [{
                     xtype: 'propertygrid',
                     title: 'Compound Object',
@@ -165,7 +167,6 @@ lore.ui.gui_spec = {
     }]
 };
 try {
-    //lore.debug.ui("lore height is " + innerHeight);
 	lore.ui.main_window = new Ext.Viewport(lore.ui.gui_spec);
 	lore.ui.main_window.show();
 	
