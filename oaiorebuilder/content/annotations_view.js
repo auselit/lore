@@ -63,6 +63,16 @@
 					case 'D':
 						buf += lore.util.longDate(anno.created);
 						break;
+					case 'r':
+						var replies = "";
+						if ( anno.replies) {
+							var numreplies = lore.anno.calcNumReplies(anno);
+							if (numreplies > 0) {
+								replies = " (" + numreplies + (numreplies == 1 ? " reply" : " replies") + ")";
+							}
+						}
+						buf += replies;
+						break;
 					case '\\':
 						if ( i < formatStr.length -1 ) {
 							i++;
@@ -489,19 +499,12 @@
 									 jscript: "lore.ui.anno.showSplitter('" + anno.id + "');"});
 				}
 				
-				var replies = "";
-				if ( anno.replies ) {
-					var numreplies = lore.anno.calcNumReplies(anno);
-					replies = " (" +  numreplies + (numreplies==1 ? " reply":" replies") + ")";
-					 
-				}
-				
 				var args = {
 					id: anno.id,
 					nodeType: anno.type,
 					text: lore.ui.anno.genTreeNodeText(anno),
 					title: anno.title,
-					bheader: lore.ui.anno.genAnnotationCaption(anno, 'by c, d') + replies,
+					bheader: lore.ui.anno.genAnnotationCaption(anno, 'by c, d r'),
 					iconCls: 'anno-icon',
 					uiProvider: lore.ui.anno.LOREColumnTreeNodeUI,
 					links: nodeLinks,
@@ -1121,6 +1124,7 @@
 		}
 		
 		lore.ui.anno.updateUIOnUpdate = function(store, rec, operation){
+			lore.debug.anno("onupdate ui");
 			try {
 				var node = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', rec.data.id);
 				
@@ -1128,17 +1132,17 @@
 					return;
 				}
 				
-				if (operation == Ext.data.Record.EDIT) {
-					node.getUI().addClass("annochanged");
-				}
-				else 
-					if (operation == Ext.data.Record.COMMIT ||
-					Ext.data.Record.REJECT) {
-						node.getUI().removeClass("annochanged");
-						
+				if (rec.dirty) {
+					if (operation == Ext.data.Record.EDIT) {
+						node.getUI().addClass("annochanged");
 					}
+					else {
+						node.getUI().removeClass("annochanged");
+					}
+				}
+				
 				node.setText(rec.data.title,
-								lore.ui.anno.genAnnotationCaption(rec.data, 'by c, d'),
+								(lore.anno.isNewAnnotation(rec) ? '':(lore.ui.anno.genAnnotationCaption(rec.data, 'by c, d r'))),
 								'', lore.ui.anno.genTreeNodeText(rec.data));
 				lore.ui.anno.updateAnnoInTimeline(rec.data);
 				lore.ui.anno.showAnnotation(rec, true);
