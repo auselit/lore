@@ -151,6 +151,18 @@ lore.ui.initProperties = function() {
 					e.cancel = true;
 				}
 	});
+    lore.ui.grid.on("afteredit",function(e){
+        if (e.record.id == "dc:title"){
+            var treenode = lore.ui.remstreeroot.findChild('id',lore.ore.currentREM);
+            if (treenode){
+                treenode.setText(e.value);
+            }
+            treenode = lore.ui.recenttreeroot.findChild('id',lore.ore.currentREM + "r");
+            if (treenode){
+                treenode.setText(e.value);
+            }
+        }
+    });
 	lore.ui.nodegrid.on("beforeedit", function(e) {
 				// don't allow format field to be edited
 				if (e.record.id == "dc:format") {
