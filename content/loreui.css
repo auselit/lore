@@ -186,8 +186,6 @@
 }
 #drawingarea {
 	position:relative;
-	overflow:auto;
-	width:100%;
 }
 #remrdfview {
  	color: #51666b;
@@ -332,7 +330,7 @@
  * Any images displayed in the column text are shrunk to thumbnail size
  */
 .x-tree-col-text img {
-	max-width:128;
+	max-width:128px;
 }
 
 .x-tree-headers {
