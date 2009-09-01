@@ -97,7 +97,28 @@ lore.ui.clearTree = function(treeRoot) {
 		treeRoot.removeChild(treeRoot.firstChild);
 	}
 }
-
+/**
+ * Set up scripts for image selection etc when a page loads in the browser
+ * @param {} contextURL
+ */
+lore.ui.locationLoaded = function(contextURL){
+    /*var doc = lore.util.getContentWindow().document;
+    if (contextURL.match(".jpg")){ // temporary hack to test
+        //if doc contains any images and it has not already been injected, inject image annotation script
+        lore.util.injectScript("content/lib/ext/adapter/jquery/jquery-1.3.2.min.js",doc);
+        lore.util.injectScript("content/lib/jquery.imgareaselect-0.8.min.js",doc);
+        var imgscript = "$('img').imgAreaSelect({onSelectEnd: function(){alert('image region selected');},handles:'corners'});";
+        var hidden = doc.createElement("div");
+        var script = doc.createElement("script");
+        script.type = "text/javascript";
+        script.innerHTML = imgscript;
+        var body = doc.getElementsByTagName("body")[0];
+        if (body){
+            body.appendChild(script);
+            body.appendChild(hidden);
+        }
+    }*/
+}
 /**
  * Update the source lists to show annotations and compound objects that
  * reference the resource currently loaded in the web browser
@@ -106,8 +127,7 @@ lore.ui.clearTree = function(treeRoot) {
  *            contextURL The URL of the resource currently loaded in the browser
  */
 lore.ui.updateSourceLists = function(contextURL) {
-	lore.ui.currentURL = contextURL; // store the contextURL
-     
+    lore.ui.currentURL = contextURL; // store the contextURL
 	if (lore.ui.lorevisible) {
        
         //if (!lore.ui.disabled || !lore.ui.disabled.disable_annotations){
