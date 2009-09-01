@@ -353,9 +353,7 @@
 					}
 				}
 				if (ind != -1) {
-					lore.debug.anno("a",replies);
 					parent.data.replies.splice(ind, 1);
-					lore.debug.anno("b",replies);
 					lore.anno.annods.fireEvent("update", lore.anno.annods, parent, Ext.data.Record.EDIT);
 				}
 				else {
