@@ -8,7 +8,10 @@
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	exclude-result-prefixes="rdf dc dcterms ore foaf xsl">
-
+	<xsl:param name="width" select="'100%'"/>
+	<xsl:param name="height" select="'100%'"/>
+	<xsl:variable name="mwidth" select="'150'"/>
+	
 	<xsl:output method="html" indent="yes"/>
 	<xsl:strip-space elements="*"/>
 
@@ -52,7 +55,7 @@
 			
 			<div class="item" title="{$title}">
 				<xsl:apply-templates mode="preview" select="//rdf:Description[@rdf:about = $about]"/>
-				<div class='itemdesc'>
+				<div style='width:{$mwidth}px;height:{$height}px' class='itemdesc'>
 					<xsl:variable name="linkLabel">
 						<xsl:choose>
 							<xsl:when test="contains($about,'ShowAgent')">Agent record</xsl:when>
@@ -87,16 +90,17 @@
 		<div class="preview">
         <xsl:choose>
         	<xsl:when test="contains($format,'image')">
-    			<img src="{$about}" alt="{$about}" style="max-height:400px"/> 
+    			<img src="{$about}" alt="{$about}" style="max-height:{$height}"/> 
     		</xsl:when>
     		<xsl:when test="contains($format,'application/rdf+xml')">
     			<!--  most likely another compound object -->
     			
-    			Load compound object
+    			<p style='color:#51666b;margin-top:3em'>This resource is an RDF/XML document. No preview available</p> 
     			
     		</xsl:when>
     		<xsl:otherwise>
-    			<object data="{$about}"  height="400px" width="100%"></object>
+    			<!--  minus 10 to account for 5px padding on each side of itemdesc -->
+    			<object data="{$about}"  height="{$height}" width="{($width - $mwidth) - 10}"></object>
     		</xsl:otherwise>
     	</xsl:choose>
 		</div>		
