@@ -47,7 +47,25 @@ lore.textm.requestTextMiningMetadata = function() {
     if (!lore.ui.textminingtab) {
         return;
     }
-    var ocParams = '<c:params xmlns:c="http://s.opencalais.com/1/pred/">'
+    try{
+    // process RDFa
+    var doc = lore.util.getContentWindow().document;
+    var contentElem = jQuery('body',doc);
+    
+    var myrdf = contentElem.rdfa();
+    var triples = myrdf.databank.triples();
+    lore.debug.tm("triples object", triples);
+    lore.debug.tm("json dump", Ext.util.JSON.encode(jQuery.rdf.dump(triples)));
+    var ser = new XMLSerializer();
+    var rdfxml = jQuery.rdf.dump(triples,{'format': 'application/rdf+xml', 'namespaces': {'austlit': 'http://austlit.edu.au/owl/austlit.owl#'}});
+    lore.ui.textminingtab.body.update("Extracted the following RDF: <pre style='font-size:smaller;color:#51666b;'>"
+        + Ext.util.Format.htmlEncode(XML(ser.serializeToString(rdfxml)).toXMLString()) + "</pre>");
+    
+    } catch (ex){
+        lore.debug.tm("exception processing rdfa",ex);
+    }
+
+    /*var ocParams = '<c:params xmlns:c="http://s.opencalais.com/1/pred/">'
             + '<c:processingDirectives c:contentType="text/txt" c:outputFormat="application/json"></c:processingDirectives>'
             + '<c:userDirectives c:allowDistribution="true" c:allowSearch="true"/><c:externalMetadata />'
             + '</c:params>';
@@ -75,5 +93,7 @@ lore.textm.requestTextMiningMetadata = function() {
             content : contentStr, // Ext.Ajax does urlencoding 
             paramsXML : ocParams
         }
-    });
+    });*/
+   
+    //lore.ui.textminingtab.body.update(myresult);
 }
