@@ -32,7 +32,7 @@
 		                     cls:'x-tree-hd-text',
 		                     html: c.header
 		                 },
-		                 style:'width:'+(c.width-this.borderWidth)+'px;',
+		                 style:'width:'+(c.width-this.borderWidth)+'px;'
 		             });
 		        }
 		        this.headers.createChild({cls:'x-clear'});
@@ -147,7 +147,7 @@
 				this.titleNode = cs[3].firstChild;
 				this.infoNode = this.titleNode.nextSibling;
 				this.anchor = this.textNode = this.infoNode.nextSibling;
-			},
+			}
 		});
 		
 
@@ -279,11 +279,11 @@ loreuieditor = function (model ) {
 							selectOnFocus: true
 						}, {
 							fieldLabel: 'Title',
-							name: 'title',
+							name: 'title'
 							
 						}, {
 							fieldLabel: 'Creator',
-							name: 'creator',
+							name: 'creator'
 							
 						}, {
 							fieldLabel: 'Variation Agent',
@@ -550,7 +550,7 @@ lore.ui.anno.initGUI = function(model){
 							deferredRender: false,
 							activeTab: "treeview",
 							items: [loreuiannotreeandeditor(model), loreuiannotimeline(model)		
-							, loreuiannoabout() ],
+							, loreuiannoabout() ]
 						},
 						{xtype: "panel",
 						id : "dispanel",
@@ -563,7 +563,7 @@ lore.ui.anno.initGUI = function(model){
 						xtype: "statusbar",
 						id: "lorestatus",
 						defaultText: "",
-						autoClear: 6000,
+						autoClear: 6000
 					}]
 				}]
 			}]
