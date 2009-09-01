@@ -211,9 +211,8 @@ lore.ui.initExtComponents = function() {
 	sourcestreeroot.appendChild(lore.ui.recenttreeroot);
 
 	// set up event handlers
-	//lore.ui.compoundobjecttab.on("beforeremove", lore.ore.closeView);
-	// create a context menu for the compound object tab to hide/show RDF/XML
-	// Tab
+	lore.ui.loreviews.on("beforeremove", lore.ore.closeView);
+	// create a context menu to hide/show optional views
 	lore.ui.loreviews.contextmenu = new Ext.menu.Menu({
 				id : "co-context-menu"
 			});
@@ -225,7 +224,9 @@ lore.ui.initExtComponents = function() {
 		text: "Show SMIL",
 		handler: lore.ore.openSMILView
 	});
-	
+	lore.ui.loreviews.on("contextmenu", function(tabpanel, tab, e){
+        lore.ui.loreviews.contextmenu.showAt(e.xy);
+    });
 	lore.ui.summarytab.on("activate", lore.ore.showCompoundObjectSummary);
     var smiltab = Ext.getCmp("remsmilview");
     var rdftab = Ext.getCmp("remrdfview");
