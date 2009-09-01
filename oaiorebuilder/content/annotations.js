@@ -344,7 +344,6 @@
 			// remove the annotation from the server
 			var existsInBackend = !lore.anno.isNewAnnotation(anno);
 			if (anno.data.isReply) {
-				lore.debug.anno("HERE!");
 				var parent = lore.util.findRecordById(lore.anno.annods, anno.data.resource);
 				var ind = -1;
 				for( var i=0;i< parent.data.replies.length;i++) {
@@ -362,8 +361,6 @@
 				else {
 					lore.debug.anno("Couldn't find reply annotation to remove from parent replies list: " + anno.id);
 				}
-			}		else {
-				lore.debug.anno("fuck you");
 			}		
 			
 			lore.anno.annods.remove(anno);
