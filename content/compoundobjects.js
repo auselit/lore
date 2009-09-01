@@ -748,6 +748,7 @@ lore.ore.setrelonturl = function(relonturl) {
  */
 lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
     lore.ui.clearTree(lore.ui.remstreeroot);
+	lore.ui.currentURL = contextURL;
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         var escapedURL = escape(contextURL);
         // TODO: Fedora support

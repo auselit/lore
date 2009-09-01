@@ -226,7 +226,6 @@
 				if (!lore.ui.anno.scheduleTimelineLayout.once || lore.ui.anno.scheduleTimelineLayout.once == 0) {
 					lore.ui.anno.scheduleTimelineLayout.once = 1;
 					tltab.on("activate", function(){
-						lore.debug.anno("here!");
 						lore.ui.anno.scheduleTimelineLayout.once = 0;
 						lore.ui.anno.annotimeline.layout();
 					}, this, {
@@ -292,7 +291,6 @@
 					var ctxtField = lore.ui.annotationsform.findField('contextdisp');
 					var selText = '';
 					try {
-						// need to do this while the xpointer library still has emotional problems
 						selText = lore.util.getSelectionText(rec.data.context) 
 					} catch (e ) {
 					}
@@ -343,10 +341,22 @@
 					lore.ui.annotationsform.loadRecord(rec);
 					
 				
+				
+				var val = rec.data.resource;
+				if (rec.data.isReply) {
+					var prec = lore.util.findRecordById(lore.anno.annods, rec.data.resource);
+					val = "'" + prec.data.title + "'";
+					if (!lore.anno.isNewAnnotation(prec)) {
+						val += " ( " + rec.data.resource + " )";
+					}
+				}
+				lore.ui.annotationsform.setValues([{ id: 'res', value: val }]);
+						
 				if ( !loadOnly){	
 					if (rec.data.isReply) {
 						Ext.getCmp("updctxtbtn").hide();
 						Ext.getCmp("updrctxtbtn").hide();
+							
 					}
 					else {
 						Ext.getCmp("updctxtbtn").show();
@@ -991,7 +1001,8 @@
 						
 					}
 					
-					
+					// update the currently selected annotation before the focus is taken off it
+					// for the newly created annotation
 					if (lore.ui.anno.curSelAnno &&
 						((lore.ui.annotationsform.isDirty()||
 				lore.anno.isNewAnnotation(lore.ui.anno.curSelAnno)) && 
@@ -1017,8 +1028,6 @@
 					lore.ui.annotationstreeroot = new Ext.tree.TreeNode({});
 					tree.setRootNode(lore.ui.annotationstreeroot);
 					
-					//lore.ui.clearTree(lore.ui.annotationstreeroot);
-					
 					lore.ui.anno.annoEventSource.clear();
 					
 					lore.anno.annods.each(function(rec){
@@ -1040,6 +1049,12 @@
 			catch (e) {
 				lore.debug.ui("Error loading annotation tree view: " + e, e);
 			}
+		}
+		
+		lore.ui.anno.updateUIOnClear = function(store) {
+			var tree = lore.ui.annotationstreeroot.getOwnerTree();
+			lore.ui.annotationstreeroot = new Ext.tree.TreeNode({});
+			tree.setRootNode(lore.ui.annotationstreeroot);
 		}
 		
 		lore.ui.anno.updateUIOnRemove = function(store, rec, index){
@@ -1099,9 +1114,9 @@
 		lore.ui.anno.highlightCurrentAnnotation = function(rec){
 		
 			lore.ui.anno.curAnnoMarkers = new Array();
-			
 			if (rec.data.context && (rec.data.resource == lore.ui.currentURL)) {
 				try {
+					//lore.debug.anno("-->sigh");
 					lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle));
 				} 
 				catch (e) {
@@ -1135,7 +1150,7 @@
 				}
 				
 				lore.ui.anno.curSelAnno = rec; // TODO: eventually have a listener on this to abstract on which gui element was selected
-				
+				 
 				lore.ui.anno.highlightCurrentAnnotation(rec);
 				
 				if ( parent.loreoverlay.variationContentWindowIsVisible() &&
@@ -1222,3 +1237,13 @@
 		alert(e);
 	}
 
+	/**
+	 * 
+	 * 
+	 */
+	lore.ui.anno.handleLocationChange = function(contextURL) {
+		lore.ui.currentURL = contextURL;
+		lore.debug.anno("The uri is " + lore.ui.currentURL);
+		lore.debug.ui("Updating annotation source list");
+		lore.anno.updateAnnotationsSourceList(contextURL);
+	}
