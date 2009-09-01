@@ -332,8 +332,7 @@
  * Any images displayed in the column text are shrunk to thumbnail size
  */
 .x-tree-col-text img {
-	width:64;
-	height:64;
+	max-width:128;
 }
 
 .x-tree-headers {

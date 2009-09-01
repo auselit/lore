@@ -14,10 +14,10 @@ try {
 						return;
 					if (window.graphiframe.lore && typeof(window.graphiframe.lore.ore.updateCompoundObjectsSourceList) == 'function' &&
 					window.annographiframe.lore &&
-					typeof(window.annographiframe.lore.anno.updateAnnotationsSourceList) == 'function') {
+					typeof(window.annographiframe.lore.ui.anno.handleLocationChange) == 'function') {
 						window.graphiframe.lore.ore.updateCompoundObjectsSourceList(aURI.spec);
 						window.graphiframe.lore.ui.loadedURL = aURI.spec;
-						window.annographiframe.lore.anno.updateAnnotationsSourceList(aURI.spec);
+						window.annographiframe.lore.ui.anno.handleLocationChange(aURI.spec);
 						window.annographiframe.lore.ui.loadedURL = aURI.spec;
 						this.oldURL = aURI.spec;
 					}

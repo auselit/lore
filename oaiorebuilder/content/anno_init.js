@@ -76,6 +76,7 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		lore.anno.annods.on( { "update": {fn: lore.ui.anno.updateUIOnUpdate}, 
 							   "load":{fn: lore.ui.anno.updateUI},
 							   "remove":{fn: lore.ui.anno.updateUIOnRemove},
+							   "clear": {fn: lore.ui.anno.updateUIOnClear}
 							   });
     }
 	
@@ -114,12 +115,9 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 			
  			lore.ui.anno.initTimeline();
 			
-			lore.debug.anno("The uri is " + lore.ui.currentURL);
 			if (lore.ui.currentURL && lore.ui.currentURL != '' &&
 				lore.ui.currentURL != 'about:blank' &&
 				lore.ui.lorevisible) {
-				lore.debug.ui("Updating annotation source list");
-				lore.debug.ui(lore.anno,lore.anno);
 				lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
 				lore.ui.loadedURL = lore.ui.currentURL; //TODO: this could be shared code
 			}

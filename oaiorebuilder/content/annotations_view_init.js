@@ -312,7 +312,7 @@ loreuieditor = function (model ) {
 							}
 						}, {
 							fieldLabel: 'Annotates',
-							name: 'resource',
+							name: 'res',
 							readOnly: true,
 							hideParent: true,
 							style: {
@@ -596,7 +596,6 @@ lore.ui.anno.initExtComponents = function(){
 		lore.ui.lorestatus = Ext.getCmp('lorestatus');
 		lore.ui.annotationsformpanel = Ext.getCmp("annotationslistform")
 		lore.ui.annotationsform = lore.ui.annotationsformpanel.getForm();
-		//lore.ui.annotationsformpanel.collapse();
 		lore.ui.annotationsformpanel.hide();
 		
 		// set up the sources tree

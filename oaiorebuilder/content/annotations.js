@@ -685,7 +685,6 @@
 	
 	
 	lore.anno.handleAnnotationsLoaded = function(resp){
-	
 		var resultNodes = {};
 		var xmldoc = resp.responseXML;
 		if (xmldoc) {
@@ -716,6 +715,8 @@
 			//lore.anno.annods.resumeEvents();
 			//lore.anno.annods.fireEvent('load', lore.anno.annods, lore.anno.annods.getRange(), {});
 			
+		} else {
+			lore.anno.annods.removeAll();
 		}
 	}
 	
