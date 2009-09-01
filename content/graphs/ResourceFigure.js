@@ -208,7 +208,7 @@ lore.ore.graph.ResourceFigure.prototype.setMetadata=function(urlparam)
 	this.metadataproperties["Resource"] = urlparam;
 	
 	this.metadataarea.innerHTML="<ul><li id='"+ this.id + "-icon'>" +
-		"<a target='_blank' href='" + urlparam + "'>" + urlparam + "</a></li></ul>";
+		"<a onclick='lore.util.launchTab(\"" + urlparam +"\");' href='#'>" + urlparam + "</a></li></ul>";
 	
 }
 lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl){
