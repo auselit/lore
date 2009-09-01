@@ -146,97 +146,113 @@ lore.ore.graph.ResourceFigure.prototype.setTitle=function(title){
 
 lore.ore.graph.ResourceFigure.prototype.setContent=function(urlparam)
 {
-
-if (urlparam && urlparam != ""){
-	var theurl = urlparam;
-}
-else {var theurl = "about:blank";}
-this.setMetadata(theurl);
-this.setIcon(theurl);
-
-// Don't display PDFs in preview
-var mimetype = this.metadataproperties["dc:format"];
-if (!mimetype) mimetype = "text/html";
-if (mimetype && mimetype.contains("application/rdf+xml")){
-	// resource is most likely to be a compound object - don't display contents
-	// TODO: allow annotations as contained objects as well
-	
-	this.iframearea.innerHTML="<div class='orelink' id='" + this.id + "-data'><a href='#' onclick=\"lore.ore.readRDF('"+ theurl + "');\">Compound Object: <br><img src='../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
-	var identifierURI = lore.ore.getOREIdentifier(theurl);
-	
-	this.metadataarea.innerHTML="<ul><li class='mimeicon oreicon'>" + identifierURI + "</li></ul>";
-	
-} else if (mimetype && mimetype.contains("image")){
-	this.iframearea.innerHTML="<img id='" + theurl + "-data' src='" + theurl + "' style='z-index:-9001' height='95%'>";
-
-} else if (mimetype && !mimetype.contains("pdf")){
-	try {
-		
-		var domObj = this.iframearea.firstChild;
-		if ( domObj ) {
-			this.iframearea.removeChild(domObj);
-		}
-
-		var iframe = lore.util.createSecureIFrame(window.top, theurl); 
-	/*	function () {
-			if ( this.scrollx != 0 || this.scrolly != 0 ) {
-				iframe.contentDocument.body.scrollLeft = this.scrollx;
-				iframe.contentDocument.body.scrollTop = this.scrolly;
-			}
-		});*/
-		
-		iframe.style.width = "100%";
-		iframe.style.height = "100%";
-		iframe.name = theurl + "-data";
-		iframe.id = theurl + "-data";
-		
-		iframe.style.zIndex = "-9001";
-		iframe.scrolling = "yes";
-		this.iframearea.appendChild(iframe);
-		
-	} catch (e) {
-		lore.debug.ore("iframe(general): " + e, e);
+	if (urlparam && urlparam != ""){
+		var theurl = urlparam;
 	}
-} 
+	else {var theurl = "about:blank";}
+	this.setMetadata(theurl);
+	this.setMimeType(theurl);
 };
+
+lore.ore.graph.ResourceFigure.prototype.showContent = function(){
+    var theurl = this.url;
+    var mimetype = this.metadataproperties["dc:format"];
+    this.setIcon(theurl);
+	if (mimetype && mimetype.contains("application/rdf+xml")){
+	    // resource is most likely to be a compound object - don't display contents
+	    // TODO: allow annotations as contained objects as well  
+	    this.iframearea.innerHTML="<div class='orelink' id='" + this.id + "-data'><a href='#' onclick=\"lore.ore.readRDF('"+ theurl + "');\">Compound Object: <br><img src='../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
+	    var identifierURI = lore.ore.getOREIdentifier(theurl);
+	    this.metadataarea.innerHTML="<ul><li class='mimeicon oreicon'>" + identifierURI + "</li></ul>";
+	    
+	} else if (mimetype && mimetype.contains("image")){
+	    this.iframearea.innerHTML="<img id='" + theurl + "-data' src='" + theurl + "' style='width:auto;z-index:-9001' height='95%'>";
+	} else if (mimetype && !mimetype.contains("pdf")){ // Don't display PDFs in preview
+	    try {
+	        
+	        var domObj = this.iframearea.firstChild;
+	        if ( domObj ) {
+	            this.iframearea.removeChild(domObj);
+	        }
+            
+	        if (this.originalHeight == -1){
+	            this.createPreview(theurl);
+	        }
+	    } catch (e) {
+	        lore.debug.ore("iframe(general): " + e, e);
+	    }
+    }
+}
+
+lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl){
+    var iframe = lore.util.createSecureIFrame(window.top, theurl); 
+    /*  function () {
+            if ( this.scrollx != 0 || this.scrolly != 0 ) {
+                iframe.contentDocument.body.scrollLeft = this.scrollx;
+                iframe.contentDocument.body.scrollTop = this.scrolly;
+            }
+        });*/
+        
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.name = theurl + "-data";
+        iframe.id = theurl + "-data";
+        iframe.style.zIndex = "-9001";
+        iframe.scrolling = "yes";
+        this.iframearea.appendChild(iframe);
+}
 
 lore.ore.graph.ResourceFigure.prototype.setMetadata=function(urlparam)
 {
 	this.url=urlparam;
 	this.metadataproperties["Resource"] = urlparam;
 	
-	this.metadataarea.innerHTML="<ul><li class='" + this.icontype + "' id='"+ this.id + "-icon'>" +
+	this.metadataarea.innerHTML="<ul><li id='"+ this.id + "-icon'>" +
 		"<a target='_blank' href='" + urlparam + "'>" + urlparam + "</a></li></ul>";
 	
 }
-lore.ore.graph.ResourceFigure.prototype.setIcon=function(theurl)
+lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl){
+    var mimetype = this.metadataproperties["dc:format"]? this.metadataproperties["dc:format"]: "text/html";
+    this.icontype = "mimeicon ";
+    if (mimetype.contains("html"))
+        this.icontype += "htmlicon";
+    else if (mimetype.contains("image")){
+        this.icontype += "imageicon";
+    } else if (mimetype.contains("audio")) {
+        this.icontype += "audioicon";
+    }else if (mimetype.contains("video") || mimetype.contains("flash")) 
+        this.icontype += "videoicon";
+    else if (mimetype.contains("pdf")) {
+        this.icontype += "pdficon";
+    }else {
+        this.icontype += "pageicon";
+    }
+    document.getElementById(this.id + '-icon').className = this.icontype;
+}
+lore.ore.graph.ResourceFigure.prototype.setMimeType=function(theurl)
 {
-	var mimetype = "text/html";
-	try {
-		var req = new XMLHttpRequest();
-		req.open('GET', theurl, false); 
-		req.send(null);
-		mimetype = req.getResponseHeader('Content-Type');
-		this.icontype = "mimeicon ";
-		if (mimetype.contains("html"))
-			this.icontype += "htmlicon";
-		else if (mimetype.contains("image")){
-			this.icontype += "imageicon";
-			document.getElementById(theurl + "-data").style.width='auto';
-		} else if (mimetype.contains("audio")) {
-			this.icontype += "audioicon";
-		}else if (mimetype.contains("video") || mimetype.contains("flash")) 
-			this.icontype += "videoicon";
-		else if (mimetype.contains("pdf")) {
-			this.icontype += "pdficon";
-		}else {
-			this.icontype += "pageicon";
-		}
-		
-		
-		
-	} catch (e) {}
-	this.metadataproperties["dc:format"] = mimetype;
+    if (!this.metadataproperties["dc:format"]){
+        var req = new XMLHttpRequest();
+	    req.open('GET', theurl, true);
+        var thisobj = this;
+	    req.onreadystatechange = function() {
+	            if (req.readyState == 4) {
+                    var mimetype;
+                        try{
+	                       mimetype = req.getResponseHeader('Content-Type');
+                        } catch(e){
+                            lore.debug.ore("exception getting mime type",e);
+                        }
+                        if (!mimetype) mimetype = "text/html";
+                        thisobj.metadataproperties["dc:format"] = mimetype;
+                        thisobj.showContent();
+	            }      
+	    };
+	    req.send(null);               
+    } else {
+        lore.debug.ore("using stored mimetype for resource figure",this);
+        this.showContent();
+    }
 }
 
 lore.ore.graph.ResourceFigure.prototype.onDragstart=function(x,y){
@@ -284,13 +300,15 @@ lore.ore.graph.ResourceFigure.prototype.toggle=function(){
 	if(this.originalHeight==-1){
 		this.originalHeight=this.height;
 		this.iframearea.style.display="none";
-		
 		var newHeight = this.metadataarea.offsetHeight + this.header.offsetHeight + this.footer.offsetHeight - 4;
 		this.setDimension(this.width,newHeight);
 		//this.setResizeable(false);
 	}
 	else{
 		this.setDimension(this.width,this.originalHeight);
+        if (!this.iframearea.firstChild && !this.metadataproperties["dc:format"].contains("pdf")){
+            this.createPreview(this.url);
+        }
 		this.iframearea.style.display="block";
 		this.originalHeight=-1;
 		//this.setResizeable(true);
