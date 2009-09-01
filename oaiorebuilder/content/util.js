@@ -94,6 +94,47 @@ lore.util.launchWindow = function(url, locbar) {
 	newwindow.focus();
 } 
 
+/**
+ * Launch a URL in a new tab in the main browser (or focus existing tab if already open in browser)
+ * Code from MDC code snippets page https://developer.mozilla.org/en/Code_snippets/Tabbed_browser
+ * @param {Object} url
+ */
+lore.util.launchTab = function(url) {
+  var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                     .getService(Components.interfaces.nsIWindowMediator);
+  var browserEnumerator = wm.getEnumerator("navigator:browser");
+  var found = false;
+  while (!found && browserEnumerator.hasMoreElements()) {
+    var browserWin = browserEnumerator.getNext();
+    var tabbrowser = browserWin.getBrowser();
+    // Check each tab of this browser instance
+    var numTabs = tabbrowser.browsers.length;
+    for(var index=0; index<numTabs; index++) {
+      var currentBrowser = tabbrowser.getBrowserAtIndex(index);
+      if (url == currentBrowser.currentURI.spec) {
+        // The URL is already opened. Select this tab.
+        tabbrowser.selectedTab = tabbrowser.mTabs[index];
+        // Focus *this* browser-window
+        browserWin.focus();
+        found = true;
+        break;
+      }
+    }
+  }
+  // Our URL isn't open. Open it now.
+  if (!found) {
+    var recentWindow = wm.getMostRecentWindow("navigator:browser");
+    if (recentWindow) {
+      // Use an existing browser window
+      recentWindow.delayedOpenTab(url, null, null, null, null);
+    }
+    else {
+      // No browser windows are open, so open a new one.
+      window.open(url);
+    }
+  }
+}
+
 lore.util.longDate = function ( adate ) {
 	return Date.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
 }

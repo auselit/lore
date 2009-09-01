@@ -6,7 +6,9 @@ Ext.namespace("lore.ore.explore");
 lore.ore.explore.showInExploreView = function (id, title){
     if(!lore.ore.explore.rg){
         lore.ore.explore.init();
-    } 
+    } else {
+        lore.ore.explore.canvas.clear();
+    }
     lore.ore.explore.loadRem(id, title, function(json){
             lore.ore.explore.rg.loadJSON(json);
             lore.ore.explore.rg.refresh();
@@ -59,16 +61,11 @@ lore.ore.explore.loadRem = function(id, title, f){
         var serializer = new XMLSerializer();
         lore.debug.ore("response is",serializer.serializeToString(rdfDoc));
         eval ("json = " + serializer.serializeToString(thefrag));
-        /*var xhr = new XMLHttpRequest();
-        xhr.open("GET",'chrome://lore/content/testexplore.js',false);
-        xhr.send(null);
-        eval ("json = " + xhr.responseText);*/
         lore.debug.ore("got json",json);
     } catch (ex){
         lore.debug.ore("problem doing sparql transform",ex);
     } 
-   //json = [{"id":"node0","name":remid,"data":{'$dim': 6,'$color': 'orange', '$type': 'circle'},"adjacencies":[{"nodeTo":"node1","data":{"weight":3}},{"nodeTo":"node2","data":{"weight":3}},{"nodeTo":"node3","data":{"weight":3}},{"nodeTo":"node4","data":{"weight":1}},{"nodeTo":"node5","data":{"weight":1}}]},{"id":"node1","name":"node1 name","data":[{"key":"weight","value":13.077119090372014},{"key":"some other key","value":"some other value"}],"adjacencies":[{"nodeTo":"node0","data":{"weight":3}},{"nodeTo":"node2","data":{"weight":1}},{"nodeTo":"node3","data":{"weight":3}},{"nodeTo":"node4","data":{"weight":1}},{"nodeTo":"node5","data":{"weight":1}}]},{"id":"node2","name":"node2 name","data":[{"key":"weight","value":24.937383149648717},{"key":"some other key","value":"some other value"}],"adjacencies":[{"nodeTo":"node0","data":{"weight":3}},{"nodeTo":"node1","data":{"weight":1}},{"nodeTo":"node3","data":{"weight":3}},{"nodeTo":"node4","data":{"weight":3}},{"nodeTo":"node5","data":{"weight":1}}]},{"id":"node3","name":"node3 name","data":[{"key":"weight","value":10.53272740718869},{"key":"some other key","value":"some other value"}],"adjacencies":[{"nodeTo":"node0","data":{"weight":3}},{"nodeTo":"node1","data":{"weight":3}},{"nodeTo":"node2","data":{"weight":3}},{"nodeTo":"node4","data":{"weight":1}},{"nodeTo":"node5","data":{"weight":3}}]},{"id":"node4","name":"node4 name","data":[{"key":"weight","value":1.3754347037767345},{"key":"some other key","value":"some other value"}],"adjacencies":[{"nodeTo":"node0","data":{"weight":1}},{"nodeTo":"node1","data":{"weight":1}},{"nodeTo":"node2","data":{"weight":3}},{"nodeTo":"node3","data":{"weight":1}},{"nodeTo":"node5","data":{"weight":3}}]},{"id":"node5","name":"node5 name","data":{'type': 'rem'},"adjacencies":[{"nodeTo":"node0","data":{"weight":1}},{"nodeTo":"node1","data":{"weight":1}},{"nodeTo":"node2","data":{"weight":1}},{"nodeTo":"node3","data":{"weight":3}},{"nodeTo":"node4","data":{"weight":3}}]}];
-   if (json){
+  if (json){
         f(json);
    }
 }
@@ -145,7 +142,8 @@ lore.ore.explore.init = function() {
         this.clickedNode = node;
         var existhistory = Ext.get('history').dom.innerHTML;
         // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
-        var nodelink = "<a target='_blank' title='Show in browser' href='" + node.id + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'></a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" + node.id + "');\">" + node.name + "</a>";
+        var action = "lore.util.launchTab(\"" + node.id + "\");";
+        var nodelink = "<a title='Show in browser' href='#' onclick='" + action + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'></a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" + node.id + "');\">" + node.name + "</a>";
         Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
         this.requestGraph();
     }
