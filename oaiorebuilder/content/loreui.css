@@ -116,6 +116,14 @@
 .x-tree-node .anno-view {
 	height: 16px !important;
 }
+
+.x-tree-node-bheader, .x-tree-node-bfooter {
+	color:#888888;
+	font-size:smaller;
+	
+}
+
+
 .x-tree-node .anno-icon-launchWindow {
 	background-image: url(chrome://lore/skin/icons/page_go.png);
 	/*display:none;*/

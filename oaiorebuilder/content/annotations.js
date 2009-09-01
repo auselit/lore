@@ -217,6 +217,18 @@
 		return anno.id.indexOf("#new") == 0;
 	}
 	
+	lore.anno.calcNumReplies = function (anno) {
+		if ( anno.replies) {
+			var num = anno.replies.length;
+			for (var i=0;i<anno.replies;i++) {
+				num += lore.anno.calcNumReplies(lore.util.findRecordById(lore.anno.annods, data.replies[i]).data);
+			}
+			return num;
+		} else {
+			return 0;
+		}
+	}  
+	
 	lore.anno.addAnnotation = function(currentContext, parent){
 		
 		var anno = {
@@ -234,6 +246,13 @@
 			lang: "en",
 			isReply: (parent ? true: null)
 		};
+		if (parent) {
+			if ( !parent.data.replies ) {
+				parent.data.replies = [];
+			}
+			parent.data.replies.push(anno.id);
+		}
+		
 		lore.anno.annods.loadData([anno], true);
 		return anno;
 	}
@@ -322,7 +341,22 @@
 	lore.anno.deleteAnnotation = function(anno, resultCallback) {
 			// remove the annotation from the server
 			var existsInBackend = !lore.anno.isNewAnnotation(anno);
-						
+			if (anno.isReply) {
+				var parent = lore.util.findRecordById(lore.anno.annods, anno.resource);
+				var ind = -1;
+				for( var i=0;i< parent.replies.length;i++) {
+					if ( parent.replies[i] == anno.id ) {
+						ind = i;
+						break;
+					}
+				}
+				if ( ind!=-1 )
+					parent.replies.splice(ind,1);
+				else {
+					lore.debug.anno("Couldn't find reply annotation to remove from parent replies list: " + anno.id);
+				}
+			}				
+			
 			lore.anno.annods.remove(anno);
 			if (existsInBackend) {
 
@@ -722,12 +756,23 @@
 	
 	
 	lore.anno.handleAnnotationRepliesLoaded = function(resp, opt){
-	
-		var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.RDF_SYNTAX_NS, 'Description');
-		var isLeaf = (replyList.length == 0);
-		if (!isLeaf) {
-			
-			replies = lore.anno.orderByDate(replyList);
-			lore.anno.annods.loadData(replies, true);
+		try {
+			var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.RDF_SYNTAX_NS, 'Description');
+			var isLeaf = (replyList.length == 0);
+			if (!isLeaf) {
+				replies = lore.anno.orderByDate(replyList);
+				
+				var parent = lore.util.findRecordById(lore.anno.annods, replies[0].resource);
+				parent.data.replies = [];
+				
+				for (var i = 0; i < replies.length; i++) {
+						
+					parent.data.replies.push(replies[i].id);
+				}
+
+				lore.anno.annods.loadData(replies, true);
+			}
+		} catch (e ) {
+			lore.debug.anno(e,e);
 		}
 	}
