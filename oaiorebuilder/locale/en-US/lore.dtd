@@ -6,10 +6,13 @@
 <!ENTITY loreToolbar.tooltip "Toggle LORE">
 <!ENTITY lore.addNodeLabel "Add Resource">
 <!ENTITY lore.addNodeTip "Add the current URL to the compound object">
-<!ENTITY lore.loadRDFLabel "Load RDF URL">
-<!ENTITY lore.loadRDFFromReposLabel "Load RDF (from repository)">
-<!ENTITY lore.loadRDFTip "Load a compound object">
-<!ENTITY lore.loadRDFFromReposTip "Load a compound object from the RDF Repository">
+<!ENTITY lore.saveMoreTip "More load and save options">
+<!ENTITY lore.saveFileLabel "Save to file">
+<!ENTITY lore.saveFileTip "Save compound object to a file">
+<!ENTITY lore.loadRDFLabel "Load from file">
+<!ENTITY lore.loadRDFTip "Load a compound object from a file">
+<!ENTITY lore.loadRDFURLLabel "Load from URL">
+<!ENTITY lore.loadRDFURLTip "Load a compound object from a URL">
 <!ENTITY lore.resetGraphLabel "Reset Graph">
 <!ENTITY lore.resetGraphTip "Reset UI">
 <!ENTITY lore.saveRDFLabel "Save RDF">
