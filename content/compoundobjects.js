@@ -150,7 +150,7 @@ lore.ore.showExploreUI = function(){
     if (lore.ore.exploreLoaded != lore.ore.currentREM) {
         lore.debug.ore("show in explore view", lore.ore.currentREM);
         lore.ore.exploreLoaded = lore.ore.currentREM;
-        lore.ore.explore.showInExploreView(lore.ore.currentREM);
+        lore.ore.explore.showInExploreView(lore.ore.currentREM, lore.ui.grid.getSource()["dc:title"]);
     } else {
         lore.debug.ore("refresh explore view");
         lore.ore.explore.rg.refresh();
