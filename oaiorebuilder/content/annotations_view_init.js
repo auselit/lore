@@ -698,18 +698,15 @@ lore.ui.anno.initTimeline = function() {
     lore.debug.ui("LORE Annotations: disable ui features?", opts);
     lore.ui.disabled = opts;
     
-	var annotab = Ext.getCmp("annotationstab");
-   	
     if (opts.disable_annotations){
-        if (annotab){
-			lore.ui.anno.views.hide();
-        }
-    } else if (!annotab){
-        window.location.reload(true);
+        window.parent.loreoverlay.setAnnotationsVisibility(false);
     } else {
-		if ( !annotab.isVisible() ) {
-			annotab.show();
-			annotab.doLayout();
+		// don't set visibility on start up 
+		if (!lore.ui.anno.disableUIFeatures.initialCall) {
+			lore.ui.anno.disableUIFeatures.initialCall = 1;
+		}
+		else {
+			window.parent.loreoverlay.setAnnotationsVisibility(true);
 		}
 	}
 }
