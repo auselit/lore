@@ -147,27 +147,9 @@ lore.ore.showSlideshow = function (){
  */
 lore.ore.showExploreUI = function(){
     try{
-    if(!lore.ore.exploreInit){
-        var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
-        + "<script type='text/javascript' src='chrome://lore/content/graphs/lore_explore.js'></script>"
-        + "<a id='explorereset' style='z-index:999;position:absolute;bottom:10px;left:10px;font-size:x-small;color:#51666b' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM,\"Current Compound Object\");'>RESET VISUALISATION</a>"
-        + "<div style='vertical-align:middle;height:1.5em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;background-color:white;' id='history'></div>"
-        + "<div id='infovis'></div>";
-
-        
-        lore.ui.exploretab.body.update(contents,true);
-        if (lore.ore.currentREM){
-            lore.ore.exploreInit = lore.ore.currentREM;
-            lore.ui.exploretab.on("render",
-                function(){lore.ore.explore.showInExploreView(lore.ore.currentREM);}, {'single':true}); 
-        } else {
-            lore.ore.exploreInit = "about:blank";
-        }
-        
-        lore.debug.ore("initialised explore view",lore.ore.exploreInit);
-    } else if (lore.ore.exploreInit != lore.ore.currentREM) {
+    if (lore.ore.exploreLoaded != lore.ore.currentREM) {
         lore.debug.ore("show in explore view", lore.ore.currentREM);
-        lore.ore.exploreInit = lore.ore.currentREM;
+        lore.ore.exploreLoaded = lore.ore.currentREM;
         lore.ore.explore.showInExploreView(lore.ore.currentREM);
     } else {
         lore.debug.ore("refresh explore view");
