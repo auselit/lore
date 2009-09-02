@@ -43,7 +43,7 @@
       <xsl:value-of select="$subj"/>
       </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>", "data": {"$dim": 6, "$color": "orange", "$type": "circle"}, "adjacencies": [</xsl:text>
+      <xsl:text>", "data": {"$dim": 6, "$color": "red", "$type": "square"}, "adjacencies": [</xsl:text>
       <xsl:for-each select="sparql:result">
       <xsl:text>{"nodeTo":"</xsl:text>
       <xsl:value-of select="sparql:binding[@name='something']/sparql:uri"/>
