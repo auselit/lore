@@ -438,7 +438,7 @@
 		}
 		lore.ui.anno.setAnnotationFormUI = function(variation){
 		
-			var nonVariationFields = ['resource'];
+			var nonVariationFields = ['res'];
 			var variationFields = ['original', 'variant', 'rcontextdisp', 'variationagent', 'variationplace', 'variationdate'];
 			if (variation) {
 				lore.ui.anno.hideFormFields(nonVariationFields);
@@ -718,7 +718,7 @@
 				
 				if (!rec) {
 				try {
-					//currentContext = lore.util.getXPathForSelection();
+					currentContext = lore.util.getXPathForSelection();
 				} 
 				catch (e) {
 					lore.debug.anno("exception creating xpath for new annotation", e);
@@ -951,7 +951,7 @@
 				theField.setValue(currentCtxt);
 				theField = lore.ui.annotationsform.findField('originalcontext');
 				theField.setValue(currentCtxt);
-				theField = lore.ui.annotationsform.findField('resource');
+				theField = lore.ui.annotationsform.findField('res');
 				theField.setValue(lore.ui.currentURL);
 				theField = lore.ui.annotationsform.findField('original');
 				theField.setValue(lore.ui.currentURL);
@@ -1124,7 +1124,7 @@
 		}
 		
 		lore.ui.anno.updateUIOnUpdate = function(store, rec, operation){
-			lore.debug.anno("onupdate ui");
+			
 			try {
 				var node = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', rec.data.id);
 				
@@ -1136,9 +1136,12 @@
 					if (operation == Ext.data.Record.EDIT) {
 						node.getUI().addClass("annochanged");
 					}
-					else {
+				}
+				if ( operation == Ext.data.Record.COMMIT || 
+						( operation == Ext.data.Record.REJECT 
+						&& !lore.anno.isNewAnnotation(rec)) ) {
+						
 						node.getUI().removeClass("annochanged");
-					}
 				}
 				
 				node.setText(rec.data.title,
@@ -1289,4 +1292,5 @@
 		lore.debug.anno("The uri is " + lore.ui.currentURL);
 		lore.debug.ui("Updating annotation source list");
 		lore.anno.updateAnnotationsSourceList(contextURL);
+		lore.ui.anno.hideAnnotation();
 	}
