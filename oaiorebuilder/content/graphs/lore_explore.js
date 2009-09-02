@@ -4,15 +4,12 @@ Ext.namespace("lore.ore.explore");
  * @param {} id The URI that identifies the resource map
  */
 lore.ore.explore.showInExploreView = function (id, title){
-    if(!lore.ore.explore.rg){
-        lore.ore.explore.init();
-    } else {
-        lore.ore.explore.canvas.clear();
-    }
+    lore.ore.explore.init();
     lore.ore.explore.loadRem(id, title, function(json){
-            lore.ore.explore.rg.loadJSON(json);
-            lore.ore.explore.rg.refresh();
+        lore.ore.explore.rg.loadJSON(json);
+        lore.ore.explore.rg.refresh();
     });
+    
 }
 /**
  * Helper: gets resource map as RDF, transforms to JSON and applies f to it
@@ -75,11 +72,21 @@ lore.ore.explore.loadRem = function(id, title, f){
 lore.ore.explore.init = function() {
   var infovis = document.getElementById('infovis');
   var w = infovis.offsetWidth, h = infovis.offsetHeight;
-  lore.ore.explore.canvas = new Canvas('explorecanvas', {
-    'injectInto':'infovis',
-    'width': w,
-    'height':h
-  });
+  if (!lore.ore.explore.canvas){
+    // create a new canvas
+    lore.ore.explore.canvas = new Canvas('explorecanvas', {
+        'injectInto':'infovis',
+        'width': w,
+        'height':h
+    });
+  } else {
+        // clear the canvas to reuse it
+        for(var id in lore.ore.explore.rg.fx.labels){
+               lore.ore.explore.rg.fx.disposeLabel(id);
+               delete lore.ore.explore.rg.fx.labels[id];
+        } 
+        lore.ore.explore.canvas.clear();
+  }
   lore.ore.explore.rg= new RGraph(lore.ore.explore.canvas,  {
     Node: {
        overridable: true,
