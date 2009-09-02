@@ -18,7 +18,9 @@
 	 	<xul:iframe id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
 	 	</xul:vbox>
  	
-	 	<xul:splitter id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" />
+	 	<xul:splitter id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" collapse="after" >
+	 	<xul:grippy />
+	 	</xul:splitter>
 	    
 	    <xul:vbox flex="2" id = "oobAnnoContentBox" collapsed="true" persist = "width">
 	    	
@@ -47,7 +49,9 @@
 	    
  	</xul:tabbrowser>
  	
-    <xul:splitter id="oobContentSplitter" collapsed="true" orient="vertical" />
+    <xul:splitter id="oobContentSplitter" collapsed="true" orient="vertical" collapse="after">
+    <xul:grippy /> 
+    </xul:splitter>
     <xul:vbox flex="2" align="stretch" id="oobContentBox" collapsed="true" persist="height" width="100%">
       <xul:toolbox>
         <xul:toolbar id="graph-toolbar">

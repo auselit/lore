@@ -181,33 +181,21 @@ lore.ui.ore.disableUIFeatures = function(opts) {
     lore.ui.disabled = opts;
     
     var tmtab = Ext.getCmp("textmining");
-    var cotab = Ext.getCmp("loreviews");
     if (opts.disable_textmining){
         if(tmtab){
             // remove text mining tab
             lore.ui.loreviews.remove(lore.ui.textminingtab);
-			
         }
-    } else if (!tmtab){
-        window.location.reload(true); 
-    }
+    } 
 	
     if (opts.disable_compoundobjects){
-        // remove compound object tab
-        if (cotab){
-           cotab.hide();
-           // remove source tree nodes
-           //lore.ui.remstreeroot.remove();
-           //lore.ui.recenttreeroot.remove();
-           // remove propertytabs
-           //lore.ui.propertytabs.remove(lore.ui.grid);
-           //lore.ui.propertytabs.remove(lore.ui.nodegrid);
-        }     
-    } else if (!cotab){
-       window.location.reload(true);
+		window.parent.loreoverlay.setCompoundObjectsVisibility(false);
     } else {
-		if ( !cotab.isVisible() ){
-			cotab.show();
+		// don't set visible on initial call
+		if (!lore.ui.ore.disableUIFeatures.initialCall ) {
+			lore.ui.ore.disableUIFeatures.initialCall=1;
+		} else {
+			window.parent.loreoverlay.setCompoundObjectsVisibility(true);
 		}
 	}
 }
