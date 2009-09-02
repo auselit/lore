@@ -53,7 +53,7 @@ lore.ui.gui_spec = {
                         },{
                             title: "Slideshow",
                             id: "remslideview",
-                            autoScroll: true
+                            autoScroll: false
                         } /*,{
                             title: "SMIL",
                             xtype: "panel",
@@ -61,11 +61,12 @@ lore.ui.gui_spec = {
 							autoScroll: true,
 							closable: true
                         
-                        },*//*{
+                        }*/,{
                             title: "Explore",
                             id: "remexploreview",
                             autoScroll:true
-                        }*///],
+                        }
+                        //],
                        //.. activeTab: "drawingarea"
                     // }, {
 				,{	
