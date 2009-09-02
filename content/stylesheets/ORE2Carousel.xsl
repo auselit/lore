@@ -66,7 +66,7 @@
 					 
 					
 					 <div class="desctitle">
-					  <a target="_blank" href="{$about}"><img src="../skin/icons/page_go.png" title="Open {$linkLabel} in a new window"/></a>
+					  <a href='#' onclick="lore.util.launchTab('{$about}');"><img src="../skin/icons/page_go.png" title="Open {$linkLabel} in a new tab"/></a>
 					  <xsl:text> </xsl:text>
 					 <xsl:choose>
 					 	<xsl:when test="$title"><xsl:value-of select="$title"/></xsl:when>
