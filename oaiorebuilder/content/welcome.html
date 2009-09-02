@@ -23,30 +23,31 @@
 		<title>LORE</title>
 		</head>
 	<body>
-		<h1>LORE: Literature Object Re-use and Exchange</h1>
-		<p>LORE aims to support the digital practice of researchers and teachers of literary cultures through:</p>
-		<ul>
-			<li><b><a href="#co">Compound-object authoring:</a></b>
+		<h1>LORE: Literature Object Re-use and Exchange: Compound Objects</h1>
+		<p>LORE aims to support the digital practice of researchers and teachers of literary cultures through <b>compound object authoring</b>, allowing them to:</p>
+
 				<ul>
 					<li><b>Gather</b> web resources and organise and tag them, describe links between them and make notes about them using a graphical editor.</li>
 					<li><b>Discover</b> compound objects that others have created about related topics and web resources.</li>
 				<li><b>Publish</b> the information that you have gathered as <i>compound objects</i> so that others can find them and reuse the information.</li>
 				<li><b>Present</b> the information that you have gathered and discovered using automatically generated slideshows and diagrams.</li>
 				</ul>
-				</li>
+				
 			
 			<!--li><b><a href="#tm">Text-mining:</a></b> Highlight names of people, places and events within the text of the current web resource.</li-->
-		</ul>
 		
-		<h2 id="co">Compound Objects</h2>
+		
+		<h2>Why compound objects?</h2>
 		
 		<div class="figdesc" style="width:40%">
-		LORE supports electronic publishing of compound objects that may be used to create pathways, tutorials, slideshows, annotated bibliographies and illustrated essays. LORE enables you to mark, describe and collect your on-line resources for re-use. LORE will enable you to protect your intellectual property by Creative Commons Licensing and to clearly label the re-use of copyright material to identify ownership of on-line material delivered through LORE. A collection of presentation templates will allow you to simply collect, annotate and electronically publish your on-line collection at the click of a button.
+		<p>LORE supports electronic publishing of compound objects that may be used to create pathways, tutorials, slideshows, annotated bibliographies and illustrated essays. LORE enables you to mark, describe and collect your on-line resources for re-use. LORE will enable you to protect your intellectual property by Creative Commons Licensing and to clearly label the re-use of copyright material to identify ownership of on-line material delivered through LORE. A collection of presentation templates will allow you to simply collect, annotate and electronically publish your on-line collection at the click of a button.</p>
+        <p><b>Note</b>: Similarly to bookmarks, LORE only stores links to the online materials that you include in compound objects - it does not take copies of those materials. We suggest that you select resources hosted at reliable institutions or archives to avoid broken links within your compound objects, and that you use persistent URIs for each resource (such as DOIs) where available.</p>
 		</div>
 		<div class="fig">
 		<img src="chrome://lore/skin/help-comp-obj.jpg">
 		</div>
 		
+        
 		<!--h2 id="tm">Text-mining</h2>
 		<div class="figdesc" style="width:60%">
 		<p>LORE uses the <a target="_blank" href="http://opencalais.com">Calais</a> semantic web service to identify names of people, places and events on the current page. Select the Calais button <img src="chrome://lore/skin/icons/Calais_icon.jpg"> in the toolbar and LORE will highlight the terms identified by Calais in the main browser window. 
@@ -56,11 +57,43 @@
 		<div class="fig">
 		<img src="chrome://lore/skin/help-text-mining.jpg">
 		</div-->
+        <h2>Getting started</h2>
 		
-		<h2>Getting started with LORE Compound Objects</h2>
-		
-		<p>You can configure LORE's features via the preferences. Select the <img alt="preferences" src="chrome://lore/skin/icons/cog.png"> icon from the toolbar to show the preferences window. You can enter your name (used to identify you as the creator of annotations or compound objects), and enable or disable the features described above <!--(compound objects, annotations or text-mining)--> via the General preferences. </p>
+		<p>You can configure LORE's features via the preferences. Select <img src="chrome://lore/skin/icons/cog.png" alt="View or edit LORE preferences" title="View or edit LORE preferences"> from the toolbar to show the preferences window. You can enter your name (used to identify you as the creator of compound objects), and enable or disable LORE's features via the General preferences. </p>
 		<p>Expert users have the option to configure the details of these services, or to specify an ontology describing alternate relationship types to relate resources within compound objects.</p>
+		
+        <h3>Compound object editor</h3>
+        <p>
+            The compound object editor can be used to view, edit or create a compound object.
+        </p>
+        <h4>Loading a compound object</h4>
+        <p>While you are browsing, any compound objects associated with the page that you are currently viewing in the browser will be displayed in the panel to the left of the editor area. You can double click on these to load the compound object in the editor. If you wish to create a new compound object, you can clear the editor by selecting <img src="chrome://lore/skin/icons/arrow_refresh.png" alt="Reset UI" title="Reset"> from the toolbar.</p>
+        
+        <h4>Adding resources</h4>
+        <p>You can add the page that you are currently viewing in the browser to the compound object by selecting <img src="chrome://lore/skin/icons/add.png" alt="Add" title="Add"> from the toolbar. To add links or images from the current page, right-click on the link or image and select 'Add linked resource to ORE object' or 'Add image to ORE object'.</p>
+        <p>Once you have added a resource, it will appear as a node in the editor. Use the minus (or plus) icon in the top-right of the node to collapse and expand the node preview. You can also reposition nodes using the mouse or resize them by clicking on a node and then dragging the resize handles.</p> 
+        <p>To create a connection indicating a relationship between two nodes, click and drag from the port on the right-hand side of the first node, to the port on the left-hand side of the second node. You can select the relationship type from the context menu displayed when you right-click on the connection. The relationship types in the menu are configured from an ontology specified in the preferences.</p>
+        <p>Click on a node or connection to display its properties in the 'Resource/Relationship' property panel to the bottom-left of the editor. Properties can be edited by clicking on the value displayed next to the property name in the property panel. You can add additional properties by selecting them from the 'Add Property' menu and remove properties again via the 'Remove properties' menu (this action cannot be undone).</p>
+        <p>If you wish to delete a resource node or connection, select it and press the delete key. On Mac, you will need to press Fn-Delete.  You can undo your actions within the editor using Control-Z (Command-Z on Mac)</p>
+        
+        <h4>Saving</h4>
+        <p>When you are ready to publish your compound object, select save <img src="chrome://lore/skin/icons/disk.png" alt="Save" title="Save"> from the toolbar. This will save the compound object to the repository. For advanced users, you can save a backup of your compound objects to a RDF/XML file on your computer by selecting the 'Save to file' option from the drop down menu next to the save icon.</p>
+        
+		<h3>Other views of compound objects</h3>
+        <p>In addition to the graphical editor, LORE provides the following views of compound objects:</p>
+        <ul>
+            <li>The Summary view lists the resources that are aggregated by the compound object that is currently loaded in the editor</li>
+            <li>The Slideshow view displays a slide for each resource showing a preview of the resource and a summary of properties attached to that resource. Selecting the play button will start the slideshow, which will automatically loop through the slides, displaying each for a few seconds. When the slideshow is paused, you can use the forward and back buttons to navigate between slides.</li>
+            <li>The Explore view allows you to navigate visually through the relationships between resources and compound objects from the repository. 
+            <ul>
+                <li>The red square indicates where you started exploring, and orange circles represent compound objects.</li>
+                <li>By default, the view starts from the currently loaded compound object, displaying connections to each of the resources that it aggregates. Clicking on any of the nodes in the visualisation will cause the visualisation to be re-centered around that node and relationships between that node and other compound objects or resources to be added to the visualisation. Right-clicking any node within the compound object editor gives you the option to reset the visualisation starting with that resource. You can also reset the view back to the default by selecting the 'Reset visualisation' link at the bottom-left.</li>
+                <li>The nodes that you have visited while exploring are shown along the top of the view, with the most recent appearing at the left. You can open resources that you have visited in the browser by clicking on <img src="chrome://lore/skin/icons/page_go.png" alt="Show in browser" title="Show in browser">, displayed to the left of each node title.</li>        
+            </ul>
+            </li>
+        </ul>
+        <p>Additional specialised views may be enabled in your copy of LORE: These can be selected from the context menu which is displayed when you right-click any of the existing view tabs.</p>
+         
 		
 		<p style='clear:both;font-size:smaller; border-top: 1px solid #dce0e1;padding-top:0.5em'>For more information about LORE, please see the 
 		<a target='_blank' href='http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/'>Aus-e-Lit</a> project page</p>
