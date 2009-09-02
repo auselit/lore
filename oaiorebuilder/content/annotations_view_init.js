@@ -13,36 +13,75 @@
 		    lines : false,
 		    borderWidth : Ext.isBorderBox ? 0 : 2, // the combined left/right border for each cell
 		    cls : 'x-column-tree',
-		
+			expandBefore: true,
+			scrollOffset:19,
+			
 		    onRender : function(){
 		        lore.ui.anno.LOREColumnTree.superclass.onRender.apply(this, arguments);
 				this.headers = this.header.createChild({cls:'x-tree-headers'});
 				
 		        var cols = this.columns, c;
 				var totalWidth = 0;
-		        var scrollOffset = 19; // similar to Ext.grid.GridView default
+		        
 		        
 				//// prevent floats from wrapping when clipped
 		        for(var i = 0, len = cols.length; i < len; i++){
 		             c = cols[i];
 		             totalWidth += c.width;
+					 
 		             this.headers.createChild({
 		                 cls:'x-tree-hd ' + (c.cls?c.cls+'-hd':''),
 		                 cn: {
 		                     cls:'x-tree-hd-text',
 		                     html: c.header
 		                 },
-		                 style:'width:'+(c.width-this.borderWidth)+'px;'
+		                 style:'width:'+(c.width-this.borderWidth) +'px;'
 		             });
+					 
 		        }
 		        this.headers.createChild({cls:'x-clear'});
-				//this.headers.setWidth(totalWidth+scrollOffset);
-		        //this.innerCt.setWidth(totalWidth);
-		        //TODO: Fix widths
-		        this.headers.setWidth(this.width+scrollOffset);
-		        this.innerCt.setWidth(this.width);
-		        
-		    }
+				
+				
+				this.headers.setWidth(totalWidth+ this.borderWidth);
+		        this.innerCt.setWidth(totalWidth);
+				this.headers.totalWidth = totalWidth;
+		    },
+			
+			onResize : function(cmp, bWidth, bHeight, width, height) {
+				var newwidth = this.getWidth();
+				lore.ui.anno.LOREColumnTree.superclass.onResize.apply(this, arguments);
+
+				var cols = this.columns;
+				var index = this.expandBefore ? 0: cols.length-1;
+				var c = cols[index];
+				var totalWidth = this.headers.totalWidth ;
+				c.width = c.width + ( newwidth - totalWidth);
+				this.headers.dom.childNodes[index].style.width = c.width;
+				this.headers.totalWidth = totalWidth = newwidth;
+			
+					this.headers.setWidth(totalWidth + this.borderWidth);
+					this.innerCt.setWidth(totalWidth);
+					
+				try {		
+						var f = function (node) {
+							if (node.isExpanded()) {
+								var n = node.childNodes;
+								for (var i = 0; i < n.length; i++) {
+									n[i].ui.refresh(n[i]);
+									f(n[i]);
+								}
+							}
+						}
+						 
+						f(this.getRootNode());
+						
+						
+					
+				} catch(e){
+					lore.debug.anno(e,e);
+				}
+				
+			}
 		});
 
 		lore.ui.anno.LOREColumnTreeNode = function(attributes){
@@ -52,6 +91,7 @@
 			this.bfooter = attributes.bfooter || '';
 			this.links = attributes.links || [];
 			this.nodeType = attributes.nodeType;
+			
 			lore.ui.anno.LOREColumnTreeNode.superclass.constructor.call(this, attributes);
 		}
     
@@ -108,6 +148,15 @@
        			 }
 			},
 			
+			refresh: function (n) {
+				var t = n.getOwnerTree();
+				var cols = t.columns;
+				for (var i =0; i < cols.length; i++ ){
+					this.columnNodes[i].style.width = cols[i].width - t.borderWidth - ( i == (cols.length-1)? t.scrollOffset: 0);
+				}
+				this.bodyNode.style.width= cols[0].width- t.borderWidth -(32 + n.getDepth() * 16);
+			},
+			
 			renderElements: function(n, a, targetNode, bulkRender){
 				// add some indent caching, this helps performance when rendering a large tree
 				this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
@@ -116,6 +165,7 @@
 				var cols = t.columns;
 				var bw = t.borderWidth;
 				var c = cols[0];
+				
 				
 				var cb = typeof a.checked == 'boolean';
 				
@@ -132,17 +182,17 @@
 				 '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />', 
 				 '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon', (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), 
 				 '" unselectable="on" />', 
-				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div>',  n.title, '</div>', (n.bheader ? '<div class="x-tree-node-bheader">' + n.bheader + '</div>':'<span></span>'),
-				'<div style="width:100%" class="x-tree-col-text">', n.text, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
+				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div class="x-tree-col-div-general">',  n.title, '</div>', (n.bheader ? '<div class="x-tree-node-bheader x-tree-col-div-general">' + n.bheader + '</div>':'<span></span>'),
+				'<div class="x-tree-col-text x-tree-col-div-general">', n.text, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter x-tree-col-div-general">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
 				
 				 for(var i = 1, len = cols.length; i < len; i++){
              		c = cols[i];
 
-            		 buf.push('<div class="x-tree-col ',(c.cls?c.cls:''),'" style="width:',c.width-bw,'px;">',
+            		 buf.push('<div class="x-tree-col ',(c.cls?c.cls:''),'" style="width:',c.width-bw- t.scrollOffset,'px;">',
                        // '<div class="x-tree-col-text">','blah'(c.renderer ? c.renderer(a[c.dataIndex], n, a) : a[c.dataIndex]),"</div>",
-					    '<div class="x-tree-col-text">',linksBuf,"</div>",
-                      "</div>");
-         			}
+					    ( (n.columns && n.columns[i]) ? '<div class="x-tree-col-text">' + n.columns.text + '</div>':''), 
+					    (c.links ? '<div class="x-tree-col-text">' + linksBuf + "</div>":''),"</div>");
+         		}
 				  buf.push(
             	'<div class="x-clear"></div></div>',
             	'<ul class="x-tree-node-ct" style="display:none;"></ul>',
@@ -158,10 +208,12 @@
 				
 				this.elNode = this.wrap.childNodes[0];
 				this.ctNode = this.wrap.childNodes[1];
+				this.columnNodes = this.elNode.childNodes;
 				var cs = this.elNode.firstChild.childNodes;
 				this.indentNode = cs[0];
 				this.ecNode = cs[1];
 				this.iconNode = cs[2];
+				this.bodyNode = cs[3];
 				this.titleNode = cs[3].firstChild;
 				this.bHeaderNode = this.titleNode.nextSibling;
 				this.anchor = this.textNode = this.bHeaderNode.nextSibling;
@@ -515,7 +567,8 @@ loreuiannotreeandeditor = function (model) {
 						width: 280
 					}, {
 						header: "Views",
-						width: 66
+						width: 80,
+						links:true
 					}],
 					header: true,
 					rootVisible: false,
