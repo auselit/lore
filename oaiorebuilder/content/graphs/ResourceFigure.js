@@ -339,13 +339,26 @@ lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon=function(){
 		this.top_right.style.background="url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right";
 	}
 }
-/*lore.ore.graph.ResourceFigure.prototype.getContextMenu=function()
+lore.ore.graph.ResourceFigure.prototype.getContextMenu=function()
 {
-  var menu =new draw2d.Menu();
+  var menu = new draw2d.Menu();
   var oThis = this;
 
-  menu.appendMenuItem(new draw2d.MenuItem("Add rdf:type", null,function(){}));
-  menu.appendMenuItem(new draw2d.MenuItem("Add ore:isAggregatedBy", null,function(){}));
-
+  var thisfig = this;
+  if (!this.metadataproperties["dc:format"].contains("application/rdf+xml")){
+    menu.appendMenuItem(new draw2d.MenuItem("Open resource in separate window", null, function(){
+      lore.util.launchWindow(thisfig.url, true);  
+    }));
+  }
+  if (lore.ui.exploretab){
+    menu.appendMenuItem(new draw2d.MenuItem("Show in explore view", null, function(){
+        lore.ui.loreviews.activate("remexploreview");
+        if (thisfig.url){
+            lore.ore.exploreLoaded = thisfig.url;
+            lore.ore.explore.showInExploreView(thisfig.url,
+            thisfig.metadataproperties["dc:title"]);
+        }
+    }));
+  }
   return menu;
-}*/
+}
