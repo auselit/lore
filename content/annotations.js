@@ -300,6 +300,8 @@
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading tree
 		anno.commit(lore.anno.isNewAnnotation(anno));
+		lore.debug.anno("anno: " + anno, anno);
+		return;
 		
 		var annoRDF = lore.anno.createAnnotationRDF(anno.data);
 		var xhr = new XMLHttpRequest();
