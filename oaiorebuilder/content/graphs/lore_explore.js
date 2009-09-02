@@ -8,6 +8,14 @@ lore.ore.explore.showInExploreView = function (id, title){
     lore.ore.explore.loadRem(id, title, function(json){
         lore.ore.explore.rg.loadJSON(json);
         lore.ore.explore.rg.refresh();
+        var existhistory = Ext.get('history').dom.innerHTML;
+        // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
+        var action = "lore.util.launchTab(\"" + id + "\");";
+        var nodelink = "<a title='Show in browser' href='#' onclick='" + action 
+        + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'>" 
+        + "</a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
+        + id + "');\">" + title + "</a>";
+        Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
     });
     
 }
@@ -80,6 +88,8 @@ lore.ore.explore.init = function() {
         'height':h
     });
   } else {
+        // clear history
+        Ext.get('history').update("");
         // clear the canvas to reuse it
         for(var id in lore.ore.explore.rg.fx.labels){
                lore.ore.explore.rg.fx.disposeLabel(id);
