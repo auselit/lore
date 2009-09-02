@@ -312,14 +312,18 @@
 	color:#000;
 }
 .x-tree-col {
-	/*overflow:hidden;*/
+	
     float:left;
     padding:0 1px;
     zoom:1;
 	whitespace:normal;
 }
 
-.x-tree-col-text, .x-tree-hd-text {
+.x-tree-col-div-general {
+	white-space: normal;
+	width: 100%;
+}
+.x-tree-col-text {
     color:#888888;
    
 /* overflow:hidden; 
@@ -329,11 +333,24 @@
 	*/
 	
     padding:3px 3px 3px 5px;
-    white-space: normal;
+    
 	
     font:normal 11px arial, tahoma, helvetica, sans-serif;
 }
 
+.x-tree-hd-text {
+    color:#888888;
+   
+   overflow:hidden; 
+   -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	
+    padding:3px 3px 3px 5px;
+    white-space: normal;
+	
+    font:normal 11px arial, tahoma, helvetica, sans-serif;
+}
 /*
  * Any images displayed in the column text are shrunk to thumbnail size
  */
