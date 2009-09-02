@@ -2,11 +2,16 @@
 LORE makes use of the following libraries:
 
 Silk icons : Creative Commons Attribution 2.5 license : http://www.famfamfam.com/lab/icons/silk/
-Ext JS 2.2 : GPL 3.0 : http://extjs.com/
-DDTabPanel (drag and drop tabs) : GPL 3.0 : http://extjs-ux.org/docs/index.html?class=Ext.ux.panel.DDTabPanel
+Ext JS 3.0.0 : GPL 3.0 : http://extjs.com/
+
 Draw2d: http://draw2d.org/
 (mootools, moocanvas and wz_jsgraphics are used by draw2d)
+
 parser.js: http://www.jibbering.com/rdf-parser/
+uuid :
+wz_tooltip : hover tooltips
+jit: http://thejit.org/
+rdfquery (replacing parser.js): http://code.google.com/p/rdfquery/
 
 From DIAS-B project:
 Modified version of nsXPointerServer : MPL 1.1/GPL 2.0/LGPL 2.1 
