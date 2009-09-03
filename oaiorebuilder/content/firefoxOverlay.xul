@@ -104,7 +104,7 @@
    <xul:menupopup id="menu_ToolsPopup">
     <xul:menuitem oncommand="loreoverlay.onToolbarMenuCommand()"
        autoCheck="false" type="checkbox" insertbefore="menu_preferences"
-       label="&loreToolbar.label;" id="lore-tools-item"/>
+       accesskey="L" label="&loreToolbar.label;" id="lore-tools-item"/>
     <xul:menuseparator id="lore-tools-sep1" insertbefore="menu_preferences" />
   </xul:menupopup>
   <xul:statusbar id="status-bar">
