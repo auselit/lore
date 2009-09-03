@@ -138,6 +138,12 @@ if(this.inputPort!=null){
 	this.inputPort.setPosition(-5,this.height/2);
 }
 
+if(this.inputPort2!=null){
+    this.inputPort2.setPosition(this.width/2,-5);
+}
+if(this.outputPort2!=null){
+    this.outputPort2.setPosition(this.width/2,this.height+5);
+}
 };
 lore.ore.graph.ResourceFigure.prototype.setTitle=function(title){
 	this.header.innerHTML=title;
@@ -281,19 +287,35 @@ lore.ore.graph.ResourceFigure.prototype.setWorkflow=function(_4679){
 	if(_4679!=null&&this.inputPort==null){
 		var orange = new draw2d.Color(255,204,51);
 		var grey = new draw2d.Color(174,174,174);
-		this.inputPort=new lore.ore.graph.InputPort();
+		this.inputPort=new lore.ore.graph.Port();
 		this.inputPort.setWorkflow(_4679);
 		this.inputPort.setName("input");
 		this.inputPort.setBackgroundColor(orange);
 		this.inputPort.setColor(grey);
 		this.addPort(this.inputPort,-5,this.height/2);
-		this.outputPort=new lore.ore.graph.OutputPort();
-		this.outputPort.setMaxFanOut(5);
+        
+        this.inputPort2=new lore.ore.graph.Port();
+        this.inputPort2.setWorkflow(_4679);
+        this.inputPort2.setName("input2");
+        this.inputPort2.setBackgroundColor(orange);
+        this.inputPort2.setColor(grey);
+        this.addPort(this.inputPort2,this.width/2,-5)
+        
+		this.outputPort=new lore.ore.graph.Port();
 		this.outputPort.setWorkflow(_4679);
 		this.outputPort.setName("output");
 		this.outputPort.setBackgroundColor(orange);
 		this.outputPort.setColor(grey);
-		this.addPort(this.outputPort,this.width+5,this.height/2);}
+		this.addPort(this.outputPort,this.width+5,this.height/2);
+        
+        this.outputPort2=new lore.ore.graph.Port();
+        this.outputPort2.setWorkflow(_4679);
+        this.outputPort2.setName("output2");
+        this.outputPort2.setBackgroundColor(orange);
+        this.outputPort2.setColor(grey);
+        this.addPort(this.outputPort2,this.width/2,this.height+5);
+        
+    }
 };
 
 lore.ore.graph.ResourceFigure.prototype.toggle=function(){
