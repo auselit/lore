@@ -147,7 +147,7 @@ lore.ore.showSlideshow = function (){
  */
 lore.ore.showExploreUI = function(){
     try{
-    if (lore.ore.exploreLoaded != lore.ore.currentREM) {
+    if (lore.ore.exploreLoaded !== lore.ore.currentREM) {
         lore.debug.ore("show in explore view", lore.ore.currentREM);
         lore.ore.exploreLoaded = lore.ore.currentREM;
         lore.ore.explore.showInExploreView(lore.ore.currentREM, lore.ui.grid.getSource()["dc:title"]);
