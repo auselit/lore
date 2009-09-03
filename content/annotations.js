@@ -304,6 +304,8 @@
 		//return;
 		
 		var annoRDF = lore.anno.createAnnotationRDF(anno.data);
+		lore.debug.anno("rdf: " + annoRDF, annoRDF);
+		
 		var xhr = new XMLHttpRequest();
 		if ( lore.anno.isNewAnnotation(anno)) {
 			lore.debug.anno("creating new annotation")
@@ -323,7 +325,7 @@
 			};
 			xhr.send(annoRDF);
 			lore.debug.anno("RDF of new annotation", annoRDF);
-			//lore.anno.annods.remove(anno);
+			lore.anno.annods.remove(anno);
 		}
 		else {
 			// Update the annotation on the server via HTTP PUT
@@ -686,13 +688,13 @@
 	 */
 	lore.anno.updateAnnotationsSourceList = function(theURL){
 	
-		var ds = lore.store.get(lore.anno.ANNOTATIONS_STORE, theURL);
-		if (ds) {
+		//var ds = lore.store.get(lore.anno.ANNOTATIONS_STORE, theURL);
+		//if (ds) {
 			// TODO:
 			// update so that triggers events lsiterenes to update the view to the
 			// model ( change models of the views to this??)
 			
-		}
+	//	}
 		
 		
 		// Get annotations for theURL
@@ -730,10 +732,19 @@
 		if (xmldoc) {
 			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.RDF_SYNTAX_NS, "Description");
 		}
+		
+		lore.anno.annods.each(function(rec) {
+				if ( !lore.anno.isNewAnnotation(rec)) {
+					lore.anno.annods.remove(rec);
+				}
+			});
+			
 		if (resultNodes.length > 0) {
 			var annotations = lore.anno.orderByDate(resultNodes);
 			//lore.anno.annods.suspendEvents(false);
-			lore.anno.annods.loadData(annotations);//, true);
+			
+			
+			lore.anno.annods.loadData(annotations, true);
 			
 			var annogriddata = [];
 			for (var i = 0; i < annotations.length; i++) {
@@ -755,8 +766,6 @@
 			//lore.anno.annods.resumeEvents();
 			//lore.anno.annods.fireEvent('load', lore.anno.annods, lore.anno.annods.getRange(), {});
 			
-		} else {
-			lore.anno.annods.removeAll();
 		}
 	}
 	

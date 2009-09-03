@@ -97,24 +97,25 @@
     
 		Ext.extend(lore.ui.anno.LOREColumnTreeNode, Ext.tree.TreeNode, {
 			
-			setText: function(title,bh,bf,text) {
+			setText: function(_title,bh,bf,_text) {
 				var oldText = this.text;
 				var oldTitle = this.title;
 				var oldBh = this.bheader;
 				var oldBf = this.bfooter;
-		        this.title = title;
+		        this.title = _title;
+				this.text = _text;
 				this.bheader = bh;
 				this.bfooter = bf;
-				this.attributes.title = title;
+				this.attributes.title = _title;
 				this.attributes.bheader = bh;
 				this.attributes.bfooter = bf;
-				this.attributes.text = text;
+				this.attributes.text = _text;
         		
 				if(this.rendered){ // event without subscribing
-            		this.ui.onTextChange(this, { title:title,
+            		this.ui.onTextChange(this, { title:_title,
 												 bheader:bh,
 												 bfooter:bf,
-												 text:text,
+												 text:_text,
 												 oldTitle: oldTitle,
 												 oldBHeader: bh,
 												 oldBFooter: bf,
@@ -122,10 +123,10 @@
 												 
 												 
         		}
-        		this.fireEvent('textchange', this,  { title:title,
+        		this.fireEvent('textchange', this,  { title:_title,
 												 bheader:bh,
 												 bfooter:bf,
-												 text:text,
+												 text:_text,
 												 oldTitle: oldTitle,
 												 oldBHeader: bh,
 												 oldBFooter: bf,
@@ -140,11 +141,12 @@
 			// private
 			
 			focus: Ext.emptyFn,
-			onTextChange: function( txtfields) {
+			onTextChange: function( txtfield) {
 				 if(this.rendered){
-           			 this.textNode.innerHTML = txtfields.text;
-					 this.titleNode.innerHTML = txtfields.title;
-					 this.bHeaderNode.innerHTML = txtfields.bheader;
+           			 this.textNode.innerHTML = txtfield.text;
+					 this.titleNode.innerHTML = txtfield.title;
+					 if ( txtfield.bheader) this.bHeaderNode.innerHTML = txtfield.bheader;
+					 if ( txtfield.bfooter) this.bFooterNode.innerHTML = txtfield.bfooter;
        			 }
 			},
 			
