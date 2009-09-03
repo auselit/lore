@@ -3,6 +3,7 @@
  */
 lore.ore.graph.Port = function(uirep) {
     draw2d.Port.call(this,uirep);
+    this.setCoronaWidth(35);
 };
 lore.ore.graph.Port.prototype = new draw2d.Port;
 lore.ore.graph.Port.prototype.type = "lore.ore.graph.Port";
