@@ -78,25 +78,28 @@ lore.ore.explore.loadRem = function(id, title, f){
  * Initialises the explore view
  */
 lore.ore.explore.init = function() {
+  
+  if (lore.ore.explore.canvas){
+    // clear history
+    Ext.get('history').update("");
+    // clear the labels and canvas
+    for(var id in lore.ore.explore.rg.fx.labels){
+           lore.ore.explore.rg.fx.disposeLabel(id);
+           delete lore.ore.explore.rg.fx.labels[id];
+    } 
+    lore.ore.explore.canvas.clear();
+    delete lore.ore.explore.canvas;
+  }
   var infovis = document.getElementById('infovis');
+  infovis.innerHTML = "";
   var w = infovis.offsetWidth, h = infovis.offsetHeight;
-  if (!lore.ore.explore.canvas){
-    // create a new canvas
-    lore.ore.explore.canvas = new Canvas('explorecanvas', {
+  // create a new canvas
+  lore.ore.explore.canvas = new Canvas('explorecanvas', {
         'injectInto':'infovis',
         'width': w,
         'height':h
-    });
-  } else {
-        // clear history
-        Ext.get('history').update("");
-        // clear the canvas to reuse it
-        for(var id in lore.ore.explore.rg.fx.labels){
-               lore.ore.explore.rg.fx.disposeLabel(id);
-               delete lore.ore.explore.rg.fx.labels[id];
-        } 
-        lore.ore.explore.canvas.clear();
-  }
+  });
+  
   lore.ore.explore.rg= new RGraph(lore.ore.explore.canvas,  {
     Node: {
        overridable: true,
