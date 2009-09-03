@@ -1127,29 +1127,34 @@ lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
     // update the metadataproperties recorded in the figure for that node
     lore.ore.graph.modified = true;
     var theval;
+    lore.debug.ore("handle property change " + recid + " " + newval + " " + oldval,source);
     if (recid == 'Resource') {
         // the URL of the resource has changed
         if (newval && newval != '') {
             theval = newval;
         } else {
             theval = "about:blank";
-            if (lore.ore.graph.lookup[theval]) {
-                lore.ui
-                        .loreWarning("Cannot change resource URL: a node already exists for "
-                                + theval);
-                lore.ore.graph.selectedFigure.setContent("about:blank");
-            } else {
-                lore.ore.graph.lookup[theval] = lore.ore.graph.selectedFigure
-                        .getId();
-            }
+        }
+        if (lore.ore.graph.lookup[theval]) {
+            lore.ui.loreWarning("Cannot change resource URL: a node already exists for " + theval);
+            lore.ore.graph.selectedFigure.setContent("about:blank");
+        } else {
+            lore.ore.graph.lookup[theval] = lore.ore.graph.selectedFigure.getId();
         }
         delete lore.ore.graph.lookup[oldval];
-    }
-    if (recid == 'dc:title') {
+    } else if (recid == 'dc:title') {
         // update figure title
         lore.ore.graph.selectedFigure.setTitle(newval);
+    } else if (recid == 'relationship'){
+        try{
+        lore.ore.graph.selectedFigure.setRelationshipType(source["namespace"],newval);
+        } catch (e){
+            lore.debug.ore("updating rel",e);
+        }
     }
-    lore.ore.graph.selectedFigure.updateMetadata(source);
+    else {
+        lore.ore.graph.selectedFigure.updateMetadata(source);
+    }
 }
 lore.ore.graph.dummyBatchDialog = function(){
     // dummy dialog for OR09 challenge
