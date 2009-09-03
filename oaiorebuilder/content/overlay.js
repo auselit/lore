@@ -102,24 +102,24 @@ try {
 			if (gContextMenu.hasBGImage) 
 				window.graphiframe.lore.ore.graph.addFigure(gContextMenu.bgImageURL);
 		},
-		onToolbarButtonCommand: function(e){
+		onToolbarMenuCommand: function(e){
 			this.toggleBar();
 		},
 		toggleBar: function(){
 		try {
-			var toolsMenuItem = document.getElementById('lore-tools-item');
-			
-			if (!toolsMenuItem.getAttribute("checked") ) {
-				toolsMenuItem.setAttribute("checked", "true");
-				this.setAnnotationsVisibility(true);
-				this.setCompoundObjectsVisibility(true);
-				
-			}
-			else {
-				toolsMenuItem.removeAttribute("checked");
-				this.setAnnotationsVisibility(false);
-				this.setCompoundObjectsVisibility(false);
-			}
+            var toolsMenuItem = document.getElementById('lore-tools-item');
+            var annoContentBox = document.getElementById('oobAnnoContentBox');
+            var contentBox = document.getElementById('oobContentBox');
+            
+            if (annoContentBox.getAttribute("collapsed") == "false" || contentBox.getAttribute("collapsed") == "false"){
+               toolsMenuItem.removeAttribute("checked");
+                this.setAnnotationsVisibility(false);
+                this.setCompoundObjectsVisibility(false); 
+            } else {
+               toolsMenuItem.setAttribute("checked", "true");
+               this.setAnnotationsVisibility(true);
+               this.setCompoundObjectsVisibility(true); 
+            }
 		} catch (e ) {
 			alert(e);
 		}
