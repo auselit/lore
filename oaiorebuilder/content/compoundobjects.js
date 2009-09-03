@@ -349,23 +349,23 @@ lore.ore.createRDF = function(escape) {
                     + "layout:scrolly>" + nlsymb;
         }
         resourcerdf += ltsymb + rdfdescclose + nlsymb;
-
-        var outgoingconnections = fig.getPorts().get(1).getConnections();
-        for (var j = 0; j < outgoingconnections.getSize(); j++) {
-            var theconnector = outgoingconnections.get(j);
-            var relpred = theconnector.edgetype;
-            var relns = theconnector.edgens;
-            var relobj = theconnector.targetPort.parentNode.url.escapeHTML();
-            resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
-                    + relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
-                    + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
-            // caused problems
-            // var relobj =
-            // theconnector.targetPort.parentNode.url.replace('<','%3C').replace('>','%3E').escapeHTML();
-            // resourcerdf += ltsymb + rdfdescabout +
-            // figurl.replace('<','%3C').replace('>','%3E').escapeHTML() +
-            // closetag + ltsymb
-        }
+        
+        // iterate over all ports' connections and serialize if this fig is the source of the connection
+        var ports = fig.getPorts();
+        for (var p = 0; p < ports.getSize(); p++){
+            var outgoingconnections = ports.get(p).getConnections();
+            for (var j = 0; j < outgoingconnections.getSize(); j++) {
+	            var theconnector = outgoingconnections.get(j);
+                if (figurl == theconnector.sourcePort.parentNode.url.escapeHTML()){
+	               var relpred = theconnector.edgetype;
+	               var relns = theconnector.edgens;
+	               var relobj = theconnector.targetPort.parentNode.url.escapeHTML();
+	               resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
+	                    + relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
+	                    + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
+                }
+	        }
+        }    
     }
     rdfxml += ltsymb + rdfdescclose + nlsymb;
     rdfxml += resourcerdf;
