@@ -30,6 +30,10 @@ lore.ui.setdccreator = function(creator) {
 	lore.ui.grid.setSource(remprops);
 	lore.defaultCreator = creator;
 }
+
+lore.ui.anno.setdccreator = function(creator) {
+	lore.defaultCreator = creator;
+}
 /**
  * Set the global variables for the repository access URLs
  * 

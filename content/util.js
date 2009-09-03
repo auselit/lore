@@ -328,13 +328,15 @@ lore.util.getNodeForXPath = function(xp) {
  * modified from dannotate.js
  * @return XPath/XPointer statement for selected text, or '' if no selection.
  */
+
 lore.util.getXPathForSelection = function()
 {
   var mainwindow = lore.util.getContentWindow();
   var xp = '';
   try {
     var seln = mainwindow.getSelection();
-    if (seln) {
+	
+    if (seln && seln!='') {
       var select = seln.getRangeAt(0);
       xp = lore.m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
     }
