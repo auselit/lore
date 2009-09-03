@@ -698,6 +698,9 @@ lore.ui.anno.initExtComponents = function(){
 			
 	    Ext.QuickTips.interceptTitles = true;
 	    Ext.QuickTips.init();
+        Ext.apply(Ext.QuickTips.getQuickTip(),{
+            dismissDelay: 0
+        });
 		
 	} catch (e ) {
 		lore.debug.ui("Errors during initExtComponents: " + e, e);
