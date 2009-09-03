@@ -45,6 +45,12 @@
 			
 		}
 		
+		lore.ui.anno.setCurrentAnno = function (rec) {
+			lore.ui.anno.hideMarker();
+			lore.ui.anno.curSelAnno = rec;	
+		}
+		
+		
 		lore.ui.anno.genAnnotationCaption = function(anno, formatStr){
 			var buf = '';
 			
@@ -455,6 +461,18 @@
 			}
 		}
 		
+		lore.ui.anno.updateAnnoFromRecord = function(rec){
+		/*	if (!rec.data.isReply) {
+				var resField = lore.ui.annotationsform.findField('res');
+				if (resField.getValue() != rec.data.resource) {
+					rec.data.resource = resField.getValue();
+				}
+			}*/
+			
+			lore.ui.annotationsform.updateRecord(rec);
+			
+		}
+				
 		/** Tree UI Functions */
 
 		
@@ -673,18 +691,6 @@
 			}
 		}
 		
-		lore.ui.anno.highlightVariantAnnotation = function(rec){
-			
-			if (rec.data.variantcontext && parent.loreoverlay.variationContentWindowIsVisible()) {
-					try {
-						lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle, parent.loreoverlay.getVariationContentWindow()))
-					} 
-					catch (e) {
-						lore.debug.anno("Error highlighting variation context: " + e, e);
-					}
-		
-			}
-		}
 		
 		lore.ui.anno.updateHighlightFields = function(fields, colour){
 			if (fields) {
@@ -825,7 +831,8 @@
 				if (lore.ui.anno.curSelAnno &&
 					(lore.ui.annotationsform.isDirty() && 
 					lore.ui.annotationsform.findField('id').getValue() == lore.ui.anno.curSelAnno.data.id)) {
-						lore.ui.annotationsform.updateRecord(lore.ui.anno.curSelAnno);
+						lore.ui.anno.updateAnnoFromRecord(lore.ui.anno.curSelAnno);
+						//lore.ui.annotationsform.updateRecord(lore.ui.anno.curSelAnno);
 					
 				}
 							
@@ -877,7 +884,7 @@
 				}
 				
 				// update anno with properties from form
-				lore.ui.annotationsform.updateRecord(anno);
+				lore.ui.anno.updateAnnoFromRecord(anno);
 				lore.ui.annotationsform.reset(); // clear dirty flag
 				lore.anno.updateAnnotation(anno, function(action, result, resultMsg){
 				
@@ -935,8 +942,7 @@
 				});
 				
 				lore.ui.anno.hideAnnotation();
-				lore.ui.anno.hideMarker();
-				lore.ui.anno.curSelAnno = null;
+				lore.ui.anno.setCurrentAnno(null);
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception when deleting annotation", ex);
@@ -953,6 +959,7 @@
 				theField.setValue(currentCtxt);
 				theField = lore.ui.annotationsform.findField('res');
 				theField.setValue(lore.ui.currentURL);
+				rec.data.resource = lore.ui.currentURL;
 				theField = lore.ui.annotationsform.findField('original');
 				theField.setValue(lore.ui.currentURL);
 				theField = lore.ui.annotationsform.findField('contextdisp');
@@ -1005,15 +1012,29 @@
 			} else if ( typeof(rec) == 'string') {
 				rec = lore.util.findRecordById(lore.anno.annods, rec);
 			}
+			try {
 			
-			if (rec.data.variantcontext) {
-				// show splitter
-				parent.loreoverlay.showVariationSplitter(rec.data.variant,
-				function(){
-						lore.ui.anno.highlightVariantAnnotation(rec);
+				if (rec.data.variantcontext) {
+					// show splitter
+					var ctx = null;
+					var title = '';
+					if (rec.data.original == lore.ui.currentURL) {
+						ctx = rec.data.variant;
+						title = "Variation Resource";
+					}
+					else {
+						ctx = rec.data.original;
+						title = "Original Resource";
+					}
 					
-				} );
-				
+					parent.loreoverlay.updateVariationSplitter(ctx, title, true, function(){
+						lore.ui.anno.hideMarker();
+						lore.ui.anno.highlightCurrentAnnotation(rec);
+					});
+					
+				}
+			} catch (e ) {
+				lore.debug.anno(e, e);
 			}
 		}
 	
@@ -1043,10 +1064,9 @@
 					// for the newly created annotation
 					if (lore.ui.anno.curSelAnno &&
 						((lore.ui.annotationsform.isDirty()||
-				lore.anno.isNewAnnotation(lore.ui.anno.curSelAnno)) && 
-						lore.ui.annotationsform.findField('id').getValue() == lore.ui.anno.curSelAnno.data.id)) {
-							lore.ui.annotationsform.updateRecord(lore.ui.anno.curSelAnno);
-						
+							lore.anno.isNewAnnotation(lore.ui.anno.curSelAnno)) && 
+							lore.ui.annotationsform.findField('id').getValue() == lore.ui.anno.curSelAnno.data.id)) {
+							lore.ui.anno.updateAnnoFromRecord(lore.ui.anno.curSelAnno);
 					}
 					
 					if (!lore.ui.annotationsformpanel.isVisible()) {
@@ -1056,28 +1076,23 @@
 					lore.ui.anno.showAnnotation(rec);
 				
 					node.ensureVisible();
-					lore.ui.anno.curSelAnno = rec;
+					lore.ui.anno.setCurrentAnno(rec);
+					
 					node.select();
 				}
 				else {
 				
-					// bulk load
-					var tree = lore.ui.annotationstreeroot.getOwnerTree();
-					lore.ui.annotationstreeroot = new Ext.tree.TreeNode({});
-					tree.setRootNode(lore.ui.annotationstreeroot);
-					
-					lore.ui.anno.annoEventSource.clear();
-					
-					lore.anno.annods.each(function(rec){
+					for (var i = 0; i < records.length; i++) {
+						var rec = records[i];
 						var anno = rec.data;
 						try {
 							lore.ui.anno.createAndInsertTreeNode(anno);
-													
+							
 						} 
 						catch (e) {
 							lore.debug.anno("error loading: " + rec.id, e);
 						}
-					});
+					}
 					
 					lore.ui.anno.scheduleTimelineLayout();
 				}
@@ -1099,7 +1114,6 @@
 		
 		lore.ui.anno.updateUIOnRemove = function(store, rec, index){
 			try {
-				lore.debug.anno("id: " + rec.data.id);
 				var node = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', rec.data.id);
 				if (!node) {
 					return;
@@ -1144,9 +1158,14 @@
 						node.getUI().removeClass("annochanged");
 				}
 				
-				node.setText(rec.data.title,
-								(lore.anno.isNewAnnotation(rec) ? '':(lore.ui.anno.genAnnotationCaption(rec.data, 'by c, d r'))),
-								'', lore.ui.anno.genTreeNodeText(rec.data));
+				var info = ' ';
+				if (!lore.anno.isNewAnnotation(rec)) {
+					info = lore.ui.anno.genAnnotationCaption(rec.data, 'by c, d r')
+				}
+				else if (lore.anno.isNewAnnotation(rec) && rec.data.resource != lore.ui.currentURL) {
+						info = "Unsaved annotation from " + rec.data.resource;
+				}
+				node.setText(rec.data.title, info,'', lore.ui.anno.genTreeNodeText(rec.data));
 				lore.ui.anno.updateAnnoInTimeline(rec.data);
 				lore.ui.anno.showAnnotation(rec, true);
 				
@@ -1160,15 +1179,55 @@
 		lore.ui.anno.highlightCurrentAnnotation = function(rec){
 		
 			lore.ui.anno.curAnnoMarkers = new Array();
-			if (rec.data.context && (rec.data.resource == lore.ui.currentURL)) {
-				try {
-					//lore.debug.anno("-->sigh");
-					lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle));
-				} 
-				catch (e) {
-					lore.debug.anno(e, e);
+			
+			// regular non variant case for highlighting
+			if (rec.data.context && !rec.data.variantcontext 
+					&& rec.data.resource == lore.ui.currentURL) {
+					try {
+						lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle));
+					} 
+					catch (e) {
+						lore.debug.anno(e, e);
+					}
+			} else 	if (rec.data.variantcontext) {
+			
+				if (rec.data.original && rec.data.original == lore.ui.currentURL) {
+					try {
+						lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle));
+					} 
+					catch (e) {
+						lore.debug.anno("Error highlighting variation context: " + e, e);
+					}
+					
+					if (parent.loreoverlay.variationContentWindowIsVisible()) {
+						try {
+							lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle, parent.loreoverlay.getVariationContentWindow()))
+						} 
+						catch (e) {
+							lore.debug.anno(e, e);
+						}
+						
+					}
+				}
+				if (rec.data.variant == lore.ui.currentURL) {
+					try {
+						lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle));
+					} 
+					catch (e) {
+						lore.debug.anno("Error highlighting variation context: " + e, e);
+					}
+					
+					if (rec.data.context && parent.loreoverlay.variationContentWindowIsVisible()) {
+						try {
+							lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle, parent.loreoverlay.getVariationContentWindow()))
+						} 
+						catch (e) {
+							lore.debug.anno("Error highlighting variation context: " + e, e);
+						}
+					}
 				}
 			}
+				
 		}
 		
 		lore.ui.anno.handleAnnotationSelection = function(node, event){
@@ -1182,26 +1241,29 @@
 			
 				
 				// update annotations grid from form if it's a new annotation
-				lore.ui.anno.hideMarker();
+				//lore.ui.anno.hideMarker();
 				
 				if (lore.ui.anno.curSelAnno &&
 				(lore.ui.annotationsform.isDirty() ||
 				lore.anno.isNewAnnotation(lore.ui.anno.curSelAnno))) {
-					lore.ui.annotationsform.updateRecord(lore.ui.anno.curSelAnno);
+					lore.ui.anno.updateAnnoFromRecord(lore.ui.anno.curSelAnno);
 				}
 				
 				if (rec == null) { // if they select root element, if it's shown 
-					lore.ui.anno.curSelAnno = null;
+					lore.ui.anno.setCurrentAnno(null);
 					return;
 				}
 				
-				lore.ui.anno.curSelAnno = rec; // TODO: eventually have a listener on this to abstract on which gui element was selected
+				lore.ui.anno.setCurrentAnno(rec);
+				//lore.ui.anno.curSelAnno = rec; // TODO: eventually have a listener on this to abstract on which gui element was selected
 				 
-				lore.ui.anno.highlightCurrentAnnotation(rec);
+				
 				
 				if ( parent.loreoverlay.variationContentWindowIsVisible() &&
 					 lore.ui.anno.curSelAnno.data.type== lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation") {
 					 lore.ui.anno.showSplitter();	
+				} else {
+					lore.ui.anno.highlightCurrentAnnotation(rec);
 				}
 				
 				lore.ui.annotationsformpanel.hide();
@@ -1225,7 +1287,7 @@
 				}
 				else if (typeof(arg) == 'string') {  // timeline
 					rec = lore.util.findRecordById(lore.anno.annods, arg);
-					if ( rec) lore.ui.anno.curSelAnno = rec;
+					if ( rec) lore.ui.anno.setCurrentAnno(rec);//lore.ui.anno.curSelAnno = rec;
 				}
 					
 				if (!rec) {
@@ -1291,6 +1353,21 @@
 		lore.ui.currentURL = contextURL;
 		lore.debug.anno("The uri is " + lore.ui.currentURL);
 		lore.debug.ui("Updating annotation source list");
+		
+		// tag any unsaved new annotations for the new page
+		lore.anno.annods.each(function (rec) {
+			if ( lore.anno.isNewAnnotation(rec)) {
+				var n = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', rec.data.id);
+				n.setText(rec.data.title, "Unsaved annotation from " + rec.data.resource, '',lore.ui.anno.genTreeNodeText(rec.data));
+			}
+		})
+		lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', lore.ui.anno.curSelAnno.data.id);
+		
+		if (!lore.anno.isNewAnnotation(lore.ui.anno.curSelAnno)) {
+			lore.ui.anno.hideAnnotation();
+		}
+		
 		lore.anno.updateAnnotationsSourceList(contextURL);
-		lore.ui.anno.hideAnnotation();
+		
+		lore.ui.anno.annoEventSource.clear();
 	}
