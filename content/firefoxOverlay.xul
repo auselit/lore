@@ -95,15 +95,15 @@
     <xul:menuitem id="addbgimg-lore" label="&loreContextBGImage.label;"
         oncommand="loreoverlay.addBGImageMenuItemCommand(event)"/>
   </xul:popup>
-  <xul:toolbarpalette id="BrowserToolbarPalette">
+  <!--xul:toolbarpalette id="BrowserToolbarPalette">
     <xul:toolbarbutton id="lore-toolbar-button"
       label="&loreToolbar.label;"
       tooltiptext="&loreToolbar.tooltip;"
       oncommand="loreoverlay.onToolbarButtonCommand()"/>
-  </xul:toolbarpalette>
+  </xul:toolbarpalette-->
    <xul:menupopup id="menu_ToolsPopup">
-    <xul:menuitem oncommand="loreoverlay.onToolbarButtonCommand()" 
-       type="checkbox" autoCheck="false" insertbefore="menu_preferences"
+    <xul:menuitem oncommand="loreoverlay.onToolbarMenuCommand()"
+       autoCheck="false" type="checkbox" insertbefore="menu_preferences"
        label="&loreToolbar.label;" id="lore-tools-item"/>
     <xul:menuseparator id="lore-tools-sep1" insertbefore="menu_preferences" />
   </xul:menupopup>
