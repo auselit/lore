@@ -19,10 +19,11 @@
  */
 
 	try {
+		lore.ui.anno.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
+		
 		lore.ui.anno.multiSelAnno = new Array();
 		lore.ui.anno.colourForOwner = new Array();
 		lore.ui.anno.colourCount = 0;
-		lore.ui.anno.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 		lore.ui.anno.curSelAnno;
 		lore.ui.anno.curAnnoMarkers = new Array();
 		
@@ -1350,24 +1351,51 @@
 	 * 
 	 */
 	lore.ui.anno.handleLocationChange = function(contextURL) {
-		lore.ui.currentURL = contextURL;
-		lore.debug.anno("The uri is " + lore.ui.currentURL);
-		lore.debug.ui("Updating annotation source list");
-		
-		// tag any unsaved new annotations for the new page
-		lore.anno.annods.each(function (rec) {
-			if ( lore.anno.isNewAnnotation(rec)) {
-				var n = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', rec.data.id);
-				n.setText(rec.data.title, "Unsaved annotation from " + rec.data.resource, '',lore.ui.anno.genTreeNodeText(rec.data));
+		try {
+			var oldurl = lore.ui.currentURL;
+			lore.ui.currentURL = contextURL;
+			lore.debug.anno("The uri is " + lore.ui.currentURL);
+			lore.debug.ui("Updating annotation source list");
+			
+			var ds = {
+				multiSelAnno: lore.ui.anno.multiSelAnno,
+				colourForOwner: lore.ui.anno.colourForOwner,
+				colourCount: lore.ui.anno.colourCount,
+				curSelAnno: lore.ui.anno.curSelAnno || null,
+				curAnnoMarkers: lore.ui.anno.curAnnoMarkers
+			};
+			
+			lore.store.set('highlighting', ds, oldurl);
+			
+			// tag any unsaved new annotations for the new page
+			lore.anno.annods.each(function(rec){
+				if (lore.anno.isNewAnnotation(rec)) {
+					var n = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', rec.data.id);
+					n.setText(rec.data.title, "Unsaved annotation from " + rec.data.resource, '', lore.ui.anno.genTreeNodeText(rec.data));
+				}
+			})
+			
+			if (lore.ui.anno.curSelAnno) {
+				if (!lore.anno.isNewAnnotation(lore.ui.anno.curSelAnno)) {
+					lore.ui.anno.hideAnnotation();
+				}
 			}
-		})
-		lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', lore.ui.anno.curSelAnno.data.id);
-		
-		if (!lore.anno.isNewAnnotation(lore.ui.anno.curSelAnno)) {
-			lore.ui.anno.hideAnnotation();
+			
+			
+			
+			var ds = lore.store.get('highlighting', contextURL);
+			if (ds) {
+				
+				lore.ui.anno.multiSelAnno = multiSelAnno;
+				lore.ui.anno.colourForOwner = colourForOwner;
+				lore.ui.anno.colourCount = colourCount
+				lore.ui.anno.curSelAnno = curSelAnno;
+				lore.ui.anno.curAnnoMarkers = curAnnoMarkers;
+			}
+		} catch (e ) {
+			lore.debug.anno(e,e);
 		}
 		
 		lore.anno.updateAnnotationsSourceList(contextURL);
-		
 		lore.ui.anno.annoEventSource.clear();
 	}
