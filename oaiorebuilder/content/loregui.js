@@ -75,7 +75,7 @@ lore.ui.gui_spec = {
 					autoWidth: true,
 					autoScroll:true
 				},{
-                        title: "Using LORE",
+                        title: "Using Compound Objects",
                         id: "welcome",
                         autoWidth: true,
                         autoScroll: true,
