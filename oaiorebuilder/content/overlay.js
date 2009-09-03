@@ -270,6 +270,7 @@ try {
 				var annoserver = this.prefs.getCharPref("annoserver");
 				var rdfrepos = this.prefs.getCharPref("rdfrepos");
 				var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
+				var dccreator = this.prefs.getCharPref("dccreator");
 				
 				var disable_anno = this.prefs.getBoolPref("disable_annotations");
 				document.getElementById('annsep').hidden = disable_anno;
@@ -282,6 +283,8 @@ try {
 				document.getElementById('reply-annotation').hidden = disable_anno;
 				document.getElementById('save-annotation').hidden = disable_anno;
 				document.getElementById('save-all-annotations').hidden = disable_anno;
+				
+				window.annographiframe.lore.ui.anno.setdccreator(dccreator);
 				window.annographiframe.lore.ui.setRepos(rdfrepos, rdfrepostype, annoserver);
 				window.annographiframe.lore.ui.anno.disableUIFeatures({
 					'disable_annotations': disable_anno
@@ -328,12 +331,14 @@ try {
 			return retVal;
 		},
 		
-		showVariationSplitter: function(url, callBack){
+		updateVariationSplitter: function(url,title,show, callBack){
 			try {
-				document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "false");
-				document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "false");
-				var labelValue = "Annotation Variation Resource: " + url;
+				if (show) {
+					document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "false");
+					document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "false");
+				}
 				
+				var labelValue = title + ': ' + url;
 				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", labelValue);
 				var iframe = document.getElementById("oobAnnoVarContent");
 				
