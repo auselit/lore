@@ -591,17 +591,17 @@
 		
 	lore.ui.anno.genDescription = function(annodata, noimglink){
 			var res = "";
-			
+			if (!noimglink) {
+                res += "<a title='Show annotation body in separate window' xmlns=\"" +
+                lore.constants.XHTML_NS +
+                "\" href=\"javascript:lore.util.launchWindow('" +
+                annodata.bodyURL +
+                "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
+            }
 			var body = lore.util.externalizeLinks(annodata.body || '');
 			res += body;
 			
-			if (!noimglink) {
-				res += "<a title='Show annotation body in separate window' xmlns=\"" +
-				lore.constants.XHTML_NS +
-				"\" href=\"javascript:lore.util.launchWindow('" +
-				annodata.bodyURL +
-				"',false);\" >View in Window</a>";
-			}
+			
 			return res;
 		}
 		
