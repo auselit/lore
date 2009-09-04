@@ -5,13 +5,17 @@
 <groupbox align="center" orient="horizontal">
 <vbox>
   <text value="LORE" style="font-weight: bold; font-size: x-large;"/>
-  <text value="&version; 0.25"/>
+  <text value="Literature Object Re-use and Exchange"/>
+  <!--text value="&version; 0.25"/-->
   <separator class="thin"/>
   <text value="&createdBy;" style="font-weight: bold;"/>
   <text value="UQ ITEE eResearch"/>
   <separator class="thin"/>
+  <text value="Aus-e-Lit Project:"/>
+  <text class="text-link" onclick="window.open('http://itee.uq.edu.au/~eresearch/projects/aus-e-lit')" value="http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/"/>
+  <separator class="thin"/>
   <text value="Credits" style="font-weight: bold;"/>
-  <text style='font-size:smaller' value="Icons from http://famfamfam.com/lab/icons/silk"/>
+  <text style='font-size:smaller' value="Icons used under a Creative Commons licence: http://famfamfam.com/lab/icons/silk"/>
 </vbox>
 </groupbox>
 </dialog>
