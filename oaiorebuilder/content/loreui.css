@@ -155,7 +155,10 @@
 	color:blue;
 	text-decoration:underline;
 }
-
+#loresidebar * .x-tree-node a:hover {
+    text-decoration:none;
+    color:black;
+}
 .orelink {
 	font-style:italic; 
 	color: #51666b; 
