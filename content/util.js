@@ -22,6 +22,28 @@
   * General utility functions for I/O, manipulating the DOM, selections etc
   */
  
+ 
+
+lore.util.clone = function(o) {
+    if(!o || 'object' !== typeof o) {
+        return o;
+    }
+    var c = '[object Array]' === Object.prototype.toString.call(o) ? [] : {};
+    var p, v;
+    for(p in o) {
+        if(o.hasOwnProperty(p)) {
+            v = o[p];
+            if(v && 'object' === typeof v) {
+                c[p] = Ext.ux.clone(v);
+            }
+            else {
+                c[p] = v;
+            }
+        }
+    }
+    return c;
+};
+ 
  /**
  * Display all keys, values for an object
  * @param {} obj to dump

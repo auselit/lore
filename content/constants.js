@@ -81,6 +81,7 @@ lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
         
 // Store constants
 lore.anno.ANNOTATIONS_STORE = "annotations";
+lore.ui.anno.HIGHLIGHT_STORE = "highlights";
 
 
 // Compound object editor graph view defaults
@@ -92,11 +93,6 @@ lore.ore.MAX_X        = 400;
 // Annotation query strings
 lore.anno.REPLY_TREE = "?w3c_reply_tree=";
 lore.anno.ANNOTATES = "?w3c_annotates=";
-
-// Variations view defaults
-lore.anno.FRAME_WIDTH_CLEARANCE      = 7;
-lore.anno.FRAME_HEIGHT_CLEARANCE     = 50;
-lore.anno.VARIATIONS_FRAME_LOAD_WAIT = 250;
 
 // Calais web service (text mining)
 lore.textm.OPENCALAIS_KEY   = "ab3yxw3ab4b2fyexwg44amns";
