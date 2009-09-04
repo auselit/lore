@@ -116,7 +116,7 @@ lore.ui.gui_spec = {
                 xtype: "treepanel",
                 title: "Compound Objects",
                 id: "sourcestree",
-                animate: true,
+                animate: false,
                 autoScroll: true,
                 fitToFrame: true,
                 rootVisible: false,
