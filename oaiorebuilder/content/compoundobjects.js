@@ -843,8 +843,37 @@ lore.ore.loadRelationshipsFromOntology = function() {
                 });
     }
 }
-
-
+/**
+ * Delete the compound object from the repository
+ */
+lore.ore.deleteFromRepository = function(){
+    var remid = lore.ui.grid.getSource()["rdf:about"];
+    var title = lore.ui.grid.getSource()["dc:title"];
+    Ext.Msg.show({
+        title : 'Remove Compound Object',
+        buttons : Ext.MessageBox.OKCANCEL,
+        msg : 'Are you sure you want to delete this compound object from the repository?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",
+        fn : function(btn, theurl) {
+            if (btn == 'ok') {
+                try {
+                    var xmlhttp = new XMLHttpRequest();
+                    xmlhttp.open("DELETE",
+                                  lore.ore.reposURL + "/statements?context=<"
+                                        + remid + ">", true);  
+                        xmlhttp.onreadystatechange= function(){
+                            if (xmlhttp.readyState == 4) {
+                                lore.ui.initGraphicalView();
+                                lore.ui.loreInfo("Compound object deleted");
+                            }
+                        };
+                        xmlhttp.send(null);
+                } catch (e){
+                    lore.debug.ore("deleting compound object",e);
+                }
+            }
+        }
+    });
+}
 /**
  * Save the resource map to the repository - prompt user to confirm
  */
@@ -859,32 +888,45 @@ lore.ore.saveRDFToRepository = function() {
             if (btn == 'ok') {
                 if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
                     var therdf = lore.ore.createRDF(false);
-
                     try {
                         var xmlhttp = new XMLHttpRequest();
-                        xmlhttp.open("PUT",
+                        xmlhttp.open("DELETE",
+                                  lore.ore.reposURL + "/statements?context=<"
+                                        + remid + ">", true);
+                        
+                        xmlhttp.onreadystatechange= function(){
+                            lore.debug.ore("ready state change from delete",xmlhttp);
+                            if (xmlhttp.readyState == 4) {
+                               var xmlhttp2 = new XMLHttpRequest();
+                               xmlhttp2.open("PUT",
                                 lore.ore.reposURL + "/statements?context=<"
                                         + remid + ">", true);
-                        xmlhttp.onreadystatechange = function() {
-                            if (xmlhttp.readyState == 4) {
-                                if (xmlhttp.status == 204) {
-                                    lore.ui.loreInfo(remid + " saved to "
-                                            + lore.ore.reposURL);
-                                } else {
-                                    lore.ui
-                                            .loreError('Unable to save to repository'
-                                                    + xmlhttp.responseText);
-                                    Ext.Msg.show({
-                                        title : 'Problem saving RDF',
-                                        buttons : Ext.MessageBox.OKCANCEL,
-                                        msg : ('There was an problem saving the RDF: ' + xmlhttp.responseText)
-                                    });
-                                }
+		                        xmlhttp2.onreadystatechange = function() {
+                                    lore.debug.ore("ready state change from update",xmlhttp2);
+		                            if (xmlhttp2.readyState == 4) {
+		                                if (xmlhttp2.status == 204) {
+                                            lore.debug.ore("RDF saved",xmlhttp2);
+		                                    lore.ui.loreInfo(remid + " saved to "
+		                                            + lore.ore.reposURL);
+		                                } else {
+		                                    lore.ui
+		                                            .loreError('Unable to save to repository'
+		                                                    + xmlhttp2.responseText);
+		                                    Ext.Msg.show({
+		                                        title : 'Problem saving RDF',
+		                                        buttons : Ext.MessageBox.OKCANCEL,
+		                                        msg : ('There was an problem saving the RDF: ' + xmlhttp2.responseText)
+		                                    });
+		                                }
+		                            }
+		                        };
+		                        xmlhttp2.setRequestHeader("Content-Type",
+		                                "application/rdf+xml");
+		                        xmlhttp2.send(therdf); 
                             }
-                        };
-                        xmlhttp.setRequestHeader("Content-Type",
-                                "application/rdf+xml");
-                        xmlhttp.send(therdf);
+                        }
+                        xmlhttp.send(null);
+                        lore.debug.ore("clearing" + remid);
                     } catch (e) {
                         xmlhttp = false;
                     }

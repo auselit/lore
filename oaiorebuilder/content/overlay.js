@@ -192,6 +192,9 @@ try {
 		saveRDF: function(){
 			window.graphiframe.lore.ore.saveRDFToRepository();
 		},
+        deleteRDF: function(){
+            window.graphiframe.lore.ore.deleteFromRepository();
+        },
         saveXML: function () {
             try{
                 var therdf = window.graphiframe.lore.ore.createRDF(false);

@@ -64,7 +64,6 @@
           <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/> -->
           <xul:toolbarseparator id="cosep"/>
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/>
-          <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
           <xul:toolbarbutton type="menu" id="save-more" tooltip="&lore.saveMoreTip;">
                 <xul:menupopup>
                     <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.saveXML()"/>
@@ -72,7 +71,9 @@
                     <xul:menuitem id="load-rdf-url" label="&lore.loadRDFURLLabel;" tooltiptext="&lore.loadRDFURLTip;" oncommand="loreoverlay.loadRDFURL()"/>
                 </xul:menupopup>
           </xul:toolbarbutton>
-
+          <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
+          
+          <xul:toolbarbutton id="delete-rdf" oncommand="loreoverlay.deleteRDF();" tooltiptext="&lore.deleteRDFTip;"/>
           <xul:toolbarseparator id="tmsep"/>
           <xul:toolbarbutton id="text-mining" tooltiptext="&lore.textMiningTip;"  oncommand="loreoverlay.doTextMining();"/>
           <xul:toolbarseparator/>

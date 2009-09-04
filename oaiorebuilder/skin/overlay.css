@@ -32,7 +32,10 @@
 	list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
 }
 #save-rdf {
-	list-style-image: url(chrome://lore/skin/icons/disk.png);
+	list-style-image: url(chrome://lore/skin/icons/database_save.png);
+}
+#delete-rdf {
+	list-style-image: url(chrome://lore/skin/icons/database_delete.png);	
 }
 #reset-graph {
 	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
