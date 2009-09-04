@@ -92,23 +92,29 @@ lore.ui.gui_spec = {
                 autoClear: 6000
             }]
         }]
-    }   
-    , {
+    }, {
         region: "west",
         id: "loresidebar",
-        title: "LORE Compound Objects",
-        border: false,
-        width: 250,
+        title: "LORE Compound Objects",         
+        width: 300,
         minWidth: 100,
         split: true,
         collapsible: true,
         animCollapse: false, 
         layout: "fit",
         items: [{
-            layout: "border",
-            items: [{
-                region: "center",
+            id:"propertytabs",
+            xtype:"tabpanel",
+            deferredRender: false,
+            enableTabScroll: true,
+            defaults: {
+            autoScroll: true
+            },
+            fitToFrame: true,
+            items:[
+            {
                 xtype: "treepanel",
+                title: "Compound Objects",
                 id: "sourcestree",
                 animate: true,
                 autoScroll: true,
@@ -121,36 +127,24 @@ lore.ui.gui_spec = {
                     appendOnly: true
                 }    
             }, {
-                region: "south",
-                split: true,
-                height: 150,
-                xtype: "tabpanel",
-                id: "propertytabs",
-                deferredRender: false,
-                enableTabScroll: true,
-                defaults: {
-                    autoScroll: true
+                xtype: 'propertygrid',
+                title: 'Compound Object Properties',
+                id: "remgrid",
+                autoWidth: true,
+                viewConfig: {
+                    forceFit: true,
+                    scrollOffset: 0
                 },
-                fitToFrame: true,
-                items: [{
-                    xtype: 'propertygrid',
-                    title: 'Compound Object',
-                    id: "remgrid",
-                    autoWidth: true,
-                    viewConfig: {
-                        forceFit: true,
-                        scrollOffset: 0
-                    },
-                    tbar: [new Ext.Button({
-                        id: "maddbtn",
-                        text: "Add property"
-                    }), new Ext.Button({
-                        id: "mrembtn",
-                        text: "Remove property"
-                    })]
-                }, {
+                tbar: [new Ext.Button({
+                    id: "maddbtn",
+                    text: "Add property"
+                }), new Ext.Button({
+                    id: "mrembtn",
+                    text: "Remove property"
+                })]
+             }, {
                     xtype: "propertygrid",
-                    title: "Resource/Relationship",
+                    title: "Resource/Relationship Properties",
                     id: "nodegrid",
                     autoWidth: true,
                     viewConfig: {
@@ -162,12 +156,17 @@ lore.ui.gui_spec = {
                     }), new Ext.Button({
                         text: "Remove property"
                     })]
-                }       
-                ]
-            }]
-        }]
-    }]
-};
+              }
+         ]
+            }
+        ]
+    }
+    ]};
+        
+
+    
+    
+    
 try {
 	lore.ui.main_window = new Ext.Viewport(lore.ui.gui_spec);
 	lore.ui.main_window.show();

@@ -578,8 +578,6 @@ lore.ore.readRDF = function(rdfURL) {
     };
     // reset the graphical view
     lore.ui.initGraphicalView();
-
-    
     lore.ui.loreviews.activate("drawingarea");
     var theRDF = new RDF();
     theRDF.getRDFURL(rdfURL, function() {
@@ -719,14 +717,15 @@ lore.ore.readRDF = function(rdfURL) {
                         .removeChild(lore.ui.recenttreeroot.firstChild);
                 }
                 lore.ui.recenttreeroot.appendChild(recentNode);
+                lore.ui.propertytabs.activate("remgrid");
             });
 }
 
 lore.ore.attachREMEvents = function(node){
-    node.on('click',function(node){
+   /* node.on('click',function(node){
         lore.ui.propertytabs.activate("remgrid");
         // TODO: show details but disable editing if not lore.ore.currentREM
-    });
+    });*/
     node.on('dblclick', function(node) {
          lore.ore.readRDF(node.attributes.uri);
     });
@@ -915,7 +914,7 @@ lore.ore.saveRDFToRepository = function() {
 		                                    Ext.Msg.show({
 		                                        title : 'Problem saving RDF',
 		                                        buttons : Ext.MessageBox.OKCANCEL,
-		                                        msg : ('There was an problem saving the RDF: ' + xmlhttp2.responseText)
+		                                        msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again or save your compound object to a file using the <i>Save to file</i> menu option and contact the Aus-e-Lit team for further assistance.')
 		                                    });
 		                                }
 		                            }
@@ -1009,6 +1008,9 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                         }
                         if (!lore.ui.remstreeroot.isExpanded()) {
                             lore.ui.remstreeroot.expand();
+                        }
+                        if(lore.ui.remstreeroot.hasChildNodes()){
+                            lore.ui.propertytabs.activate("sourcestree");
                         }
                     }
                 }
