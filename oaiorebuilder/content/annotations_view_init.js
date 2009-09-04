@@ -485,11 +485,10 @@ loreuieditor = function (model ) {
 							labelStyle: 'font-size:90%'
 						},{
 							xtype:"button",
-							text: 'Update Selection',
+							text: 'Update Variant Selection',
 							fieldLabel: '',
 							id: 'updrctxtbtn',
 							hidden: true,
-							
 							tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
 						}, 
 						{
