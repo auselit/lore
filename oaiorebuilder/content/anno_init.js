@@ -89,7 +89,7 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 			lore.m_xps = new XPointerService();
 			// TODO: this could be shared in common library
 			// TODO: namespace should reflect components i.e lore.ui.initModel??
-			
+
 			window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 			lore.ui.currentURL = lore.util.getContentWindow().location.href;
 			lore.ui.initModel(lore.ui.currentURL);

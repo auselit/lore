@@ -41,6 +41,7 @@
   */
  lore.store.get = function (datastoreName,  uid) {
  	if ( uid ) {
+		lore.debug.ui("Retrieving datastore for : " +uid, lore.store.uidcache);
 		var datastores = lore.store.uidcache[uid]
 		if (datastores) {
 			return datastores[datastoreName];
@@ -62,6 +63,7 @@
 		if (!lore.store.uidcache[uid]) {
 			lore.store.uidcache[uid] = {};
 		}
+		lore.debug.ui("Setting datastore for : " + uid, lore.store.uidcache);
 		(lore.store.uidcache[uid])[datastoreName] = datastore;
 	}
 	else {

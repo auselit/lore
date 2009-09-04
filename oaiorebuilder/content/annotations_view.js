@@ -22,7 +22,7 @@
 		lore.ui.anno.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 		
 		lore.ui.anno.multiSelAnno = new Array();
-		lore.ui.anno.colourForOwner = new Array();
+		lore.ui.anno.colourForOwner = {};
 		lore.ui.anno.colourCount = 0;
 		lore.ui.anno.curSelAnno;
 		lore.ui.anno.curAnnoMarkers = new Array();
@@ -960,7 +960,8 @@
 				theField.setValue(currentCtxt);
 				theField = lore.ui.annotationsform.findField('res');
 				theField.setValue(lore.ui.currentURL);
-				rec.data.resource = lore.ui.currentURL;
+				if ( lore.ui.curSelAnno)
+					lore.ui.curSelAnno.data.resource = lore.ui.currentURL;
 				theField = lore.ui.annotationsform.findField('original');
 				theField.setValue(lore.ui.currentURL);
 				theField = lore.ui.annotationsform.findField('contextdisp');
@@ -1357,15 +1358,15 @@
 			lore.debug.anno("The uri is " + lore.ui.currentURL);
 			lore.debug.ui("Updating annotation source list");
 			
-			var ds = {
-				multiSelAnno: lore.ui.anno.multiSelAnno,
-				colourForOwner: lore.ui.anno.colourForOwner,
+			var update_ds = {
+				multiSelAnno: lore.ui.anno.multiSelAnno.slice(),
+				colourForOwner: lore.util.clone(lore.ui.anno.colourForOwner),
 				colourCount: lore.ui.anno.colourCount,
-				curSelAnno: lore.ui.anno.curSelAnno || null,
-				curAnnoMarkers: lore.ui.anno.curAnnoMarkers
+				curSelAnnoId: lore.ui.anno.curSelAnno ? lore.ui.anno.curSelAnno.data.id:null,
+				curAnnoMarkers: lore.ui.anno.curAnnoMarkers.slice()
 			};
 			
-			lore.store.set('highlighting', ds, oldurl);
+			lore.store.set(lore.ui.anno.HIGHLIGHT_STORE, update_ds, oldurl);
 			
 			// tag any unsaved new annotations for the new page
 			lore.anno.annods.each(function(rec){
@@ -1381,16 +1382,18 @@
 				}
 			}
 			
-			
-			
-			var ds = lore.store.get('highlighting', contextURL);
+			var ds = lore.store.get(lore.ui.anno.HIGHLIGHT_STORE, contextURL);
 			if (ds) {
+				lore.ui.anno.multiSelAnno = ds.multiSelAnno;
+				lore.ui.anno.colourForOwner = ds.colourForOwner;
+				lore.ui.anno.colourCount = ds.colourCount
+				var curSelAnnoId = ds.curSelAnnoId;
+				lore.ui.anno.curAnnoMarkers = ds.curAnnoMarkers;
 				
-				lore.ui.anno.multiSelAnno = multiSelAnno;
-				lore.ui.anno.colourForOwner = colourForOwner;
-				lore.ui.anno.colourCount = colourCount
-				lore.ui.anno.curSelAnno = curSelAnno;
-				lore.ui.anno.curAnnoMarkers = curAnnoMarkers;
+				var rec = lore.util.findRecordById(lore.anno.annods, curSelAnnoId);
+				if (rec) {
+					lore.ui.anno.curSelAnno = rec;
+				}
 			}
 		} catch (e ) {
 			lore.debug.anno(e,e);
