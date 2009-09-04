@@ -172,7 +172,7 @@ lore.ui.initProperties = function() {
     
 	lore.ui.setUpMetadataMenu(lore.ui.grid, "lore.ui.grid");
 	lore.ui.setUpMetadataMenu(lore.ui.nodegrid, "lore.ui.nodegrid");
-	lore.ui.propertytabs.activate("remgrid");
+	lore.ui.propertytabs.activate("sourcestree");
 }
 /**
  * Initialise the Extjs UI components and listeners
