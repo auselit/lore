@@ -121,6 +121,7 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 				lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
 				lore.ui.loadedURL = lore.ui.currentURL; //TODO: this could be shared code
 			}
+			lore.ui.initialized = true;
 									
 			// TODO: the 'view' should call this function						
 			lore.debug.anno("Annotation init");
