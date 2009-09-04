@@ -140,8 +140,8 @@
 		lore.ui.anno.LOREColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 			// private
 			
-			focus: Ext.emptyFn,
-			onTextChange: function( txtfield) {
+			focus : Ext.emptyFn,
+			onTextChange : function( txtfield) {
 				 if(this.rendered){
            			 this.textNode.innerHTML = txtfield.text;
 					 this.titleNode.innerHTML = txtfield.title;
@@ -150,7 +150,7 @@
        			 }
 			},
 			
-			refresh: function (n) {
+			refresh : function (n) {
 				var t = n.getOwnerTree();
 				var cols = t.columns;
 				for (var i =0; i < cols.length; i++ ){
@@ -159,7 +159,7 @@
 				this.bodyNode.style.width= cols[0].width- t.borderWidth -(32 + n.getDepth() * 16);
 			},
 			
-			renderElements: function(n, a, targetNode, bulkRender){
+			renderElements : function(n, a, targetNode, bulkRender){
 				// add some indent caching, this helps performance when rendering a large tree
 				this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
 				
@@ -530,6 +530,10 @@ loreuieditor = function (model ) {
 							anchor: '-30 100%'
 						}],
 						buttons: [{
+							text: 'Hide Editor',
+							id: 'hideeditbtn',
+							tooltip: 'Hides the annotation editor from view'
+						},{
 							text: 'Save Annotation',
 							id: 'updannobtn',
 							tooltip: 'Save the annotation to the repository'
@@ -676,6 +680,7 @@ lore.ui.anno.initExtComponents = function(){
 		
 		Ext.getCmp("resetannobtn")
 				.on('click', function () { lore.ui.anno.rejectChanges()});
+		Ext.getCmp("hideeditbtn").on('click', lore.ui.anno.hideAnnotation);
 		Ext.getCmp("updannobtn").on('click', lore.ui.anno.handleSaveAnnotationChanges);
 		Ext.getCmp("delannobtn").on('click', lore.ui.anno.deleteMsgBoxShow);
 		Ext.getCmp("updctxtbtn").on('click',
