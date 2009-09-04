@@ -1353,6 +1353,9 @@
 	 */
 	lore.ui.anno.handleLocationChange = function(contextURL) {
 		try {
+			if (!lore.ui.initialized)
+				return;
+				
 			var oldurl = lore.ui.currentURL;
 			lore.ui.currentURL = contextURL;
 			lore.debug.anno("The uri is " + lore.ui.currentURL);
