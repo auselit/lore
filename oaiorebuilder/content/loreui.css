@@ -364,6 +364,7 @@
  */
 .x-tree-col-text img {
 	max-width:128px;
+    height:auto;
 }
 
 .x-tree-headers {
