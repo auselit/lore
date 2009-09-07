@@ -84,7 +84,7 @@
         </xul:toolbar>
       </xul:toolbox>
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
-      <xul:iframe tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="chrome://lore/content/loreui.html" name="graphiframe" id="graphiframe"/>
+      <xul:iframe tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="chrome://lore/content/compound_objects/loreui.html" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
     
          
