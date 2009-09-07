@@ -133,7 +133,7 @@ lore.ore.showSlideshow = function (){
     var params = {
     "width": carouselel.getWidth(),
     "height": (carouselel.getHeight() - 29)}; // minus 29 to account for slide nav bar
-    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/stylesheets/ORE2Carousel.xsl",true, params);
+    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/ORE2Carousel.xsl",true, params);
     var serializer = new XMLSerializer();
     sscontents += serializer.serializeToString(resultDoc);
     carouselel.update(sscontents);
@@ -1134,23 +1134,8 @@ lore.ore.transformORERDF = function(stylesheetURL, fragment, params){
  */
 lore.ore.createSMIL = function() {
     try {
-        /*var stylesheetURL = "chrome://lore/content/stylesheets/ORE2SMIL.xsl";
-        var xsltproc = new XSLTProcessor();
-
-        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
-        var xhr = new XMLHttpRequest();
-        xhr.overrideMimeType('text/xml');
-        xhr.open("GET", stylesheetURL, false);
-        xhr.send(null);
-        var stylesheetDoc = xhr.responseXML;
-        xsltproc.importStylesheet(stylesheetDoc);
-        xsltproc.setParameter(null, "indent", "yes");
-        // get the compound object xml
-        var theRDF = lore.ore.createRDF(false);
-        var parser = new DOMParser();
-        var rdfDoc = parser.parseFromString(theRDF, "text/xml");
-        var resultDoc = xsltproc.transformToFragment(rdfDoc, document);*/
-        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/stylesheets/ORE2SMIL.xsl",true);
+       
+        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/ORE2SMIL.xsl",true);
         var serializer = new XMLSerializer();
         lore.util.writeFile(serializer.serializeToString(resultDoc),
                 "oresmil.smil");
