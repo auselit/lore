@@ -225,7 +225,7 @@ try {
 		resetGraph: function(){
 			window.annographiframe.lore.ui.anno.hideMarker();
 			window.annographiframe.location.reload(true);
-            window.graphiframe.location = "chrome://lore/content/loreui.html";
+            window.graphiframe.location = "chrome://lore/content/compound_objects/loreui.html";
 			window.graphiframe.location.reload(true);
 		},
 		openAbout: function(){

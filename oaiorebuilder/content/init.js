@@ -275,7 +275,7 @@ lore.ui.init = function() {
     lore.debug.ui("vars (" + lore.ui.vars.length + ")", lore.ui.vars);
     
     try{
-	lore.m_xps = new XPointerService();
+	
 	lore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 	lore.ore.resource_metadata_props = [];
 	lore.ore.all_props = lore.ore.METADATA_PROPS;
