@@ -3,16 +3,19 @@
 <!DOCTYPE overlay SYSTEM "chrome://lore/locale/lore.dtd">
 <xul:overlay id="lore-overlay" xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
   <xul:script type="application/x-javascript" src="overlay.js"/>
   <xul:script type="application/x-javascript" src="tracing.js"/>
+
   <xul:stringbundleset id="stringbundleset">
     <xul:stringbundle id="lore-strings" src="chrome://lore/locale/lore.properties"/>
   </xul:stringbundleset>
+
   <xul:vbox id="appcontent">
  	<xul:tabbrowser id="content" flex="3" orient="horizontal" >
 	 <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" orient="horizontal" collapsed = "true" />
 	 	
-	 	<xul:vbox id="oobAnnoVarContentBox" flex="2" height="100%" collapsed="true" >
+	 	<xul:vbox id="oobAnnoVarContentBox" flex="0" height="100%" collapsed="true" >
 	 	<xul:label id = "oobAnnoVarContentLabel" value="Annotation Variation Resource: http://www.google.com" />
 	 	<xul:button id = "oobAnnoVarContentHideMe" label="Hide Me" onclick = "loreoverlay.hideVariationSplitter();" />
 	 	<xul:iframe id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
@@ -22,7 +25,7 @@
 	 	<xul:grippy />
 	 	</xul:splitter>
 	    
-	    <xul:vbox flex="2" id = "oobAnnoContentBox" collapsed="true" persist = "width">
+	    <xul:vbox flex="0" id = "oobAnnoContentBox" collapsed="true" persist = "width">
 	    	
 		    <xul:toolbox>
 		    	
@@ -44,7 +47,7 @@
 		          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="window.annographiframe.location.reload(true);"/><!-- label="&lore.resetGraphLabel;"-->
 		        </xul:toolbar>
 		     </xul:toolbox>
-	     	<xul:iframe tooltip="aHTMLTooltip" flex="3" height="100%" width="300px" src="chrome://lore/content/loreui_anno.html" name="annographiframe" id="annographiframe"/> 
+	     	<xul:iframe tooltip="aHTMLTooltip" flex="1" width="100%" height="100%" src="chrome://lore/content/loreui_anno.html" name="annographiframe" id="annographiframe"/> 
 	    </xul:vbox>
 	    
  	</xul:tabbrowser>
@@ -52,7 +55,7 @@
     <xul:splitter id="oobContentSplitter" collapsed="true" orient="vertical" collapse="after">
     <xul:grippy /> 
     </xul:splitter>
-    <xul:vbox flex="2" align="stretch" id="oobContentBox" collapsed="true" persist="height" width="100%">
+    <xul:vbox flex="1" align="stretch" id="oobContentBox" collapsed="true" persist="height" width="100%">
       <xul:toolbox>
         <xul:toolbar id="graph-toolbar">
          <!--xul:label value="LORE Compound Objects" style="margin-top:5px;margin-right:10px;margin-left:5px;font-weight:bolder" /-->
@@ -81,7 +84,7 @@
         </xul:toolbar>
       </xul:toolbox>
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
-      <xul:iframe tooltip="aHTMLTooltip" flex="3" height="450px" width="100%" src="chrome://lore/content/loreui.html" name="graphiframe" id="graphiframe"/>
+      <xul:iframe tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="chrome://lore/content/loreui.html" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
     
          

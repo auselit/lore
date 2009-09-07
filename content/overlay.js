@@ -432,7 +432,9 @@ try {
 				}
 				contentBox.setAttribute("collapsed", "false");
 				contentSplitter.setAttribute("collapsed", "false");
-				if (window.graphiframe.lore) {
+				if (window.graphiframe.lore  &&
+					window.graphiframe.lore.ui &&
+					window.graphiframe.lore.ui.loreOpen) {
 					window.graphiframe.lore.ui.loreOpen();
 				}else {
 					window.setTimeout(function(){
@@ -445,7 +447,8 @@ try {
 				contentBox.setAttribute("collapsed", "true");
 				contentSplitter.setAttribute("collapsed", "true");
 				if (window.graphiframe.lore &&
-					window.graphiframe.lore.ui ) {
+					window.graphiframe.lore.ui &&
+					window.graphiframe.lore.ui.loreClose ) {
 					window.graphiframe.lore.ui.loreClose();
 				} else {
 					window.setTimeout(function(){

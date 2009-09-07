@@ -13,19 +13,11 @@
 #loreStatusIcon {
     list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
 }
-#oobContentBox {
-    /*-moz-binding: url("chrome://lore/content/bindings.xml#contentBox");*/
-    height: 270px;
+
+#oobAnnoContentBox {
+	width: 35%;	
 }
-/*#oobContentSplitter {
-    border-top: 1px solid !important;
-    -moz-border-top-colors: threedShadow !important;
-    border-bottom: 1px solid !important;
-    -moz-border-bottom-colors: #EEEEEE !important;
-    min-height: 3px;
-    max-height: 3px;
-    background-color: #FFFFFF;
-}*/
+
 #oobMenuButton {
 	/*margin: 0 4px 0 0;
     padding: 0 0 0 4px;*/
