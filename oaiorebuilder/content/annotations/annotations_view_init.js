@@ -295,7 +295,6 @@ if (typeof Timeline !== "undefined") {
 			}
 									
 		};
-        lore.debug.anno("updated fillinfobubble",Timeline);
 };
 
 loreuiannoabout = function () { 
