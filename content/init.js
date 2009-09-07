@@ -248,7 +248,7 @@ lore.ui.initExtComponents = function() {
     }
     if (lore.ui.exploretab){
         var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
-        + "<script type='text/javascript' src='chrome://lore/content/graphs/lore_explore.js'></script>"
+        + "<script type='text/javascript' src='chrome://lore/content/compound_objects/lore_explore.js'></script>"
         + "<a id='explorereset' style='z-index:999;position:absolute;bottom:10px;left:10px;font-size:x-small;color:#51666b' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM,\"Current Compound Object\");'>RESET VISUALISATION</a>"
         + "<div style='vertical-align:middle;height:1.5em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;background-color:white;' id='history'></div>"
         + "<div id='infovis'></div>";
