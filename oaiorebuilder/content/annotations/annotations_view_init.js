@@ -233,6 +233,7 @@ Ext.reg('loretreepanel', lore.ui.anno.LOREColumnTree);
 	 * @param {} theme
 	 * @param {} labeller
 	 */
+if (typeof Timeline !== "undefined") {
 		Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function(elmt, theme, labeller){
 			var doc = elmt.ownerDocument;
 			var title = this.getText();
@@ -294,7 +295,8 @@ Ext.reg('loretreepanel', lore.ui.anno.LOREColumnTree);
 			}
 									
 		};
-
+        lore.debug.anno("updated fillinfobubble",Timeline);
+};
 
 loreuiannoabout = function () { 
 	return {
@@ -751,7 +753,9 @@ lore.ui.anno.initTimeline = function() {
         lore.ui.anno.annotimeline.getBand(0).getEventPainter().setFilterMatcher(function(evt){
             return !(evt._eventID == "flagdelete");
         });
-	}
+	} else {
+        lore.debug.anno("Timeline is undefined",this);
+    }
 }
 
 	

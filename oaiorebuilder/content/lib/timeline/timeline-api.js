@@ -254,7 +254,7 @@
         
         var url = useLocalResources ?
             "http://127.0.0.1:9999/ajax/api/simile-ajax-api.js?bundle=false" :
-            "lib/simileajax/simile-ajax-api.js";
+            "chrome://lore/content/lib/simileajax/simile-ajax-api.js";
         if (typeof Timeline_ajax_url == "string") {
            url = Timeline_ajax_url;
         }
