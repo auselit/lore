@@ -258,7 +258,7 @@ lore.ui.initExtComponents = function() {
 	
 	// set up welcome tab contents
 	lore.ui.welcometab.body.update("<iframe height='100%' width='100%' "
-			+ "src='chrome://lore/content/welcome.html'></iframe>");
+			+ "src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>");
             Ext.QuickTips.interceptTitles = true;
     Ext.QuickTips.init();
 }
