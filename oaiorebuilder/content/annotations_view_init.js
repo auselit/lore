@@ -700,7 +700,7 @@ lore.ui.anno.initExtComponents = function(){
 		lore.ui.anno.setAnnotationFormUI(false);
 		
 		lore.ui.abouttab.body.update("<iframe height='100%' width='100%' "
-			+ "src='chrome://lore/content/about_annotations.html'></iframe>");
+			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");
 			
 	    Ext.QuickTips.interceptTitles = true;
 	    Ext.QuickTips.init();
