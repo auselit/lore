@@ -167,7 +167,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function(){
 	if (mimetype && mimetype.contains("application/rdf+xml")){
 	    // resource is most likely to be a compound object - don't display contents
 	    // TODO: allow annotations as contained objects as well  
-	    this.iframearea.innerHTML="<div class='orelink' id='" + this.id + "-data'><a href='#' onclick=\"lore.ore.readRDF('"+ theurl + "');\">Compound Object: <br><img src='../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
+	    this.iframearea.innerHTML="<div class='orelink' id='" + this.id + "-data'><a href='#' onclick=\"lore.ore.readRDF('"+ theurl + "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
 	    var identifierURI = lore.ore.getOREIdentifier(theurl);
 	    this.metadataarea.innerHTML="<ul><li class='mimeicon oreicon'>" + identifierURI + "</li></ul>";
 	    
