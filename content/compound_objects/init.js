@@ -115,18 +115,14 @@ lore.ui.initGraphicalView = function() {
 	lore.ore.graph.dummylayouty = lore.ore.NODE_SPACING;
 }
 /**
- * Load domain ontology
+ * Init domain ontology
  */
 lore.ui.initOntologies = function() {
-	lore.ore.ontrelationships = {};
-    
     try{
-	window.parent.loreoverlay.loadPrefs();
+	   window.parent.loreoverlay.loadPrefs(); // calls lore.ore.loadRelationshipsFromOntology()
     } catch (ex){
         alert(ex.toString());
     }
-	lore.ore.loadRelationshipsFromOntology();
-    
 }
 /**
  * Initialise property grids and set up listeners
