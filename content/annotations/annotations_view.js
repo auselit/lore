@@ -1165,6 +1165,8 @@
 					info = lore.ui.anno.genAnnotationCaption(rec.data, 'by c, d r')
 				}
 				else if (lore.anno.isNewAnnotation(rec) && rec.data.resource != lore.ui.currentURL) {
+					//TODO: Need to change this logic or add an entry for replies that recursively checks
+					// to find the leaf annotation and if that annotation's resource != currentURL
 						info = "Unsaved annotation from " + rec.data.resource;
 				}
 				node.setText(rec.data.title, info,'', lore.ui.anno.genTreeNodeText(rec.data));

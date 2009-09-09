@@ -144,6 +144,7 @@
 			onTextChange : function( txtfield) {
 				 if(this.rendered){
            			 this.textNode.innerHTML = txtfield.text;
+					 
 					 this.titleNode.innerHTML = txtfield.title;
 					 if ( txtfield.bheader) this.bHeaderNode.innerHTML = txtfield.bheader;
 					 if ( txtfield.bfooter) this.bFooterNode.innerHTML = txtfield.bfooter;
@@ -184,7 +185,7 @@
 				 '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />', 
 				 '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon', (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), 
 				 '" unselectable="on" />', 
-				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div class="x-tree-col-div-general">',  n.title, '</div>', (n.bheader ? '<div class="x-tree-node-bheader x-tree-col-div-general">' + n.bheader + '</div>':'<span></span>'),
+				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div class="x-tree-col-div-general">',  n.title, '</div>','<div class="x-tree-node-bheader x-tree-col-div-general">', (n.bheader ?  n.bheader:''),'</div>',
 				'<div class="x-tree-col-text x-tree-col-div-general">', n.text, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter x-tree-col-div-general">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
 				
 				 for(var i = 1, len = cols.length; i < len; i++){
