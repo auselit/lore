@@ -317,7 +317,7 @@
 				if (xhr.readyState == 4) {
 					if (resultCallback) {
 						var result = xhr.status == 201 ? 'success' : 'fail';
-						resultCallback('create', result, xhr.statusText);
+						resultCallback('create', result, xhr.responseText ? xhr.responseText:xhr.statusText);
 						lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
 						
 					}
