@@ -39,6 +39,60 @@ lore.textm.handleOpenCalaisMetadata = function(resp) {
     var jsonObj = nativeJSON.decode(res);
 
 }
+lore.textm.processRDFa = function() {
+    try{
+    // process RDFa in current page
+    var doc = lore.util.getContentWindow().document;
+    var contentElem = jQuery('body',doc);
+    lore.ui.textminingtab.body.update("Found the following from RDFa:<br>");
+    var myrdf = contentElem.rdfa();
+    var triples = myrdf.databank.triples();
+    lore.debug.tm("triples object", triples);
+    lore.debug.tm("json dump", Ext.util.JSON.encode(jQuery.rdf.dump(triples)));
+    for (var t = 0; t < triples.length; t++){
+        var triple = triples[t];
+        var triplestr = triple.toString().escapeHTML();
+        // add a border around elements with rdfa with a hover to disply the triple
+        if (triple.source.style){
+	        triple.source.style.border="0.5px solid #eeeeee";
+	        jQuery(triple.source).simpletip({
+	            content: '&nbsp;<img src="chrome://lore/skin/icons/rdf.png">&nbsp;' +  triplestr,
+	            showEffect: 'custom',
+	            fixed:true,
+                position:["-20","0"],
+	            showCustom: function(){
+	              try{
+	                //lore.debug.ore("showcustom",this);
+	                this.context.style.padding="2px";
+	                this.context.style.position= 'absolute';
+	                this.context.style.opacity = "1";
+	                this.context.style.backgroundColor="#fcfcfc";
+	                this.context.style.fontSize = "9pt";
+	                this.context.style.fontWeight = "normal";
+	                this.context.style.color="#51666b";  
+	                this.context.style.border= '1.5px solid orange';
+	                this.context.style.zIndex="3";  
+	                jQuery(this).animate({
+	                    width: 'auto',
+	                    display: 'block'
+	                },400);
+                    
+	              } catch (ex){
+	                lore.debug.ore("exception in hover",ex);
+	              }
+	            }
+	        });
+        }  
+    }
+    var ser = new XMLSerializer();
+    var rdfxml = jQuery.rdf.dump(triples,{'format': 'application/rdf+xml', 'namespaces': {'austlit': 'http://austlit.edu.au/owl/austlit.owl#'}});
+    lore.ui.textminingtab.body.insertHtml('beforeEnd',"<pre style='font-size:smaller;color:#51666b;'>"
+        + Ext.util.Format.htmlEncode(XML(ser.serializeToString(rdfxml)).toXMLString()) + "</pre>");
+    
+    } catch (ex){
+        lore.debug.tm("exception processing rdfa",ex);
+    }
+}
 /**
  * Triggered when the user selects the Calais button from the toolbar: sends a
  * request to retrieve metadata using Calais web service
@@ -47,24 +101,9 @@ lore.textm.requestTextMiningMetadata = function() {
     if (!lore.ui.textminingtab) {
         return;
     }
-    try{
-    // process RDFa
-    var doc = lore.util.getContentWindow().document;
-    var contentElem = jQuery('body',doc);
     
-    var myrdf = contentElem.rdfa();
-    var triples = myrdf.databank.triples();
-    lore.debug.tm("triples object", triples);
-    lore.debug.tm("json dump", Ext.util.JSON.encode(jQuery.rdf.dump(triples)));
-    var ser = new XMLSerializer();
-    var rdfxml = jQuery.rdf.dump(triples,{'format': 'application/rdf+xml', 'namespaces': {'austlit': 'http://austlit.edu.au/owl/austlit.owl#'}});
-    lore.ui.textminingtab.body.update("Extracted the following RDF: <pre style='font-size:smaller;color:#51666b;'>"
-        + Ext.util.Format.htmlEncode(XML(ser.serializeToString(rdfxml)).toXMLString()) + "</pre>");
-    
-    } catch (ex){
-        lore.debug.tm("exception processing rdfa",ex);
-    }
-
+    lore.textm.processRDFa();
+    // TODO: call semantic text mining services such as Open Calais
     /*var ocParams = '<c:params xmlns:c="http://s.opencalais.com/1/pred/">'
             + '<c:processingDirectives c:contentType="text/txt" c:outputFormat="application/json"></c:processingDirectives>'
             + '<c:userDirectives c:allowDistribution="true" c:allowSearch="true"/><c:externalMetadata />'

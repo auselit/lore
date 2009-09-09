@@ -72,6 +72,7 @@ lore.ui.gui_spec = {
 				,{	
 					title: "Text mining",
 					id: "textmining",
+                    html: "<p>Select the text mining icon <img alt='text mining' src='chrome://lore/skin/icons/page_white_magnify.png'> from the toolbar to get started with finding people, places and concepts on the current page.</p>",
 					autoWidth: true,
 					autoScroll:true
 				},{
