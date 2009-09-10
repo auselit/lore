@@ -9,18 +9,20 @@ try {
 				throw Components.results.NS_NOINTERFACE;
 			},
 			onLocationChange: function(aProgress, aRequest, aURI){
-				if (aURI) {
-					if (aURI.spec == this.oldURL) 
-						return;
-					if (window.graphiframe.lore && typeof(window.graphiframe.lore.ore.updateCompoundObjectsSourceList) == 'function' &&
-					window.annographiframe.lore &&
-					typeof(window.annographiframe.lore.ui.anno.handleLocationChange) == 'function') {
-						window.graphiframe.lore.ore.updateCompoundObjectsSourceList(aURI.spec);
-						window.graphiframe.lore.ui.loadedURL = aURI.spec;
-						window.annographiframe.lore.ui.anno.handleLocationChange(aURI.spec);
-						window.annographiframe.lore.ui.loadedURL = aURI.spec;
-						this.oldURL = aURI.spec;
+				try {
+					if (aURI) {
+						if (aURI.spec == this.oldURL) 
+							return;
+						if (window.graphiframe.lore && typeof(window.graphiframe.lore.ui.ore.handleLocationChange) == 'function' &&
+						window.annographiframe.lore &&
+						typeof(window.annographiframe.lore.ui.anno.handleLocationChange) == 'function') {
+							window.graphiframe.lore.ui.ore.handleLocationChange(aURI.spec);
+							window.annographiframe.lore.ui.anno.handleLocationChange(aURI.spec);
+							this.oldURL = aURI.spec;
+						}
 					}
+				} catch(e) {
+					alert(e);
 				}
 			},
 			onStateChange: function(aProgress, aRequest, stateFlags, status){

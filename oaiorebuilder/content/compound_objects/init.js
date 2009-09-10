@@ -292,6 +292,7 @@ lore.ui.init = function() {
 		lore.ore.updateCompoundObjectsSourceList(lore.ui.currentURL);
 		lore.ui.loadedURL = lore.ui.currentURL;
 	}
+	lore.ui.initialized = true;
 	lore.debug.ui("LORE Compound Object init complete", this);
     } catch (e) {
         lore.debug.ui("exception in init",e);

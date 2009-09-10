@@ -1355,11 +1355,13 @@
 	 */
 	lore.ui.anno.handleLocationChange = function(contextURL) {
 		try {
-			if (!lore.ui.initialized)
-				return;
-				
-			var oldurl = lore.ui.currentURL;
+			var oldurl = lore.ui.currentURL + '';
 			lore.ui.currentURL = contextURL;
+			if (!lore.ui.initialized ||	!lore.ui.lorevisible)
+					return;
+				
+				
+			
 			lore.debug.anno("The uri is " + lore.ui.currentURL);
 			lore.debug.ui("Updating annotation source list");
 			
@@ -1403,7 +1405,7 @@
 		} catch (e ) {
 			lore.debug.anno(e,e);
 		}
-		
 		lore.anno.updateAnnotationsSourceList(contextURL);
+		lore.ui.loadedURL = contextURL;
 		lore.ui.anno.annoEventSource.clear();
 	}

@@ -140,7 +140,7 @@ lore.ui.loreMsg = function (message, iconCls) {
 		} catch (e ) {
 			lore.debug.ui(e,e);
 		}
-	},4000);
+	},3000);
 	
 }
 				
@@ -206,9 +206,11 @@ lore.ui.updateSourceLists = function(contextURL) {
 
 lore.ui.loreOpen = function() {
 	lore.ui.lorevisible = true;
+
 	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank'
 			&& lore.ui.currentURL != ''
 			&& (!lore.ui.loadedURL || lore.ui.currentURL != lore.ui.loadedURL)) {
+		
 		lore.ui.updateSourceLists(lore.ui.currentURL);
 		lore.ui.loadedURL = lore.ui.currentURL;
 	}
