@@ -400,11 +400,16 @@
 		if (anno.isReply) {
 			rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
 		}
-		if (anno.type) {
+		else {
 			rdfxml += '<rdf:type rdf:resource="' + lore.constants.ANNOTATION_NS +
-			'Annotation"/>';
-			rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
+				'Annotation"/>';
 		}
+		if (anno.type) {
+			rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';				
+		}
+			
+			
+		
 		
 		if (anno.isReply) {
 			rdfxml += '<inReplyTo xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
