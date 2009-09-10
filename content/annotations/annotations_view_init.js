@@ -638,12 +638,6 @@ lore.ui.anno.initGUI = function(model){
 						items: [ { fieldLabel:"This feature is disabled"}]
 						}
 						]
-					}, {
-						region: "south",
-						xtype: "statusbar",
-						id: "lorestatus",
-						defaultText: "",
-						autoClear: 6000
 					}]
 				}]
 			}]
@@ -673,7 +667,6 @@ lore.ui.anno.initExtComponents = function(){
 		Ext.getCmp("annosourcestree").on("dblclick", lore.ui.anno.handleEditAnnotation);
 			
 		
-		lore.ui.lorestatus = Ext.getCmp('lorestatus');
 		lore.ui.annotationsformpanel = Ext.getCmp("annotationslistform")
 		lore.ui.annotationsform = lore.ui.annotationsformpanel.getForm();
 		lore.ui.annotationsformpanel.hide();

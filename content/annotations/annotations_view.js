@@ -828,7 +828,7 @@
 		
 		lore.ui.anno.handleSaveAllAnnotationChanges = function(){
 			try {
-			
+				
 				if (lore.ui.anno.curSelAnno &&
 					(lore.ui.annotationsform.isDirty() && 
 					lore.ui.annotationsform.findField('id').getValue() == lore.ui.anno.curSelAnno.data.id)) {
@@ -852,7 +852,7 @@
 							lore.debug.anno(action + 'd ' + anno.data.title, anno);
 						}
 						else {
-							lore.ui.loreInfo('Unable to ' + action + ' annotation');
+							lore.ui.loreError('Unable to ' + action + ' annotation');
 							lore.debug.anno('Unable to ' + action + ' annotation', resultMsg);
 						}
 					} 
@@ -874,13 +874,13 @@
 				var anno = lore.ui.anno.curSelAnno;
 				
 				if (!anno) {
-					lore.ui.loreInfo('No annotation selected to save!');
+					lore.ui.loreError('No annotation selected to save!');
 					return;
 				}
 				
 				// update existing annotation
 				if (!lore.ui.annotationsform.isDirty() && !anno.dirty) {
-					lore.ui.loreInfo('Annotation content not modified: Annotation will not be updated');
+					lore.ui.loreWarning('Annotation content was not modified, save will not occur.');
 					return;
 				}
 				
@@ -894,7 +894,7 @@
 						lore.debug.anno(action + 'd ' + anno.data.title, anno);
 					}
 					else {
-						lore.ui.loreInfo('Unable to ' + action + ' annotation');
+						lore.ui.loreError('Unable to ' + action + ' annotation');
 						lore.debug.anno('Unable to ' + action + ' annotation', resultMsg);
 					}
 				});
@@ -938,7 +938,7 @@
 					}
 					else {
 					
-						lore.ui.loreWarning('Unable to delete annotation');
+						lore.ui.loreError('Unable to delete annotation');
 					}
 				});
 				
