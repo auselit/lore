@@ -57,13 +57,21 @@ lore.ui.setRepos = function(rdfrepos, rdfrepostype, annoserver) {
  *            message The message to display
  */
 lore.ui.loreInfo = function(message) {
-	lore.ui.lorestatus.setStatus({
-				text : message,
-				iconCls : 'info-icon',
-				 clear : {wait: 3000}
-			});
+	
+	if (lore.ui.lorestatus) {
+		lore.ui.lorestatus.setStatus({
+			text: message,
+			iconCls: 'info-icon',
+			clear: {
+				wait: 3000
+			}
+		});
+	} else {
+		lore.ui.loreMsg(message, 'info-icon');	
+	}
      
 }
+
 /**
  * Display an warning message in the status bar
  * 
@@ -71,11 +79,18 @@ lore.ui.loreInfo = function(message) {
  *            message The message to display
  */
 lore.ui.loreWarning = function(message) {
-	lore.ui.lorestatus.setStatus({
-				text : message,
-				iconCls : 'warning-icon',
-				clear : { wait : 3000}
-			});
+	if (lore.ui.lorestatus) {
+		lore.ui.lorestatus.setStatus({
+			text: message,
+			iconCls: 'warning-icon',
+			clear: {
+				wait: 3000
+			}
+		});
+	}
+	else {
+		lore.ui.loreMsg(message, 'warning-icon');
+	}
 }
 /**
  * Display an error message in the status bar
@@ -84,12 +99,53 @@ lore.ui.loreWarning = function(message) {
  *            message The message to display
  */
 lore.ui.loreError = function(message) {
-	lore.ui.lorestatus.setStatus({
-				text : message,
-				iconCls : 'error-icon',
-				clear : {wait: 3000}
-			});
+	if (lore.ui.lorestatus) {
+		lore.ui.lorestatus.setStatus({
+			text: message,
+			iconCls: 'error-icon',
+			clear: {
+				wait: 3000
+			}
+		});
+	}
+	else {
+		lore.ui.loreMsg(message, 'error-icon');
+	}
 }
+
+lore.ui.loreMsg = function (message, iconCls) {
+	if ( !lore.ui.loreMsgStack) {
+		lore.ui.loreMsgStack = [];
+	}
+	iconCls = iconCls || '';
+	message = '<div class="status-bubble-icon ' + iconCls +'"></div><div class="status-bubble-msg">' + message + "</div>";
+		
+	lore.ui.loreMsgStack.push(message);
+	Ext.Msg.show({msg: '', modal:false, closable:true, width:window.innerWidth});
+	Ext.Msg.updateText(lore.ui.loreMsgStack.join('<br/>'));
+	var w =Ext.Msg.getDialog(); 
+	w.setPosition(0, window.innerHeight - w.getBox().height);
+	
+	window.setTimeout(function(){
+		try {
+			if (lore.ui.loreMsgStack.length == 1) {
+				lore.ui.loreMsgStack.pop();
+				Ext.Msg.hide();
+			} else {
+				lore.ui.loreMsgStack.splice(0, 1);
+				Ext.Msg.updateText(lore.ui.loreMsgStack.join('<br/>'));
+				var w =Ext.Msg.getDialog();
+				w.setPosition(0, window.innerHeight - w.getBox().height);
+			}
+		} catch (e ) {
+			lore.debug.ui(e,e);
+		}
+	},4000);
+	
+}
+				
+				
+
 
 /**
  * Clear nodes from sources tree
