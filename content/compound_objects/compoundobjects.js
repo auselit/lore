@@ -954,6 +954,16 @@ lore.ore.setrelonturl = function(relonturl) {
         lore.debug.ore("exception in setrelonturl", ex);
     }
 }
+
+lore.ui.ore.handleLocationChange = function (contextURL) {
+	lore.ui.currentURL = contextURL;
+	
+	if ( !lore.ui.lorevisible || ! lore.ui.initialized)
+		return;
+	
+	lore.ore.updateCompoundObjectsSourceList(contextURL);
+	lore.ui.loadedURL = contextURL;
+}
 /**
  * Helper function for updateSourceLists: updates the compound objects list with
  * objects that reference the contextURL
@@ -962,6 +972,7 @@ lore.ore.setrelonturl = function(relonturl) {
  *            contextURL The escaped URL
  */
 lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
+	lore.debug.ui("i'm here!");
     lore.ui.clearTree(lore.ui.remstreeroot);
 	lore.ui.currentURL = contextURL;
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
