@@ -211,15 +211,24 @@ lore.ui.initExtComponents = function() {
 	// create a context menu to hide/show optional views
 	lore.ui.loreviews.contextmenu = new Ext.menu.Menu({
 				id : "co-context-menu"
-			});
-	lore.ui.loreviews.contextmenu.add({
-		text : "Show RDF/XML",
-		handler : lore.ore.openRDFView
 	});
+	
     lore.ui.loreviews.contextmenu.add({
-		text: "Show SMIL",
+		text: "Show SMIL View",
 		handler: lore.ore.openSMILView
 	});
+    lore.ui.loreviews.contextmenu.add({
+        text : "Show RDF/XML",
+        handler : lore.ore.openRDFView
+    });
+    lore.ui.loreviews.contextmenu.add({
+       text: "Show TriG",
+       handler: lore.ore.openTriGView
+    });
+    lore.ui.loreviews.contextmenu.add({
+       text: "Show FOXML",
+       handler: lore.ore.openFOXMLView
+    });
 	lore.ui.loreviews.on("contextmenu", function(tabpanel, tab, e){
         lore.ui.loreviews.contextmenu.showAt(e.xy);
     });

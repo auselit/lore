@@ -24,6 +24,12 @@
 lore.ore.updateRDFHTML = function() {
     Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
 }
+lore.ore.updateFOXML = function (){
+    Ext.getCmp("remfoxmlview").body.update(Ext.util.Format.htmlEncode(lore.ore.createFOXML()));
+}
+lore.ore.updateTriG = function (){
+    Ext.getCmp("remtrigview").body.update("<pre>" + Ext.util.Format.htmlEncode(lore.ore.serializeREM('trig')) + "</pre>");
+}
 /**
  * Remove listeners and reference to RDF View if it is closed
  * 
@@ -37,11 +43,18 @@ lore.ore.closeView = function(tabpanel, panel) {
     if (panel.id == 'remrdfview') {
         tab.un("activate", lore.ore.updateRDFHTML);     
     }
-    if (panel.id == 'remsmilview') {
+    else if (panel.id == 'remsmilview') {
         tab.un("activate", lore.ore.showSMIL);   
+    }
+    else if (panel.id == 'remfoxmlview') {
+        tab.un("activate",lore.ore.updateFOXML);
+    }
+    else if (panel.id == 'remtrigview') {
+        tab.un("activate",lore.ore.updateTriG);
     }
     return true;
 }
+
 /**
  * Create or show the RDF View
  */
@@ -53,6 +66,15 @@ lore.ore.openSMILView = function() {
     lore.debug.ore("open smil view");
     lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
 }
+lore.ore.openTriGView = function(){
+    lore.debug.ore("open TriG view");
+    lore.ore.openView("remtrigview","TriG",lore.ore.updateTriG);
+}
+lore.ore.openFOXMLView = function(){
+    lore.debug.ore("open foxml view");
+    lore.ore.openView("remfoxmlview","FOXML",lore.ore.updateFOXML);
+}
+
 lore.ore.openView = function (panelid,paneltitle,activationhandler){
     var tab = Ext.getCmp(panelid);
     if (!tab) {
@@ -133,7 +155,7 @@ lore.ore.showSlideshow = function (){
     var params = {
     "width": carouselel.getWidth(),
     "height": (carouselel.getHeight() - 29)}; // minus 29 to account for slide nav bar
-    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/ORE2Carousel.xsl",true, params);
+    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/slideshow_view.xsl",true, params);
     var serializer = new XMLSerializer();
     sscontents += serializer.serializeToString(resultDoc);
     carouselel.update(sscontents);
@@ -193,7 +215,31 @@ lore.ore.CompObjListing = function(result){
     }
 }
 
-
+lore.ore.serializeREM = function(format) {
+    if (format == 'foxml') {
+        return lore.ore.createFOXML();
+    }
+    // TODO: remove the first line once compound object is stored as rdfquery store
+    var rdf = lore.ore.createRDF(false);
+    rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
+        var databank = jQuery.rdf.databank();
+        for (ns in lore.constants.NAMESPACES){
+            databank.prefix(ns,lore.constants.NAMESPACES[ns]);
+        }
+        databank.load(rdfDoc);
+    if (format == 'trig') {
+       var result = "<" + lore.ui.grid.getSource()["rdf:about"] + ">\n{\n";
+       var triples = databank.triples();
+       for (var t = 0; t < triples.length; t++){
+        var triple = triples[t];
+        result += triple.toString() + "\n"; 
+       }
+       result += "}\n";
+       return result;
+    } else {
+        return databank.dump({format:'application/rdf+xml',serialize:true});
+    }
+}
 /**
  * Create the RDF/XML of the current resource map
  * 
@@ -807,10 +853,35 @@ lore.ore.loadRDF = function() {
  * Assumes that onturl has been set in init from preferences
  */
 lore.ore.loadRelationshipsFromOntology = function() {
-    // Properties for aggregated resources (also populated from ontology)
+    lore.ore.ontrelationships = {};
     lore.ore.resource_metadata_props = ["rdf:type", "ore:isAggregatedBy"];
     if (lore.ore.onturl) {
-        var ontRDF = new RDF();
+        var xhr = new XMLHttpRequest();
+        //xhr.overrideMimeType('text/xml');
+        xhr.open("GET", lore.ore.onturl, true);
+        xhr.onreadystatechange= function(){
+            if (xhr.readyState == 4) {
+                lore.debug.ore("success",xhr);
+                var db = jQuery.rdf.databank();
+                for (ns in lore.constants.NAMESPACES){
+                    db.prefix(ns,lore.constants.NAMESPACES[ns]);
+                }
+                db.load(xhr.responseXML);
+                lore.ore.relOntology = jQuery.rdf({databank: db});
+                lore.debug.ore("loading relationships from " + lore.ore.onturl,lore.ore.relOntology);      
+                lore.ore.relOntology.where('?prop rdf:type <'+lore.constants.OWL_OBJPROP+'>')
+                .each(function (){
+                    var relresult = lore.util.splitTerm(this.prop.value.toString());
+                    lore.ore.ontrelationships[relresult.term] = relresult.ns;
+                });
+            } 
+        };
+        xhr.send(null);
+     }
+     
+        
+  
+       /* var ontRDF = new RDF();
         lore.ore.ontrelationships = {};
         ontRDF.getRDFURL(lore.ore.onturl, function() {
                     var relResult = ontRDF.Match(null, null,
@@ -840,7 +911,7 @@ lore.ore.loadRelationshipsFromOntology = function() {
                             + " " + args.content);
                     lore.debug.ore("error loading relationships ontology",args);
                 });
-    }
+                */  
 }
 /**
  * Delete the compound object from the repository
@@ -1146,7 +1217,7 @@ lore.ore.transformORERDF = function(stylesheetURL, fragment, params){
 lore.ore.createSMIL = function() {
     try {
        
-        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/ORE2SMIL.xsl",true);
+        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/smil_view.xsl",true);
         var serializer = new XMLSerializer();
         lore.util.writeFile(serializer.serializeToString(resultDoc),
                 "oresmil.smil");
@@ -1162,7 +1233,17 @@ lore.ore.createSMIL = function() {
         lore.ui.loreWarning("Unable to generate SMIL: " + e.toString());
     }
 }
-
+lore.ore.createFOXML = function (){
+    try {
+        var params = {'coid': 'demo:' + lore.util.splitTerm(lore.ui.grid.getSource()['rdf:about']).term};
+        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/foxml.xsl",true,params);
+        var serializer = new XMLSerializer();
+        return serializer.serializeToString(resultDoc);         
+    } catch (e) {
+        lore.ui.loreWarning("Unable to generate FOXML: " + e.toString());
+        return null;
+    }
+}
 lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
     // update the metadataproperties recorded in the figure for that node
     lore.ore.graph.modified = true;
