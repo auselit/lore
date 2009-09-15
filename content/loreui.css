@@ -232,7 +232,7 @@
 #drawingarea {
 	position:relative;
 }
-#remrdfview {
+#remrdfview, #remfoxmlview, #remtrigview {
  	color: #51666b;
  	font-family: courier monospace;
  	font-size: 70%;
