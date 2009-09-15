@@ -197,9 +197,9 @@ try {
         deleteRDF: function(){
             window.graphiframe.lore.ore.deleteFromRepository();
         },
-        saveXML: function () {
+        serializeREM: function (format) {
             try{
-                var therdf = window.graphiframe.lore.ore.createRDF(false);
+                var therdf = window.graphiframe.lore.ore.serializeREM(format);
                 var nsIFilePicker = Components.interfaces.nsIFilePicker;
                 var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
                 fp.appendFilters(nsIFilePicker.filterXML | nsIFilePicker.filterAll);
