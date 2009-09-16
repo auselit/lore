@@ -119,9 +119,9 @@ lore.ui.initGraphicalView = function() {
  */
 lore.ui.initOntologies = function() {
     try{
-	   window.parent.loreoverlay.loadPrefs(); // calls lore.ore.loadRelationshipsFromOntology()
+	  lore.ui.global.topWindowView.loadCompoundObjectPrefs();
     } catch (ex){
-        alert(ex.toString());
+        alert(ex + " " + ex.stack);
     }
 }
 /**
@@ -188,7 +188,7 @@ lore.ui.initExtComponents = function() {
 	lore.ui.textminingtab = Ext.getCmp("textmining");
 	// set up the sources tree
 	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
-	lore.ui.clearTree(sourcestreeroot);
+	lore.ui.global.clearTree(sourcestreeroot);
 	
 	lore.ui.remstreeroot = new Ext.tree.TreeNode({
 				id : "remstree",
@@ -278,24 +278,22 @@ lore.ui.init = function() {
     lore.ui.vars=[]; for(var v in this){lore.ui.vars.push(v);} lore.ui.vars.sort();
 
     lore.debug.ui("vars (" + lore.ui.vars.length + ")", lore.ui.vars);
-    
     try{
 	
 	lore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 	lore.ore.resource_metadata_props = [];
 	lore.ore.all_props = lore.ore.METADATA_PROPS;
-	if (window.parent.document.getElementById('oobContentBox')
-			.getAttribute("collapsed") == "true") {
-		lore.ui.lorevisible = false;
-	} else {
-		lore.ui.lorevisible = true;
-	}
+	lore.ui.lorevisible = lore.ui.global.topWindowView.compoundObjectsVisible();
+	
 	lore.ui.initExtComponents();
     lore.ui.initProperties();
     lore.ui.initOntologies();
 	lore.ui.initGraphicalView();
 	lore.ui.loreInfo("Welcome to LORE");
-    
+
+	lore.ui.global.compoundObjectView.registerView(lore.ore);  
+	lore.ui.global.textMiningView.registerView(lore.textm);  
+	
 	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank'
 			&& lore.ui.currentURL != '' && lore.ui.lorevisible) {          
 		lore.ore.updateCompoundObjectsSourceList(lore.ui.currentURL);

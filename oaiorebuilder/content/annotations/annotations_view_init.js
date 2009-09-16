@@ -658,7 +658,7 @@ lore.ui.anno.initExtComponents = function(){
 		lore.ui.abouttab = Ext.getCmp("about");
 		lore.ui.anno.views = Ext.getCmp("annotationstab");
 		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
-		lore.ui.clearTree(annosourcestreeroot);
+		lore.ui.global.clearTree(annosourcestreeroot);
 		lore.ui.annotationstreeroot = annosourcestreeroot; 
 
 		lore.ui.annotationstreeroot.expand();
@@ -756,16 +756,18 @@ lore.ui.anno.initTimeline = function() {
     // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
     lore.debug.ui("LORE Annotations: disable ui features?", opts);
     lore.ui.disabled = opts;
-    
-    if (opts.disable_annotations){
-        window.parent.loreoverlay.setAnnotationsVisibility(false);
-    } else {
-		// don't set visibility on start up 
-		if (!lore.ui.anno.disableUIFeatures.initialCall) {
-			lore.ui.anno.disableUIFeatures.initialCall = 1;
+
+	// don't set visibility on start up 
+	if (!lore.ui.anno.disableUIFeatures.initialCall) {
+		lore.ui.anno.disableUIFeatures.initialCall = 1;
+	}
+	else {
+	
+		if (opts.disable_annotations) {
+			lore.ui.global.topWindowView.setAnnotationsVisibility(false);
 		}
 		else {
-			window.parent.loreoverlay.setAnnotationsVisibility(true);
+			lore.ui.global.topWindowView.setAnnotationsVisibility(true);
 		}
 	}
 }

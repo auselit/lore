@@ -19,13 +19,6 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
 -->
     <head>
-		<!-- TODO: 
-		Need to have a common html file that's loaded in the javascript at the XUL level not at iframe level
-		  alternatively use Componentets.util.importJavascript to import it and then have it cached so that it only
-		  get loaded once by one of the iframes -->
-		
-                
-       
         
         <!--  Ext scripts -->
         <script type="text/javascript" src="../lib/ext/adapter/jquery/jquery-1.3.2.min.js"></script>
@@ -50,8 +43,19 @@
 		<!-- mozdev xpointer lib -->
 		<script type="text/javascript" src="../lib/nsXPointerService.js"></script>
 		<script type="text/javascript" src="../util.js"></script>
-		<script type="text/javascript" src="store.js"></script>
-		<script type="text/javascript" src="../uifunctions.js"></script>
+		<!-- <script type="text/javascript" src="store.js"></script> -->
+		<!-- <script type="text/javascript" src="../uiglobal.js"></script> -->
+		<script type="text/javascript">
+			try {
+				// Load and cache global ui functions
+				Components.utils.import("resource://lore/uiglobal.js", lore.ui);
+				// lore.store
+				Components.utils.import("resource://lore/annotations/store.js", lore);
+			} catch (e) {
+				alert(e + " " + e.stack);
+			}
+	 	</script>
+		
 		<script type="text/javascript" src="annotations.js"></script>
 		<script type="text/javascript" src="annotations_view.js"></script>
 		

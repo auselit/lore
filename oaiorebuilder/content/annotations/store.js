@@ -20,36 +20,39 @@
 
  
  /*retrieveCache = function (uid) {
- 	if (! lore.store.uidcache) {
-		lore.store.uidcache = {};
+ 	if (! store.uidcache) {
+		store.uidcache = {};
 	}
-	return lore.store.uidcache[uid];	
+	return store.uidcache[uid];	
  }*/
  
- lore.store.uidcache = {};
- lore.store.datastores = {};
- lore.store.uid = "";
+ var EXPORTED_SYMBOLS = ['store'];
  
- lore.store.setCacheContext = function (uid) {
- 	lore.store.uid = uid;
-	lore.store.datastores = lore.store.uidcache[uid];
+ store = {};
+ store.uidcache = {};
+ store.datastores = {};
+ store.uid = "";
+ 
+ store.setCacheContext = function (uid) {
+ 	store.uid = uid;
+	store.datastores = store.uidcache[uid];
  }
  /**
   * 
   * @param {Object} datastoreName
   * @param {Object} uid
   */
- lore.store.get = function (datastoreName,  uid) {
+ store.get = function (datastoreName,  uid) {
  	if ( uid ) {
-		lore.debug.ui("Retrieving datastore for : " +uid, lore.store.uidcache);
-		var datastores = lore.store.uidcache[uid]
+		
+		var datastores = store.uidcache[uid]
 		if (datastores) {
 			return datastores[datastoreName];
 		} else {
 			return null;
 		}
 	}
-	return lore.store.datastores[datastoreName];
+	return store.datastores[datastoreName];
  }
  
  /**
@@ -58,16 +61,16 @@
   * @param {Object} uid
   * @param {Object} datastore
   */
- lore.store.set = function (datastoreName, datastore, uid ) {
+ store.set = function (datastoreName, datastore, uid ) {
  	if (uid) {
-		if (!lore.store.uidcache[uid]) {
-			lore.store.uidcache[uid] = {};
+		if (!store.uidcache[uid]) {
+			store.uidcache[uid] = {};
 		}
-		lore.debug.ui("Setting datastore for : " + uid, lore.store.uidcache);
-		(lore.store.uidcache[uid])[datastoreName] = datastore;
+		
+		(store.uidcache[uid])[datastoreName] = datastore;
 	}
 	else {
-		lore.store.datastores[datastoreName] = datastore;
+		store.datastores[datastoreName] = datastore;
 	}
  }
  
@@ -77,16 +80,16 @@
   * @param {Object} uid
   * @param {Object} type
   */
- lore.store.create = function (datastoreName, thestore, uid) {
- 	var datastores = lore.store.datastores;
+ store.create = function (datastoreName, thestore, uid) {
+ 	var datastores = store.datastores;
 	if ( uid ) {
-		datastores = lore.store.uidcache[uid];
+		datastores = store.uidcache[uid];
 	}
-	lore.store.datastores[datastoreName] = thestore;
+	store.datastores[datastoreName] = thestore;
 	
- 	return lore.store.datastores[datastoreName];	
+ 	return store.datastores[datastoreName];	
  }
  
  
- lore.store.load = function (datastore, uid, type) {
+ store.load = function (datastore, uid, type) {
  }

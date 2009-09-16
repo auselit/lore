@@ -56,7 +56,15 @@
 		<script type="text/javascript" src="graphical_editor/Workflow.js"></script>
 
 		<script type="text/javascript" src="../util.js"></script>
-		<script type="text/javascript" src="../uifunctions.js"></script>
+
+		<!-- <script type="text/javascript" src="../uiglobal.js"></script> -->
+		<script type="text/javascript">
+			// Load and cache global ui functions
+			Components.utils.import("resource://lore/uiglobal.js", lore.ui);
+			// lore.store
+			Components.utils.import("resource://lore/annotations/store.js", lore);
+	 	</script>
+
 		<script type="text/javascript" src="compoundobjects.js"></script>
 		<script type="text/javascript" src="../textmining.js"></script>
 		

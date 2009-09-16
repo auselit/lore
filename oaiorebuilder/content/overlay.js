@@ -1,4 +1,20 @@
 try {
+	
+	// Load and cache global ui functions
+	
+	// for naming consistency with other code
+	var lore = { ui: {} };
+	
+	// lore.ui.global
+	Components.utils.import("resource://lore/uiglobal.js", lore.ui);
+	// lore.store
+	Components.utils.import("resource://lore/annotations/store.js", lore);
+		
+	if (!lore.ui.global || !lore.store ) {
+		// sanity check
+		alert("Not all js modules loaded.");
+	}
+	
 	var loreoverlay = {
 		oreLocationListener: {
 			QueryInterface: function(aIID){
@@ -13,16 +29,14 @@ try {
 					if (aURI) {
 						if (aURI.spec == this.oldURL) 
 							return;
-						if (window.graphiframe.lore && typeof(window.graphiframe.lore.ui.ore.handleLocationChange) == 'function' &&
-						window.annographiframe.lore &&
-						typeof(window.annographiframe.lore.ui.anno.handleLocationChange) == 'function') {
-							window.graphiframe.lore.ui.ore.handleLocationChange(aURI.spec);
-							window.annographiframe.lore.ui.anno.handleLocationChange(aURI.spec);
+						if ( lore.ui.global.compoundObjectView.loaded() && lore.ui.global.annotationView.loaded() ) {
+							lore.ui.global.compoundObjectView.handleLocationChange(aURI.spec);
+							lore.ui.global.annotationView.handleLocationChange(aURI.spec);
 							this.oldURL = aURI.spec;
 						}
 					}
 				} catch(e) {
-					alert(e);
+					alert(e + " " +  e.stack);
 				}
 			},
 			onStateChange: function(aProgress, aRequest, stateFlags, status){
@@ -32,9 +46,7 @@ try {
 				}
 				if (stateFlags & WPL.STATE_IS_NETWORK) { // entire page has loaded
 					if (stateFlags & WPL.STATE_STOP) {
-						if (window.graphiframe.lore && typeof(window.graphiframe.lore.ui.locationLoaded) == 'function') {
-							window.graphiframe.lore.ui.locationLoaded();
-						}
+						lore.ui.global.locationLoaded();
 					}
 				}
 			},
@@ -50,8 +62,7 @@ try {
 		oldURL: null,
 		onLoad: function(){
 			try {
-				this.graphiframe = window.graphiframe;
-				this.resetGraph();
+				lore.ui.global.topWindowView.registerView(this);
 				gBrowser.addProgressListener(this.oreLocationListener, Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
 				this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
 				this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
@@ -59,6 +70,7 @@ try {
 				
 				this.initialized = true;
 				this.strings = document.getElementById("lore-strings");
+				lore.ui.global.load(window);
 			} 
 			catch (e) {
 				alert("Error on load: " + e);
@@ -68,8 +80,8 @@ try {
 			if (topic != "nsPref:changed") {
 				return;
 			}
-			this.loadPrefs();
-			this.loadAnnoPrefs();
+			this.loadCompoundObjectPrefs();
+			this.loadAnnotationPrefs();
 		},
 		uninit: function(){
 			if (this.graphiframe) {
@@ -77,7 +89,8 @@ try {
 			}
 		},
 		doTextMining: function(){
-			window.graphiframe.lore.textm.requestTextMiningMetadata();
+			lore.ui.global.textMiningView.requestTextMiningMetadata();
+			
 		},
 		showContextMenu1: function(event){
 			document.getElementById("context-lore").hidden = gContextMenu.onImage;
@@ -87,7 +100,7 @@ try {
 		},
 		onMenuItemCommand: function(e){
 			if (gContextMenu.onLink) 
-				window.graphiframe.lore.ore.graph.addFigure(gContextMenu.linkURL);
+				lore.ui.global.compoundObjectView.addFigure(gContextMenu.linkURL);
 		},
 		onMenuPopup: function(e){
 			gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
@@ -98,36 +111,36 @@ try {
 		},
 		addImageMenuItemCommand: function(e){
 			if (gContextMenu.onImage) 
-				window.graphiframe.lore.ore.graph.addFigure(gContextMenu.imageURL);
+				lore.ui.global.compoundObjectView.addFigure(gContextMenu.imageURL);
 		},
 		addBGImageMenuItemCommand: function(e){
 			if (gContextMenu.hasBGImage) 
-				window.graphiframe.lore.ore.graph.addFigure(gContextMenu.bgImageURL);
+				lore.ui.global.compoundObjectView.addFigure(gContextMenu.bgImageURL);
 		},
 		onToolbarMenuCommand: function(e){
 			this.toggleBar();
 		},
 		toggleBar: function(){
-		try {
-            var toolsMenuItem = document.getElementById('lore-tools-item');
-            var annoContentBox = document.getElementById('oobAnnoContentBox');
-            var contentBox = document.getElementById('oobContentBox');
-            
-            if (annoContentBox.getAttribute("collapsed") == "false" || contentBox.getAttribute("collapsed") == "false"){
-               toolsMenuItem.removeAttribute("checked");
-                this.setAnnotationsVisibility(false);
-                this.setCompoundObjectsVisibility(false); 
-            } else {
-               toolsMenuItem.setAttribute("checked", "true");
-               this.setAnnotationsVisibility(true);
-               this.setCompoundObjectsVisibility(true); 
-            }
-		} catch (e ) {
-			alert(e);
-		}
+			try {
+	            var toolsMenuItem = document.getElementById('lore-tools-item');
+	            var annoContentBox = document.getElementById('oobAnnoContentBox');
+	            var contentBox = document.getElementById('oobContentBox');
+	            
+	            if (annoContentBox.getAttribute("collapsed") == "false" || contentBox.getAttribute("collapsed") == "false"){
+	               toolsMenuItem.removeAttribute("checked");
+	                this.setAnnotationsVisibility(false);
+	                this.setCompoundObjectsVisibility(false); 
+	            } else {
+	               toolsMenuItem.setAttribute("checked", "true");
+	               this.setAnnotationsVisibility(true);
+	               this.setCompoundObjectsVisibility(true); 
+	            }
+			} catch (e ) {
+				alert(e + " " +  e.stack);
+			}
 		},
         loadRDFURL: function(){
-            window.graphiframe.lore.ore.loadRDF();
+            lore.ui.global.compoundObjectView.loadRDF();
         },
 		loadRDF: function(){
             try{
@@ -149,10 +162,10 @@ try {
                     cstream.readString(-1, str); 
                     data = str.value;
                     cstream.close();
-                    window.graphiframe.lore.ore.loadCompoundObject(data);
+					lore.ui.global.compoundObjectView.loadCompoundObject(data);
                 }
             } catch (e){
-                alert(e);
+                alert(e + " " +  e.stack);
                 window.graphiframe.lore.debug.ui("exception loading file",e);
             }
         },
@@ -165,11 +178,11 @@ try {
 		},
 		
 		removeAnnotation: function() {
-		try {
-			window.annographiframe.lore.ui.anno.deleteMsgBoxShow();
-		} catch (e) {
-			alert(e);
-		}
+			try {
+				window.annographiframe.lore.ui.anno.deleteMsgBoxShow();
+			} catch (e) {
+				alert(e + " " +  e.stack);
+			}
 		},
 		
 		editAnnotation: function () {
@@ -222,13 +235,11 @@ try {
             }
         },
 		addGraphNode: function(){
-			window.graphiframe.lore.ore.graph.addFigure(window.content.location.href);
+			lore.ui.global.compoundObjectView.addFigure(window.content.location.href);
+			//window.graphiframe.lore.ore.graph.addFigure(window.content.location.href);
 		},
 		resetGraph: function(){
-			window.annographiframe.lore.ui.anno.hideMarker();
-			window.annographiframe.location.reload(true);
-            window.graphiframe.location = "chrome://lore/content/compound_objects/loreui.html";
-			window.graphiframe.location.reload(true);
+			lore.ui.global.reset(window);
 		},
 		openAbout: function(){
 			window.open("chrome://lore/content/about.xul", "", "chrome,centerscreen,modal");
@@ -236,7 +247,8 @@ try {
 		openOptions: function(){
 			window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
 		},
-		loadPrefs: function(){
+		loadCompoundObjectPrefs: function(){
+			//window.graphiframe.lore.debug.ui("I am here");
 			if (this.prefs) {
 				var dccreator = this.prefs.getCharPref("dccreator");
 				var relonturl = this.prefs.getCharPref("relonturl");
@@ -250,19 +262,24 @@ try {
 				document.getElementById('text-mining').hidden = disable_tm;
 				document.getElementById('tmsep').hidden = disable_tm;
 				
-				
-				
 				document.getElementById('cosep').hidden = disable_co;
 				document.getElementById('add-node').hidden = disable_co;
 				document.getElementById('save-rdf').hidden = disable_co;
 				document.getElementById('load-rdf').hidden = disable_co;
 				
-				window.graphiframe.lore.ui.setdccreator(dccreator);
-				window.graphiframe.lore.ore.setrelonturl(relonturl);
-				window.graphiframe.lore.ui.setRepos(rdfrepos, rdfrepostype, annoserver);
+				// TODO: Cache store, views/model have listeners that listen to
+				// changes in settings instead perhaps? 
+				//lore.store.get("lore_preferences") 
+				//lore.ui.global.compoundObjectView.setdccreator(dccreator);
+				//lore.ui.global.compoundObjectView.setrelonturl(relonturl);
+				//lore.ui.global.compoundObjectView.setRepos(rdfrepos, rdfrepostype);
 				
+				window.graphiframe.lore.ore.setdccreator(dccreator);
+				window.graphiframe.lore.ore.setrelonturl(relonturl);
+				window.graphiframe.lore.ore.setRepos(rdfrepos, rdfrepostype);
+								
 				// hide or show related Ext UI depending on prefs
-				window.graphiframe.lore.ui.ore.disableUIFeatures({
+				window.graphiframe.lore.ore.disableUIFeatures({
 					'disable_textmining': disable_tm,
 					'disable_compoundobjects': disable_co
 				});
@@ -270,11 +287,9 @@ try {
 			} 
 		},
 		
-		loadAnnoPrefs: function(){
+		loadAnnotationPrefs: function(){
 			if (this.prefs) {
 				var annoserver = this.prefs.getCharPref("annoserver");
-				var rdfrepos = this.prefs.getCharPref("rdfrepos");
-				var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
 				var dccreator = this.prefs.getCharPref("dccreator");
 				
 				var disable_anno = this.prefs.getBoolPref("disable_annotations");
@@ -289,8 +304,14 @@ try {
 				document.getElementById('save-annotation').hidden = disable_anno;
 				document.getElementById('save-all-annotations').hidden = disable_anno;
 				
+				// TODO: Cache store, views/model have listeners that listen to
+				// changes in settings instead perhaps?  
+				//lore.ui.global.annotationView.setdccreator(dccreator);
+				//lore.ui.global.annotationView.setRepos(annoserver);
+				
 				window.annographiframe.lore.ui.anno.setdccreator(dccreator);
-				window.annographiframe.lore.ui.setRepos(rdfrepos, rdfrepostype, annoserver);
+				window.annographiframe.lore.ui.anno.setRepos(annoserver);
+				
 				window.annographiframe.lore.ui.anno.disableUIFeatures({
 					'disable_annotations': disable_anno
 				});
@@ -308,6 +329,7 @@ try {
 			this.graphiframe.lore.ore.loadRelationshipsFromOntology();
 			return true;
 		},
+		
 		fillInHTMLTooltip: function(tipElement){
 			// From http://forums.mozillazine.org/viewtopic.php?f=19&t=561451&start=0&st=0&sk=t&sd=a
 			var retVal = false;
@@ -366,7 +388,7 @@ try {
 				}
 				iframe.setAttribute("src", url);
 			} catch ( e ) {
-				alert(e);
+				alert(e + " " +  e.stack);
 			}
 		},
 		
@@ -380,6 +402,14 @@ try {
 			}
 		},
 		
+		annotationsVisible: function() {
+			return document.getElementById('oobAnnoContentBox').getAttribute("collapsed") == "false";	
+		},
+		
+		compoundObjectsVisible: function () {
+			return document.getElementById('oobContentBox').getAttribute("collapsed") == "false";
+		},
+			
 		setAnnotationsVisibility: function (show) {
 			var annoContentBox = document.getElementById('oobAnnoContentBox');
 			var annoContentSplitter = document.getElementById('oobAnnoContentSplitter');
@@ -388,20 +418,19 @@ try {
 				if (this.prefs) {
 					var disable_anno = this.prefs.getBoolPref("disable_annotations");
 					if (disable_anno)
-						return; // don't make visible a disable component					
+						return; // don't make visible a disabled component					
 				}
 				
 				annoContentBox.setAttribute("collapsed", "false");
 				annoContentSplitter.setAttribute("collapsed", "false");
-				if ( window.annographiframe.lore && 
-					window.annographiframe.lore.ui &&
-					window.annographiframe.lore.ui.loreOpen ) {
-					window.annographiframe.lore.ui.loreOpen();	
+				
+				if ( lore.ui.global.annotationView.loaded()) {
+					lore.ui.global.annotationView.show();
 				} else {
 					//TODO: need a better way of doing this
 					window.setTimeout(function(){
 						lore.debug.ui("Annotations: Delayed loreOpen running...");
-						window.annographiframe.lore.ui.loreOpen();
+						lore.ui.global.annotationView.show();
 					}, 2000);
 				}
 				
@@ -409,15 +438,13 @@ try {
 				annoContentBox.setAttribute("collapsed", "true");
 				annoContentSplitter.setAttribute("collapsed", "true");
 				
-				if ( window.annographiframe.lore && 
-				window.annographiframe.lore.ui && 
-				window.annographiframe.lore.ui.loreClose ) {
-					window.annographiframe.lore.ui.loreClose();	
+				if ( lore.ui.global.annotationView.loaded() ) {
+					lore.ui.global.annotationView.hide();
 				} else {
 					//TODO: need a better way of doing this
 					window.setTimeout(function(){
 						lore.debug.ui("Annotations: Delayed loreClose running...");
-						window.annographiframe.lore.ui.loreClose();
+						lore.ui.global.annotationView.hide();
 					}, 2000);
 				}			
 			}
@@ -430,32 +457,28 @@ try {
 				if ( this.prefs) {
 					var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
 					if ( disable_co)
-						return; // don't make visible a disabled componet
+						return; // don't make visible a disabled component
 				}
 				contentBox.setAttribute("collapsed", "false");
 				contentSplitter.setAttribute("collapsed", "false");
-				if (window.graphiframe.lore  &&
-					window.graphiframe.lore.ui &&
-					window.graphiframe.lore.ui.loreOpen) {
-					window.graphiframe.lore.ui.loreOpen();
+				if ( lore.ui.global.compoundObjectView.loaded()) {
+					lore.ui.global.compoundObjectView.show();
 				}else {
 					window.setTimeout(function(){
 						lore.debug.ui("Compount Objects: Delayed loreOpen running...");
-						window.graphiframe.lore.ui.loreOpen();
+						lore.ui.global.compoundObjectView.show();
 					}, 2000);
 					
 				}
 			} else {
 				contentBox.setAttribute("collapsed", "true");
 				contentSplitter.setAttribute("collapsed", "true");
-				if (window.graphiframe.lore &&
-					window.graphiframe.lore.ui &&
-					window.graphiframe.lore.ui.loreClose ) {
-					window.graphiframe.lore.ui.loreClose();
+				if ( lore.ui.global.compoundObjectView.loaded()) {
+					lore.ui.global.compoundObjectView.hide();
 				} else {
 					window.setTimeout(function(){
 						lore.debug.ui("Compount Objects: Delayed loreClose running...");
-						window.graphiframe.lore.ui.loreClose();
+						lore.ui.global.compoundObjectView.hide();
 					}, 2000);
 				}
 			}
@@ -479,6 +502,6 @@ try {
 		loreoverlay.uninit()
 	}, false);
 } catch (e ) {
-	alert(e);
+	alert(e + " " + e.lineNumber);
 
 }

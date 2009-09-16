@@ -24,12 +24,9 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getInstallLocation(lore.constants.EXTENSION_ID)
 		.getItemLocation(lore.constants.EXTENSION_ID);
 
-
- 
-
-
-	//TODO: This eventually should be a shared function
-	lore.ui.initModel = function ( theURL ) {
+	//TODO: This eventually should be a shared function and moved outta here into the model
+	
+	lore.anno.initModel = function ( theURL ) {
 		lore.anno.annods = lore.store.create(lore.anno.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({
 									fields: [
@@ -60,18 +57,7 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		
 	}
 	
-	//TODO: This eventually should be a shared function
-	lore.ui.initViews = function ( theviews ) {
-		for ( var i = 0; i< theviews.length; i++) {
-			var v = theviews[i];
-			if (typeof(v) == "function") {
-				v( { annods: lore.anno.annods});
-			} 
-		}
-	}
-	
-	
-	lore.ui.initControllers = function () {
+	lore.ui.anno.initModelHandlers = function () {
 		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
 		lore.anno.annods.on( { "update": {fn: lore.ui.anno.updateUIOnUpdate}, 
 							   "load":{fn: lore.ui.anno.updateUI},
@@ -80,44 +66,33 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 							   });
     }
 	
-	
-	
-
-	
-	lore.ui.init = function(){
+	lore.ui.anno.init = function(){
 		try {
 			lore.m_xps = new XPointerService();
-			// TODO: this could be shared in common library
-			// TODO: namespace should reflect components i.e lore.ui.initModel??
+			// TODO: some of this code could be shared in common library
 
-			window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 			lore.ui.currentURL = lore.util.getContentWindow().location.href;
-			lore.ui.initModel(lore.ui.currentURL);
-			lore.ui.initViews([lore.ui.anno.initGUI]);
-			lore.ui.initControllers();
-			
+			lore.anno.initModel(lore.ui.currentURL);
+			lore.ui.anno.initGUI({ annods: lore.anno.annods});
+			lore.ui.anno.initModelHandlers();
 			
 			// TODO:load preferences, shared code?
 			try{
-				window.parent.loreoverlay.loadAnnoPrefs();
+				lore.ui.global.topWindowView.loadAnnotationPrefs();
     		} catch (ex){
-        		alert(ex.toString());
+        		lore.debug.anno("Error loading annotation preferences: " + ex, ex);
     		}
 	
-			//TODO: could be shared code		
-			if (window.parent.document.getElementById('oobAnnoContentBox')
-			.getAttribute("collapsed") == "true") {
-				lore.ui.lorevisible = false;
-			} else {
-				lore.ui.lorevisible = true;
-			}
-			
+			lore.ui.lorevisible = lore.ui.global.topWindowView.annotationsVisible();
 			
  			lore.ui.anno.initTimeline();
+
+			lore.ui.global.annotationView.registerView(lore.ui.anno);
 			
 			if (lore.ui.currentURL && lore.ui.currentURL != '' &&
 				lore.ui.currentURL != 'about:blank' &&
 				lore.ui.lorevisible) {
+				lore.debug.anno("anno init: updating sources");
 				lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
 				lore.ui.loadedURL = lore.ui.currentURL; //TODO: this could be shared code
 			}
@@ -126,9 +101,9 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 			// TODO: the 'view' should call this function						
 			lore.debug.anno("Annotation init");
 		} catch (e ) {
-			lore.debug.ui("Errors! " + e, e);
+			lore.debug.ui("Except in anno init ! " + e, e);
 		}
 	}
 	
-	Ext.EventManager.onDocumentReady(lore.ui.init);
+	Ext.EventManager.onDocumentReady(lore.ui.anno.init);
 
