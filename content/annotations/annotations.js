@@ -706,6 +706,8 @@
 		
 		if (lore.anno.annoURL) {
 			var queryURL = lore.anno.annoURL + lore.anno.ANNOTATES + escape(theURL);
+			
+			//TODO:This view specific output should be put elsewhere not in model
 			lore.ui.loreInfo("Loading annotations for " + theURL);
 			Ext.Ajax.request({
 				url: queryURL,
@@ -714,6 +716,7 @@
 				success: lore.anno.handleAnnotationsLoaded,
 				failure: function(resp, opt){
 					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
+					//TODO:this output needs to be moved into a callback function
 					lore.ui.loreInfo("No annotations found for the current page");
 				}
 			});

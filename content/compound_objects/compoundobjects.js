@@ -18,6 +18,82 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
+lore.ui.loreError = function(message){
+	lore.ui.lorestatus.setStatus({
+			text: message,
+			iconCls: 'error-icon',
+			clear: {
+				wait: 3000
+			}
+		});
+	lore.ui.global.loreError(message);
+}
+
+lore.ui.loreInfo = function(message) {
+	lore.ui.lorestatus.setStatus({
+				text: message,
+				iconCls: 'info-icon',
+				clear: {
+					wait: 3000
+				}
+	});
+	lore.ui.global.loreInfo(message);
+}
+	
+lore.ui.loreWarning = function(message){
+
+	lore.ui.lorestatus.setStatus({
+		text: message,
+		iconCls: 'warning-icon',
+		clear: {
+			wait: 3000
+		}
+	});
+	lore.ui.global.loreWarning(message);
+}
+/**
+ * Set the global variables for the repository access URLs
+ *
+ * @param {}
+ *            rdfrepos The repository access URL
+ * @param {}
+ *            rdfrepostype The type of the repository (eg sesame, fedora)
+ * @param {}
+ *            annoserver The annotation server access URL
+ */
+lore.ore.setRepos = function(rdfrepos, rdfrepostype){
+	lore.ore.reposURL = rdfrepos; // compound object repository
+	lore.ore.reposType = rdfrepostype; // type of compound object repository
+}
+	
+	
+lore.ore.setdccreator = function(creator){
+	var remprops = lore.ui.grid.getSource();
+	remprops["dc:creator"] = creator;
+	lore.ui.grid.setSource(remprops);
+	lore.defaultCreator = creator;
+}
+
+lore.ore.show = function () {
+	lore.ui.lorevisible = true;
+		
+	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank' &&
+		lore.ui.currentURL != '' &&
+		(!lore.ui.loadedURL || lore.ui.currentURL != lore.ui.loadedURL)) {
+			lore.ore.updateCompoundObjectsSourceList(lore.ui.currentURL);
+			lore.ui.loadedURL = lore.ui.currentURL;
+		}
+}
+
+lore.ore.hide = function () {
+	lore.ui.lorevisible = false;
+}
+
+// alias used by uiglobal
+lore.ore.addFigure = function (theURL) {
+	lore.ore.graph.addFigure(theURL);
+}
+
 /**
  * Render the current resource map as RDF/XML in the RDF view
  */
@@ -985,8 +1061,7 @@ lore.ore.saveRDFToRepository = function() {
 		                                    lore.ui.loreInfo(remid + " saved to "
 		                                            + lore.ore.reposURL);
 		                                } else {
-		                                    lore.ui
-		                                            .loreError('Unable to save to repository'
+		                                    lore.ui.loreError('Unable to save to repository'
 		                                                    + xmlhttp2.responseText);
 		                                    Ext.Msg.show({
 		                                        title : 'Problem saving RDF',
@@ -1032,7 +1107,9 @@ lore.ore.setrelonturl = function(relonturl) {
     }
 }
 
-lore.ui.ore.handleLocationChange = function (contextURL) {
+
+
+lore.ore.handleLocationChange = function (contextURL) {
 	lore.ui.currentURL = contextURL;
 	
 	if ( !lore.ui.lorevisible || ! lore.ui.initialized)
@@ -1049,8 +1126,7 @@ lore.ui.ore.handleLocationChange = function (contextURL) {
  *            contextURL The escaped URL
  */
 lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
-	lore.debug.ui("i'm here!");
-    lore.ui.clearTree(lore.ui.remstreeroot);
+    lore.ui.global.clearTree(lore.ui.remstreeroot);
 	lore.ui.currentURL = contextURL;
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         var escapedURL = escape(contextURL);
@@ -1179,7 +1255,7 @@ lore.ore.graph.addFigureWithOpts = function(opts){
  *            theURL The URL of the resource to be represented by the node
  */
 lore.ore.graph.addFigure = function(theURL) {
-    var fig = lore.ore.graph.addFigureWithOpts({
+	var fig = lore.ore.graph.addFigureWithOpts({
         "url": theURL, 
         "x": lore.ore.graph.dummylayoutx,
         "y": lore.ore.graph.dummylayouty

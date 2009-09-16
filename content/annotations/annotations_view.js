@@ -31,6 +31,97 @@
 	/**
 	 * General functions
 	 */
+	lore.ui.loreMsg = function(message, iconCls){
+		if (!lore.ui.loreMsgStack) {
+			lore.ui.loreMsgStack = [];
+		}
+		iconCls = iconCls || '';
+		message = '<div class="status-bubble-icon ' + iconCls + '"></div><div class="status-bubble-msg">' + message + "</div>";
+		
+		lore.ui.loreMsgStack.push(message);
+		Ext.Msg.show({
+			msg: '',
+			modal: false,
+			closable: true,
+			width: window.innerWidth
+		});
+		Ext.Msg.updateText(lore.ui.loreMsgStack.join('<br/>'));
+		var w = Ext.Msg.getDialog();
+		w.setPosition(0, window.innerHeight - w.getBox().height);
+		
+		window.setTimeout(function(){
+			try {
+				if (lore.ui.loreMsgStack.length == 1) {
+					lore.ui.loreMsgStack.pop();
+					Ext.Msg.hide();
+				}
+				else {
+					lore.ui.loreMsgStack.splice(0, 1);
+					Ext.Msg.updateText(lore.ui.loreMsgStack.join('<br/>'));
+					var w = Ext.Msg.getDialog();
+					w.setPosition(0, window.innerHeight - w.getBox().height);
+				}
+			} 
+			catch (e) {
+				lore.debug.ui(e, e);
+			}
+		}, 3000);
+		
+	}
+	
+	
+	lore.ui.loreInfo = function(message ) {
+		lore.ui.loreMsg(message, 'info-icon');
+		lore.ui.global.loreInfo(message);
+	}
+	
+	lore.ui.loreError = function(message) {
+		lore.ui.loreMsg(message, 'error-icon');
+		lore.ui.global.loreError(message);	
+		
+	}
+	lore.ui.loreWarning = function(message) {
+		lore.ui..loreMsg(message, 'warning-icon');
+		lore.ui.global.loreWarning(message);
+	}
+	
+	
+			
+	lore.ui.anno.setdccreator = function(creator){
+			lore.defaultCreator = creator;
+	}
+	/**
+	 * Set the global variables for the repository access URLs
+	 *
+	 * @param {}
+	 *            rdfrepos The repository access URL
+	 * @param {}
+	 *            rdfrepostype The type of the repository (eg sesame, fedora)
+	 * @param {}
+	 *            annoserver The annotation server access URL
+	 */
+	lore.ui.anno.setRepos = function(annoserver){
+		lore.anno.annoURL = annoserver; // annotation server
+	}
+	
+		//loreOpen
+	lore.ui.anno.show = function(){
+				lore.ui.lorevisible = true;
+			
+			if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank' &&
+			lore.ui.currentURL != '' &&
+			(!lore.ui.loadedURL || lore.ui.currentURL != lore.ui.loadedURL)) {
+			
+				lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
+				lore.ui.loadedURL = lore.ui.currentURL; //TODO: this could be shared code
+			}
+		}
+		
+		//loreClose
+		lore.ui.anno.hide = function(){
+			lore.ui.lorevisible = false;
+		}
+	
 		lore.ui.anno.updateUIElements = function(rec){
 			// update the highlighted fields colour in the event the creator is changed
 			// the colour is identified by the creator's name
@@ -588,8 +679,11 @@
 					node.contextmenu.add({
 						text: "Add as node in compound object editor",
 						handler: function(evt){
-							//TODO: temporary way to access lore
-							parent.loreoverlay.graphiframe.lore.ore.graph.addFigure(node.id);
+							try {
+								lore.ui.global.compoundObjectView.addFigure(node.id);
+							} catch (e ){
+								lore.debug.anno("Error adding node to compound editor:" + e, e);
+							}
 						}
 					});
 					
@@ -1029,7 +1123,7 @@
 						title = "Original Resource";
 					}
 					
-					parent.loreoverlay.updateVariationSplitter(ctx, title, true, function(){
+					lore.ui.global.topWindowView.updateVariationSplitter(ctx, title, true, function(){
 						lore.ui.anno.hideMarker();
 						lore.ui.anno.highlightCurrentAnnotation(rec);
 					});
@@ -1203,9 +1297,9 @@
 						lore.debug.anno("Error highlighting variation context: " + e, e);
 					}
 					
-					if (parent.loreoverlay.variationContentWindowIsVisible()) {
+					if (lore.ui.global.topWindowView.variationContentWindowIsVisible()) {
 						try {
-							lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle, parent.loreoverlay.getVariationContentWindow()))
+							lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.variantcontext), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle, lore.ui.global.topWindowView.getVariationContentWindow()))
 						} 
 						catch (e) {
 							lore.debug.anno(e, e);
@@ -1221,9 +1315,9 @@
 						lore.debug.anno("Error highlighting variation context: " + e, e);
 					}
 					
-					if (rec.data.context && parent.loreoverlay.variationContentWindowIsVisible()) {
+					if (rec.data.context && lore.ui.global.topWindowView.variationContentWindowIsVisible()) {
 						try {
-							lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle, parent.loreoverlay.getVariationContentWindow()))
+							lore.ui.anno.curAnnoMarkers.push(lore.ui.anno.highlightAnnotation(lore.util.normalizeXPointer(rec.data.context), lore.ui.anno.getCreatorColour(rec.data.creator), lore.ui.anno.setCurAnnoStyle, lore.ui.global.topWindowView.getVariationContentWindow()))
 						} 
 						catch (e) {
 							lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -1263,7 +1357,7 @@
 				 
 				
 				
-				if ( parent.loreoverlay.variationContentWindowIsVisible() &&
+				if ( lore.ui.global.topWindowView.variationContentWindowIsVisible() &&
 					 lore.ui.anno.curSelAnno.data.type== lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation") {
 					 lore.ui.anno.showSplitter();	
 				} else {
@@ -1346,7 +1440,7 @@
 		}
 		
 	} catch(e ) {
-		alert(e);
+		alert(e + " " + e.stack);
 	}
 
 	/**
@@ -1403,6 +1497,7 @@
 				}
 			}
 		} catch (e ) {
+			
 			lore.debug.anno(e,e);
 		}
 		lore.anno.updateAnnotationsSourceList(contextURL);

@@ -28,8 +28,7 @@ Ext.namespace(
     "lore.anno",
 	"lore.ore.graph",
     "lore.textm", 
-    "lore.debug",
-	"lore.store"
+    "lore.debug"
 );
 
 lore.constants.EXTENSION_ID = "lore@maenad.itee.uq.edu.au";

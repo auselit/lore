@@ -176,8 +176,9 @@ try {
 	lore.debug.ui("Exception creating lore UI", ex);
 }
 
-lore.ui.ore.disableUIFeatures = function(opts) {
+lore.ore.disableUIFeatures = function(opts) {
     // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
+	
     lore.debug.ui("LORE Compound Objects: disable ui features?", opts);
     lore.ui.disabled = opts;
     
@@ -188,15 +189,15 @@ lore.ui.ore.disableUIFeatures = function(opts) {
             lore.ui.loreviews.remove(lore.ui.textminingtab);
         }
     } 
-	
-    if (opts.disable_compoundobjects){
-		window.parent.loreoverlay.setCompoundObjectsVisibility(false);
-    } else {
-		// don't set visible on initial call
-		if (!lore.ui.ore.disableUIFeatures.initialCall ) {
-			lore.ui.ore.disableUIFeatures.initialCall=1;
-		} else {
-			window.parent.loreoverlay.setCompoundObjectsVisibility(true);
+	if (!lore.ore.disableUIFeatures.initialCall) {
+		lore.ore.disableUIFeatures.initialCall = 1;
+	}
+	else {
+		if (opts.disable_compoundobjects) {
+			lore.ui.global.topWindowView.setCompoundObjectsVisibility(false);
+		}
+		else {
+			lore.ui.global.topWindowView.setCompoundObjectsVisibility(true);
 		}
 	}
 }

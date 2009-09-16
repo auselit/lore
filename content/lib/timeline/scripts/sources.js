@@ -403,7 +403,7 @@ Timeline.DefaultEventSource.Event = function(args) {
   }
 
   this._description = args.description;//SimileAjax.HTML.deEntify(args.description);
-  lore.debug.anno("the description is ",this._description);
+  
   this._image = cleanArg('image');
   this._link =  cleanArg('link');
   this._title = cleanArg('hoverText');
