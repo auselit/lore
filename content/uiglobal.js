@@ -22,6 +22,9 @@
 	
 	global = {};
 	
+	/*
+	 * TODO: This is temporary until lore.debug is imported as a shared js module
+	 */
 	FBTrace = Components.classes["@joehewitt.com/firebug-trace-service;1"]
         .getService(Components.interfaces.nsISupports)
         .wrappedJSObject
@@ -149,7 +152,8 @@
 	}
 
 	var funcs = ["setrelonturl", "setdccreator","setRepos","show","hide",
-	"disableUIFeatures","loadCompoundObject","loadRDF","handleLocationChange", "addFigure" ];
+	"disableUIFeatures","loadCompoundObject","loadRDF","handleLocationChange", "addFigure",
+	"saveRDFToRepository", "deleteFromRepository", "serializeREM", "loadRelationshipsFromOntology" ];
 	for ( var i=0;i < funcs.length;i++) {
 		var funcname = funcs[i];
 		global.compoundObjectView[funcname] = eval('function(){'+
@@ -181,7 +185,11 @@
 			}
 		},
 	}
-	var funcs = ["handleLocationChange", "show","hide","setRepos","setdccreator","disableUIFeatures"];
+	
+	var funcs = ["handleLocationChange", "show","hide","setRepos","setdccreator","disableUIFeatures",
+	"handleAddAnnotation", "handleDeleteAnnotation", "handleEditAnnotation","handleReplyToAnnotation",
+	"handleSaveAnnotationChanges", "handleSaveAllAnnotationChanges", "showAllAnnotations"  ];
+	
 	for ( var i=0;i < funcs.length;i++) {
 		var funcname = funcs[i];
 		global.annotationView[funcname] = eval('function(){'+
