@@ -509,6 +509,12 @@ lore.ore.loadCompoundObject = function (rdf) {
                         opts[prop] = this[prop].value;
                     }
                 }
+                if (opts.x < 0){
+                    opts.x = 0;
+                }
+                if (opts.y < 0) {
+                    opts.y = 0;
+                }
                 fig = lore.ore.graph.addFigureWithOpts(opts);
              } else {
                 fig = lore.ore.graph.addFigure(resourceURL);
