@@ -13,7 +13,7 @@ lore.ore.graph.ContextmenuConnection=function(){
     this.setRelationshipType("http://purl.org/dc/elements/1.1/","relation",false);
 	this.sourcePort=null;
     this.targetPort=null;
-	this.lineSegments=new Array();
+	this.lineSegments=[];
 	this.setColor(this.lineColor);
 	this.setLineWidth(1);
     var tgtArrow = new draw2d.ArrowConnectionDecorator();
@@ -63,7 +63,7 @@ lore.ore.graph.ContextmenuConnection.prototype.getContextMenu=function() {
             var symmquery = lore.ore.relOntology.prefix('rdf',lore.constants.RDF_SYNTAX_NS)
                 .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
 	        var symm = symmquery.length > 0;
-			var functionstr = "lore.ore.graph.selectedFigure.setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");"
+			var functionstr = "lore.ore.graph.selectedFigure.setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
 	 		lore.ore.graph.ContextmenuConnection.contextMenu.appendMenuItem(new draw2d.MenuItem(rel,null,new Function(functionstr)));
 	 	}
         lore.ore.graph.ContextmenuConnection.loadedOntology = lore.ore.onturl;
