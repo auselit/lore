@@ -292,6 +292,7 @@ lore.ore.CompObjListing = function(result){
 }
 
 lore.ore.serializeREM = function(format) {
+	
     if (format == 'foxml') {
         return lore.ore.createFOXML();
     }

@@ -287,12 +287,12 @@ lore.ui.init = function() {
 	
 	lore.ui.initExtComponents();
     lore.ui.initProperties();
-    lore.ui.initOntologies();
 	lore.ui.initGraphicalView();
 	lore.ui.loreInfo("Welcome to LORE");
 
 	lore.ui.global.compoundObjectView.registerView(lore.ore);  
-	lore.ui.global.textMiningView.registerView(lore.textm);  
+	lore.ui.global.textMiningView.registerView(lore.textm);
+	lore.ui.initOntologies();  
 	
 	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank'
 			&& lore.ui.currentURL != '' && lore.ui.lorevisible) {          

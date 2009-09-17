@@ -677,7 +677,7 @@ lore.ui.anno.initExtComponents = function(){
 				.on('click', function () { lore.ui.anno.rejectChanges()});
 		Ext.getCmp("hideeditbtn").on('click', lore.ui.anno.hideAnnotation);
 		Ext.getCmp("updannobtn").on('click', lore.ui.anno.handleSaveAnnotationChanges);
-		Ext.getCmp("delannobtn").on('click', lore.ui.anno.deleteMsgBoxShow);
+		Ext.getCmp("delannobtn").on('click', lore.ui.anno.handleDeleteAnnotation);
 		Ext.getCmp("updctxtbtn").on('click',
 				lore.ui.anno.handleUpdateAnnotationContext);
 		Ext.getCmp("updrctxtbtn").on('click',

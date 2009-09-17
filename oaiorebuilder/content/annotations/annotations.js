@@ -300,10 +300,9 @@
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading tree
 		anno.commit(lore.anno.isNewAnnotation(anno));
-		//lore.debug.anno("anno: " + anno, anno);
-		//return;
 		
 		var annoRDF = lore.anno.createAnnotationRDF(anno.data);
+		
 		lore.debug.anno("rdf: " + annoRDF, annoRDF);
 		
 		var xhr = new XMLHttpRequest();
@@ -413,12 +412,13 @@
 		
 		if (anno.isReply) {
 			rdfxml += '<inReplyTo xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
-			var rootannonode = lore.util.findChildRecursively(window.top.annographiframe.lore.ui.annotationstreeroot, 'id', anno.resource);
+			
+			var rootannonode = lore.util.findRecordById(lore.anno.annods, anno.resource);
 			if (rootannonode) {
-				while (rootannonode.getDepth() > 2) {
-					rootannonode = rootannonode.parentNode;
+				while ( rootannonode.data.isReply) {
+					rootannonode = lore.util.findRecordById(lore.anno.annods, rootannonode.data.resource);
 				}
-				rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + rootannonode.id + '"/>';
+				rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + rootannonode.data.id + '"/>';
 			}
 			else {
 				rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
@@ -784,6 +784,7 @@
 			var isLeaf = (replyList.length == 0);
 			if (!isLeaf) {
 				replies = lore.anno.orderByDate(replyList);
+				
 				
 				var parent = lore.util.findRecordById(lore.anno.annods, replies[0].resource);
 				parent.data.replies = [];

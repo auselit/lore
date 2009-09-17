@@ -22,6 +22,7 @@
 	
 	global = {};
 	
+	
 	/*
 	 * TODO: This is temporary until lore.debug is imported as a shared js module
 	 */
@@ -29,7 +30,8 @@
         .getService(Components.interfaces.nsISupports)
         .wrappedJSObject
         .getTracer("extensions.lore");
-            
+    
+		
 	// TODO: global logging ( in addition to the logging for each view)
 	// log to a log4j file instead of firebug window??
 	// log4j built-in xpc thing in firefox
@@ -62,7 +64,6 @@
 	}
 	
 	global.reset = function (win ) {
-		win.annographiframe.lore.ui.anno.hideMarker(); //TODO:change
 		global.compoundObjectView.unregisterView();
 		global.annotationView.unregisterView();
 		
@@ -143,8 +144,12 @@
 		
 		unregisterView: function (coView) {
 			if (!coView) {
+				for (var i=0; i < this.coViews.length; i++) {
+					if ( this.coViews[i].uninit ) {
+						this.coViews[i].uninit();
+					}
+				}
 				this.coViews = [];
-				this.funcMap = [];
 			} else {
 				//TODO:		
 			}
@@ -158,9 +163,10 @@
 		var funcname = funcs[i];
 		global.compoundObjectView[funcname] = eval('function(){'+
 			'FBTrace.sysout("[UI] " + "compoundObjectView.' + funcname + ' args:" + arguments, arguments);' +
-			'	for (var j = 0; j < this.coViews.length; j++) {' +
-			'	this.coViews[j]["' + funcname + '"].apply(this.coViews[j],arguments);' +
-			'}' +
+			'	return this.coViews[0]["' + funcname + '"].apply(this.coViews[0],arguments);' +
+		//	'	for (var j = 0; j < this.coViews.length; j++) {' +
+			//'	this.coViews[j]["' + funcname + '"].apply(this.coViews[j],arguments);' +
+		//	'}' +
 		'}');
 	}
 	
@@ -179,6 +185,11 @@
 		
 		unregisterView: function (annoView) {
 			if (!annoView) {
+				for (var i=0; i < this.annoViews.length; i++) {
+					if ( this.annoViews[i].uninit ) {
+						this.annoViews[i].uninit();
+					}
+				}
 				this.annoViews = [];
 			} else {
 				//TODO:		
@@ -194,9 +205,10 @@
 		var funcname = funcs[i];
 		global.annotationView[funcname] = eval('function(){'+
 			'FBTrace.sysout("[UI] " + "annotationView.' + funcname + ' args:" + arguments, arguments);' +
-			'	for (var j = 0; j < this.annoViews.length; j++) {' +
-			'	this.annoViews[j]["' + funcname + '"].apply(this.annoViews[j],arguments);' +
-			'}' +
+			'   return this.annoViews[0]["' + funcname + '"].apply(this.annoViews[0],arguments);' +
+			//'	for (var j = 0; j < this.annoViews.length; j++) {' +
+			//'	this.annoViews[j]["' + funcname + '"].apply(this.annoViews[j],arguments);' +
+			//'}' +
 		'}');
 	}
 	

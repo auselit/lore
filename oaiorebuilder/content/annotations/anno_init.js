@@ -76,18 +76,17 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 			lore.ui.anno.initGUI({ annods: lore.anno.annods});
 			lore.ui.anno.initModelHandlers();
 			
+			lore.ui.lorevisible = lore.ui.global.topWindowView.annotationsVisible();
+			
+ 			lore.ui.anno.initTimeline();
+
+			lore.ui.global.annotationView.registerView(lore.ui.anno);
 			// TODO:load preferences, shared code?
 			try{
 				lore.ui.global.topWindowView.loadAnnotationPrefs();
     		} catch (ex){
         		lore.debug.anno("Error loading annotation preferences: " + ex, ex);
     		}
-	
-			lore.ui.lorevisible = lore.ui.global.topWindowView.annotationsVisible();
-			
- 			lore.ui.anno.initTimeline();
-
-			lore.ui.global.annotationView.registerView(lore.ui.anno);
 			
 			if (lore.ui.currentURL && lore.ui.currentURL != '' &&
 				lore.ui.currentURL != 'about:blank' &&
@@ -103,6 +102,10 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		} catch (e ) {
 			lore.debug.ui("Except in anno init ! " + e, e);
 		}
+	}
+	
+	lore.ui.anno.uninit = function () {
+		lore.ui.anno.hideMarker(); 
 	}
 	
 	Ext.EventManager.onDocumentReady(lore.ui.anno.init);
