@@ -17,13 +17,12 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * General utility functions for I/O, manipulating the DOM, selections etc 
+ * @namespace
+ * @name lore.util
+ */
  
- /*
-  * General utility functions for I/O, manipulating the DOM, selections etc
-  */
- 
- 
-
 lore.util.clone = function(o) {
     if(!o || 'object' !== typeof o) {
         return o;
@@ -62,7 +61,7 @@ lore.util.dumpValues = function(obj){
  * 
  * Taken from code snippet on http://stackoverflow.com/questions/170004/how-to-remove-only-the-parent-element-and-not-its-child-elements-in-javascript .
  * 
- * @param DOMNode nodeToRemove
+ * @param {DOMNode} nodeToRemove
  */
 lore.util.removeNodePreserveChildren = function(nodeToRemove) {
   var fragment = document.createDocumentFragment();
@@ -85,7 +84,7 @@ lore.util.safeGetFirstChildValue = function(node, defaultValue)
 
 /**
  * Scroll to an element within a window
- * @param {} theElement
+ * @param {DOMElement} theElement
  * @param {} theWindow
  */
 lore.util.scrollToElement = function(theElement, theWindow){
@@ -367,6 +366,11 @@ lore.util.getXPathForSelection = function()
     throw new Error('XPath create failed\n' + ex.toString());
   }
   return xp;
+}
+lore.util.getXPathForImgSelection = function (){
+    //return XPointerCreator.xpointer_wrap('image-range(' + this.create_child_XPointer(node) +
+    //    ',[' + x1 + ',' + y1 + '],[' + x2 + ',' + y2 + '],"' + src + '")');
+
 }
 /**
  * Return the text contents of a selection
