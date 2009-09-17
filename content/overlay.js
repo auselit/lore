@@ -15,6 +15,7 @@ try {
 		alert("Not all js modules loaded.");
 	}
 	
+	
 	var loreoverlay = {
 		oreLocationListener: {
 			QueryInterface: function(aIID){
@@ -84,7 +85,7 @@ try {
 			this.loadAnnotationPrefs();
 		},
 		uninit: function(){
-			if (this.graphiframe) {
+			if ( lore.ui.global.annotationView.loaded() || lore.ui.global.compoundObjectView.loaded()) {
 				gBrowser.removeProgressListener(this.oreLocationListener);
 			}
 		},
@@ -171,7 +172,7 @@ try {
         },
 		addAnnotation: function(){
 			try {
-				window.annographiframe.lore.ui.anno.handleAddAnnotation();
+				lore.ui.global.annotationView.handleAddAnnotation();
 			}catch (e ) {
 				alert("addAnnotation: " + e) ;
 			}
@@ -179,41 +180,42 @@ try {
 		
 		removeAnnotation: function() {
 			try {
-				window.annographiframe.lore.ui.anno.deleteMsgBoxShow();
+				lore.ui.global.annotationView.handleDeleteAnnotation();
 			} catch (e) {
 				alert(e + " " +  e.stack);
 			}
 		},
 		
 		editAnnotation: function () {
-			window.annographiframe.lore.ui.anno.handleEditAnnotation();
+			lore.ui.global.annotationView.handleEditAnnotation();
 		},
 		
 		replyToAnnotation: function () {
-			window.annographiframe.lore.ui.anno.handleReplyToAnnotation();
+			lore.ui.global.annotationView.handleReplyToAnnotation();
 		},
 		
 		saveAnnotation: function () {
-			window.annographiframe.lore.ui.anno.handleSaveAnnotationChanges();
+			lore.ui.global.annotationView.handleSaveAnnotationChanges();
 		},
 		
 		saveAllAnnotations: function () {
-			window.annographiframe.lore.ui.anno.handleSaveAllAnnotationChanges();
+			lore.ui.global.annotationView.handleSaveAllAnnotationChanges();
 		},
 		
 		showAnnotations: function(){
-			window.annographiframe.lore.ui.anno.showAllAnnotations();
+			lore.ui.global.annotationView.showAllAnnotations();
 		},
 		saveRDF: function(){
-			window.graphiframe.lore.ore.saveRDFToRepository();
+			lore.ui.global.compoundObjectView.saveRDFToRepository();
 		},
         deleteRDF: function(){
-            window.graphiframe.lore.ore.deleteFromRepository();
+            lore.ui.global.compoundObjectView.deleteFromRepository();
         },
         serializeREM: function (format) {
             try{
-                var therdf = window.graphiframe.lore.ore.serializeREM(format);
-                var nsIFilePicker = Components.interfaces.nsIFilePicker;
+                var therdf = lore.ui.global.compoundObjectView.serializeREM(format);
+                // TODO: This should probably be out of the overlay
+				var nsIFilePicker = Components.interfaces.nsIFilePicker;
                 var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
                 fp.appendFilters(nsIFilePicker.filterXML | nsIFilePicker.filterAll);
                 fp.init(window, "Save Compound Object as", nsIFilePicker.modeSave);
@@ -236,7 +238,6 @@ try {
         },
 		addGraphNode: function(){
 			lore.ui.global.compoundObjectView.addFigure(window.content.location.href);
-			//window.graphiframe.lore.ore.graph.addFigure(window.content.location.href);
 		},
 		resetGraph: function(){
 			lore.ui.global.reset(window);
@@ -248,7 +249,7 @@ try {
 			window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
 		},
 		loadCompoundObjectPrefs: function(){
-			//window.graphiframe.lore.debug.ui("I am here");
+			
 			if (this.prefs) {
 				var dccreator = this.prefs.getCharPref("dccreator");
 				var relonturl = this.prefs.getCharPref("relonturl");
@@ -270,16 +271,12 @@ try {
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps? 
 				//lore.store.get("lore_preferences") 
-				//lore.ui.global.compoundObjectView.setdccreator(dccreator);
-				//lore.ui.global.compoundObjectView.setrelonturl(relonturl);
-				//lore.ui.global.compoundObjectView.setRepos(rdfrepos, rdfrepostype);
+				lore.ui.global.compoundObjectView.setdccreator(dccreator);
+				lore.ui.global.compoundObjectView.setrelonturl(relonturl);
+				lore.ui.global.compoundObjectView.setRepos(rdfrepos, rdfrepostype);
 				
-				window.graphiframe.lore.ore.setdccreator(dccreator);
-				window.graphiframe.lore.ore.setrelonturl(relonturl);
-				window.graphiframe.lore.ore.setRepos(rdfrepos, rdfrepostype);
-								
 				// hide or show related Ext UI depending on prefs
-				window.graphiframe.lore.ore.disableUIFeatures({
+				lore.ui.global.compoundObjectView.disableUIFeatures({
 					'disable_textmining': disable_tm,
 					'disable_compoundobjects': disable_co
 				});
@@ -306,13 +303,10 @@ try {
 				
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps?  
-				//lore.ui.global.annotationView.setdccreator(dccreator);
-				//lore.ui.global.annotationView.setRepos(annoserver);
+				lore.ui.global.annotationView.setdccreator(dccreator);
+				lore.ui.global.annotationView.setRepos(annoserver);
 				
-				window.annographiframe.lore.ui.anno.setdccreator(dccreator);
-				window.annographiframe.lore.ui.anno.setRepos(annoserver);
-				
-				window.annographiframe.lore.ui.anno.disableUIFeatures({
+				lore.ui.global.annotationView.disableUIFeatures({
 					'disable_annotations': disable_anno
 				});
 			}
@@ -325,8 +319,8 @@ try {
 			var prefservice = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
 			var loreprefs = prefservice.getBranch("extensions.lore.");
 			var relonturl = loreprefs.getCharPref("relonturl");
-			this.graphiframe.lore.ore.setrelonturl(relonturl);
-			this.graphiframe.lore.ore.loadRelationshipsFromOntology();
+			lore.ui.global.compoundObjectView.setrelonturl(relonturl);
+			lore.ui.global.compoundObjectView.loadRelationshipsFromOntology();
 			return true;
 		},
 		

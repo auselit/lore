@@ -81,7 +81,7 @@
 		
 	}
 	lore.ui.loreWarning = function(message) {
-		lore.ui..loreMsg(message, 'warning-icon');
+		lore.ui.loreMsg(message, 'warning-icon');
 		lore.ui.global.loreWarning(message);
 	}
 	
@@ -1006,7 +1006,7 @@
 		}
 		
 		
-		lore.ui.anno.deleteMsgBoxShow = function (){
+		lore.ui.anno.handleDeleteAnnotation = function (){
 	       if (lore.ui.anno.curSelAnno) {
 		   	Ext.MessageBox.show({
 		   		title: 'Delete annotation',
@@ -1014,14 +1014,14 @@
 		   		buttons: Ext.MessageBox.YESNO,
 		   		fn: function(btn){
 		   			if (btn == 'yes') 
-		   				lore.ui.anno.handleDeleteAnnotation();
+		   				lore.ui.anno.handleDeleteAnnotation2();
 		   		},
 		   		icon: Ext.Msg.QUESTION
 		   	});
 		   }
 	    }
 		
-		lore.ui.anno.handleDeleteAnnotation = function(){
+		lore.ui.anno.handleDeleteAnnotation2 = function(){
 			try {
 				lore.debug.anno("deleting " + lore.ui.anno.curSelAnno);
 				
