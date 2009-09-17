@@ -11,7 +11,7 @@ draw2d.Workflow.prototype.showResizeHandles=function(/*:draw2d.Figure*/ figure)
   // Reason: We would fadeIn the ResizeHandles at the new selected object but the fast toggle from oldSeleciton => newSelection
   //         doesn't reset the alpha to 0.0. So, we do it manually.
   //
-  if(this.getEnableSmoothFigureHandling()==true && this.getCurrentSelection()!=figure)
+  if(this.getEnableSmoothFigureHandling() && this.getCurrentSelection()!=figure)
   {
      this.resizeHandle1.setAlpha(0.01);
      this.resizeHandle2.setAlpha(0.01);

@@ -3,11 +3,9 @@
  */
 lore.ore.graph.SelectionProperties=function(/*:workflow*/ workflow)
 {
-   this.workflow = workflow;
-   
+   this.workflow = workflow; 
 }
 
-/** @private **/
 lore.ore.graph.SelectionProperties.prototype.type="lore.ore.graph.SelectionProperties";
 lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Figure*/figure){
 	if (figure != null) {
