@@ -38,27 +38,22 @@
 	// handy if users experience problems they can send log file in an email
 	
 	/**
-	 * Display an informational message in the status bar
-	 *
-	 * @param {}
-	 *            message The message to display
+	 * Display an informational message to the user
+	 * @param {String} message The message to display
 	 */
 	global.loreInfo = function(message){
 	}
 	
 	/**
-	 * Display an warning message in the status bar
-	 *
-	 * @param {}
-	 *            message The message to display
+	 * Display an warning message to the user
+	 * @param {String} message The message to display
 	 */
 	global.loreWarning = function(message){
 	}
 	/**
-	 * Display an error message in the status bar
+	 * Display an error message to the user
 	 *
-	 * @param {}
-	 *            message The message to display
+	 * @param {String} message The message to display
 	 */
 	global.loreError = function(message){
 	}
@@ -73,13 +68,12 @@
 	
 	global.load = function (win) {
 		win.document.getElementById("annographiframe").setAttribute("src", "chrome://lore/content/annotations/loreui_anno.html");
-        win.document.getElementById("graphiframe").setAttribute("src", "chrome://lore/content/compound_objects/loreui.html");
+        win.document.getElementById("graphiframe").setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
 	}
 	
 	/**
-	 * Clear nodes from sources tree
-	 *
-	 * @param {Object} theTree The tree node to clear
+	 * Clear nodes all children from a tree node recursively
+	 * @param {Ext.tree.TreeNode} treeRoot The tree node to clear
 	 */
 	global.clearTree = function(treeRoot){
 		while (treeRoot.firstChild) {
@@ -194,7 +188,7 @@
 			} else {
 				//TODO:		
 			}
-		},
+		}
 	}
 	
 	var funcs = ["handleLocationChange", "show","hide","setRepos","setdccreator","disableUIFeatures",
