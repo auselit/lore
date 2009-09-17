@@ -17,49 +17,74 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
+    /** Compound objects
+ * @namespace
+ * @name lore.ore
+ */
 
+// Compound object editor graph view defaults
+/** Default width of new nodes in graphical editor 
+ * @const */
+lore.ore.NODE_WIDTH   = 220;
+/** Default height of new nodes in graphical editor 
+ * @const */
+lore.ore.NODE_HEIGHT  = 170;
+/** Default spacing between new nodes in graphical editor 
+ * @const */
+lore.ore.NODE_SPACING = 40;
+/** Used for layout in graphical editor - Maximum width before nodes are positioned on new row 
+ * @const */
+lore.ore.MAX_X        = 400;
+
+// TODO: replace with an ontology
+/** Default list of properties that can be specified for compound objects or aggregated resources 
+ * @const */
+lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
+    "dcterms:created", "dc:contributor", "dc:coverage", "dc:description",
+    "dc:format", "dcterms:hasFormat", "dc:identifier", "dc:language",
+    "dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
+    "dc:subject", "dc:title"]; 
+    
 lore.ui.loreError = function(message){
-	lore.ui.lorestatus.setStatus({
-			text: message,
-			iconCls: 'error-icon',
-			clear: {
-				wait: 3000
-			}
-		});
-	lore.ui.global.loreError(message);
+    lore.ui.lorestatus.setStatus({
+            text: message,
+            iconCls: 'error-icon',
+            clear: {
+                wait: 3000
+            }
+        });
+    lore.ui.global.loreError(message);
 }
 
 lore.ui.loreInfo = function(message) {
-	lore.ui.lorestatus.setStatus({
-				text: message,
-				iconCls: 'info-icon',
-				clear: {
-					wait: 3000
-				}
-	});
-	lore.ui.global.loreInfo(message);
+    lore.ui.lorestatus.setStatus({
+                text: message,
+                iconCls: 'info-icon',
+                clear: {
+                    wait: 3000
+                }
+    });
+    lore.ui.global.loreInfo(message);
 }
-	
+    
 lore.ui.loreWarning = function(message){
 
-	lore.ui.lorestatus.setStatus({
-		text: message,
-		iconCls: 'warning-icon',
-		clear: {
-			wait: 3000
-		}
-	});
-	lore.ui.global.loreWarning(message);
+    lore.ui.lorestatus.setStatus({
+        text: message,
+        iconCls: 'warning-icon',
+        clear: {
+            wait: 3000
+        }
+    });
+    lore.ui.global.loreWarning(message);
 }
+
 /**
  * Set the global variables for the repository access URLs
  *
- * @param {}
- *            rdfrepos The repository access URL
- * @param {}
- *            rdfrepostype The type of the repository (eg sesame, fedora)
- * @param {}
- *            annoserver The annotation server access URL
+ * @param {} rdfrepos The repository access URL
+ * @param {}rdfrepostype The type of the repository (eg sesame, fedora)
+ * @param {}annoserver The annotation server access URL
  */
 lore.ore.setRepos = function(rdfrepos, rdfrepostype){
 	lore.ore.reposURL = rdfrepos; // compound object repository
@@ -95,18 +120,6 @@ lore.ore.addFigure = function (theURL) {
 }
 
 /**
- * Render the current resource map as RDF/XML in the RDF view
- */
-lore.ore.updateRDFHTML = function() {
-    Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
-}
-lore.ore.updateFOXML = function (){
-    Ext.getCmp("remfoxmlview").body.update(Ext.util.Format.htmlEncode(lore.ore.createFOXML()));
-}
-lore.ore.updateTriG = function (){
-    Ext.getCmp("remtrigview").body.update("<pre>" + Ext.util.Format.htmlEncode(lore.ore.serializeREM('trig')) + "</pre>");
-}
-/**
  * Remove listeners and reference to RDF View if it is closed
  * 
  * @param {Object} tabpanel
@@ -131,26 +144,27 @@ lore.ore.closeView = function(tabpanel, panel) {
     return true;
 }
 
-/**
- * Create or show the RDF View
- */
+/** Create or activate the RDF View */
 lore.ore.openRDFView = function() { 
     lore.debug.ore("open rdf view");
     lore.ore.openView("remrdfview","RDF/XML",lore.ore.updateRDFHTML);
 }
+/** Create or activate the SMIL View */
 lore.ore.openSMILView = function() {
     lore.debug.ore("open smil view");
     lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
 }
+/** Create or activate the TriG View */
 lore.ore.openTriGView = function(){
     lore.debug.ore("open TriG view");
     lore.ore.openView("remtrigview","TriG",lore.ore.updateTriG);
 }
+/** Create or activate the FOXML View */
 lore.ore.openFOXMLView = function(){
     lore.debug.ore("open foxml view");
     lore.ore.openView("remfoxmlview","FOXML",lore.ore.updateFOXML);
 }
-
+/** Helper function to create or activate a view displayed in a closeable tab */
 lore.ore.openView = function (panelid,paneltitle,activationhandler){
     var tab = Ext.getCmp(panelid);
     if (!tab) {
@@ -169,9 +183,7 @@ lore.ore.openView = function (panelid,paneltitle,activationhandler){
     }
 }
 
-/**
- * Displays a summary of the resource URIs contained in the compound object
- */
+/** Displays a summary of the resource URIs aggregated by the compound object */
 lore.ore.showCompoundObjectSummary = function() {
     var remprops = lore.ui.grid.getSource();
 
@@ -200,9 +212,8 @@ lore.ore.showCompoundObjectSummary = function() {
     lore.ui.summarytab.body.update(newsummary);
     lore.ui.loreInfo("Displaying a summary of compound object contents");
 }
-/**
- * Generate a SMIL presentation and display a link to launch it
- */
+
+/** Generate a SMIL presentation from the current compound object and display a link to launch it */
 lore.ore.showSMIL = function() {
     
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
@@ -221,7 +232,19 @@ lore.ore.showSMIL = function() {
     Ext.getCmp("remsmilview").body.update(smilcontents);
     lore.ui.loreInfo("Display a multimedia presentation generated from the compound object contents");
 }
-
+/** Render the current compound object as RDF/XML in the RDF view */
+lore.ore.updateRDFHTML = function() {
+    Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
+}
+/** Render the current compound object as Fedora Object XML in the FOXML view */
+lore.ore.updateFOXML = function (){
+    Ext.getCmp("remfoxmlview").body.update(Ext.util.Format.htmlEncode(lore.ore.createFOXML()));
+}
+/** Render the current compound object in TriG format in the TriG view*/
+lore.ore.updateTriG = function (){
+    Ext.getCmp("remtrigview").body.update("<pre>" + Ext.util.Format.htmlEncode(lore.ore.serializeREM('trig')) + "</pre>");
+}
+/** Generate a slideshow representing the current compound object */
 lore.ore.showSlideshow = function (){
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
@@ -240,9 +263,7 @@ lore.ore.showSlideshow = function (){
         lore.debug.ore("adding slideshow",ex);
     }
 }
-/**
- * Generate a visualisation to explore compound object connections
- */
+/** Generate a visualisation to explore compound object connections */
 lore.ore.showExploreUI = function(){
     try{
     if (lore.ore.exploreLoaded !== lore.ore.currentREM) {
@@ -258,7 +279,7 @@ lore.ore.showExploreUI = function(){
 }
 /**
  * Stores basic metadata about a compound object for the results listing
- * @param {} sparqlxml
+ * @param {XMLNode} result
  */
 lore.ore.CompObjListing = function(result){
     var bindings;
@@ -318,7 +339,7 @@ lore.ore.serializeREM = function(format) {
     }
 }
 /**
- * Create the RDF/XML of the current resource map
+ * Create the RDF/XML of the current compound object
  * 
  * @param {Boolean} escape Indicates whether to escape the results for rendering as HTML
  * @return {String} The RDF/XML as a string
@@ -673,7 +694,7 @@ lore.ore.loadCompoundObject = function (rdf) {
 }
 
 /**
- * Loads a resource map from a URL into the graphical view and property panels
+ * Loads a ORE resource map from a URL into the graphical view and property panels
  * 
  * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
  */
@@ -1028,7 +1049,7 @@ lore.ore.deleteFromRepository = function(){
     });
 }
 /**
- * Save the resource map to the repository - prompt user to confirm
+ * Save the compound object to the repository - prompt user to confirm
  */
 lore.ore.saveRDFToRepository = function() {
     // TODO: implement Fedora support
@@ -1244,7 +1265,7 @@ lore.ore.graph.addFigureWithOpts = function(opts){
         lore.ore.graph.lookup[theURL] = fig.getId();
       	  lore.ui.loreviews.activate("drawingarea");
     } else {
-        lore.ui.loreWarning("Resource is already in resource map: " + theURL);
+        lore.ui.loreWarning("Resource is already in the compound object: " + theURL);
     }
     return fig;
 }
@@ -1316,6 +1337,7 @@ lore.ore.createSMIL = function() {
         lore.ui.loreWarning("Unable to generate SMIL: " + e.toString());
     }
 }
+/** Generate FOXML from the current compound object */
 lore.ore.createFOXML = function (){
     try {
         var params = {'coid': 'demo:' + lore.util.splitTerm(lore.ui.grid.getSource()['rdf:about']).term};
@@ -1327,8 +1349,8 @@ lore.ore.createFOXML = function (){
         return null;
     }
 }
+/** update the metadataproperties recorded in the figure for that node */
 lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
-    // update the metadataproperties recorded in the figure for that node
     lore.ore.graph.modified = true;
     var theval;
     lore.debug.ore("handle property change " + recid + " " + newval + " " + oldval,source);

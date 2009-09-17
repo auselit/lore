@@ -17,7 +17,11 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
-
+/**
+ * Text mining aspects of LORE
+ * @namespace
+ * @name lore.textm
+ */
 /**
  * Handler function for successful return of Ajax request to Calais web service
  * 
@@ -82,11 +86,21 @@ lore.textm.processRDFa = function() {
 	              }
 	            }
 	        });
-        }  
+        }    
     }
+    myrdf.prefix('rdf',lore.constants.RDF_SYNTAX_NS).where('?athing rdf:type ?atype').each(function(){
+       
+       var resultStr = this.athing.value + " is a " + this.atype.value + "<br>";
+       lore.ui.textminingtab.body.insertHtml('beforeEnd',resultStr);
+       myrdf.about(this.athing).each(function(){
+        lore.debug.ore("properties of thing "+ this.property.value.toString(),this);
+        
+       });
+       
+    });
     var ser = new XMLSerializer();
     var rdfxml = jQuery.rdf.dump(triples,{'format': 'application/rdf+xml', 'namespaces': {'austlit': 'http://austlit.edu.au/owl/austlit.owl#'}});
-    lore.ui.textminingtab.body.insertHtml('beforeEnd',"<pre style='font-size:smaller;color:#51666b;'>"
+    lore.ui.textminingtab.body.insertHtml('beforeEnd',"The RDF/XML is:<pre style='font-size:smaller;color:#51666b;'>"
         + Ext.util.Format.htmlEncode(XML(ser.serializeToString(rdfxml)).toXMLString()) + "</pre>");
     
     } catch (ex){

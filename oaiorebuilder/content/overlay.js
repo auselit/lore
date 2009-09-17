@@ -1,3 +1,7 @@
+/**
+ * @namespace
+ * @name loreoverlay
+ */
 try {
 	
 	// Load and cache global ui functions

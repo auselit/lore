@@ -18,19 +18,16 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Reference to the Extension
+/** Reference to the Extension */
 lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
 		.getInstallLocation(lore.constants.EXTENSION_ID)
 		.getItemLocation(lore.constants.EXTENSION_ID);
 
 /**
- * create menus to add/remove additional metadata properties
- * 
- * @param {Object}
- *            the_grid The property grid object on which to create the menus
- * @param {Object}
- *            gridname The display name of the property grid
+ * Create menus for adding/removing additional metadata properties
+ * @param {Ext.grid.GridPanel} the_grid The property grid object on which to create the menus
+ * @param {String} gridname The display name of the property grid
  */
 lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
 	var make_menu_entry = function(menu, gridname, propname, op) {
@@ -115,7 +112,7 @@ lore.ui.initGraphicalView = function() {
 	lore.ore.graph.dummylayouty = lore.ore.NODE_SPACING;
 }
 /**
- * Init domain ontology
+ * Load the preferences (which will init domain ontology)
  */
 lore.ui.initOntologies = function() {
     try{
@@ -270,7 +267,7 @@ lore.ui.initExtComponents = function() {
 
 
 /**
- * Initialise LORE
+ * Initialise Compound Objects component of LORE
  */
 lore.ui.init = function() {
     lore.ui.disabled = {};
