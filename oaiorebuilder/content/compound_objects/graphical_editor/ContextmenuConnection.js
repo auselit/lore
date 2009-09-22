@@ -60,7 +60,7 @@ lore.ore.graph.ContextmenuConnection.prototype.getContextMenu=function() {
 	 	for (var i =0; i< keys.length; i++){
 	 		rel = keys[i];
 			var relnamespace=lore.ore.ontrelationships[rel]; 
-            var symmquery = lore.ore.relOntology.prefix('rdf',lore.constants.RDF_SYNTAX_NS)
+            var symmquery = lore.ore.relOntology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
                 .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
 	        var symm = symmquery.length > 0;
 			var functionstr = "lore.ore.graph.selectedFigure.setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";

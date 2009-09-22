@@ -345,7 +345,7 @@ util = {
         try {
             var sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
             
-            var highlightNode = targetDocument.createElementNS(constants.XHTML_NS, "span");
+            var highlightNode = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
             // m_xps.markElement(highlightNode);
             // m_xps.markElementHide(highlightNode);
             if (colour) {
@@ -521,7 +521,7 @@ util = {
      */
     unescapeHTML : function (str){
         return(                                                                 
-                this.replace(/&amp;/g,'&').                                         
+                str.replace(/&amp;/g,'&').                                         
                     replace(/&gt;/g,'>').                                           
                     replace(/&lt;/g,'<').                                           
                     replace(/&quot;/g,'"')                                         
@@ -646,8 +646,8 @@ util = {
             var res2 = res.substring((res.indexOf('</title>')+8), res.length);
             res = res1 + res2;
         }
-        while (res.match('<br xmlns"'+ constants.XHTML_NS + '">')){
-            res = res.replace('<br xmlns="' + constants.XHTML_NS + '">', '<br />');
+        while (res.match('<br xmlns"'+ constants.NAMESPACES["xhtml"] + '">')){
+            res = res.replace('<br xmlns="' + constants.NAMESPACES["xhtml"] + '">', '<br />');
         }
         while (res.match('<br>')){
             res = res.replace('<br>','<br />');

@@ -720,7 +720,7 @@
 						}
 					});
 					
-					if (node.nodeType == lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation") {
+					if (node.nodeType == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
 						node.contextmenu.add({
 							text: "Show Variation Window",
 							handler: function(evt){
@@ -739,7 +739,7 @@
 			var res = "";
 			if (!noimglink) {
                 res += "<a title='Show annotation body in separate window' xmlns=\"" +
-                lore.constants.XHTML_NS +
+                lore.constants.NAMESPACES["xhtml"] +
                 "\" href=\"javascript:lore.global.util.launchWindow('" +
                 annodata.bodyURL +
                 "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
@@ -1408,7 +1408,7 @@
 				lore.anno.ui.setCurrentAnno(rec);// TODO: eventually have a listener on this to abstract on which gui element was selected
 				 
 				if ( lore.anno.ui.topView.variationContentWindowIsVisible() &&
-					 lore.anno.ui.curSelAnno.data.type== lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation") {
+					 lore.anno.ui.curSelAnno.data.type== lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
 					 lore.anno.ui.showSplitter();	
 				} else {
 					lore.anno.ui.highlightCurrentAnnotation(rec);

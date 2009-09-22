@@ -88,7 +88,7 @@ lore.textm.processRDFa = function() {
 	        });
         }    
     }
-    myrdf.prefix('rdf',lore.constants.RDF_SYNTAX_NS).where('?athing rdf:type ?atype').each(function(){
+    myrdf.prefix('rdf',lore.constants.NAMESPACES["rdf"]).where('?athing rdf:type ?atype').each(function(){
        
        var resultStr = this.athing.value + " is a " + this.atype.value + "<br>";
        lore.ui.textminingtab.body.insertHtml('beforeEnd',resultStr);

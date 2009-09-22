@@ -299,7 +299,7 @@ lore.ui.init = function() {
 		lore.ui.loadedURL = lore.ui.currentURL;
 	}
 	lore.ui.initialized = true;
-	lore.debug.ui("LORE Compound Object init complete", this);
+	lore.debug.ui("LORE Compound Object init complete", lore);
     } catch (e) {
         lore.debug.ui("exception in init",e);
     }
