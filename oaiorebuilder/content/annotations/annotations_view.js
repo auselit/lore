@@ -403,7 +403,7 @@
 		 
 		 lore.anno.ui.isDirty = function() {
 		 var dirtyList = [];
-		 lore.anno.uitationsform.items.each( function (item, index, length) {
+		 lore.anno.ui.form.items.each( function (item, index, length) {
 		 if ( item.isDirty()) {
 		 
 		 dirtyList.push(item.getName());
@@ -419,8 +419,8 @@
 		}
 		
 		lore.anno.ui.hideAnnotation = function() {
-			if ( lore.anno.uitationsformpanel.isVisible() ) {
-				lore.anno.uitationsformpanel.hide();
+			if ( lore.anno.ui.formpanel.isVisible() ) {
+				lore.anno.ui.formpanel.hide();
 				Ext.getCmp("treeview").doLayout();
 			}
 		}
@@ -428,57 +428,85 @@
 			try {
 				// display contents of context
 				if (rec.data.context) {
-					var ctxtField = lore.anno.uitationsform.findField('contextdisp');
-					var selText = '';
-					try {
-						selText = lore.global.util.getSelectionText(rec.data.context, window) 
-					} catch (e ) {
-					}
 					
-					lore.anno.uitationsform.setValues([{
-						id: 'contextdisp',
-						value: selText
-					}]);
+					var ctxtField = lore.anno.ui.form.findField('contextdisp');
+					if (rec.data.original == lore.anno.ui.currentURL) {
+						var selText = '';
+						try {
+							selText = lore.global.util.getSelectionText(
+							rec.data.context, lore.global.util.getContentWindow(window))
+						} 
+						catch (e) {
+						}
+						
+						lore.anno.ui.form.setValues([{
+							id: 'contextdisp',
+							value: '"' + selText + '"'
+						}]);
+					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+						lore.anno.ui.updateSplitter(lore.anno.ui.curSelAnno, false); // when content is loaded in splitter
+															// context field will be set
+					}
+
 					ctxtField.getEl().setStyle("background-color", lore.anno.ui.getCreatorColour(rec.data.creator));
 					lore.anno.ui.setVisibilityFormField('contextdisp', false);
+					
 				}
 				else {
-					var ctxtField = lore.anno.uitationsform.findField('contextdisp');
-					lore.anno.uitationsform.setValues([{
+					var ctxtField = lore.anno.ui.form.findField('contextdisp');
+					lore.anno.ui.form.setValues([{
 						id: 'contextdisp',
 						value: ""
 					}]);
 					ctxtField.getEl().setStyle("background-color", "inherit");
 				}
 				if (rec.data.variantcontext) {
-					var vCtxtField = lore.anno.uitationsform.findField('rcontextdisp');
-					var selText = '';
-					try {
-						// need to do this while the xpointer library still has emotional problems
-						selText = lore.global.util.getSelectionText(rec.data.variantcontext, window) 
-					} catch (e ) {
+					var vCtxtField = lore.anno.ui.form.findField('rcontextdisp');
+					if (rec.data.variant == lore.anno.ui.currentURL) {
+						var selText = '';
+						try {
+							// need to do this while the xpointer library still has emotional problems
+							selText = lore.global.util.getSelectionText(
+							rec.data.variantcontext, lore.global.util.getContentWindow(window))
+						} 
+						catch (e) {
+						}
+						lore.anno.ui.form.setValues([{
+							id: 'rcontextdisp',
+							value: '"' + selText + '"'
+						}]);
+					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+						lore.anno.ui.updateSplitter(lore.anno.ui.curSelAnno,false); // when content is loaded in splitter
+															// context field will be set
 					}
-					lore.anno.uitationsform.setValues([{
-						id: 'rcontextdisp',
-						value: selText
-					}]);
 					vCtxtField.getEl().setStyle("background-color", lore.anno.ui.getCreatorColour(rec.data.creator));
 					lore.anno.ui.setVisibilityFormField('rcontextdisp', false);
 				}
 				else {
-					var ctxtField = lore.anno.uitationsform.findField('rcontextdisp');
-					lore.anno.uitationsform.setValues([{
+					var ctxtField = lore.anno.ui.form.findField('rcontextdisp');
+					lore.anno.ui.form.setValues([{
 						id: 'rcontextdisp',
 						value: ""
 					}]);
 					ctxtField.getEl().setStyle("background-color", "inherit");
 				}
 				
+				/*if (rec.data.context && rec.data.variantcontext) {
+					if ( rec.data.original == rec.data.context)
+						url = rec.data.variant;
+					else
+						url = rec.data.original;
+					lore.anno.ui.topView.updateVariationSplitter(ctx, title, true, function(){
+						lore.anno.ui.hideMarker();
+						lore.anno.ui.highlightCurrentAnnotation(rec);
+					});
+				}*/
+				
 				if (!loadOnly) {
-					lore.anno.uitationsformpanel.show();
+					lore.anno.ui.formpanel.show();
 					Ext.getCmp("treeview").doLayout();
 				}
-					lore.anno.uitationsform.loadRecord(rec);
+					lore.anno.ui.form.loadRecord(rec);
 					
 				
 				
@@ -490,7 +518,7 @@
 						val += " ( " + rec.data.resource + " )";
 					}
 				}
-				lore.anno.uitationsform.setValues([{ id: 'res', value: val }]);
+				lore.anno.ui.form.setValues([{ id: 'res', value: val }]);
 						
 				if ( !loadOnly){	
 					if (rec.data.isReply) {
@@ -510,7 +538,7 @@
 		}
 		
 		lore.anno.ui.setVisibilityFormField = function(fieldName, hide){
-			var thefield = lore.anno.uitationsform.findField(fieldName);
+			var thefield = lore.anno.ui.form.findField(fieldName);
 			if (thefield) {
 				var cont = thefield.container.up('div.x-form-item');
 				cont.setDisplayed(false);
@@ -559,13 +587,13 @@
 		
 		lore.anno.ui.updateAnnoFromRecord = function(rec){
 		/*	if (!rec.data.isReply) {
-				var resField = lore.anno.uitationsform.findField('res');
+				var resField = lore.anno.ui.form.findField('res');
 				if (resField.getValue() != rec.data.resource) {
 					rec.data.resource = resField.getValue();
 				}
 			}*/
 			
-			lore.anno.uitationsform.updateRecord(rec);
+			lore.anno.ui.form.updateRecord(rec);
 			
 		}
 				
@@ -580,7 +608,7 @@
 		
 				
 		lore.anno.ui.createAndInsertTreeNode = function(anno, defparent){
-			var parent = defparent ? defparent : lore.anno.uitationstreeroot;
+			var parent = defparent ? defparent : lore.anno.ui.treeroot;
 			
 			var tmpNode;
 			var nodeLinks = [{title: 'View annotation body in a new window',
@@ -629,7 +657,7 @@
 				tmpNode = new lore.anno.ui.LOREColumnTreeNode (args );
 				
 				if (anno.about) { // reply
-					parent = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', anno.about);
+					parent = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', anno.about);
 					
 				}
 				
@@ -916,7 +944,7 @@
 		
 		lore.anno.ui.handleCancelAnnotationEdit = function(){
 			// reset all annotation form items to empty
-			lore.anno.uitationsform.items.each(function(item, index, len){
+			lore.anno.ui.form.items.each(function(item, index, len){
 				item.reset();
 			});
 			
@@ -929,10 +957,10 @@
 			try {
 				
 				if (lore.anno.ui.curSelAnno &&
-					(lore.anno.uitationsform.isDirty() && 
-					lore.anno.uitationsform.findField('id').getValue() == lore.anno.ui.curSelAnno.data.id)) {
+					(lore.anno.ui.form.isDirty() && 
+					lore.anno.ui.form.findField('id').getValue() == lore.anno.ui.curSelAnno.data.id)) {
 						lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.curSelAnno);
-						//lore.anno.uitationsform.updateRecord(lore.anno.ui.curSelAnno);
+						//lore.anno.ui.form.updateRecord(lore.anno.ui.curSelAnno);
 					
 				}
 							
@@ -978,14 +1006,14 @@
 				}
 				
 				// update existing annotation
-				if (!lore.anno.uitationsform.isDirty() && !anno.dirty) {
+				if (!lore.anno.ui.form.isDirty() && !anno.dirty) {
 					lore.anno.ui.loreWarning('Annotation content was not modified, save will not occur.');
 					return;
 				}
 				
 				// update anno with properties from form
 				lore.anno.ui.updateAnnoFromRecord(anno);
-				lore.anno.uitationsform.reset(); // clear dirty flag
+				lore.anno.ui.form.reset(); // clear dirty flag
 				lore.anno.updateAnnotation(anno, lore.anno.ui.currentURL, function(action, result, resultMsg){
 				
 					if (result == "success") {
@@ -1053,18 +1081,18 @@
 		lore.anno.ui.handleUpdateAnnotationContext = function(btn, e){
 			try {
 				var currentCtxt = lore.global.util.getXPathForSelection(window);
-				var theField = lore.anno.uitationsform.findField('context');
+				var theField = lore.anno.ui.form.findField('context');
 				theField.setValue(currentCtxt);
-				theField = lore.anno.uitationsform.findField('originalcontext');
+				theField = lore.anno.ui.form.findField('originalcontext');
 				theField.setValue(currentCtxt);
-				theField = lore.anno.uitationsform.findField('res');
+				theField = lore.anno.ui.form.findField('res');
 				theField.setValue(lore.anno.ui.currentURL);
 				if ( lore.anno.ui.curSelAnno)
 					lore.anno.ui.curSelAnno.data.resource = lore.anno.ui.currentURL;
-				theField = lore.anno.uitationsform.findField('original');
+				theField = lore.anno.ui.form.findField('original');
 				theField.setValue(lore.anno.ui.currentURL);
-				theField = lore.anno.uitationsform.findField('contextdisp');
-				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, window) + '"', window);
+				theField = lore.anno.ui.form.findField('contextdisp');
+				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window)) + '"');
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception updating anno context", ex);
@@ -1073,12 +1101,12 @@
 		lore.anno.ui.handleUpdateAnnotationVariantContext = function(btn, e){
 			try {
 				var currentCtxt = lore.global.util.getXPathForSelection(window);
-				var theField = lore.anno.uitationsform.findField('variantcontext');
+				var theField = lore.anno.ui.form.findField('variantcontext');
 				theField.setValue(currentCtxt);
-				theField = lore.anno.uitationsform.findField('variant');
+				theField = lore.anno.ui.form.findField('variant');
 				theField.setValue(lore.anno.ui.currentURL);
-				theField = lore.anno.uitationsform.findField('rcontextdisp');
-				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, window) + '"', window);
+				theField = lore.anno.ui.form.findField('rcontextdisp');
+				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window)) + '"');
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception updating anno variant context", ex);
@@ -1104,15 +1132,16 @@
 		
 		
 		
-	
 		lore.anno.ui.showSplitter = function (rec) {
-			var rec;
-			
 			if (!rec) {
 				rec = lore.anno.ui.curSelAnno;
 			} else if ( typeof(rec) == 'string') {
 				rec = lore.global.util.findRecordById(lore.anno.annods, rec);
 			}
+			lore.anno.ui.updateSplitter(rec, true);
+		}
+		lore.anno.ui.updateSplitter =  function (rec, show) {
+						
 			try {
 			
 				if (rec.data.variantcontext) {
@@ -1128,11 +1157,30 @@
 						title = "Original Resource";
 					}
 					
-					lore.anno.ui.topView.updateVariationSplitter(ctx, title, true, function(){
+					lore.anno.ui.topView.updateVariationSplitter(ctx, title, show, function(){
 						lore.anno.ui.hideMarker();
 						lore.anno.ui.highlightCurrentAnnotation(rec);
+
+						var n = 'rcontextdisp';
+						var ctx = rec.data.variantcontext;
+						if (rec.data.variant == lore.anno.ui.currentURL) {
+							n = 'contextdisp';
+							ctx = rec.data.context;
+						}
+						
+						var selText = '';
+						try {
+							selText = lore.global.util.getSelectionText(ctx, lore.anno.ui.topView.getVariationContentWindow());
+						} 
+						catch (e) {
+							lore.debug.anno(e,e);
+						}
+						lore.debug.anno("Setting value for " + n + " to: " + selText);
+						lore.anno.ui.form.setValues([{
+							id: n,
+							value: '"' + selText + '"'
+						}]);
 					});
-					
 				}
 			} catch (e ) {
 				lore.debug.anno(e, e);
@@ -1153,7 +1201,7 @@
 					
 					
 					if (rec.data.isReply && rec.data.isReply == true) {
-						var pnode = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', lore.anno.ui.curSelAnno.data.id);
+						var pnode = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', lore.anno.ui.curSelAnno.data.id);
 						node = lore.anno.ui.createAndInsertTreeNode(rec.data, pnode);
 					}
 					else {
@@ -1164,15 +1212,15 @@
 					// update the currently selected annotation before the focus is taken off it
 					// for the newly created annotation
 					if (lore.anno.ui.curSelAnno &&
-						((lore.anno.uitationsform.isDirty()||
+						((lore.anno.ui.form.isDirty()||
 							lore.anno.isNewAnnotation(lore.anno.ui.curSelAnno)) && 
-							lore.anno.uitationsform.findField('id').getValue() == lore.anno.ui.curSelAnno.data.id)) {
+							lore.anno.ui.form.findField('id').getValue() == lore.anno.ui.curSelAnno.data.id)) {
 							lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.curSelAnno);
 					}
 					
-					if (!lore.anno.uitationsformpanel.isVisible()) {
+					if (!lore.anno.ui.formpanel.isVisible()) {
 					
-						lore.anno.uitationsformpanel.show();
+						lore.anno.ui.formpanel.show();
 					}
 					lore.anno.ui.showAnnotation(rec);
 				
@@ -1198,8 +1246,8 @@
 					lore.anno.ui.scheduleTimelineLayout();
 				}
 				
-				if (!lore.anno.uitationstreeroot.isExpanded()) {
-					lore.anno.uitationstreeroot.expand();
+				if (!lore.anno.ui.treeroot.isExpanded()) {
+					lore.anno.ui.treeroot.expand();
 				}
 			} 
 			catch (e) {
@@ -1208,14 +1256,14 @@
 		}
 		
 		lore.anno.ui.updateUIOnClear = function(store) {
-			var tree = lore.anno.uitationstreeroot.getOwnerTree();
-			lore.anno.uitationstreeroot = new Ext.tree.TreeNode({});
-			tree.setRootNode(lore.anno.uitationstreeroot);
+			var tree = lore.anno.ui.treeroot.getOwnerTree();
+			lore.anno.ui.treeroot = new Ext.tree.TreeNode({});
+			tree.setRootNode(lore.anno.ui.treeroot);
 		}
 		
 		lore.anno.ui.updateUIOnRemove = function(store, rec, index){
 			try {
-				var node = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', rec.data.id);
+				var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
 				if (!node) {
 					return;
 				}
@@ -1241,7 +1289,7 @@
 		lore.anno.ui.updateUIOnUpdate = function(store, rec, operation){
 			
 			try {
-				var node = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', rec.data.id);
+				var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
 				
 				if (!node) {
 					return;
@@ -1347,7 +1395,7 @@
 				//lore.anno.ui.hideMarker();
 				
 				if (lore.anno.ui.curSelAnno &&
-				(lore.anno.uitationsform.isDirty() ||
+				(lore.anno.ui.form.isDirty() ||
 				lore.anno.isNewAnnotation(lore.anno.ui.curSelAnno))) {
 					lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.curSelAnno);
 				}
@@ -1357,11 +1405,8 @@
 					return;
 				}
 				
-				lore.anno.ui.setCurrentAnno(rec);
-				//lore.anno.ui.curSelAnno = rec; // TODO: eventually have a listener on this to abstract on which gui element was selected
+				lore.anno.ui.setCurrentAnno(rec);// TODO: eventually have a listener on this to abstract on which gui element was selected
 				 
-				
-				
 				if ( lore.anno.ui.topView.variationContentWindowIsVisible() &&
 					 lore.anno.ui.curSelAnno.data.type== lore.constants.VARIATION_ANNOTATION_NS + "VariationAnnotation") {
 					 lore.anno.ui.showSplitter();	
@@ -1369,7 +1414,7 @@
 					lore.anno.ui.highlightCurrentAnnotation(rec);
 				}
 				
-				lore.anno.uitationsformpanel.hide();
+				lore.anno.ui.formpanel.hide();
 				Ext.getCmp("treeview").doLayout();
 				
 			} 
@@ -1431,7 +1476,7 @@
 					lore.debug.anno("Couldn't find record to edit: " + arg, arg);
 					return;
 				}
-				var node = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', rec.data.id);
+				var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
 
 				if (node) {
 					lore.anno.ui.showAnnotation(rec);
@@ -1477,7 +1522,7 @@
 			// tag any unsaved new annotations for the new page
 			lore.anno.annods.each(function(rec){
 				if (lore.anno.isNewAnnotation(rec)) {
-					var n = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', rec.data.id);
+					var n = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
 					if ( n) 
 						n.setText(rec.data.title, "Unsaved annotation from " + rec.data.resource, '', lore.anno.ui.genTreeNodeText(rec.data));
 					else {
