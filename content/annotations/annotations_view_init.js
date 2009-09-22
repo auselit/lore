@@ -288,7 +288,7 @@ if (typeof Timeline !== "undefined") {
 			elmt.appendChild(divOps);
 			
 			var annoid = this._eventID;
-			var node = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', annoid);
+			var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', annoid);
 			if ( node) {
 				node.select();
 			} else {
@@ -659,17 +659,17 @@ lore.anno.ui.initExtComponents = function(){
 		lore.anno.ui.views = Ext.getCmp("annotationstab");
 		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
 		lore.global.ui.clearTree(annosourcestreeroot);
-		lore.anno.uitationstreeroot = annosourcestreeroot; 
+		lore.anno.ui.treeroot = annosourcestreeroot; 
 
-		lore.anno.uitationstreeroot.expand();
+		lore.anno.ui.treeroot.expand();
 		
 		Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleAnnotationSelection);
 		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditAnnotation);
 			
 		
-		lore.anno.uitationsformpanel = Ext.getCmp("annotationslistform")
-		lore.anno.uitationsform = lore.anno.uitationsformpanel.getForm();
-		lore.anno.uitationsformpanel.hide();
+		lore.anno.ui.formpanel = Ext.getCmp("annotationslistform")
+		lore.anno.ui.form = lore.anno.ui.formpanel.getForm();
+		lore.anno.ui.formpanel.hide();
 		
 		// set up the sources tree
 		
@@ -685,7 +685,7 @@ lore.anno.ui.initExtComponents = function(){
 		Ext.getCmp("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("typecombo").on('valid', lore.anno.ui.handleAnnotationTypeChange);
-		lore.anno.uitationsform.findField("body").on("push", function(field, html) {
+		lore.anno.ui.form.findField("body").on("push", function(field, html) {
 			// this is hack to stop this field being flagged as dirty because
 			// originalValue is XML and the value field is converted to HTML
 			field.originalValue = field.getValue();
