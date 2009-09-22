@@ -9,7 +9,7 @@
 		 * 
 		 * @xtype columntree
 		 */
-		lore.ui.anno.LOREColumnTree = Ext.extend(Ext.tree.TreePanel, {
+		lore.anno.ui.LOREColumnTree = Ext.extend(Ext.tree.TreePanel, {
 		    lines : false,
 		    borderWidth : Ext.isBorderBox ? 0 : 2, // the combined left/right border for each cell
 		    cls : 'x-column-tree',
@@ -17,7 +17,7 @@
 			scrollOffset:19,
 			
 		    onRender : function(){
-		        lore.ui.anno.LOREColumnTree.superclass.onRender.apply(this, arguments);
+		        lore.anno.ui.LOREColumnTree.superclass.onRender.apply(this, arguments);
 				this.headers = this.header.createChild({cls:'x-tree-headers'});
 				
 		        var cols = this.columns, c;
@@ -49,7 +49,7 @@
 			
 			onResize : function(cmp, bWidth, bHeight, width, height) {
 				var newwidth = this.getWidth();
-				lore.ui.anno.LOREColumnTree.superclass.onResize.apply(this, arguments);
+				lore.anno.ui.LOREColumnTree.superclass.onResize.apply(this, arguments);
 
 				var cols = this.columns;
 				var index = this.expandBefore ? 0: cols.length-1;
@@ -84,7 +84,7 @@
 			}
 		});
 
-		lore.ui.anno.LOREColumnTreeNode = function(attributes){
+		lore.anno.ui.LOREColumnTreeNode = function(attributes){
 		
 			this.title = attributes.title || '';
 			this.bheader = attributes.bheader || '';
@@ -92,10 +92,10 @@
 			this.links = attributes.links || [];
 			this.nodeType = attributes.nodeType;
 			
-			lore.ui.anno.LOREColumnTreeNode.superclass.constructor.call(this, attributes);
+			lore.anno.ui.LOREColumnTreeNode.superclass.constructor.call(this, attributes);
 		}
     
-		Ext.extend(lore.ui.anno.LOREColumnTreeNode, Ext.tree.TreeNode, {
+		Ext.extend(lore.anno.ui.LOREColumnTreeNode, Ext.tree.TreeNode, {
 			
 			setText: function(_title,bh,bf,_text) {
 				var oldText = this.text;
@@ -137,7 +137,7 @@
 		});
 		
 		
-		lore.ui.anno.LOREColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
+		lore.anno.ui.LOREColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 			// private
 			
 			focus : Ext.emptyFn,
@@ -226,7 +226,7 @@
 		});
 		
 
-Ext.reg('loretreepanel', lore.ui.anno.LOREColumnTree);
+Ext.reg('loretreepanel', lore.anno.ui.LOREColumnTree);
 
 /**	 Timeline UI Definitions
 	 * Replaces default function for generating contents of timeline bubbles
@@ -277,18 +277,18 @@ if (typeof Timeline !== "undefined") {
 			var divOps = doc.createElement("div");
 			divOps.style.paddingTop = '5px';
 			var divOpsInner = "<a style='color:orange;font-size:smaller' href='#' " +
-			"onclick='lore.ui.anno.annotimeline.getBand(0).closeBubble();lore.ui.anno.handleEditAnnotation(\"" +
+			"onclick='lore.anno.ui.annotimeline.getBand(0).closeBubble();lore.anno.ui.handleEditAnnotation(\"" +
 			this._eventID +
 			"\")'>EDIT</a> | " +
 			"<a style='color:orange;font-size:smaller' href='#' " +
-			"onclick='lore.ui.anno.annotimeline.getBand(0).closeBubble();lore.ui.anno.handleReplyToAnnotation(\"" +
+			"onclick='lore.anno.ui.annotimeline.getBand(0).closeBubble();lore.anno.ui.handleReplyToAnnotation(\"" +
 			this._eventID +
 			"\")'>REPLY</a>";
 			divOps.innerHTML = divOpsInner;
 			elmt.appendChild(divOps);
 			
 			var annoid = this._eventID;
-			var node = lore.util.findChildRecursively(lore.ui.annotationstreeroot, 'id', annoid);
+			var node = lore.global.util.findChildRecursively(lore.anno.uitationstreeroot, 'id', annoid);
 			if ( node) {
 				node.select();
 			} else {
@@ -602,7 +602,7 @@ loreuiannotimeline = function (model)
 	}
 }
 	
-lore.ui.anno.initGUI = function(model){
+lore.anno.ui.initGUI = function(model){
 	lore.debug.ui("initGUI: model " + model, model);
 	if (!model) {
 		lore.debug.ui("No model found for view");
@@ -610,7 +610,7 @@ lore.ui.anno.initGUI = function(model){
 	}
 	
 	try {
-		lore.ui.anno.gui_spec = {
+		lore.anno.ui.gui_spec = {
 			layout: "border",
 			items: [{
 				region: "center",
@@ -643,58 +643,58 @@ lore.ui.anno.initGUI = function(model){
 			}]
 		};
 		
-		lore.ui.anno.main_window = new Ext.Viewport(lore.ui.anno.gui_spec);
-		lore.ui.anno.main_window.show();
-		lore.ui.anno.initExtComponents();
+		lore.anno.ui.main_window = new Ext.Viewport(lore.anno.ui.gui_spec);
+		lore.anno.ui.main_window.show();
+		lore.anno.ui.initExtComponents();
 	} 
 	catch (ex) {
 		lore.debug.ui("Exception creating anno UI", ex);
 	}
 }
 
-lore.ui.anno.initExtComponents = function(){
+lore.anno.ui.initExtComponents = function(){
 	try {
 		
-		lore.ui.abouttab = Ext.getCmp("about");
-		lore.ui.anno.views = Ext.getCmp("annotationstab");
+		lore.anno.ui.abouttab = Ext.getCmp("about");
+		lore.anno.ui.views = Ext.getCmp("annotationstab");
 		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
-		lore.ui.global.clearTree(annosourcestreeroot);
-		lore.ui.annotationstreeroot = annosourcestreeroot; 
+		lore.global.ui.clearTree(annosourcestreeroot);
+		lore.anno.uitationstreeroot = annosourcestreeroot; 
 
-		lore.ui.annotationstreeroot.expand();
+		lore.anno.uitationstreeroot.expand();
 		
-		Ext.getCmp("annosourcestree").on("click", lore.ui.anno.handleAnnotationSelection);
-		Ext.getCmp("annosourcestree").on("dblclick", lore.ui.anno.handleEditAnnotation);
+		Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleAnnotationSelection);
+		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditAnnotation);
 			
 		
-		lore.ui.annotationsformpanel = Ext.getCmp("annotationslistform")
-		lore.ui.annotationsform = lore.ui.annotationsformpanel.getForm();
-		lore.ui.annotationsformpanel.hide();
+		lore.anno.uitationsformpanel = Ext.getCmp("annotationslistform")
+		lore.anno.uitationsform = lore.anno.uitationsformpanel.getForm();
+		lore.anno.uitationsformpanel.hide();
 		
 		// set up the sources tree
 		
 		Ext.getCmp("resetannobtn")
-				.on('click', function () { lore.ui.anno.rejectChanges()});
-		Ext.getCmp("hideeditbtn").on('click', lore.ui.anno.hideAnnotation);
-		Ext.getCmp("updannobtn").on('click', lore.ui.anno.handleSaveAnnotationChanges);
-		Ext.getCmp("delannobtn").on('click', lore.ui.anno.handleDeleteAnnotation);
+				.on('click', function () { lore.anno.ui.rejectChanges()});
+		Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.hideAnnotation);
+		Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
+		Ext.getCmp("delannobtn").on('click', lore.anno.ui.handleDeleteAnnotation);
 		Ext.getCmp("updctxtbtn").on('click',
-				lore.ui.anno.handleUpdateAnnotationContext);
+				lore.anno.ui.handleUpdateAnnotationContext);
 		Ext.getCmp("updrctxtbtn").on('click',
-				lore.ui.anno.handleUpdateAnnotationVariantContext);
-		Ext.getCmp("variantfield").on('specialkey', lore.ui.anno.launchFieldWindow);
-		Ext.getCmp("originalfield").on('specialkey', lore.ui.anno.launchFieldWindow);
-		Ext.getCmp("typecombo").on('valid', lore.ui.anno.handleAnnotationTypeChange);
-		lore.ui.annotationsform.findField("body").on("push", function(field, html) {
+				lore.anno.ui.handleUpdateAnnotationVariantContext);
+		Ext.getCmp("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
+		Ext.getCmp("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
+		Ext.getCmp("typecombo").on('valid', lore.anno.ui.handleAnnotationTypeChange);
+		lore.anno.uitationsform.findField("body").on("push", function(field, html) {
 			// this is hack to stop this field being flagged as dirty because
 			// originalValue is XML and the value field is converted to HTML
 			field.originalValue = field.getValue();
 			
 		});
 		
-		lore.ui.anno.setAnnotationFormUI(false);
+		lore.anno.ui.setAnnotationFormUI(false);
 		
-		lore.ui.abouttab.body.update("<iframe height='100%' width='100%' "
+		lore.anno.ui.abouttab.body.update("<iframe height='100%' width='100%' "
 			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");
 			
 	    Ext.QuickTips.interceptTitles = true;
@@ -711,14 +711,14 @@ lore.ui.anno.initExtComponents = function(){
 /**
  * Create a Timeline visualisation
  */
-lore.ui.anno.initTimeline = function() {
+lore.anno.ui.initTimeline = function() {
 	var tl = Ext.getCmp("annotimeline");
 	if (typeof Timeline !== "undefined") {
-		lore.ui.anno.annoEventSource = new Timeline.DefaultEventSource();
+		lore.anno.ui.annoEventSource = new Timeline.DefaultEventSource();
         var theme = Timeline.ClassicTheme.create();
         theme.event.bubble.width = 350;
 		var bandConfig = [Timeline.createBandInfo({
-							eventSource : lore.ui.anno.annoEventSource,
+							eventSource : lore.anno.ui.annoEventSource,
                             theme: theme,
 							width : "90%",
 							intervalUnit : Timeline.DateTime.WEEK,
@@ -726,7 +726,7 @@ lore.ui.anno.initTimeline = function() {
 							timeZone : 10,
                             layout: "original"
 						}), Timeline.createBandInfo({
-							eventSource : lore.ui.anno.annoEventSource,
+							eventSource : lore.anno.ui.annoEventSource,
                             theme: theme,
                             //showEventText:  false,
 							width : "10%",
@@ -738,12 +738,12 @@ lore.ui.anno.initTimeline = function() {
         
 		bandConfig[1].syncWith = 0;
 		bandConfig[1].highlight = true;
-		lore.ui.anno.annotimeline = Timeline.create(document
+		lore.anno.ui.annotimeline = Timeline.create(document
 						.getElementById("annotimeline"), bandConfig, Timeline.HORIZONTAL);
 		tl.on("resize", function() {
-			lore.ui.anno.scheduleTimelineLayout();
+			lore.anno.ui.scheduleTimelineLayout();
 		});
-        lore.ui.anno.annotimeline.getBand(0).getEventPainter().setFilterMatcher(function(evt){
+        lore.anno.ui.annotimeline.getBand(0).getEventPainter().setFilterMatcher(function(evt){
             return !(evt._eventID == "flagdelete");
         });
 	} else {
@@ -752,22 +752,22 @@ lore.ui.anno.initTimeline = function() {
 }
 
 	
-	lore.ui.anno.disableUIFeatures = function(opts) {
+	lore.anno.ui.disableUIFeatures = function(opts) {
     // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
     lore.debug.ui("LORE Annotations: disable ui features?", opts);
-    lore.ui.disabled = opts;
+    lore.anno.ui.disabled = opts;
 
 	// don't set visibility on start up 
-	if (!lore.ui.anno.disableUIFeatures.initialCall) {
-		lore.ui.anno.disableUIFeatures.initialCall = 1;
+	if (!lore.anno.ui.disableUIFeatures.initialCall) {
+		lore.anno.ui.disableUIFeatures.initialCall = 1;
 	}
 	else {
 	
 		if (opts.disable_annotations) {
-			lore.ui.global.topWindowView.setAnnotationsVisibility(false);
+			lore.anno.ui.topView.setAnnotationsVisibility(false);
 		}
 		else {
-			lore.ui.global.topWindowView.setAnnotationsVisibility(true);
+			lore.anno.ui.topView.setAnnotationsVisibility(true);
 		}
 	}
 }

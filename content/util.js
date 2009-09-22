@@ -20,10 +20,27 @@
 /**
  * General utility functions for I/O, manipulating the DOM, selections etc 
  * @namespace
- * @name lore.util
+ * @name lore.global.util
  */
- 
-lore.util.clone = function(o) {
+
+var EXPORTED_SYMBOLS = ['util'];
+
+util = {};
+ 	
+	// constants
+	Components.utils.import("resource://lore/constants.js");
+	// debug
+	Components.utils.import("resource://lore/debug.js");
+	
+	
+
+m_xps = null;
+
+util.setXPointerService = function(xps) {
+	m_xps = xps;
+}
+
+util.clone = function(o) {
     if(!o || 'object' !== typeof o) {
         return o;
     }
@@ -47,7 +64,7 @@ lore.util.clone = function(o) {
  * Display all keys, values for an object
  * @param {} obj to dump
  */
-lore.util.dumpValues = function(obj){
+util.dumpValues = function(obj){
 	var res="";
 	for(var k in obj){
 		res += k + ": " + obj[k] + ";\n";
@@ -63,7 +80,7 @@ lore.util.dumpValues = function(obj){
  * 
  * @param {DOMNode} nodeToRemove
  */
-lore.util.removeNodePreserveChildren = function(nodeToRemove) {
+util.removeNodePreserveChildren = function(nodeToRemove) {
   var fragment = document.createDocumentFragment();
   while(nodeToRemove.firstChild) {
     fragment.appendChild(nodeToRemove.firstChild);
@@ -76,7 +93,7 @@ lore.util.removeNodePreserveChildren = function(nodeToRemove) {
  * Returns value of first child of first node, or default value if provided.
  * Unchanged from dannotate.js
  */
-lore.util.safeGetFirstChildValue = function(node, defaultValue)
+util.safeGetFirstChildValue = function(node, defaultValue)
 {
   return ((node.length > 0) && (node[0] != null) && node[0].firstChild) ?
            node[0].firstChild.nodeValue : defaultValue ? defaultValue : '';
@@ -87,7 +104,7 @@ lore.util.safeGetFirstChildValue = function(node, defaultValue)
  * @param {DOMElement} theElement
  * @param {} theWindow
  */
-lore.util.scrollToElement = function(theElement, theWindow){
+util.scrollToElement = function(theElement, theWindow){
 
   var selectedPosX = 0;
   var selectedPosY = 0;
@@ -106,13 +123,14 @@ lore.util.scrollToElement = function(theElement, theWindow){
  * @param {} url The URL to launch
  * @param {} locbar Boolean: whether to show location bar
  */
-lore.util.launchWindow = function(url, locbar) {
+util.launchWindow = function(url, locbar, win) {
 	var winOpts = 'height=650,width=800,top=200,left=250,resizable,scrollbars=yes';
 	if (locbar) {
 		winOpts += ',location=1';
 	}
-	var newwindow=window.open(url,'name',winOpts);
+	var newwindow=win.openDialog(url,'view_resource',winOpts);
 	newwindow.focus();
+	
 } 
 
 /**
@@ -120,7 +138,7 @@ lore.util.launchWindow = function(url, locbar) {
  * Code from MDC code snippets page https://developer.mozilla.org/en/Code_snippets/Tabbed_browser
  * @param {Object} url
  */
-lore.util.launchTab = function(url) {
+util.launchTab = function(url, win) {
   var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
                      .getService(Components.interfaces.nsIWindowMediator);
   var browserEnumerator = wm.getEnumerator("navigator:browser");
@@ -151,22 +169,22 @@ lore.util.launchTab = function(url) {
     }
     else {
       // No browser windows are open, so open a new one.
-      window.open(url);
+      win.open(url);
     }
   }
 }
 
-lore.util.longDate = function ( adate ) {
-	return Date.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
+util.longDate = function ( adate, dateObj ) {
+	return dateObj.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
 }
 
-lore.util.shortDate = function (adate ) {
-	return Date.parseDate(adate, 'c').format("d M Y H:i:s");
+util.shortDate = function (adate, dateObj ) {
+	return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
 }
 /**
  * Returns a boolean value for determing if the platform is linux
  */
-lore.util.isLinux = function() {
+util.isLinux = function() {
 	return (navigator.platform.toLowerCase().indexOf('linux') > -1);
 }
 
@@ -174,7 +192,7 @@ lore.util.isLinux = function() {
  * Returns a boolean value for determing if the platform is mac
  */
 
-lore.util.isMac = function() { 
+util.isMac = function() { 
 	return (navigator.platform.toLowerCase().indexOf('mac') > -1);
 }
 
@@ -182,21 +200,21 @@ lore.util.isMac = function() {
  * Returns a boolean value for determing if the platform is windows
  */
 
-lore.util.isWindows = function () {
+util.isWindows = function () {
 	return (navigator.platform.toLowerCase().indexOf('win32') > -1);
 }	
 
 /**
  * Return the file separator used by the OS
  */
-lore.util.fSeparator = function () {
-	if ( lore.util.isWindows() ) {
+util.fSeparator = function () {
+	if ( util.isWindows() ) {
 		return "\\";
-	} else if ( lore.util.isMac() || lore.util.isLinux() ) {
+	} else if ( util.isMac() || util.isLinux() ) {
 		return "/";
 	} else {
 		// default to forward slash
-		lore.debug.ui("fSeparator: Could not determine platform, defaulting to '/'", navigator.platform);
+		debug.ui("fSeparator: Could not determine platform, defaulting to '/'", navigator.platform);
 		return "/";
 	}
 }
@@ -207,10 +225,9 @@ lore.util.fSeparator = function () {
  * @param {} fileName
  * @return {}
  */
-lore.util.writeFile = function(content, fileName){
+util.writeFile = function(content, fileBase, fileName){
 		try {
 			netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-			var fileBase = lore.ui.extension.path + "\\content\\";
 			var filePath =  fileBase + fileName;
 			var file = Components.classes["@mozilla.org/file/local;1"]
 				.createInstance(Components.interfaces.nsILocalFile);
@@ -226,7 +243,7 @@ lore.util.writeFile = function(content, fileName){
 			stream.close();
 			return filePath;
 		} catch (e) {
-			lore.debug.ui("Unable to write to file: " + fileName, e);
+			debug.ui("Unable to write to file: " + fileName, e);
 			throw new Error("Unable to write to file" + e.toString());
 		}
 }
@@ -235,7 +252,7 @@ lore.util.writeFile = function(content, fileName){
  * Remove any artifacts from the XPath
  * @param {} xp
  */
-lore.util.normalizeXPointer = function(xp) {
+util.normalizeXPointer = function(xp) {
 	var idx = xp.indexOf('#');
 	return xp.substring(idx + 1);
 }
@@ -245,26 +262,26 @@ lore.util.normalizeXPointer = function(xp) {
  * Path supplied is relative to <profile>/lore/
  * @param {} path
  */
-lore.util.readChromeFile = function(path) {
+util.readChromeFile = function(path, win) {
 	  try {
         var url = "chrome://lore/" + path;
-	
-	    var xhr = new XMLHttpRequest();
+	    var xhr = new win.XMLHttpRequest();
         xhr.overrideMimeType('text/javascript');
   	
 	    xhr.open("GET", url, false);
         xhr.send(null);
 		return xhr.responseText;
     } catch (e) {
-        lore.debug.ui("Unable to read resource file: " + e.toString());
+        debug.ui("Unable to read resource file: " + e.toString());
     }
 }
 /** 
  * Inject contents of local script into a document
  * @param {} chromefile Path to chrome file
  */
-lore.util.injectScript = function (chromefile,doc) {
-    var buffer = lore.util.readChromeFile(chromefile);
+util.injectScript = function (chromefile,win) {
+	var doc = win.document;
+    var buffer = util.readChromeFile(chromefile, win);
     var script = doc.createElement("script");
     script.type = "text/javascript";
     script.innerHTML = buffer;
@@ -281,7 +298,7 @@ lore.util.injectScript = function (chromefile,doc) {
  * @param {Object} mxg max green
  * @param {Object} mxb max blue
  */
-lore.util.generateColour = function(mr,mg,mb,mxr, mxg, mxb) {
+util.generateColour = function(mr,mg,mb,mxr, mxg, mxb) {
 	var min = new Array( (mr ? mr: 0), (mg ? mg: 0), (mb ? mb: 0) );
 	var max = new Array( (mxr ? mxr: 255), (mxg ? mxg: 255), (mxb ? mxb: 255) );
 	
@@ -298,13 +315,13 @@ lore.util.generateColour = function(mr,mg,mb,mxr, mxg, mxb) {
  * @param {} targetDocument The document in which to highlight
  * @param {} scrollToHighlight Boolean indicating whether to scroll
  */
-lore.util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlight, colour) {
+util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlight, colour) {
  	try {
-		var sel = lore.m_xps.parseXPointerToRange(xpointer, targetDocument);
+		var sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
 		
-		var highlightNode = targetDocument.createElementNS(lore.constants.XHTML_NS, "span");
-		// lore.m_xps.markElement(highlightNode);
-		// lore.m_xps.markElementHide(highlightNode);
+		var highlightNode = targetDocument.createElementNS(constants.XHTML_NS, "span");
+		// m_xps.markElement(highlightNode);
+		// m_xps.markElementHide(highlightNode);
 		if (colour) {
 			highlightNode.style.backgroundColor = colour;
 		}
@@ -313,35 +330,35 @@ lore.util.highlightXPointer = function(xpointer, targetDocument, scrollToHighlig
 		}
 		sel.surroundContents(highlightNode);
 		if (scrollToHighlight) {
-			lore.util.scrollToElement(highlightNode, targetDocument.defaultView);
+			util.scrollToElement(highlightNode, targetDocument.defaultView);
 		}
 		
 		return highlightNode;
 	} catch (e) {
-		lore.debug.ui(e,e);
+		debug.ui(e,e);
 		return null;
 	}
 }
 /**
  * Return the window object of the content window
  */
-lore.util.getContentWindow = function() {
-	return window.top.getBrowser().selectedBrowser.contentWindow;
+util.getContentWindow = function(win) {
+	return win.top.getBrowser().selectedBrowser.contentWindow;
 }
 /**
  * Get the Range defined by an XPath/Xpointer (restricted to subset of
  * expressions understood by Anozilla).
  * modified from dannotate.js
  */
-lore.util.getSelectionForXPath = function(xp)
+util.getSelectionForXPath = function(xp, win)
 {
-	var mainwindow = lore.util.getContentWindow();
-    return lore.m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
+	var mainwindow = util.getContentWindow(win);
+    return m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
 }
 
-lore.util.getNodeForXPath = function(xp) {
-	var mainwindow = lore.util.getContentWindow();
-	return lore.m_xps.parseXPointerToNode(xp, mainwindow);
+util.getNodeForXPath = function(xp, win) {
+	var mainwindow = util.getContentWindow(win);
+	return m_xps.parseXPointerToNode(xp, mainwindow);
 }
 /**
  * This fn depends on a hacked version of nsXpointerService being loaded by the browser
@@ -350,16 +367,16 @@ lore.util.getNodeForXPath = function(xp) {
  * @return XPath/XPointer statement for selected text, or '' if no selection.
  */
 
-lore.util.getXPathForSelection = function()
+util.getXPathForSelection = function(win)
 {
-  var mainwindow = lore.util.getContentWindow();
+  var mainwindow = util.getContentWindow(win);
   var xp = '';
   try {
     var seln = mainwindow.getSelection();
 	
     if (seln && seln!='') {
       var select = seln.getRangeAt(0);
-      xp = lore.m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
+      xp = m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
     }
   }
   catch (ex) {
@@ -367,7 +384,8 @@ lore.util.getXPathForSelection = function()
   }
   return xp;
 }
-lore.util.getXPathForImgSelection = function (){
+
+util.getXPathForImgSelection = function (){
     //return XPointerCreator.xpointer_wrap('image-range(' + this.create_child_XPointer(node) +
     //    ',[' + x1 + ',' + y1 + '],[' + x2 + ',' + y2 + '],"' + src + '")');
 
@@ -377,11 +395,11 @@ lore.util.getXPathForImgSelection = function (){
  * @param {} currentCtxt
  * @return {} The selection contents
  */
-lore.util.getSelectionText = function(currentCtxt){
+util.getSelectionText = function(currentCtxt, win){
 	var selText = "";
 	if (currentCtxt){
 		var idx = currentCtxt.indexOf('#');
-		var sel = lore.util.getSelectionForXPath(currentCtxt.substring(idx + 1));
+		var sel = util.getSelectionForXPath(currentCtxt.substring(idx + 1), win);
 		selText = sel.toString();
 		if (selText){
 			if (selText.length > 100){
@@ -398,7 +416,7 @@ lore.util.getSelectionText = function(currentCtxt){
  * @return {Object} A JSON object with properties ns (the namespace) and term
  *         (the unqualified term)
  */
-lore.util.splitTerm = function(theurl) {
+util.splitTerm = function(theurl) {
 	var result = {};
 	// try splitting on #
 	var termsplit = theurl.split("#");
@@ -413,7 +431,7 @@ lore.util.splitTerm = function(theurl) {
 	}
 	return result;
 }
-lore.util.findChildRecursively=function(tree,attribute, value) {
+util.findChildRecursively=function(tree,attribute, value) {
     var cs = tree.childNodes;
 	
     for(var i = 0, len = cs.length; i < len; i++) {
@@ -422,7 +440,7 @@ lore.util.findChildRecursively=function(tree,attribute, value) {
         }
         else {
             // Find it in this tree
-            if(found = lore.util.findChildRecursively(cs[i], attribute, value)) {
+            if(found = util.findChildRecursively(cs[i], attribute, value)) {
                 return found;
             }
         }
@@ -430,7 +448,7 @@ lore.util.findChildRecursively=function(tree,attribute, value) {
     return null;
 } 
 
-lore.util.findRecordById = function(store, xid) {
+util.findRecordById = function(store, xid) {
 	var ind = store.findBy(function(rec, id){
 			if ( !xid ) {
 				return !rec.json.id;
@@ -449,9 +467,9 @@ lore.util.findRecordById = function(store, xid) {
  * Escape characters for HTML display
  * @return {}
  */
-String.prototype.escapeHTML = function () {                                       
+util.escapeHTML = function (str) {                                       
         return(                                                                 
-            this.replace(/&/g,'&amp;').                                         
+            str.replace(/&/g,'&amp;').                                         
                 replace(/>/g,'&gt;').                                           
                 replace(/</g,'&lt;').                                           
                 replace(/"/g,'&quot;').
@@ -462,7 +480,7 @@ String.prototype.escapeHTML = function () {
  * Unescape HTML entities to characters
  * @return {}
  */
-String.prototype.unescapeHTML = function (){
+util.unescapeHTML = function (str){
 	return(                                                                 
             this.replace(/&amp;/g,'&').                                         
                 replace(/&gt;/g,'>').                                           
@@ -479,7 +497,7 @@ String.prototype.unescapeHTML = function (){
  
  */
 
-lore.util.createXULIFrame = function(win) {
+util.createXULIFrame = function(win) {
 	var iframe = win.top.document.createElement("iframe"); // create a XUL iframe 
 	
 	iframe.setAttribute("type", "content");
@@ -489,7 +507,7 @@ lore.util.createXULIFrame = function(win) {
 	return iframe;
 }
 
-lore.util.setSecureXULIFrameContent = function(iframe, theurl) {
+util.setSecureXULIFrameContent = function(iframe, theurl) {
 
 	// once the document had loaded the iframe
 	// the docshell object will be created.
@@ -506,18 +524,18 @@ lore.util.setSecureXULIFrameContent = function(iframe, theurl) {
 	iframe.setAttribute("src",theurl);
 }
  
-lore.util.createSecureIFrame = function(win, theurl, extraFunc) {
-	var iframe = lore.util.createXULIFrame(win);
+util.createSecureIFrame = function(win, theurl, extraFunc) {
+	var iframe = util.createXULIFrame(win);
 	
 	iframe.addEventListener("load", function onLoadTrigger (event) {
 							try {
 								iframe.removeEventListener("load", onLoadTrigger, true);
-								lore.util.setSecureXULIFrameContent(iframe, theurl);
+								util.setSecureXULIFrameContent(iframe, theurl);
 								if ( extraFunc) {
 									extraFunc();
 								}
 							} catch (e ) {
-								lore.debug.ore("iframe(onload): " + e, e);
+								debug.ore("iframe(onload): " + e, e);
 							}
 		}, true);
 		
@@ -529,12 +547,12 @@ lore.util.createSecureIFrame = function(win, theurl, extraFunc) {
  * Basic HTML Sanitizer using Firefox's parseFragment
  * @param {Object} html
  */
-lore.util.sanitizeHTML = function(html) {
-    var serializer = new XMLSerializer();
+util.sanitizeHTML = function(html, win) {
+    var serializer = new win.XMLSerializer();
 	
     var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
         .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
-        .parseFragment(html, false, null, document.body);
+        .parseFragment(html, false, null, win.document.body);
 	if (fragment) {
 		//TODO: remove dodgey characters inserted by nsiScriptableUnescapeHTML
 		// it'd be interesting to see whether these characters are generated from the
@@ -554,10 +572,10 @@ lore.util.sanitizeHTML = function(html) {
  * Add target="_blank" to all links in an html string
  * @param {Object} html
  */
-lore.util.externalizeLinks = function(html){
+util.externalizeLinks = function(html){
 	return html.replace(/<A /g,'<A target="_blank" '); 
 }
-lore.util.externalizeDomLinks = function(node){
+util.externalizeDomLinks = function(node){
 	var links = node.getElementsByTagName('a');
 	var attr;
 	for (var i=0; i < links.length; i++){
@@ -570,15 +588,15 @@ lore.util.externalizeDomLinks = function(node){
  * Quick and nasty function to tidy up html string so that it is valid XML
  * @return {}
  */
-String.prototype.tidyHTML = function (){
-	var res = this;
+util.tidyHTML = function (str){
+	var res = str;
 	if (res.match("<title>") && res.match("</title>")){
 		var res1 = res.substring(0,(res.indexOf('<title>')));
 		var res2 = res.substring((res.indexOf('</title>')+8), res.length);
 		res = res1 + res2;
 	}
-	while (res.match('<br xmlns"'+ lore.constants.XHTML_NS + '">')){
-		res = res.replace('<br xmlns="' + lore.constants.XHTML_NS + '">', '<br />');
+	while (res.match('<br xmlns"'+ constants.XHTML_NS + '">')){
+		res = res.replace('<br xmlns="' + constants.XHTML_NS + '">', '<br />');
 	}
 	while (res.match('<br>')){
 		res = res.replace('<br>','<br />');
@@ -595,6 +613,6 @@ String.prototype.tidyHTML = function (){
  * normalize spaces in a string
  * @return {}
  */
-String.prototype.normalize = function() {
-	return this.replace(/^\s*|\s(?=\s)|\s*$/g, "");
+util.normalize = function(str) {
+	return str.replace(/^\s*|\s(?=\s)|\s*$/g, "");
 }

@@ -53,7 +53,7 @@ lore.ui.loreError = function(message){
                 wait: 3000
             }
         });
-    lore.ui.global.loreError(message);
+    lore.global.ui.loreError(message);
 }
 
 lore.ui.loreInfo = function(message) {
@@ -64,7 +64,7 @@ lore.ui.loreInfo = function(message) {
                     wait: 3000
                 }
     });
-    lore.ui.global.loreInfo(message);
+    lore.global.ui.loreInfo(message);
 }
     
 lore.ui.loreWarning = function(message){
@@ -76,9 +76,8 @@ lore.ui.loreWarning = function(message){
             wait: 3000
         }
     });
-    lore.ui.global.loreWarning(message);
+    lore.global.ui.loreWarning(message);
 }
-
 /**
  * Set the global variables for the repository access URLs
  *
@@ -203,7 +202,7 @@ lore.ore.showCompoundObjectSummary = function() {
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
     for (var i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
-        var figurl = fig.url.escapeHTML();
+        var figurl = lore.global.util.escapeHTML(fig.url);
         var title = fig.metadataproperties["dc:title"];
         newsummary += "<li>" + (title? title + ": " : "") + "<a target='_blank' href='" 
             + figurl + "'>&lt;" + figurl + "&gt;</a></li>";
@@ -223,7 +222,7 @@ lore.ore.showSMIL = function() {
         var smilpath = lore.ore.createSMIL(); // generate the new smil file
         // into oresmil.xsl
         smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p>"
-                + "<a onclick='lore.util.launchWindow(this.href, false);return(false);' target='_blank' href='file://"
+                + "<a onclick='lore.global.util.launchWindow(this.href, false, window);return(false);' target='_blank' href='file://"
                 + smilpath
                 + "'>Click here to launch the slideshow in a new window</a><br/>";
     } else {
@@ -294,10 +293,10 @@ lore.ore.CompObjListing = function(result){
         attr = bindings[j].getAttributeNode('name');
         if (attr.nodeValue =='g'){ //graph uri
             node = bindings[j].getElementsByTagName('uri'); 
-            this.uri = lore.util.safeGetFirstChildValue(node);
+            this.uri = lore.global.util.safeGetFirstChildValue(node);
         } else {
             node = bindings[j].getElementsByTagName('literal');
-            nodeVal = lore.util.safeGetFirstChildValue(node);
+            nodeVal = lore.global.util.safeGetFirstChildValue(node);
             if (attr.nodeValue == 't' && nodeVal){ //title
                 this.title = nodeVal;
             } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
@@ -312,6 +311,29 @@ lore.ore.CompObjListing = function(result){
     }
 }
 
+lore.ore.handleSerializeREM = function (format) {
+	try {
+		var therdf = lore.ore.serializeREM(format);
+		
+		var nsIFilePicker = Components.interfaces.nsIFilePicker;
+		var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+		fp.appendFilters(nsIFilePicker.filterXML | nsIFilePicker.filterAll);
+		fp.init(window, "Save Compound Object as", nsIFilePicker.modeSave);
+		var res = fp.show();
+		if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
+			var thefile = fp.file;
+			var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
+			fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
+			var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+			converter.init(fostream, "UTF-8", 0, 0);
+			converter.writeString(therdf);
+			converter.close();
+			lore.ui.loreInfo("Compound object saved to " + thefile.path);
+		}
+	} catch (e) {
+		lore.debug.ore("Error saving Compound Objects data: " + e,e );
+	}
+}
 lore.ore.serializeREM = function(format) {
 	
     if (format == 'foxml') {
@@ -358,7 +380,7 @@ lore.ore.createRDF = function(escape) {
             result = ltsymb + propname + ">";
             if (nlsymb == "<br/>" && propval) {
                 try {
-                    result += propval.toString().escapeHTML();
+                    result += lore.global.util.escapeHTML(propval.toString);
                 } catch (e) {
                     lore.ui.loreWarning(e.toString());
                 }
@@ -457,8 +479,7 @@ lore.ore.createRDF = function(escape) {
     var resourcerdf = "";
     for (i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
-        var figurl = fig.url.replace('<', '%3C').replace('>', '%3E')
-                .escapeHTML();
+        var figurl = lore.global.util.escapeHTML(fig.url.replace('<', '%3C').replace('>', '%3E'))
         rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                 + fullclosetag;
         // create RDF for resources in aggregation
@@ -500,10 +521,10 @@ lore.ore.createRDF = function(escape) {
             var outgoingconnections = ports.get(p).getConnections();
             for (var j = 0; j < outgoingconnections.getSize(); j++) {
 	            var theconnector = outgoingconnections.get(j);
-                if (figurl == theconnector.sourcePort.parentNode.url.escapeHTML()){
+                if (figurl == lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url)){
 	               var relpred = theconnector.edgetype;
 	               var relns = theconnector.edgens;
-	               var relobj = theconnector.targetPort.parentNode.url.escapeHTML();
+	               var relobj = lore.global.util.escapeHTML(theconnector.targetPort.parentNode.url);
 	               resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
 	                    + relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
 	                    + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
@@ -570,7 +591,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.ore.currentRDF.about('<' + remurl + '>')
             .each(function(){
                 var propurl = this.property.value.toString();
-                var propsplit = lore.util.splitTerm(propurl);
+                var propsplit = lore.global.util.splitTerm(propurl);
                 var propname = nsprefix(propsplit.ns);
                 if (propname){
                     propname = propname + propsplit.term;
@@ -634,19 +655,17 @@ lore.ore.loadCompoundObject = function (rdf) {
                     .lookupFigure(subject);
                 if (!srcfig) {
                    srcfig = lore.ore.graph
-                    .lookupFigure(subject.replace(
-                    '%3C', '<').replace('%3F', '>')
-                    .unescapeHTML());
+                    .lookupFigure(lore.global.util.unescapeHTML(subject.replace(
+                    '%3C', '<').replace('%3F', '>')));
                 }
                 if (srcfig) {
-                    var relresult = lore.util.splitTerm(this.pred.value.toString());
+                    var relresult = lore.global.util.splitTerm(this.pred.value.toString());
                     var obj = this.obj.value.toString()
                     var tgtfig = lore.ore.graph.lookupFigure(obj);
                     if (!tgtfig) {
                         tgtfig = lore.ore.graph
-                            .lookupFigure(obj.replace(
-                                        '%3C', '<').replace('%3F', '>')
-                                        .unescapeHTML());
+                            .lookupFigure(lore.global.util.unescapeHTML(obj.replace(
+                                        '%3C', '<').replace('%3F', '>')));
                     }
                     if (tgtfig) { // this is a connection
                         var c = new lore.ore.graph.ContextmenuConnection();
@@ -813,23 +832,21 @@ lore.ore.readRDF = function(rdfURL) {
                 // relationships
                 for (var j = 0; j < resourcerels.length; j++) {
                     var rel = resourcerels[j].predicate;
-                    var relresult = lore.util.splitTerm(rel);
+                    var relresult = lore.global.util.splitTerm(rel);
                     var srcfig = lore.ore.graph
                             .lookupFigure(resourcerels[j].subject);
                     if (!srcfig) {
                         srcfig = lore.ore.graph
-                                .lookupFigure(resourcerels[j].subject.replace(
-                                        '%3C', '<').replace('%3F', '>')
-                                        .unescapeHTML());
+                                .lookupFigure(lore.global.util.unescapeHTML(resourcerels[j].subject.replace(
+                                        '%3C', '<').replace('%3F', '>')));
                     }
 
                     var tgtfig = lore.ore.graph
                             .lookupFigure(resourcerels[j].object);
                     if (!tgtfig) {
                         tgtfig = lore.ore.graph
-                                .lookupFigure(resourcerels[j].object.replace(
-                                        '%3C', '<').replace('%3F', '>')
-                                        .unescapeHTML());
+                                .lookupFigure(lore.global.util.unescapeHTML(resourcerels[j].object.replace(
+                                        '%3C', '<').replace('%3F', '>')));
                     }
 
                     if (srcfig && tgtfig) {
@@ -975,7 +992,7 @@ lore.ore.loadRelationshipsFromOntology = function() {
                 lore.debug.ore("loading relationships from " + lore.ore.onturl,lore.ore.relOntology);      
                 lore.ore.relOntology.where('?prop rdf:type <'+lore.constants.OWL_OBJPROP+'>')
                 .each(function (){
-                    var relresult = lore.util.splitTerm(this.prop.value.toString());
+                    var relresult = lore.global.util.splitTerm(this.prop.value.toString());
                     lore.ore.ontrelationships[relresult.term] = relresult.ns;
                 });
             } 
@@ -992,7 +1009,7 @@ lore.ore.loadRelationshipsFromOntology = function() {
                             lore.constants.RDF_SYNTAX_NS + "type",
                             lore.constants.OWL_OBJPROP);
                     for (var i = 0; i < relResult.length; i++) {
-                        var relresult = lore.util.splitTerm(relResult[i].subject);
+                        var relresult = lore.global.util.splitTerm(relResult[i].subject);
                         if (!relresult.term.match("genid:")) {
                             lore.ore.ontrelationships[relresult.term] = relresult.ns;
                         }
@@ -1148,7 +1165,7 @@ lore.ore.handleLocationChange = function (contextURL) {
  *            contextURL The escaped URL
  */
 lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
-    lore.ui.global.clearTree(lore.ui.remstreeroot);
+    lore.global.ui.clearTree(lore.ui.remstreeroot);
 	lore.ui.currentURL = contextURL;
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         var escapedURL = escape(contextURL);
@@ -1323,7 +1340,9 @@ lore.ore.createSMIL = function() {
        
         var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/smil_view.xsl",true);
         var serializer = new XMLSerializer();
-        lore.util.writeFile(serializer.serializeToString(resultDoc),
+		
+		var fileBase = lore.ui.extension.path + "\\content\\";
+        lore.global.util.writeFile(serializer.serializeToString(resultDoc), fileBase,
                 "oresmil.smil");
         var htmlwrapper = "<HTML><HEAD><TITLE>SMIL Slideshow</TITLE></HEAD>"
                 + "<BODY BGCOLOR=\"#003366\"><CENTER>"
@@ -1331,7 +1350,7 @@ lore.ore.createSMIL = function() {
                 + "</CENTER><p style='font-size:smalller;color:#ffffff; padding:5px'>SMIL presentation generated by LORE on "
                 + "<script type='text/javascript'>document.write(new Date().toString())</script>"
                 + "</p></BODY></HTML>";
-        return lore.util.writeFile(htmlwrapper, "playsmil.html");
+        return lore.global.util.writeFile(htmlwrapper, fileBase, "playsmil.html");
 
     } catch (e) {
         lore.ui.loreWarning("Unable to generate SMIL: " + e.toString());
@@ -1340,7 +1359,7 @@ lore.ore.createSMIL = function() {
 /** Generate FOXML from the current compound object */
 lore.ore.createFOXML = function (){
     try {
-        var params = {'coid': 'demo:' + lore.util.splitTerm(lore.ui.grid.getSource()['rdf:about']).term};
+        var params = {'coid': 'demo:' + lore.global.util.splitTerm(lore.ui.grid.getSource()['rdf:about']).term};
         var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/foxml.xsl",true,params);
         var serializer = new XMLSerializer();
         return serializer.serializeToString(resultDoc);         

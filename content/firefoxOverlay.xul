@@ -18,7 +18,7 @@
 	 	<xul:vbox id="oobAnnoVarContentBox" flex="0" height="100%" collapsed="true" >
 	 	<xul:label id = "oobAnnoVarContentLabel" value="Annotation Variation Resource: http://www.google.com" />
 	 	<xul:button id = "oobAnnoVarContentHideMe" label="Hide Me" onclick = "loreoverlay.hideVariationSplitter();" />
-	 	<xul:iframe id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
+	 	<xul:browser disablehistory="false" id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
 	 	</xul:vbox>
  	
 	 	<xul:splitter id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" collapse="after" >

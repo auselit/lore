@@ -194,10 +194,10 @@ lore.ore.disableUIFeatures = function(opts) {
 	}
 	else {
 		if (opts.disable_compoundobjects) {
-			lore.ui.global.topWindowView.setCompoundObjectsVisibility(false);
+			lore.ore.ui.topView.setCompoundObjectsVisibility(false);
 		}
 		else {
-			lore.ui.global.topWindowView.setCompoundObjectsVisibility(true);
+			lore.ore.ui.topView.setCompoundObjectsVisibility(true);
 		}
 	}
 }

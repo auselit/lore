@@ -36,21 +36,35 @@
         
 		<script type="text/javascript" src="../lib/Math.uuid.js"></script>
 		
-        <script type="text/javascript" src="../constants.js"></script>
-        <script type="text/javascript" src="../debug.js"></script>
+        <!-- <script type="text/javascript" src="../constants.js"></script> -->
+        <!-- <script type="text/javascript" src="../debug.js"></script> -->
         
 		
 		<!-- mozdev xpointer lib -->
 		<script type="text/javascript" src="../lib/nsXPointerService.js"></script>
-		<script type="text/javascript" src="../util.js"></script>
+		<!-- <script type="text/javascript" src="../util.js"></script> -->
 		<!-- <script type="text/javascript" src="store.js"></script> -->
 		<!-- <script type="text/javascript" src="../uiglobal.js"></script> -->
 		<script type="text/javascript">
 			try {
+				
+				// Set up JavaScript namespaces
+			lore = {
+				textm: {},	
+				anno: {	ui: {}},
+				ore: {	graph: {},ui: {}},
+				global: {}
+			}
+				// imports the lore namespace and it's sub components
+				Components.utils.import("resource://lore/constants.js", lore);
+				// lore.debug
+				Components.utils.import("resource://lore/util.js", lore.global);
+				// lore.debug
+				Components.utils.import("resource://lore/debug.js", lore);
 				// Load and cache global ui functions
-				Components.utils.import("resource://lore/uiglobal.js", lore.ui);
+				Components.utils.import("resource://lore/uiglobal.js", lore.global);
 				// lore.store
-				Components.utils.import("resource://lore/annotations/store.js", lore);
+				Components.utils.import("resource://lore/annotations/store.js", lore.global);
 			} catch (e) {
 				alert(e + " " + e.stack);
 			}

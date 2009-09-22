@@ -116,7 +116,7 @@ lore.ui.initGraphicalView = function() {
  */
 lore.ui.initOntologies = function() {
     try{
-	  lore.ui.global.topWindowView.loadCompoundObjectPrefs();
+	  lore.ore.ui.topView.loadCompoundObjectPrefs();
     } catch (ex){
         alert(ex + " " + ex.stack);
     }
@@ -185,7 +185,7 @@ lore.ui.initExtComponents = function() {
 	lore.ui.textminingtab = Ext.getCmp("textmining");
 	// set up the sources tree
 	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
-	lore.ui.global.clearTree(sourcestreeroot);
+	lore.global.ui.clearTree(sourcestreeroot);
 	
 	lore.ui.remstreeroot = new Ext.tree.TreeNode({
 				id : "remstree",
@@ -277,18 +277,20 @@ lore.ui.init = function() {
     lore.debug.ui("vars (" + lore.ui.vars.length + ")", lore.ui.vars);
     try{
 	
+	lore.ore.ui.topView =  lore.global.ui.topWindowView.get(window.instanceId);
+	
 	lore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 	lore.ore.resource_metadata_props = [];
 	lore.ore.all_props = lore.ore.METADATA_PROPS;
-	lore.ui.lorevisible = lore.ui.global.topWindowView.compoundObjectsVisible();
+	lore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
 	
 	lore.ui.initExtComponents();
     lore.ui.initProperties();
 	lore.ui.initGraphicalView();
 	lore.ui.loreInfo("Welcome to LORE");
 
-	lore.ui.global.compoundObjectView.registerView(lore.ore);  
-	lore.ui.global.textMiningView.registerView(lore.textm);
+	lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId);  
+	lore.global.ui.textMiningView.registerView(lore.textm);
 	lore.ui.initOntologies();  
 	
 	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank'

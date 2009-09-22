@@ -18,22 +18,15 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-	var EXPORTED_SYMBOLS = ['global'];
+	var EXPORTED_SYMBOLS = ['ui'];	
 	
-	global = {};
+	ui = {};
 	
+	Components.utils.import("resource://lore/debug.js");
+	Components.utils.import("resource://lore/util.js");
 	
-	/*
-	 * TODO: This is temporary until lore.debug is imported as a shared js module
-	 */
-	FBTrace = Components.classes["@joehewitt.com/firebug-trace-service;1"]
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject
-        .getTracer("extensions.lore");
-    
-		
 	// TODO: global logging ( in addition to the logging for each view)
-	// log to a log4j file instead of firebug window??
+	// log to a log4j file 
 	// log4j built-in xpc thing in firefox
 	// handy if users experience problems they can send log file in an email
 	
@@ -41,41 +34,64 @@
 	 * Display an informational message to the user
 	 * @param {String} message The message to display
 	 */
-	global.loreInfo = function(message){
+	ui.loreInfo = function(message){
 	}
 	
 	/**
 	 * Display an warning message to the user
 	 * @param {String} message The message to display
 	 */
-	global.loreWarning = function(message){
+	ui.loreWarning = function(message){
 	}
 	/**
 	 * Display an error message to the user
 	 *
 	 * @param {String} message The message to display
 	 */
-	global.loreError = function(message){
+	ui.loreError = function(message){
 	}
 	
-	global.reset = function (win ) {
-		global.compoundObjectView.unregisterView();
-		global.annotationView.unregisterView();
+	ui.reset = function (win, instId ) {
+		ui.compoundObjectView.unregisterView();
+		ui.annotationView.unregisterView();
 		
-		win.annographiframe.location.reload(true);
-		win.graphiframe.location.reload(true);
+		ui.load(win, instId, true);
+		//win.annographiframe.location.reload(true);
+		//win.graphiframe.location.reload(true);
 	}
 	
-	global.load = function (win) {
-		win.document.getElementById("annographiframe").setAttribute("src", "chrome://lore/content/annotations/loreui_anno.html");
-        win.document.getElementById("graphiframe").setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
+	ui.load = function (win, instId, reload) {
+		var iframe1 = win.document.getElementById("annographiframe");
+		
+		iframe1.addEventListener("load", function onLoadTrigger(event){
+			iframe1.removeEventListener("load", onLoadTrigger, true);
+			iframe1.contentWindow.instanceId = instId; 
+		}, true);
+		if (reload) {
+			win.annographiframe.location.reload(true);
+		}
+		else {
+			iframe1.setAttribute("src", "chrome://lore/content/annotations/loreui_anno.html");
+		}
+
+		var iframe2 = win.document.getElementById("graphiframe");
+		iframe2.addEventListener("load", function onLoadTrigger(event){
+			iframe2.removeEventListener("load", onLoadTrigger, true);
+			iframe2.contentWindow.instanceId = instId;
+		}, true);
+		if (reload) {
+			win.graphiframe.location.reload(true);
+		}
+		else {
+			iframe2.setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
+		}
 	}
 	
 	/**
 	 * Clear nodes all children from a tree node recursively
 	 * @param {Ext.tree.TreeNode} treeRoot The tree node to clear
 	 */
-	global.clearTree = function(treeRoot){
+	ui.clearTree = function(treeRoot){
 		while (treeRoot.firstChild) {
 			treeRoot.removeChild(treeRoot.firstChild);
 		}
@@ -84,16 +100,16 @@
 	 * Set up scripts for image selection etc when a page loads in the browser
 	 * @param {} contextURL
 	 */
-	global.locationLoaded = function(contextURL){
-		/*var doc = lore.util.getContentWindow().document;
+	ui.locationLoaded = function(contextURL, win){
+		/*var doc = util.getContentWindow().document;
 		
 		 if (contextURL.match(".jpg")){ // temporary hack to test
 		
 		 //if doc contains any images and it has not already been injected, inject image annotation script
 		
-		 lore.util.injectScript("content/lib/ext/adapter/jquery/jquery-1.3.2.min.js",doc);
+		 util.injectScript("content/lib/ext/adapter/jquery/jquery-1.3.2.min.js",win);
 		
-		 lore.util.injectScript("content/lib/jquery.imgareaselect-0.8.min.js",doc);
+		 util.injectScript("content/lib/jquery.imgareaselect-0.8.min.js",win);
 		
 		 var imgscript = "$('img').imgAreaSelect({onSelectEnd: function(){alert('image region selected');},handles:'corners'});";
 		
@@ -119,115 +135,78 @@
 		
 	}
 	
+	ui.genInstanceID = function () {
+		if ( !ui.genInstanceID.counter) {
+			ui.genInstanceID.counter = 1;
+		} else {
+			ui.genInstanceID.counter++;
+		}
+		return ui.genInstanceID.counter;
+	}
+	
+	function createWrapper(srcObj, name) {
+			var wrapper = { _real: srcObj};
+			for ( x in srcObj) {
+				if ( typeof(srcObj[x]) == 'function' ) {
+					wrapper[x] = eval('function(){'+
+						'debug.ui("' + name + '.' + x + ' args:" + arguments, arguments);' +
+						'return this._real["' + x + '"].apply(this._real,arguments);' +
+							'}');
+				}
+			}
+			return wrapper;
+	}
+	
 	/**
-	 * UI Wrapper classes
+	 * UI View 
 	 * The intention is that the views are never directly accesses via their iframes
 	 * by other view/overlay code
 	 */
-	global.compoundObjectView = {
 	
-		coViews: [],
-		
-		loaded: function(){
-			return this.coViews.length > 0;
-		},
-		
-		registerView: function(coView ){
-			this.coViews.push(coView);
-		},
-		
-		unregisterView: function (coView) {
-			if (!coView) {
-				for (var i=0; i < this.coViews.length; i++) {
-					if ( this.coViews[i].uninit ) {
-						this.coViews[i].uninit();
-					}
-				}
-				this.coViews = [];
-			} else {
-				//TODO:		
-			}
-		}
-	}
+		function Views(args){
 
-	var funcs = ["setrelonturl", "setdccreator","setRepos","show","hide",
-	"disableUIFeatures","loadCompoundObject","loadRDF","handleLocationChange", "addFigure",
-	"saveRDFToRepository", "deleteFromRepository", "serializeREM", "loadRelationshipsFromOntology" ];
-	for ( var i=0;i < funcs.length;i++) {
-		var funcname = funcs[i];
-		global.compoundObjectView[funcname] = eval('function(){'+
-			'FBTrace.sysout("[UI] " + "compoundObjectView.' + funcname + ' args:" + arguments, arguments);' +
-			'	return this.coViews[0]["' + funcname + '"].apply(this.coViews[0],arguments);' +
-		//	'	for (var j = 0; j < this.coViews.length; j++) {' +
-			//'	this.coViews[j]["' + funcname + '"].apply(this.coViews[j],arguments);' +
-		//	'}' +
-		'}');
-	}
-	
-	
-	global.annotationView = {
-	
-		annoViews: [],
+			this.name = args.name;
+			this.views = {};
 		
-		loaded: function(){
-			return this.annoViews.length > 0;
-		},
-		
-		registerView: function(annoView){
-			this.annoViews.push(annoView);
-		},
-		
-		unregisterView: function (annoView) {
-			if (!annoView) {
-				for (var i=0; i < this.annoViews.length; i++) {
-					if ( this.annoViews[i].uninit ) {
-						this.annoViews[i].uninit();
+			this.loaded = function(instId){
+				return this.views[instId] != null;
+			};
+			
+			this.registerView = function(view, instId){
+				this.views[instId] = createWrapper(view, this.name);
+			};
+			
+			this.unregisterView = function(view){
+				if (!view) {
+					for (x in this.views) {
+						if (this.views[x].uninit) {
+							this.views[x].uninit();
+						}
 					}
+					this.views = {};
 				}
-				this.annoViews = [];
-			} else {
+				else {
 				//TODO:		
-			}
+				}
+			};
+			
+			this.get = function(instId){
+				return this.views[instId];
+			};
 		}
-	}
-	
-	var funcs = ["handleLocationChange", "show","hide","setRepos","setdccreator","disableUIFeatures",
-	"handleAddAnnotation", "handleDeleteAnnotation", "handleEditAnnotation","handleReplyToAnnotation",
-	"handleSaveAnnotationChanges", "handleSaveAllAnnotationChanges", "showAllAnnotations"  ];
-	
-	for ( var i=0;i < funcs.length;i++) {
-		var funcname = funcs[i];
-		global.annotationView[funcname] = eval('function(){'+
-			'FBTrace.sysout("[UI] " + "annotationView.' + funcname + ' args:" + arguments, arguments);' +
-			'   return this.annoViews[0]["' + funcname + '"].apply(this.annoViews[0],arguments);' +
-			//'	for (var j = 0; j < this.annoViews.length; j++) {' +
-			//'	this.annoViews[j]["' + funcname + '"].apply(this.annoViews[j],arguments);' +
-			//'}' +
-		'}');
-	}
-	
-	global.topWindowView = {
-		topView: null,
 		
-		registerView: function(topView){
-			this.topView = topView;
-		}
-	}
+		
+		ui.compoundObjectView = new Views({
+			name: 'coView'
+		});
+		ui.annotationView = new Views({
+			name: 'annoView'
+		});
+		ui.topWindowView = new Views({
+			name: 'topView'
+		});
 	
-	var funcs = ["loadAnnotationPrefs", "loadCompoundObjectPrefs",
-	"setCompoundObjectsVisibility","setAnnotationsVisibility","compoundObjectsVisible",
-	"annotationsVisible","getVariationContentWindow","variationContentWindowIsVisible",
-	"updateVariationSplitter"];
-	
-	for ( var i=0;i < funcs.length;i++) {
-		var funcname = funcs[i];
-		global.topWindowView[funcname] = eval('function(){'+
-			'FBTrace.sysout("[UI] " + "topWindowView.' + funcname + ' args:" + arguments, arguments);' +
-			'return this.topView["' + funcname + '"].apply(this.topView,arguments);' +
-		'}');
-	}
-	
-	global.textMiningView = {
+	ui.textMiningView = {
 		tmView: null,
 		requestTextMiningMetadata: function(){
 			tmView.requestTextMiningMetadata();

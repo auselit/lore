@@ -3,25 +3,35 @@
  * @name loreoverlay
  */
 try {
-	
 	// Load and cache global ui functions
 	
 	// for naming consistency with other code
-	var lore = { ui: {} };
-	
-	// lore.ui.global
-	Components.utils.import("resource://lore/uiglobal.js", lore.ui);
-	// lore.store
-	Components.utils.import("resource://lore/annotations/store.js", lore);
+	var lore = { global: {} };
+	// lore.debug
+	Components.utils.import("resource://lore/debug.js", lore);	
+	// lore.global.ui
+	Components.utils.import("resource://lore/uiglobal.js", lore.global);
+	// lore.global.store
+	Components.utils.import("resource://lore/annotations/store.js", lore.global);
 		
-	if (!lore.ui.global || !lore.store ) {
+	if (!lore.global.ui || !lore.global.store || !lore.debug ) {
 		// sanity check
 		alert("Not all js modules loaded.");
 	}
 	
 	
 	var loreoverlay = {
+		
+		coView: function () { 
+			return lore.global.ui.compoundObjectView.get(this.instId);
+		},
+		
+		annoView: function () { 
+			return lore.global.ui.annotationView.get(this.instId);
+		},
+		
 		oreLocationListener: {
+			
 			QueryInterface: function(aIID){
 				if (aIID.equals(Components.interfaces.nsIWebProgressListener) ||
 				aIID.equals(Components.interfaces.nsISupportsWeakReference) ||
@@ -34,9 +44,10 @@ try {
 					if (aURI) {
 						if (aURI.spec == this.oldURL) 
 							return;
-						if ( lore.ui.global.compoundObjectView.loaded() && lore.ui.global.annotationView.loaded() ) {
-							lore.ui.global.compoundObjectView.handleLocationChange(aURI.spec);
-							lore.ui.global.annotationView.handleLocationChange(aURI.spec);
+						if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId) && 
+							 lore.global.ui.annotationView.loaded(loreoverlay.instId) ) {
+							loreoverlay.coView().handleLocationChange(aURI.spec);
+							loreoverlay.annoView().handleLocationChange(aURI.spec);
 							this.oldURL = aURI.spec;
 						}
 					}
@@ -51,7 +62,7 @@ try {
 				}
 				if (stateFlags & WPL.STATE_IS_NETWORK) { // entire page has loaded
 					if (stateFlags & WPL.STATE_STOP) {
-						lore.ui.global.locationLoaded();
+						lore.global.ui.locationLoaded();
 					}
 				}
 			},
@@ -67,7 +78,9 @@ try {
 		oldURL: null,
 		onLoad: function(){
 			try {
-				lore.ui.global.topWindowView.registerView(this);
+				this.instId = lore.global.ui.genInstanceID();
+				
+				lore.global.ui.topWindowView.registerView(this, this.instId);
 				gBrowser.addProgressListener(this.oreLocationListener, Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
 				this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
 				this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
@@ -75,10 +88,10 @@ try {
 				
 				this.initialized = true;
 				this.strings = document.getElementById("lore-strings");
-				lore.ui.global.load(window);
+				lore.global.ui.load(window, this.instId);
 			} 
 			catch (e) {
-				alert("Error on load: " + e);
+				alert("Error on load: " + e.stack, e);
 			}
 		},
 		observe: function(subject, topic, data){
@@ -89,12 +102,12 @@ try {
 			this.loadAnnotationPrefs();
 		},
 		uninit: function(){
-			if ( lore.ui.global.annotationView.loaded() || lore.ui.global.compoundObjectView.loaded()) {
+			if ( lore.global.ui.annotationView.loaded(this.instId) || lore.global.ui.compoundObjectView.loaded(this.instId)) {
 				gBrowser.removeProgressListener(this.oreLocationListener);
 			}
 		},
 		doTextMining: function(){
-			lore.ui.global.textMiningView.requestTextMiningMetadata();
+			lore.global.ui.textMiningView.requestTextMiningMetadata();
 			
 		},
 		showContextMenu1: function(event){
@@ -105,7 +118,7 @@ try {
 		},
 		onMenuItemCommand: function(e){
 			if (gContextMenu.onLink) 
-				lore.ui.global.compoundObjectView.addFigure(gContextMenu.linkURL);
+				loreoverlay.coView().addFigure(gContextMenu.linkURL);
 		},
 		onMenuPopup: function(e){
 			gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
@@ -116,11 +129,11 @@ try {
 		},
 		addImageMenuItemCommand: function(e){
 			if (gContextMenu.onImage) 
-				lore.ui.global.compoundObjectView.addFigure(gContextMenu.imageURL);
+				loreoverlay.coView().addFigure(gContextMenu.imageURL);
 		},
 		addBGImageMenuItemCommand: function(e){
 			if (gContextMenu.hasBGImage) 
-				lore.ui.global.compoundObjectView.addFigure(gContextMenu.bgImageURL);
+				loreoverlay.coView().addFigure(gContextMenu.bgImageURL);
 		},
 		onToolbarMenuCommand: function(e){
 			this.toggleBar();
@@ -144,8 +157,9 @@ try {
 				alert(e + " " +  e.stack);
 			}
 		},
+		
         loadRDFURL: function(){
-            lore.ui.global.compoundObjectView.loadRDF();
+            loreoverlay.coView().loadRDF();
         },
 		loadRDF: function(){
             try{
@@ -167,16 +181,16 @@ try {
                     cstream.readString(-1, str); 
                     data = str.value;
                     cstream.close();
-					lore.ui.global.compoundObjectView.loadCompoundObject(data);
+					loreoverlay.coView().loadCompoundObject(data);
                 }
             } catch (e){
                 alert(e + " " +  e.stack);
-                window.graphiframe.lore.debug.ui("exception loading file",e);
+                lore.debug.ui("exception loading file",e);
             }
         },
 		addAnnotation: function(){
 			try {
-				lore.ui.global.annotationView.handleAddAnnotation();
+				loreoverlay.annoView().handleAddAnnotation();
 			}catch (e ) {
 				alert("addAnnotation: " + e) ;
 			}
@@ -184,67 +198,45 @@ try {
 		
 		removeAnnotation: function() {
 			try {
-				lore.ui.global.annotationView.handleDeleteAnnotation();
+				loreoverlay.annoView().handleDeleteAnnotation();
 			} catch (e) {
 				alert(e + " " +  e.stack);
 			}
 		},
 		
 		editAnnotation: function () {
-			lore.ui.global.annotationView.handleEditAnnotation();
+			loreoverlay.annoView().handleEditAnnotation();
 		},
 		
 		replyToAnnotation: function () {
-			lore.ui.global.annotationView.handleReplyToAnnotation();
+			loreoverlay.annoView().handleReplyToAnnotation();
 		},
 		
 		saveAnnotation: function () {
-			lore.ui.global.annotationView.handleSaveAnnotationChanges();
+			loreoverlay.annoView().handleSaveAnnotationChanges();
 		},
 		
 		saveAllAnnotations: function () {
-			lore.ui.global.annotationView.handleSaveAllAnnotationChanges();
+			loreoverlay.annoView().handleSaveAllAnnotationChanges();
 		},
 		
 		showAnnotations: function(){
-			lore.ui.global.annotationView.showAllAnnotations();
+			loreoverlay.annoView().showAllAnnotations();
 		},
 		saveRDF: function(){
-			lore.ui.global.compoundObjectView.saveRDFToRepository();
+			loreoverlay.coView().saveRDFToRepository();
 		},
         deleteRDF: function(){
-            lore.ui.global.compoundObjectView.deleteFromRepository();
+            loreoverlay.coView().deleteFromRepository();
         },
         serializeREM: function (format) {
-            try{
-                var therdf = lore.ui.global.compoundObjectView.serializeREM(format);
-                // TODO: This should probably be out of the overlay
-				var nsIFilePicker = Components.interfaces.nsIFilePicker;
-                var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-                fp.appendFilters(nsIFilePicker.filterXML | nsIFilePicker.filterAll);
-                fp.init(window, "Save Compound Object as", nsIFilePicker.modeSave);
-                var res = fp.show();
-                if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace){
-                    var thefile = fp.file;
-                    var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"]
-                    .createInstance(Components.interfaces.nsIFileOutputStream);
-                    fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
-                    var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].
-                                      createInstance(Components.interfaces.nsIConverterOutputStream);
-                    converter.init(fostream, "UTF-8", 0, 0);
-                    converter.writeString(therdf);
-                    converter.close();
-                    window.graphiframe.lore.ui.loreInfo("Compound object saved to " + thefile.path);
-                }
-            } catch (e) {
-                window.graphiframe.lore.debug.ui("exception saving XML",e);
-            }
+            loreoverlay.coView().handleSerializeREM(format);
         },
 		addGraphNode: function(){
-			lore.ui.global.compoundObjectView.addFigure(window.content.location.href);
+			loreoverlay.coView().addFigure(window.content.location.href);
 		},
 		resetGraph: function(){
-			lore.ui.global.reset(window);
+			lore.global.ui.reset(window, this.instId);
 		},
 		openAbout: function(){
 			window.open("chrome://lore/content/about.xul", "", "chrome,centerscreen,modal");
@@ -274,13 +266,13 @@ try {
 				
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps? 
-				//lore.store.get("lore_preferences") 
-				lore.ui.global.compoundObjectView.setdccreator(dccreator);
-				lore.ui.global.compoundObjectView.setrelonturl(relonturl);
-				lore.ui.global.compoundObjectView.setRepos(rdfrepos, rdfrepostype);
+				//lore.global.store.get("lore_preferences") 
+				loreoverlay.coView().setdccreator(dccreator);
+				loreoverlay.coView().setrelonturl(relonturl);
+				loreoverlay.coView().setRepos(rdfrepos, rdfrepostype);
 				
 				// hide or show related Ext UI depending on prefs
-				lore.ui.global.compoundObjectView.disableUIFeatures({
+				loreoverlay.coView().disableUIFeatures({
 					'disable_textmining': disable_tm,
 					'disable_compoundobjects': disable_co
 				});
@@ -290,6 +282,7 @@ try {
 		
 		loadAnnotationPrefs: function(){
 			if (this.prefs) {
+				
 				var annoserver = this.prefs.getCharPref("annoserver");
 				var dccreator = this.prefs.getCharPref("dccreator");
 				
@@ -307,15 +300,15 @@ try {
 				
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps?  
-				lore.ui.global.annotationView.setdccreator(dccreator);
-				lore.ui.global.annotationView.setRepos(annoserver);
+				loreoverlay.annoView().setdccreator(dccreator);
+				loreoverlay.annoView().setRepos(annoserver);
 				
-				lore.ui.global.annotationView.disableUIFeatures({
+				loreoverlay.annoView().disableUIFeatures({
 					'disable_annotations': disable_anno
 				});
 			}
 			else {
-				window.annographiframe.lore.debug.ui("preferences object not loaded, can't read in annotation preferences!");
+				lore.debug.ui("preferences object not loaded, can't read in annotation preferences!");
 			}
 		},
 		
@@ -323,8 +316,8 @@ try {
 			var prefservice = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
 			var loreprefs = prefservice.getBranch("extensions.lore.");
 			var relonturl = loreprefs.getCharPref("relonturl");
-			lore.ui.global.compoundObjectView.setrelonturl(relonturl);
-			lore.ui.global.compoundObjectView.loadRelationshipsFromOntology();
+			loreoverlay.coView().setrelonturl(relonturl);
+			loreoverlay.coView().loadRelationshipsFromOntology();
 			return true;
 		},
 		
@@ -422,13 +415,13 @@ try {
 				annoContentBox.setAttribute("collapsed", "false");
 				annoContentSplitter.setAttribute("collapsed", "false");
 				
-				if ( lore.ui.global.annotationView.loaded()) {
-					lore.ui.global.annotationView.show();
+				if ( lore.global.ui.annotationView.loaded(this.instId)) {
+					loreoverlay.annoView().show();
 				} else {
 					//TODO: need a better way of doing this
 					window.setTimeout(function(){
 						lore.debug.ui("Annotations: Delayed loreOpen running...");
-						lore.ui.global.annotationView.show();
+						loreoverlay.annoView().show();
 					}, 2000);
 				}
 				
@@ -436,13 +429,13 @@ try {
 				annoContentBox.setAttribute("collapsed", "true");
 				annoContentSplitter.setAttribute("collapsed", "true");
 				
-				if ( lore.ui.global.annotationView.loaded() ) {
-					lore.ui.global.annotationView.hide();
+				if ( lore.global.ui.annotationView.loaded(this.instId) ) {
+					loreoverlay.annoView().hide();
 				} else {
 					//TODO: need a better way of doing this
 					window.setTimeout(function(){
 						lore.debug.ui("Annotations: Delayed loreClose running...");
-						lore.ui.global.annotationView.hide();
+						loreoverlay.annoView().hide();
 					}, 2000);
 				}			
 			}
@@ -459,24 +452,24 @@ try {
 				}
 				contentBox.setAttribute("collapsed", "false");
 				contentSplitter.setAttribute("collapsed", "false");
-				if ( lore.ui.global.compoundObjectView.loaded()) {
-					lore.ui.global.compoundObjectView.show();
+				if ( lore.global.ui.compoundObjectView.loaded(this.instId)) {
+					loreoverlay.coView().show();
 				}else {
 					window.setTimeout(function(){
 						lore.debug.ui("Compount Objects: Delayed loreOpen running...");
-						lore.ui.global.compoundObjectView.show();
+						loreoverlay.coView().show();
 					}, 2000);
 					
 				}
 			} else {
 				contentBox.setAttribute("collapsed", "true");
 				contentSplitter.setAttribute("collapsed", "true");
-				if ( lore.ui.global.compoundObjectView.loaded()) {
-					lore.ui.global.compoundObjectView.hide();
+				if ( lore.global.ui.compoundObjectView.loaded(this.instId)) {
+					loreoverlay.coView().hide();
 				} else {
 					window.setTimeout(function(){
-						lore.debug.ui("Compount Objects: Delayed loreClose running...");
-						lore.ui.global.compoundObjectView.hide();
+						lore.debug.ui("Compound Objects: Delayed loreClose running...");
+						loreoverlay.coView().hide();
 					}, 2000);
 				}
 			}
@@ -499,6 +492,7 @@ try {
 	window.addEventListener("unload", function(){
 		loreoverlay.uninit()
 	}, false);
+	
 } catch (e ) {
 	alert(e + " " + e.lineNumber);
 

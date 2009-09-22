@@ -10,7 +10,7 @@ lore.ore.explore.showInExploreView = function (id, title){
         lore.ore.explore.rg.refresh();
         var existhistory = Ext.get('history').dom.innerHTML;
         // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
-        var action = "lore.util.launchTab(\"" + id + "\");";
+        var action = "lore.global.util.launchTab(\"" + id + "\", window);";
         var nodelink = "<a title='Show in browser' href='#' onclick='" + action 
         + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'>" 
         + "</a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
@@ -162,7 +162,7 @@ lore.ore.explore.init = function() {
         this.clickedNode = node;
         var existhistory = Ext.get('history').dom.innerHTML;
         // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
-        var action = "lore.util.launchTab(\"" + node.id + "\");";
+        var action = "lore.global.util.launchTab(\"" + node.id + "\", window);";
         var nodelink = "<a title='Show in browser' href='#' onclick='" + action + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'></a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" + node.id + "');\">" + node.name + "</a>";
         Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
         this.requestGraph();
