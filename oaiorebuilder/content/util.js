@@ -59,7 +59,7 @@ util = {
             if(o.hasOwnProperty(p)) {
                 v = o[p];
                 if(v && 'object' === typeof v) {
-                    c[p] = Ext.ux.clone(v);
+                    c[p] = util.clone(v);
                 }
                 else {
                     c[p] = v;
@@ -378,8 +378,7 @@ util = {
      */
     getSelectionForXPath : function(xp, win)
     {
-        var mainwindow = util.getContentWindow(win);
-        return m_xps.xptrResolver.resolveXPointerToRange(xp, mainwindow.document);
+        return m_xps.xptrResolver.resolveXPointerToRange(xp, win.document);
     },
     /**
      * @param {} xp
@@ -387,8 +386,7 @@ util = {
      * @return {}
      */
     getNodeForXPath : function(xp, win) {
-        var mainwindow = util.getContentWindow(win);
-        return m_xps.parseXPointerToNode(xp, mainwindow);
+        return m_xps.parseXPointerToNode(xp, win);
     },
     /**
      * This fn depends on a hacked version of nsXpointerService being loaded by the browser
