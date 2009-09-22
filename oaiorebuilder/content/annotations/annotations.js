@@ -99,30 +99,30 @@
 				}
 			}
 			node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'created');
-			this.created = lore.util.safeGetFirstChildValue(node);
+			this.created = lore.global.util.safeGetFirstChildValue(node);
 			node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'modified');
-			this.modified = lore.util.safeGetFirstChildValue(node);
+			this.modified = lore.global.util.safeGetFirstChildValue(node);
 			
 			if (this.isReply) {
 				this.context = '';
 			}
 			else {
 				node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'context');
-				this.context = lore.util.safeGetFirstChildValue(node);
+				this.context = lore.global.util.safeGetFirstChildValue(node);
 			}
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.DC10_NS, 'creator');
-			this.creator = lore.util.safeGetFirstChildValue(node, 'anon');
+			this.creator = lore.global.util.safeGetFirstChildValue(node, 'anon');
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.DC10_NS, 'title');
-			this.title = lore.util.safeGetFirstChildValue(node);
+			this.title = lore.global.util.safeGetFirstChildValue(node);
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.DC10_NS, 'language');
-			this.lang = lore.util.safeGetFirstChildValue(node);
+			this.lang = lore.global.util.safeGetFirstChildValue(node);
 			
 			// body stores the contents of the html body tag as text
 			if (this.bodyURL) {
-				this.body = lore.anno.getBodyContent(this.bodyURL);
+				this.body = lore.anno.getBodyContent(this.bodyURL, window);
 			}
 			// get tags
 			this.tags = "";
@@ -166,27 +166,27 @@
 					}
 				}
 				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'original-context');
-				this.originalcontext = lore.util.safeGetFirstChildValue(node);
+				this.originalcontext = lore.global.util.safeGetFirstChildValue(node);
 				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variant-context');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revised-context');
 				}
-				this.variantcontext = lore.util.safeGetFirstChildValue(node);
+				this.variantcontext = lore.global.util.safeGetFirstChildValue(node);
 				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variation-agent');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revision-agent');
 				}
-				this.variationagent = lore.util.safeGetFirstChildValue(node);
+				this.variationagent = lore.global.util.safeGetFirstChildValue(node);
 				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variation-place');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revision-place');
 				}
-				this.variationplace = lore.util.safeGetFirstChildValue(node);
+				this.variationplace = lore.global.util.safeGetFirstChildValue(node);
 				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variation-date');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revision-date');
 				}
-				this.variationdate = lore.util.safeGetFirstChildValue(node);
+				this.variationdate = lore.global.util.safeGetFirstChildValue(node);
 			}
 			if (!this.original) {
 				this.original = this.resource;
@@ -200,7 +200,7 @@
 			return "Annotation [" + this.id + "," +
 			(this.modified ? this.modified : this.created) +
 			"," +
-			lore.util.splitTerm(this.type).term +
+			lore.global.util.splitTerm(this.type).term +
 			"]";
 		}
 	}
@@ -221,7 +221,7 @@
 		if ( anno.replies) {
 			var num = anno.replies.length;
 			for (var i=0;i<anno.replies;i++) {
-				num += lore.anno.calcNumReplies(lore.util.findRecordById(lore.anno.annods, data.replies[i]).data);
+				num += lore.anno.calcNumReplies(lore.global.util.findRecordById(lore.anno.annods, data.replies[i]).data);
 			}
 			return num;
 		} else {
@@ -229,12 +229,12 @@
 		}
 	}  
 	
-	lore.anno.addAnnotation = function(currentContext, parent){
+	lore.anno.addAnnotation = function(currentContext, currentURL, parent){
 		
 		var anno = {
 			id : "#new" + Math.uuid(),
-			resource: (parent ? parent.data.id: lore.ui.currentURL),
-			original: lore.ui.currentURL,
+			resource: (parent ? parent.data.id: currentURL),
+			original: currentURL,
 			context: currentContext,
 			originalcontext: currentContext,
 			creator: lore.defaultCreator,
@@ -259,12 +259,12 @@
 		return anno;
 	}
 	
-	lore.anno.updateAnnotations = function (resultCallback) {
+	lore.anno.updateAnnotations = function (currentURL, resultCallback) {
 		// TODO: this is inefficient, should create one xml request, need to change
 		lore.anno.annods.each( function (rec) 
 		{
 			if ( rec.dirty ) {
-				lore.anno.updateAnnotation(rec, function (action,result,resultMsg) {
+				lore.anno.updateAnnotation(rec, currentURL, function (action,result,resultMsg) {
 					resultCallback(rec, action, result, resultMsg);
 				});
 				
@@ -295,7 +295,7 @@
 		});
 
 	}
-	lore.anno.updateAnnotation = function(anno, resultCallback){
+	lore.anno.updateAnnotation = function(anno, currentURL, resultCallback){
 	
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading tree
@@ -317,7 +317,7 @@
 					if (resultCallback) {
 						var result = xhr.status == 201 ? 'success' : 'fail';
 						resultCallback('create', result, xhr.responseText ? xhr.responseText:xhr.statusText);
-						lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
+						lore.anno.updateAnnotationsSourceList(currentURL);
 						
 					}
 				}
@@ -347,7 +347,7 @@
 			// remove the annotation from the server
 			var existsInBackend = !lore.anno.isNewAnnotation(anno);
 			if (anno.data.isReply) {
-				var parent = lore.util.findRecordById(lore.anno.annods, anno.data.resource);
+				var parent = lore.global.util.findRecordById(lore.anno.annods, anno.data.resource);
 				var ind = -1;
 				for( var i=0;i< parent.data.replies.length;i++) {
 					if ( parent.data.replies[i] == anno.data.id ) {
@@ -413,10 +413,10 @@
 		if (anno.isReply) {
 			rdfxml += '<inReplyTo xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
 			
-			var rootannonode = lore.util.findRecordById(lore.anno.annods, anno.resource);
+			var rootannonode = lore.global.util.findRecordById(lore.anno.annods, anno.resource);
 			if (rootannonode) {
 				while ( rootannonode.data.isReply) {
-					rootannonode = lore.util.findRecordById(lore.anno.annods, rootannonode.data.resource);
+					rootannonode = lore.global.util.findRecordById(lore.anno.annods, rootannonode.data.resource);
 				}
 				rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + rootannonode.data.id + '"/>';
 			}
@@ -521,7 +521,7 @@
 			}
 		}
 		if (anno.body) {
-			anno.body = lore.util.sanitizeHTML(anno.body);
+			anno.body = lore.global.util.sanitizeHTML(anno.body, window);
 			rdfxml += '<body xmlns="' + lore.constants.ANNOTATION_NS +
 			'"><rdf:Description>' +
 			'<ContentType xmlns="' +
@@ -543,7 +543,7 @@
 			var tagsarray = anno.tags.split(',');
 			lore.debug.anno("tags are", tagsarray);
 			for (var ti = 0; ti < tagsarray.length; ti++) {
-				var thetag = tagsarray[ti].escapeHTML();
+				var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
 				rdfxml += '<tag xmlns="' + lore.constants.VARIATION_ANNOTATION_NS + '"';
 				if (thetag.indexOf("http://") == 0) {
 					rdfxml += ' resource="' + thetag + '"/>';
@@ -618,7 +618,7 @@
 	 * @param {String} uri Fully formed request against Danno annotation server
 	 * @return {Object} Server response as text or XML document.
 	 */
-	lore.anno.getBodyContent = function(uri){
+	lore.anno.getBodyContent = function(uri, window){
 		var req = null;
 		try {
 			req = new XMLHttpRequest();
@@ -680,7 +680,7 @@
 			bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
 		}
 		if (bodyText) {
-			return lore.util.sanitizeHTML(bodyText);
+			return lore.global.util.sanitizeHTML(bodyText, window);
 		}
 		lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
 		return "";
@@ -691,9 +691,9 @@
 	 *
 	 * @param {String} theURL The escaped URL
 	 */
-	lore.anno.updateAnnotationsSourceList = function(theURL){
+	lore.anno.updateAnnotationsSourceList = function(theURL, callbackFunc){
 	
-		//var ds = lore.store.get(lore.anno.ANNOTATIONS_STORE, theURL);
+		//var ds = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
 		//if (ds) {
 			// TODO:
 			// update so that triggers events lsiterenes to update the view to the
@@ -705,19 +705,28 @@
 		// Get annotations for theURL
 		
 		if (lore.anno.annoURL) {
-			var queryURL = lore.anno.annoURL + lore.anno.ANNOTATES + escape(theURL);
+			var queryURL = lore.anno.annoURL + lore.constants.ANNOTATES + escape(theURL);
 			
-			//TODO:This view specific output should be put elsewhere not in model
-			lore.ui.loreInfo("Loading annotations for " + theURL);
 			Ext.Ajax.request({
 				url: queryURL,
 				method: "GET",
 				disableCaching: false,
-				success: lore.anno.handleAnnotationsLoaded,
+				success: function(resp, opt) {
+					try {
+						if (callbackFunc) 
+							callbackFunc('success', resp);
+						lore.anno.handleAnnotationsLoaded(resp);
+					} catch (e ) {
+						lore.debug.anno(e,e);
+					}
+				},
 				failure: function(resp, opt){
-					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
-					//TODO:this output needs to be moved into a callback function
-					lore.ui.loreInfo("No annotations found for the current page");
+					try {
+						lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
+					if ( callbackFunc) callbackFunc('fail', resp);
+					} catch (e ) {
+						lore.debug.anno(e,e);
+					}
 				}
 			});
 		}
@@ -764,7 +773,7 @@
 				Ext.Ajax.request({
 					disableCaching: false, // without this the request was failing
 					method: "GET",
-					url: lore.anno.annoURL + lore.anno.REPLY_TREE + annoID,
+					url: lore.anno.annoURL + lore.constants.REPLY_TREE + annoID,
 					success: lore.anno.handleAnnotationRepliesLoaded,
 					failure: function(resp, opt){
 						lore.debug.anno("Unable to obtain replies for " + opt.url, resp);
@@ -786,7 +795,7 @@
 				replies = lore.anno.orderByDate(replyList);
 				
 				
-				var parent = lore.util.findRecordById(lore.anno.annods, replies[0].resource);
+				var parent = lore.global.util.findRecordById(lore.anno.annods, replies[0].resource);
 				parent.data.replies = [];
 				
 				for (var i = 0; i < replies.length; i++) {

@@ -19,7 +19,7 @@
  */
 
 // Reference to the Extension
-lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
+lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
 		.getInstallLocation(lore.constants.EXTENSION_ID)
 		.getItemLocation(lore.constants.EXTENSION_ID);
@@ -27,7 +27,7 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 	//TODO: This eventually should be a shared function and moved outta here into the model
 	
 	lore.anno.initModel = function ( theURL ) {
-		lore.anno.annods = lore.store.create(lore.anno.ANNOTATIONS_STORE,
+		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({
 									fields: [
 										{name: 'created'}, 
@@ -57,45 +57,50 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		
 	}
 	
-	lore.ui.anno.initModelHandlers = function () {
+	lore.anno.ui.initModelHandlers = function () {
 		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
-		lore.anno.annods.on( { "update": {fn: lore.ui.anno.updateUIOnUpdate}, 
-							   "load":{fn: lore.ui.anno.updateUI},
-							   "remove":{fn: lore.ui.anno.updateUIOnRemove},
-							   "clear": {fn: lore.ui.anno.updateUIOnClear}
+		lore.anno.annods.on( { "update": {fn: lore.anno.ui.updateUIOnUpdate}, 
+							   "load":{fn: lore.anno.ui.updateUI},
+							   "remove":{fn: lore.anno.ui.updateUIOnRemove},
+							   "clear": {fn: lore.anno.ui.updateUIOnClear}
 							   });
     }
 	
-	lore.ui.anno.init = function(){
+	lore.anno.ui.init = function(){
 		try {
-			lore.m_xps = new XPointerService();
+			lore.global.util.setXPointerService(new XPointerService());
 			// TODO: some of this code could be shared in common library
-
-			lore.ui.currentURL = lore.util.getContentWindow().location.href;
-			lore.anno.initModel(lore.ui.currentURL);
-			lore.ui.anno.initGUI({ annods: lore.anno.annods});
-			lore.ui.anno.initModelHandlers();
 			
-			lore.ui.lorevisible = lore.ui.global.topWindowView.annotationsVisible();
+			lore.anno.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
+			lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;
+			lore.anno.initModel(lore.anno.ui.currentURL);
+			lore.anno.ui.initGUI({ annods: lore.anno.annods});
+			lore.anno.ui.initModelHandlers();
 			
- 			lore.ui.anno.initTimeline();
+			lore.anno.ui.lorevisible = lore.anno.ui.topView.annotationsVisible();
+			
+ 			lore.anno.ui.initTimeline();
 
-			lore.ui.global.annotationView.registerView(lore.ui.anno);
+			lore.global.ui.annotationView.registerView(lore.anno.ui, window.instanceId);
 			// TODO:load preferences, shared code?
 			try{
-				lore.ui.global.topWindowView.loadAnnotationPrefs();
+				lore.anno.ui.topView.loadAnnotationPrefs();
     		} catch (ex){
         		lore.debug.anno("Error loading annotation preferences: " + ex, ex);
     		}
 			
-			if (lore.ui.currentURL && lore.ui.currentURL != '' &&
-				lore.ui.currentURL != 'about:blank' &&
-				lore.ui.lorevisible) {
+			if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != '' &&
+				lore.anno.ui.currentURL != 'about:blank' &&
+				lore.anno.ui.lorevisible) {
 				lore.debug.anno("anno init: updating sources");
-				lore.anno.updateAnnotationsSourceList(lore.ui.currentURL);
-				lore.ui.loadedURL = lore.ui.currentURL; //TODO: this could be shared code
+				lore.anno.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (result, resultMsg) {
+					if (result == 'fail') {
+						lore.anno.ui.loreError("Failure loading annotations for page.");
+					}
+				});
+				lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
 			}
-			lore.ui.initialized = true;
+			lore.anno.ui.initialized = true;
 									
 			// TODO: the 'view' should call this function						
 			lore.debug.anno("Annotation init");
@@ -104,9 +109,9 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		}
 	}
 	
-	lore.ui.anno.uninit = function () {
-		lore.ui.anno.hideMarker(); 
+	lore.anno.ui.uninit = function () {
+		lore.anno.ui.hideMarker(); 
 	}
 	
-	Ext.EventManager.onDocumentReady(lore.ui.anno.init);
+	Ext.EventManager.onDocumentReady(lore.anno.ui.init);
 

@@ -15,8 +15,8 @@ function testVariationMarkers() {
   if (consoleDebug) console.debug('[testVariationMarkers() begin]');
   var sourceFrame = document.getElementById("variationSourceFrame");
   
-  lore.util.highlightXPointer(TEST_VALID_XPATH_LORECOMMON, sourceFrame.contentDocument, false);
-  lore.util.highlightXPointer(TEST_VALID_XPATH_LORECOMMON_2, sourceFrame.contentDocument, true);
+  lore.global.util.highlightXPointer(TEST_VALID_XPATH_LORECOMMON, sourceFrame.contentDocument, false);
+  lore.global.util.highlightXPointer(TEST_VALID_XPATH_LORECOMMON_2, sourceFrame.contentDocument, true);
   
   if (consoleDebug) console.debug('[testVariationMarkers() end]');
 }

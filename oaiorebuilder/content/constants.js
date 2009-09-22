@@ -17,82 +17,59 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
- 
-// Set up JavaScript namespaces
-Ext.namespace(
-    "lore.constants",
-    "lore.ui", 
-	"lore.ui.anno",
-	"lore.ui.ore",
-    "lore.util",
-    "lore.anno",
-	"lore.ore.graph",
-    "lore.textm", 
-    "lore.debug"
-);
 
-lore.constants.EXTENSION_ID = "lore@maenad.itee.uq.edu.au";
+var EXPORTED_SYMBOLS = ['constants'];
+
+constants = {
+	textm : {}
+}
+constants.EXTENSION_ID = "lore@maenad.itee.uq.edu.au";
 
 // XML Namespaces
-lore.constants.XHTML_NS                = "http://www.w3.org/1999/xhtml";
-lore.constants.FOAF_NS                 = "http://xmlns.com/foaf/0.1/";
-lore.constants.DC10_NS                 = "http://purl.org/dc/elements/1.0/";
-lore.constants.DC_NS                   = "http://purl.org/dc/elements/1.1/";
-lore.constants.DCTERMS_NS              = "http://purl.org/dc/terms/";
-lore.constants.ORETERMS_NS             = "http://www.openarchives.org/ore/terms/";
-lore.constants.RDF_SYNTAX_NS           = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-lore.constants.ANNOTATION_NS           = "http://www.w3.org/2000/10/annotation-ns#";
-lore.constants.ANNOTATION_TYPE_NS      = "http://www.w3.org/2000/10/annotationType#";
-lore.constants.THREAD_NS               = "http://www.w3.org/2001/03/thread#";
-lore.constants.REPLY_TYPE_NS           = "http://www.w3.org/2001/12/replyType#";
-lore.constants.VARIATION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
-lore.constants.LORE_LAYOUT_NS          = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
-lore.constants.SPARQLRESULTS_NS        = "http://www.w3.org/2005/sparql-results#";
-lore.constants.HTTP_NS                 = "http://www.w3.org/1999/xx/http#";
-lore.constants.XMLSCHEMA_NS            = "http://www.w3.org/2001/XMLSchema#";
+constants.XHTML_NS                = "http://www.w3.org/1999/xhtml";
+constants.FOAF_NS                 = "http://xmlns.com/foaf/0.1/";
+constants.DC10_NS                 = "http://purl.org/dc/elements/1.0/";
+constants.DC_NS                   = "http://purl.org/dc/elements/1.1/";
+constants.DCTERMS_NS              = "http://purl.org/dc/terms/";
+constants.ORETERMS_NS             = "http://www.openarchives.org/ore/terms/";
+constants.RDF_SYNTAX_NS           = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+constants.ANNOTATION_NS           = "http://www.w3.org/2000/10/annotation-ns#";
+constants.ANNOTATION_TYPE_NS      = "http://www.w3.org/2000/10/annotationType#";
+constants.THREAD_NS               = "http://www.w3.org/2001/03/thread#";
+constants.REPLY_TYPE_NS           = "http://www.w3.org/2001/12/replyType#";
+constants.VARIATION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
+constants.LORE_LAYOUT_NS          = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
+constants.SPARQLRESULTS_NS        = "http://www.w3.org/2005/sparql-results#";
+constants.HTTP_NS                 = "http://www.w3.org/1999/xx/http#";
+constants.XMLSCHEMA_NS            = "http://www.w3.org/2001/XMLSchema#";
 
 // XML Namespace prefixes
-lore.constants.NAMESPACES = {
-    "dc"      : lore.constants.DC_NS,
-    "dc10"    : lore.constants.DC10_NS,
-    "dcterms" : lore.constants.DCTERMS_NS,
-    "ore"     : lore.constants.ORETERMS_NS,
-    "foaf"    : lore.constants.FOAF_NS,
-    "layout"  : lore.constants.LORE_LAYOUT_NS,
-	"rdf"	  : lore.constants.RDF_SYNTAX_NS
+constants.NAMESPACES = {
+    "dc"      : constants.DC_NS,
+    "dc10"    : constants.DC10_NS,
+    "dcterms" : constants.DCTERMS_NS,
+    "ore"     : constants.ORETERMS_NS,
+    "foaf"    : constants.FOAF_NS,
+    "layout"  : constants.LORE_LAYOUT_NS,
+	"rdf"	  : constants.RDF_SYNTAX_NS
 };
 
 // RDF/OWL
-lore.constants.OWL_OBJPROP    = "http://www.w3.org/2002/07/owl#ObjectProperty";
-lore.constants.OWL_DATAPROP   = "http://www.w3.org/2002/07/owl#DatatypeProperty";
-lore.constants.OWL_TPROP      = "http://www.w3.org/2002/07/owl#TransitiveProperty";
-lore.constants.OWL_SPROP      = "http://www.w3.org/2002/07/owl#SymmetricProperty";
-lore.constants.RDFS_CLASS     = "http://www.w3.org/2000/01/rdf-schema#Class";
-lore.constants.RESOURCE_MAP   = "http://www.openarchives.org/ore/terms/ResourceMap";
+constants.OWL_OBJPROP    = "http://www.w3.org/2002/07/owl#ObjectProperty";
+constants.OWL_DATAPROP   = "http://www.w3.org/2002/07/owl#DatatypeProperty";
+constants.OWL_TPROP      = "http://www.w3.org/2002/07/owl#TransitiveProperty";
+constants.OWL_SPROP      = "http://www.w3.org/2002/07/owl#SymmetricProperty";
+constants.RDFS_CLASS     = "http://www.w3.org/2000/01/rdf-schema#Class";
+constants.RESOURCE_MAP   = "http://www.openarchives.org/ore/terms/ResourceMap";
 
-
-// Default list of properties that can be specified for resource maps or aggregated resources
-lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
-    "dcterms:created", "dc:contributor", "dc:coverage", "dc:description",
-    "dc:format", "dcterms:hasFormat", "dc:identifier", "dc:language",
-    "dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
-    "dc:subject", "dc:title"];  
-        
 // Store constants
-lore.anno.ANNOTATIONS_STORE = "annotations";
-lore.ui.anno.HIGHLIGHT_STORE = "highlights";
-
-
-// Compound object editor graph view defaults
-lore.ore.NODE_WIDTH   = 220;
-lore.ore.NODE_HEIGHT  = 170;
-lore.ore.NODE_SPACING = 40;
-lore.ore.MAX_X        = 400;
+constants.ANNOTATIONS_STORE = "annotations";
+constants.HIGHLIGHT_STORE = "highlights";
 
 // Annotation query strings
-lore.anno.REPLY_TREE = "?w3c_reply_tree=";
-lore.anno.ANNOTATES = "?w3c_annotates=";
+constants.REPLY_TREE = "?w3c_reply_tree=";
+constants.ANNOTATES = "?w3c_annotates=";
 
 // Calais web service (text mining)
-lore.textm.OPENCALAIS_KEY   = "ab3yxw3ab4b2fyexwg44amns";
-lore.textm.POWEREDBY_CALAIS = "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/Calais_icon.jpg'> Powered by Calais</a>";
+constants.textm.OPENCALAIS_KEY   = "ab3yxw3ab4b2fyexwg44amns";
+constants.textm.POWEREDBY_CALAIS = "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/Calais_icon.jpg'> Powered by Calais</a>";

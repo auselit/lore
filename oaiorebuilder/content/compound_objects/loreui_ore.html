@@ -19,6 +19,7 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
 -->
     <head>
+    	
         <!--  Ext scripts -->
         <script type="text/javascript" src="../lib/ext/adapter/jquery/jquery-1.3.2.min.js"></script>
         <script type="text/javascript" src="../lib/ext/adapter/jquery/ext-jquery-adapter.js"></script>
@@ -32,8 +33,8 @@
         <script type="text/javascript" src="../lib/ext/ux/StatusBar.js"></script>
         <script type="text/javascript" src="../lib/ext/ux/uxvismode.js"></script>
 
-        <script type="text/javascript" src="../constants.js"></script>
-        <script type="text/javascript" src="../debug.js"></script>
+        <!-- <script type="text/javascript" src="../constants.js"></script> -->
+        <!-- <script type="text/javascript" src="../debug.js"></script>-->
  
 		<!-- graph drawing library scripts -->
   		<script type="text/javascript" src='../lib/wz_jsgraphics.js'></script>
@@ -47,6 +48,31 @@
 		<!-- UUID function -->
 		<script type="text/javascript" src="../lib/Math.uuid.js"></script>
 		
+		<script type="text/javascript">
+			try {
+					// Set up JavaScript namespaces
+			lore = {
+				ui : {},
+				textm: {},	// debug: {}
+				anno: {	ui: {}},
+				ore: {	graph: {},ui: {}},
+				global: {}
+			}
+				// imports the lore namespace and it's sub components
+				Components.utils.import("resource://lore/constants.js", lore);
+				// lore.debug
+				Components.utils.import("resource://lore/util.js", lore.global);
+				// lore.debug
+				Components.utils.import("resource://lore/debug.js", lore);
+				// Load and cache global ui functions
+				Components.utils.import("resource://lore/uiglobal.js", lore.global);
+				// lore.store
+				Components.utils.import("resource://lore/annotations/store.js", lore.global);
+			} catch (e) {
+				window.top.alert(e + " " + e.stack);
+			}
+	 	</script>
+		
 		<!--  graph nodes, connnections, listeners etc -->
 		<script type="text/javascript" src="graphical_editor/ContextmenuConnection.js"></script>
 		<script type="text/javascript" src="graphical_editor/Port.js"></script>
@@ -54,16 +80,6 @@
 		<script type="text/javascript" src="graphical_editor/SelectionProperties.js"></script>
 		<script type="text/javascript" src="graphical_editor/CommandListener.js"></script>
 		<script type="text/javascript" src="graphical_editor/Workflow.js"></script>
-
-		<script type="text/javascript" src="../util.js"></script>
-
-		<!-- <script type="text/javascript" src="../uiglobal.js"></script> -->
-		<script type="text/javascript">
-			// Load and cache global ui functions
-			Components.utils.import("resource://lore/uiglobal.js", lore.ui);
-			// lore.store
-			Components.utils.import("resource://lore/annotations/store.js", lore);
-	 	</script>
 
 		<script type="text/javascript" src="compoundobjects.js"></script>
 		<script type="text/javascript" src="../textmining.js"></script>

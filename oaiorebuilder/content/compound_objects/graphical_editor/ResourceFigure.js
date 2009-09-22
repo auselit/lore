@@ -201,7 +201,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 };
 
 lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl) {
-	var iframe = lore.util.createSecureIFrame(window.top, theurl);
+	var iframe = lore.global.util.createSecureIFrame(window.top, theurl);
 	/*
 	 * function () { if ( this.scrollx != 0 || this.scrolly != 0 ) {
 	 * iframe.contentDocument.body.scrollLeft = this.scrollx;
@@ -222,8 +222,8 @@ lore.ore.graph.ResourceFigure.prototype.setMetadata = function(urlparam) {
 	this.metadataproperties.Resource = urlparam;
 
 	this.metadataarea.innerHTML = "<ul><li id='" + this.id + "-icon'>"
-			+ "<a onclick='lore.util.launchTab(\"" + urlparam
-			+ "\");' href='#'>" + urlparam + "</a></li></ul>";
+			+ "<a onclick='lore.global.util.launchTab(\"" + urlparam
+			+ "\",window);' href='#'>" + urlparam + "</a></li></ul>";
 
 };
 lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
@@ -399,7 +399,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 	if (!this.metadataproperties["dc:format"].contains("application/rdf+xml")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
 				"Open resource in separate window", null, function() {
-					lore.util.launchWindow(thisfig.url, true);
+					lore.global.util.launchWindow(thisfig.url, true, window);
 				}));
 	}
 	if (lore.ui.exploretab) {

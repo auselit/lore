@@ -46,7 +46,7 @@ lore.textm.handleOpenCalaisMetadata = function(resp) {
 lore.textm.processRDFa = function() {
     try{
     // process RDFa in current page
-    var doc = lore.util.getContentWindow().document;
+    var doc = lore.global.util.getContentWindow(window).document;
     var contentElem = jQuery('body',doc);
     lore.ui.textminingtab.body.update("Found the following from RDFa:<br>");
     var myrdf = contentElem.rdfa();
@@ -55,7 +55,7 @@ lore.textm.processRDFa = function() {
     lore.debug.tm("json dump", Ext.util.JSON.encode(jQuery.rdf.dump(triples)));
     for (var t = 0; t < triples.length; t++){
         var triple = triples[t];
-        var triplestr = triple.toString().escapeHTML();
+        var triplestr = lore.global.util.escapeHTML(triple.toString());
         // add a border around elements with rdfa with a hover to disply the triple
         if (triple.source.style){
 	        triple.source.style.border="0.5px solid #eeeeee";
@@ -126,8 +126,7 @@ lore.textm.requestTextMiningMetadata = function() {
     // set contentStr to current main window contents
     // TODO: do this better in terms of preserving whitespace and ignoring
     // script and hidden elems
-    var contentStr = window.top.getBrowser().selectedBrowser.contentWindow.document.body.textContent
-            .normalize().escapeHTML();
+    var contentStr = lore.global.util.escapeHTML(lore.global.util.normalize(window.top.getBrowser().selectedBrowser.contentWindow.document.body.textContent));
     // alert(contentStr);
     // truncate - web service can only handle 100,000 chars
     if (contentStr.length > 99999) {
