@@ -433,7 +433,7 @@ util.splitTerm = function(theurl) {
 }
 util.findChildRecursively=function(tree,attribute, value) {
     var cs = tree.childNodes;
-	
+	var found;
     for(var i = 0, len = cs.length; i < len; i++) {
         if(cs[i].attributes[attribute] == value){
             return cs[i];
