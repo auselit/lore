@@ -430,7 +430,7 @@ lore.ore.createRDF = function(escape) {
             + "ore:describes rdf:resource=\"" + describes + fullclosetag
             + ltsymb + 'rdf:type rdf:resource="' + lore.constants.RESOURCE_MAP
             + '" />' + nlsymb + ltsymb + 'dcterms:modified rdf:datatype="'
-            + lore.constants.XMLSCHEMA_NS + 'date">'
+            + lore.constants.NAMESPACES["xsd"] + 'date">'
             + modifiedDate.getFullYear() + "-" + monthString
             + "-" + dayString + ltsymb + "/dcterms:modified>"
             + nlsymb;
@@ -445,13 +445,13 @@ lore.ore.createRDF = function(escape) {
 	        dayString = "0" + dayString;
 	    }
         rdfxml += ltsymb + 'dcterms:created rdf:datatype="'
-                + lore.constants.XMLSCHEMA_NS + 'date">'
+                + lore.constants.NAMESPACES["xsd"] + 'date">'
                 + created.getFullYear() + "-" + monthString + "-"
                 + dayString + ltsymb + "/dcterms:created>" + nlsymb;
     } 
     else if (created != null) {
         rdfxml += ltsymb + 'dcterms:created rdf:datatype="'
-                + lore.constants.XMLSCHEMA_NS + 'date">'
+                + lore.constants.NAMESPACES["xsd"] + 'date">'
                 + created + ltsymb + "/dcterms:created>" + nlsymb;
     }
     for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
@@ -464,7 +464,7 @@ lore.ore.createRDF = function(escape) {
 
     // create RDF for aggregation
     var aggreprops = {
-        "rdf:type" : lore.constants.ORETERMS_NS + "Aggregation"
+        "rdf:type" : lore.constants.NAMESPACES["ore"] + "Aggregation"
     };
     rdfxml += ltsymb + rdfdescabout + describes + closetag + ltsymb
             + "rdf:type rdf:resource=\"" + aggreprops["rdf:type"]
@@ -644,7 +644,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.ore.currentRDF.where('?subj ?pred ?obj')
             .filter(function(){
                 // filter out the layout properties and predicates about the resource map
-                if (this.pred.value.toString().match(lore.constants.LORE_LAYOUT_NS) 
+                if (this.pred.value.toString().match(lore.constants.NAMESPACES["lore"]) 
                     || this.subj.value.toString().match(remurl)) return false;
                 else return true;
             })
@@ -730,6 +730,7 @@ lore.ore.loadCompoundObject = function (rdf) {
 }*/
 
 lore.ore.readRDF = function(rdfURL) {
+    
     var nsprefix = function(ns) {
         for (var prefix in lore.constants.NAMESPACES) {
             if (lore.constants.NAMESPACES[prefix] == ns) {
@@ -745,18 +746,20 @@ lore.ore.readRDF = function(rdfURL) {
             props[theProp] = propresult[0].object;
         }
     };
+    try{
     // reset the graphical view
     lore.ui.initGraphicalView();
     lore.ui.loreviews.activate("drawingarea");
     var theRDF = new RDF();
     theRDF.getRDFURL(rdfURL, function() {
+        try{
                 var remurl = theRDF.Match(null, null,
-                        lore.constants.RDF_SYNTAX_NS + "type",
+                        lore.constants.NAMESPACES["rdf"] + "type",
                         lore.constants.RESOURCE_MAP)[0].subject.toString();
-                var creator = theRDF.Match(null, remurl, lore.constants.DC_NS
+                var creator = theRDF.Match(null, remurl, lore.constants.NAMESPACES["dc"]
                                 + "creator", null)[0].object;
                 var createdResult = theRDF.Match(null, remurl,
-                        lore.constants.DCTERMS_NS + "created", null);
+                        lore.constants.NAMESPACES["dcterms"] + "created", null);
                 var created = "";
                 if (createdResult.length > 0) {
                     // TODO: check for minutes, seconds
@@ -785,26 +788,26 @@ lore.ore.readRDF = function(rdfURL) {
                 // create a node figure for each aggregated resource
                 var aggregationID = remurl + "#aggregation";
                 var aggregates = theRDF.Match(null, aggregationID,
-                        lore.constants.ORETERMS_NS + "aggregates", null);
+                        lore.constants.NAMESPACES["ore"] + "aggregates", null);
                 var resourcerels = [];
                 for (i = 0; i < aggregates.length; i++) {
                     var resourceURL = aggregates[i].object;
                     // lookup layout info
                     var x = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.LORE_LAYOUT_NS + "x", null);
+                            lore.constants.NAMESPACES["lore"] + "x", null);
                     var y = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.LORE_LAYOUT_NS + "y", null);
+                            lore.constants.NAMESPACES["lore"] + "y", null);
                     var width = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.LORE_LAYOUT_NS + "width", null);
+                            lore.constants.NAMESPACES["lore"] + "width", null);
                     var height = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.LORE_LAYOUT_NS + "height", null);
+                            lore.constants.NAMESPACES["lore"] + "height", null);
                     var originalHeight = theRDF.getSingleObject(null,
-                            resourceURL, lore.constants.LORE_LAYOUT_NS
+                            resourceURL, lore.constants.NAMESPACES["lore"]
                                     + "originalHeight", null);
                     var scrollx = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.LORE_LAYOUT_NS + "scrollx", null);
+                            lore.constants.NAMESPACES["lore"] + "scrollx", null);
                     var scrolly = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.LORE_LAYOUT_NS + "scrolly", null);
+                            lore.constants.NAMESPACES["lore"] + "scrolly", null);
 
                     if (x && y) {
                         var fig = lore.ore.graph.addFigureWithOpts({
@@ -845,8 +848,9 @@ lore.ore.readRDF = function(rdfURL) {
                             .lookupFigure(resourcerels[j].object);
                     if (!tgtfig) {
                         tgtfig = lore.ore.graph
-                                .lookupFigure(lore.global.util.unescapeHTML(resourcerels[j].object.replace(
-                                        '%3C', '<').replace('%3F', '>')));
+                                .lookupFigure(lore.global.util.unescapeHTML(resourcerels[j].object
+                                .replace('%3C', '<').replace('%3F', '>')
+                                ));
                     }
 
                     if (srcfig && tgtfig) {
@@ -857,7 +861,7 @@ lore.ore.readRDF = function(rdfURL) {
                         lore.ore.graph.Graph.addFigure(c);
                     } else if (srcfig) {
                         // not a node relationship, show in the property grid
-                        if (!relresult.ns.match(lore.constants.LORE_LAYOUT_NS)) {
+                        if (!relresult.ns.match(lore.constants.NAMESPACES["lore"])) {
                             srcfig.metadataproperties[
                                     nsprefix(relresult.ns)
                                     + relresult.term] = resourcerels[j].object;
@@ -885,7 +889,13 @@ lore.ore.readRDF = function(rdfURL) {
                 }
                 lore.ui.recenttreeroot.appendChild(recentNode);
                 lore.ui.propertytabs.activate("remgrid");
-            });
+        } catch (ex) {
+            lore.debug.ore("Error loading RDF",ex);
+        }
+      });
+    } catch (ex) {
+        lore.debug.ore("Error loading compound object RDF",ex);
+    }
 }
 
 lore.ore.attachREMEvents = function(node){
@@ -1006,7 +1016,7 @@ lore.ore.loadRelationshipsFromOntology = function() {
         lore.ore.ontrelationships = {};
         ontRDF.getRDFURL(lore.ore.onturl, function() {
                     var relResult = ontRDF.Match(null, null,
-                            lore.constants.RDF_SYNTAX_NS + "type",
+                            lore.constants.NAMESPACES["rdf"] + "type",
                             lore.constants.OWL_OBJPROP);
                     for (var i = 0; i < relResult.length; i++) {
                         var relresult = lore.global.util.splitTerm(relResult[i].subject);
@@ -1015,7 +1025,7 @@ lore.ore.loadRelationshipsFromOntology = function() {
                         }
                     }
                     relResult = ontRDF.Match(null, null,
-                            lore.constants.RDF_SYNTAX_NS + "type",
+                            lore.constants.NAMESPACES["rdf"] + "type",
                             lore.constants.OWL_DATAPROP);
                     var tmp_resource_metadata = new Array(relResult.length);
                     for (i = 0; i < relResult.length; i++) {
@@ -1190,7 +1200,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                         if (xmldoc) {
                             lore.debug.ore("compound objects: sparql response", req);
                             result = xmldoc.getElementsByTagNameNS(
-                                    lore.constants.SPARQLRESULTS_NS, "result");
+                                    lore.constants.NAMESPACES["sparql"], "result");
                         }
                         for (var i = 0; i < result.length; i++) {
                             var theobj = new lore.ore.CompObjListing(result[i]);

@@ -35,30 +35,30 @@
 		this.rdf = rdf;
 		
 		try {
-			attr = rdf.getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'about');
+			attr = rdf.getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'about');
 			if (attr) {
 				this.id = attr.nodeValue;
 			}
 			var isReply = false;
-			node = rdf.getElementsByTagNameNS(lore.constants.RDF_SYNTAX_NS, 'type');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'type');
 			for (var i = 0; i < node.length; i++) {
-				attr = node[i].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+				attr = node[i].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 				if (attr) {
 					tmp = attr.nodeValue;
 				}
-				if (tmp.indexOf(lore.constants.ANNOTATION_TYPE_NS) == 0) {
+				if (tmp.indexOf(lore.constants.NAMESPACES["annotype"]) == 0) {
 					this.type = tmp;
 				}
 				else 
-					if (tmp.indexOf(lore.constants.REPLY_TYPE_NS) == 0) {
+					if (tmp.indexOf(lore.constants.NAMESPACES["annoreply"]) == 0) {
 						this.type = tmp;
 					}
 					else 
-						if (tmp.indexOf(lore.constants.VARIATION_ANNOTATION_NS) == 0) {
+						if (tmp.indexOf(lore.constants.NAMESPACES["vanno"]) == 0) {
 							this.type = tmp;
 						}
 						else 
-							if (tmp.indexOf(lore.constants.THREAD_NS) == 0) {
+							if (tmp.indexOf(lore.constants.NAMESPACES["thread"]) == 0) {
 								isReply = true;
 							}
 				
@@ -66,48 +66,48 @@
 			this.isReply = isReply;
 			
 			if (!this.isReply) {
-				node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'annotates');
-				attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'annotates');
+				attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 				if (attr) {
 					this.resource = attr.nodeValue;
 				}
 				this.about = null;
 			}
 			else {
-				node = rdf.getElementsByTagNameNS(lore.constants.THREAD_NS, 'root');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'root');
 				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					
 					if (attr) {
 						this.resource = attr.nodeValue;
 					}
 				}
-				node = rdf.getElementsByTagNameNS(lore.constants.THREAD_NS, 'inReplyTo');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'inReplyTo');
 				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
 						this.about = attr.nodeValue;
 					}
 				}
 			}
 			
-			node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'body');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'body');
 			if (node[0]) {
-				attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+				attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 				if (attr) {
 					this.bodyURL = attr.nodeValue;
 				}
 			}
-			node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'created');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'created');
 			this.created = lore.global.util.safeGetFirstChildValue(node);
-			node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'modified');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
 			this.modified = lore.global.util.safeGetFirstChildValue(node);
 			
 			if (this.isReply) {
 				this.context = '';
 			}
 			else {
-				node = rdf.getElementsByTagNameNS(lore.constants.ANNOTATION_NS, 'context');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'context');
 				this.context = lore.global.util.safeGetFirstChildValue(node);
 			}
 			
@@ -126,10 +126,10 @@
 			}
 			// get tags
 			this.tags = "";
-			node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'tag');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'tag');
 			for (var j = 0; j < node.length; j++) {
 				var tagval = "";
-				attr = node[j].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+				attr = node[j].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 				if (attr) {
 					// a thesaurus tag
 					tagval = attr.nodeValue;
@@ -147,44 +147,44 @@
 			}
 			
 			// Additional fields for variation annotations only
-			if (this.type.match(lore.constants.VARIATION_ANNOTATION_NS)) {
-				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variant');
+			if (this.type.match(lore.constants.NAMESPACES["vanno"])) {
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant');
 				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revised');
+					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised');
 				}
 				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
 						this.variant = attr.nodeValue;
 					}
 				}
-				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'original');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original');
 				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.RDF_SYNTAX_NS, 'resource');
+					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
 						this.original = attr.nodeValue;
 					}
 				}
-				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'original-context');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original-context');
 				this.originalcontext = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variant-context');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant-context');
 				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revised-context');
+					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised-context');
 				}
 				this.variantcontext = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variation-agent');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-agent');
 				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revision-agent');
+					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-agent');
 				}
 				this.variationagent = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variation-place');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-place');
 				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revision-place');
+					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-place');
 				}
 				this.variationplace = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'variation-date');
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-date');
 				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.VARIATION_ANNOTATION_NS, 'revision-date');
+					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-date');
 				}
 				this.variationdate = lore.global.util.safeGetFirstChildValue(node);
 			}
@@ -242,7 +242,7 @@
 			modified: new Date().format('c'),
 			body: "",
 			title: (parent ? "New Reply":"New Annotation"),
-			type: lore.constants.ANNOTATION_TYPE_NS + "Comment",
+			type: lore.constants.NAMESPACES["annotype"] + "Comment",
 			lang: "en",
 			isReply: (parent ? true: null)
 		};
@@ -390,7 +390,7 @@
 	
 	lore.anno.createAnnotationRDF = function(anno){
 		var rdfxml = "<?xml version=\"1.0\" ?>";
-		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.RDF_SYNTAX_NS + '">';
+		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '">';
 		rdfxml += '<rdf:Description';
 		if (anno.id && !lore.anno.isNewAnnotation(anno) ) {
 			rdfxml += ' rdf:about="' + anno.id + '"';
@@ -400,7 +400,7 @@
 			rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
 		}
 		else {
-			rdfxml += '<rdf:type rdf:resource="' + lore.constants.ANNOTATION_NS +
+			rdfxml += '<rdf:type rdf:resource="' + lore.constants.NAMESPACES["annotea"] +
 				'Annotation"/>';
 		}
 		if (anno.type) {
@@ -411,22 +411,22 @@
 		
 		
 		if (anno.isReply) {
-			rdfxml += '<inReplyTo xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
+			rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.resource + '"/>';
 			
 			var rootannonode = lore.global.util.findRecordById(lore.anno.annods, anno.resource);
 			if (rootannonode) {
 				while ( rootannonode.data.isReply) {
 					rootannonode = lore.global.util.findRecordById(lore.anno.annods, rootannonode.data.resource);
 				}
-				rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + rootannonode.data.id + '"/>';
+				rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id + '"/>';
 			}
 			else {
-				rdfxml += '<root xmlns="' + lore.constants.THREAD_NS + '" rdf:resource="' + anno.resource + '"/>';
+				rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.resource + '"/>';
 			}
 			
 		}
 		else {
-			rdfxml += '<annotates xmlns="' + lore.constants.ANNOTATION_NS +
+			rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
 			'" rdf:resource="' +
 			anno.resource.replace(/&/g, '&amp;') +
 			'"/>';
@@ -434,7 +434,7 @@
 		// also send variant as annotates for backwards compatability with older
 		// clients
 		if (anno.variant) {
-			rdfxml += '<annotates xmlns="' + lore.constants.ANNOTATION_NS +
+			rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
 			'" rdf:resource="' +
 			anno.variant.replace(/&/g, '&amp;') +
 			'"/>';
@@ -457,64 +457,64 @@
 			anno.created = new Date();
 		}
 		// TODO: format date strings
-		//rdfxml += '<created xmlns="' + lore.constants.ANNOTATION_NS + '">'
+		//rdfxml += '<created xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
 		//		+ anno.created.toString() + '</created>';
 		//anno.modified = new Date();
-		//rdfxml += '<modified xmlns="' + lore.constants.ANNOTATION_NS + '">'
+		//rdfxml += '<modified xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
 		//		+ anno.modified.toString() + '</modified>';
 		if (anno.context) {
-			rdfxml += '<context xmlns="' + lore.constants.ANNOTATION_NS + '">' +
+			rdfxml += '<context xmlns="' + lore.constants.NAMESPACES["annotea"] + '">' +
 			anno.context +
 			'</context>';
 		}
 		if (anno.type ==
-		lore.constants.VARIATION_ANNOTATION_NS +
+		lore.constants.NAMESPACES["vanno"] +
 		"VariationAnnotation") {
 			if (anno.originalcontext) {
 				rdfxml += '<original-context xmlns="' +
-				lore.constants.VARIATION_ANNOTATION_NS +
+				lore.constants.NAMESPACES["vanno"] +
 				'">' +
 				anno.originalcontext +
 				'</original-context>';
 			}
 			if (anno.variantcontext) {
 				rdfxml += '<variant-context xmlns="' +
-				lore.constants.VARIATION_ANNOTATION_NS +
+				lore.constants.NAMESPACES["vanno"] +
 				'">' +
 				anno.variantcontext +
 				'</variant-context>';
 			}
 			if (anno.variationagent) {
 				rdfxml += '<variation-agent xmlns="' +
-				lore.constants.VARIATION_ANNOTATION_NS +
+				lore.constants.NAMESPACES["vanno"] +
 				'">' +
 				anno.variationagent +
 				'</variation-agent>';
 			}
 			if (anno.variationplace) {
 				rdfxml += '<variation-place xmlns="' +
-				lore.constants.VARIATION_ANNOTATION_NS +
+				lore.constants.NAMESPACES["vanno"] +
 				'">' +
 				anno.variationplace +
 				'</variation-place>';
 			}
 			if (anno.variationdate) {
 				rdfxml += '<variation-date xmlns="' +
-				lore.constants.VARIATION_ANNOTATION_NS +
+				lore.constants.NAMESPACES["vanno"] +
 				'">' +
 				anno.variationdate +
 				'</variation-date>';
 			}
 			if (anno.original) {
 				rdfxml += '<original xmlns="' +
-				lore.constants.VARIATION_ANNOTATION_NS +
+				lore.constants.NAMESPACES["vanno"] +
 				'" rdf:resource="' +
 				anno.original +
 				'"/>';
 			}
 			if (anno.variant) {
 				rdfxml += '<variant xmlns="' +
-				lore.constants.VARIATION_ANNOTATION_NS +
+				lore.constants.NAMESPACES["vanno"] +
 				'" rdf:resource="' +
 				anno.variant +
 				'"/>';
@@ -522,13 +522,13 @@
 		}
 		if (anno.body) {
 			anno.body = lore.global.util.sanitizeHTML(anno.body, window);
-			rdfxml += '<body xmlns="' + lore.constants.ANNOTATION_NS +
+			rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
 			'"><rdf:Description>' +
 			'<ContentType xmlns="' +
-			lore.constants.HTTP_NS +
+			lore.constants.NAMESPACES["http"] +
 			'">text/html</ContentType>' +
 			'<Body xmlns="' +
-			lore.constants.HTTP_NS +
+			lore.constants.NAMESPACES["http"] +
 			'" rdf:parseType="Literal">' +
 			'<html xmlns="http://www.w3.org/TR/REC-html40"><head><title>' +
 			(anno.title ? anno.title : 'Annotation') +
@@ -544,7 +544,7 @@
 			lore.debug.anno("tags are", tagsarray);
 			for (var ti = 0; ti < tagsarray.length; ti++) {
 				var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
-				rdfxml += '<tag xmlns="' + lore.constants.VARIATION_ANNOTATION_NS + '"';
+				rdfxml += '<tag xmlns="' + lore.constants.NAMESPACES["vanno"] + '"';
 				if (thetag.indexOf("http://") == 0) {
 					rdfxml += ' resource="' + thetag + '"/>';
 				}
@@ -747,7 +747,7 @@
 		var resultNodes = {};
 		var xmldoc = resp.responseXML;
 		if (xmldoc) {
-			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.RDF_SYNTAX_NS, "Description");
+			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
 		}
 		
 		lore.anno.annods.each(function(rec) {
@@ -789,7 +789,7 @@
 	
 	lore.anno.handleAnnotationRepliesLoaded = function(resp, opt){
 		try {
-			var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.RDF_SYNTAX_NS, 'Description');
+			var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 			var isLeaf = (replyList.length == 0);
 			if (!isLeaf) {
 				replies = lore.anno.orderByDate(replyList);

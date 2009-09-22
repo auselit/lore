@@ -20,56 +20,81 @@
 
 var EXPORTED_SYMBOLS = ['constants'];
 
+/** Constants used in LORE
+ * @namespace
+ * @name lore.constants
+ */
 constants = {
-	textm : {}
-}
-constants.EXTENSION_ID = "lore@maenad.itee.uq.edu.au";
-
-// XML Namespaces
-constants.XHTML_NS                = "http://www.w3.org/1999/xhtml";
-constants.FOAF_NS                 = "http://xmlns.com/foaf/0.1/";
-constants.DC10_NS                 = "http://purl.org/dc/elements/1.0/";
-constants.DC_NS                   = "http://purl.org/dc/elements/1.1/";
-constants.DCTERMS_NS              = "http://purl.org/dc/terms/";
-constants.ORETERMS_NS             = "http://www.openarchives.org/ore/terms/";
-constants.RDF_SYNTAX_NS           = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-constants.ANNOTATION_NS           = "http://www.w3.org/2000/10/annotation-ns#";
-constants.ANNOTATION_TYPE_NS      = "http://www.w3.org/2000/10/annotationType#";
-constants.THREAD_NS               = "http://www.w3.org/2001/03/thread#";
-constants.REPLY_TYPE_NS           = "http://www.w3.org/2001/12/replyType#";
-constants.VARIATION_ANNOTATION_NS = "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#";
-constants.LORE_LAYOUT_NS          = "http://maenad.itee.uq.edu.au/lore/layout.owl#";
-constants.SPARQLRESULTS_NS        = "http://www.w3.org/2005/sparql-results#";
-constants.HTTP_NS                 = "http://www.w3.org/1999/xx/http#";
-constants.XMLSCHEMA_NS            = "http://www.w3.org/2001/XMLSchema#";
-
-// XML Namespace prefixes
-constants.NAMESPACES = {
-    "dc"      : constants.DC_NS,
-    "dc10"    : constants.DC10_NS,
-    "dcterms" : constants.DCTERMS_NS,
-    "ore"     : constants.ORETERMS_NS,
-    "foaf"    : constants.FOAF_NS,
-    "layout"  : constants.LORE_LAYOUT_NS,
-	"rdf"	  : constants.RDF_SYNTAX_NS
+    /** @lends lore.constants */
+    
+    /** The name of the Firefox extension
+     */
+    EXTENSION_ID: "lore@maenad.itee.uq.edu.au",
+    /**
+     * XML Namespaces
+     * @const
+     */
+    NAMESPACES : {
+        "dc"      : "http://purl.org/dc/elements/1.1/",
+        "dc10"    : "http://purl.org/dc/elements/1.0/",
+        "dcterms" : "http://purl.org/dc/terms/",
+        "ore"     : "http://www.openarchives.org/ore/terms/",
+        "foaf"    : "http://xmlns.com/foaf/0.1/",
+        "layout"  : "http://maenad.itee.uq.edu.au/lore/layout.owl#",
+        "rdf"     : "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "xhtml"   : "http://www.w3.org/1999/xhtml",
+        "annotea" : "http://www.w3.org/2000/10/annotation-ns#",
+        "annotype": "http://www.w3.org/2000/10/annotationType#",
+        "thread"  : "http://www.w3.org/2001/03/thread#",
+        "annoreply"  : "http://www.w3.org/2001/12/replyType#",
+        "vanno"   : "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#",
+        "sparql"  : "http://www.w3.org/2005/sparql-results#",
+        "http"    : "http://www.w3.org/1999/xx/http#",
+        "xsd"     : "http://www.w3.org/2001/XMLSchema#"     
+    },
+    
+    // RDF/OWL
+    /** OWL Object Property type
+     * @const */
+    OWL_OBJPROP    : "http://www.w3.org/2002/07/owl#ObjectProperty",
+    /** OWL Datatype Property type
+     * @const */
+    OWL_DATAPROP   : "http://www.w3.org/2002/07/owl#DatatypeProperty",
+    /** OWL Transitive Property type
+     * @const */
+    OWL_TPROP      : "http://www.w3.org/2002/07/owl#TransitiveProperty",
+    /** OWL Symmetric Property type
+     * @const */
+    OWL_SPROP      : "http://www.w3.org/2002/07/owl#SymmetricProperty",
+    /** RDF Schema Class type
+     * @const */
+    RDFS_CLASS     : "http://www.w3.org/2000/01/rdf-schema#Class",
+    /** ORE Resource Map type
+     * @const */
+    RESOURCE_MAP   : "http://www.openarchives.org/ore/terms/ResourceMap",
+  
+    // Store constants
+    /** Name of the annotatiosn store
+     * @const */
+    ANNOTATIONS_STORE : "annotations",
+    /** Name of the highlight store
+     * @const */
+    HIGHLIGHT_STORE : "highlights",
+    
+    // Annotation query strings
+    /** Annotea query string for retreiving reply tree of annotation
+     * @const */
+    REPLY_TREE : "?w3c_reply_tree=",
+    /** Annotea query string for retreiving all annotations on a resource
+     * @const */
+    ANNOTATES : "?w3c_annotates=",
+    textm : {
+    // Calais web service (text mining)
+       /** Key to access Calais web service for text mining
+        * @const */
+       OPENCALAIS_KEY   : "ab3yxw3ab4b2fyexwg44amns",
+       /** String to display to attribute Calais web service
+        * @const */
+       POWEREDBY_CALAIS : "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/Calais_icon.jpg'> Powered by Calais</a>"
+    }
 };
-
-// RDF/OWL
-constants.OWL_OBJPROP    = "http://www.w3.org/2002/07/owl#ObjectProperty";
-constants.OWL_DATAPROP   = "http://www.w3.org/2002/07/owl#DatatypeProperty";
-constants.OWL_TPROP      = "http://www.w3.org/2002/07/owl#TransitiveProperty";
-constants.OWL_SPROP      = "http://www.w3.org/2002/07/owl#SymmetricProperty";
-constants.RDFS_CLASS     = "http://www.w3.org/2000/01/rdf-schema#Class";
-constants.RESOURCE_MAP   = "http://www.openarchives.org/ore/terms/ResourceMap";
-
-// Store constants
-constants.ANNOTATIONS_STORE = "annotations";
-constants.HIGHLIGHT_STORE = "highlights";
-
-// Annotation query strings
-constants.REPLY_TREE = "?w3c_reply_tree=";
-constants.ANNOTATES = "?w3c_annotates=";
-
-// Calais web service (text mining)
-constants.textm.OPENCALAIS_KEY   = "ab3yxw3ab4b2fyexwg44amns";
-constants.textm.POWEREDBY_CALAIS = "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/Calais_icon.jpg'> Powered by Calais</a>";
