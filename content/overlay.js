@@ -359,8 +359,8 @@ try {
 				var labelValue = title + ': ' + url;
 				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", labelValue);
 				var iframe = document.getElementById("oobAnnoVarContent");
-				
-				if ( iframe.getAttribute("src") == url ) {
+		
+				if ( iframe.contentWindow.location == url ) {
 					if ( callBack) 
 						callBack();
 					return;
@@ -377,7 +377,10 @@ try {
 						
 					}, true);
 				}
-				iframe.setAttribute("src", url);
+				// Must use .location not the src attriubte of iframe
+				// as it's not updated by users action within the iframe
+				iframe.contentWindow.location = url;
+
 			} catch ( e ) {
 				alert(e + " " +  e.stack);
 			}
