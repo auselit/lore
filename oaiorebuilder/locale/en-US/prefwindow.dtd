@@ -19,4 +19,4 @@
 <!ENTITY annoserver.label "Annotation Server URL:">
 <!ENTITY disable_anno.label "Disable annotation features">
 <!ENTITY disable_co.label "Disable compound object features">
-<!ENTITY disable_tm.label "Disable text mining features">
+
