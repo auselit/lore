@@ -27,13 +27,12 @@ var EXPORTED_SYMBOLS = ['constants'];
 constants = {
     /** @lends lore.constants */
     
-    /** The name of the Firefox extension
-     */
+    /** The name of the Firefox extension 
+     * @const */
     EXTENSION_ID: "lore@maenad.itee.uq.edu.au",
-    /**
-     * XML Namespaces
-     * @const
-     */
+    
+    /**  XML Namespaces
+     * @const */
     NAMESPACES : {
         "dc"      : "http://purl.org/dc/elements/1.1/",
         "dc10"    : "http://purl.org/dc/elements/1.0/",
@@ -88,6 +87,7 @@ constants = {
     /** Annotea query string for retreiving all annotations on a resource
      * @const */
     ANNOTATES : "?w3c_annotates=",
+    
     textm : {
     // Calais web service (text mining)
        /** Key to access Calais web service for text mining

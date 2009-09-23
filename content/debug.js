@@ -19,49 +19,78 @@
  */
 
 var EXPORTED_SYMBOLS = ['debug'];
+/**
+ * @namespace
+ * @name lore.debug 
+ */
+debug = {
+    /** @lends lore.debug */
+	/**
+	 * Log debug message for UI components
+	 * @param {} message
+	 * @param {} obj
+	 */
+	ui : function (message, obj){
+	    if (debug.ui_pref){
+	        debug.FBTrace.sysout("[UI] " + message, obj);
+	    } 
+	},
+	/**
+	 * Log debug message for Annotations components
+	 * @param {} message
+	 * @param {} obj
+	 */
+	anno : function (message, obj){
+	    if (debug.anno_pref){
+	        debug.FBTrace.sysout("[ANNO] " + message, obj);
+	    } 
+	},
+	/**
+	 * Lore debug message for ORE components
+	 * @param {} message
+	 * @param {} obj
+	 */
+	ore : function (message, obj){
+	    if (debug.ore_pref){
+	        debug.FBTrace.sysout("[ORE] " + message, obj);
+	    } 
+	},
+	/** Log debug message for Text mining components
+	 * 
+	 * @param {} message
+	 * @param {} obj
+	 */
+	tm : function (message, obj){
+	    if (debug.tm_pref){
+	        debug.FBTrace.sysout("[TM] " + message, obj);
+	    } 
+    },
+    // debugging options
+    /** Preference for UI messages  */
+    ui_pref   : false,
+    /** Preference for Annotation messages */
+    anno_pref : false,
+    /** Preference for ORE/Compound Object messages */
+    ore_pref  : false,
+    /** Preference for Text mining messages */
+    tm_pref   : false
+};
 
-debug = {};
 
-// debugging options
-debug.ui_pref   = false;
-debug.anno_pref = false;
-debug.ore_pref  = false;
-debug.tm_pref   = false;
 
 //Use Firebug trace console for debug logs - edit the extension preferences to enable (about:config)
 try {
+    /** Firebug Tracer 
+     * @name lore.FBTrace */
     debug.FBTrace = Components.classes["@joehewitt.com/firebug-trace-service;1"]
         .getService(Components.interfaces.nsISupports)
         .wrappedJSObject
         .getTracer("extensions.lore");
-		
+        
     debug.ui_pref   = debug.FBTrace.DBG_LORE_UI;
     debug.anno_pref = debug.FBTrace.DBG_LORE_ANNOTATIONS;
     debug.ore_pref  = debug.FBTrace.DBG_LORE_COMPOUND_OBJECTS;
     debug.tm_pref   = debug.FBTrace.DBG_LORE_TEXT_MINING;
-        
-        
 } catch (ex) {
     // suppress errors if getting FBTrace fails - Firebug probably not enabled
-}
-
-debug.ui = function (message, obj){
-    if (debug.ui_pref){
-        debug.FBTrace.sysout("[UI] " + message, obj);
-    } 
-}
-debug.anno = function (message, obj){
-    if (debug.anno_pref){
-        debug.FBTrace.sysout("[ANNO] " + message, obj);
-    } 
-}
-debug.ore = function (message, obj){
-    if (debug.ore_pref){
-        debug.FBTrace.sysout("[ORE] " + message, obj);
-    } 
-}
-debug.tm = function (message, obj){
-    if (debug.tm_pref){
-        debug.FBTrace.sysout("[TM] " + message, obj);
-    } 
 }
