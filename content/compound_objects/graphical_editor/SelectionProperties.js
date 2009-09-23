@@ -12,15 +12,15 @@ lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Fi
 		lore.debug.ore("User selected figure in graph editor", figure);
 		lore.ore.graph.selectedFigure = figure;
 		if (figure.metadataproperties) {
-			lore.ui.nodegrid.setSource(figure.metadataproperties);
-			lore.ui.propertytabs.activate('nodegrid');
+			lore.ore.ui.nodegrid.setSource(figure.metadataproperties);
+			lore.ore.ui.propertytabs.activate('nodegrid');
 		}
 		else if (figure.edgetype){
-			lore.ui.nodegrid.setSource({"relationship": figure.edgetype, "namespace": figure.edgens});
-			lore.ui.propertytabs.activate('nodegrid');
+			lore.ore.ui.nodegrid.setSource({"relationship": figure.edgetype, "namespace": figure.edgens});
+			lore.ore.ui.propertytabs.activate('nodegrid');
 		}
 	} else {
-		lore.ui.nodegrid.setSource({});
-		lore.ui.propertytabs.activate('remgrid');
+		lore.ore.ui.nodegrid.setSource({});
+		lore.ore.ui.propertytabs.activate('remgrid');
 	}
 }

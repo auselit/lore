@@ -402,10 +402,10 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 					lore.global.util.launchWindow(thisfig.url, true, window);
 				}));
 	}
-	if (lore.ui.exploretab) {
+	if (Ext.getCmp("remexploreview")) {
 		menu.appendMenuItem(new draw2d.MenuItem("Show in explore view", null,
 				function() {
-					lore.ui.loreviews.activate("remexploreview");
+					lore.ore.ui.oreviews.activate("remexploreview");
 					if (thisfig.url) {
 						lore.ore.exploreLoaded = thisfig.url;
 						lore.ore.explore.showInExploreView(thisfig.url,

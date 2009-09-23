@@ -18,8 +18,13 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-lore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
-lore.ui.gui_spec = {
+/*
+ * @include  "/oaiorebuilder/content/lib/ext/ux/uxvismode.js"
+ * @include  "/oaiorebuilder/content/lib/ext/ux/StatusBar.js"
+ */
+
+lore.ore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
+lore.ore.ui.gui_spec = {
     layout: "border",
     items: [{region:"north", layout: "fit"},{
         region: "center",
@@ -35,7 +40,8 @@ lore.ui.gui_spec = {
                 items: [{
                     xtype: "tabpanel",
                     id: "loreviews",
-					plugins : lore.ui.vismode,
+                    enableTabScroll: true,
+					plugins : lore.ore.ui.vismode,
 					deferredRender: false,
                     autoScroll: true,
                     items: [
@@ -69,13 +75,7 @@ lore.ui.gui_spec = {
                         //],
                        //.. activeTab: "drawingarea"
                     // }, {
-				,{	
-					title: "Text mining",
-					id: "textmining",
-                    html: "<p>Select the text mining icon <img alt='text mining' src='chrome://lore/skin/icons/page_white_magnify.png'> from the toolbar to get started with finding people, places and concepts on the current page.</p>",
-					autoWidth: true,
-					autoScroll:true
-				},{
+				,{
                         title: "Using Compound Objects",
                         id: "welcome",
                         autoWidth: true,
@@ -169,8 +169,8 @@ lore.ui.gui_spec = {
     
     
 try {
-	lore.ui.main_window = new Ext.Viewport(lore.ui.gui_spec);
-	lore.ui.main_window.show();
+	lore.ore.ui.main_window = new Ext.Viewport(lore.ore.ui.gui_spec);
+	lore.ore.ui.main_window.show();
 	
 } catch (ex) {
 	lore.debug.ui("Exception creating lore UI", ex);
@@ -180,15 +180,8 @@ lore.ore.disableUIFeatures = function(opts) {
     // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
 	
     lore.debug.ui("LORE Compound Objects: disable ui features?", opts);
-    lore.ui.disabled = opts;
+    lore.ore.ui.disabled = opts;
     
-    var tmtab = Ext.getCmp("textmining");
-    if (opts.disable_textmining){
-        if(tmtab){
-            // remove text mining tab
-            lore.ui.loreviews.remove(lore.ui.textminingtab);
-        }
-    } 
 	if (!lore.ore.disableUIFeatures.initialCall) {
 		lore.ore.disableUIFeatures.initialCall = 1;
 	}
