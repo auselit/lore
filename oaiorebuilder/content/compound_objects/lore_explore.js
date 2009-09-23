@@ -3,6 +3,9 @@ Ext.namespace("lore.ore.explore");
  * Display a resource map in the explore view
  * @param {} id The URI that identifies the resource map
  */
+/*
+ * @include  "/oaiorebuilder/content/lib/jit.js"
+ */
 lore.ore.explore.showInExploreView = function (id, title){
     lore.ore.explore.init();
     lore.ore.explore.loadRem(id, title, function(json){
@@ -16,8 +19,7 @@ lore.ore.explore.showInExploreView = function (id, title){
         + "</a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
         + id + "');\">" + title + "</a>";
         Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
-    });
-    
+    });  
 }
 /**
  * Helper: gets resource map as RDF, transforms to JSON and applies f to it
@@ -99,8 +101,7 @@ lore.ore.explore.init = function() {
         'width': w,
         'height':h
   });
-  
-  lore.ore.explore.rg= new RGraph(lore.ore.explore.canvas,  {
+  lore.ore.explore.rg=new RGraph(lore.ore.explore.canvas,  {
     Node: {
        overridable: true,
        type: "square",

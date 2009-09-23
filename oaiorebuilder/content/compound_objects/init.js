@@ -17,9 +17,17 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+/*
+ * @include  "/oaiorebuilder/content/constants.js"
+ * @include  "/oaiorebuilder/content/uiglobal.js"
+ * @include  "/oaiorebuilder/content/debug.js"
+ * @include  "/oaiorebuilder/content/compound_objects/loregui.js"
+ */
+
 
 /** Reference to the Extension */
-lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
+lore.ore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
 		.getInstallLocation(lore.constants.EXTENSION_ID)
 		.getItemLocation(lore.constants.EXTENSION_ID);
@@ -29,7 +37,7 @@ lore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
  * @param {Ext.grid.GridPanel} the_grid The property grid object on which to create the menus
  * @param {String} gridname The display name of the property grid
  */
-lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
+lore.ore.ui.setUpMetadataMenu = function(the_grid, gridname) {
 	var make_menu_entry = function(menu, gridname, propname, op) {
 		var funcstr = "";
 		funcstr += "var props = " + gridname + ".getSource();";
@@ -60,7 +68,7 @@ lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
 		make_menu_entry(remMetadataMenu, gridname, lore.ore.METADATA_PROPS[i],
 				"rem");
 	}
-	if (gridname == "lore.ui.nodegrid") {
+	if (gridname == "lore.ore.ui.nodegrid") {
 		for (var i = 0; i < lore.ore.resource_metadata_props.length; i++) {
 			make_menu_entry(addMetadataMenu, gridname,
 					lore.ore.resource_metadata_props[i], "add");
@@ -82,8 +90,8 @@ lore.ui.setUpMetadataMenu = function(the_grid, gridname) {
 /**
  * Initialise the graphical view
  */
-lore.ui.initGraphicalView = function() {
-	lore.ui.loreviews.activate("drawingarea");
+lore.ore.ui.initGraphicalView = function() {
+	lore.ore.ui.oreviews.activate("drawingarea");
 	
 	lore.ore.graph.lookup = {};
 	lore.ore.graph.modified = false;
@@ -114,7 +122,7 @@ lore.ui.initGraphicalView = function() {
 /**
  * Load the preferences (which will init domain ontology)
  */
-lore.ui.initOntologies = function() {
+lore.ore.ui.initOntologies = function() {
     try{
 	  lore.ore.ui.topView.loadCompoundObjectPrefs();
     } catch (ex){
@@ -124,9 +132,9 @@ lore.ui.initOntologies = function() {
 /**
  * Initialise property grids and set up listeners
  */
-lore.ui.initProperties = function() {
+lore.ore.ui.initProperties = function() {
 	var today = new Date();
-	lore.ui.grid.setSource({
+	lore.ore.ui.grid.setSource({
 				"rdf:about" : lore.ore.generateID(),
 				"ore:describes" : "#aggregation",
 				"dc:creator" : "",
@@ -135,101 +143,117 @@ lore.ui.initProperties = function() {
 				"rdf:type" : lore.constants.RESOURCE_MAP,
                 "dc:title" : ""
 	});
-	lore.ui.nodegrid.on("propertychange", lore.ore.handleNodePropertyChange);
-	lore.ui.grid.on("beforeedit", function(e) {
+	lore.ore.ui.nodegrid.on("propertychange", lore.ore.handleNodePropertyChange);
+	lore.ore.ui.grid.on("beforeedit", function(e) {
 				// don't allow these fields to be edited
 				if (e.record.id == "ore:describes" 
                     || e.record.id == "rdf:type" 
-                    || e.record.id == 'rdf:about') {
+                    || e.record.id == "rdf:about") {
 					e.cancel = true;
 				}
 	});
-    lore.ui.grid.on("afteredit",function(e){
+    lore.ore.ui.grid.on("afteredit",function(e){
         if (e.record.id == "dc:title"){
-            var treenode = lore.ui.remstreeroot.findChild('id',lore.ore.currentREM);
+            var treenode = lore.ore.ui.remstreeroot.findChild("id",lore.ore.currentREM);
             if (treenode){
                 treenode.setText(e.value);
             }
-            treenode = lore.ui.recenttreeroot.findChild('id',lore.ore.currentREM + "r");
+            treenode = lore.ore.ui.recenttreeroot.findChild("id",lore.ore.currentREM + "r");
             if (treenode){
                 treenode.setText(e.value);
             }
         }
     });
-	lore.ui.nodegrid.on("beforeedit", function(e) {
+	lore.ore.ui.nodegrid.on("beforeedit", function(e) {
 				// don't allow format field to be edited
 				if (e.record.id == "dc:format") {
 					e.cancel = true;
 				}
 			});
     
-	lore.ui.setUpMetadataMenu(lore.ui.grid, "lore.ui.grid");
-	lore.ui.setUpMetadataMenu(lore.ui.nodegrid, "lore.ui.nodegrid");
-	lore.ui.propertytabs.activate("sourcestree");
+	lore.ore.ui.setUpMetadataMenu(lore.ore.ui.grid, "lore.ore.ui.grid");
+	lore.ore.ui.setUpMetadataMenu(lore.ore.ui.nodegrid, "lore.ore.ui.nodegrid");
+	lore.ore.ui.propertytabs.activate("sourcestree");
 }
 /**
  * Initialise the Extjs UI components and listeners
  */
-lore.ui.initExtComponents = function() {
+lore.ore.ui.initExtComponents = function() {
 	// set up glocal variable references to main UI components
-	lore.ui.propertytabs = Ext.getCmp("propertytabs");
-	lore.ui.grid = Ext.getCmp("remgrid");
-	lore.ui.nodegrid = Ext.getCmp('nodegrid');
-	lore.ui.lorestatus = Ext.getCmp('lorestatus');
-	lore.ui.loreviews = Ext.getCmp("loreviews");
-	lore.ui.welcometab = Ext.getCmp("welcome");
-	lore.ui.summarytab = Ext.getCmp("remlistview");
-	
-    lore.ui.exploretab = Ext.getCmp("remexploreview");
-	
-	lore.ui.textminingtab = Ext.getCmp("textmining");
+	lore.ore.ui.propertytabs = Ext.getCmp("propertytabs");
+	lore.ore.ui.grid = Ext.getCmp("remgrid");
+	lore.ore.ui.nodegrid = Ext.getCmp("nodegrid");
+	lore.ore.ui.status = Ext.getCmp("lorestatus");
+	lore.ore.ui.oreviews = Ext.getCmp("loreviews");
+	lore.ore.ui.textminingtab = Ext.getCmp("textmining");
+    
 	// set up the sources tree
 	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	lore.global.ui.clearTree(sourcestreeroot);
 	
-	lore.ui.remstreeroot = new Ext.tree.TreeNode({
+	lore.ore.ui.remstreeroot = new Ext.tree.TreeNode({
 				id : "remstree",
 				text : "Compound Objects",
 				draggable : false,
 				iconCls : "tree-ore"
 			});
-	lore.ui.recenttreeroot = new Ext.tree.TreeNode({
+	lore.ore.ui.recenttreeroot = new Ext.tree.TreeNode({
 				id : "recenttree",
 				text : "Recently viewed Compound Objects",
 				draggable : false,
 				iconCls : "tree-ore"
 			});
 	
-	sourcestreeroot.appendChild(lore.ui.remstreeroot);
-	sourcestreeroot.appendChild(lore.ui.recenttreeroot);
+	sourcestreeroot.appendChild(lore.ore.ui.remstreeroot);
+	sourcestreeroot.appendChild(lore.ore.ui.recenttreeroot);
 
 	// set up event handlers
-	lore.ui.loreviews.on("beforeremove", lore.ore.closeView);
+	lore.ore.ui.oreviews.on("beforeremove", lore.ore.closeView);
 	// create a context menu to hide/show optional views
-	lore.ui.loreviews.contextmenu = new Ext.menu.Menu({
+	lore.ore.ui.oreviews.contextmenu = new Ext.menu.Menu({
 				id : "co-context-menu"
 	});
-	
-    lore.ui.loreviews.contextmenu.add({
+	lore.ore.ui.oreviews.contextmenu.add({
+        text: "Show Text Mining view",
+        handler: function (){
+            lore.ore.openView("remtmview","Text Mining",lore.ore.textm.requestTextMiningMetadata);
+        }
+    });
+    lore.ore.ui.oreviews.contextmenu.add({
 		text: "Show SMIL View",
-		handler: lore.ore.openSMILView
+		handler: function(){
+            lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
+        }
 	});
-    lore.ui.loreviews.contextmenu.add({
+    lore.ore.ui.oreviews.contextmenu.add({
         text : "Show RDF/XML",
-        handler : lore.ore.openRDFView
+        handler : function (){
+            lore.ore.openView("remrdfview","RDF/XML",lore.ore.updateRDFHTML);
+        }
     });
-    lore.ui.loreviews.contextmenu.add({
+    lore.ore.ui.oreviews.contextmenu.add({
        text: "Show TriG",
-       handler: lore.ore.openTriGView
+       handler: function (){
+            lore.ore.openView("remtrigview","TriG",lore.ore.updateTriG);
+       }
     });
-    lore.ui.loreviews.contextmenu.add({
+    lore.ore.ui.oreviews.contextmenu.add({
        text: "Show FOXML",
-       handler: lore.ore.openFOXMLView
+       handler: function(){
+            lore.ore.openView("remfoxmlview","FOXML",lore.ore.updateFOXML);
+       }
     });
-	lore.ui.loreviews.on("contextmenu", function(tabpanel, tab, e){
-        lore.ui.loreviews.contextmenu.showAt(e.xy);
+    lore.ore.ui.oreviews.contextmenu.add({
+       text: "Show Tabular editor",
+       handler: function (){
+            lore.ore.openView("remgrideditor","Tabular Editor",lore.ore.refreshTabularEditor);
+       }
     });
-	lore.ui.summarytab.on("activate", lore.ore.showCompoundObjectSummary);
+	lore.ore.ui.oreviews.on("contextmenu", function(tabpanel, tab, e){
+        lore.ore.ui.oreviews.contextmenu.showAt(e.xy);
+    });
+    // summary tab
+    Ext.getCmp("remlistview").on("activate", lore.ore.showCompoundObjectSummary);
     var smiltab = Ext.getCmp("remsmilview");
     var rdftab = Ext.getCmp("remrdfview");
     var slidetab = Ext.getCmp("remslideview");
@@ -242,24 +266,23 @@ lore.ui.initExtComponents = function() {
     if (slidetab){
         slidetab.on("activate",lore.ore.showSlideshow);
         slidetab.body.update("<div id='trailcarousel'></div>");
-        lore.ui.carousel = new Ext.ux.Carousel('trailcarousel', {
-            itemSelector: 'div.item',
+        lore.ore.ui.carousel = new Ext.ux.Carousel("trailcarousel", {
+            itemSelector: "div.item",
             showPlayButton: true,
-            transitionType: 'fade'
+            transitionType: "fade"
         });
     }
-    if (lore.ui.exploretab){
-        var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
+    var exploretab = Ext.getCmp("remexploreview");
+    var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
         + "<script type='text/javascript' src='chrome://lore/content/compound_objects/lore_explore.js'></script>"
         + "<a id='explorereset' style='z-index:999;position:absolute;bottom:10px;left:10px;font-size:x-small;color:#51666b' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM,\"Current Compound Object\");'>RESET VISUALISATION</a>"
         + "<div style='vertical-align:middle;height:1.5em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;background-color:white;' id='history'></div>"
         + "<div id='infovis'></div>";
-        lore.ui.exploretab.body.update(contents,true);
-        lore.ui.exploretab.on("activate", lore.ore.showExploreUI);
-    }
-	
+    exploretab.body.update(contents,true);
+    exploretab.on("activate", lore.ore.showExploreUI);
+
 	// set up welcome tab contents
-	lore.ui.welcometab.body.update("<iframe height='100%' width='100%' "
+	Ext.getCmp("welcome").body.update("<iframe height='100%' width='100%' "
 			+ "src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>");
             Ext.QuickTips.interceptTitles = true;
     Ext.QuickTips.init();
@@ -269,8 +292,8 @@ lore.ui.initExtComponents = function() {
 /**
  * Initialise Compound Objects component of LORE
  */
-lore.ui.init = function() {
-    lore.ui.disabled = {};
+lore.ore.ui.init = function() {
+    lore.ore.ui.disabled = {};
     
     lore.ui.vars=[]; for(var v in this){lore.ui.vars.push(v);} lore.ui.vars.sort();
 
@@ -278,31 +301,29 @@ lore.ui.init = function() {
     try{
 	
 	lore.ore.ui.topView =  lore.global.ui.topWindowView.get(window.instanceId);
-	
-	lore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
+	lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 	lore.ore.resource_metadata_props = [];
 	lore.ore.all_props = lore.ore.METADATA_PROPS;
-	lore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
-	
-	lore.ui.initExtComponents();
-    lore.ui.initProperties();
-	lore.ui.initGraphicalView();
-	lore.ui.loreInfo("Welcome to LORE");
 
+	lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
+	lore.ore.ui.initExtComponents();
+    lore.ore.ui.initProperties();
+	lore.ore.ui.initGraphicalView();
+	lore.ore.ui.loreInfo("Welcome to LORE");
+ 
 	lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId);  
-	lore.global.ui.textMiningView.registerView(lore.textm);
-	lore.ui.initOntologies();  
+	lore.ore.ui.initOntologies();  
 	
-	if (lore.ui.currentURL && lore.ui.currentURL != 'about:blank'
-			&& lore.ui.currentURL != '' && lore.ui.lorevisible) {          
-		lore.ore.updateCompoundObjectsSourceList(lore.ui.currentURL);
-		lore.ui.loadedURL = lore.ui.currentURL;
+	if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != "about:blank"
+			&& lore.ore.ui.currentURL != '' && lore.ore.ui.lorevisible) {          
+		lore.ore.updateCompoundObjectsSourceList(lore.ore.ui.currentURL);
+		lore.ore.ui.loadedURL = lore.ore.ui.currentURL;
 	}
-	lore.ui.initialized = true;
+	lore.ore.ui.initialized = true;
 	lore.debug.ui("LORE Compound Object init complete", lore);
     } catch (e) {
-        lore.debug.ui("exception in init",e);
+        lore.debug.ui("exception in ORE init",e);
     }
 }
 
-Ext.EventManager.onDocumentReady(lore.ui.init);
+Ext.EventManager.onDocumentReady(lore.ore.ui.init);
