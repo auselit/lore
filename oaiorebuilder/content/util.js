@@ -251,9 +251,9 @@ util = {
      * @param {} fileName
      * @return {} The path to the file
      */
-    writeFile : function(content, fileBase, fileName){
+    writeFile : function(content, fileBase, fileName,theWindow){
             try {
-                netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+                theWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
                 var filePath =  fileBase + fileName;
                 var file = Components.classes["@mozilla.org/file/local;1"]
                     .createInstance(Components.interfaces.nsILocalFile);
