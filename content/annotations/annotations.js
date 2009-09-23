@@ -111,13 +111,13 @@
 				this.context = lore.global.util.safeGetFirstChildValue(node);
 			}
 			
-			node = rdf.getElementsByTagNameNS(lore.constants.DC10_NS, 'creator');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'creator');
 			this.creator = lore.global.util.safeGetFirstChildValue(node, 'anon');
 			
-			node = rdf.getElementsByTagNameNS(lore.constants.DC10_NS, 'title');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'title');
 			this.title = lore.global.util.safeGetFirstChildValue(node);
 			
-			node = rdf.getElementsByTagNameNS(lore.constants.DC10_NS, 'language');
+			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'language');
 			this.lang = lore.global.util.safeGetFirstChildValue(node);
 			
 			// body stores the contents of the html body tag as text
@@ -440,17 +440,17 @@
 			'"/>';
 		}
 		if (anno.lang) {
-			rdfxml += '<language xmlns="' + lore.constants.DC10_NS + '">' +
+			rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
 			anno.lang +
 			'</language>';
 		}
 		if (anno.title) {
-			rdfxml += '<title xmlns="' + lore.constants.DC10_NS + '">' + anno.title +
+			rdfxml += '<title xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' + anno.title +
 			'</title>';
 		}
 		if (anno.creator) {
-			rdfxml += '<creator xmlns="' + lore.constants.DC10_NS + '">' +
-			anno.creator +
+			rdfxml += '<creator xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
+			anno.creator +s
 			'</creator>';
 		}
 		if (!anno.created) {
