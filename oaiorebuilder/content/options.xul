@@ -8,14 +8,12 @@
       <preference id="dccreator_pref" name="extensions.lore.dccreator" type="unichar"/>
       <preference id="disable_anno" name="extensions.lore.disable_annotations" type="bool"/>
       <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
-      <preference id="disable_tm" name="extensions.lore.disable_textmining" type="bool"/>
     </preferences>
     <label accesskey="&dccreator.accesskey;" control="text_dccreator">&dccreator.label;</label><textbox id="text_dccreator" preference="dccreator_pref"/>
     <groupbox>
         <caption label="&ui.label;"/>
         <checkbox label="&disable_anno.label;" preference="disable_anno"/>
         <checkbox label="&disable_co.label;" preference="disable_co"/>
-        <checkbox label="&disable_tm.label;" preference="disable_tm"/>
     </groupbox>
   </prefpane>
   <prefpane image="chrome://lore/skin/icons/wrench_orange.png" id="expert-pref" label="&expert.label;" style="width:350px">
