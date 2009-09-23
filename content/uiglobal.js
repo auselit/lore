@@ -19,7 +19,10 @@
  */
 
 	var EXPORTED_SYMBOLS = ['ui'];	
-	
+	/**
+     * @namespace
+     * @name lore.global.ui 
+	 */
 	ui = {};
 	
 	Components.utils.import("resource://lore/debug.js");
@@ -35,31 +38,38 @@
 	 * @param {String} message The message to display
 	 */
 	ui.loreInfo = function(message){
-	}
+	};
 	
 	/**
 	 * Display an warning message to the user
 	 * @param {String} message The message to display
 	 */
 	ui.loreWarning = function(message){
-	}
+	};
 	/**
 	 * Display an error message to the user
-	 *
 	 * @param {String} message The message to display
 	 */
 	ui.loreError = function(message){
-	}
-	
+	};
+	/**
+     * @param {} win
+     * @param {} instId
+	 */
 	ui.reset = function (win, instId ) {
 		ui.compoundObjectView.unregisterView();
 		ui.annotationView.unregisterView();
+        
 		
 		ui.load(win, instId, true);
 		//win.annographiframe.location.reload(true);
 		//win.graphiframe.location.reload(true);
 	}
-	
+	/**
+     * @param {} win
+     * @param {} instId
+     * @param {} reload
+	 */
 	ui.load = function (win, instId, reload) {
 		var iframe1 = win.document.getElementById("annographiframe");
 		
@@ -134,7 +144,9 @@
 		 }*/
 		
 	}
-	
+	/**
+     * @return {}
+	 */
 	ui.genInstanceID = function () {
 		if ( !ui.genInstanceID.counter) {
 			ui.genInstanceID.counter = 1;
@@ -143,7 +155,11 @@
 		}
 		return ui.genInstanceID.counter;
 	}
-	
+	/**
+     * @param {} srcObj
+     * @param {} name
+     * @return {}
+	 */
 	function createWrapper(srcObj, name) {
 			var wrapper = { _real: srcObj};
 			for ( x in srcObj) {
@@ -161,8 +177,8 @@
 	 * UI View 
 	 * The intention is that the views are never directly accesses via their iframes
 	 * by other view/overlay code
+     * @param {} args
 	 */
-	
 		function Views(args){
 
 			this.name = args.name;
@@ -205,17 +221,8 @@
 		ui.topWindowView = new Views({
 			name: 'topView'
 		});
+        
 	
-	ui.textMiningView = {
-		tmView: null,
-		requestTextMiningMetadata: function(){
-			tmView.requestTextMiningMetadata();
-		},
-		
-		registerView: function(view){
-			this.tmView = view;
-		}
-	}
 	
 	
 	

@@ -29,7 +29,7 @@ try {
 		annoView: function () { 
 			return lore.global.ui.annotationView.get(this.instId);
 		},
-		
+
 		oreLocationListener: {
 			
 			QueryInterface: function(aIID){
@@ -105,10 +105,6 @@ try {
 			if ( lore.global.ui.annotationView.loaded(this.instId) || lore.global.ui.compoundObjectView.loaded(this.instId)) {
 				gBrowser.removeProgressListener(this.oreLocationListener);
 			}
-		},
-		doTextMining: function(){
-			lore.global.ui.textMiningView.requestTextMiningMetadata();
-			
 		},
 		showContextMenu1: function(event){
 			document.getElementById("context-lore").hidden = gContextMenu.onImage;
@@ -252,12 +248,9 @@ try {
 				var rdfrepos = this.prefs.getCharPref("rdfrepos");
 				var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
 				var annoserver = this.prefs.getCharPref("annoserver");
-				var disable_tm = this.prefs.getBoolPref("disable_textmining");
 				var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
 				
 				// hide or show XUL toolbar buttons depending on prefs
-				document.getElementById('text-mining').hidden = disable_tm;
-				document.getElementById('tmsep').hidden = disable_tm;
 				
 				document.getElementById('cosep').hidden = disable_co;
 				document.getElementById('add-node').hidden = disable_co;
@@ -267,13 +260,13 @@ try {
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps? 
 				//lore.global.store.get("lore_preferences") 
+
 				loreoverlay.coView().setdccreator(dccreator);
 				loreoverlay.coView().setrelonturl(relonturl);
 				loreoverlay.coView().setRepos(rdfrepos, rdfrepostype);
-				
+               
 				// hide or show related Ext UI depending on prefs
 				loreoverlay.coView().disableUIFeatures({
-					'disable_textmining': disable_tm,
 					'disable_compoundobjects': disable_co
 				});
 				

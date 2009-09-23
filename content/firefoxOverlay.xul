@@ -79,8 +79,6 @@
           <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
           
           <xul:toolbarbutton id="delete-rdf" oncommand="loreoverlay.deleteRDF();" tooltiptext="&lore.deleteRDFTip;"/>
-          <xul:toolbarseparator id="tmsep"/>
-          <xul:toolbarbutton id="text-mining" tooltiptext="&lore.textMiningTip;"  oncommand="loreoverlay.doTextMining();"/>
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/>
         </xul:toolbar>
