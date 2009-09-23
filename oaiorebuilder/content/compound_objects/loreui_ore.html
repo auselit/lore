@@ -30,11 +30,12 @@
         <script type="text/javascript" src="../lib/ext/ext-all.js"></script>
         <script type="text/javascript" src="../lib/ext/ux/carousel.js"></script>
         
+        <!--script type="text/javascript" src="RdfStore.js"></script>
+        <script type="text/javascript" src="RdfGrid.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/RowEditor.js"></script-->
+        
         <script type="text/javascript" src="../lib/ext/ux/StatusBar.js"></script>
         <script type="text/javascript" src="../lib/ext/ux/uxvismode.js"></script>
-
-        <!-- <script type="text/javascript" src="../constants.js"></script> -->
-        <!-- <script type="text/javascript" src="../debug.js"></script>-->
  
 		<!-- graph drawing library scripts -->
   		<script type="text/javascript" src='../lib/wz_jsgraphics.js'></script>
@@ -51,11 +52,24 @@
 		<script type="text/javascript">
 			try {
 					// Set up JavaScript namespaces
+            /** LORE: Literature Object Re-use and Exchange javascript namespace 
+             * @namespace
+             */
 			lore = {
+                /** User interface */
 				ui : {},
-				textm: {},	// debug: {}
+                /** Annotations */
 				anno: {	ui: {}},
-				ore: {	graph: {},ui: {}},
+                /** Compound objects */
+				ore: {
+                    /** Text mining */	
+                    textm: {}, 
+                    /** Graphical Editor */
+                    graph: {},
+                    /** Compound object-related user interface */
+                    ui: {}
+                },
+                /** Global functions and properties */
 				global: {}
 			}
 				// imports the lore namespace and it's sub components
@@ -82,8 +96,7 @@
 		<script type="text/javascript" src="graphical_editor/Workflow.js"></script>
 
 		<script type="text/javascript" src="compoundobjects.js"></script>
-		<script type="text/javascript" src="../textmining.js"></script>
-		
+		<script type="text/javascript" src="textmining.js"></script>
         <!--  styles -->
         <link rel="stylesheet" type="text/css" href="../lib/ext/resources/css/ext-all.css"/>
 		<link rel="stylesheet" type="text/css" href="../lib/ext/resources/css/xtheme-gray-extend.css"/>
