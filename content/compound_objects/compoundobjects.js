@@ -244,9 +244,7 @@ lore.ore.showSlideshow = function (){
     var params = {
     "width": carouselel.getWidth(),
     "height": (carouselel.getHeight() - 29)}; // minus 29 to account for slide nav bar
-    var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/slideshow_view.xsl",true, params);
-    var serializer = new XMLSerializer();
-    sscontents += serializer.serializeToString(resultDoc);
+    sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/slideshow_view.xsl",params,true);
     carouselel.update(sscontents);
     lore.ore.ui.carousel.reloadMarkup();
     } catch (ex){
@@ -303,14 +301,32 @@ lore.ore.CompObjListing = function(/*Node*/result){
 }
 
 lore.ore.handleSerializeREM = function (format) {
+    var fileExtensions = {
+        "rdf": "xml",
+        "wordml": "xml",
+        "foxml": "xml",
+        "trig": "txt"
+        
+    }
 	try {
-		var therdf = lore.ore.serializeREM(format);
-		
+        if (!format) {
+            format = "rdf";
+        }
 		var nsIFilePicker = Components.interfaces.nsIFilePicker;
 		var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-		fp.appendFilters(nsIFilePicker.filterXML | nsIFilePicker.filterAll);
-		fp.init(window, "Save Compound Object as", nsIFilePicker.modeSave);
+        fp.defaultExtension = fileExtensions[format];
+        if ("xml" == fp.defaultExtension){
+            fp.appendFilters(nsIFilePicker.filterXML); 
+        } else if ("txt" == fp.defaultExtension){
+            fp.appendFilters(nsIFilePicker.filterText);  
+        } 
+        //else if ("doc" ==  fp.defaultExtension){
+        //    fp.appendFilter("MS Word Documents", "*.doc");    
+        //}
+		fp.appendFilters(nsIFilePicker.filterAll);
+		fp.init(window, "Export Compound Object as", nsIFilePicker.modeSave);
 		var res = fp.show();
+        var therdf = lore.ore.serializeREM(format);
 		if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
 			var thefile = fp.file;
 			var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
@@ -326,8 +342,10 @@ lore.ore.handleSerializeREM = function (format) {
 	}
 }
 lore.ore.serializeREM = function(format) {
-    if (format == 'foxml') {
+    if ('foxml' == format) {
         return lore.ore.createFOXML();
+    } else if ('wordml' == format){
+        return lore.ore.createOREWord();
     }
     // TODO: remove the first line once compound object is stored as rdfquery store
     var rdf = lore.ore.createRDF(false);
@@ -1308,7 +1326,7 @@ lore.ore.graph.addFigure = function(theURL) {
     }
     return fig;
 }
-lore.ore.transformORERDF = function(stylesheetURL, fragment, params){
+lore.ore.transformORERDF = function(stylesheetURL, params, serialize){
 
     var xsltproc = new XSLTProcessor();
     // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
@@ -1326,12 +1344,13 @@ lore.ore.transformORERDF = function(stylesheetURL, fragment, params){
     var theRDF = lore.ore.createRDF(false);
     var parser = new DOMParser();
     var rdfDoc = parser.parseFromString(theRDF, "text/xml");
-    if (fragment){
-        return xsltproc.transformToFragment(rdfDoc, document);
+    var resultFrag = xsltproc.transformToFragment(rdfDoc, document);
+    if (serialize){
+         var serializer = new XMLSerializer();
+         return serializer.serializeToString(resultFrag);
     } else {
-        return xsltproc.transformToDocument(rdfDoc, document);
+        return resultFrag
     }
-    
 }
 /**
  * Use XSLT to generate a smil file from the compound object, plus create an
@@ -1342,12 +1361,9 @@ lore.ore.transformORERDF = function(stylesheetURL, fragment, params){
 lore.ore.createSMIL = function() {
     try {
        
-        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/smil_view.xsl",true);
-        var serializer = new XMLSerializer();
-		
+        var result = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/smil_view.xsl",{},true);
 		var fileBase = lore.ore.ui.extension.path + "\\content\\";
-        lore.global.util.writeFile(serializer.serializeToString(resultDoc), fileBase,
-                "oresmil.smil",window);
+        lore.global.util.writeFile(result, fileBase,"oresmil.smil",window);
         var htmlwrapper = "<HTML><HEAD><TITLE>SMIL Slideshow</TITLE></HEAD>"
                 + "<BODY BGCOLOR=\"#003366\"><CENTER>"
                 + "<embed style='border:none' height=\"95%\" width=\"95%\" src=\"oresmil.smil\" type=\"application/x-ambulant-smil\"/>"
@@ -1364,14 +1380,24 @@ lore.ore.createSMIL = function() {
 lore.ore.createFOXML = function (){
     try {
         var params = {'coid': 'demo:' + lore.global.util.splitTerm(lore.ore.ui.grid.getSource()['rdf:about']).term};
-        var resultDoc = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/foxml.xsl",true,params);
-        var serializer = new XMLSerializer();
-        return serializer.serializeToString(resultDoc);         
+        return lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/foxml.xsl",params,true);     
     } catch (e) {
-        lore.ore.ui.loreWarning("Unable to generate FOXML: " + e.toString());
+        lore.ore.ui.loreWarning("Unable to generate FOXML");
+        lore.debug.ore("Unable to generate FOXML: ",e);
         return null;
     }
 }
+/** Generate a Word document from the current compound object */
+lore.ore.createOREWord = function (){
+    try {
+        return lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/wordml.xsl",{},true);
+    } catch (e) {
+        lore.ore.ui.loreWarning("Unable to generate Word document");
+        lore.debug.ore("Unable to generate Word document",e);
+        return null;
+    }
+}
+
 /** update the metadataproperties recorded in the figure for that node */
 lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
     lore.ore.graph.modified = true;

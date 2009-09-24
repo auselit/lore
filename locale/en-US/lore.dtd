@@ -7,8 +7,8 @@
 <!ENTITY lore.addNodeLabel "Add Resource">
 <!ENTITY lore.addNodeTip "Add the current URL to the compound object">
 <!ENTITY lore.saveMoreTip "More load and save options">
-<!ENTITY lore.saveFileLabel "Save to file">
-<!ENTITY lore.saveFileTip "Save compound object to a file">
+<!ENTITY lore.saveFileLabel "Save as RDF/XML">
+<!ENTITY lore.saveFileTip "Save compound object to a RDF/XML file">
 <!ENTITY lore.loadRDFLabel "Load from file">
 <!ENTITY lore.loadRDFTip "Load a compound object from a file">
 <!ENTITY lore.loadRDFURLLabel "Load from URL">
