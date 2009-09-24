@@ -43,7 +43,7 @@
 	                <w:rPr>
 	                    <w:rFonts w:ascii="Arial" w:h-ansi="Arial"/>
 	                    <w:b/>
-	                    <w:sz w:val="28"/>
+	                    <w:sz w:val="24"/>
 	                </w:rPr>
 	            </w:style>
 	            <w:style w:type="paragraph" w:styleId="Heading2">
@@ -57,7 +57,7 @@
 	                <w:rPr>
 	                    <w:rFonts w:ascii="Arial" w:h-ansi="Arial"/>
 	                    <w:b/>
-	                    <w:sz w:val="22"/>
+	                    <w:sz w:val="18"/>
 	                </w:rPr>
 	            </w:style>
 	            <w:style w:type="character" w:styleId="Hyperlink">
