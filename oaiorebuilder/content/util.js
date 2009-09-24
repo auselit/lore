@@ -68,6 +68,10 @@ util = {
         }
         return c;
     },
+	
+	trim : function (str) {
+		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	},
      
      /**
      * Display (via an alert) all keys, values for an object
@@ -88,8 +92,8 @@ util = {
      * Taken from code snippet on http://stackoverflow.com/questions/170004/how-to-remove-only-the-parent-element-and-not-its-child-elements-in-javascript .
      * @param {Node} nodeToRemove The node to remove
      */
-    removeNodePreserveChildren : function(nodeToRemove) {
-      var fragment = document.createDocumentFragment();
+    removeNodePreserveChildren : function(nodeToRemove, win) {
+      var fragment = win.document.createDocumentFragment();
       while(nodeToRemove.firstChild) {
         fragment.appendChild(nodeToRemove.firstChild);
       }
@@ -335,6 +339,132 @@ util = {
         var colour = rgb[0] + ( rgb[1] << 8) + (rgb[2] << 16);
         return "#" + colour.toString(16);
     },
+	
+	/**
+	 * Disect the range into multiple ranges IF a selection passes it's containing DOM 
+	 * element's DOM boundary  
+	 */
+	
+	safeSurroundContents: function(targetDocument, r, nodeTmpl) {
+		var nodes = [];
+			
+		var s = r.startContainer.parentNode; 
+		var e = r.endContainer.parentNode;   
+
+		if ( s == e ) {
+			// doesn't cross parent element boundary
+			// return shallow node copy of the template node	
+			var n = nodeTmpl.cloneNode(false);
+			r.surroundContents(n);
+			
+			return [n];
+		} 
+		debug.ui("start");	
+		// create inital range to end of the start Container
+		// set end offset to end of contents of start node
+		// i.e <div> This [is </div> <p> a lot of </p><p>highli]ghting</p>
+		// it would be 'is '  ( '[' and ']' denote highlighted region)
+		var w = targetDocument.createRange();
+		
+		w.selectNodeContents(s);
+		// set start offset to what it was
+		// find text element in parent
+		w.setStart(r.startContainer,r.startOffset);
+		//debug.ui("start range: " + w, w);
+		var n = nodeTmpl.cloneNode(false);
+		w.surroundContents(n);
+		nodes.push(n);
+		
+		var container = s;
+					
+		// loop through whole selected containers that are part of the
+		// original selection
+		// i.e 'a lot of ' range sel would be created from this
+		var containsEl = function(src, dest) {
+			if ( src == dest) {
+				return true;
+			}
+			
+			for ( var i =0; i < src.childNodes.length; i++ ) {
+				if ( containsEl(src.childNodes[i],dest)) { 	
+					return true;
+				}
+			}
+			return false;
+		};
+		
+		var tag = function(container) {
+			var nt = container.nodeType;
+			var ignore = {};
+			if ( nt == 1 ) {
+				for (var i = 0; i < container.childNodes.length; i++) {
+					var n = container.childNodes[i];
+					if (!n.id || (n.id && !ignore[n.id])) {
+						n = tag(container.childNodes[i]);
+						if ( n) ignore[n.id] = n;
+					}
+				}
+			} else if ( (nt == 3 || nt ==4 || nt == 8) && util.trim(container.nodeValue) != '') {
+				var w = targetDocument.createRange();
+				w.selectNodeContents(container);
+				//debug.ui("tagging : " + w , w);
+				var n = nodeTmpl.cloneNode(false);
+				w.surroundContents(n);
+				n.id = debug.hcounter|| 0;
+				debug.hcounter = debug.hcounter ? debug.hcounter+1:1;
+								
+				nodes.push(n);
+				return n;
+			}
+		};
+		
+		// move up to the sibling level 
+		var found = false;
+		var i =0;
+		while ( !found ) {
+			while (!container.nextSibling ) {
+					container = container.parentNode;
+					if (!container)
+						break;
+			}
+			if (!container)
+				break;
+				
+			container = container.nextSibling;
+			
+			if ( container.nodeType ==1 && containsEl(container, e)) {
+				found = true;
+			}
+			else {
+				tag(container);
+			}
+		}
+
+		// traverse down to end container
+		container = container.firstChild
+		while ( container != e ) {
+			if ( containsEl(container, e) ){
+				container = container.firstChild;
+			} else {
+				tag(container);
+				container = container.nextSibling;
+			}
+		}
+		
+		// create range for end container
+		// i.e 'highli'
+		w = targetDocument.createRange();
+		w.selectNodeContents(e);
+		w.setEnd(r.endContainer, r.endOffset);
+		//debug.ui("end range: " + w, w);
+		n = nodeTmpl.cloneNode(false);
+		w.surroundContents(n);
+		nodes.push(n);
+		debug.ui("end");
+		
+		return nodes;
+	},
+	
     /**
      * Highlight part of a document
      * @param {} xpointer Context to highlight (as xpointer)
@@ -343,28 +473,38 @@ util = {
      */
     highlightXPointer : function(xpointer, targetDocument, scrollToHighlight, colour) {
         try {
-            var sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
-            
-            var highlightNode = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
-            // m_xps.markElement(highlightNode);
-            // m_xps.markElementHide(highlightNode);
-            if (colour) {
-                highlightNode.style.backgroundColor = colour;
-            }
-            else {
-                highlightNode.style.backgroundColor = "yellow";
-            }
-            sel.surroundContents(highlightNode);
+		// TODO: Caching code needs to cache on per tab instance not on location
+		//	if ( !util.highlightXPointer.cache) {
+		//		util.highlightXPointer.cache = {};
+		//	}
+		//	var id = targetDocument.location + "#" + xpointer.toString();
+			
+		//	var sel = util.highlightXPointer.cache[id];
+		//	if ( !sel ) {
+				sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
+		//		util.highlightXPointer.cache[id] = sel;	
+		//	}
+
+            var highlightNodeTmpl = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
+			highlightNodeTmpl.style.backgroundColor = colour || "yellow";
+			
+			var highlightNodes =  util.safeSurroundContents(targetDocument, sel, highlightNodeTmpl);
+			for ( var i =0; i< highlightNodes.length;i++) {
+				m_xps.markElement(highlightNodes[i]);
+			}
+
             if (scrollToHighlight) {
-                util.scrollToElement(highlightNode, targetDocument.defaultView);
+                util.scrollToElement(highlightNodes[0], targetDocument.defaultView);
             }
             
-            return highlightNode;
+            return highlightNodes;
         } catch (e) {
             debug.ui(e,e);
             return null;
         }
     },
+	
+	
     /**
      * Return the window object of the content window
      */

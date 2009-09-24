@@ -450,7 +450,7 @@
 		}
 		if (anno.creator) {
 			rdfxml += '<creator xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-			anno.creator +s
+			anno.creator +
 			'</creator>';
 		}
 		if (!anno.created) {
