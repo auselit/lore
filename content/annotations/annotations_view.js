@@ -129,7 +129,7 @@
 		lore.anno.ui.updateUIElements = function(rec){
 			// update the highlighted fields colour in the event the creator is changed
 			// the colour is identified by the creator's name
-			//lore.anno.ui.updateHighlightFields(lore.anno.ui.curAnnoMarkers, lore.anno.ui.getCreatorColour(rec.data.creator));
+			
 			lore.anno.ui.hideMarker();
 			lore.anno.ui.highlightCurrentAnnotation(rec);
 			
@@ -199,7 +199,6 @@
 		
 		lore.anno.ui.genTipForAnnotation = function(annodata, domContainer){
 			try {
-				//TODO: Replace with an existing pop-up library? 
 				var uid = annodata.id;
 				var obj = document.createElement("span");
 				obj.setAttribute("id", uid);
@@ -239,6 +238,9 @@
 				
 				// set events via DOM so that events are handled in the context of the content window
 				// and not the extension
+				if ( domContainer.length  && domContainer.length > 0) {
+					var domContainer = domContainer[0];
+				}
 				domContainer.setAttribute("onmouseover", "TagToTip('" + uid +
 				"',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', " +
 				"BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" +
@@ -768,22 +770,13 @@
 			}
 		}
 		
-		lore.anno.ui.hideMarkerFromXP = function(domObj){
-			// this is silly but the parent node disappears
-			// in certain circumstances, so can't use this for the moment
-			// lore.global.util.removeNodePreserveChildren(domObj, window);
-			if (domObj) {
-				domObj.style.textDecoration = "inherit";
-				domObj.style.backgroundColor = "transparent";
-				domObj.removeAttribute("onmouseover");
-				domObj.removeAttribute("onmouseout");
+		lore.anno.ui.hideMarkerFromXP = function(domObjs){
+			for (var i = 0; i < domObjs.length; i++) {
+				lore.global.util.removeNodePreserveChildren(domObjs[i], window);
 			}
-			
-			
 		}
 		
 		lore.anno.ui.getCreatorColour = function(creator){
-		
 			creator = creator.replace(/\s+$/, ""); //rtrim
 			var colour = lore.anno.ui.colourForOwner[creator];
 			if (!colour) {
@@ -802,34 +795,21 @@
 		lore.anno.ui.highlightAnnotation = function(currentCtxt, colour, extraStyle, contentWindow){
 			if (currentCtxt) {
 				var idx, marker = null;
-				// lore.debug.anno("highlighting annotation context: " + currentCtxt, currentCtxt);
 				if (!contentWindow) {
 					contentWindow = lore.global.util.getContentWindow(window);
 				}
-				var domObj = lore.global.util.highlightXPointer(currentCtxt, contentWindow.document, true, colour);
-				if (domObj && extraStyle) {
 				
-					domObj = extraStyle(domObj);
+				var domObjs = lore.global.util.highlightXPointer(currentCtxt, contentWindow.document, true, colour);
+				if (domObjs && extraStyle) {
+					for (var i = 0; i < domObjs.length; i++) {
+						domObjs[i] = extraStyle(domObjs[i]);
+					}
 				}
-				return domObj;
+				return domObjs;
 				
 			}
 			else {
 				return null;
-			}
-		}
-		
-		
-		lore.anno.ui.updateHighlightFields = function(fields, colour){
-			if (fields) {
-				if (fields.length) {
-					for (var i = 0; i < fields.length; i++) {
-						fields[i].style.backgroundColor = colour;
-					}
-				}
-				else {
-					fields.style.backgroundColor = colour;
-				}
 			}
 		}
 		
@@ -1175,7 +1155,6 @@
 						catch (e) {
 							lore.debug.anno(e,e);
 						}
-						lore.debug.anno("Setting value for " + n + " to: " + selText);
 						lore.anno.ui.form.setValues([{
 							id: n,
 							value: '"' + selText + '"'
@@ -1189,13 +1168,13 @@
 	
 
 		lore.anno.ui.updateUI = function(store, records, options){
-			lore.debug.anno("updateUI()");
+			
 			// TODO: Timeline and Editor code should have their own listener functions
 			// instead of being clumped with treeui handler code
 			try {
 				// add
 				if (records.length == 1 && lore.anno.isNewAnnotation(records[0])) {
-				
+					lore.debug.anno("updateUI() - add", records);
 					var rec = records[0];
 					var node;
 					
@@ -1230,7 +1209,7 @@
 					node.select();
 				}
 				else {
-				
+					lore.debug.anno("updateUI() - load", records);
 					for (var i = 0; i < records.length; i++) {
 						var rec = records[i];
 						var anno = rec.data;

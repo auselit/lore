@@ -160,13 +160,17 @@
      * @param {} name
      * @return {}
 	 */
-	function createWrapper(srcObj, name) {
-			var wrapper = { _real: srcObj};
+	function createWrapper(srcObj, name, pre, post) {
+			var wrapper = { _real: srcObj, _pre: pre, _post: post};
 			for ( x in srcObj) {
 				if ( typeof(srcObj[x]) == 'function' ) {
 					wrapper[x] = eval('function(){'+
-						'debug.ui("' + name + '.' + x + ' args:" + arguments, arguments);' +
+						// would need to chain argument values for _pre
+						// if (this._pre) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }} 
+						//'debug.ui("' + name + '.' + x + ' args:" + arguments, arguments);' +
 						'return this._real["' + x + '"].apply(this._real,arguments);' +
+						// // if (this._post) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }}
+						// would need to chain return values for _post
 							'}');
 				}
 			}
