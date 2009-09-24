@@ -69,7 +69,8 @@
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/>
           <xul:toolbarbutton type="menu" id="save-more" tooltip="&lore.saveMoreTip;">
                 <xul:menupopup>
-                    <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeREM('xml')"/>
+                    <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeREM('rdf')"/>
+                    <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeREM('wordml')"/>
                     <xul:menuitem id="save-trig" label="Save TriG file" tooltiptext="Save to a file in TriG format" oncommand="loreoverlay.serializeREM('trig')"/>
                     <xul:menuitem id="save-foxml" label="Export FOXML" tooltiptext="Export compound object to Fedora Object XML" oncommand="loreoverlay.serializeREM('foxml')"/>
                     <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadRDF()"/>
