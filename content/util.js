@@ -72,18 +72,6 @@ util = {
 	trim : function (str) {
 		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	},
-     
-     /**
-     * Display (via an alert) all keys, values for an object
-     * @param {} obj Object to dump
-     */
-    dumpValues : function(obj){
-        var res="";
-        for(var k in obj){
-            res += k + ": " + obj[k] + ";\n";
-        }
-        alert(res);
-    },
     
     /**
      * Removes DOM node, but preserves its children by attaching them to the node's 
@@ -774,31 +762,6 @@ util = {
             attr.nodeValue = "_blank";
             links[i].setAttributeNode(attr);
         }
-    },
-    /**
-     * Quick and nasty function to tidy up html string so that it is valid XML
-     * @return {}
-     */
-    tidyHTML : function (str){
-        var res = str;
-        if (res.match("<title>") && res.match("</title>")){
-            var res1 = res.substring(0,(res.indexOf('<title>')));
-            var res2 = res.substring((res.indexOf('</title>')+8), res.length);
-            res = res1 + res2;
-        }
-        while (res.match('<br xmlns"'+ constants.NAMESPACES["xhtml"] + '">')){
-            res = res.replace('<br xmlns="' + constants.NAMESPACES["xhtml"] + '">', '<br />');
-        }
-        while (res.match('<br>')){
-            res = res.replace('<br>','<br />');
-        }
-        while (res.match('</br>')){
-            res = res.replace('</br>',' ');
-        }
-        if (res.match('nbsp')){
-            res = res.replace('&nbsp;',' ');
-        }
-        return res;
     },
     /**
      * normalize spaces in a string
