@@ -336,18 +336,16 @@ util = {
 	safeSurroundContents: function(targetDocument, r, nodeTmpl) {
 		var nodes = [];
 			
-		var s = r.startContainer.parentNode; 
-		var e = r.endContainer.parentNode;   
-
-		if ( s == e ) {
+		if ( r.startContainer.parentNode == r.endContainer.parentNode ) {
 			// doesn't cross parent element boundary
-			// return shallow node copy of the template node	
 			var n = nodeTmpl.cloneNode(false);
 			r.surroundContents(n);
 			
 			return [n];
 		} 
-		debug.ui("start");	
+		var s = r.startContainer;
+		var e = r.endContainer;
+
 		// create inital range to end of the start Container
 		// set end offset to end of contents of start node
 		// i.e <div> This [is </div> <p> a lot of </p><p>highli]ghting</p>
@@ -355,27 +353,25 @@ util = {
 		var w = targetDocument.createRange();
 		
 		w.selectNodeContents(s);
-		// set start offset to what it was
-		// find text element in parent
 		w.setStart(r.startContainer,r.startOffset);
 		//debug.ui("start range: " + w, w);
 		var n = nodeTmpl.cloneNode(false);
 		w.surroundContents(n);
 		nodes.push(n);
 		
-		var container = s;
-					
-		// loop through whole selected containers that are part of the
-		// original selection
+		var container = s.nodeType !=1 ?  n: s;
+		// loop through DOM nodes thats are completely selected 
 		// i.e 'a lot of ' range sel would be created from this
 		var containsEl = function(src, dest) {
 			if ( src == dest) {
 				return true;
 			}
 			
-			for ( var i =0; i < src.childNodes.length; i++ ) {
-				if ( containsEl(src.childNodes[i],dest)) { 	
-					return true;
+			if (src.nodeType == 1) {
+				for (var i = 0; i < src.childNodes.length; i++) {
+					if (containsEl(src.childNodes[i], dest)) {
+						return true;
+					}
 				}
 			}
 			return false;
@@ -406,30 +402,31 @@ util = {
 			}
 		};
 		
-		// move up to the sibling level 
+		// move up the DOM tree until find parent node
+		// that contains the end container  
 		var found = false;
-		var i =0;
 		while ( !found ) {
 			while (!container.nextSibling ) {
+					//debug.ui('p');
 					container = container.parentNode;
 					if (!container)
 						break;
 			}
 			if (!container)
 				break;
-				
+			//debug.ui('s');	
 			container = container.nextSibling;
 			
-			if ( container.nodeType ==1 && containsEl(container, e)) {
+			if ( containsEl(container, e)) {
 				found = true;
 			}
 			else {
 				tag(container);
 			}
 		}
-
 		// traverse down to end container
-		container = container.firstChild
+		container = container.nodeType == 1 ? container.firstChild : container;
+		
 		while ( container != e ) {
 			if ( containsEl(container, e) ){
 				container = container.firstChild;
@@ -448,7 +445,7 @@ util = {
 		n = nodeTmpl.cloneNode(false);
 		w.surroundContents(n);
 		nodes.push(n);
-		debug.ui("end");
+		//debug.ui("end");
 		
 		return nodes;
 	},
@@ -458,21 +455,32 @@ util = {
      * @param {} xpointer Context to highlight (as xpointer)
      * @param {} targetDocument The document in which to highlight
      * @param {} scrollToHighlight Boolean indicating whether to scroll
+     * @param {} colour highlight colour
      */
-    highlightXPointer : function(xpointer, targetDocument, scrollToHighlight, colour) {
-        try {
-		// TODO: Caching code needs to cache on per tab instance not on location
-		//	if ( !util.highlightXPointer.cache) {
-		//		util.highlightXPointer.cache = {};
-		//	}
-		//	var id = targetDocument.location + "#" + xpointer.toString();
-			
-		//	var sel = util.highlightXPointer.cache[id];
-		//	if ( !sel ) {
-				sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
-		//		util.highlightXPointer.cache[id] = sel;	
-		//	}
+    highlightXPointer : function(xpointer, targetDocument, scrollToHighlight, colour, cache) {
+       	
+		var sel = null;
+		if (cache) {
+			sel = cache[xpointer.toString()];
+		}
+		if (!sel) {
+			sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
+			if ( cache)
+				cache[xpointer.toString()] = sel;
+		}
 
+        return util.highlightRange( sel,targetDocument, scrollToHighlight, colour);
+	},
+	
+	 /**
+     * Highlight part of a document
+     * @param {} sel Context to highlight (as DOM Range)
+     * @param {} targetDocument The document in which to highlight
+     * @param {} scrollToHighlight Boolean indicating whether to scroll
+     * @param {} colour highlight colour
+     */
+	highlightRange : function ( sel, targetDocument, scrollToHighlight, colour) {
+		try {
             var highlightNodeTmpl = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
 			highlightNodeTmpl.style.backgroundColor = colour || "yellow";
 			
@@ -490,7 +498,7 @@ util = {
             debug.ui(e,e);
             return null;
         }
-    },
+	},
 	
 	
     /**
