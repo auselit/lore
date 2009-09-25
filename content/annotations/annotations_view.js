@@ -21,11 +21,19 @@
 	try {
 		lore.anno.ui.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 		
-		lore.anno.ui.multiSelAnno = new Array();
-		lore.anno.ui.colourForOwner = {};
-		lore.anno.ui.colourCount = 0;
-		lore.anno.ui.curSelAnno;
-		lore.anno.ui.curAnnoMarkers = new Array();
+		lore.anno.ui.initHighlightData = function (){
+		
+			lore.anno.ui.multiSelAnno = new Array();
+			lore.anno.ui.colourForOwner = {};
+			lore.anno.ui.colourCount = 0;
+			lore.anno.ui.curSelAnno;
+			lore.anno.ui.curAnnoMarkers = new Array();
+			lore.anno.ui.rangeCache = {};
+		}
+		
+		lore.anno.ui.initHighlightData();
+		
+		
 		
 		
 	/**
@@ -763,6 +771,7 @@
 					for (var i = 0; i < lore.anno.ui.curAnnoMarkers.length; i++) {
 						lore.anno.ui.hideMarkerFromXP(lore.anno.ui.curAnnoMarkers[i]);
 					}
+					lore.anno.ui.curAnnoMarkers = [];
 				}
 			} 
 			catch (ex) {
@@ -771,8 +780,11 @@
 		}
 		
 		lore.anno.ui.hideMarkerFromXP = function(domObjs){
-			for (var i = 0; i < domObjs.length; i++) {
-				lore.global.util.removeNodePreserveChildren(domObjs[i], window);
+			if (domObjs) {
+				for (var i = 0; i < domObjs.length; i++) {
+					if (domObjs[i]) 
+						lore.global.util.removeNodePreserveChildren(domObjs[i], window);
+				}
 			}
 		}
 		
@@ -792,14 +804,16 @@
 			return colour;
 		}
 		
-		lore.anno.ui.highlightAnnotation = function(currentCtxt, colour, extraStyle, contentWindow){
+		lore.anno.ui.highlightXPointer = function(currentCtxt, colour, extraStyle, contentWindow){
 			if (currentCtxt) {
 				var idx, marker = null;
 				if (!contentWindow) {
 					contentWindow = lore.global.util.getContentWindow(window);
 				}
 				
+				//TODO: enable range cache.  it has bug at the moment related to ranges that return multiple ranges
 				var domObjs = lore.global.util.highlightXPointer(currentCtxt, contentWindow.document, true, colour);
+				
 				if (domObjs && extraStyle) {
 					for (var i = 0; i < domObjs.length; i++) {
 						domObjs[i] = extraStyle(domObjs[i]);
@@ -831,19 +845,15 @@
 				var currentContext = "";
 				
 				if (!rec) {
-				try {
-					currentContext = lore.global.util.getXPathForSelection(window);
-				} 
-				catch (e) {
-					lore.debug.anno("exception creating xpath for new annotation", e);
+					try {
+						currentContext = lore.global.util.getXPathForSelection(window);
+					} 
+					catch (e) {
+						lore.debug.anno("exception creating xpath for new annotation", e);
+					}
 				}
-				}
-				
-				
-				
 				if (rec) {
 					lore.anno.addAnnotation(currentContext,  lore.anno.ui.currentURL, rec);
-				
 				}
 				else {
 					lore.anno.addAnnotation(currentContext, lore.anno.ui.currentURL);
@@ -852,7 +862,6 @@
 			catch (e) {
 				lore.debug.anno(e, e);
 			}
-			
 		}
 		
 		/**
@@ -872,14 +881,16 @@
 				}
 				
 				lore.anno.annods.each(function highlightAnnotations(rec){
-					if (rec.data.context) {
+					if ( rec.data.context ) {
 						try {
-							var domContainer = lore.anno.ui.highlightAnnotation(lore.global.util.normalizeXPointer(rec.data.context), lore.anno.ui.getCreatorColour(rec.data.creator), selAllStyle);
+							var domContainers = lore.anno.ui.highlightAnnotation(rec, selAllStyle);	
+							
 							// 'attach' annotation description bubble
-							if (domContainer != null) {
-								lore.anno.ui.multiSelAnno.push(domContainer);
-								// create the tip div in the content window						
-								lore.anno.ui.genTipForAnnotation(rec.data, domContainer);
+							if (domContainers != null) {
+								lore.anno.ui.multiSelAnno = lore.anno.ui.multiSelAnno.concat(domContainers);
+								// create the tip div in the content window
+								for ( var i =0 ; i < domContainers.length;i++)						
+									lore.anno.ui.genTipForAnnotation(rec.data, domContainers[i]);
 							}
 							else {
 								lore.debug.anno("domContainer null for context: " + rec.data.context, rec);
@@ -890,19 +901,6 @@
 						}
 					}
 					
-					if (rec.data.variantcontext) {
-						try {
-							var domContainer = lore.anno.ui.highlightAnnotation(lore.global.util.normalizeXPointer(rec.data.variantcontext), lore.anno.ui.getCreatorColour(rec.data.creator), selAllStyle);
-							if (domContainer) {
-								lore.anno.ui.multiSelAnno.push(domContainer);
-								// create the tip div in the content window						
-								lore.anno.ui.genTipForAnnotation(rec.data, domContainer);
-							}
-						} 
-						catch (ex) {
-							lore.debug.anno("Error during highlight all for variant: " + ex, rec);
-						}
-					}
 				});
 			}
 			else {
@@ -1307,14 +1305,17 @@
 		}
 		
 		lore.anno.ui.highlightCurrentAnnotation = function(rec){
+			lore.anno.ui.curAnnoMarkers = lore.anno.ui.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
+		}
 		
-			lore.anno.ui.curAnnoMarkers = new Array();
-			
+		lore.anno.ui.highlightAnnotation = function(rec, annoStyle) {
+			var cColour = lore.anno.ui.getCreatorColour(rec.data.creator);
+			var markers = [];
 			// regular non variant case for highlighting
 			if (rec.data.context && !rec.data.variantcontext 
 					&& rec.data.resource == lore.anno.ui.currentURL) {
 					try {
-						lore.anno.ui.curAnnoMarkers.push(lore.anno.ui.highlightAnnotation(lore.global.util.normalizeXPointer(rec.data.context), lore.anno.ui.getCreatorColour(rec.data.creator), lore.anno.ui.setCurAnnoStyle));
+						markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.context), cColour, annoStyle));
 					} 
 					catch (e) {
 						lore.debug.anno(e, e);
@@ -1323,15 +1324,15 @@
 			
 				if (rec.data.original && rec.data.original == lore.anno.ui.currentURL) {
 					try {
-						lore.anno.ui.curAnnoMarkers.push(lore.anno.ui.highlightAnnotation(lore.global.util.normalizeXPointer(rec.data.context), lore.anno.ui.getCreatorColour(rec.data.creator), lore.anno.ui.setCurAnnoStyle));
+						markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.context), cColour, annoStyle));
 					} 
 					catch (e) {
 						lore.debug.anno("Error highlighting variation context: " + e, e);
 					}
-					
-					if (lore.anno.ui.topView.variationContentWindowIsVisible()) {
+					var cw = lore.anno.ui.topView.getVariationContentWindow();
+					if (lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.variant) {
 						try {
-							lore.anno.ui.curAnnoMarkers.push(lore.anno.ui.highlightAnnotation(lore.global.util.normalizeXPointer(rec.data.variantcontext), lore.anno.ui.getCreatorColour(rec.data.creator), lore.anno.ui.setCurAnnoStyle, lore.anno.ui.topView.getVariationContentWindow()))
+							markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.variantcontext), cColour, annoStyle, cw))
 						} 
 						catch (e) {
 							lore.debug.anno(e, e);
@@ -1341,15 +1342,15 @@
 				}
 				if (rec.data.variant == lore.anno.ui.currentURL) {
 					try {
-						lore.anno.ui.curAnnoMarkers.push(lore.anno.ui.highlightAnnotation(lore.global.util.normalizeXPointer(rec.data.variantcontext), lore.anno.ui.getCreatorColour(rec.data.creator), lore.anno.ui.setCurAnnoStyle));
+						markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.variantcontext), cColour, annoStyle));
 					} 
 					catch (e) {
 						lore.debug.anno("Error highlighting variation context: " + e, e);
 					}
-					
-					if (rec.data.context && lore.anno.ui.topView.variationContentWindowIsVisible()) {
+					var cw = lore.anno.ui.topView.getVariationContentWindow();
+					if (rec.data.context && lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.original) {
 						try {
-							lore.anno.ui.curAnnoMarkers.push(lore.anno.ui.highlightAnnotation(lore.global.util.normalizeXPointer(rec.data.context), lore.anno.ui.getCreatorColour(rec.data.creator), lore.anno.ui.setCurAnnoStyle, lore.anno.ui.topView.getVariationContentWindow()))
+							markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.context), cColour, annoStyle, cw))
 						} 
 						catch (e) {
 							lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -1357,6 +1358,8 @@
 					}
 				}
 			}
+			
+			return markers;
 				
 		}
 		
@@ -1493,7 +1496,7 @@
 				colourForOwner: lore.global.util.clone(lore.anno.ui.colourForOwner),
 				colourCount: lore.anno.ui.colourCount,
 				curSelAnnoId: lore.anno.ui.curSelAnno ? lore.anno.ui.curSelAnno.data.id:null,
-				curAnnoMarkers: lore.anno.ui.curAnnoMarkers.slice()
+				curAnnoMarkers: lore.anno.ui.curAnnoMarkers.slice(),
 			};
 			
 			lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, oldurl);
@@ -1528,7 +1531,10 @@
 				if (rec) {
 					lore.anno.ui.curSelAnno = rec;
 				}
+			} else {
+				lore.anno.ui.initHighlightData();
 			}
+			
 		} catch (e ) {
 			
 			lore.debug.anno(e,e);
