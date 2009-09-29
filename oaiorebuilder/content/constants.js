@@ -73,7 +73,7 @@ constants = {
     RESOURCE_MAP   : "http://www.openarchives.org/ore/terms/ResourceMap",
   
     // Store constants
-    /** Name of the annotatiosn store
+    /** Name of the annotations store
      * @const */
     ANNOTATIONS_STORE : "annotations",
     /** Name of the highlight store
