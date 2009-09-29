@@ -161,8 +161,9 @@ try {
             try{
                 var nsIFilePicker = Components.interfaces.nsIFilePicker;
                 var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-                fp.appendFilters(nsIFilePicker.filterXML | nsIFilePicker.filterAll);
-                fp.init(window, "Select Compound Object file", nsIFilePicker.modeOpen);
+                fp.appendFilters(nsIFilePicker.filterXML);
+                fp.appendFilter("RDF documents", "*.rdf");  
+                fp.init(window, "Select Compound Object RDF/XML file", nsIFilePicker.modeOpen);
                 var res = fp.show();
                 if (res == nsIFilePicker.returnOK){
                     var thefile = fp.file;
@@ -174,8 +175,9 @@ try {
                     fistream.init(thefile, -1, 0, 0);
                     cstream.init(fistream, "UTF-8", 0, 0); 
                     var str = {};
-                    cstream.readString(-1, str); 
-                    data = str.value;
+                    while(cstream.readString(4096,str) != 0){
+                        data += str.value;
+                    }
                     cstream.close();
 					loreoverlay.coView().loadCompoundObject(data);
                 }
