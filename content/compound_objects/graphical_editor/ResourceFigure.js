@@ -23,7 +23,7 @@ lore.ore.graph.ResourceFigure = function() {
 	this.setDimension(250, 150);
 };
 
-lore.ore.graph.ResourceFigure.prototype = new draw2d.Node();
+lore.ore.graph.ResourceFigure.prototype = new draw2d.Node;
 lore.ore.graph.ResourceFigure.prototype.type = "lore.ore.graph.ResourceFigure";
 
 lore.ore.graph.ResourceFigure.prototype.createHTMLElement = function() {
@@ -167,7 +167,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 	var theurl = this.url;
 	var mimetype = this.metadataproperties["dc:format"];
 	this.setIcon(theurl);
-	if (mimetype && mimetype.contains("application/rdf+xml")) {
+	if (mimetype && mimetype.match("rdf")) {
 		// resource is most likely to be a compound object - don't display content
 		// TODO: allow annotations as contained objects as well
 		this.iframearea.innerHTML = "<div class='orelink' id='"
@@ -179,10 +179,10 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 		this.metadataarea.innerHTML = "<ul><li class='mimeicon oreicon'>"
 				+ identifierURI + "</li></ul>";
 
-	} else if (mimetype && mimetype.contains("image")) {
+	} else if (mimetype && mimetype.match("image")) {
 		this.iframearea.innerHTML = "<img id='" + theurl + "-data' src='"
 				+ theurl + "' style='width:auto;z-index:-9001' height='95%'>";
-	} else if (mimetype && !mimetype.contains("pdf")) { // Don't display PDFs in
+	} else if (mimetype && !mimetype.match("pdf")) { // Don't display PDFs in
 														// preview
 		try {
 
@@ -226,27 +226,32 @@ lore.ore.graph.ResourceFigure.prototype.setMetadata = function(urlparam) {
 			+ "\",window);' href='#'>" + urlparam + "</a></li></ul>";
 
 };
+
 lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
 	var mimetype = this.metadataproperties["dc:format"]
 			? this.metadataproperties["dc:format"]
 			: "text/html";
 	this.icontype = "mimeicon ";
-	if (mimetype.contains("html")){
+    lore.debug.ore("mimetype is" + mimetype,mimetype);
+	if (mimetype.match("html")){
 		this.icontype += "htmlicon";
     }
-	else if (mimetype.contains("image")) {
+	else if (mimetype.match("image")) {
 		this.icontype += "imageicon";
-	} else if (mimetype.contains("audio")) {
+	} else if (mimetype.match("audio")) {
 		this.icontype += "audioicon";
-	} else if (mimetype.contains("video") || mimetype.contains("flash")){
+	} else if (mimetype.match("video") || mimetype.match("flash")){
 		this.icontype += "videoicon";
     }
-	else if (mimetype.contains("pdf")) {
+	else if (mimetype.match("pdf")) {
 		this.icontype += "pdficon";
 	} else {
 		this.icontype += "pageicon";
 	}
-	document.getElementById(this.id + '-icon').className = this.icontype;
+    var icon = document.getElementById(this.id + '-icon');
+    if (icon){
+	   icon.className = this.icontype;
+    }
 };
 lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 	if (!this.metadataproperties["dc:format"]) {
@@ -358,7 +363,7 @@ lore.ore.graph.ResourceFigure.prototype.toggle = function() {
 	} else {
 		this.setDimension(this.width, this.originalHeight);
 		if (!this.iframearea.firstChild
-				&& !this.metadataproperties["dc:format"].contains("pdf")) {
+				&& !this.metadataproperties["dc:format"].match("pdf")) {
 			this.createPreview(this.url);
 		}
 		this.iframearea.style.display = "block";
@@ -396,7 +401,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 	var oThis = this;
 
 	var thisfig = this;
-	if (!this.metadataproperties["dc:format"].contains("application/rdf+xml")) {
+	if (!this.metadataproperties["dc:format"].match("rdf")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
 				"Open resource in separate window", null, function() {
 					lore.global.util.launchWindow(thisfig.url, true, window);
