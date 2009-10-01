@@ -113,7 +113,21 @@ lore.ore.setDcCreator = function(creator){
     var remprops = lore.ore.ui.grid.getSource();
     remprops["dc:creator"] = creator;
     lore.ore.ui.grid.setSource(remprops);
+    /** The name of the default creator used for dc:creator for annotations and compound objects */
     lore.defaultCreator = creator;
+}
+lore.ore.createCompoundObject = function (){
+    var today = new Date();
+    lore.ore.ui.grid.setSource({
+                "rdf:about" : lore.ore.generateID(),
+                "ore:describes" : "#aggregation",
+                "dc:creator" : lore.defaultCreator,
+                "dcterms:modified" : today,
+                "dcterms:created" : today,
+                "rdf:type" : lore.constants.RESOURCE_MAP,
+                "dc:title" : ""
+    });
+    lore.ore.ui.initGraphicalView();
 }
 
 lore.ore.show = function () {
@@ -593,7 +607,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             databank.prefix(ns,lore.constants.NAMESPACES[ns]);
         }
 	    databank.load(rdfDoc);
-        /** rdfquery triplestore representing the compound object that is being edited */
+        /** rdfquery triplestore that stores the original RDF triples that were loaded for a compound object */
         lore.ore.currentRDF = jQuery.rdf({databank: databank});
         
         // Display the properties for the compound object
