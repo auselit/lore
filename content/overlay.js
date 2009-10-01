@@ -21,15 +21,15 @@ try {
 	
 	
 	var loreoverlay = {
-		
+		/** The compound objects view */
 		coView: function () { 
 			return lore.global.ui.compoundObjectView.get(this.instId);
 		},
-		
+		/** The annotations view */
 		annoView: function () { 
 			return lore.global.ui.annotationView.get(this.instId);
 		},
-
+        /** Location listener to listen for browser page events */
 		oreLocationListener: {
 			
 			QueryInterface: function(aIID){
@@ -39,6 +39,7 @@ try {
 					return this;
 				throw Components.results.NS_NOINTERFACE;
 			},
+            /** Respond to the URL loaded in the browser changing */
 			onLocationChange: function(aProgress, aRequest, aURI){
 				try {
 					if (aURI) {
@@ -55,6 +56,7 @@ try {
 					alert(e + " " +  e.stack);
 				}
 			},
+            /** Respond to a page loading in the browser */
 			onStateChange: function(aProgress, aRequest, stateFlags, status){
 				var WPL = Components.interfaces.nsIWebProgressListener;
 				if (stateFlags & WPL.STATE_IS_DOCUMENT) {
@@ -76,6 +78,9 @@ try {
 			}
 		},
 		oldURL: null,
+        /**
+         * Initialization code performed onLoad
+         */
 		onLoad: function(){
 			try {
 				this.instId = lore.global.ui.genInstanceID();
@@ -94,6 +99,7 @@ try {
 				alert("Error on load: " + e.stack, e);
 			}
 		},
+        /** Observe if preferences have changed */
 		observe: function(subject, topic, data){
 			if (topic != "nsPref:changed") {
 				return;
@@ -101,39 +107,43 @@ try {
 			this.loadCompoundObjectPrefs();
 			this.loadAnnotationPrefs();
 		},
+        /** Tear down code to remove progress listener */
 		uninit: function(){
 			if ( lore.global.ui.annotationView.loaded(this.instId) || lore.global.ui.compoundObjectView.loaded(this.instId)) {
 				gBrowser.removeProgressListener(this.oreLocationListener);
 			}
 		},
-		showContextMenu1: function(event){
-			document.getElementById("context-lore").hidden = gContextMenu.onImage;
-		},
+        /** Toggle LORE visibility when the status bar icon is clicked */
 		onClickStatusIcon: function(event){
 			this.toggleBar();
 		},
+        /** Trigger adding a node to the compound object editor from browser context menu on links */
 		onMenuItemCommand: function(e){
 			if (gContextMenu.onLink) 
 				loreoverlay.coView().addFigure(gContextMenu.linkURL);
 		},
+        /** Show a context menu in the browser on images, links and background images, for creating nodes in compound object editor */
 		onMenuPopup: function(e){
 			gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
 			gContextMenu.showItem('addlink-lore', gContextMenu.onLink);
 			gContextMenu.showItem('addbgimg-lore', gContextMenu.hasBGImage);
 			gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
-			
 		},
+        /** Trigger adding a node to the compound object editor from browser context menu on images */ 
 		addImageMenuItemCommand: function(e){
 			if (gContextMenu.onImage) 
 				loreoverlay.coView().addFigure(gContextMenu.imageURL);
 		},
+        /** Trigger adding a node to the compound object editor from browser context menu on background images */
 		addBGImageMenuItemCommand: function(e){
 			if (gContextMenu.hasBGImage) 
 				loreoverlay.coView().addFigure(gContextMenu.bgImageURL);
 		},
+        /** Toggle LORE visibility when LORE menu item is selected */
 		onToolbarMenuCommand: function(e){
 			this.toggleBar();
 		},
+        /** Toggle the visibility of LORE */
 		toggleBar: function(){
 			try {
 	            var toolsMenuItem = document.getElementById('lore-tools-item');
@@ -153,10 +163,11 @@ try {
 				alert(e + " " +  e.stack);
 			}
 		},
-		
+		/** Compound Objects Toolbar button handler: Triggers loading compound object RDF from a URL **/
         loadRDFURL: function(){
             loreoverlay.coView().loadRDF();
         },
+        /** Compound Objects Toolbar button handler: Allow the user to choose an RDF/XML file describing a compound object and display it in the editor */
 		loadRDF: function(){
             try{
                 var nsIFilePicker = Components.interfaces.nsIFilePicker;
@@ -186,6 +197,7 @@ try {
                 lore.debug.ui("exception loading file",e);
             }
         },
+        /** Annotations Toolbar button handler: Trigger adding an annotation */
 		addAnnotation: function(){
 			try {
 				loreoverlay.annoView().handleAddAnnotation();
@@ -193,7 +205,7 @@ try {
 				alert("addAnnotation: " + e) ;
 			}
 		},
-		
+		/** Annotations Toolbar button handler: Trigger removing an annotation */
 		removeAnnotation: function() {
 			try {
 				loreoverlay.annoView().handleDeleteAnnotation();
@@ -201,47 +213,60 @@ try {
 				alert(e + " " +  e.stack);
 			}
 		},
-		
+		/** Annotations Toolbar button handler: Trigger editing an annoation */
 		editAnnotation: function () {
 			loreoverlay.annoView().handleEditAnnotation();
 		},
-		
+		/** Annotations Toolbar button handler: Triger replying to an annotation */
 		replyToAnnotation: function () {
 			loreoverlay.annoView().handleReplyToAnnotation();
 		},
-		
+		/** Annotations Toolbar button handler: Trigger saving a modified annotation */
 		saveAnnotation: function () {
 			loreoverlay.annoView().handleSaveAnnotationChanges();
 		},
-		
+		/** Annotations Toolbar button handler: Trigger saving all modified annotations */
 		saveAllAnnotations: function () {
 			loreoverlay.annoView().handleSaveAllAnnotationChanges();
 		},
-		
+		/** Annotations Toolbar button handler: Trigger highlighting all annotation contexts in the page */
 		showAnnotations: function(){
 			loreoverlay.annoView().showAllAnnotations();
 		},
+        /** Compound Objects Toolbar button handler: Trigger saving the current compound object to the repository */
 		saveRDF: function(){
 			loreoverlay.coView().saveRDFToRepository();
 		},
+        /** Compound Objects Toolbar button handler: Trigger deleting a compound object from the repository */
         deleteRDF: function(){
             loreoverlay.coView().deleteFromRepository();
         },
+        /** Compound Objects Toolbar button handler: Trigger serializing a compound object to a file
+         * @param {String} format The format of the serialization
+         */
         serializeREM: function (format) {
             loreoverlay.coView().handleSerializeREM(format);
         },
+        /** Compound Object Toolbar button handler: Trigger adding the current URI to the compound object editor */
 		addGraphNode: function(){
 			loreoverlay.coView().addFigure(window.content.location.href);
 		},
+        createCompoundObject: function(){
+            loreoverlay.coView().createCompoundObject();  
+        },
+        /** Toolbar button handler: reset the compound objects and annotations views */
 		resetGraph: function(){
 			lore.global.ui.reset(window, this.instId);
 		},
+        /** Display the about window */
 		openAbout: function(){
 			window.open("chrome://lore/content/about.xul", "", "chrome,centerscreen,modal");
 		},
+        /** Display the preferences window */
 		openOptions: function(){
 			window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
 		},
+        /** Reload preferences for compound objects and disable/enable the compound objects view depending on prefs */
 		loadCompoundObjectPrefs: function(){
 			
 			if (this.prefs) {
@@ -306,7 +331,7 @@ try {
 				lore.debug.ui("preferences object not loaded, can't read in annotation preferences!");
 			}
 		},
-		
+		/** Trigger the relationships ontology to be reloaded */
 		loadOntology: function(){
 			var prefservice = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
 			var loreprefs = prefservice.getBranch("extensions.lore.");
@@ -315,7 +340,7 @@ try {
 			loreoverlay.coView().loadRelationshipsFromOntology();
 			return true;
 		},
-		
+		/** Used to provide tooltips for title attributes in HTML inside the chrome window */
 		fillInHTMLTooltip: function(tipElement){
 			// From http://forums.mozillazine.org/viewtopic.php?f=19&t=561451&start=0&st=0&sk=t&sd=a
 			var retVal = false;
@@ -343,7 +368,9 @@ try {
 			}
 			return retVal;
 		},
-		
+		/**
+         * Update the variation splitter
+		 */
 		updateVariationSplitter: function(url,title,show, callBack){
 			try {
 				if (show) {
@@ -380,7 +407,9 @@ try {
 				alert(e + " " +  e.stack);
 			}
 		},
-		
+		/**
+         * Hide the variation splitter
+		 */
 		hideVariationSplitter: function(){
 			var splitter = document.getElementById("oobAnnoVarContentSplitter");
 			if (splitter.getAttribute("collapsed") == "false") {
@@ -390,15 +419,22 @@ try {
 				document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
 			}
 		},
-		
+		/**
+         * @return {boolean} Returns true if the annotations view is visible
+		 */
 		annotationsVisible: function() {
 			return document.getElementById('oobAnnoContentBox').getAttribute("collapsed") == "false";	
 		},
-		
+		/**
+         * @return {boolean} Returns true if the compound object view is visible
+		 */
 		compoundObjectsVisible: function () {
 			return document.getElementById('oobContentBox').getAttribute("collapsed") == "false";
 		},
-			
+	    /**
+         * Hide or show the annotations view
+         * @param {boolean} show Set to true to make the annotations view visible
+         */
 		setAnnotationsVisibility: function (show) {
 			var annoContentBox = document.getElementById('oobAnnoContentBox');
 			var annoContentSplitter = document.getElementById('oobAnnoContentSplitter');
@@ -438,7 +474,10 @@ try {
 				}			
 			}
 		},
-		
+		/**
+         * Hide or show the compound objects view
+         * @param {boolean} show Set to true to make the compound objects view visible
+		 */
 		setCompoundObjectsVisibility: function (show) {
 			var contentBox = document.getElementById('oobContentBox');
 			var contentSplitter = document.getElementById('oobContentSplitter');
@@ -473,11 +512,15 @@ try {
 			}
 				
 		},
-		
+		/** 
+         * @return {} The variation content window
+		 */
 		getVariationContentWindow: function(){
 			return document.getElementById("oobAnnoVarContent").contentWindow;
 		},
-		
+		/**
+         * @return {boolean} True if the variation content window is visible
+		 */
 		variationContentWindowIsVisible: function () {
 			return document.getElementById("oobAnnoVarContentBox").getAttribute("collapsed") == "false";
 			
