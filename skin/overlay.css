@@ -32,6 +32,9 @@
 #reset-graph {
 	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
 }
+#create-co {
+	list-style-image: url(chrome://lore/skin/icons/database_add.png);
+}
 #add-node {
 	list-style-image: url(chrome://lore/skin/icons/add.png);
 }
@@ -66,10 +69,8 @@
 #load-rdf{
 	list-style-image: url(chrome://lore/skin/icons/application_put.png);
 }
-#save-more {
-	width: 0 !important;
-	padding: 0;
-	margin:0;
+#import-export {
+	list-style-image: url(chrome://lore/skin/icons/table_refresh.png);
 }
 #text-mining {
 	list-style-image: url(chrome://lore/skin/icons/page_white_magnify.png);
