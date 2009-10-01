@@ -23,7 +23,7 @@ lore.ore.graph.ContextmenuConnection=function(){
 	this.setTargetAnchor(new draw2d.ChopboxConnectionAnchor());
 };
 
-lore.ore.graph.ContextmenuConnection.prototype=new draw2d.Connection();
+lore.ore.graph.ContextmenuConnection.prototype=new draw2d.Connection;
 
 lore.ore.graph.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype, symmetric){
 	this.edgetype=etype;

@@ -24,7 +24,7 @@
  **/
 lore.ore.graph.CommandListener=function(){
 draw2d.CommandStackEventListener.call(this);};
-lore.ore.graph.CommandListener.prototype=new draw2d.CommandStackEventListener();
+lore.ore.graph.CommandListener.prototype=new draw2d.CommandStackEventListener;
 lore.ore.graph.CommandListener.prototype.type="lore.ore.graph.CommandListener";
 lore.ore.graph.CommandListener.prototype.stackChanged=function(event){
 	lore.debug.ore("CommandListener stackChanged", event);
