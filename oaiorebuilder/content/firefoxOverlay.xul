@@ -30,7 +30,7 @@
 		    <xul:toolbox>
 		    	
 		        <xul:toolbar id="anno-toolbar">
-		        <xul:label value="LORE Annotations" style="margin-top:5px;margin-right:10px;margin-left:5px;font-weight:bolder" />
+		        <xul:label value="&lore.annoLabel;" style="margin-top:5px;margin-right:10px;margin-left:5px;font-weight:bolder" />
 		          <xul:toolbarbutton id="oobMenuButton" tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()" />
 		          <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
 		          <xul:toolbarseparator id="annsep" />
@@ -67,19 +67,22 @@
           <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/> -->
           <xul:toolbarseparator id="cosep"/>
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/>
-          <xul:toolbarbutton type="menu" id="save-more" tooltip="&lore.saveMoreTip;">
+          
+          <xul:toolbarseparator/>
+          <xul:toolbarbutton id="create-co" tooltiptext="&lore.createCOTip;" oncommand="loreoverlay.createCompoundObject();"/>
+          <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
+          <xul:toolbarbutton id="delete-rdf" oncommand="loreoverlay.deleteRDF();" tooltiptext="&lore.deleteRDFTip;"/>
+          
+          <xul:toolbarbutton type="menu" id="import-export" tooltiptext="&lore.saveMoreTip;">
                 <xul:menupopup>
                     <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeREM('rdf')"/>
-                    <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeREM('wordml')"/>
-                    <xul:menuitem id="save-trig" label="Save TriG file" tooltiptext="Save to a file in TriG format" oncommand="loreoverlay.serializeREM('trig')"/>
-                    <xul:menuitem id="save-foxml" label="Export FOXML" tooltiptext="Export compound object to Fedora Object XML" oncommand="loreoverlay.serializeREM('foxml')"/>
+                    <xul:menuitem id="save-wordml" label="&lore.saveWordLabel;" tooltiptext="&lore.saveWordTip;" oncommand="loreoverlay.serializeREM('wordml')"/>
+                    <xul:menuitem id="save-trig" label="&lore.saveTrigLabel;" tooltiptext="&lore.saveTrigTip;" oncommand="loreoverlay.serializeREM('trig')"/>
+                    <xul:menuitem id="save-foxml" label="&lore.saveFOXMLLabel;" tooltiptext="&lore.saveFOXMLTip;" oncommand="loreoverlay.serializeREM('foxml')"/>
                     <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadRDF()"/>
                     <xul:menuitem id="load-rdf-url" label="&lore.loadRDFURLLabel;" tooltiptext="&lore.loadRDFURLTip;" oncommand="loreoverlay.loadRDFURL()"/>
                 </xul:menupopup>
           </xul:toolbarbutton>
-          <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
-          
-          <xul:toolbarbutton id="delete-rdf" oncommand="loreoverlay.deleteRDF();" tooltiptext="&lore.deleteRDFTip;"/>
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/>
         </xul:toolbar>
