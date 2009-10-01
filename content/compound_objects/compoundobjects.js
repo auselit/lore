@@ -22,7 +22,6 @@
  * @include  "/oaiorebuilder/content/compound_objects/init.js"
  * @include  "/oaiorebuilder/content/util.js"
  * @include "/oaiorebuilder/content/compound_objects/lore_explore.js"
- * @include  "/oaiorebuilder/content/lib/Math.uuid.js"
  */
 
 /** 
@@ -54,6 +53,8 @@ lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
     "dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
     "dc:subject", "dc:title"]; 
     
+/** Display an error message in the ORE statusbar 
+ * @param {String} message The message to display */
 lore.ore.ui.loreError = function(/*String*/message){
     lore.ore.ui.status.setStatus({
             'text': message,
@@ -64,7 +65,10 @@ lore.ore.ui.loreError = function(/*String*/message){
         });
     lore.global.ui.loreError(message);
 }
-
+/**
+ * Display an information message in the ORE statusbar
+ * @param {String} message The message to display
+ */
 lore.ore.ui.loreInfo = function(/*String*/message) {
     lore.ore.ui.status.setStatus({
                 'text': message,
@@ -75,7 +79,10 @@ lore.ore.ui.loreInfo = function(/*String*/message) {
     });
     lore.global.ui.loreInfo(message);
 }
-    
+/**
+ * Display a warning message in the ORE statusbar
+ * @param {String} message The message to display
+ */
 lore.ore.ui.loreWarning = function(/*String*/message){
 
     lore.ore.ui.status.setStatus({
@@ -98,18 +105,19 @@ lore.ore.setRepos = function(rdfrepos, rdfrepostype){
 	lore.ore.reposURL = rdfrepos; // compound object repository
 	lore.ore.reposType = rdfrepostype; // type of compound object repository
 }
-	
-	
-lore.ore.setdccreator = function(/*String*/creator){
-	var remprops = lore.ore.ui.grid.getSource();
-	remprops["dc:creator"] = creator;
-	lore.ore.ui.grid.setSource(remprops);
-	lore.defaultCreator = creator;
+/**
+ * Set the DC Creator for the resource map
+ * @param {} creator
+ */	
+lore.ore.setDcCreator = function(creator){
+    var remprops = lore.ore.ui.grid.getSource();
+    remprops["dc:creator"] = creator;
+    lore.ore.ui.grid.setSource(remprops);
+    lore.defaultCreator = creator;
 }
 
 lore.ore.show = function () {
-	lore.ore.ui.lorevisible = true;
-		
+	lore.ore.ui.lorevisible = true;	
 	if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != 'about:blank' &&
 		lore.ore.ui.currentURL != '' &&
 		(!lore.ore.ui.loadedURL || lore.ore.ui.currentURL != lore.ore.ui.loadedURL)) {
@@ -123,12 +131,13 @@ lore.ore.hide = function () {
 }
 
 // alias used by uiglobal
+// TODO: change this to addNode - make it add to model and get view to listen on model
 lore.ore.addFigure = function (/*URL*/theURL) {
 	lore.ore.graph.addFigure(theURL);
 }
 
 /**
- * Remove listeners and reference to RDF View if it is closed
+ * Remove listeners and reference to a Compound Object view if it is closed
  * 
  * @param {Object} tabpanel
  * @param {Object} panel
@@ -224,6 +233,7 @@ lore.ore.updateRDFHTML = function() {
 }
 lore.ore.refreshTabularEditor = function (panel){
     lore.debug.ore("the tabular editor",panel);
+    // create table if it does not exist, otherwise refresh it
     
 }
 /** Render the current compound object as Fedora Object XML in the FOXML view */
@@ -488,7 +498,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     var resourcerdf = "";
     for (i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
-        var figurl = lore.global.util.escapeHTML(fig.url.replace('<', '%3C').replace('>', '%3E'))
+        var figurl = lore.global.util.escapeHTML(fig.url.toString().replace('<', '%3C').replace('>', '%3E'))
         rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                 + fullclosetag;
         // create RDF for resources in aggregation
@@ -549,7 +559,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
 
 lore.ore.generateID = function(){
     // TODO: should use a persistent identifier service to request an identifier
-    return "http://austlit.edu.au/rem/" + Math.uuid();
+    return "http://austlit.edu.au/rem/" + draw2d.UUID.create();
 }
 
 /**
@@ -572,7 +582,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         
         lore.ore.ui.oreviews.activate("drawingarea");
         var rdfDoc;
-        if (typeof rdf != 'object'){ // it should be a string
+        if (typeof rdf != 'object'){ 
 	       rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
         } else {
             showInTree = true;
@@ -583,6 +593,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             databank.prefix(ns,lore.constants.NAMESPACES[ns]);
         }
 	    databank.load(rdfDoc);
+        /** rdfquery triplestore representing the compound object that is being edited */
         lore.ore.currentRDF = jQuery.rdf({databank: databank});
         
         // Display the properties for the compound object
@@ -591,7 +602,10 @@ lore.ore.loadCompoundObject = function (rdf) {
         if (res){
 	       remurl = res.rem.value.toString();
         }  else {
+            lore.ore.ui.loreWarning("Unable to load compound object");
             lore.debug.ore("no remurl found in RDF",lore.ore.currentRDF);
+            lore.debug.ore("the input rdf was",rdf);
+            
         }
 	    var theprops = {
 	        "rdf:about" : remurl,
@@ -607,15 +621,14 @@ lore.ore.loadCompoundObject = function (rdf) {
                 } else {
                     propname = propurl;
                 }
-                lore.debug.ore("rem props " + propname,this);
-                lore.debug.ore("rem prop " + this.value.toString(),this);
+                //lore.debug.ore("rem props " + propname + " " + this.value.toString(),this);
                 theprops[propname] = this.value.value.toString();
             });
 	     lore.ore.ui.grid.setSource(theprops);
          
          
         // create a node figure for each aggregated resource, restoring the layout
-        lore.ore.currentRDF.where('<' + remurl + "#aggregation" + '> ore:aggregates ?aggre')
+        lore.ore.currentRDF.where('<' + remurl + "#aggregation" + '> ore:aggregates ?url')
             .optional('?url layout:x ?x')
             .optional('?url layout:y ?y')
             .optional('?url layout:width ?w')
@@ -626,15 +639,16 @@ lore.ore.loadCompoundObject = function (rdf) {
             .optional('?url dc:format ?format')
             .each(function(){
              var resourceURL = this.url.value.toString(); 
+             lore.debug.ore("found aggregated resource " + resourceURL,this);
              var fig;
              
              if (this.x && this.y) {
                 var opts = {};
                 for (prop in this) {
-                    if (prop != 'aggre' && prop != 'format'){
+                    if (prop != 'url' && prop != 'format'){
                         opts[prop] = parseInt(this[prop].value);
                     } else {
-                        opts[prop] = this[prop].value;
+                        opts[prop] = this[prop].value.toString();
                     }
                 }
                 if (opts.x < 0){
@@ -715,6 +729,7 @@ lore.ore.loadCompoundObject = function (rdf) {
        }
     
     } catch (e){
+        lore.ore.ui.loreError("Error loading compound object");
         lore.debug.ore("exception loading RDF from string",e);
         lore.debug.ore("the RDF string was",rdf);
         lore.debug.ore("the serialized databank is",databank.dump({format:'application/rdf+xml', serialize: true}));
@@ -726,7 +741,7 @@ lore.ore.loadCompoundObject = function (rdf) {
  * 
  * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
  */
-/*lore.ore.readRDF = function(rdfURL){
+lore.ore.readRDF = function(rdfURL){
     Ext.Ajax.request({
             url: rdfURL,
             method: "GET",
@@ -736,175 +751,6 @@ lore.ore.loadCompoundObject = function (rdf) {
                 lore.debug.ore("Unable to load compound object " + opt.url, resp);
             }
         }); 
-}*/
-
-lore.ore.readRDF = function(rdfURL) {
-    
-    var nsprefix = function(ns) {
-        for (var prefix in lore.constants.NAMESPACES) {
-            if (lore.constants.NAMESPACES[prefix] == ns) {
-                return prefix + ":";
-            }
-        }
-    };
-    var read_property = function(theRDF, props, subj, theProp) {
-        var propInfo = theProp.split(":");
-        var propresult = theRDF.Match(null, subj,
-                lore.constants.NAMESPACES[propInfo[0]] + propInfo[1], null);
-        if (propresult.length > 0) {
-            props[theProp] = propresult[0].object;
-        }
-    };
-    try{
-    // reset the graphical view
-    lore.ore.ui.initGraphicalView();
-    lore.ore.ui.oreviews.activate("drawingarea");
-    var theRDF = new RDF();
-    theRDF.getRDFURL(rdfURL, function() {
-        try{
-                var remurl = theRDF.Match(null, null,
-                        lore.constants.NAMESPACES["rdf"] + "type",
-                        lore.constants.RESOURCE_MAP)[0].subject.toString();
-                var creator = theRDF.Match(null, remurl, lore.constants.NAMESPACES["dc"]
-                                + "creator", null)[0].object;
-                var createdResult = theRDF.Match(null, remurl,
-                        lore.constants.NAMESPACES["dcterms"] + "created", null);
-                var created = "";
-                if (createdResult.length > 0) {
-                    // TODO: check for minutes, seconds
-                    created = createdResult[0].object;
-                    var createdsplit = created.split("-");
-                    if (createdsplit.length == 3) {
-                        created = new Date(createdsplit[0],
-                                createdsplit[1] - 1, createdsplit[2]);
-                    }
-                }
-                var theprops = {
-                    "rdf:about" : remurl,
-                    "ore:describes" : "#aggregation",
-                    "dc:creator" : creator,
-                    "rdf:type" : lore.constants.RESOURCE_MAP
-                };
-                // TODO: perhaps should read any property, not just those in the
-                // list?
-                for (var i = 0; i < lore.ore.all_props.length; i++) {
-                    read_property(theRDF, theprops, remurl,
-                            lore.ore.all_props[i]);
-                }
-                theprops["dcterms:created"] = created;
-                lore.ore.ui.grid.setSource(theprops);
-
-                // create a node figure for each aggregated resource
-                var aggregationID = remurl + "#aggregation";
-                var aggregates = theRDF.Match(null, aggregationID,
-                        lore.constants.NAMESPACES["ore"] + "aggregates", null);
-                var resourcerels = [];
-                for (i = 0; i < aggregates.length; i++) {
-                    var resourceURL = aggregates[i].object;
-                    // lookup layout info
-                    var x = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.NAMESPACES["layout"] + "x", null);
-                    var y = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.NAMESPACES["layout"] + "y", null);
-                    var width = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.NAMESPACES["layout"] + "width", null);
-                    var height = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.NAMESPACES["layout"] + "height", null);
-                    var originalHeight = theRDF.getSingleObject(null,
-                            resourceURL, lore.constants.NAMESPACES["layout"]
-                                    + "originalHeight", null);
-                    var scrollx = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.NAMESPACES["layout"] + "scrollx", null);
-                    var scrolly = theRDF.getSingleObject(null, resourceURL,
-                            lore.constants.NAMESPACES["layout"] + "scrolly", null);
-                    lore.debug.ore("layout info?" + x + " " + y + " " + width + " " + height,aggregates[i]); 
-                    if (x && y) {
-                        var fig = lore.ore.graph.addFigureWithOpts({
-                            "url": resourceURL,
-                            "x": parseInt(x), 
-                            "y":parseInt(y)
-                        });
-                        fig.originalHeight = parseInt(originalHeight);
-                        fig.setDimension(parseInt(width), parseInt(height));
-                        if (scrollx && scrolly) {
-                            fig.scrollx = parseInt(scrollx);
-                            fig.scrolly = parseInt(scrolly);
-
-                        }
-                    } else {
-                        lore.ore.graph.addFigure(resourceURL);
-                    }
-                    // collect all predicates
-                    var matches = theRDF.Match(null, resourceURL, null, null);
-                    resourcerels = resourcerels.concat(matches);
-
-                }
-
-                // create connection figures based on resource-resource
-                // relationships
-                for (var j = 0; j < resourcerels.length; j++) {
-                    var rel = resourcerels[j].predicate;
-                    var relresult = lore.global.util.splitTerm(rel);
-                    var srcfig = lore.ore.graph
-                            .lookupFigure(resourcerels[j].subject);
-                    if (!srcfig) {
-                        srcfig = lore.ore.graph
-                                .lookupFigure(lore.global.util.unescapeHTML(resourcerels[j].subject.replace(
-                                        '%3C', '<').replace('%3F', '>')));
-                    }
-
-                    var tgtfig = lore.ore.graph
-                            .lookupFigure(resourcerels[j].object);
-                    if (!tgtfig) {
-                        tgtfig = lore.ore.graph
-                                .lookupFigure(lore.global.util.unescapeHTML(resourcerels[j].object
-                                .replace('%3C', '<').replace('%3F', '>')
-                                ));
-                    }
-
-                    if (srcfig && tgtfig) {
-                        var c = new lore.ore.graph.ContextmenuConnection();
-                        c.setSource(srcfig.getPort("output"));
-                        c.setTarget(tgtfig.getPort("input"));
-                        c.setRelationshipType(relresult.ns, relresult.term);
-                        lore.ore.graph.Graph.addFigure(c);
-                    } else if (srcfig) {
-                        // not a node relationship, show in the property grid
-                        if (!relresult.ns.match(lore.constants.NAMESPACES["layout"])) {
-                            srcfig.metadataproperties[
-                                    nsprefix(relresult.ns)
-                                    + relresult.term] = resourcerels[j].object;
-                        }
-                        if (relresult.term == "title") {
-                            srcfig.setTitle(resourcerels[j].object);
-                        }
-                    }
-                }
-                lore.ore.ui.loreInfo("Loading compound object");
-                lore.ore.currentREM = remurl;
-                var title = theprops["dc:title"] ? theprops["dc:title"] : "Untitled";
-                var recentNode = new Ext.tree.TreeNode({
-                    'text' : title,
-                    'id': remurl + 'r',
-                    'uri': remurl,
-                    'iconCls' : 'oreresult',
-                    'leaf' : true
-                });
-                lore.ore.attachREMEvents(recentNode);
-                var childNodes = lore.ore.ui.recenttreeroot.childNodes;
-                if (childNodes.length >= 5) {
-                    lore.ore.ui.recenttreeroot
-                        .removeChild(lore.ore.ui.recenttreeroot.firstChild);
-                }
-                lore.ore.ui.recenttreeroot.appendChild(recentNode);
-                lore.ore.ui.propertytabs.activate("remgrid");
-        } catch (ex) {
-            lore.debug.ore("Error loading RDF",ex);
-        }
-      });
-    } catch (ex) {
-        lore.debug.ore("Error loading compound object RDF",ex);
-    }
 }
 
 lore.ore.attachREMEvents = function(node){
@@ -958,7 +804,7 @@ lore.ore.getOREIdentifier = function(url) {
     // Example of the url :
     // http://austlit.edu.au/openrdf-sesame/repositories/lore/statements?context=<http://austlit.edu.au>
     var result;
-    var theurl = url.replace('%3C', '<').replace('%3E', '>');
+    var theurl = url.toString().replace('%3C', '<').replace('%3E', '>');
     if (theurl && theurl.indexOf('>') >= 0 ) {
         result = theurl.substring((theurl.indexOf('<') + 1),
                 (theurl.length - 1));
@@ -1010,44 +856,13 @@ lore.ore.loadRelationshipsFromOntology = function() {
                     var relresult = lore.global.util.splitTerm(this.prop.value.toString());
                     lore.ore.ontrelationships[relresult.term] = relresult.ns;
                 });
+                // TODO: load datatype properties for prop grids
             } 
         };
         xhr.send(null);
      }
      
         
-  
-       /* var ontRDF = new RDF();
-        lore.ore.ontrelationships = {};
-        ontRDF.getRDFURL(lore.ore.onturl, function() {
-                    var relResult = ontRDF.Match(null, null,
-                            lore.constants.NAMESPACES["rdf"] + "type",
-                            lore.constants.OWL_OBJPROP);
-                    for (var i = 0; i < relResult.length; i++) {
-                        var relresult = lore.global.util.splitTerm(relResult[i].subject);
-                        if (!relresult.term.match("genid:")) {
-                            lore.ore.ontrelationships[relresult.term] = relresult.ns;
-                        }
-                    }
-                    relResult = ontRDF.Match(null, null,
-                            lore.constants.NAMESPACES["rdf"] + "type",
-                            lore.constants.OWL_DATAPROP);
-                    var tmp_resource_metadata = new Array(relResult.length);
-                    for (i = 0; i < relResult.length; i++) {
-                        tmp_resource_metadata[i] = relResult[i].subject;
-                    }
-                    lore.ore.resource_metadata_props = lore.ore.resource_metadata_props
-                            .concat(tmp_resource_metadata);
-                    lore.ore.resource_metadata_props.sort();
-                    lore.ore.all_props = lore.ore.METADATA_PROPS
-                            .concat(lore.ore.resource_metadata_props);
-                    lore.ore.all_props.sort();
-                }, false, function(args) {
-                    lore.ore.ui.loreWarning(args.status + "\n" + args.contentType
-                            + " " + args.content);
-                    lore.debug.ore("error loading relationships ontology",args);
-                });
-                */  
 }
 /**
  * Delete the compound object from the repository
@@ -1399,6 +1214,7 @@ lore.ore.createOREWord = function (){
 }
 
 /** update the metadataproperties recorded in the figure for that node */
+// TODO: this needs to update the model (and view needs to listen to model)
 lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
     lore.ore.graph.modified = true;
     var theval;
