@@ -94,6 +94,7 @@ lore.ore.ui.initGraphicalView = function() {
 	lore.ore.ui.oreviews.activate("drawingarea");
 	
 	lore.ore.graph.lookup = {};
+    lore.ore.currentRDF = {};
 	lore.ore.graph.modified = false;
 	if (lore.ore.graph.Graph) {
 		lore.ore.graph.Graph
