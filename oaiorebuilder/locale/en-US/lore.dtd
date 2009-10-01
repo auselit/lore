@@ -1,4 +1,5 @@
 <!ENTITY lore.label "LORE">
+<!ENTITY lore.annoLabel "LORE Annotations">
 <!ENTITY loreContextLink.label "Add linked resource to ORE object">
 <!ENTITY loreContextImage.label "Add image to ORE object">
 <!ENTITY loreContextBGImage.label "Add background image to ORE object">
@@ -6,13 +7,20 @@
 <!ENTITY loreToolbar.tooltip "Toggle LORE">
 <!ENTITY lore.addNodeLabel "Add Resource">
 <!ENTITY lore.addNodeTip "Add the current URL to the compound object">
-<!ENTITY lore.saveMoreTip "More load and save options">
-<!ENTITY lore.saveFileLabel "Save as RDF/XML">
-<!ENTITY lore.saveFileTip "Save compound object to a RDF/XML file">
-<!ENTITY lore.loadRDFLabel "Load from file">
-<!ENTITY lore.loadRDFTip "Load a compound object from a file">
-<!ENTITY lore.loadRDFURLLabel "Load from URL">
-<!ENTITY lore.loadRDFURLTip "Load a compound object from a URL">
+<!ENTITY lore.createCOTip "Create a new compound object">
+<!ENTITY lore.saveMoreTip "Import/Export compound object as file">
+<!ENTITY lore.saveFileLabel "Export to RDF/XML">
+<!ENTITY lore.saveFileTip "Export compound object as an RDF/XML file">
+<!ENTITY lore.loadRDFLabel "Import from RDF/XML file">
+<!ENTITY lore.loadRDFTip "Import a compound object from a RDF/XML file">
+<!ENTITY lore.loadRDFURLLabel "Import from RDF/XML URL">
+<!ENTITY lore.loadRDFURLTip "Import a compound object from a URL">
+<!ENTITY lore.saveWordTip "Export compound object as a MS Word document">
+<!ENTITY lore.saveWordLabel "Export to Word">
+<!ENTITY lore.saveTrigTip "Export compound object as RDF in TriG format">
+<!ENTITY lore.saveTrigLabel "Export to TriG">
+<!ENTITY lore.saveFOXMLTip "Export compound object to Fedora Object XML">
+<!ENTITY lore.saveFOXMLLabel "Export FOXML">
 <!ENTITY lore.resetGraphLabel "Reset Graph">
 <!ENTITY lore.resetGraphTip "Reset UI">
 <!ENTITY lore.saveRDFLabel "Save RDF">
