@@ -263,7 +263,7 @@ try {
 				// changes in settings instead perhaps? 
 				//lore.global.store.get("lore_preferences") 
 
-				loreoverlay.coView().setdccreator(dccreator);
+				loreoverlay.coView().setDcCreator(dccreator);
 				loreoverlay.coView().setrelonturl(relonturl);
 				loreoverlay.coView().setRepos(rdfrepos, rdfrepostype);
                
