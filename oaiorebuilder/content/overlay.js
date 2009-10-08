@@ -13,6 +13,10 @@ try {
 	Components.utils.import("resource://lore/uiglobal.js", lore.global);
 	// lore.global.store
 	Components.utils.import("resource://lore/annotations/store.js", lore.global);
+	
+	// lore.global.util
+	Components.utils.import("resource://lore/util.js", lore.global);
+	
 		
 	if (!lore.global.ui || !lore.global.store || !lore.debug ) {
 		// sanity check
@@ -167,34 +171,23 @@ try {
         loadRDFURL: function(){
             loreoverlay.coView().loadRDF();
         },
+		
+		loadAnnoRDF: function () {
+			loreoverlay.annoView().handleImportRDF();
+		},
+		
         /** Compound Objects Toolbar button handler: Allow the user to choose an RDF/XML file describing a compound object and display it in the editor */
 		loadRDF: function(){
-            try{
-                var nsIFilePicker = Components.interfaces.nsIFilePicker;
-                var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-                fp.appendFilters(nsIFilePicker.filterXML);
-                fp.appendFilter("RDF documents", "*.rdf");  
-                fp.init(window, "Select Compound Object RDF/XML file", nsIFilePicker.modeOpen);
-                var res = fp.show();
-                if (res == nsIFilePicker.returnOK){
-                    var thefile = fp.file;
-                    var data = "";
-                    var fistream = Components.classes["@mozilla.org/network/file-input-stream;1"].
-                                createInstance(Components.interfaces.nsIFileInputStream);
-                    var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].
-                                createInstance(Components.interfaces.nsIConverterInputStream);
-                    fistream.init(thefile, -1, 0, 0);
-                    cstream.init(fistream, "UTF-8", 0, 0); 
-                    var str = {};
-                    while(cstream.readString(4096,str) != 0){
-                        data += str.value;
-                    }
-                    cstream.close();
-					loreoverlay.coView().loadCompoundObject(data);
-                }
+            
+			try{
+                var fObj = 	lore.global.util.loadFileWithOpen("Select Compound Object RDF/XML file", 
+				{desc:"RDF documents", filter:"*.rdf"}, window);
+				
+				if ( fObj) {
+					loreoverlay.coView().loadCompoundObject(fObj.data);
+				}
             } catch (e){
-                alert(e + " " +  e.stack);
-                lore.debug.ui("exception loading file",e);
+                lore.debug.ui("Exception importing compound object from file",e);
             }
         },
         /** Annotations Toolbar button handler: Trigger adding an annotation */
@@ -229,6 +222,11 @@ try {
 		saveAllAnnotations: function () {
 			loreoverlay.annoView().handleSaveAllAnnotationChanges();
 		},
+		
+		serializeAnnotations: function (format) {
+			loreoverlay.annoView().handleSerialize(format);
+		},
+		
 		/** Annotations Toolbar button handler: Trigger highlighting all annotation contexts in the page */
 		showAnnotations: function(){
 			loreoverlay.annoView().showAllAnnotations();
@@ -283,6 +281,7 @@ try {
 				document.getElementById('add-node').hidden = disable_co;
 				document.getElementById('save-rdf').hidden = disable_co;
 				document.getElementById('load-rdf').hidden = disable_co;
+				document.getElementById('import-export').hidden = disable_co;
 				
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps? 
@@ -317,6 +316,7 @@ try {
 				document.getElementById('reply-annotation').hidden = disable_anno;
 				document.getElementById('save-annotation').hidden = disable_anno;
 				document.getElementById('save-all-annotations').hidden = disable_anno;
+				document.getElementById('import-export-anno').hidden = disable_anno;
 				
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps?  

@@ -18,78 +18,82 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
- 
- /*retrieveCache = function (uid) {
- 	if (! store.uidcache) {
-		store.uidcache = {};
-	}
-	return store.uidcache[uid];	
- }*/
- 
+/** 
+ * @namespace
+ * @name lore.store
+ */ 
  var EXPORTED_SYMBOLS = ['store'];
  
- store = {};
- store.uidcache = {};
- store.datastores = {};
- store.uid = "";
- 
- store.setCacheContext = function (uid) {
- 	store.uid = uid;
-	store.datastores = store.uidcache[uid];
- }
- /**
-  * 
-  * @param {Object} datastoreName
-  * @param {Object} uid
-  */
- store.get = function (datastoreName,  uid) {
- 	if ( uid ) {
-		
-		var datastores = store.uidcache[uid]
-		if (datastores) {
-			return datastores[datastoreName];
-		} else {
-			return null;
-		}
-	}
-	return store.datastores[datastoreName];
- }
- 
- /**
-  * 
-  * @param {Object} datastoreName
-  * @param {Object} uid
-  * @param {Object} datastore
-  */
- store.set = function (datastoreName, datastore, uid ) {
- 	if (uid) {
-		if (!store.uidcache[uid]) {
-			store.uidcache[uid] = {};
-		}
-		
-		(store.uidcache[uid])[datastoreName] = datastore;
-	}
-	else {
-		store.datastores[datastoreName] = datastore;
-	}
- }
- 
- /**
-  * 
-  * @param {Object} datastore
-  * @param {Object} uid
-  * @param {Object} type
-  */
- store.create = function (datastoreName, thestore, uid) {
- 	var datastores = store.datastores;
-	if ( uid ) {
-		datastores = store.uidcache[uid];
-	}
-	store.datastores[datastoreName] = thestore;
+ store =  {
+	/** @lends lore.store */
 	
- 	return store.datastores[datastoreName];	
- }
- 
- 
- store.load = function (datastore, uid, type) {
+	 uidcache: {},
+	 datastores : {},
+	 uid: "",
+	 
+	 /**
+	  * Set the context for the current cache
+	  * Subsequent calls to the store will be using
+	  * this supplied context uid
+	  * @param {String} uid The context uid to use
+	  */
+	 setCacheContext : function (uid) {
+	 	store.uid = uid;
+		store.datastores = store.uidcache[uid];
+	 },
+	 
+	 /**
+	  * Retrieve the store given the data store name 
+	  * and optionall the context uid 
+	  * @param {String} datastoreName The data store name
+	  * @param {String} uid (Optional) The context uid
+	  */
+	 get : function (datastoreName,  uid) {
+	 	if ( uid ) {
+			
+			var datastores = store.uidcache[uid]
+			if (datastores) {
+				return datastores[datastoreName];
+			} else {
+				return null;
+			}
+		}
+		return store.datastores[datastoreName];
+	 },
+	 
+	/**
+	  * 'Hash' the store given the data store name, the store 
+	  * and optionally the context uid 
+	  * @param {String} datastoreName The data store name
+	  * @param {Object} datastore The data store to hash into the supplied/current context
+	  * @param {String} uid (Optional) The context uid
+	  */
+	 set : function (datastoreName, datastore, uid ) {
+	 	if (uid) {
+			if (!store.uidcache[uid]) {
+				store.uidcache[uid] = {};
+			}
+			
+			(store.uidcache[uid])[datastoreName] = datastore;
+		}
+		else {
+			store.datastores[datastoreName] = datastore;
+		}
+	 },
+	 
+	 /**
+	  * Create a store for the supplied/current cache context
+	  * @param {String} datastoreName The datastore name 
+	  * @param {Object} thestore The store
+	  * @param {String} uid The context uid
+	  */
+	 create : function (datastoreName, thestore, uid) {
+	 	var datastores = store.datastores;
+		if ( uid ) {
+			datastores = store.uidcache[uid];
+		}
+		store.datastores[datastoreName] = thestore;
+		
+	 	return store.datastores[datastoreName];	
+	 }
  }

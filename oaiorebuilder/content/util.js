@@ -265,6 +265,66 @@ util = {
                 throw new Error("Unable to write to file" + e.toString());
             }
     },
+	
+	writeFileWithSaveAs: function (title, defExtension, callback, win) {
+			var nsIFilePicker = Components.interfaces.nsIFilePicker;
+			var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+	        
+			fp.defaultExtension = defExtension;
+	        if ("xml" == defExtension){
+	            fp.appendFilters(nsIFilePicker.filterXML); 
+	        } else if ("txt" == defExtension){
+	            fp.appendFilters(nsIFilePicker.filterText);  
+	        } 
+	        //else if ("doc" ==  defExtension){
+	        //    fp.appendFilter("MS Word Documents", "*.doc");    
+	        //}
+			fp.appendFilters(nsIFilePicker.filterAll);
+			fp.init(win, title, nsIFilePicker.modeSave);
+			var res = fp.show();
+			if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
+				var dataStr = callback();
+				var thefile = fp.file;
+				var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
+				fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
+				var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+				converter.init(fostream, "UTF-8", 0, 0);
+				converter.writeString(dataStr);
+				converter.close();
+				return {fname: thefile.persistentDescriptor, data:dataStr};
+			}
+			return null;
+			
+	},
+	
+	loadFileWithOpen: function(title, defExtension, win) {
+		 
+		 var nsIFilePicker = Components.interfaces.nsIFilePicker;
+         var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+         fp.appendFilters(nsIFilePicker.filterXML);
+         fp.appendFilter(defExtension.desc, defExtension.filter);
+	   	 fp.init(win, title , nsIFilePicker.modeOpen);
+         
+		 var res = fp.show();
+         
+		 if (res == nsIFilePicker.returnOK){
+         	var thefile = fp.file;
+            var data = "";
+            var fistream = Components.classes["@mozilla.org/network/file-input-stream;1"].
+                        createInstance(Components.interfaces.nsIFileInputStream);
+            var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"].
+                        createInstance(Components.interfaces.nsIConverterInputStream);
+            fistream.init(thefile, -1, 0, 0);
+            cstream.init(fistream, "UTF-8", 0, 0); 
+            var str = {};
+            while(cstream.readString(4096,str) != 0){
+                data += str.value;
+            }
+            cstream.close();
+			return {fname: thefile.persistentDescriptor, data:data};
+        }
+		return null;
+	},
     
     /**
      * Remove any artifacts from the XPath
@@ -738,11 +798,6 @@ util = {
             .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
             .parseFragment(html, false, null, win.document.body);
         if (fragment) {
-            //TODO: remove dodgey characters inserted by nsiScriptableUnescapeHTML
-            // it'd be interesting to see whether these characters are generated from the
-            // nsiScriptableUnescapeHTML function or whether they appear due to the way
-            // XMLserializers is accessing (i.e what properties used) the fragment's DOM 
-            
             var buf = serializer.serializeToString(fragment);
             // remove garbage
             return buf.replace(/[\x80-\xff|\u0080-\uFFFF]*/g, '');
@@ -778,5 +833,32 @@ util = {
      */
     normalize : function(str) {
         return str.replace(/^\s*|\s(?=\s)|\s*$/g, "");
-    }
+    },
+	
+	transformRDF: function(stylesheetURL, theRDF, params, win, serialize) {
+	
+		var xsltproc = new win.XSLTProcessor();
+	    // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
+	    var xhr = new win.XMLHttpRequest();
+	    xhr.overrideMimeType('text/xml');
+	    xhr.open("GET", stylesheetURL, false);
+	    xhr.send(null);
+	    var stylesheetDoc = xhr.responseXML;
+	    xsltproc.importStylesheet(stylesheetDoc
+		);
+	    for (param in params){
+	        xsltproc.setParameter(null,param,params[param]);
+	    }
+	    xsltproc.setParameter(null, "indent", "yes");
+	    
+	    var parser = new win.DOMParser();
+	    var rdfDoc = parser.parseFromString(theRDF, "text/xml");
+	    var resultFrag = xsltproc.transformToFragment(rdfDoc, win.document);
+	    if (serialize){
+	         var serializer = new win.XMLSerializer();
+	         return serializer.serializeToString(resultFrag);
+	    } else {
+	        return resultFrag
+	    }
+	}
 };

@@ -38,10 +38,17 @@
 		          <xul:toolbarbutton id="remove-annotation" tooltiptext="&lore.removeAnnotationTip;" oncommand="loreoverlay.removeAnnotation();" />
 		          <xul:toolbarbutton id="edit-annotation" tooltiptext="&lore.editAnnotationTip;" oncommand="loreoverlay.editAnnotation();" />
 		          <xul:toolbarbutton id="reply-annotation" tooltiptext="&lore.replyAnnotationTip;" oncommand="loreoverlay.replyToAnnotation();" />
-		          
 		          <xul:toolbarbutton id="save-annotation" tooltiptext="&lore.saveAnnotationTip;" oncommand="loreoverlay.saveAnnotation();" />
 		          <xul:toolbarseparator id ="annsep2" />
-		          <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" />
+		          <xul:toolbarbutton type="menu" id="import-export-anno" tooltip="&lore.saveMoreTip;">
+                	<xul:menupopup>
+	                    <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeAnnotations('rdf')"/>
+    	             <!--   <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/> -->
+    	                <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadAnnoRDF()"/>
+                	</xul:menupopup>
+          		 </xul:toolbarbutton>
+          		 
+		          <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" /> 
 		          <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/>
 		          <xul:toolbarseparator id ="annsep3" />
 		          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/> 

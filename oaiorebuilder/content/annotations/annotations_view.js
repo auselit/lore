@@ -18,7 +18,26 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * @include  "/oaiorebuilder/content/annotations/annotations.js"
+ * @include  "/oaiorebuilder/content/debug.js"
+ * @include  "/oaiorebuilder/content/util.js"
+ * @include  "/oaiorebuilder/content/uiglobal.js"
+ * @include  "/oaiorebuilder/content/constants.js"
+ */
+
+/** 
+ * Annotations View
+ * @namespace
+ * @name lore.anno.ui
+ */
+	
 	try {
+
+	/*
+	 * Initialization
+	 */
+		// set defaults for page
 		lore.anno.ui.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 		
 		lore.anno.ui.initHighlightData = function (){
@@ -33,11 +52,44 @@
 		
 		lore.anno.ui.initHighlightData();
 		
-		
-		
-		
+	
+
 	/**
+	 * Setup the event hooks that notify the view functions of store events
+	 */
+	lore.anno.ui.initModelHandlers = function () {
+		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
+		lore.anno.annods.on( { "update": {fn: lore.anno.ui.updateUIOnUpdate}, 
+							   "load":{fn: lore.anno.ui.updateUI},
+							   "remove":{fn: lore.anno.ui.updateUIOnRemove},
+							   "clear": {fn: lore.anno.ui.updateUIOnClear}
+							   });
+    }
+
+		
+	/*
 	 * General functions
+	 */
+	
+	/** Helper function to create a view displayed in a closeable tab */
+	lore.anno.ui.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
+	    var tab = Ext.getCmp(panelid);
+	    if (!tab) {
+	       tab =lore.anno.ui.views.add({
+	            'title' : paneltitle,
+	            'id' : panelid,
+	            'autoScroll' : true,
+	            'closable' : true
+	        });
+	        tab.on("activate", activationhandler);
+	    }
+	    tab.show();
+	}
+	
+	/**
+	 * Output a message to notification window
+	 * @param {String} message Notification message 
+	 * @param {Object} iconCls CSS Class for notification icon
 	 */
 	lore.anno.ui.loreMsg = function(message, iconCls){
 		if (!lore.anno.ui.loreMsgStack) {
@@ -77,227 +129,274 @@
 		
 	}
 	
-	
+	/**
+	 * Output a notification to notification window
+	 * @param {String} message Notification message 
+	 */
 	lore.anno.ui.loreInfo = function(message ) {
 		lore.anno.ui.loreMsg(message, 'info-icon');
 		lore.global.ui.loreInfo(message);
 	}
 	
+	/**
+	 * Output a error message to notification window
+	 * @param {String} message Erro message 
+	 */
 	lore.anno.ui.loreError = function(message) {
 		lore.anno.ui.loreMsg(message, 'error-icon');
 		lore.global.ui.loreError(message);	
 		
 	}
+	
+	/**
+	 * Output a warning to notification window
+	 * @param {String} message Warning message 
+	 */
 	lore.anno.ui.loreWarning = function(message) {
 		lore.anno.ui.loreMsg(message, 'warning-icon');
-		lore.anno.ui.global.loreWarning(message);
+		lore.global.ui.loreWarning(message);
 	}
 	
 	
-			
+	/**
+	 * Set the default creator for annotations
+	 * @param {String} creator The default creator of annotations
+	 */		
 	lore.anno.ui.setdccreator = function(creator){
 			lore.defaultCreator = creator;
 	}
+	
 	/**
-	 * Set the global variables for the repository access URLs
-	 *
-	 * @param {}
-	 *            rdfrepos The repository access URL
-	 * @param {}
-	 *            rdfrepostype The type of the repository (eg sesame, fedora)
-	 * @param {}
-	 *            annoserver The annotation server access URL
+	 * Set the annotation server URL
+	 * @param {String} annoserver The annotation server URL
 	 */
 	lore.anno.ui.setRepos = function(annoserver){
 		lore.anno.annoURL = annoserver; // annotation server
 	}
 	
-		//loreOpen
-	lore.anno.ui.show = function(){
-				lore.anno.ui.lorevisible = true;
-			
-			if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' &&
-			lore.anno.ui.currentURL != '' &&
-			(!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
-				lore.anno.ui.loreInfo("Loading annotations for " + lore.anno.ui.currentURL);
-				lore.anno.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (result, resultMsg) {
-					if (result == 'fail') {
-						lore.anno.ui.loreError("Failure loading annotations for page.");
-					}
-				});
-				lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
-			}
-		}
-		
-		//loreClose
-		lore.anno.ui.hide = function(){
-			lore.anno.ui.lorevisible = false;
-		}
 	
-		lore.anno.ui.updateUIElements = function(rec){
-			// update the highlighted fields colour in the event the creator is changed
-			// the colour is identified by the creator's name
-			
-			lore.anno.ui.hideMarker();
-			lore.anno.ui.highlightCurrentAnnotation(rec);
-			
-			if (lore.anno.ui.multiSelAnno.length > 0) {
-				// hide then reshow 
-				lore.anno.ui.showAllAnnotations();
-				lore.anno.ui.showAllAnnotations();
-			}
-			
+	/**
+	 * Show the annotations view. Update the annotations source list
+	 * to match this page
+	 */
+	lore.anno.ui.show = function(){
+		lore.anno.ui.lorevisible = true;
+		
+		if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' &&
+		lore.anno.ui.currentURL != '' &&
+		(!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
+			lore.anno.ui.loreInfo("Loading annotations for " + lore.anno.ui.currentURL);
+			lore.anno.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (result, resultMsg) {
+				if (result == 'fail') {
+					lore.anno.ui.loreError("Failure loading annotations for page.");
+				}
+			});
+			lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
+		}
+	}
+		
+	/**
+	 * Hide the annotations view
+	 */
+	lore.anno.ui.hide = function(){
+		lore.anno.ui.lorevisible = false;
+	}
+	
+	/**
+	 * Update GUI elements based off the record passed in
+	 * @param {Record} rec Ext Annotation record to base update off of
+	 */
+	lore.anno.ui.updateUIElements = function(rec){
+		// update the highlighted fields colour in the event the creator is changed
+		// the colour is identified by the creator's name
+		
+		lore.anno.ui.hideMarker();
+		lore.anno.ui.highlightCurrentAnnotation(rec);
+		
+		if (lore.anno.ui.multiSelAnno.length > 0) {
+			// hide then reshow 
+			lore.anno.ui.showAllAnnotations();
+			lore.anno.ui.showAllAnnotations();
 		}
 		
-		lore.anno.ui.setCurrentAnno = function (rec) {
-			lore.anno.ui.hideMarker();
-			lore.anno.ui.curSelAnno = rec;	
-		}
+	}
+		
+	/**
+	 * Store the annotation that is currently selected in the view
+	 * @param {Record} rec Record Currently selected annotation
+	 */
+	lore.anno.ui.setCurrentAnno = function (rec) {
+		lore.anno.ui.hideMarker();
+		lore.anno.ui.curSelAnno = rec;	
+	}
+		
+	/**
+	 * Generate annotation caption for the given annotation using the formatting
+	 * string
+	 * @param {Object} anno The annotation to retrieve the information from
+	 * @param {String} formatStr Formatting string. The following
+	 */
+	lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
+		var buf = '';
 		
 		
-		lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
-			var buf = '';
-			
-			
-			for ( var i=0; i < formatStr.length; i++) {
-				switch ( formatStr[i]) {
-					case 't': 
-						buf += lore.global.util.splitTerm(anno.type).term;
-						break;
-					case 'c':
-						buf += anno.creator
-						break;
-					case 'd':
-						buf += lore.global.util.shortDate(anno.created, Date);
-						break;
-					case 'D':
-						buf += lore.global.util.longDate(anno.created, Date);
-						break;
-					case 'r':
-						var replies = "";
-						if ( anno.replies) {
-							var numreplies = lore.anno.calcNumReplies(anno);
-							if (numreplies > 0) {
-								replies = " (" + numreplies + (numreplies == 1 ? " reply" : " replies") + ")";
-							}
+		for ( var i=0; i < formatStr.length; i++) {
+			switch ( formatStr[i]) {
+				case 't': 
+					buf += lore.global.util.splitTerm(anno.type).term;
+					break;
+				case 'c':
+					buf += anno.creator
+					break;
+				case 'd':
+					buf += lore.global.util.shortDate(anno.created, Date);
+					break;
+				case 'D':
+					buf += lore.global.util.longDate(anno.created, Date);
+					break;
+				case 'r':
+					var replies = "";
+					if ( anno.replies) {
+						var numreplies = lore.anno.calcNumReplies(anno);
+						if (numreplies > 0) {
+							replies = " (" + numreplies + (numreplies == 1 ? " reply" : " replies") + ")";
 						}
-						buf += replies;
-						break;
-					case '\\':
-						if ( i < formatStr.length -1 ) {
-							i++;
-							buf += formatStr[i];
-						}
-						break;
-					default:
+					}
+					buf += replies;
+					break;
+				case '\\':
+					if ( i < formatStr.length -1 ) {
+						i++;
 						buf += formatStr[i];
-				}
+					}
+					break;
+				default:
+					buf += formatStr[i];
 			}
-		 
-			return buf;
 		}
+	 
+		return buf;
+	}
 		
-		lore.anno.ui.getAnnoTitle = function(anno){
-			var title = anno.title;
-			if (!title || title == '') {
-				title = "Untitled";
-			}
-			return title;
-		}
-		
-		lore.anno.ui.genTipForAnnotation = function(annodata, domContainer){
-			try {
-				var uid = annodata.id;
-				var obj = document.createElement("span");
-				obj.setAttribute("id", uid);
-				var desc = "<span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
-				" by " +
-				annodata.creator +
-				"</span><br />";
-				desc += lore.anno.ui.genDescription(annodata, true);
-				var d = lore.global.util.longDate(annodata.created, Date);
-				desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span><br />";
-				obj.innerHTML = desc;
-				
-				
-				var doc = lore.global.util.getContentWindow(window).document;
-				var tipContainer = doc.getElementById("tipcontainer");
-				
-				// create the tip container and import the script onto the page
-				// if first time a tip is created			
-				if (tipContainer == null) {
-					tipContainer = doc.createElement("div");
-					tipContainer.id = "tipcontainer";
-					tipContainer.style.display = "none";
-					
-					doc.body.appendChild(tipContainer);
-					
-					lore.global.util.injectScript("content/lib/wz_tooltip.js", lore.global.util.getContentWindow(window));
-					
-				}
-				
-				// add tip to the container
-				if (doc.getElementById(uid) == null) {
-					tipContainer.appendChild(obj);
+	/**
+	 * Generate HTML formatted tag list
+	 * @param {Object} annodata The annotation to retrieve the tag information from
+	 * @return {String} HTML formatted tag list
+	 */
+	lore.anno.ui.genTagList = function(annodata){
+		var bodyText = "";
+		if (annodata.tags) {
+			bodyText += '<span style="font-size:smaller;color:#51666b">Tags: ';
+			var tagarray = annodata.tags.split(',');
+			for (var ti = 0; ti < tagarray.length; ti++) {
+				var thetag = tagarray[ti];
+				if (thetag.indexOf('http://') == 0) {
+					try {
+						var tagname = thetag;
+						Ext.getCmp('tagselector').store.findBy(function(rec){
+							if (rec.data.id == thetag) {
+								tagname = rec.data.name;
+							}
+						});
+						bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
+					} 
+					catch (e) {
+						lore.debug.anno("unable to find tag name for " + thetag, e);
+					}
 				}
 				else {
-					tipContainer.replaceChild(obj, doc.getElementById(uid));
+					bodyText += thetag + ", ";
 				}
-				
-				// set events via DOM so that events are handled in the context of the content window
-				// and not the extension
-				if ( domContainer.length  && domContainer.length > 0) {
-					var domContainer = domContainer[0];
-				}
-				domContainer.setAttribute("onmouseover", "TagToTip('" + uid +
-				"',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', " +
-				"BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" +
-				annodata.title.replace(/'/g, '&apos;') +
-				"');");
-				domContainer.setAttribute("onmouseout", "UnTip();");
-			} 
-			catch (ex) {
-				lore.debug.anno("Tip creation failure: " + ex, ex);
 			}
+			bodyText += "</span>";
 		}
+		return bodyText;
+	}
 		
-		/*lore.anno.ui.genPreview = function(annodata){
-			var body = lore.anno.ui.replaceImgTag(lore.global.util.externalizeLinks(annodata.body));
-			body = Components.classes["@mozilla.org/feed-unescapehtml;1"].getService(Components.interfaces.nsIScriptableUnescapeHTML).unescape(body);
+	/**
+	 * Retrieve the annotation title 
+	 * @param {Object} anno The annotation
+	 * @return {String} The annotation titile. The default value is 'Untitled'
+	 */
+	lore.anno.ui.getAnnoTitle = function(anno){
+		var title = anno.title;
+		if (!title || title == '') {
+			title = "Untitled";
+		}
+		return title;
+	}
+	
+	/**
+	 * Generated a pop up for the given annotation and place the HTML into the
+	 * supplied dom container
+	 * @param {Object} annodata	The annotation to create the tip for 
+	 * @param {Object} domContainer An object or an array containing the dom container/s
+	 * to insert the pop up HTML into
+	 */	
+	lore.anno.ui.genTipForAnnotation = function(annodata, domContainer){
+		try {
+			var uid = annodata.id;
+			var obj = document.createElement("span");
+			obj.setAttribute("id", uid);
+			var desc = "<span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
+			" by " +
+			annodata.creator +
+			"</span><br />";
+			desc += lore.anno.ui.genDescription(annodata, true);
+			var d = lore.global.util.longDate(annodata.created, Date);
+			desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span><br />";
+			obj.innerHTML = desc;
 			
-			if (body.length > 67) {
-				body = body.substring(0, 67) + "..."
+			
+			var doc = lore.global.util.getContentWindow(window).document;
+			var tipContainer = doc.getElementById("tipcontainer");
+			
+			// create the tip container and import the script onto the page
+			// if first time a tip is created			
+			if (tipContainer == null) {
+				tipContainer = doc.createElement("div");
+				tipContainer.id = "tipcontainer";
+				tipContainer.style.display = "none";
+				
+				doc.body.appendChild(tipContainer);
+				
+				lore.global.util.injectScript("content/lib/wz_tooltip.js", lore.global.util.getContentWindow(window));
+				
 			}
-			return body;
+			
+			// add tip to the container
+			if (doc.getElementById(uid) == null) {
+				tipContainer.appendChild(obj);
+			}
+			else {
+				tipContainer.replaceChild(obj, doc.getElementById(uid));
+			}
+			
+			// set events via DOM so that events are handled in the context of the content window
+			// and not the extension
+			if ( domContainer.length  && domContainer.length > 0) {
+				var domContainer = domContainer[0];
+			}
+			domContainer.setAttribute("onmouseover", "TagToTip('" + uid +
+			"',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', " +
+			"BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" +
+			annodata.title.replace(/'/g, '&apos;') +
+			"');");
+			domContainer.setAttribute("onmouseout", "UnTip();");
+		} 
+		catch (ex) {
+			lore.debug.anno("Tip creation failure: " + ex, ex);
 		}
+	}
 		
-		lore.anno.ui.replaceImgTag = function(body){
-			// TODO: this is a hacky function, not meant to be kept in this format
-			var ind = 0;
-			while (ind != -1 || ind >= body.length) {
-				var ind = body.indexOf("<", ind);
-				if (ind != -1) {
-					var tmpind = body.indexOf("img", ind);
-					if (tmpind == -1) {
-						ind = body.indexOf("IMG", ind);
-					}
-					else {
-						ind = tmpind;
-					}
-					if (ind != -1) {
-						body = body.substring(0, ind - 1) + " [image attached] " + body.substring(body.indexOf(">", ind) + 1);
-						ind = ind + " [image attached] ".length;
-					}
-				}
-			}
-			return body;
-		}*/
+		/* Timeline Functions */
 		
-		
-		
-		
-		/** Timeline Functions **/
-		
+		/**
+		 * Generate a description for the annotation suitable for display
+		 * in the timeline bubble.
+		 * @param {Object} anno The annotation to generate the description for
+		 * @return {String} A string containing a HTML formatted description of the annotation
+		 */		
 		lore.anno.ui.getTimelineDescription = function(anno){
 			return "<span style='font-size:small;color:#51666b;'>" 
 			// lore.global.util.splitTerm(anno.type).term +
@@ -307,11 +406,16 @@
 			"</span><br/> " +
 			lore.anno.ui.genDescription(anno) +
 			"<br />" +
-			lore.anno.genTagList(anno);
+			lore.anno.ui.genTagList(anno);
 			
 			
 		}
 		
+		/**
+		 * Add an annotation to the timelne
+		 * @param {Object} anno The annotation to add to the timeline
+		 * @param {Object} title The title to give 
+		 */
 		lore.anno.ui.addAnnoToTimeline = function(anno, title){
 				// TODO: need to determine what clumps of annotations are close to each other
 				// and what the threshold should be then, should create a Hotzone so that these
@@ -352,6 +456,10 @@
 			
 		}
 		
+		/**
+		 * Update an annotation in the timeline
+		 * @param {Object} anno Annotation to update
+		 */
 		lore.anno.ui.updateAnnoInTimeline = function(anno){
 			var evt = lore.anno.ui.annoEventSource.getEvent(anno.id);
 			if (evt) {
@@ -362,17 +470,21 @@
 			}
 		}
 		
+		/**
+		 * Refresh the timeline.  If the timeline is not visible then the refresh
+		 * is scheduled to occur the next time the timeline is made visible
+		 */
 		lore.anno.ui.scheduleTimelineLayout = function(){
+			
 			// Timeline needs to be visible to do layout otherwise it goes blank
-			// check if timeline is active tab, if not, do layout on next activation
-			
-			
+			// check if timeline is active tab...
 			var tltab = Ext.getCmp("annotimeline");
 			var activetab = Ext.getCmp("annotationstab").getActiveTab();
 			if (activetab == tltab) {
 				lore.anno.ui.annotimeline.layout();
 			}
 			else {
+				//...if not, do layout on next activation.  Only schedule this once
 				if (!lore.anno.ui.scheduleTimelineLayout.once || lore.anno.ui.scheduleTimelineLayout.once == 0) {
 					lore.anno.ui.scheduleTimelineLayout.once = 1;
 					tltab.on("activate", function(){
@@ -386,7 +498,11 @@
 			}
 		}
 		
-		
+		/**
+		 * Activate the annotation timeline tab and show the annotation
+		 * in the timeline.
+		 * @param {String} annoid The id of the annotation to show
+		 */
 		lore.anno.ui.showAnnoInTimeline = function(annoid){
 			try {
 				Ext.getCmp("annotimeline").on("activate",
@@ -406,34 +522,45 @@
 			}
 		}
 				
-		/** Form Editor Functions */
+		/* Form Editor Functions */
 		
 		/*
 		 Can use for debugging purposes when isDirty() is overzealous on the form
 		 
 		 lore.anno.ui.isDirty = function() {
-		 var dirtyList = [];
-		 lore.anno.ui.form.items.each( function (item, index, length) {
-		 if ( item.isDirty()) {
-		 
-		 dirtyList.push(item.getName());
-		 }
-		 });
-		 
-		 alert("The dirty items are: " + dirtyList.join());
-		 
+			 var dirtyList = [];
+			 lore.anno.ui.form.items.each( function (item, index, length) {
+			 if ( item.isDirty()) {
+			 
+			 dirtyList.push(item.getName());
+			 }
+			 });
+			 
+			 alert("The dirty items are: " + dirtyList.join());
 		 }*/
 		
+		/**
+		 * Reject any changes made to the current annotation
+		 */
 		lore.anno.ui.rejectChanges = function(){
 			lore.anno.ui.curSelAnno.reject();
 		}
 		
+		/**
+		 * Hide the annotation editor
+		 */
 		lore.anno.ui.hideAnnotation = function() {
 			if ( lore.anno.ui.formpanel.isVisible() ) {
 				lore.anno.ui.formpanel.hide();
 				Ext.getCmp("treeview").doLayout();
 			}
 		}
+		
+		/**
+		 * Show the annotation editor. 
+		 * @param {Record} rec  The record containing the annotation to show in the editor
+		 * @param {Boolean} loadOnly (Optional) Load the annotation data into form fields but don't show editor. Defaults to false.
+		 */
 		lore.anno.ui.showAnnotation = function(rec, loadOnly){
 			try {
 				// display contents of context
@@ -522,10 +649,11 @@
 				
 				var val = rec.data.resource;
 				if (rec.data.isReply) {
-					var prec = lore.global.util.findRecordById(lore.anno.annods, rec.data.resource);
+					var prec = lore.global.util.findRecordById(lore.anno.annods, rec.data.about);
+					lore.debug.anno(rec.data.about);
 					val = "'" + prec.data.title + "'";
 					if (!lore.anno.isNewAnnotation(prec)) {
-						val += " ( " + rec.data.resource + " )";
+						val += " ( " + rec.data.about + " )";
 					}
 				}
 				lore.anno.ui.form.setValues([{ id: 'res', value: val }]);
@@ -547,6 +675,11 @@
 			}
 		}
 		
+		/**
+		 * Show/hide a field on a form
+		 * @param {String} fieldName The field name to set the visibility of
+		 * @param {Boolean} hide (Optional)Specify whether to hide the field or not. Defaults to false
+		 */
 		lore.anno.ui.setVisibilityFormField = function(fieldName, hide){
 			var thefield = lore.anno.ui.form.findField(fieldName);
 			if (thefield) {
@@ -566,16 +699,31 @@
 				
 			}
 		}
+		
+		/**
+		 * Hide list of form fields
+		 * @param {Array} fieldNameArr List of fields to hide
+		 */
 		lore.anno.ui.hideFormFields = function(fieldNameArr){
 			for (var i = 0; i < fieldNameArr.length; i++) {
 				lore.anno.ui.setVisibilityFormField(fieldNameArr[i], true);
 			}
 		}
+		
+		/**
+		 * Show list of form fields
+		 * @param {Array} fieldNameArr List of fields to show
+		 */
 		lore.anno.ui.showFormFields = function(fieldNameArr){
 			for (var i = 0; i < fieldNameArr.length; i++) {
 				lore.anno.ui.setVisibilityFormField(fieldNameArr[i], false);
 			}
 		}
+		
+		/**
+		 * Show hide fields depending on whether the current annotation is a variation
+		 * @param {Boolean} variation Specify whether the annotation is variation annotation or not
+		 */
 		lore.anno.ui.setAnnotationFormUI = function(variation){
 		
 			var nonVariationFields = ['res'];
@@ -595,6 +743,11 @@
 			}
 		}
 		
+		/**
+		 * Update the annotation object to use the values from the
+		 * form
+		 * @param {Record} rec The annotation to update
+		 */
 		lore.anno.ui.updateAnnoFromRecord = function(rec){
 		/*	if (!rec.data.isReply) {
 				var resField = lore.anno.ui.form.findField('res');
@@ -610,6 +763,10 @@
 		/** Tree UI Functions */
 
 		
+		/**
+		 * Generate the tree node text
+		 * @param {Object} anno Annotation to generate the node text for
+		 */
 		lore.anno.ui.genTreeNodeText = function(anno){
 		
 			return lore.anno.ui.genDescription(lore.anno.getAnnoData(anno.id).data, true);
@@ -617,8 +774,26 @@
 		}
 		
 				
+		
+		/**
+		 * Create a tree node and insert into the tree. If it's a new annotation then set
+		 * inital values.  If it's not a new annotation, add it to the timeline. 
+		 * @param {Object} anno  Annotation to add as a tree node
+		 * @param {Object} defparent (Optional) The default parent to add the annotation to
+		 */
 		lore.anno.ui.createAndInsertTreeNode = function(anno, defparent){
-			var parent = defparent ? defparent : lore.anno.ui.treeroot;
+			
+			var parent = null;
+			
+			if ( defparent ) {
+				parent = defparent;
+			}
+		
+			if ( !parent && anno.isReply) {
+				parent = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', anno.about);				
+			} else {
+				parent = lore.anno.ui.treeroot;
+			}
 			
 			var tmpNode;
 			var nodeLinks = [{title: 'View annotation body in a new window',
@@ -629,16 +804,18 @@
 							 	iconCls: 'anno-icon-timeline',
 							 jscript: "lore.anno.ui.showAnnoInTimeline('" + anno.id + "');"}
 							  ];
-							  
+				
+						  
 			if (lore.anno.isNewAnnotation(anno)) {
+				
 				tmpNode = new lore.anno.ui.LOREColumnTreeNode ( {
 					id: anno.id,
 					nodeType: anno.type,
 					title: lore.anno.ui.getAnnoTitle(anno),
-					text: '',
+					text: anno.body || '',
 					iconCls: 'anno-icon',
 					uiProvider: lore.anno.ui.LOREColumnTreeNodeUI,
-					links: nodeLinks,
+					// links: nodeLinks,
 					qtip:  lore.anno.ui.genAnnotationCaption(anno, 't by c, d')
 				});
 				
@@ -666,11 +843,6 @@
 				
 				tmpNode = new lore.anno.ui.LOREColumnTreeNode (args );
 				
-				if (anno.about) { // reply
-					parent = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', anno.about);
-					
-				}
-				
 				parent.appendChild(tmpNode);
   			    lore.anno.ui.addAnnoToTimeline(anno, lore.anno.ui.getAnnoTitle(anno));
 				
@@ -681,6 +853,10 @@
 			
 		}
 		
+		/**
+		 * Attach context menu events to a tree node
+		 * @param {TreeNode} annoNode  The tree node to attach the events to
+		 */
 		lore.anno.ui.attachAnnoCtxMenuEvents = function(annoNode){
 			 annoNode.on('contextmenu', function(node, ev){
 			 	node.select();
@@ -744,7 +920,14 @@
 	 	});
 	 }
 	
-		
+	
+	/**
+	 * Generate a description for an annotation
+	 * @param {Object} annodata The annotation to generate the description for 
+	 * @param {Object} noimglink (Optional) If true, specifies that a link to a new window containing the 
+	 * annotation body will not be generated in the description
+	 * @return {String} A string containing the annotation description. The string may contain HTML.
+	 */	
 	lore.anno.ui.genDescription = function(annodata, noimglink){
 			var res = "";
 			if (!noimglink) {
@@ -761,10 +944,14 @@
 			return res;
 		}
 		
+		/*
+	 	* Highlighting functions
+	 	*
+	 	*/
+		
 		/**
-	 * Highlighting functions
-	 *
-	 */
+		 * Hide the currently selected annotation markers
+		 */
 		lore.anno.ui.hideMarker = function(){
 			try {
 				if (lore.anno.ui.curAnnoMarkers) {
@@ -779,6 +966,10 @@
 			}
 		}
 		
+		/**
+		 * 'Hide' a selection given the an array of dom nodes
+		 * @param {Array} domObjs dom nodes that contain the selections
+		 */
 		lore.anno.ui.hideMarkerFromXP = function(domObjs){
 			if (domObjs) {
 				for (var i = 0; i < domObjs.length; i++) {
@@ -788,6 +979,13 @@
 			}
 		}
 		
+		/**
+		 * Get a colour based of the creator name.  This is retrieve from a predefined
+		 * table of colours.  If there a no colours available from the table, then a
+		 * colour is generated.
+		 * @param {String} creator Creator name
+		 * @return {String} A hexadecimal colour value of the form #RRGGBB 
+		 */
 		lore.anno.ui.getCreatorColour = function(creator){
 			creator = creator.replace(/\s+$/, ""); //rtrim
 			var colour = lore.anno.ui.colourForOwner[creator];
@@ -804,6 +1002,17 @@
 			return colour;
 		}
 		
+		/**
+		 * Highlight text on the supplied content window given an xpointer describing the location of the
+		 * selection
+		 * @param {String} currentCtxt	The xpath for the selection	
+		 * @param {String} colour	The highlighting colour to use
+		 * @param {Function} extraStyle	A callback that is called once the selection has been created. 
+		 * A parameter is passed supplying the dom node that contains the selection
+		 * @param {Object} contentWindow (Optional) The content window to apply the selection to. The xpath
+		 * must be valid in this window's document.
+		 * @return {Array} An array of dom nodes that house the selected text 
+		 */
 		lore.anno.ui.highlightXPointer = function(currentCtxt, colour, extraStyle, contentWindow){
 			if (currentCtxt) {
 				var idx, marker = null;
@@ -833,13 +1042,15 @@
 		}
 		
 
-	/**
+	/*
 	 * Handlers
 	 */
-		/** 
-	 * Create a new annotation which
-	 * @param {} annoid
-	 */
+		
+		/**
+		 * Retrieve the currently selected text and, create a new annotation in
+		 * the local store
+		 * @param {Record} rec (Optional) The parent annotation record. Defaults to null
+		 */
 		lore.anno.ui.handleAddAnnotation = function(rec){
 			try {
 				var currentContext = "";
@@ -865,8 +1076,8 @@
 		}
 		
 		/**
-	 * Highlight all annotations on the current page
-	 */
+	 	* Highlight all annotations on the current page
+	 	*/
 		lore.anno.ui.showAllAnnotations = function(){
 		
 			if (lore.anno.ui.multiSelAnno.length == 0) {
@@ -920,6 +1131,9 @@
 			}
 		}
 		
+		/**
+		 * Reset all changes made to annotation
+		 */
 		lore.anno.ui.handleCancelAnnotationEdit = function(){
 			// reset all annotation form items to empty
 			lore.anno.ui.form.items.each(function(item, index, len){
@@ -931,6 +1145,9 @@
 			}
 		}
 		
+		/**
+		 * Save all annotation changes
+		 */		
 		lore.anno.ui.handleSaveAllAnnotationChanges = function(){
 			try {
 				
@@ -972,6 +1189,9 @@
 			}
 		}
 		
+		/**
+		 * Save the currently selected annotation
+		 */
 		lore.anno.ui.handleSaveAnnotationChanges = function(){
 		
 			try {
@@ -984,7 +1204,7 @@
 				}
 				
 				// update existing annotation
-				if (!lore.anno.ui.form.isDirty() && !anno.dirty) {
+				if (!lore.anno.isNewAnnotation(anno) && !lore.anno.ui.form.isDirty() && !anno.dirty ) {
 					lore.anno.ui.loreWarning('Annotation content was not modified, save will not occur.');
 					return;
 				}
@@ -996,7 +1216,7 @@
 				
 					if (result == "success") {
 						lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
-						lore.debug.anno(action + 'd ' + anno.data.title, anno);
+						lore.debug.anno(action + 'd ' + anno.data.title, resultMsg);
 					}
 					else {
 						lore.anno.ui.loreError('Unable to ' + action + ' annotation');
@@ -1017,11 +1237,22 @@
 		}
 		
 		
+		/**
+		 * Delete the currently selected annotation
+		 */
 		lore.anno.ui.handleDeleteAnnotation = function (){
 	       if (lore.anno.ui.curSelAnno) {
+		   	
+	       	var msg = 'Are you sure you want to delete this annotation forever?';
+	       	if ( lore.anno.hasChildren(lore.anno.ui.curSelAnno) ) {
+	       		//msg = "Are you sure you want to delete this annotation and its REPLIES forever?";
+				lore.anno.ui.loreError("Delete the replies for this annotation first.");
+				return;
+	       	}
 		   	Ext.MessageBox.show({
+		   	
 		   		title: 'Delete annotation',
-		   		msg: 'Are you sure you want to delete this annotation forever?',
+		   		msg: msg,
 		   		buttons: Ext.MessageBox.YESNO,
 		   		fn: function(btn){
 		   			if (btn == 'yes') 
@@ -1056,6 +1287,11 @@
 			}
 		}
 		
+		/**
+		 * Update the annotation xpath context
+		 * @param {Object} btn Not currently used
+		 * @param {Object} e Not currently used
+		 */
 		lore.anno.ui.handleUpdateAnnotationContext = function(btn, e){
 			try {
 				var currentCtxt = lore.global.util.getXPathForSelection(window);
@@ -1076,6 +1312,11 @@
 				lore.debug.anno("Exception updating anno context", ex);
 			}
 		}
+		/**
+		 * Update the variation annotation xpath context
+		 * @param {Object} btn Not currently used
+		 * @param {Object} e Not currently used
+		 */
 		lore.anno.ui.handleUpdateAnnotationVariantContext = function(btn, e){
 			try {
 				var currentCtxt = lore.global.util.getXPathForSelection(window);
@@ -1091,6 +1332,10 @@
 			}
 		}
 		
+		/**
+		 * Update the form when the annotation type changes
+		 * @param {Combo} combo The Combo field that has changed
+		 */
 		lore.anno.ui.handleAnnotationTypeChange = function(combo){
 		
 			var theVal = combo.getValue();
@@ -1104,12 +1349,21 @@
 			
 		}
 		
+		/**
+		 * Launch field value in a new window
+		 * @param {Field} field Form field to launch in a new window
+		 */
 		lore.anno.ui.launchFieldWindow = function(field){
 			lore.global.util.launchWindow(field.value, true, window);
 		}
 		
 		
 		
+		/**
+		 * Show the variation splitter for the current/supplied annotation
+		 * @param {Record} rec (Optional)The annotation to show in the splitter window. Defaults to currently
+		 * selected annotation
+		 */
 		lore.anno.ui.showSplitter = function (rec) {
 			if (!rec) {
 				rec = lore.anno.ui.curSelAnno;
@@ -1118,6 +1372,12 @@
 			}
 			lore.anno.ui.updateSplitter(rec, true);
 		}
+		
+		/**
+		 * Update the variation splitter for the supplied annotation
+		 * @param {Record} rec The annotation to update in the splitter window. 
+		 * @param {Boolean} show Specifies whether the variation window is to be made visible
+		 */
 		lore.anno.ui.updateSplitter =  function (rec, show) {
 						
 			try {
@@ -1164,7 +1424,15 @@
 			}
 		}
 	
-
+		/**
+		 * Notification function called when a load operation occurs in the store.
+		 * This is called when annotations are loaded in bulk from the server or when
+		 * an individual annotation was added by a user.  Adds one or more nodes to the
+		 * tree
+		 * @param {Store} store The data store that created the notification
+		 * @param {Array} records The list of records that have been added to the store
+		 * @param {Object} options Not used
+		 */
 		lore.anno.ui.updateUI = function(store, records, options){
 			
 			// TODO: Timeline and Editor code should have their own listener functions
@@ -1176,16 +1444,8 @@
 					var rec = records[0];
 					var node;
 					
-					
-					if (rec.data.isReply && rec.data.isReply == true) {
-						var pnode = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', lore.anno.ui.curSelAnno.data.id);
-						node = lore.anno.ui.createAndInsertTreeNode(rec.data, pnode);
-					}
-					else {
-						node = lore.anno.ui.createAndInsertTreeNode(rec.data);
+					node = lore.anno.ui.createAndInsertTreeNode(rec.data);
 						
-					}
-					
 					// update the currently selected annotation before the focus is taken off it
 					// for the newly created annotation
 					if (lore.anno.ui.curSelAnno &&
@@ -1213,7 +1473,6 @@
 						var anno = rec.data;
 						try {
 							lore.anno.ui.createAndInsertTreeNode(anno);
-							
 						} 
 						catch (e) {
 							lore.debug.anno("error loading: " + rec.id, e);
@@ -1232,12 +1491,24 @@
 			}
 		}
 		
+		/**
+		 * Notification function called when a clear operation occurs in the store.
+		 * Clears the tree.
+		 * @param {Store} store The data store that performed the notification
+		 */
 		lore.anno.ui.updateUIOnClear = function(store) {
 			var tree = lore.anno.ui.treeroot.getOwnerTree();
 			lore.anno.ui.treeroot = new Ext.tree.TreeNode({});
 			tree.setRootNode(lore.anno.ui.treeroot);
 		}
 		
+		/**
+		 * Notification function  called when a remove operation occurs in the store.
+		 * Removes a node from the tree and the timeline.
+		 * @param {Store} store The data store that performed the notification
+		 * @param {Record} rec  The record for the annotation that has been removed
+		 * @param {Integer} index Not used
+		 */
 		lore.anno.ui.updateUIOnRemove = function(store, rec, index){
 			try {
 				var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
@@ -1263,6 +1534,13 @@
 			}
 		}
 		
+		/**
+		 * Notification function called when an update operation occurs in the store
+		 * Update the values of a node in tree
+		 * @param {Object} store The datastore that perofmred the notification
+		 * @param {Object} rec The record of the annotation that has changed
+		 * @param {Object} operation The update operation that occurred to the record
+		 */
 		lore.anno.ui.updateUIOnUpdate = function(store, rec, operation){
 			
 			try {
@@ -1288,10 +1566,17 @@
 				if (!lore.anno.isNewAnnotation(rec)) {
 					info = lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
 				}
-				else if (lore.anno.isNewAnnotation(rec) && rec.data.resource != lore.anno.ui.currentURL) {
+				else if (lore.anno.isNewAnnotation(rec)) {
+					var url = rec.data.resource; 
+					if ( rec.data.isReply ) {
+						var recp = lore.global.util.findRecordById(lore.anno.annods, rec.data.resource);
+						if ( recp) url = recp.data.resource;
+					}
+					if ( url != lore.anno.ui.currentURL) {
 					//TODO: Need to change this logic or add an entry for replies that recursively checks
 					// to find the leaf annotation and if that annotation's resource != currentURL
-						info = "Unsaved annotation from " + rec.data.resource;
+						info = "Unsaved annotation from " + url;
+					}
 				}
 				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data));
 				lore.anno.ui.updateAnnoInTimeline(rec.data);
@@ -1304,10 +1589,20 @@
 			}
 		}
 		
+		/**
+		 * Highlight the current annotation 
+		 * @param {Record} rec The record of the annoation to highlight 
+		 */
 		lore.anno.ui.highlightCurrentAnnotation = function(rec){
 			lore.anno.ui.curAnnoMarkers = lore.anno.ui.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
 		}
-		
+	
+		/**
+		 * Highlight an annotation.
+		 * @param {Record} rec The record of the annotation to highlight
+		 * @param {Function} annoStyle a callback which is called once the dom node is created for the selection.
+		 * The dom node is passed in as a parameter to the callback.
+		 */	
 		lore.anno.ui.highlightAnnotation = function(rec, annoStyle) {
 			var cColour = lore.anno.ui.getCreatorColour(rec.data.creator);
 			var markers = [];
@@ -1363,6 +1658,13 @@
 				
 		}
 		
+		/**
+		 * When an annotation is selected in the tree this function is called. The annotation
+		 * is loaded into the form. It is highlighted on the current content window's document and if
+		 * it's a variation annotation the splitter is shown
+		 * @param {Node} node The tree node that was selected
+		 * @param {Object} event Not Used
+		 */
 		lore.anno.ui.handleAnnotationSelection = function(node, event){
 		
 			try {
@@ -1406,6 +1708,11 @@
 			
 		}
 		
+		/**
+		 * Reply to an annotation. Add the reply to the local store. 
+		 * @param {Object} arg (Optional) The parent annotation. A string containing the annotation id or if not supplied defaults
+		 * to the currently selected annotation
+		 */
 		lore.anno.ui.handleReplyToAnnotation = function(arg){
 			lore.anno.ui.views.activate('treeview');
 			try {
@@ -1425,6 +1732,10 @@
 					return;
 				}
 				
+				if ( lore.anno.isNewAnnotation(rec) ) {
+					lore.anno.ui.loreError("Save the annotation first before replying to it.");
+					return;
+				}
 				lore.anno.ui.handleAddAnnotation(rec);
 			} 
 			catch (e) {
@@ -1432,10 +1743,12 @@
 			}
 		}
 		
+		
 		/**
-	 * Open an annotation in the editor
-	 * @param {} annoid The id of the anotation to open
-	 */
+	 	* Load the annoation in the form editor and show the editor.
+	 	* @param {Object} annoid (Optional) A string or Annotation object supplying the annotation
+	 	* to be editted. Defaults to the currently selected annotation.
+	 	*/
 		lore.anno.ui.handleEditAnnotation = function(arg){
 			lore.anno.ui.views.activate('treeview');
 		
@@ -1476,8 +1789,82 @@
 	}
 
 	/**
-	 * 
-	 * 
+	 * Serialize the annotations on the page into the supplied format to a file.  Opens a save as
+	 * dialog to allow the user to select the file path.
+	 * @param {String} format The format to serialize the annotations into. 'rdf' or 'wordml'.
+	 */
+	lore.anno.ui.handleSerialize = function (format ) {
+		 var fileExtensions = {
+	        "rdf": "xml",
+	        "wordml": "xml",
+	        "foxml": "xml",
+	        "trig": "txt"
+	    }
+		if ( !format) {
+			format = "rdf";
+		}
+		try {
+			if ( lore.anno.ui.curSelAnno) lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.curSelAnno);
+			var fobj = lore.global.util.writeFileWithSaveAs("Export Annotations (for current page) as", fileExtensions[format], 
+												function(){
+													return lore.anno.serialize(format);
+												},window);
+			if ( fobj) lore.anno.ui.loreInfo("Annotations exported to " + fobj.fname);
+		} catch (e ) {
+			lore.debug.anno("Error exporting annotations: " + e, e );
+			lore.anno.ui.loreError("Error exporting annotations: " + e);
+			
+		}
+	}
+	
+	/**
+	 * Import annotations from an xml file in RDF format.  Provides an Open Dialog for the user
+	 * to supply the file path.
+	 */
+	lore.anno.ui.handleImportRDF = function () {
+		
+			var fObj = lore.global.util.loadFileWithOpen("Select Annotations RDF/XML file", {
+				desc: "RDF documents",
+				filter: "*.rdf"
+			}, window);
+			
+			if (fObj) {
+					Ext.MessageBox.show({
+		   	
+		   		title: 'Import and save annotations?',
+		   		msg: "This will import and SAVE the annotations to the server. Do you wish to proceed?",
+		   		buttons: Ext.MessageBox.YESNO,
+		   		fn: function(btn){
+		   			if (btn == 'yes') 
+		   				lore.anno.ui.handleImportRDF2(fObj.data);
+		   		},
+		   		icon: Ext.Msg.QUESTION
+		   	});
+			}
+		
+	}
+	
+	lore.anno.ui.handleImportRDF2 = function(theRDF){
+		try {
+			var output = function(result, resultMsg){
+				if ( result == 'success') {
+					lore.anno.ui.loreInfo("Successfully imported all annotations");		
+				} else if ( result == 'fail') {
+					lore.anno.ui.loreError("Failed to import all annotations: " + resultMsg, resultMsg);
+				}
+			};
+			lore.anno.ui.loreInfo("Importing annotations...");
+			lore.anno.importRDF(theRDF, lore.anno.ui.currentURL, output);
+		} catch(e) {
+			lore.debug.anno("Error importing annotations: " +e, e);
+			lore.anno.ui.loreError("Error importing annotations: " + e );
+		}
+	}
+	
+	/**
+	 * Notifiation function called when a change in location is detected in the currently
+	 * selected tab
+	 * @param {String} contextURL The url the currently selected browser tab is now pointing to    
 	 */
 	lore.anno.ui.handleLocationChange = function(contextURL) {
 		try {

@@ -69,7 +69,7 @@
 #load-rdf{
 	list-style-image: url(chrome://lore/skin/icons/application_put.png);
 }
-#import-export {
+#import-export, #import-export-anno {
 	list-style-image: url(chrome://lore/skin/icons/table_refresh.png);
 }
 #text-mining {
