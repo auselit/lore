@@ -18,54 +18,30 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * @include  "/oaiorebuilder/content/annotations.js"
+ * @include  "/oaiorebuilder/content/uiglobal.js"
+ * @include  "/oaiorebuilder/content/debug.js"
+ * @include  "/oaiorebuilder/content/annotations/annotations_view_init.js"
+ */
+
+/**
+ * Annotations View
+ * @namespace
+ * @name lore.anno.ui
+ */
 // Reference to the Extension
 lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
 		.getInstallLocation(lore.constants.EXTENSION_ID)
 		.getItemLocation(lore.constants.EXTENSION_ID);
 
-	//TODO: This eventually should be a shared function and moved outta here into the model
-	
-	lore.anno.initModel = function ( theURL ) {
-		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
-		new Ext.data.JsonStore({
-									fields: [
-										{name: 'created'}, 
-										{name: 'creator'}, 
-										{name: 'title'}, 
-										{name: 'body'}, 
-										{name: 'modified'}, 
-										{name: 'type'}, 
-										{name: 'lang'},
-                                        {name: 'resource'},
-                                        {name: 'id'},
-                                        {name: 'context'},
-                                        {name: 'isReply'},
-                                        {name: 'bodyURL'},
-                                        {name: 'about'},
-                                        {name: 'original'},
-                                        {name: 'variant'},
-                                        {name: 'originalcontext'},
-                                        {name: 'variantcontext'},
-                                        {name: 'variationagent'},
-                                        {name: 'variationplace'},
-                                        {name: 'variationdate'},
-                                        {name: 'tags'}
-                                        ],
-									data: {}
-								}), theURL);
-		
-	}
-	
-	lore.anno.ui.initModelHandlers = function () {
-		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
-		lore.anno.annods.on( { "update": {fn: lore.anno.ui.updateUIOnUpdate}, 
-							   "load":{fn: lore.anno.ui.updateUI},
-							   "remove":{fn: lore.anno.ui.updateUIOnRemove},
-							   "clear": {fn: lore.anno.ui.updateUIOnClear}
-							   });
-    }
-	
+
+
+	/**
+	 * Initialize the annotations model and view. Registering the view and loading
+	 * the annotations for the current page if the annotations view is visible
+	 */
 	lore.anno.ui.init = function(){
 		try {
 			lore.global.util.setXPointerService(new XPointerService());
@@ -109,6 +85,9 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		}
 	}
 	
+	/**
+	 * Destroy any objects and undo any changes made to the current content window
+	 */
 	lore.anno.ui.uninit = function () {
 		lore.anno.ui.hideMarker(); 
 	}

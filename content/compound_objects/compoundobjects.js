@@ -262,6 +262,7 @@ lore.ore.updateTriG = function (){
 lore.ore.showSlideshow = function (){
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
+	lore.debug.ore("num figures: " + numfigs, allfigures);	
     var sscontents = "";
     var carouselel = Ext.get("trailcarousel");
     try{
@@ -269,7 +270,7 @@ lore.ore.showSlideshow = function (){
     "width": carouselel.getWidth(),
     "height": (carouselel.getHeight() - 29)}; // minus 29 to account for slide nav bar
     sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/slideshow_view.xsl",params,true);
-    carouselel.update(sscontents);
+	carouselel.update(sscontents);
     lore.ore.ui.carousel.reloadMarkup();
     } catch (ex){
         lore.debug.ore("adding slideshow",ex);
@@ -336,33 +337,14 @@ lore.ore.handleSerializeREM = function (format) {
         if (!format) {
             format = "rdf";
         }
-		var nsIFilePicker = Components.interfaces.nsIFilePicker;
-		var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-        fp.defaultExtension = fileExtensions[format];
-        if ("xml" == fp.defaultExtension){
-            fp.appendFilters(nsIFilePicker.filterXML); 
-        } else if ("txt" == fp.defaultExtension){
-            fp.appendFilters(nsIFilePicker.filterText);  
-        } 
-        //else if ("doc" ==  fp.defaultExtension){
-        //    fp.appendFilter("MS Word Documents", "*.doc");    
-        //}
-		fp.appendFilters(nsIFilePicker.filterAll);
-		fp.init(window, "Export Compound Object as", nsIFilePicker.modeSave);
-		var res = fp.show();
-        var therdf = lore.ore.serializeREM(format);
-		if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
-			var thefile = fp.file;
-			var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
-			fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
-			var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
-			converter.init(fostream, "UTF-8", 0, 0);
-			converter.writeString(therdf);
-			converter.close();
-			lore.ore.ui.loreInfo("Compound object saved to " + thefile.path);
-		}
+		var fObj = lore.global.util.writeFileWithSaveAs("Export Compound Object as", fileExtensions[format], 
+												function(){	return lore.ore.serializeREM(format);},window);
+		if ( fObj ) {
+			lore.ore.ui.loreInfo("Successfully saved Compound Object data to " +fObj.fname);
+		}											
 	} catch (e) {
 		lore.debug.ore("Error saving Compound Objects data: " + e,e );
+		lore.ore.ui.loreError("Error saving Compound Object: " + e);
 	}
 }
 lore.ore.serializeREM = function(format) {
@@ -1156,30 +1138,7 @@ lore.ore.graph.addFigure = function(theURL) {
     return fig;
 }
 lore.ore.transformORERDF = function(stylesheetURL, params, serialize){
-
-    var xsltproc = new XSLTProcessor();
-    // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
-    var xhr = new XMLHttpRequest();
-    xhr.overrideMimeType('text/xml');
-    xhr.open("GET", stylesheetURL, false);
-    xhr.send(null);
-    var stylesheetDoc = xhr.responseXML;
-    xsltproc.importStylesheet(stylesheetDoc);
-    for (param in params){
-        xsltproc.setParameter(null,param,params[param]);
-    }
-    xsltproc.setParameter(null, "indent", "yes");
-    // get the compound object xml
-    var theRDF = lore.ore.createRDF(false);
-    var parser = new DOMParser();
-    var rdfDoc = parser.parseFromString(theRDF, "text/xml");
-    var resultFrag = xsltproc.transformToFragment(rdfDoc, document);
-    if (serialize){
-         var serializer = new XMLSerializer();
-         return serializer.serializeToString(resultFrag);
-    } else {
-        return resultFrag
-    }
+	 return lore.global.util.transformRDF(stylesheetURL, lore.ore.createRDF(false), params, window, serialize)
 }
 /**
  * Use XSLT to generate a smil file from the compound object, plus create an

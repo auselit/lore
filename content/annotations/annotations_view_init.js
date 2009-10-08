@@ -1,13 +1,45 @@
+/*
+ * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-/** Class definitions **/
+/*
+ * @include  "/oaiorebuilder/content/annotations/init.js"
+ * @include  "/oaiorebuilder/content/util.js"
+ */
 
-		/**  Tree UI Class Definitions
+/** 
+ * Annotations View
+ * @namespace
+ * @name lore.anno.ui
+ */
+
+/* Class definitions */
+
+		/*  Tree UI Class Definitions */
   
- 
-		 * @class Ext.ux.tree.ColumnTree
+		/**
+		 * LOREColumnTree 
+		 * Extends a regular Ext Tree Panel adding columns and segregated
+		 * header, body and footer text fields for each tree node
+		 * @class lore.anno.ui.LOREColumnTree
 		 * @extends Ext.tree.TreePanel
-		 * 
-		 * @xtype columntree
+		 * @xtype loretreepanel
 		 */
 		lore.anno.ui.LOREColumnTree = Ext.extend(Ext.tree.TreePanel, {
 		    lines : false,
@@ -84,6 +116,11 @@
 			}
 		});
 
+		/**
+		 * Construct a column tree node
+		 * @constructor
+		 * @param {Object} attributes
+		 */
 		lore.anno.ui.LOREColumnTreeNode = function(attributes){
 		
 			this.title = attributes.title || '';
@@ -95,6 +132,12 @@
 			lore.anno.ui.LOREColumnTreeNode.superclass.constructor.call(this, attributes);
 		}
     
+		/**
+		 * LOREColumnTreeNode extends regular treenode and provides
+		 * separate fields for title, header, body, and footer information per node
+		 * @class lore.anno.ui.LOREColumnTreeNode
+		 * @extends Ext.tree.TreeNode
+		 */
 		Ext.extend(lore.anno.ui.LOREColumnTreeNode, Ext.tree.TreeNode, {
 			
 			setText: function(_title,bh,bf,_text) {
@@ -137,6 +180,12 @@
 		});
 		
 		
+		/**
+		 * Extends regular TreeNodeUI by supporting columns and more text fields
+		 * per node
+		 * @class lore.anno.ui.LOREColumnTreeNodeUI
+		 * @extends Ext.tree.TreeNodeUI
+		 */
 		lore.anno.ui.LOREColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 			// private
 			
@@ -228,11 +277,12 @@
 
 Ext.reg('loretreepanel', lore.anno.ui.LOREColumnTree);
 
-/**	 Timeline UI Definitions
-	 * Replaces default function for generating contents of timeline bubbles
-	 * @param {} elmt
-	 * @param {} theme
-	 * @param {} labeller
+/*	 Timeline UI Definitions */
+
+/**  Replaces default function for generating contents of timeline bubbles
+	 * @param {Object} elmt  dom node that the timeline bubble will be inserted into
+	 * @param {Object} theme See timeline documentation
+	 * @param {Object} labeller See timeline documentation
 	 */
 if (typeof Timeline !== "undefined") {
 		Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function(elmt, theme, labeller){
@@ -298,6 +348,10 @@ if (typeof Timeline !== "undefined") {
 		};
 };
 
+/**
+ * Helper function for construction the "Using Annotations" tab
+ * @private
+ */
 loreuiannoabout = function () { 
 	return {
 				title: "Using Annotations",
@@ -307,6 +361,11 @@ loreuiannoabout = function () {
 				iconCls: "welcome-icon"};
 }
 
+/**
+ * Helper function for construting 'Annotationg Editor' panel
+ * @private
+ * @param {Object} model The datastore for the model
+ */
 loreuieditor = function (model ) {
 	
 	return {
@@ -553,6 +612,11 @@ loreuieditor = function (model ) {
 				};
 }
 
+/**
+ * Helper function for constructing the panel that contains the annotation tree view and editor
+ * @private
+ * @param {Object} model The datastore for the model
+ */
 loreuiannotreeandeditor = function (model) {
 	return {
 			title: "Tree",
@@ -592,7 +656,13 @@ loreuiannotreeandeditor = function (model) {
 				loreuieditor(model)]
 			};
 }
-			
+
+/**
+ * 
+ * Helper function that constructs the 'Timeline' panel
+ * @private
+ * @param {Object} model The datastore for the model
+ */
 loreuiannotimeline = function (model)
 {
 	return {
@@ -601,7 +671,11 @@ loreuiannotimeline = function (model)
 		id: "annotimeline"
 	}
 }
-	
+
+/**
+ * Construct the Ext based GUI and initialize and show the components
+ * @param {Object} model The datastore for the model
+ */	
 lore.anno.ui.initGUI = function(model){
 	lore.debug.ui("initGUI: model " + model, model);
 	if (!model) {
@@ -652,11 +726,36 @@ lore.anno.ui.initGUI = function(model){
 	}
 }
 
+/**
+ * Initialize the Ext Components. Sets globals, visibility of fields
+ * and initialize handlers
+ */
 lore.anno.ui.initExtComponents = function(){
 	try {
 		
 		lore.anno.ui.abouttab = Ext.getCmp("about");
 		lore.anno.ui.views = Ext.getCmp("annotationstab");
+		lore.anno.ui.views.contextmenu = new Ext.menu.Menu({
+				id : "anno-context-menu"
+		});
+		lore.anno.ui.views.contextmenu.add({
+		        text : "Show RDF/XML",
+        		handler : function (){try {
+            		lore.anno.ui.openView("remrdfview","RDF/XML",
+					function(){
+							Ext.getCmp("remrdfview").body.update(lore.global.util.escapeHTML(lore.anno.serialize("rdf")));
+						
+					}	);
+					} 
+						catch (e) {
+							lore.debug.anno("Error generating RDF view: " + e, e);	
+						}
+        	}
+    	});
+		lore.anno.ui.views.on("contextmenu", function(tabpanel, tab, e){
+        	lore.anno.ui.views.contextmenu.showAt(e.xy);
+    	});
+
 		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
 		lore.global.ui.clearTree(annosourcestreeroot);
 		lore.anno.ui.treeroot = annosourcestreeroot; 
@@ -751,8 +850,12 @@ lore.anno.ui.initTimeline = function() {
     }
 }
 
-	
-	lore.anno.ui.disableUIFeatures = function(opts) {
+
+/**
+ * Disable or enable the annotations view
+ * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations
+ */	
+lore.anno.ui.disableUIFeatures = function(opts) {
     // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
     lore.debug.ui("LORE Annotations: disable ui features?", opts);
     lore.anno.ui.disabled = opts;
