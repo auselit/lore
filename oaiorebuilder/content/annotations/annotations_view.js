@@ -1813,7 +1813,6 @@
 		} catch (e ) {
 			lore.debug.anno("Error exporting annotations: " + e, e );
 			lore.anno.ui.loreError("Error exporting annotations: " + e);
-			
 		}
 	}
 	

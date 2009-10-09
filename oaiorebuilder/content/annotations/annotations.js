@@ -485,19 +485,22 @@
 			var existsInBackend = !lore.anno.isNewAnnotation(anno);
 			if (anno.data.isReply) {
 				var parent = lore.global.util.findRecordById(lore.anno.annods, anno.data.about);
+				if (parent.data.replies) {
 				var ind = -1;
-				for( var i=0;i< parent.data.replies.length;i++) {
-					if ( parent.data.replies[i] == anno.data.id ) {
-						ind = i;
-						break;
+				
+					for (var i = 0; i < parent.data.replies.length; i++) {
+						if (parent.data.replies[i] == anno.data.id) {
+							ind = i;
+							break;
+						}
 					}
-				}
-				if (ind != -1) {
-					parent.data.replies.splice(ind, 1);
-					lore.anno.annods.fireEvent("update", lore.anno.annods, parent, Ext.data.Record.EDIT);
-				}
-				else {
-					lore.debug.anno("Couldn't find reply annotation to remove from parent replies list: " + anno.id);
+					if (ind != -1) {
+						parent.data.replies.splice(ind, 1);
+						lore.anno.annods.fireEvent("update", lore.anno.annods, parent, Ext.data.Record.EDIT);
+					}
+					else {
+						lore.debug.anno("Couldn't find reply annotation to remove from parent replies list: " + anno.id);
+					}
 				}
 			}		
 			
@@ -961,11 +964,34 @@
 											params, window, serialize) 
 	}
 	
-	/** Generate a Word document from the top-level, non-variation annotations on the page 
+	/** Generate a Word document from the top-level, non-variation annotations on the page
+	 * @param domNode HTML node to serialize
+	 
 	 * @return {String} The annotated page returned as String containing WordML XML.
 	 */
-	lore.anno.createAnnoWord = function(){
-		return lore.anno.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
+	lore.anno.createAnnoWord = function(domNode){
+		var serializer= new XMLSerializer();
+		
+		// attach a span in the location of the highlight for each annotation
+		// santize
+		// go through and search replace, adding the rdf
+		// stylesheet transform
+		
+		//TODO: do as the comments say above, this code is for testing out the stylesheet transform
+		// logic, as it supplied a stream with RDF & HTML.
+		var annos = lore.anno.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
+																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
+		var theRDF = lore.anno.createAnnotationRDF(annos, true);
+
+		 //santize HTML
+		var html = serializer.serializeToString(domNode);
+		html = lore.global.util.sanitizeHTML(html, window);
+		html = theRDF + "\n" + html;
+		
+		lore.global.util.writeFile(html, "c:\\", "blah2.txt", window);
+		//return lore.anno.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
+				
+		return lore.global.util.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", html, {}, window, true) 
 	}
 	
 	/**
@@ -976,7 +1002,7 @@
 	lore.anno.serialize = function ( format) {
 		lore.debug.anno("serialize format: " + format);
 		if ( format == 'wordml') {
-			return lore.anno.createAnnoWord();
+			return lore.anno.createAnnoWord( lore.global.util.getContentWindow(window).document.body, true);
 		} else if ( format == 'rdf') {
 			return lore.anno.createAnnotationRDF(lore.anno.annods.getRange(), true);
 		} else {

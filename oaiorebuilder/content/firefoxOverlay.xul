@@ -43,7 +43,7 @@
 		          <xul:toolbarbutton type="menu" id="import-export-anno" tooltip="&lore.saveMoreTip;">
                 	<xul:menupopup>
 	                    <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeAnnotations('rdf')"/>
-    	             <!--   <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/> -->
+    	                <!-- <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/>--> 
     	                <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadAnnoRDF()"/>
                 	</xul:menupopup>
           		 </xul:toolbarbutton>
