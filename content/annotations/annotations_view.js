@@ -257,9 +257,11 @@
 				case 'r':
 					var replies = "";
 					if ( anno.replies) {
-						var numreplies = lore.anno.calcNumReplies(anno);
-						if (numreplies > 0) {
-							replies = " (" + numreplies + (numreplies == 1 ? " reply" : " replies") + ")";
+						//var numreplies = lore.anno.calcNumReplies(anno);
+						var n =anno.replies.count; 
+						//if (numreplies > 0) {
+						if ( n > 0 ){
+							replies = " (" + n + (n == 1 ? " reply" : " replies") + ")";
 						}
 					}
 					buf += replies;
