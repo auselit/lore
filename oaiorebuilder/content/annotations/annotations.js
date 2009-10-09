@@ -67,6 +67,56 @@
 									data: {}
 								}), theURL);
 		
+		 lore.anno.annods.on("load",  lore.anno.onDSLoad);
+		 lore.anno.annods.on("remove", lore.anno.onDSRemove);
+	}
+	
+	lore.anno.onDSLoad = function(store, records, options) {
+		for( var i =0; i < records.length;i++) {
+			
+				var incParentReplies = function(rec, countonly){
+					if ( !rec.data.isReply  ) 
+						return;
+					var prec = lore.global.util.findRecordById(store, rec.data.about);
+					
+					if ( !prec) {
+						lore.debug.anno("Couldn't find parent to update replies list. Bad");
+						return;
+					}
+					
+					if (!countonly) {
+						prec.data.replies.map[rec.data.id] = rec;
+						prec.data.replies.localcount++;
+					}
+					prec.data.replies.count++;
+					store.fireEvent("update", store, prec, Ext.data.Record.EDIT);
+					incParentReplies(prec, true);
+				};
+			
+			incParentReplies(records[i]);
+			records[i].data.replies = { count:0, localcount:0, map:{}};
+		}
+	}
+	
+	lore.anno.onDSRemove = function(store, record, index){
+			
+			var decParentReplies = function (rec, countonly) {
+				if ( !rec.data.isReply)
+					return;
+				
+				var prec = lore.global.util.findRecordById(store, rec.data.about);
+				
+				if (!countonly) {
+					prec.data.replies.map[rec.data.id] = null;
+					prec.data.replies.localcount--;
+				}
+				prec.data.replies.count--;
+				
+				store.fireEvent("update", store, prec, Ext.data.Record.EDIT);
+				decParentReplies(prec, true);
+				
+			};
+			decParentReplies(record);
 	}
 	
 /**
@@ -293,25 +343,8 @@
 	 */
 	lore.anno.hasChildren = function (anno) {
 		var a = anno.data || anno;
-		return a.replies && a.replies.length >0;
+		return a.replies && a.replies.count >0;
 	}
-	
-	/**
-	 * Calculate the number of replies recursively for an annotation
-	 * @param {Object} anno The annotation to test against
-	 * @return {Integer} Number of replies the annotation. If none, zero is returned
-	 */
-	lore.anno.calcNumReplies = function (anno) {
-		if ( anno.replies) {
-			var num = anno.replies.length;
-			for (var i=0;i<anno.replies;i++) {
-				num += lore.anno.calcNumReplies(lore.global.util.findRecordById(lore.anno.annods, data.replies[i]).data);
-			}
-			return num;
-		} else {
-			return 0;
-		}
-	}  
 	
 	/**
 	 * Generate an annotation id for a new annotation
@@ -346,13 +379,6 @@
 			lang: "en",
 			isReply: (parent ? true: null)
 		};
-		if (parent) {
-			if ( !parent.data.replies ) {
-				parent.data.replies = [];
-			}
-			parent.data.replies.push(anno.id);
-			lore.anno.annods.fireEvent("update", lore.anno.annods, parent, Ext.data.Record.EDIT);
-		}
 		
 		lore.anno.annods.loadData([anno], true);
 		
@@ -483,26 +509,6 @@
 			}
 			
 			var existsInBackend = !lore.anno.isNewAnnotation(anno);
-			if (anno.data.isReply) {
-				var parent = lore.global.util.findRecordById(lore.anno.annods, anno.data.about);
-				if (parent.data.replies) {
-				var ind = -1;
-				
-					for (var i = 0; i < parent.data.replies.length; i++) {
-						if (parent.data.replies[i] == anno.data.id) {
-							ind = i;
-							break;
-						}
-					}
-					if (ind != -1) {
-						parent.data.replies.splice(ind, 1);
-						lore.anno.annods.fireEvent("update", lore.anno.annods, parent, Ext.data.Record.EDIT);
-					}
-					else {
-						lore.debug.anno("Couldn't find reply annotation to remove from parent replies list: " + anno.id);
-					}
-				}
-			}		
 			
 			lore.anno.annods.remove(anno);
 			if (existsInBackend) {
@@ -932,13 +938,7 @@
 				
 				
 				var parent = lore.global.util.findRecordById(lore.anno.annods, replies[0].about);
-				parent.data.replies = [];
 				
-				for (var i = 0; i < replies.length; i++) {
-						
-					parent.data.replies.push(replies[i].id);
-				}
-
 				lore.anno.annods.loadData(replies, true);
 			}
 		} catch (e ) {
@@ -1042,7 +1042,7 @@
 			
 		var createAnno = function (anno) {
 			
-			if ( processed[anno.id] ) // shouldn't need this logic if things work as expected
+			if ( processed[anno.id] ) // shouldn't ever be true if there's no bugs
 				return processed[anno.id];
 				
 			if ( anno.isReply ) {
@@ -1100,7 +1100,7 @@
 		for ( var i =0; i < annotations.length; i++ ) {
 			unprocessed[annotations[i].id] = annotations[i];
 		}
-		lore.anno.annods.suspendEvents(false);
+		//lore.anno.annods.suspendEvents(false);
 		var success = true;
 		try {
 			for (var i = 0; i < annotations.length; i++) {
@@ -1114,12 +1114,11 @@
 		} catch (e) {
 			lore.debug.anno("error occurred during annotations import process: " + e , e);
 		}
-		lore.anno.annods.resumeEvents();
+		//lore.anno.annods.resumeEvents();
+		
 		if ( success) {
 			if (callback) callback('success', 'All annotations imported successfully');
 		}
-		lore.anno.updateAnnotationsSourceList(theurl);
-			
 	}
 	
 
