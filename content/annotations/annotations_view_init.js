@@ -227,15 +227,18 @@
 						linksBuf += "<a title=\"" + n.links[i].title + "\" href=\"#\" onclick=\"" + n.links[i].jscript + "\"><img  src='" + this.emptyIcon + "' class='x-tree-node-icon x-tree-node-inline-icon anno-view " + n.links[i].iconCls + "' /></a><span class='left-spacer4' />";
 				}
 				
+				// Hack to bypass the default tree node model's interception of child node clicks.
+				var txt = n.text.replace(/<A /g,'<A onclick="window.open(this.href);" ');
+				
 				var buf = ['<li class="x-tree-node"><div ext:tree-node-id="', n.id, 
-				'" class="x-tree-node-el x-tree-node-leaf ', a.cls, '" unselectable="off">',
+				'" class="x-tree-node-el x-tree-node-leaf ', a.cls, '" >',
 				 '<div class="x-tree-col" style="width:', c.width-bw,'px;">',
 				 '<span style="padding-left:', (n.getDepth()-1)*16,'" class="x-tree-node-indent"></span>', 
 				 '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />', 
 				 '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon', (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), 
-				 '" unselectable="on" />', 
+				 '" />', 
 				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div class="x-tree-col-div-general">',  n.title, '</div>','<div class="x-tree-node-bheader x-tree-col-div-general">', (n.bheader ?  n.bheader:''),'</div>',
-				'<div class="x-tree-col-text x-tree-col-div-general">', n.text, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter x-tree-col-div-general">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
+				'<div class="x-tree-col-text x-tree-col-div-general">',txt, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter x-tree-col-div-general">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
 				
 				 for(var i = 1, len = cols.length; i < len; i++){
              		c = cols[i];
@@ -856,7 +859,6 @@ lore.anno.ui.initTimeline = function() {
  * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations
  */	
 lore.anno.ui.disableUIFeatures = function(opts) {
-    // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
     lore.debug.ui("LORE Annotations: disable ui features?", opts);
     lore.anno.ui.disabled = opts;
 

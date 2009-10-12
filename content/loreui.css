@@ -365,6 +365,11 @@
 	white-space: normal;
 	width: 100%;
 }
+
+.x-tree-node .x-tree-col-div-general a {
+	-moz-user-select:text !important;
+}
+
 .x-tree-col-text {
     color:#888888;
    

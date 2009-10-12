@@ -105,6 +105,8 @@
 					return;
 				
 				var prec = lore.global.util.findRecordById(store, rec.data.about);
+				if ( !prec)
+					return;
 				
 				if (!countonly) {
 					prec.data.replies.map[rec.data.id] = null;
@@ -895,6 +897,7 @@
 		}
 		
 		lore.anno.annods.each(function(rec) {
+				
 				if ( !lore.anno.isNewAnnotation(rec)) {
 					lore.anno.annods.remove(rec);
 				}
@@ -1049,11 +1052,9 @@
 				// create parents recursively, updating the about reference
 				// to the the new id assigned by the server
 				if (unprocessed[anno.about]) {
-					lore.debug.anno("creating parent first");
 					if (!createAnno(unprocessed[anno.about]))
 						return null;
 				}
-				lore.debug.anno("updating parent reference for " + anno.id, processed[anno.about]);
 				anno.about = processed[anno.about].id;
 			}
 			var annoid = anno.id + '';

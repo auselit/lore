@@ -191,7 +191,7 @@
 					lore.anno.ui.loreError("Failure loading annotations for page.");
 				}
 			});
-			lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
+			lore.anno.ui.loadedURL = lore.anno.ui.currentURL; 
 		}
 	}
 		
@@ -257,9 +257,7 @@
 				case 'r':
 					var replies = "";
 					if ( anno.replies) {
-						//var numreplies = lore.anno.calcNumReplies(anno);
 						var n =anno.replies.count; 
-						//if (numreplies > 0) {
 						if ( n > 0 ){
 							replies = " (" + n + (n == 1 ? " reply" : " replies") + ")";
 						}
@@ -420,7 +418,7 @@
 		 */
 		lore.anno.ui.addAnnoToTimeline = function(anno, title){
 				// TODO: need to determine what clumps of annotations are close to each other
-				// and what the threshold should be then, should create a Hotzone so that these
+				// and what the threshold should be then create a Hotzone so that these
 				// annotations are displayed more evenly
 				
 			if (lore.anno.ui.annoEventSource) {
@@ -1022,7 +1020,7 @@
 					contentWindow = lore.global.util.getContentWindow(window);
 				}
 				
-				//TODO: enable range cache.  it has bug at the moment related to ranges that return multiple ranges
+				//TODO: enable caching of range. It has bug at the moment related to ranges that return multiple ranges
 				var domObjs = lore.global.util.highlightXPointer(currentCtxt, contentWindow.document, true, colour);
 				
 				if (domObjs && extraStyle) {
@@ -1437,8 +1435,6 @@
 		 */
 		lore.anno.ui.updateUI = function(store, records, options){
 			
-			// TODO: Timeline and Editor code should have their own listener functions
-			// instead of being clumped with treeui handler code
 			try {
 				// add
 				if (records.length == 1 && lore.anno.isNewAnnotation(records[0])) {
@@ -1570,13 +1566,7 @@
 				}
 				else if (lore.anno.isNewAnnotation(rec)) {
 					var url = rec.data.resource; 
-					if ( rec.data.isReply ) {
-						var recp = lore.global.util.findRecordById(lore.anno.annods, rec.data.resource);
-						if ( recp) url = recp.data.resource;
-					}
 					if ( url != lore.anno.ui.currentURL) {
-					//TODO: Need to change this logic or add an entry for replies that recursively checks
-					// to find the leaf annotation and if that annotation's resource != currentURL
 						info = "Unsaved annotation from " + url;
 					}
 				}
@@ -1691,7 +1681,7 @@
 					return;
 				}
 				
-				lore.anno.ui.setCurrentAnno(rec);// TODO: eventually have a listener on this to abstract on which gui element was selected
+				lore.anno.ui.setCurrentAnno(rec);
 				 
 				if ( lore.anno.ui.topView.variationContentWindowIsVisible() &&
 					 lore.anno.ui.curSelAnno.data.type== lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {

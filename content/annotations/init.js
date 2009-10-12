@@ -45,7 +45,6 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 	lore.anno.ui.init = function(){
 		try {
 			lore.global.util.setXPointerService(new XPointerService());
-			// TODO: some of this code could be shared in common library
 			
 			lore.anno.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
 			lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;
@@ -58,7 +57,7 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
  			lore.anno.ui.initTimeline();
 
 			lore.global.ui.annotationView.registerView(lore.anno.ui, window.instanceId);
-			// TODO:load preferences, shared code?
+			
 			try{
 				lore.anno.ui.topView.loadAnnotationPrefs();
     		} catch (ex){
@@ -77,8 +76,6 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 				lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
 			}
 			lore.anno.ui.initialized = true;
-									
-			// TODO: the 'view' should call this function						
 			lore.debug.anno("Annotation init");
 		} catch (e ) {
 			lore.debug.ui("Except in anno init ! " + e, e);
