@@ -8,6 +8,7 @@
       <preference id="dccreator_pref" name="extensions.lore.dccreator" type="unichar"/>
       <preference id="disable_anno" name="extensions.lore.disable_annotations" type="bool"/>
       <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
+      <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
     </preferences>
     <label accesskey="&dccreator.accesskey;" control="text_dccreator">&dccreator.label;</label><textbox id="text_dccreator" preference="dccreator_pref"/>
     <groupbox>
@@ -22,6 +23,7 @@
       <preference id="rdfrepos_pref" name="extensions.lore.rdfrepos" type="unichar"/>
       <preference id="typepref" name="extensions.lore.rdfrepostype" type="string"/>
       <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
+      <preference id="filelogging_pref" name="extensions.lore.filelogging" type="bool" />
     </preferences>
     <groupbox>
         <caption label="&anno.label;"/>
@@ -38,6 +40,10 @@
                <radio id="fedora_radio" label="&fedora.label;" value="fedora"/>
           </radiogroup>
         </groupbox>
+    </groupbox>
+    <groupbox>
+    	<caption label="&debug.label;" />
+    	<checkbox label="&filelogging.label;" preference="filelogging_pref" />
     </groupbox>
   </prefpane>
 </prefwindow>

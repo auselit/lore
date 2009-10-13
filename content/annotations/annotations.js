@@ -991,7 +991,7 @@
 		html = lore.global.util.sanitizeHTML(html, window);
 		html = theRDF + "\n" + html;
 		
-		lore.global.util.writeFile(html, "c:\\", "blah2.txt", window);
+		//lore.global.util.writeFile(html, "c:\\", "test.txt", window);
 		//return lore.anno.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
 				
 		return lore.global.util.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", html, {}, window, true) 
