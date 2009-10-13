@@ -236,19 +236,34 @@ util = {
     ******
     (Not currently used)
     */
+	
+	/**
+	 * Retrieve an instance of the nsiLocalFile interface, initializing it with the
+	 * path supplied if it is supplied.
+	 * @param {String} fileBase (optional) File path
+	 * @return {nsiLocalFile} file object
+	 */
+	getFile: function (fileBase) {
+        var file = Components.classes["@mozilla.org/file/local;1"]
+            .createInstance(Components.interfaces.nsILocalFile);
+			if ( fileBase)
+    			file.initWithPath(fileBase);
+		return file;
+	},
+	
     /**
-     * Write file content to fileName in the extensions content folder
-     * @param {} content
-     * @param {} fileName
-     * @return {} The path to the file
+     * Write content to a file 
+     * @param {String} content
+     * @param {nsiLocalFile} file The file to write to
+     * @return {String} The path to the file as a string
      */
-    writeFile : function(content, fileBase, fileName,theWindow){
+    writeFile : function(content, file ,theWindow){
             try {
                 theWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-                var filePath =  fileBase + fileName;
-                var file = Components.classes["@mozilla.org/file/local;1"]
-                    .createInstance(Components.interfaces.nsILocalFile);
-                    file.initWithPath(filePath);
+                //var filePath =  fileBase + fileName;
+               // var file = Components.classes["@mozilla.org/file/local;1"]
+               //     .createInstance(Components.interfaces.nsILocalFile);
+               //     file.initWithPath(filePath);
                 if(!file.exists()) 
                 {
                     file.create( Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 420);
@@ -258,7 +273,8 @@ util = {
                 stream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
                 stream.write(content, content.length);
                 stream.close();
-                return filePath;
+                //return filePath;
+				return file.path;
             } catch (e) {
                 debug.ui("Unable to write to file: " + fileName, e);
                 throw new Error("Unable to write to file" + e.toString());
@@ -851,6 +867,7 @@ util = {
 	    xsltproc.setParameter(null, "indent", "yes");
 	    
 	    var parser = new win.DOMParser();
+		debug.ui("The RDF is: " + theRDF, theRDF);
 	    var rdfDoc = parser.parseFromString(theRDF, "text/xml");
 	    var resultFrag = xsltproc.transformToFragment(rdfDoc, win.document);
 	    if (serialize){
