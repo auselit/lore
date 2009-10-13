@@ -260,10 +260,7 @@ util = {
     writeFile : function(content, file ,theWindow){
             try {
                 theWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-                //var filePath =  fileBase + fileName;
-               // var file = Components.classes["@mozilla.org/file/local;1"]
-               //     .createInstance(Components.interfaces.nsILocalFile);
-               //     file.initWithPath(filePath);
+               
                 if(!file.exists()) 
                 {
                     file.create( Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 420);
@@ -273,7 +270,7 @@ util = {
                 stream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
                 stream.write(content, content.length);
                 stream.close();
-                //return filePath;
+               
 				return file.path;
             } catch (e) {
                 debug.ui("Unable to write to file: " + fileName, e);
