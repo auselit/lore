@@ -22,12 +22,13 @@ var EXPORTED_SYMBOLS = ['util'];
 
 Components.utils.import("resource://lore/constants.js");
 Components.utils.import("resource://lore/debug.js");
+Components.utils.import("resource://lore/lib/nsXPointerService.js");
 
 /**
  * @name lore.global.xps
  * @type XPointerService
  */
-m_xps = null;
+m_xps = new XPointerService(); 
 
 /**
  * General utility functions for I/O, manipulating the DOM, selections etc 
@@ -37,13 +38,6 @@ m_xps = null;
 util = {
     /** @lends lore.global.util */
     
-    /**
-     * Set the Xpointer service used by the util functions
-     * @param {} xps The xpointer service
-     */
-    setXPointerService : function(xps) {
-        m_xps = xps;
-    },
     /**
      * Create a clone of an object
      * @param {} o The object to clone
@@ -195,36 +189,39 @@ util = {
     shortDate : function (adate, dateObj ) {
         return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
     },
-    /**
+  
+    /*
+    (Not currently used)
+     *******
      * Returns a boolean value for determing if the platform is linux
      * @return {boolean} returns true if the platform is linux
-     */
+     *
     isLinux : function() {
         return (navigator.platform.toLowerCase().indexOf('linux') > -1);
     },
     
-    /**
+    /*
      * Returns a boolean value for determing if the platform is mac
      * @return {boolean} returns true if the platform is mac
-     */
+     *
     
     isMac : function() { 
         return (navigator.platform.toLowerCase().indexOf('mac') > -1);
     },
     
-    /**
+    /*
      * Returns a boolean value for determing if the platform is windows
      * @return {boolean} returns true if the platform is windows
-     */
+     *
     
     isWindows : function () {
         return (navigator.platform.toLowerCase().indexOf('win32') > -1);
     },  
     
-    /**
+    /*
      * Return the file separator used by the OS
      * @return {String} file separator
-     */
+     *
     fSeparator : function () {
         if ( util.isWindows() ) {
             return "\\";
@@ -236,7 +233,9 @@ util = {
             return "/";
         }
     },
-        
+    ******
+    (Not currently used)
+    */
     /**
      * Write file content to fileName in the extensions content folder
      * @param {} content

@@ -44,8 +44,7 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 	 */
 	lore.anno.ui.init = function(){
 		try {
-			lore.global.util.setXPointerService(new XPointerService());
-			
+
 			lore.anno.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
 			lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;
 			lore.anno.initModel(lore.anno.ui.currentURL);
