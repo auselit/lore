@@ -32,7 +32,7 @@
 			<seq dur="indefinite">
 				<par id="slideshow" repeatCount="50">
 					<seq>
-						<xsl:apply-templates select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates"/>
+						<xsl:apply-templates select="//rdf:Description[@rdf:about]/ore:aggregates"/>
 					</seq>
 				</par>
 				<!-- create a link to start slideshow again -->
@@ -48,7 +48,7 @@
 	</xsl:template>
 	
 	<!--  display each aggregated resource -->
-	<xsl:template match="rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
+	<xsl:template match="rdf:Description[@rdf:about]/ore:aggregates">
 			<xsl:variable name="aggregates" select="@rdf:resource"/>
 			<par dur="2s">
 			<smilText textFontSize="9px" textFontWeight="bold" region="txt_r">
