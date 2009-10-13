@@ -19,4 +19,5 @@
 <!ENTITY annoserver.label "Annotation Server URL:">
 <!ENTITY disable_anno.label "Disable annotation features">
 <!ENTITY disable_co.label "Disable compound object features">
-
+<!ENTITY debug.label "Debugging" >
+<!ENTITY filelogging.label "Enable logging to file" >

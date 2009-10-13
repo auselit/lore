@@ -93,6 +93,7 @@ try {
 				gBrowser.addProgressListener(this.oreLocationListener, Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
 				this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
 				this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+				this.loadGlobalPrefs();
 				this.prefs.addObserver("", this, false);
 				
 				this.initialized = true;
@@ -108,8 +109,11 @@ try {
 			if (topic != "nsPref:changed") {
 				return;
 			}
+			
+			this.loadGlobalPrefs();
 			this.loadCompoundObjectPrefs();
 			this.loadAnnotationPrefs();
+			
 		},
         /** Tear down code to remove progress listener */
 		uninit: function(){
@@ -263,6 +267,14 @@ try {
         /** Display the preferences window */
 		openOptions: function(){
 			window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
+		},
+		
+		loadGlobalPrefs: function () {
+			try {
+				var logging = this.prefs.getBoolPref("filelogging");
+				lore.debug.enableFileLogger(logging);
+			} catch (ex) {
+			}
 		},
         /** Reload preferences for compound objects and disable/enable the compound objects view depending on prefs */
 		loadCompoundObjectPrefs: function(){

@@ -10,3 +10,4 @@ pref("extensions.lore.DBG_LORE_TEXT_MINING", false);
 pref("extensions.lore.disable_annotations", false);
 pref("extensions.lore.disable_compoundobjects", false);
 pref("extensions.lore.disable_textmining", true);
+pref("extensions.lore.filelogging", false);
