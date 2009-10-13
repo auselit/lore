@@ -55,7 +55,14 @@
  * ***** END LICENSE BLOCK ***** */
 
 
+/*
+ * Modified 13 Oct, 2009 
+ * Add support for module to be loaded via Components.utils.import
+ */
+var EXPORTED_SYMBOLS = ['XPointerService'];
+
 const XPOINTER_SERVICE_VERSION = '0.2.6.a.2';
+
 
 /**
  * nsXPointerService.js
