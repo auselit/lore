@@ -17,7 +17,7 @@
 
 	<xsl:template match="/">
 		<xsl:apply-templates select="//rdf:Description[ore:describes]"/>
-		<xsl:apply-templates select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates"/>
+		<xsl:apply-templates select="//rdf:Description[@rdf:about]/ore:aggregates"/>
 		
 	</xsl:template>
 	
@@ -48,7 +48,7 @@
 	</xsl:template>
 	
 	<!--  display each aggregated resource -->
-	<xsl:template match="rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
+	<xsl:template match="rdf:Description[@rdf:about]/ore:aggregates">
 			<xsl:variable name="about" select="@rdf:resource"/>
 			
 			<xsl:variable name="title" select="//rdf:Description[@rdf:about = $about]/dc:title[1]"/>
