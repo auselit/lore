@@ -188,7 +188,13 @@
 			lore.anno.ui.loreInfo("Loading annotations for " + lore.anno.ui.currentURL);
 			lore.anno.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (result, resultMsg) {
 				if (result == 'fail') {
+                    lore.anno.annods.each(function(rec) {
+	                    if ( !lore.anno.isNewAnnotation(rec)) {
+	                        lore.anno.annods.remove(rec);
+	                    }
+                    });
 					lore.anno.ui.loreError("Failure loading annotations for page.");
+                    
 				}
 			});
 			lore.anno.ui.loadedURL = lore.anno.ui.currentURL; 
@@ -1920,6 +1926,11 @@
 		lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
 		lore.anno.updateAnnotationsSourceList(contextURL, function (result, resultMsg) {
 			if (result == 'fail') {
+                lore.anno.annods.each(function(rec) {
+                    if ( !lore.anno.isNewAnnotation(rec)) {
+                        lore.anno.annods.remove(rec);
+                    }
+                });
 				lore.anno.ui.loreError("Failure loading annotations for page.");
 			}
 		});
