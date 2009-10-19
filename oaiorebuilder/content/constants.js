@@ -35,7 +35,7 @@ constants = {
      * @const */
     NAMESPACES : {
         "dc"      : "http://purl.org/dc/elements/1.1/",
-        "dc10"    : "http://purl.org/dc/elements/1.0/",
+        "dc10"    : "http://purl.org/dc/elements/1.1/",
         "dcterms" : "http://purl.org/dc/terms/",
         "ore"     : "http://www.openarchives.org/ore/terms/",
         "foaf"    : "http://xmlns.com/foaf/0.1/",
