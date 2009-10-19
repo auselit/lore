@@ -134,3 +134,15 @@ draw2d.Workflow.prototype.showLineResizeHandles=function(/*:draw2d.Line*/ figure
     this.resizeHandleEnd.setBackgroundColor(null);
   }
 }
+
+draw2d.Workflow.prototype.onKeyDown=function( /*:int*/ keyCode, /*:boolean*/ ctrl)
+{
+  lore.debug.ore("Workflow onKeyDown " + keyCode,ctrl);
+  if((keyCode==46 || keyCode==8) && this.currentSelection!=null)
+     this.commandStack.execute(this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+  else if(keyCode==90 && ctrl)
+     this.commandStack.undo();
+  else if(keyCode==89 && ctrl)
+     this.commandStack.redo();
+
+}
