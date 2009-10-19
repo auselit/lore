@@ -502,11 +502,11 @@ try {
 				contentBox.setAttribute("collapsed", "false");
 				contentSplitter.setAttribute("collapsed", "false");
 				if ( lore.global.ui.compoundObjectView.loaded(this.instId)) {
-					loreoverlay.coView().show();
+					loreoverlay.coView().onShow();
 				}else {
 					window.setTimeout(function(){
 						lore.debug.ui("Compount Objects: Delayed loreOpen running...");
-						loreoverlay.coView().show();
+						loreoverlay.coView().onShow();
 					}, 2000);
 					
 				}
@@ -514,11 +514,11 @@ try {
 				contentBox.setAttribute("collapsed", "true");
 				contentSplitter.setAttribute("collapsed", "true");
 				if ( lore.global.ui.compoundObjectView.loaded(this.instId)) {
-					loreoverlay.coView().hide();
+					loreoverlay.coView().onHide();
 				} else {
 					window.setTimeout(function(){
 						lore.debug.ui("Compound Objects: Delayed loreClose running...");
-						loreoverlay.coView().hide();
+						loreoverlay.coView().onHide();
 					}, 2000);
 				}
 			}
