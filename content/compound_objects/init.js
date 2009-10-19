@@ -94,42 +94,39 @@ lore.ore.ui.initGraphicalView = function() {
 	lore.ore.ui.oreviews.activate("drawingarea");
 	
 	lore.ore.graph.lookup = {};
-    lore.ore.currentRDF = {};
+    lore.ore.loadedRDF = {};
 	lore.ore.graph.modified = false;
 	if (lore.ore.graph.Graph) {
-		lore.ore.graph.Graph
-				.getCommandStack()
+		lore.ore.graph.Graph.getCommandStack()
 				.removeCommandStackEventListener(lore.ore.graph.gCommandListener);
-		lore.ore.graph.Graph
-				.removeSelectionListener(lore.ore.graph.gSelectionListener);
+		lore.ore.graph.Graph.removeSelectionListener(lore.ore.graph.gSelectionListener);
 		lore.ore.graph.Graph.clear();
 	} else {
 		lore.ore.graph.Graph = new draw2d.Workflow("drawingarea");
-		lore.ore.graph.Graph.scrollArea = document
-				.getElementById("drawingarea").parentNode;
+		lore.ore.graph.Graph.scrollArea = document.getElementById("drawingarea").parentNode;
 	}
 	lore.ore.graph.gSelectionListener = new lore.ore.graph.SelectionProperties(lore.ore.graph.Graph);
-	lore.ore.graph.Graph
-			.addSelectionListener(lore.ore.graph.gSelectionListener);
+	lore.ore.graph.Graph.addSelectionListener(lore.ore.graph.gSelectionListener);
 	lore.ore.graph.gCommandListener = new lore.ore.graph.CommandListener();
-	lore.ore.graph.Graph.getCommandStack()
-			.addCommandStackEventListener(lore.ore.graph.gCommandListener);
+	lore.ore.graph.Graph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
 	// selectedFigure is last selected figure - updated by
 	// SelectionProperties.js
 	lore.ore.graph.selectedFigure = null;
 	lore.ore.graph.dummylayoutx = lore.ore.NODE_SPACING;
 	lore.ore.graph.dummylayouty = lore.ore.NODE_SPACING;
 }
+
 /**
  * Load the preferences (which will init domain ontology)
  */
-lore.ore.ui.initOntologies = function() {
+lore.ore.ui.loadPreferences = function() {
     try{
 	  lore.ore.ui.topView.loadCompoundObjectPrefs();
     } catch (ex){
         alert(ex + " " + ex.stack);
     }
 }
+
 /**
  * Initialise property grids and set up listeners
  */
@@ -313,7 +310,7 @@ lore.ore.ui.init = function() {
 	lore.ore.ui.loreInfo("Welcome to LORE");
  
 	lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId);  
-	lore.ore.ui.initOntologies();  
+	lore.ore.ui.loadPreferences();  
 	
 	if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != "about:blank"
 			&& lore.ore.ui.currentURL != '' && lore.ore.ui.lorevisible) {          

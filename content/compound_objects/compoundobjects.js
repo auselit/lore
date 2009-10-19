@@ -116,21 +116,66 @@ lore.ore.setDcCreator = function(creator){
     /** The name of the default creator used for dc:creator for annotations and compound objects */
     lore.defaultCreator = creator;
 }
-lore.ore.createCompoundObject = function (){
-    var today = new Date();
-    lore.ore.ui.grid.setSource({
-                "rdf:about" : lore.ore.generateID(),
-                "ore:describes" : "#aggregation",
-                "dc:creator" : lore.defaultCreator,
-                "dcterms:modified" : today,
-                "dcterms:created" : today,
-                "rdf:type" : lore.constants.RESOURCE_MAP,
-                "dc:title" : ""
-    });
-    lore.ore.ui.initGraphicalView();
+
+/**
+ * Checks whether the compound object loaded in the editor has been modified
+ * @return {Boolean} Returns true if the compound object has been modified
+ */
+lore.ore.compoundObjectDirty = function (){
+    var isEmptyObject = function (ob){
+       for(var i in ob){ if(ob.hasOwnProperty(i)){return false;}}
+       return true;
+    };
+    // TODO: implement this method - compare lore.ore.loadedRDF with state of model
+    if (isEmptyObject(lore.ore.loadedRDF)){
+        return false;
+    } else {
+        return true;
+    }
 }
 
-lore.ore.show = function () {
+/** Initialize a new compound object in the editor, prompting first whether to save the current compound object */
+lore.ore.createCompoundObject = function (){
+    var newCO = function (){
+        var today = new Date();
+        lore.ore.ui.grid.setSource({
+                    "rdf:about" : lore.ore.generateID(),
+                    "ore:describes" : "#aggregation",
+                    "dc:creator" : lore.defaultCreator,
+                    "dcterms:modified" : today,
+                    "dcterms:created" : today,
+                    "rdf:type" : lore.constants.RESOURCE_MAP,
+                    "dc:title" : ""
+        });
+        lore.ore.ui.initGraphicalView();
+    };
+    try{
+        // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
+	    if (lore.ore.compoundObjectDirty()){
+	        Ext.Msg.show({
+		        title : 'Save Compound Object?',
+		        buttons : Ext.MessageBox.YESNOCANCEL,
+		        msg : 'Would you like to save the compound object before proceeding?<br><br>Any unsaved changes will be lost if you select "No".',
+		        fn : function(btn) {
+		            if (btn === 'yes') {
+                        // TODO: check that the save completed successfully before calling newCO
+		                lore.ore.saveRDFToRepository();
+		                newCO();  
+		            } else if (btn === 'no') {
+                        newCO();
+                    }
+		        }
+		    });
+        } else {
+            newCO();
+        }
+    } catch (e){
+        lore.debug.ore("Error in createCompoundObject",e);
+    }
+}
+
+/** Actions performed when lore Compound Objects panel is shown */
+lore.ore.onShow = function () {
 	lore.ore.ui.lorevisible = true;	
 	if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != 'about:blank' &&
 		lore.ore.ui.currentURL != '' &&
@@ -139,8 +184,8 @@ lore.ore.show = function () {
 			lore.ore.ui.loadedURL = lore.ore.ui.currentURL;
 		}
 }
-
-lore.ore.hide = function () {
+/** Actions performed when lore Compound Objects panel is hidden */
+lore.ore.onHide = function () {
 	lore.ore.ui.lorevisible = false;
 }
 
@@ -324,14 +369,15 @@ lore.ore.CompObjListing = function(/*Node*/result){
         lore.debug.ore("Unable to process compound object result list", ex);
     }
 }
-
+/** Prompt for location to save serialized compound object and save as file
+ * @param {String} format The format to which to serialize (rdf, wordml, foxml or trig)
+ */
 lore.ore.handleSerializeREM = function (format) {
     var fileExtensions = {
         "rdf": "xml",
         "wordml": "xml",
         "foxml": "xml",
-        "trig": "txt"
-        
+        "trig": "txt"  
     }
 	try {
         if (!format) {
@@ -590,24 +636,23 @@ lore.ore.loadCompoundObject = function (rdf) {
         }
 	    databank.load(rdfDoc);
         /** rdfquery triplestore that stores the original RDF triples that were loaded for a compound object */
-        lore.ore.currentRDF = jQuery.rdf({databank: databank});
+        lore.ore.loadedRDF = jQuery.rdf({databank: databank});
         
         // Display the properties for the compound object
-	    var remQuery = lore.ore.currentRDF.where('?rem rdf:type <' + lore.constants.RESOURCE_MAP + '>');
+	    var remQuery = lore.ore.loadedRDF.where('?rem rdf:type <' + lore.constants.RESOURCE_MAP + '>');
         var remurl, res = remQuery.get(0);
         if (res){
 	       remurl = res.rem.value.toString();
         }  else {
-            lore.ore.ui.loreWarning("Unable to load compound object");
-            lore.debug.ore("no remurl found in RDF",lore.ore.currentRDF);
-            lore.debug.ore("the input rdf was",rdf);
-            
+            lore.ore.ui.loreWarning("No compound object found");
+            lore.debug.ore("no remurl found in RDF",lore.ore.loadedRDF);
+            lore.debug.ore("the input rdf was",rdf); 
         }
 	    var theprops = {
 	        "rdf:about" : remurl,
 	        "ore:describes" : "#aggregation"
 	    };
-        lore.ore.currentRDF.about('<' + remurl + '>')
+        lore.ore.loadedRDF.about('<' + remurl + '>')
             .each(function(){
                 var propurl = this.property.value.toString();
                 var propsplit = lore.global.util.splitTerm(propurl);
@@ -624,7 +669,7 @@ lore.ore.loadCompoundObject = function (rdf) {
          
          
         // create a node figure for each aggregated resource, restoring the layout
-        lore.ore.currentRDF.where('<' + remurl + "#aggregation" + '> ore:aggregates ?url')
+        lore.ore.loadedRDF.where('<' + remurl + "#aggregation" + '> ore:aggregates ?url')
             .optional('?url layout:x ?x')
             .optional('?url layout:y ?y')
             .optional('?url layout:width ?w')
@@ -660,7 +705,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         });
         
         // iterate over all predicates to create node connections and properties
-        lore.ore.currentRDF.where('?subj ?pred ?obj')
+        lore.ore.loadedRDF.where('?subj ?pred ?obj')
             .filter(function(){
                 // filter out the layout properties and predicates about the resource map
                 if (this.pred.value.toString().match(lore.constants.NAMESPACES["layout"]) 
@@ -749,8 +794,8 @@ lore.ore.readRDF = function(rdfURL){
         }); 
 }
 
-lore.ore.attachREMEvents = function(node){
-   
+/** set up listeners for events in the compound objects tree */
+lore.ore.attachREMEvents = function(node){  
     node.on('dblclick', function(node) {
          lore.ore.readRDF(node.attributes.uri);
     });
@@ -766,12 +811,12 @@ lore.ore.attachREMEvents = function(node){
                     lore.ore.readRDF(node.attributes.uri);
                 }
             });
-            /*node.contextmenu.add({
+            node.contextmenu.add({
                 text : "Delete compound object",
                 handler : function(evt) {
-                    
+                    lore.ore.deleteFromRepository(node.attributes.uri,node.text);
                 }
-            });*/
+            });
             node.contextmenu.add({
                 text : "Add as node in compound object editor",
                 handler : function(evt) {
@@ -860,12 +905,17 @@ lore.ore.loadRelationshipsFromOntology = function() {
      
         
 }
+
 /**
  * Delete the compound object from the repository
  */
-lore.ore.deleteFromRepository = function(){
-    var remid = lore.ore.ui.grid.getSource()["rdf:about"];
-    var title = lore.ore.ui.grid.getSource()["dc:title"];
+lore.ore.deleteFromRepository = function(aURI, aTitle){
+    var remid = aURI;
+    var title = aTitle;
+    if (!remid){
+        remid = lore.ore.ui.grid.getSource()["rdf:about"];
+        title = lore.ore.ui.grid.getSource()["dc:title"];
+    }
     Ext.Msg.show({
         title : 'Remove Compound Object',
         buttons : Ext.MessageBox.OKCANCEL,
@@ -879,7 +929,10 @@ lore.ore.deleteFromRepository = function(){
                                         + remid + ">", true);  
                         xmlhttp.onreadystatechange= function(){
                             if (xmlhttp.readyState == 4) {
-                                lore.ore.ui.initGraphicalView();
+                                lore.ore.loadedRDF = {};
+                                lore.ore.currentREM = "";
+                                // TODO: delete from tree
+                                lore.ore.createCompoundObject();
                                 lore.ore.ui.loreInfo("Compound object deleted");
                             }
                         };
@@ -896,6 +949,8 @@ lore.ore.deleteFromRepository = function(){
  */
 lore.ore.saveRDFToRepository = function() {
     // TODO: implement Fedora support
+    // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
+    // update rdfquery to reflect most recent save
     var remid = lore.ore.ui.grid.getSource()["rdf:about"];
     Ext.Msg.show({
         title : 'Save RDF',
@@ -922,6 +977,7 @@ lore.ore.saveRDFToRepository = function() {
                                     lore.debug.ore("ready state change from update",xmlhttp2);
 		                            if (xmlhttp2.readyState == 4) {
 		                                if (xmlhttp2.status == 204) {
+                                            // TODO: add to tree
                                             lore.debug.ore("RDF saved",xmlhttp2);
 		                                    lore.ore.ui.loreInfo(remid + " saved to "
 		                                            + lore.ore.reposURL);
@@ -1137,6 +1193,12 @@ lore.ore.graph.addFigure = function(theURL) {
     }
     return fig;
 }
+/** Transform RDF/XML of the current compound object using XSLT 
+ * @param {String} stylesheetURL The XSLT stylesheet (probably a chrome URI)
+ * @param {object} params Any parameters to pass to the XSLT stylesheet
+ * @param {boolean} serialize True to return the result as a String rather than a Fragment
+ * @return {object} String or Fragment containing result of applying the XSLT
+ */
 lore.ore.transformORERDF = function(stylesheetURL, params, serialize){
 	 return lore.global.util.transformRDF(stylesheetURL, lore.ore.createRDF(false), params, window, serialize)
 }
