@@ -420,3 +420,14 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 	}
 	return menu;
 };
+
+// Override onKeyDown to cater for Macs without delete
+lore.ore.graph.ResourceFigure.prototype.onKeyDown = function (keyCode, ctrl){
+  lore.debug.ore("ResourceFigure onKeyDown " + keyCode,ctrl);
+  // on delete or backspace
+  if(keyCode==46 || keyCode==8){ 
+     this.workflow.getCommandStack().execute(this.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+  }
+  if(ctrl)
+     this.workflow.onKeyDown(keyCode,ctrl);
+};
