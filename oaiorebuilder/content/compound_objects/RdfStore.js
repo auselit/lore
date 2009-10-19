@@ -4,7 +4,7 @@
  *          <p>
  *          Small helper class to wrapper an rdfquery databank as an
  *          Ext.data.Store An RdfStore is automatically configured with a
- *          {@link Ext.data.JsonReader} with three fields (subject, predicate
+ *          Ext.data.JsonReader with three fields (subject, predicate
  *          and object) and listeners to update the rdfquery databank.
  *          </p>
  * @constructor
