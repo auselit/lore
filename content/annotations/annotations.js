@@ -840,7 +840,8 @@
 		
 		// Get annotations for theURL
 		if (lore.anno.annoURL) {
-			var queryURL = lore.anno.annoURL + lore.constants.ANNOTATES + escape(theURL).replace(/%5D/g,'%255d');
+			var queryURL = lore.anno.annoURL + lore.constants.ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
+			lore.debug.anno("Updating annotations with request URL: " + queryURL);
 			
 			Ext.Ajax.request({
 				url: queryURL,

@@ -34,6 +34,15 @@
 	
 	try {
 
+	/*lore.anno.ui.annotationMarker = function(args) {
+		this.type = args.type;
+		this.domNode = args.domNode;
+		
+		if ( this.type == 1) {
+			this.coords = lore.global.util.clone(args.coords);
+		} 
+	}*/
+
 	/*
 	 * Initialization
 	 */
@@ -185,19 +194,8 @@
 		if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' &&
 		lore.anno.ui.currentURL != '' &&
 		(!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
-			lore.anno.ui.loreInfo("Loading annotations for " + lore.anno.ui.currentURL);
-			lore.anno.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (result, resultMsg) {
-				if (result == 'fail') {
-                    lore.anno.annods.each(function(rec) {
-	                    if ( !lore.anno.isNewAnnotation(rec)) {
-	                        lore.anno.annods.remove(rec);
-	                    }
-                    });
-					lore.anno.ui.loreError("Failure loading annotations for page.");
-                    
-				}
-			});
-			lore.anno.ui.loadedURL = lore.anno.ui.currentURL; 
+			lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
+			//lore.anno.ui.loadedURL = lore.anno.ui.currentURL; 
 		}
 	}
 		
@@ -235,7 +233,11 @@
 		lore.anno.ui.hideMarker();
 		lore.anno.ui.curSelAnno = rec;	
 	}
-		
+	
+	lore.anno.ui.getCurrentAnno = function () {
+		return lore.anno.ui.curSelAnno;	
+	}
+	
 	/**
 	 * Generate annotation caption for the given annotation using the formatting
 	 * string
@@ -1008,6 +1010,27 @@
 			return colour;
 		}
 		
+		lore.anno.ui.setCurSelImage = function (img, sel) {
+				
+			lore.anno.ui.curImage = { domNode: img, selection: sel};
+			
+		}
+		
+		lore.anno.ui.getCurSelImage = function () {
+			return lore.anno.ui.curImage;
+		}
+		
+		lore.anno.ui.getCurrentSelection = function(){
+			var selxp = lore.global.util.getXPathForSelection(window);
+			lore.debug.anno("getCurSel: " + selxp + " " + lore.anno.ui.curImage);
+			
+			if ( lore.anno.ui.curImage && lore.global.util.trim(selxp) == '') {
+				return lore.global.util.getXPathForImageSelection(lore.anno.ui.curImage.domNode, lore.anno.ui.curImage.selection);
+			}
+
+			return selxp;	
+		}
+		 
 		/**
 		 * Highlight text on the supplied content window given an xpointer describing the location of the
 		 * selection
@@ -1026,12 +1049,31 @@
 					contentWindow = lore.global.util.getContentWindow(window);
 				}
 				
-				//TODO: enable caching of range. It has bug at the moment related to ranges that return multiple ranges
-				var domObjs = lore.global.util.highlightXPointer(currentCtxt, contentWindow.document, true, colour);
-				
-				if (domObjs && extraStyle) {
-					for (var i = 0; i < domObjs.length; i++) {
-						domObjs[i] = extraStyle(domObjs[i]);
+				var imgRange = lore.global.util.isXPointerImageRange(currentCtxt);
+				if (imgRange) {
+					var xpBits = currentCtxt.substring("xpointer(image-range(".length ).split(',');
+					var xp = "xpointer(" + xpBits[0]+")";
+					// dom node
+					lore.debug.anno("xpointer; " + xp, currentCtxt);
+					var img = lore.global.util.getNodeForXPath(xp, lore.global.util.getContentWindow(window));
+					// co-ordinates
+					var x1 = xpBits[1].substring(1),
+					    y1 = xpBits[2].substring(0,xpBits[2].length-1),
+						x2 = xpBits[3].substring(1),
+						y2 = xpBits[4].substring(0,xpBits[4].length-1);
+					
+					var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
+					lore.debug.anno("new x: " + coords, coords);
+					return img;
+				}
+				else {
+					//TODO: enable caching of range. It has bug at the moment related to ranges that return multiple ranges
+					var domObjs = lore.global.util.highlightXPointer(currentCtxt, contentWindow.document, true, colour);
+					
+					if (domObjs && extraStyle) {
+						for (var i = 0; i < domObjs.length; i++) {
+							domObjs[i] = extraStyle(domObjs[i]);
+						}
 					}
 				}
 				return domObjs;
@@ -1063,7 +1105,7 @@
 				
 				if (!rec) {
 					try {
-						currentContext = lore.global.util.getXPathForSelection(window);
+						currentContext = lore.anno.ui.getCurrentSelection();
 					} 
 					catch (e) {
 						lore.debug.anno("exception creating xpath for new annotation", e);
@@ -1135,6 +1177,14 @@
 				// clear selection info
 				lore.anno.ui.multiSelAnno = new Array();
 			}
+		}
+		
+		lore.anno.ui.handleEndImageSelection = function(img, sel) {
+			if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) 
+				return;
+
+				lore.anno.ui.setCurSelImage(img, sel);
+			 
 		}
 		
 		/**
@@ -1298,9 +1348,11 @@
 		 * @param {Object} btn Not currently used
 		 * @param {Object} e Not currently used
 		 */
-		lore.anno.ui.handleUpdateAnnotationContext = function(btn, e){
+		lore.anno.ui.handleUpdateAnnotationContext = function(){
 			try {
-				var currentCtxt = lore.global.util.getXPathForSelection(window);
+				if (!lore.anno.ui.formpanel.isVisible())
+					 lore.anno.ui.showAnnotation(lore.anno.ui.curSelAnno);
+				var currentCtxt = lore.anno.ui.getCurrentSelection();
 				var theField = lore.anno.ui.form.findField('context');
 				theField.setValue(currentCtxt);
 				theField = lore.anno.ui.form.findField('originalcontext');
@@ -1325,7 +1377,7 @@
 		 */
 		lore.anno.ui.handleUpdateAnnotationVariantContext = function(btn, e){
 			try {
-				var currentCtxt = lore.global.util.getXPathForSelection(window);
+				var currentCtxt = lore.anno.ui.getCurrentSelection();
 				var theField = lore.anno.ui.form.findField('variantcontext');
 				theField.setValue(currentCtxt);
 				theField = lore.anno.ui.form.findField('variant');
@@ -1864,76 +1916,108 @@
 	 * @param {String} contextURL The url the currently selected browser tab is now pointing to    
 	 */
 	lore.anno.ui.handleLocationChange = function(contextURL) {
-		try {
 			var oldurl = lore.anno.ui.currentURL + '';
 			lore.anno.ui.currentURL = contextURL;
 			if (!lore.anno.ui.initialized ||	!lore.anno.ui.lorevisible)
 					return;
 				
+			var initialLoad = oldurl == lore.anno.ui.currentURL;
+						
+			lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
+			
+			if ( !initialLoad ) {
+			try{
+				lore.debug.anno("Setting/Getting cached annotation page data");
+				var update_ds = {
+					multiSelAnno: lore.anno.ui.multiSelAnno.slice(),
+					colourForOwner: lore.global.util.clone(lore.anno.ui.colourForOwner),
+					colourCount: lore.anno.ui.colourCount,
+					curSelAnnoId: lore.anno.ui.curSelAnno ? lore.anno.ui.curSelAnno.data.id:null,
+					curAnnoMarkers: lore.anno.ui.curAnnoMarkers.slice(),
+				};
 				
-			
-			lore.debug.anno("The uri is " + lore.anno.ui.currentURL);
-			lore.debug.ui("Updating annotation source list");
-			
-			var update_ds = {
-				multiSelAnno: lore.anno.ui.multiSelAnno.slice(),
-				colourForOwner: lore.global.util.clone(lore.anno.ui.colourForOwner),
-				colourCount: lore.anno.ui.colourCount,
-				curSelAnnoId: lore.anno.ui.curSelAnno ? lore.anno.ui.curSelAnno.data.id:null,
-				curAnnoMarkers: lore.anno.ui.curAnnoMarkers.slice(),
-			};
-			
-			lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, oldurl);
-			
-			// tag any unsaved new annotations for the new page
-			lore.anno.annods.each(function(rec){
-				if (lore.anno.isNewAnnotation(rec)) {
-					var n = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
-					if ( n) 
-						n.setText(rec.data.title, "Unsaved annotation from " + rec.data.resource, '', lore.anno.ui.genTreeNodeText(rec.data));
-					else {
-						lore.debug.anno("new annotation not found in tree window. This is incorrect. " + rec.data.id );
+				lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, oldurl);
+				
+				// tag any unsaved new annotations for the new page
+				lore.anno.annods.each(function(rec){
+					if (lore.anno.isNewAnnotation(rec)) {
+						var n = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
+						if ( n) 
+							n.setText(rec.data.title, "Unsaved annotation from " + rec.data.resource, '', lore.anno.ui.genTreeNodeText(rec.data));
+						else {
+							lore.debug.anno("new annotation not found in tree window. This is incorrect. " + rec.data.id );
+						}
+					}
+				})
+				
+				if (lore.anno.ui.curSelAnno) {
+					if (!lore.anno.isNewAnnotation(lore.anno.ui.curSelAnno)) {
+						lore.anno.ui.hideAnnotation();
 					}
 				}
-			})
-			
-			if (lore.anno.ui.curSelAnno) {
-				if (!lore.anno.isNewAnnotation(lore.anno.ui.curSelAnno)) {
-					lore.anno.ui.hideAnnotation();
-				}
-			}
-			
-			var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, contextURL);
-			if (ds) {
-				lore.anno.ui.multiSelAnno = ds.multiSelAnno;
-				lore.anno.ui.colourForOwner = ds.colourForOwner;
-				lore.anno.ui.colourCount = ds.colourCount
-				var curSelAnnoId = ds.curSelAnnoId;
-				lore.anno.ui.curAnnoMarkers = ds.curAnnoMarkers;
 				
-				var rec = lore.global.util.findRecordById(lore.anno.annods, curSelAnnoId);
-				if (rec) {
-					lore.anno.ui.curSelAnno = rec;
+				var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, contextURL);
+				if (ds) {
+					lore.anno.ui.multiSelAnno = ds.multiSelAnno;
+					lore.anno.ui.colourForOwner = ds.colourForOwner;
+					lore.anno.ui.colourCount = ds.colourCount
+					var curSelAnnoId = ds.curSelAnnoId;
+					lore.anno.ui.curAnnoMarkers = ds.curAnnoMarkers;
+					
+					var rec = lore.global.util.findRecordById(lore.anno.annods, curSelAnnoId);
+					if (rec) {
+						lore.anno.ui.curSelAnno = rec;
+					}
+				} else {
+					lore.anno.ui.initHighlightData();
 				}
-			} else {
-				lore.anno.ui.initHighlightData();
+				
+			} catch (e ) {
+				lore.debug.anno(e,e);
 			}
 			
-		} catch (e ) {
+		}
+		
+		try {
+			lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
+			lore.anno.updateAnnotationsSourceList(contextURL, function(result, resultMsg){
+				if (result == 'fail') {
+					lore.anno.annods.each(function(rec){
+						if (!lore.anno.isNewAnnotation(rec)) {
+							lore.anno.annods.remove(rec);
+						}
+					});
+					lore.anno.ui.loreError("Failure loading annotations for page.");
+				}
+			});
 			
+			lore.anno.ui.enableImageHighlightingForPage();
+			lore.anno.ui.annoEventSource.clear();
+		} catch(e) {
 			lore.debug.anno(e,e);
 		}
-		lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
-		lore.anno.updateAnnotationsSourceList(contextURL, function (result, resultMsg) {
-			if (result == 'fail') {
-                lore.anno.annods.each(function(rec) {
-                    if ( !lore.anno.isNewAnnotation(rec)) {
-                        lore.anno.annods.remove(rec);
-                    }
-                });
-				lore.anno.ui.loreError("Failure loading annotations for page.");
-			}
-		});
 		lore.anno.ui.loadedURL = contextURL;
-		lore.anno.ui.annoEventSource.clear();
 	}
+	
+
+lore.anno.ui.enableImageHighlightingForPage = function(){
+	try {
+		var doc = lore.global.util.getContentWindow(window).document;
+		
+		lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", lore.global.util.getContentWindow(window));
+		
+		var inst = $('img', doc).imgAreaSelect({
+				onSelectEnd: lore.anno.ui.handleEndImageSelection,
+				onSelectStart: function () { 
+					var selObj = lore.global.util.getContentWindow(window).getSelection();
+					selObj.removeAllRanges();
+				},
+				handles: 'corners',
+				instance: true
+		});
+		lore.debug.anno("image selection enabled for the page");
+	} 
+	catch (e) {
+		lore.debug.anno("error occurred enabling image highlighting: " +e, e);
+	}
+}

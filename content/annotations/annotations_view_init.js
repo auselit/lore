@@ -853,7 +853,6 @@ lore.anno.ui.initTimeline = function() {
     }
 }
 
-
 /**
  * Disable or enable the annotations view
  * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations

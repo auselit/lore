@@ -126,7 +126,7 @@ $.imgAreaSelect = function (img, ctx, options) {
     function adjust() {
         if (!$img.width())
             return;
-		lore.debug.anno('context is ' + context,context);
+		//lore.debug.anno('context is ' + context,context);
         imgOfs = { left: round($img.offset().left), top: round($img.offset().top) };
 
         imgWidth = $img.width();
@@ -151,7 +151,7 @@ $.imgAreaSelect = function (img, ctx, options) {
 
     function update(resetKeyPress) {
         if (!shown) return;
-lore.debug.anno('context is ' + context,context);
+//lore.debug.anno('context is ' + context,context);
         $box.css({ left: viewX(selection.x1), top: viewY(selection.y1) })
             .add($area).width(w = selection.width).height(h = selection.height);
 
@@ -236,7 +236,7 @@ lore.debug.anno('context is ' + context,context);
     }
 
     function docMouseUp(event) {
-        lore.debug.anno('context is ' + context,context);
+     //   lore.debug.anno('context is ' + context,context);
 		$('body',context).css('cursor', '');
 
         if (options.autoHide || selection.width * selection.height == 0)
@@ -432,8 +432,6 @@ lore.debug.anno('context is ' + context,context);
 
     function imgLoad() {
         imgLoaded = true;
-		lore.debug.anno('box: ' + $box, $box);
-		lore.debug.anno('options: ' + options, options);
 		
         $box.add($outer).css({ visibility: '' });
 
@@ -514,7 +512,7 @@ lore.debug.anno('context is ' + context,context);
     }
 
     function setOptions(newOptions) {
-        lore.debug.anno("ctx in setOptions is " + context, context);
+        //lore.debug.anno("ctx in setOptions is " + context, context);
 		if (newOptions.parent)
             ($parent = $(newOptions.parent,context)).append($box.add($outer));
 

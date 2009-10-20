@@ -155,27 +155,6 @@
 		}
 		return ui.genInstanceID.counter;
 	}
-	/**
-     * @param {} srcObj
-     * @param {} name
-     * @return {}
-	 */
-	function createWrapper(srcObj, name, pre, post) {
-			var wrapper = { _real: srcObj, _pre: pre, _post: post};
-			for ( x in srcObj) {
-				if ( typeof(srcObj[x]) == 'function' ) {
-					wrapper[x] = eval('function(){'+
-						// would need to chain argument values for _pre
-						// if (this._pre) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }} 
-						//'debug.ui("' + name + '.' + x + ' args:" + arguments, arguments);' +
-						'return this._real["' + x + '"].apply(this._real,arguments);' +
-						// // if (this._post) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }}
-						// would need to chain return values for _post
-							'}');
-				}
-			}
-			return wrapper;
-	}
 	
 	/**
 	 * UI View 
@@ -193,7 +172,7 @@
 			};
 			
 			this.registerView = function(view, instId){
-				this.views[instId] = createWrapper(view, this.name);
+				this.views[instId] = util.createWrapper(view, this.name);
 			};
 			
 			this.unregisterView = function(view){
