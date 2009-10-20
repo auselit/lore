@@ -63,18 +63,15 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
         		lore.debug.anno("Error loading annotation preferences: " + ex, ex);
     		}
 			
+			lore.anno.ui.initialized = true;
 			if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != '' &&
 				lore.anno.ui.currentURL != 'about:blank' &&
 				lore.anno.ui.lorevisible) {
 				lore.debug.anno("anno init: updating sources");
-				lore.anno.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (result, resultMsg) {
-					if (result == 'fail') {
-						lore.anno.ui.loreError("Failure loading annotations for page.");
-					}
-				});
-				lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
+				lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
+				//lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
 			}
-			lore.anno.ui.initialized = true;
+			
 			lore.debug.anno("Annotation init");
 		} catch (e ) {
 			lore.debug.ui("Except in anno init ! " + e, e);

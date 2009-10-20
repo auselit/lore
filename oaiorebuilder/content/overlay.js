@@ -132,10 +132,36 @@ try {
 		},
         /** Show a context menu in the browser on images, links and background images, for creating nodes in compound object editor */
 		onMenuPopup: function(e){
-			gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
-			gContextMenu.showItem('addlink-lore', gContextMenu.onLink);
-			gContextMenu.showItem('addbgimg-lore', gContextMenu.hasBGImage);
-			gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
+			try {
+				
+				var img = loreoverlay.annoView().getCurSelImage();
+				
+				gContextMenu.showItem('addanno-lore', gContextMenu.isContentSelected
+				|| (gContextMenu.onImage && img));
+				gContextMenu.showItem('modannosel-lore', (gContextMenu.isContentSelected 
+				|| (gContextMenu.onImage && img)) &&
+				(loreoverlay.annoView().getCurrentAnno() != null));
+				
+				gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
+				gContextMenu.showItem('addlink-lore', gContextMenu.onLink);
+				gContextMenu.showItem('addbgimg-lore', gContextMenu.hasBGImage);
+				gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
+			} catch (e ) {
+				lore.debug.ui(e);
+			}
+		},
+		
+		/** Begin selecting a region of the image to highlight for an annotation 
+		 * 
+		 * @param {Object} e
+		 */
+		selImageMenuItemCommand: function(e) {
+			//TODO: Security risk? document.popupNode?
+			try {
+				loreoverlay.annoView().handleBeginImageSelection(document.popupNode);
+			} catch (e ) {
+				lore.debug.ui("image selection failed: " + e, e);
+			}
 		},
         /** Trigger adding a node to the compound object editor from browser context menu on images */ 
 		addImageMenuItemCommand: function(e){
@@ -201,6 +227,12 @@ try {
 			}catch (e ) {
 				alert("addAnnotation: " + e) ;
 			}
+		},
+		updateAnnotationSel: function (type) {
+			if (type == "variation")
+				loreoverlay.annoView().handleUpdateVariationAnnotationContext();
+			else
+				loreoverlay.annoView().handleUpdateAnnotationContext();
 		},
 		/** Annotations Toolbar button handler: Trigger removing an annotation */
 		removeAnnotation: function() {

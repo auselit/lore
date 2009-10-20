@@ -11,6 +11,9 @@
     <xul:stringbundle id="lore-strings" src="chrome://lore/locale/lore.properties"/>
   </xul:stringbundleset>
 
+
+
+    
   <xul:vbox id="appcontent">
  	<xul:tabbrowser id="content" flex="3" orient="horizontal" >
 	 <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" orient="horizontal" collapsed = "true" />
@@ -103,12 +106,18 @@
   
   <xul:popup id="contentAreaContextMenu" onpopupshown="loreoverlay.onMenuPopup(event)">
     <xul:menuseparator id="oaioresep"/>
+	<xul:menuitem id="addanno-lore" label="&loreContextAddAnno.label;"
+	oncommand="loreoverlay.addAnnotation()" />
+	<xul:menuitem id="modannosel-lore" label="&loreContextModAnnoSel.label;"
+	oncommand="loreoverlay.updateAnnotationSel('normal')" />
+    
     <xul:menuitem id="addlink-lore" label="&loreContextLink.label;"
         oncommand="loreoverlay.onMenuItemCommand(event)"/>
     <xul:menuitem id="addimage-lore" label="&loreContextImage.label;"
         oncommand="loreoverlay.addImageMenuItemCommand(event)"/>
     <xul:menuitem id="addbgimg-lore" label="&loreContextBGImage.label;"
         oncommand="loreoverlay.addBGImageMenuItemCommand(event)"/>
+        
   </xul:popup>
   <!--xul:toolbarpalette id="BrowserToolbarPalette">
     <xul:toolbarbutton id="lore-toolbar-button"

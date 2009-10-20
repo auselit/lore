@@ -63,6 +63,33 @@ util = {
         return c;
     },
 	
+	/**
+	 * Dynamically create a wrapper around an object and return
+	 * the wrapper object. The wrapper object currently only
+	 * exposes the original object's functions
+     * @param {Object} srcObj The original object to wrap
+     * @param {String} name Currently not used
+     * @param {Object} pre Currently not used
+     * @param {Object} post Currently not used
+     * @return {}
+	 */
+	createWrapper: function(srcObj, name, pre, post) {
+		var wrapper = { _real: srcObj, _pre: pre, _post: post};
+		for ( x in srcObj) {
+			if ( typeof(srcObj[x]) == 'function' ) {
+				wrapper[x] = eval('function(){'+
+					// would need to chain argument values for _pre
+					// if (this._pre) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }} 
+					//'debug.ui("' + name + '.' + x + ' args:" + arguments, arguments);' +
+					'return this._real["' + x + '"].apply(this._real,arguments);' +
+					// // if (this._post) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }}
+					// would need to chain return values for _post
+						'}');
+			}
+		}
+		return wrapper;
+	},
+	
 	trim : function (str) {
 		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	},
@@ -377,6 +404,15 @@ util = {
         script.innerHTML = buffer;
         doc.getElementsByTagName("head")[0].appendChild(script);   
     },
+	
+	injectCSS : function ( chromefile, win ) {
+		var doc = win.document;
+        var buffer = util.readChromeFile(chromefile, win);
+        var script = doc.createElement("style");
+        script.innerHTML = buffer;
+        doc.getElementsByTagName("head")[0].appendChild(script);   
+	},
+	
     /**
      * Generate random colour and return as hex string
      * If one or more arguments aren't supplied min fields wil default to 0
@@ -421,7 +457,7 @@ util = {
 		// create inital range to end of the start Container
 		// set end offset to end of contents of start node
 		// i.e <div> This [is </div> <p> a lot of </p><p>highli]ghting</p>
-		// it would be 'is '  ( '[' and ']' denote highlighted region)
+		// inital range is 'is ' out the selection ( '[' and ']' denote highlighted region)
 		var w = targetDocument.createRange();
 		
 		w.selectNodeContents(s);
@@ -433,7 +469,7 @@ util = {
 		
 		var container = s.nodeType !=1 ?  n: s;
 		// loop through DOM nodes thats are completely selected 
-		// i.e 'a lot of ' range sel would be created from this
+		// i.e 'a lot of ' range selection would be created from the example
 		var containsEl = function(src, dest) {
 			if ( src == dest) {
 				return true;
@@ -509,7 +545,7 @@ util = {
 		}
 		
 		// create range for end container
-		// i.e 'highli'
+		// i.e 'highli' from example
 		w = targetDocument.createRange();
 		w.selectNodeContents(e);
 		w.setEnd(r.endContainer, r.endOffset);
@@ -528,6 +564,7 @@ util = {
      * @param {} targetDocument The document in which to highlight
      * @param {} scrollToHighlight Boolean indicating whether to scroll
      * @param {} colour highlight colour
+     * @param {Object} xpointer2range cache
      */
     highlightXPointer : function(xpointer, targetDocument, scrollToHighlight, colour, cache) {
        	
@@ -535,6 +572,7 @@ util = {
 		if (cache) {
 			sel = cache[xpointer.toString()];
 		}
+		 
 		if (!sel) {
 			sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
 			if ( cache)
@@ -594,7 +632,7 @@ util = {
      * @return {}
      */
     getNodeForXPath : function(xp, win) {
-        return m_xps.parseXPointerToNode(xp, win);
+        return m_xps.parseXPointerToNode(xp, win.document);
     },
     /**
      * This fn depends on a hacked version of nsXpointerService being loaded by the browser
@@ -623,11 +661,19 @@ util = {
     /**
      * Return an XPath for an image
      */
-    getXPathForImgSelection : function (){
-        //return XPointerCreator.xpointer_wrap('image-range(' + this.create_child_XPointer(node) +
-        //    ',[' + x1 + ',' + y1 + '],[' + x2 + ',' + y2 + '],"' + src + '")');
-    
-    },
+	getXPathForImageSelection : function (domNode, coords ) {
+			//var xp = m_xps.xptrCreator.xpointer_wrap(m_xps.xptrCreator.create_child_XPointer(domNode));
+			var xp = m_xps.xptrCreator.xpointer_wrap("image-range(" + m_xps.xptrCreator.create_child_XPointer(domNode)
+			+ ",[" + coords.x1 + "," + coords.y1 + "],[" + coords.x2 + "," + coords.y2 + "],\"" + domNode.src + "\"");
+			 
+			debug.ui("The Xpointer is: " + xp);
+			return xp;	
+	},
+	
+	isXPointerImageRange: function ( xp) {
+		return xp.indexOf("image-range") != -1;
+	},
+				
     /**
      * Return the text contents of a selection
      * @param {} currentCtxt
@@ -636,7 +682,10 @@ util = {
     getSelectionText : function(currentCtxt, win){
         var selText = "";
         if (currentCtxt){
-            var idx = currentCtxt.indexOf('#');
+            if ( util.isXPointerImageRange(currentCtxt)){
+				return "Image selected: " + currentCtxt.split(',')[5].split('"')[1]; 				
+			}
+			var idx = currentCtxt.indexOf('#');
             var sel = util.getSelectionForXPath(currentCtxt.substring(idx + 1), win);
             selText = sel.toString();
             if (selText){
@@ -864,7 +913,6 @@ util = {
 	    xsltproc.setParameter(null, "indent", "yes");
 	    
 	    var parser = new win.DOMParser();
-		debug.ui("The RDF is: " + theRDF, theRDF);
 	    var rdfDoc = parser.parseFromString(theRDF, "text/xml");
 	    var resultFrag = xsltproc.transformToFragment(rdfDoc, win.document);
 	    if (serialize){
