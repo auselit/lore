@@ -19,9 +19,9 @@
  */
  
 /*
- * @include  "/oaiorebuilder/content/compound_objects/init.js"
- * @include  "/oaiorebuilder/content/util.js"
- * @include "/oaiorebuilder/content/compound_objects/lore_explore.js"
+ * @include  "init.js"
+ * @include  "../util.js"
+ * @include "lore_explore.js"
  */
 
 /** 
@@ -84,7 +84,6 @@ lore.ore.ui.loreInfo = function(/*String*/message) {
  * @param {String} message The message to display
  */
 lore.ore.ui.loreWarning = function(/*String*/message){
-
     lore.ore.ui.status.setStatus({
         'text': message,
         'iconCls': 'warning-icon',
@@ -101,13 +100,15 @@ lore.ore.ui.loreWarning = function(/*String*/message){
  * @param {}rdfrepostype The type of the repository (eg sesame, fedora)
  * @param {}annoserver The annotation server access URL
  */
-lore.ore.setRepos = function(rdfrepos, rdfrepostype){
-	lore.ore.reposURL = rdfrepos; // compound object repository
+lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype){
+    /** The compound object repository access URL */
+	lore.ore.reposURL = rdfrepos;
+    /** The type of the compound object repository eg sesame, fedora */
 	lore.ore.reposType = rdfrepostype; // type of compound object repository
 }
 /**
  * Set the DC Creator for the resource map
- * @param {} creator
+ * @param {String} creator
  */	
 lore.ore.setDcCreator = function(creator){
     var remprops = lore.ore.ui.grid.getSource();
@@ -1050,18 +1051,27 @@ lore.ore.handleLocationChange = function (contextURL) {
  */
 lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
     lore.global.ui.clearTree(lore.ore.ui.remstreeroot);
-	//lore.ore.ui.currentURL = contextURL;
+	
     
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         try {
+            // query for matches of both www and non-www version of URL
             var escapedURL = escape(contextURL);
-            
+            var altURL = "";
+	        if (!contextURL.match("http://www.")){
+	            altURL = escape(contextURL.replace("http://","http://www."));
+	        } else {
+	            altURL = escape(contextURL.replace("http://www.","http://"));
+	        }
             // TODO: Fedora support
             var queryURL = lore.ore.reposURL
 	            + "?queryLn=sparql&query=" 
-	            + "select distinct ?g ?a ?c ?t where { graph ?g {{<" 
-	            + escapedURL + "> ?p ?o .} UNION {?s ?p2 <" 
-	            + escapedURL + ">}} . {?g <http://purl.org/dc/elements/1.1/creator> ?a}"
+	            + "select distinct ?g ?a ?c ?t where { graph ?g {" 
+                + "{<" + escapedURL + "> ?p ?o .} UNION " 
+                + "{?s ?p2 <" + escapedURL + ">} UNION "
+                + "{<" + altURL + "> ?p3 ?o2 .} UNION "
+                + "{?s2 ?p4 <" + altURL + ">}"
+                + "} . {?g <http://purl.org/dc/elements/1.1/creator> ?a}"
 	            + ". {?g <http://purl.org/dc/terms/created> ?c}"
 	            + ". OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
             var req = new XMLHttpRequest();
