@@ -751,25 +751,24 @@ lore.ore.loadCompoundObject = function (rdf) {
 
         lore.ore.ui.loreInfo("Loading compound object");
         lore.ore.currentREM = remurl;
-        
-       if (showInTree){
-         var title = theprops["dc:title"] ? theprops["dc:title"] : "Untitled";
-         var recentNode = new Ext.tree.TreeNode({
-            'text' : title,
-            'id': remurl + 'r',
-            'uri': remurl,
-            'iconCls' : 'oreresult',
-            'leaf' : true
-        });
-        lore.ore.attachREMEvents(recentNode);
-        var childNodes = lore.ore.ui.recenttreeroot.childNodes;
-        if (childNodes.length >= 5) {
-            lore.ore.ui.recenttreeroot
-                .removeChild(lore.ore.ui.recenttreeroot.firstChild);
-        }
-        lore.ore.ui.recenttreeroot.appendChild(recentNode);
+       
+       if (showInTree && !lore.ore.ui.recenttreeroot.findChild('id',remurl + 'r')){
+	        var title = theprops["dc:title"] ? theprops["dc:title"] : "Untitled";
+	        var recentNode = new Ext.tree.TreeNode({
+	            'text' : title,
+	            'id': remurl + 'r',
+	            'uri': remurl,
+	            'iconCls' : 'oreresult',
+	            'leaf' : true
+	        });
+	        lore.ore.attachREMEvents(recentNode);
+	        var childNodes = lore.ore.ui.recenttreeroot.childNodes;
+	        if (childNodes.length >= 5) {
+	            lore.ore.ui.recenttreeroot
+	                .removeChild(lore.ore.ui.recenttreeroot.firstChild);
+	        }
+	        lore.ore.ui.recenttreeroot.appendChild(recentNode);
        }
-    
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
         lore.debug.ore("exception loading RDF from string",e);
