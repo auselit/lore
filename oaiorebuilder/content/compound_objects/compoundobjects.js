@@ -260,8 +260,9 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
         var fig = allfigures.get(i);
         var figurl = lore.global.util.escapeHTML(fig.url);
         var title = fig.metadataproperties["dc:title"];
-        newsummary += "<li>" + (title? title + ": " : "") + "<a target='_blank' href='" 
-            + figurl + "'>&lt;" + figurl + "&gt;</a></li>";
+        newsummary += "<li>" + (title? title + ": " : "") 
+        + "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>&lt;" 
+        + figurl + "&gt;</a></li>";
     }
     newsummary += "</ul></div>";
     summarypanel.body.update(newsummary);
