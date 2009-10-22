@@ -126,7 +126,6 @@ $.imgAreaSelect = function (img, ctx, options) {
     function adjust() {
         if (!$img.width())
             return;
-		//lore.debug.anno('context is ' + context,context);
         imgOfs = { left: round($img.offset().left), top: round($img.offset().top) };
 
         imgWidth = $img.width();
@@ -151,7 +150,6 @@ $.imgAreaSelect = function (img, ctx, options) {
 
     function update(resetKeyPress) {
         if (!shown) return;
-//lore.debug.anno('context is ' + context,context);
         $box.css({ left: viewX(selection.x1), top: viewY(selection.y1) })
             .add($area).width(w = selection.width).height(h = selection.height);
 
@@ -236,7 +234,6 @@ $.imgAreaSelect = function (img, ctx, options) {
     }
 
     function docMouseUp(event) {
-     //   lore.debug.anno('context is ' + context,context);
 		$('body',context).css('cursor', '');
 
         if (options.autoHide || selection.width * selection.height == 0)
@@ -512,7 +509,6 @@ $.imgAreaSelect = function (img, ctx, options) {
     }
 
     function setOptions(newOptions) {
-        //lore.debug.anno("ctx in setOptions is " + context, context);
 		if (newOptions.parent)
             ($parent = $(newOptions.parent,context)).append($box.add($outer));
 
@@ -677,24 +673,31 @@ $.imgAreaSelect = function (img, ctx, options) {
 
 $.fn.imgAreaSelect = function (options) {
     options = options || {};
-	var ctx = this.context;
-	lore.debug.anno("obj is: " + this, this);
+	
+	var instances = [];
 	
 	this.each(function () {
-        if ($(this,this.context).data('imgAreaSelect'))
-            $(this,this.context).data('imgAreaSelect').setOptions(options);
+		var ctx = this.ownerDocument;
+        if ($(this).data('imgAreaSelect'))
+            $(this).data('imgAreaSelect').setOptions(options);
         else {
             if (options.enable === undefined && options.disable === undefined)
                 options.enable = true;
 
-            $(this,this.context).data('imgAreaSelect', new $.imgAreaSelect(this, ctx, options));
+            $(this).data('imgAreaSelect', new $.imgAreaSelect(this, this.ownerDocument, options));
         }
+		
+		instances.push($(this).data('imgAreaSelect'));
     });
 
     if (options.instance)
-        return $(this,this.context).data('imgAreaSelect');
+		return instances;
 
     return this;
 };
+
+$.fn.imgAreaSelectInst = function () {
+	return this.data('imgAreaSelect');
+}
 
 })(jQuery);

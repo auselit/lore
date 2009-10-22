@@ -280,7 +280,7 @@ XPointerCreator.TAB         = 0xA;
 XPointerCreator.prototype.contentDoc = undefined;
 XPointerCreator.prototype.docIsRawHTML = undefined;
 
-XPointerCreator.prototype.xpointer_wrap = function(xptr) { return "xpointer(" + xptr + ")"; }
+XPointerCreator.xpointer_wrap = function(xptr) { return "xpointer(" + xptr + ")"; }
 
 /**
  * Given a DOM Range and the document encompassing it, 

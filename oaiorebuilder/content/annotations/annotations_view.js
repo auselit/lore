@@ -34,15 +34,6 @@
 	
 	try {
 
-	/*lore.anno.ui.annotationMarker = function(args) {
-		this.type = args.type;
-		this.domNode = args.domNode;
-		
-		if ( this.type == 1) {
-			this.coords = lore.global.util.clone(args.coords);
-		} 
-	}*/
-
 	/*
 	 * Initialization
 	 */
@@ -56,7 +47,6 @@
 			lore.anno.ui.colourCount = 0;
 			lore.anno.ui.curSelAnno;
 			lore.anno.ui.curAnnoMarkers = new Array();
-			lore.anno.ui.rangeCache = {};
 		}
 		
 		lore.anno.ui.initHighlightData();
@@ -341,7 +331,7 @@
 	 * @param {Object} domContainer An object or an array containing the dom container/s
 	 * to insert the pop up HTML into
 	 */	
-	lore.anno.ui.genTipForAnnotation = function(annodata, domContainer){
+	lore.anno.ui.genTipForAnnotation = function(annodata, marker){
 		try {
 			var uid = annodata.id;
 			var obj = document.createElement("span");
@@ -382,9 +372,9 @@
 			
 			// set events via DOM so that events are handled in the context of the content window
 			// and not the extension
-			if ( domContainer.length  && domContainer.length > 0) {
-				var domContainer = domContainer[0];
-			}
+			
+			var domContainer = marker.data.nodes[0];
+			
 			domContainer.setAttribute("onmouseover", "TagToTip('" + uid +
 			"',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', " +
 			"BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" +
@@ -579,7 +569,7 @@
 						var selText = '';
 						try {
 							selText = lore.global.util.getSelectionText(
-							rec.data.context, lore.global.util.getContentWindow(window))
+							rec.data.context, lore.global.util.getContentWindow(window).document)
 						} 
 						catch (e) {
 						}
@@ -612,7 +602,7 @@
 						try {
 							// need to do this while the xpointer library still has emotional problems
 							selText = lore.global.util.getSelectionText(
-							rec.data.variantcontext, lore.global.util.getContentWindow(window))
+							rec.data.variantcontext, lore.global.util.getContentWindow(window).document)
 						} 
 						catch (e) {
 						}
@@ -957,6 +947,121 @@
 	 	*
 	 	*/
 		
+		lore.anno.ui.Marker = function(args) {
+					this.xpointer = lore.global.util.normalizeXPointer(args.xpointer);
+					this.target = args.target || lore.global.util.getContentWindow(window).document;
+					this.type  = lore.global.util.isXPointerImageRange(this.xpointer) ? 1:0;
+					this.visible = false;
+					
+					this.show = function (colour, styleCallback, scroll) {
+						this.colour = colour;
+						this.styleCallback = styleCallback;
+						if ( this.type == 1) {
+							if (!this.data) {
+								var xpBits = this.xpointer.substring("xpointer(image-range(".length ).split(',');
+								var xp =  xpBits[0];
+								var img = lore.global.util.getNodeForXPath(xp, this.target);
+								// co-ordinates
+								var x1 = parseInt(xpBits[1].substring(1)),
+								    y1 = parseInt(xpBits[2].substring(0,xpBits[2].length-1)),
+									x2 = parseInt(xpBits[3].substring(1)),
+									y2 = parseInt(xpBits[4].substring(0,xpBits[4].length-1));
+
+								var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
+								this.data = { image: img, coords: coords };
+							} 
+							
+							var doc = this.target;
+							var _div = $('<div />',doc);
+							var _parent = $('body',doc)
+							_parent.append(_div);
+							this.data.nodes = [_div.get(0)];
+							this.update(); 
+							
+							lore.global.util.ignoreElementForXP(this.data.nodes[0]);
+							if ( scroll )
+								lore.global.util.scrollToElement(this.data.image, this.target.defaultView);
+							
+						} else {
+							if (!this.data || !this.data.nodes) {
+								this.data = {
+									range: lore.global.util.getSelectionForXPath(this.xpointer, this.target)
+								};
+								var stylin = function(domNode){
+									domNode.style.backgroundColor = colour || "yellow";
+									if ( styleCallback) styleCallback(this.type, domNode);
+								}
+								this.data.nodes = lore.global.util.highlightRange(this.data.range, this.target, scroll, stylin);
+							} else {
+								for (var i=0; i < this.data.nodes.length; i++ ) {
+									stylin(this.data.nodes[i]);
+								}
+							}
+						}	
+						
+						this.visible = true;		
+					}
+
+					this.update = function(colour, styleCallback){
+						if (this.data.nodes && this.type == 1) {
+							
+							var doc = this.target;
+							var _img = $(this.data.image);
+							var _parent = $('body',doc);
+							// image page offset and parent scroll offset 
+			  				var imgOfs = { left: Math.round(_img.offset().left), top: Math.round(_img.offset().top) };
+							var parOfs = $.inArray(_parent.css('position'), ['absolute', 'relative']) + 1 ?
+            					{ left: Math.round(_parent.offset().left) - _parent.scrollLeft(),
+                					top: Math.round(_parent.offset().top) - _parent.scrollTop() } :
+                				{ left: 0, top: 0 };
+							
+							var leftOf = imgOfs.left - parOfs.left;
+							var topOf = imgOfs.top - parOfs.top;
+							
+							this.colour = colour || this.colour;
+							this.styleCallback = styleCallback || this.styleCallback;
+							
+							var scale = $(this.data.image).data("scale");
+							
+							if ( !scale || scale.imgWidth != _img.width() ||
+							scale.imgHeight != _img.height()) {
+								// either no scale information stored, or is out of date
+								scale = lore.global.util.getImageScaleFactor(_img.get(0));
+								$(this.data.image).data("scale", scale);
+							}
+								
+							var x1 = this.data.coords.x1 / scale.x, y1 = this.data.coords.y1 / scale.y,
+								x2 = this.data.coords.x2 / scale.x, y2 = this.data.coords.y2 / scale.y;
+								
+							 $(this.data.nodes[0]).css({
+							 	position: 'absolute',
+							 	left: x1 + leftOf,
+							 	top: y1 + topOf,
+								border: '1px solid ' + this.colour
+							 }).width(x2 - x1).height(y2-y1);
+							 if ( this.styleCallback) this.styleCallback(this.type, this.data.nodes[0]);
+							 
+						}
+					}
+										
+					this.hide = function(){
+						if (this.data && (this.data.image || this.data.nodes)) {
+							var w = lore.global.util.getContentWindow(window);
+							if (this.type == 0) {
+								for (var i = 0; i < this.data.nodes.length; i++) {
+									var n = this.data.nodes[i]; 
+									if (n) 
+										lore.global.util.removeNodePreserveChildren(n, w);
+								}
+								this.data = null;
+							} else {
+								lore.global.util.removeNodePreserveChildren(this.data.nodes[0], w);
+							}
+						}
+						this.visible = false;
+					}
+			}
+			
 		/**
 		 * Hide the currently selected annotation markers
 		 */
@@ -964,26 +1069,15 @@
 			try {
 				if (lore.anno.ui.curAnnoMarkers) {
 					for (var i = 0; i < lore.anno.ui.curAnnoMarkers.length; i++) {
-						lore.anno.ui.hideMarkerFromXP(lore.anno.ui.curAnnoMarkers[i]);
+						var m = lore.anno.ui.curAnnoMarkers[i];
+						m.hide();
+						delete m; 
 					}
 					lore.anno.ui.curAnnoMarkers = [];
 				}
 			} 
 			catch (ex) {
 				lore.debug.anno("hide marker failure: " + ex, ex);
-			}
-		}
-		
-		/**
-		 * 'Hide' a selection given the an array of dom nodes
-		 * @param {Array} domObjs dom nodes that contain the selections
-		 */
-		lore.anno.ui.hideMarkerFromXP = function(domObjs){
-			if (domObjs) {
-				for (var i = 0; i < domObjs.length; i++) {
-					if (domObjs[i]) 
-						lore.global.util.removeNodePreserveChildren(domObjs[i], window);
-				}
 			}
 		}
 		
@@ -1022,7 +1116,6 @@
 		
 		lore.anno.ui.getCurrentSelection = function(){
 			var selxp = lore.global.util.getXPathForSelection(window);
-			lore.debug.anno("getCurSel: " + selxp + " " + lore.anno.ui.curImage);
 			
 			if ( lore.anno.ui.curImage && lore.global.util.trim(selxp) == '') {
 				return lore.global.util.getXPathForImageSelection(lore.anno.ui.curImage.domNode, lore.anno.ui.curImage.selection);
@@ -1031,65 +1124,6 @@
 			return selxp;	
 		}
 		 
-		/**
-		 * Highlight text on the supplied content window given an xpointer describing the location of the
-		 * selection
-		 * @param {String} currentCtxt	The xpath for the selection	
-		 * @param {String} colour	The highlighting colour to use
-		 * @param {Function} extraStyle	A callback that is called once the selection has been created. 
-		 * A parameter is passed supplying the dom node that contains the selection
-		 * @param {Object} contentWindow (Optional) The content window to apply the selection to. The xpath
-		 * must be valid in this window's document.
-		 * @return {Array} An array of dom nodes that house the selected text 
-		 */
-		lore.anno.ui.highlightXPointer = function(currentCtxt, colour, extraStyle, contentWindow){
-			if (currentCtxt) {
-				var idx, marker = null;
-				if (!contentWindow) {
-					contentWindow = lore.global.util.getContentWindow(window);
-				}
-				
-				var imgRange = lore.global.util.isXPointerImageRange(currentCtxt);
-				if (imgRange) {
-					var xpBits = currentCtxt.substring("xpointer(image-range(".length ).split(',');
-					var xp = "xpointer(" + xpBits[0]+")";
-					// dom node
-					lore.debug.anno("xpointer; " + xp, currentCtxt);
-					var img = lore.global.util.getNodeForXPath(xp, lore.global.util.getContentWindow(window));
-					// co-ordinates
-					var x1 = xpBits[1].substring(1),
-					    y1 = xpBits[2].substring(0,xpBits[2].length-1),
-						x2 = xpBits[3].substring(1),
-						y2 = xpBits[4].substring(0,xpBits[4].length-1);
-					
-					var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
-					lore.debug.anno("new x: " + coords, coords);
-					return img;
-				}
-				else {
-					//TODO: enable caching of range. It has bug at the moment related to ranges that return multiple ranges
-					var domObjs = lore.global.util.highlightXPointer(currentCtxt, contentWindow.document, true, colour);
-					
-					if (domObjs && extraStyle) {
-						for (var i = 0; i < domObjs.length; i++) {
-							domObjs[i] = extraStyle(domObjs[i]);
-						}
-					}
-				}
-				return domObjs;
-				
-			}
-			else {
-				return null;
-			}
-		}
-		
-		lore.anno.ui.setCurAnnoStyle = function(domObj){
-			domObj.style.textDecoration = "underline";
-			return domObj;
-		}
-		
-
 	/*
 	 * Handlers
 	 */
@@ -1132,27 +1166,32 @@
 				// toggle to highlight all
 				
 				// set text to inherit for select all fields   
-				var selAllStyle = function(domObj){
-					if (domObj) {
-						domObj.style.textDecoration = "inherit";
+				var selAllStyle = function(type, domObj){
+					if (type == 0) {
+						if (domObj) {
+							domObj.style.textDecoration = "inherit";
+						}
+					} else if ( type == 1) {
+						domObj.style.borderStyle = "dashed";
 					}
+						
 					return domObj;
 				}
 				
 				lore.anno.annods.each(function highlightAnnotations(rec){
 					if ( rec.data.context ) {
 						try {
-							var domContainers = lore.anno.ui.highlightAnnotation(rec, selAllStyle);	
+							var markers = lore.anno.ui.highlightAnnotation(rec, selAllStyle);	
 							
 							// 'attach' annotation description bubble
-							if (domContainers != null) {
-								lore.anno.ui.multiSelAnno = lore.anno.ui.multiSelAnno.concat(domContainers);
+							if (markers != null) {
+								lore.anno.ui.multiSelAnno = lore.anno.ui.multiSelAnno.concat(markers);
 								// create the tip div in the content window
-								for ( var i =0 ; i < domContainers.length;i++)						
-									lore.anno.ui.genTipForAnnotation(rec.data, domContainers[i]);
+								for ( var i =0 ; i < markers.length;i++)						
+									lore.anno.ui.genTipForAnnotation(rec.data, markers[i]);
 							}
 							else {
-								lore.debug.anno("domContainer null for context: " + rec.data.context, rec);
+								lore.debug.anno("marker null for context: " + rec.data.context, rec);
 							}
 						} 
 						catch (ex) {
@@ -1167,7 +1206,9 @@
 				lore.debug.anno("Unhighlighting all annotations", lore.anno.ui.multiSelAnno);
 				for (var i = 0; i < lore.anno.ui.multiSelAnno.length; i++) {
 					try {
-						lore.anno.ui.hideMarkerFromXP(lore.anno.ui.multiSelAnno[i]);
+						var m = lore.anno.ui.multiSelAnno[i];
+						m.hide();
+						delete m;
 					} 
 					catch (ex) {
 						lore.debug.anno("Error unhighlighting: " + ex, lore.anno.ui.multiSelAnno[i]);
@@ -1364,7 +1405,7 @@
 				theField = lore.anno.ui.form.findField('original');
 				theField.setValue(lore.anno.ui.currentURL);
 				theField = lore.anno.ui.form.findField('contextdisp');
-				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window)) + '"');
+				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window).document) + '"');
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception updating anno context", ex);
@@ -1383,7 +1424,7 @@
 				theField = lore.anno.ui.form.findField('variant');
 				theField.setValue(lore.anno.ui.currentURL);
 				theField = lore.anno.ui.form.findField('rcontextdisp');
-				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window)) + '"');
+				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window).document) + '"');
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception updating anno variant context", ex);
@@ -1455,6 +1496,8 @@
 					
 					lore.anno.ui.topView.updateVariationSplitter(ctx, title, show, function(){
 						lore.anno.ui.hideMarker();
+						var cw = lore.anno.ui.topView.getVariationContentWindow();
+						lore.anno.ui.enableImageHighlightingForPage(cw);
 						lore.anno.ui.highlightCurrentAnnotation(rec);
 
 						var n = 'rcontextdisp';
@@ -1466,7 +1509,7 @@
 						
 						var selText = '';
 						try {
-							selText = lore.global.util.getSelectionText(ctx, lore.anno.ui.topView.getVariationContentWindow());
+							selText = lore.global.util.getSelectionText(ctx, cw.document);
 						} 
 						catch (e) {
 							lore.debug.anno(e,e);
@@ -1644,9 +1687,25 @@
 		 * @param {Record} rec The record of the annoation to highlight 
 		 */
 		lore.anno.ui.highlightCurrentAnnotation = function(rec){
+			if ( lore.anno.ui.curImage) {
+				var inst = $(lore.anno.ui.curImage.domNode).imgAreaSelectInst();
+				inst.setOptions({show:false,hide:true});
+				inst.update();
+				
+			}
 			lore.anno.ui.curAnnoMarkers = lore.anno.ui.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
 		}
 	
+		lore.anno.ui.setCurAnnoStyle = function(type, domObj){
+			if (type == 0) {
+				domObj.style.textDecoration = "underline";
+			}
+			else if (type == 1) { 
+					domObj.style.borderWidth = '1px';
+			}
+			return domObj;
+		}
+		
 		/**
 		 * Highlight an annotation.
 		 * @param {Record} rec The record of the annotation to highlight
@@ -1654,13 +1713,14 @@
 		 * The dom node is passed in as a parameter to the callback.
 		 */	
 		lore.anno.ui.highlightAnnotation = function(rec, annoStyle) {
-			var cColour = lore.anno.ui.getCreatorColour(rec.data.creator);
+			
 			var markers = [];
+			
 			// regular non variant case for highlighting
 			if (rec.data.context && !rec.data.variantcontext 
 					&& rec.data.resource == lore.anno.ui.currentURL) {
 					try {
-						markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.context), cColour, annoStyle));
+						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context}));
 					} 
 					catch (e) {
 						lore.debug.anno(e, e);
@@ -1669,7 +1729,7 @@
 			
 				if (rec.data.original && rec.data.original == lore.anno.ui.currentURL) {
 					try {
-						markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.context), cColour, annoStyle));
+						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context}));
 					} 
 					catch (e) {
 						lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -1677,7 +1737,7 @@
 					var cw = lore.anno.ui.topView.getVariationContentWindow();
 					if (lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.variant) {
 						try {
-							markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.variantcontext), cColour, annoStyle, cw))
+							markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, target:cw.document}));
 						} 
 						catch (e) {
 							lore.debug.anno(e, e);
@@ -1687,7 +1747,7 @@
 				}
 				if (rec.data.variant == lore.anno.ui.currentURL) {
 					try {
-						markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.variantcontext), cColour, annoStyle));
+						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext}));
 					} 
 					catch (e) {
 						lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -1695,7 +1755,7 @@
 					var cw = lore.anno.ui.topView.getVariationContentWindow();
 					if (rec.data.context && lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.original) {
 						try {
-							markers.push(lore.anno.ui.highlightXPointer(lore.global.util.normalizeXPointer(rec.data.context), cColour, annoStyle, cw))
+							markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, target:cw.document}));
 						} 
 						catch (e) {
 							lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -1703,7 +1763,9 @@
 					}
 				}
 			}
-			
+			for ( var i=0; i < markers.length;i++) {
+				markers[i].show(lore.anno.ui.getCreatorColour(rec.data.creator), annoStyle, true);
+			}
 			return markers;
 				
 		}
@@ -1925,6 +1987,33 @@
 						
 			lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
 			
+			try {
+				if (!lore.anno.ui.handleLocationChange.windowResizeHandler) {
+					lore.anno.ui.handleLocationChange.windowResizeHandler = function(){
+						try {
+							var markers = lore.anno.ui.curAnnoMarkers.concat(lore.anno.ui.multiSelAnno);
+							for (var i = 0; i < markers.length; i++) {
+								var m = markers[i];
+								if (m.type == 1 && m.target == this.document) {
+									m.update();
+								}
+							}
+							$('img', this.document).each( function() { $(this).imgAreaSelectInst().update()});
+						}
+						catch (e) {
+							lore.debug.anno("error occurred during window resize handler: " +e, e);
+						}
+					}
+					lore.global.util.getContentWindow(window).addEventListener("resize", 
+											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
+					lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", 
+											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
+					
+				}
+			}catch (e) {
+				lore.debug.anno("error occurred setting window handlers: " +e, e);
+			}
+			
 			if ( !initialLoad ) {
 			try{
 				lore.debug.anno("Setting/Getting cached annotation page data");
@@ -2000,24 +2089,45 @@
 	}
 	
 
-lore.anno.ui.enableImageHighlightingForPage = function(){
-	try {
-		var doc = lore.global.util.getContentWindow(window).document;
+lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
+	
+		var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
+		var doc = cw.document;
 		
-		lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", lore.global.util.getContentWindow(window));
-		
-		var inst = $('img', doc).imgAreaSelect({
-				onSelectEnd: lore.anno.ui.handleEndImageSelection,
-				onSelectStart: function () { 
-					var selObj = lore.global.util.getContentWindow(window).getSelection();
-					selObj.removeAllRanges();
-				},
-				handles: 'corners',
-				instance: true
-		});
-		lore.debug.anno("image selection enabled for the page");
-	} 
-	catch (e) {
-		lore.debug.anno("error occurred enabling image highlighting: " +e, e);
-	}
+		/*$(doc).ready*/
+		//TODO: Fix this
+		window.setTimeout( function () {
+		try{
+			// pre-load image scale factors for each image
+			try {
+				$('img', doc).each(function(){
+					$(this).data('scale', lore.global.util.getImageScaleFactor(this));
+				})
+			} catch (e ) {
+				lore.debug.anno("error loadding pre-load image scale factors: " +e, e);
+			}
+						
+			if ( doc.getElementsByTagName("head").length == 0) {
+				lore.debug.anno("image selection disabled for page.  Either not a HTML page or no <head> element.");
+				lore.anno.ui.loreWarning("Image selection disabled for page. Not a valid HTML page.");
+				return;
+			}
+			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
+			lore.anno.ui.imgAreaInstances = $('img', doc).imgAreaSelect({
+					onSelectEnd: lore.anno.ui.handleEndImageSelection,
+					onSelectStart: function () { 
+						var selObj = cw.getSelection();
+						selObj.removeAllRanges();
+					},
+					handles: 'corners',
+					instance: true
+			});
+
+			lore.debug.anno("image selection enabled for the page", lore.anno.ui.imgAreaInstances);
+		} 
+		catch (e) {
+			lore.debug.anno("error occurred enabling image highlighting: " +e, e);
+		}}, 1000
+	);
+	
 }
