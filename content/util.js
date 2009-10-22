@@ -557,31 +557,8 @@ util = {
 		
 		return nodes;
 	},
-	
-    /**
-     * Highlight part of a document
-     * @param {} xpointer Context to highlight (as xpointer)
-     * @param {} targetDocument The document in which to highlight
-     * @param {} scrollToHighlight Boolean indicating whether to scroll
-     * @param {} colour highlight colour
-     * @param {Object} xpointer2range cache
-     */
-    highlightXPointer : function(xpointer, targetDocument, scrollToHighlight, colour, cache) {
-       	
-		var sel = null;
-		if (cache) {
-			sel = cache[xpointer.toString()];
-		}
-		 
-		if (!sel) {
-			sel = m_xps.parseXPointerToRange(xpointer, targetDocument);
-			if ( cache)
-				cache[xpointer.toString()] = sel;
-		}
 
-        return util.highlightRange( sel,targetDocument, scrollToHighlight, colour);
-	},
-	
+		
 	 /**
      * Highlight part of a document
      * @param {} sel Context to highlight (as DOM Range)
@@ -589,14 +566,15 @@ util = {
      * @param {} scrollToHighlight Boolean indicating whether to scroll
      * @param {} colour highlight colour
      */
-	highlightRange : function ( sel, targetDocument, scrollToHighlight, colour) {
+	highlightRange : function ( sel, targetDocument, scrollToHighlight, styleCallback) {
 		try {
             var highlightNodeTmpl = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
-			highlightNodeTmpl.style.backgroundColor = colour || "yellow";
+			if ( styleCallback)
+				styleCallback(highlightNodeTmpl);
 			
 			var highlightNodes =  util.safeSurroundContents(targetDocument, sel, highlightNodeTmpl);
 			for ( var i =0; i< highlightNodes.length;i++) {
-				m_xps.markElement(highlightNodes[i]);
+				util.ignoreElementForXP(highlightNodes[i]);
 			}
 
             if (scrollToHighlight) {
@@ -610,6 +588,13 @@ util = {
         }
 	},
 	
+	/**
+	 * Mark element to be ignored when xpointer library is searching through dom during node resolution
+	 * @param {Object} domNode
+	 */
+	ignoreElementForXP : function ( domNode ) {
+		m_xps.markElement(domNode);
+	},	
 	
     /**
      * Return the window object of the content window
@@ -622,18 +607,24 @@ util = {
      * expressions understood by Anozilla).
      * modified from dannotate.js
      */
-    getSelectionForXPath : function(xp, win)
+    getSelectionForXPath : function(xp, targetDocument)
     {
-        return m_xps.xptrResolver.resolveXPointerToRange(xp, win.document);
+        return m_xps.xptrResolver.resolveXPointerToRange(xp, targetDocument);
     },
     /**
      * @param {} xp
      * @param {} win
      * @return {}
      */
-    getNodeForXPath : function(xp, win) {
-        return m_xps.parseXPointerToNode(xp, win.document);
+    getNodeForXPath : function(xp, targetDocument) {
+		//return targetDocument.evaluate( xp, targetDocument, null, win.XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
+		return targetDocument.evaluate( xp, targetDocument, null, 0, null ).iterateNext();
     },
+	
+	getNodeForXPointer: function(xp, targetDocument) {
+		return m_xps.parseXPointerToNode(xp, targetDocument);
+	},
+	
     /**
      * This fn depends on a hacked version of nsXpointerService being loaded by the browser
      * before this script is loaded from tags in the page being annotated.
@@ -662,31 +653,60 @@ util = {
      * Return an XPath for an image
      */
 	getXPathForImageSelection : function (domNode, coords ) {
-			//var xp = m_xps.xptrCreator.xpointer_wrap(m_xps.xptrCreator.create_child_XPointer(domNode));
-			var xp = m_xps.xptrCreator.xpointer_wrap("image-range(" + m_xps.xptrCreator.create_child_XPointer(domNode)
-			+ ",[" + coords.x1 + "," + coords.y1 + "],[" + coords.x2 + "," + coords.y2 + "],\"" + domNode.src + "\"");
+			var scale = util.getImageScaleFactor( domNode);
+			var x1 = parseInt(coords.x1 * scale.x), y1 = parseInt(coords.y1 * scale.y), 
+				x2 = parseInt(coords.x2 * scale.x), y2 = parseInt(coords.y2 * scale.y);
+			debug.ui(x1 + ', ' + y1 + ', ' + x2 + ', ' + y2, scale);
+			
+			var xp = ("xpointer(image-range(" + m_xps.xptrCreator.create_child_XPointer(domNode)
+			+ ",[" + x1 + "," + y1 + "],[" + x2 + "," + y2 + "],\"" + domNode.src + "\"))");
 			 
-			debug.ui("The Xpointer is: " + xp);
+			debug.ui("The image region Xpointer is: " + xp);
 			return xp;	
 	},
 	
 	isXPointerImageRange: function ( xp) {
 		return xp.indexOf("image-range") != -1;
 	},
+	
+	/**
+     * Temporarily load another copy of an image an determine if the version
+     * visible on the page has been scaled (implicitly or explicitly)
+     * @param img The IMG element to test
+     */
+    getImageScaleFactor: function  (img)
+    {
+		// stripped from dannotate.js
+		var doc = img.ownerDocument;
+		var iwidth = parseInt(img.offsetWidth);
+		var iheight = parseInt(img.offsetHeight);
+		var tmpNode = doc.createElement('img');
+		tmpNode.setAttribute('src', img.src);
+		tmpNode.style.visibility = 'hidden';
+		doc.body.appendChild(tmpNode);
+		debug.ui(tmpNode,tmpNode);
+		var twidth = parseInt(tmpNode.offsetWidth);
+		var theight = parseInt(tmpNode.offsetHeight);
+		doc.body.removeChild(tmpNode);
+		
+		var xScaleFac = twidth/iwidth;
+		var yScaleFac = theight/iheight;
+		return { x: xScaleFac, y: yScaleFac, imgWidth:iwidth, imgHeight:iheight, origWidth:twidth,origHeight:theight};
+    },
 				
     /**
      * Return the text contents of a selection
      * @param {} currentCtxt
      * @return {} The selection contents
      */
-    getSelectionText : function(currentCtxt, win){
+    getSelectionText : function(currentCtxt, targetDocument){
         var selText = "";
         if (currentCtxt){
             if ( util.isXPointerImageRange(currentCtxt)){
 				return "Image selected: " + currentCtxt.split(',')[5].split('"')[1]; 				
 			}
 			var idx = currentCtxt.indexOf('#');
-            var sel = util.getSelectionForXPath(currentCtxt.substring(idx + 1), win);
+            var sel = util.getSelectionForXPath(currentCtxt.substring(idx + 1), targetDocument);
             selText = sel.toString();
             if (selText){
                 if (selText.length > 100){

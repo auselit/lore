@@ -1056,7 +1056,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         try {
             // query for matches of both www and non-www version of URL
-            var escapedURL = escape(contextURL);
+           var escapedURL = encodeURIComponent(contextURL);
             var altURL = "";
 	        if (!contextURL.match("http://www.")){
 	            altURL = escape(contextURL.replace("http://","http://www."));
