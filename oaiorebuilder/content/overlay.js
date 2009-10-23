@@ -47,13 +47,20 @@ try {
 			onLocationChange: function(aProgress, aRequest, aURI){
 				try {
 					if (aURI) {
-						if (aURI.spec == this.oldURL) 
+						var co = loreoverlay.coView();
+						var an = loreoverlay.annoView()
+						if (aURI.spec == lore.global.ui.getCurrentURL(loreoverlay.instId)) {
+							if ( co.refreshPage) co.refreshPage();
+							if ( an.refreshPage) an.refreshPage();
 							return;
+						}
 						if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId) && 
 							 lore.global.ui.annotationView.loaded(loreoverlay.instId) ) {
-							loreoverlay.coView().handleLocationChange(aURI.spec);
-							loreoverlay.annoView().handleLocationChange(aURI.spec);
-							this.oldURL = aURI.spec;
+							lore.global.ui.setCurrentURL(loreoverlay.instId, aURI.spec);
+							//this.oldURL = aURI.spec;
+							co.handleLocationChange(aURI.spec);
+							an.handleLocationChange(aURI.spec);
+							
 						}
 					}
 				} catch(e) {
@@ -184,6 +191,8 @@ try {
 	            var annoContentBox = document.getElementById('oobAnnoContentBox');
 	            var contentBox = document.getElementById('oobContentBox');
 	            
+				lore.global.ui.setCurrentURL(loreoverlay.instId,gBrowser.currentURI.spec);
+				
 	            if (annoContentBox.getAttribute("collapsed") == "false" || contentBox.getAttribute("collapsed") == "false"){
 	               toolsMenuItem.removeAttribute("checked");
 	                this.setAnnotationsVisibility(false);
@@ -426,6 +435,7 @@ try {
 				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", labelValue);
 				var iframe = document.getElementById("oobAnnoVarContent");
 		
+				// location hasn't changed so just call the callback
 				if ( iframe.contentWindow.location == url ) {
 					if ( callBack) 
 						callBack();
