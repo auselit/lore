@@ -130,7 +130,8 @@ $.imgAreaSelect = function (img, ctx, options) {
 
         imgWidth = $img.width();
         imgHeight = $img.height();
-
+		
+		
         if ($().jquery == '1.3.2' && $.browser.safari && position == 'fixed') {
             imgOfs.top += max(document.documentElement.scrollTop, $('body', context).scrollTop());
 
@@ -196,6 +197,7 @@ $.imgAreaSelect = function (img, ctx, options) {
             $border.css('margin', 0);
             setTimeout(function () { $border.css('margin', 'auto'); }, 0);
         }
+		
     }
 
     function hide($elem, fn) {

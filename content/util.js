@@ -589,6 +589,18 @@ util = {
 	},
 	
 	/**
+	 * Create a dom node configure to be ignored by the xpath parser 
+	 * @param {String} tagName
+	 * @param {Document} targetDocument
+	 * @return {Node} Created dom node. Not attached to the document.
+	 */
+	domCreate: function (tagName, targetDocument) {
+		var domNode = targetDocument.createElement(tagName);
+		util.ignoreElementForXP ( domNode);
+		return domNode;
+	},
+	
+	/**
 	 * Mark element to be ignored when xpointer library is searching through dom during node resolution
 	 * @param {Object} domNode
 	 */
@@ -652,11 +664,10 @@ util = {
     /**
      * Return an XPath for an image
      */
-	getXPathForImageSelection : function (domNode, coords ) {
-			var scale = util.getImageScaleFactor( domNode);
+	getXPathForImageSelection : function (domNode, coords, noScale ) {
+			var scale = noScale ? {x:1,y:1}: util.getImageScaleFactor( domNode);
 			var x1 = parseInt(coords.x1 * scale.x), y1 = parseInt(coords.y1 * scale.y), 
 				x2 = parseInt(coords.x2 * scale.x), y2 = parseInt(coords.y2 * scale.y);
-			debug.ui(x1 + ', ' + y1 + ', ' + x2 + ', ' + y2, scale);
 			
 			var xp = ("xpointer(image-range(" + m_xps.xptrCreator.create_child_XPointer(domNode)
 			+ ",[" + x1 + "," + y1 + "],[" + x2 + "," + y2 + "],\"" + domNode.src + "\"))");
@@ -667,6 +678,23 @@ util = {
 	
 	isXPointerImageRange: function ( xp) {
 		return xp.indexOf("image-range") != -1;
+	},
+	
+	parseImageRangeXPointer: function (xpointer, targetDocument) {
+		if (!util.isXPointerImageRange(xpointer))
+			return null;
+		
+		var xpBits = xpointer.substring("xpointer(image-range(".length ).split(',');
+		var xp =  xpBits[0];
+		var img = util.getNodeForXPath(xp, targetDocument);
+	
+		// co-ordinates
+		var x1 = parseInt(xpBits[1].substring(1)),
+	    	y1 = parseInt(xpBits[2].substring(0,xpBits[2].length-1)),
+			x2 = parseInt(xpBits[3].substring(1)),
+			y2 = parseInt(xpBits[4].substring(0,xpBits[4].length-1));
+		var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
+		return { image: img, coords: coords};
 	},
 	
 	/**
@@ -684,7 +712,7 @@ util = {
 		tmpNode.setAttribute('src', img.src);
 		tmpNode.style.visibility = 'hidden';
 		doc.body.appendChild(tmpNode);
-		debug.ui(tmpNode,tmpNode);
+		
 		var twidth = parseInt(tmpNode.offsetWidth);
 		var theight = parseInt(tmpNode.offsetHeight);
 		doc.body.removeChild(tmpNode);
