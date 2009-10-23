@@ -333,8 +333,10 @@
 	 */	
 	lore.anno.ui.genTipForAnnotation = function(annodata, marker){
 		try {
+			var doc = lore.global.util.getContentWindow(window).document;
+			
 			var uid = annodata.id;
-			var obj = document.createElement("span");
+			var obj = lore.global.util.domCreate("span", doc);
 			obj.setAttribute("id", uid);
 			var desc = "<span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
 			" by " +
@@ -345,14 +347,12 @@
 			desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span><br />";
 			obj.innerHTML = desc;
 			
-			
-			var doc = lore.global.util.getContentWindow(window).document;
 			var tipContainer = doc.getElementById("tipcontainer");
 			
 			// create the tip container and import the script onto the page
 			// if first time a tip is created			
 			if (tipContainer == null) {
-				tipContainer = doc.createElement("div");
+				tipContainer = lore.global.util.domCreate("div", doc);
 				tipContainer.id = "tipcontainer";
 				tipContainer.style.display = "none";
 				
@@ -648,7 +648,7 @@
 				var val = rec.data.resource;
 				if (rec.data.isReply) {
 					var prec = lore.global.util.findRecordById(lore.anno.annods, rec.data.about);
-					lore.debug.anno(rec.data.about);
+					
 					val = "'" + prec.data.title + "'";
 					if (!lore.anno.isNewAnnotation(prec)) {
 						val += " ( " + rec.data.about + " )";
@@ -947,6 +947,57 @@
 	 	*
 	 	*/
 		
+		lore.anno.ui.updateImageData = function (img) {
+			var _img = $(img);
+			var scale = _img.data("scale");
+							
+			if ( !scale || scale.imgWidth != _img.width() ||
+							scale.imgHeight != _img.height()) {
+								// either no scale information stored, or is out of date
+								scale = lore.global.util.getImageScaleFactor(_img.get(0));
+								_img.data("scale", scale);
+							}
+			return scale;
+		}
+		
+		lore.anno.ui.scaleImageCoords = function (img, coords) {
+			var scale = lore.anno.ui.updateImageData(img); 
+			// scale coords ( getting their unscale state if they are already scaled)
+			var sx = coords.sx || 1;
+			var sy = coords.sy || 1;
+			return {
+				x1: coords.x1 * sx / scale.x,
+				y1: coords.y1 * sy / scale.y,
+				x2: coords.x2 * sx / scale.x,
+				y2: coords.y2 * sy / scale.y,
+				sx: scale.x,
+				sy: scale.y
+			};
+		}
+		
+		lore.anno.ui.calcImageOffsets = function(img, doc){
+			var _img = $(img);
+			var _parent = $('body', doc);
+			
+			// image page offset and parent scroll offset 
+			var imgOfs = {
+				left: Math.round(_img.offset().left),
+				top: Math.round(_img.offset().top)
+			};
+			var parOfs = $.inArray(_parent.css('position'), ['absolute', 'relative']) + 1 ? {
+				left: Math.round(_parent.offset().left) - _parent.scrollLeft(),
+				top: Math.round(_parent.offset().top) - _parent.scrollTop()
+			} : {
+				left: 0,
+				top: 0
+			};
+			
+			return {
+				left: (imgOfs.left - parOfs.left),
+				top: (imgOfs.top - parOfs.top)
+			};
+		}
+		
 		lore.anno.ui.Marker = function(args) {
 					this.xpointer = lore.global.util.normalizeXPointer(args.xpointer);
 					this.target = args.target || lore.global.util.getContentWindow(window).document;
@@ -956,41 +1007,34 @@
 					this.show = function (colour, styleCallback, scroll) {
 						this.colour = colour;
 						this.styleCallback = styleCallback;
+						
 						if ( this.type == 1) {
 							if (!this.data) {
-								var xpBits = this.xpointer.substring("xpointer(image-range(".length ).split(',');
-								var xp =  xpBits[0];
-								var img = lore.global.util.getNodeForXPath(xp, this.target);
-								// co-ordinates
-								var x1 = parseInt(xpBits[1].substring(1)),
-								    y1 = parseInt(xpBits[2].substring(0,xpBits[2].length-1)),
-									x2 = parseInt(xpBits[3].substring(1)),
-									y2 = parseInt(xpBits[4].substring(0,xpBits[4].length-1));
-
-								var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
-								this.data = { image: img, coords: coords };
+								this.data = lore.global.util.parseImageRangeXPointer(this.xpointer, this.target);
 							} 
 							
 							var doc = this.target;
-							var _div = $('<div />',doc);
+							var _div = $(lore.global.util.domCreate('span', doc));
 							var _parent = $('body',doc)
 							_parent.append(_div);
 							this.data.nodes = [_div.get(0)];
 							this.update(); 
 							
-							lore.global.util.ignoreElementForXP(this.data.nodes[0]);
 							if ( scroll )
 								lore.global.util.scrollToElement(this.data.image, this.target.defaultView);
 							
 						} else {
+							var type = this.type;
+							var stylin = function(domNode){
+									domNode.style.backgroundColor = colour || "yellow";
+									if ( styleCallback) styleCallback(type, domNode);
+								}
+								
 							if (!this.data || !this.data.nodes) {
 								this.data = {
 									range: lore.global.util.getSelectionForXPath(this.xpointer, this.target)
 								};
-								var stylin = function(domNode){
-									domNode.style.backgroundColor = colour || "yellow";
-									if ( styleCallback) styleCallback(this.type, domNode);
-								}
+								
 								this.data.nodes = lore.global.util.highlightRange(this.data.range, this.target, scroll, stylin);
 							} else {
 								for (var i=0; i < this.data.nodes.length; i++ ) {
@@ -1005,42 +1049,19 @@
 					this.update = function(colour, styleCallback){
 						if (this.data.nodes && this.type == 1) {
 							
-							var doc = this.target;
-							var _img = $(this.data.image);
-							var _parent = $('body',doc);
-							// image page offset and parent scroll offset 
-			  				var imgOfs = { left: Math.round(_img.offset().left), top: Math.round(_img.offset().top) };
-							var parOfs = $.inArray(_parent.css('position'), ['absolute', 'relative']) + 1 ?
-            					{ left: Math.round(_parent.offset().left) - _parent.scrollLeft(),
-                					top: Math.round(_parent.offset().top) - _parent.scrollTop() } :
-                				{ left: 0, top: 0 };
-							
-							var leftOf = imgOfs.left - parOfs.left;
-							var topOf = imgOfs.top - parOfs.top;
-							
 							this.colour = colour || this.colour;
 							this.styleCallback = styleCallback || this.styleCallback;
 							
-							var scale = $(this.data.image).data("scale");
+							var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords);
+							var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
 							
-							if ( !scale || scale.imgWidth != _img.width() ||
-							scale.imgHeight != _img.height()) {
-								// either no scale information stored, or is out of date
-								scale = lore.global.util.getImageScaleFactor(_img.get(0));
-								$(this.data.image).data("scale", scale);
-							}
-								
-							var x1 = this.data.coords.x1 / scale.x, y1 = this.data.coords.y1 / scale.y,
-								x2 = this.data.coords.x2 / scale.x, y2 = this.data.coords.y2 / scale.y;
-								
 							 $(this.data.nodes[0]).css({
 							 	position: 'absolute',
-							 	left: x1 + leftOf,
-							 	top: y1 + topOf,
+							 	left: c.x1 + o.left,
+							 	top: c.y1 + o.top,
 								border: '1px solid ' + this.colour
-							 }).width(x2 - x1).height(y2-y1);
+							 }).width(c.x2 - c.x1).height(c.y2-c.y1);
 							 if ( this.styleCallback) this.styleCallback(this.type, this.data.nodes[0]);
-							 
 						}
 					}
 										
@@ -1104,21 +1125,22 @@
 			return colour;
 		}
 		
-		lore.anno.ui.setCurSelImage = function (img, sel) {
+		lore.anno.ui.setCurSelImage = function (img) {
 				
-			lore.anno.ui.curImage = { domNode: img, selection: sel};
+			lore.anno.ui.curImage = $(img);
 			
 		}
 		
 		lore.anno.ui.getCurSelImage = function () {
-			return lore.anno.ui.curImage;
+			return lore.anno.ui.curImage ? lore.anno.ui.curImage.get(0):null;
 		}
 		
 		lore.anno.ui.getCurrentSelection = function(){
 			var selxp = lore.global.util.getXPathForSelection(window);
 			
 			if ( lore.anno.ui.curImage && lore.global.util.trim(selxp) == '') {
-				return lore.global.util.getXPathForImageSelection(lore.anno.ui.curImage.domNode, lore.anno.ui.curImage.selection);
+				return lore.global.util.getXPathForImageSelection(lore.anno.ui.curImage.get(0), 
+				lore.anno.ui.curImage.imgAreaSelectInst().getSelection(), true);
 			}
 
 			return selxp;	
@@ -1224,7 +1246,7 @@
 			if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) 
 				return;
 
-				lore.anno.ui.setCurSelImage(img, sel);
+				lore.anno.ui.setCurSelImage(img);
 			 
 		}
 		
@@ -1688,7 +1710,7 @@
 		 */
 		lore.anno.ui.highlightCurrentAnnotation = function(rec){
 			if ( lore.anno.ui.curImage) {
-				var inst = $(lore.anno.ui.curImage.domNode).imgAreaSelectInst();
+				var inst = lore.anno.ui.curImage.imgAreaSelectInst();
 				inst.setOptions({show:false,hide:true});
 				inst.update();
 				
@@ -1697,6 +1719,7 @@
 		}
 	
 		lore.anno.ui.setCurAnnoStyle = function(type, domObj){
+			
 			if (type == 0) {
 				domObj.style.textDecoration = "underline";
 			}
@@ -1908,9 +1931,7 @@
 	lore.anno.ui.handleSerialize = function (format ) {
 		 var fileExtensions = {
 	        "rdf": "xml",
-	        "wordml": "xml",
-	        "foxml": "xml",
-	        "trig": "txt"
+	        "wordml": "xml"
 	    }
 		if ( !format) {
 			format = "rdf";
@@ -1972,6 +1993,11 @@
 		}
 	}
 	
+	lore.anno.ui.refreshPage = function () {
+		lore.debug.anno("page refreshed");
+		lore.anno.ui.initHighlightData();
+		lore.anno.ui.enableImageHighlightingForPage();
+	}
 	/**
 	 * Notifiation function called when a change in location is detected in the currently
 	 * selected tab
@@ -1998,18 +2024,36 @@
 									m.update();
 								}
 							}
-							$('img', this.document).each( function() { $(this).imgAreaSelectInst().update()});
-						}
+							$('img', this.document).each(function(){
+								var inst = $(this).imgAreaSelectInst();
+								if (inst) {
+									// imgarea supports scaling, but it refreshes it scaling
+									// in a retarded way, merely calling update will not work 
+									var s = inst.getSelection();
+									inst.setOptions({});
+									inst.setSelection(s.x1,s.y1,s.x2,s.y2);
+									inst.update();
+								}
+							});
+						} 
 						catch (e) {
-							lore.debug.anno("error occurred during window resize handler: " +e, e);
+							lore.debug.anno("error occurred during window resize handler: " + e, e);
 						}
 					}
+				}
+					
+					//TODO: should remove these events
+					/*lore.global.util.getContentWindow(window).removeEventListener("resize", 
+											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
+					lore.anno.ui.topView.getVariationContentWindow().removeEventListener("resize", 
+											lore.anno.ui.handleLocationChange.windowResizeHandler, false);*/
+					
 					lore.global.util.getContentWindow(window).addEventListener("resize", 
 											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
 					lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", 
 											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
 					
-				}
+				
 			}catch (e) {
 				lore.debug.anno("error occurred setting window handlers: " +e, e);
 			}
@@ -2017,12 +2061,14 @@
 			if ( !initialLoad ) {
 			try{
 				lore.debug.anno("Setting/Getting cached annotation page data");
+				//TODO: need some de-/serialization function with an array of variable names instead of this
 				var update_ds = {
 					multiSelAnno: lore.anno.ui.multiSelAnno.slice(),
 					colourForOwner: lore.global.util.clone(lore.anno.ui.colourForOwner),
 					colourCount: lore.anno.ui.colourCount,
 					curSelAnnoId: lore.anno.ui.curSelAnno ? lore.anno.ui.curSelAnno.data.id:null,
 					curAnnoMarkers: lore.anno.ui.curAnnoMarkers.slice(),
+					curImage: lore.anno.ui.curImage
 				};
 				
 				lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, oldurl);
@@ -2052,6 +2098,7 @@
 					lore.anno.ui.colourCount = ds.colourCount
 					var curSelAnnoId = ds.curSelAnnoId;
 					lore.anno.ui.curAnnoMarkers = ds.curAnnoMarkers;
+					lore.anno.ui.curImage = ds.curImage;
 					
 					var rec = lore.global.util.findRecordById(lore.anno.annods, curSelAnnoId);
 					if (rec) {
@@ -2065,6 +2112,8 @@
 				lore.debug.anno(e,e);
 			}
 			
+		}else {
+					lore.anno.ui.initHighlightData();
 		}
 		
 		try {
@@ -2098,30 +2147,27 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 		//TODO: Fix this
 		window.setTimeout( function () {
 		try{
-			// pre-load image scale factors for each image
-			try {
-				$('img', doc).each(function(){
-					$(this).data('scale', lore.global.util.getImageScaleFactor(this));
-				})
-			} catch (e ) {
-				lore.debug.anno("error loadding pre-load image scale factors: " +e, e);
-			}
-						
 			if ( doc.getElementsByTagName("head").length == 0) {
 				lore.debug.anno("image selection disabled for page.  Either not a HTML page or no <head> element.");
 				lore.anno.ui.loreWarning("Image selection disabled for page. Not a valid HTML page.");
 				return;
 			}
 			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
-			lore.anno.ui.imgAreaInstances = $('img', doc).imgAreaSelect({
+			$('img', doc).each(function(){
+				// preload image scale factor
+				var scale = lore.anno.ui.updateImageData(this);
+	
+				// attach image area select handle for image			
+				$(this).imgAreaSelect({
 					onSelectEnd: lore.anno.ui.handleEndImageSelection,
 					onSelectStart: function () { 
 						var selObj = cw.getSelection();
 						selObj.removeAllRanges();
 					},
 					handles: 'corners',
-					instance: true
-			});
+					imageHeight: scale.origHeight,
+					imageWidth: scale.origWidth
+			})});
 
 			lore.debug.anno("image selection enabled for the page", lore.anno.ui.imgAreaInstances);
 		} 
