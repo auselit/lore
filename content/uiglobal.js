@@ -106,43 +106,15 @@
 			treeRoot.removeChild(treeRoot.firstChild);
 		}
 	}
-	/**
-	 * Set up scripts for image selection etc when a page loads in the browser
-	 * @param {} contextURL
-	 */
-	ui.locationLoaded = function(contextURL, win){
-		/*var doc = util.getContentWindow().document;
-		
-		 if (contextURL.match(".jpg")){ // temporary hack to test
-		
-		 //if doc contains any images and it has not already been injected, inject image annotation script
-		
-		 util.injectScript("content/lib/ext/adapter/jquery/jquery-1.3.2.min.js",win);
-		
-		 util.injectScript("content/lib/jquery.imgareaselect-0.8.min.js",win);
-		
-		 var imgscript = "$('img').imgAreaSelect({onSelectEnd: function(){alert('image region selected');},handles:'corners'});";
-		
-		 var hidden = doc.createElement("div");
-		
-		 var script = doc.createElement("script");
-		
-		 script.type = "text/javascript";
-		
-		 script.innerHTML = imgscript;
-		
-		 var body = doc.getElementsByTagName("body")[0];
-		
-		 if (body){
-		
-		 body.appendChild(script);
-		
-		 body.appendChild(hidden);
-		
-		 }
-		
-		 }*/
-		
+	
+	ui.setCurrentURL = function (instance,url) {
+		if ( !ui.currentURLs )
+			ui.currentURLs = {};
+		ui.currentURLs[instance] = url;
+	}
+	
+	ui.getCurrentURL = function (instance) {
+		return ui.currentURLs ? ui.currentURLs[instance]: null;
 	}
 	/**
      * @return {}
