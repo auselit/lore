@@ -159,7 +159,7 @@ function MozillaFileLogger(){
 		  }
     }
 
-	this.exitObserver.register();
+	this.exitObserver.register(this);
 			
 	this.listener = {
 	
