@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="lore" default="dist">
+<project name="lore" default="dist-nojar">
 	<property name="src.dir" value="." />
 	<property name="dist.dir" value="dist" />
 	<property name="app.name" value="lore@maenad.itee.uq.edu.au" />
