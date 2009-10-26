@@ -204,8 +204,10 @@
 		// update the highlighted fields colour in the event the creator is changed
 		// the colour is identified by the creator's name
 		
-		lore.anno.ui.hideMarker();
-		lore.anno.ui.highlightCurrentAnnotation(rec);
+		if (rec) {
+			lore.anno.ui.hideMarker();
+			lore.anno.ui.highlightCurrentAnnotation(rec);
+		}
 		
 		if (lore.anno.ui.multiSelAnno.length > 0) {
 			// hide then reshow 
@@ -1017,6 +1019,15 @@
 							var _div = $(lore.global.util.domCreate('span', doc));
 							var _parent = $('body',doc)
 							_parent.append(_div);
+							/*var _img = $(this.data.image);
+							_div.mousedown(function() {
+								try {
+									_img.trigger('click');
+								} catch(e ) {
+									lore.debug.anno("err " + e,e);
+								}
+							});*/
+							
 							this.data.nodes = [_div.get(0)];
 							this.update(); 
 							
@@ -1054,12 +1065,15 @@
 							
 							var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords);
 							var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
-							
-							 $(this.data.nodes[0]).css({
+							var _n = $(this.data.nodes[0]);
+							 //$(this.data.nodes[0]).css({
+							// lore.debug.anno( 'z-ind: ' + _n.parent().css('zIndex'));
+							 _n.css({
 							 	position: 'absolute',
 							 	left: c.x1 + o.left,
 							 	top: c.y1 + o.top,
-								border: '1px solid ' + this.colour
+								border: '1px solid ' + this.colour,
+								zIndex: _n.parent().css('zIndex')
 							 }).width(c.x2 - c.x1).height(c.y2-c.y1);
 							 if ( this.styleCallback) this.styleCallback(this.type, this.data.nodes[0]);
 						}
@@ -1336,6 +1350,12 @@
 					if (result == "success") {
 						lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
 						lore.debug.anno(action + 'd ' + anno.data.title, resultMsg);
+						
+						// maybe need to replace this with firing event that when annotation 
+						// is saved or 'cleaned' that UI elements are updated i.e highlight fields
+						// are updated ( i.e the colour may change as it's based of creator name),
+						// the annotation summary window needs to be updated etc.
+						lore.anno.ui.updateUIElements(anno);
 					}
 					else {
 						lore.anno.ui.loreError('Unable to ' + action + ' annotation');
@@ -1344,11 +1364,7 @@
 				});
 				
 				
-				// maybe need to replace this with firing event that when annotation 
-				// is saved or 'cleaned' that UI elements are updated i.e highlight fields
-				// are updated ( i.e the colour may change as it's based of creator name),
-				// the annotation summary window needs to be updated etc.
-				lore.anno.ui.updateUIElements(anno);
+				
 			} 
 			catch (e) {
 				lore.debug.anno("Error updating saving annotation: " + e, e);
@@ -1586,6 +1602,7 @@
 					lore.anno.ui.setCurrentAnno(rec);
 					
 					node.select();
+					
 				}
 				else {
 					lore.debug.anno("updateUI() - load", records);
@@ -1601,11 +1618,13 @@
 					}
 					
 					lore.anno.ui.scheduleTimelineLayout();
+					lore.anno.ui.updateUIElements();
 				}
 				
 				if (!lore.anno.ui.treeroot.isExpanded()) {
 					lore.anno.ui.treeroot.expand();
 				}
+				
 			} 
 			catch (e) {
 				lore.debug.ui("Error loading annotation tree view: " + e, e);
@@ -1995,8 +2014,11 @@
 	
 	lore.anno.ui.refreshPage = function () {
 		lore.debug.anno("page refreshed");
+		
 		lore.anno.ui.initHighlightData();
 		lore.anno.ui.enableImageHighlightingForPage();
+		//TODO: unselect a currently selected node from the tree and make sure curselanno is empty
+		
 	}
 	/**
 	 * Notifiation function called when a change in location is detected in the currently
@@ -2117,6 +2139,8 @@
 		}
 		
 		try {
+			lore.anno.ui.enableImageHighlightingForPage();
+			
 			lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
 			lore.anno.updateAnnotationsSourceList(contextURL, function(result, resultMsg){
 				if (result == 'fail') {
@@ -2128,8 +2152,6 @@
 					lore.anno.ui.loreError("Failure loading annotations for page.");
 				}
 			});
-			
-			lore.anno.ui.enableImageHighlightingForPage();
 			lore.anno.ui.annoEventSource.clear();
 		} catch(e) {
 			lore.debug.anno(e,e);
@@ -2140,13 +2162,15 @@
 
 lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 	
-		var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
-		var doc = cw.document;
+		
 		
 		/*$(doc).ready*/
 		//TODO: Fix this
 		window.setTimeout( function () {
 		try{
+			var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
+			var doc = cw.document;
+			
 			if ( doc.getElementsByTagName("head").length == 0) {
 				lore.debug.anno("image selection disabled for page.  Either not a HTML page or no <head> element.");
 				lore.anno.ui.loreWarning("Image selection disabled for page. Not a valid HTML page.");
@@ -2169,7 +2193,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 					imageWidth: scale.origWidth
 			})});
 
-			lore.debug.anno("image selection enabled for the page", lore.anno.ui.imgAreaInstances);
+			lore.debug.anno("image selection enabled for the page");
 		} 
 		catch (e) {
 			lore.debug.anno("error occurred enabling image highlighting: " +e, e);
