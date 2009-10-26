@@ -33,13 +33,12 @@ $.imgAreaSelect = function (img, ctx, options) {
         $img = $(img, this.context),
 
         imgLoaded,
-		
+
         $box = div(),
         $area = div(),
         $border = div().add(div()).add(div()).add(div()),
         $outer = div().add(div()).add(div()).add(div()),
         $handles = $([], this.context),
-		$hidden = div(),
 
         $areaOpera,
 
@@ -148,14 +147,10 @@ $.imgAreaSelect = function (img, ctx, options) {
 
         left = viewX(0);
         top = viewY(0);
-		
-		$hidden.css ( {left: left, top: top });
-		$hidden.width(imgWidth).height(imgHeight);
-
     }
 
     function update(resetKeyPress) {
-		if (!shown) return;
+        if (!shown) return;
         $box.css({ left: viewX(selection.x1), top: viewY(selection.y1) })
             .add($area).width(w = selection.width).height(h = selection.height);
 
@@ -207,6 +202,7 @@ $.imgAreaSelect = function (img, ctx, options) {
 
     function hide($elem, fn) {
         options.fadeSpeed ? $elem.fadeOut(options.fadeSpeed, fn) : $elem.hide();
+
     }
 
     function areaMouseMove(event) {
@@ -281,7 +277,7 @@ $.imgAreaSelect = function (img, ctx, options) {
                 });
         }
         else
-            $hidden.mousedown(event);
+            $img.mousedown(event);
 
         return false;
     }
@@ -515,10 +511,8 @@ $.imgAreaSelect = function (img, ctx, options) {
     }
 
     function setOptions(newOptions) {
-		if (newOptions.parent) {
-			($parent = $(newOptions.parent, context)).append($box.add($outer));
-			$parent.append($hidden);
-		}
+		if (newOptions.parent)
+            ($parent = $(newOptions.parent,context)).append($box.add($outer));
 
         options = $.extend(options, newOptions);
 
@@ -534,14 +528,10 @@ $.imgAreaSelect = function (img, ctx, options) {
 
             $p = $p.parent();
         }
-		
-		// increment zIndex so it's greater than parent.
-		zIndex++;
-		
+
         if (!isNaN(options.zIndex))
             zIndex = options.zIndex;
 
-		
         if (newOptions.handles != null) {
             $handles.remove();
             $handles = $([],context);
@@ -605,7 +595,6 @@ $.imgAreaSelect = function (img, ctx, options) {
             if (o = $border.css('filter').match(/opacity=([0-9]+)/))
                 $border.css('opacity', o[1]/100);
         }
-		
 
         if (newOptions.hide)
             hide($box.add($outer));
@@ -619,7 +608,7 @@ $.imgAreaSelect = function (img, ctx, options) {
 
         if (options.disable || options.enable === false) {
             $box.unbind('mousemove', areaMouseMove).unbind('mousedown', areaMouseDown);
-            $hidden.add($outer).unbind('mousedown', imgMouseDown);
+            $img.add($outer).unbind('mousedown', imgMouseDown);
             $(window,context).unbind('resize', parentScroll);
             $img.add($img.parents()).unbind('scroll', parentScroll);
         }
@@ -628,7 +617,7 @@ $.imgAreaSelect = function (img, ctx, options) {
                 $box.mousemove(areaMouseMove).mousedown(areaMouseDown);
 
             if (!options.persistent)
-                $hidden.add($outer).mousedown(imgMouseDown);
+                $img.add($outer).mousedown(imgMouseDown);
             $(window,context).resize(parentScroll);
             $img.add($img.parents()).scroll(parentScroll);
         }
@@ -677,8 +666,7 @@ $.imgAreaSelect = function (img, ctx, options) {
     $box.add($outer).css({ visibility: 'hidden', position: position,
         overflow: 'hidden', zIndex: zIndex || '0' });
     $box.css({ zIndex: zIndex + 2 || 2 });
-    $hidden.add($area).add($border).css({ position: 'absolute' });
-	$hidden.css({ overflow: 'hidden', zIndex: zIndex || '0'});
+    $area.add($border).css({ position: 'absolute' });
 
     img.complete || img.readyState == 'complete' || !$img.is('img') ?
         imgLoad() : $img.one('load', imgLoad);
