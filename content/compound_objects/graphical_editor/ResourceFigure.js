@@ -319,7 +319,7 @@ lore.ore.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
 lore.ore.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 	draw2d.Node.prototype.setWorkflow.call(this, wf);
 	if (wf && !this.inputPort) {
-		var orange = new draw2d.Color(255, 204, 51);
+		var orange = new draw2d.Color(255, 252, 182);
 		var grey = new draw2d.Color(174, 174, 174);
 		this.inputPort = new lore.ore.graph.Port();
 		this.inputPort.setWorkflow(wf);
