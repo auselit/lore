@@ -22,8 +22,9 @@
  * @include  "/oaiorebuilder/content/lib/ext/ux/uxvismode.js"
  * @include  "/oaiorebuilder/content/lib/ext/ux/StatusBar.js"
  */
-
+/** Ext plugin to change hideMode to ensure tab contents are not destroyed/reloaded */
 lore.ore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
+/** Ext specification of compound objects UI */
 lore.ore.ui.gui_spec = {
     layout: "border",
     items: [{region:"north", layout: "fit"},{
@@ -123,6 +124,8 @@ lore.ore.ui.gui_spec = {
                 rootVisible: false,
                 containerScroll: true,
                 border: false,
+                enableDrag: true,
+                ddGroup: "TreeDD",
                 root: new Ext.tree.TreeNode({}),
                 dropConfig: {
                     appendOnly: true

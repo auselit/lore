@@ -92,9 +92,11 @@ lore.ore.ui.setUpMetadataMenu = function(the_grid, gridname) {
  */
 lore.ore.ui.initGraphicalView = function() {
 	lore.ore.ui.oreviews.activate("drawingarea");
-	
+	/** Used to lookup figures by their URIs in the graphical editor */
 	lore.ore.graph.lookup = {};
+    /** Triple store representing the compound object last loaded from the repository */
     lore.ore.loadedRDF = {};
+    /** Indicates whether the compound object has been edited since being loaded */
 	lore.ore.graph.modified = false;
 	if (lore.ore.graph.Graph) {
 		lore.ore.graph.Graph.getCommandStack()
@@ -109,10 +111,22 @@ lore.ore.ui.initGraphicalView = function() {
 	lore.ore.graph.Graph.addSelectionListener(lore.ore.graph.gSelectionListener);
 	lore.ore.graph.gCommandListener = new lore.ore.graph.CommandListener();
 	lore.ore.graph.Graph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
-	// selectedFigure is last selected figure - updated by
-	// SelectionProperties.js
+    // create drop target for dropping new nodes onto editor from the sources tree
+    var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD'});
+    droptarget.notifyDrop = function (dd, e, data){
+        lore.debug.ore("notifydrop",data);
+        lore.ore.graph.addFigureWithOpts({
+            url: data.node.attributes.uri, 
+            x: (e.xy[0] - lore.ore.graph.Graph.getAbsoluteX() + lore.ore.graph.Graph.getScrollLeft()),
+            y: (e.xy[1] - lore.ore.graph.Graph.getAbsoluteY() + lore.ore.graph.Graph.getScrollTop())
+        });
+        return true;
+    };
+	/** Most recently selected figure - updated in SelectionProperties.js */
 	lore.ore.graph.selectedFigure = null;
+    /** Used for layout of new nodes */
 	lore.ore.graph.dummylayoutx = lore.ore.NODE_SPACING;
+    /** Used for layout of new nodes */
 	lore.ore.graph.dummylayouty = lore.ore.NODE_SPACING;
 }
 
@@ -188,23 +202,30 @@ lore.ore.ui.initExtComponents = function() {
 	// set up the sources tree
 	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	lore.global.ui.clearTree(sourcestreeroot);
-	
+	/** The root of the tree used to display compound objects related to the resource loaded in the browser */
 	lore.ore.ui.remstreeroot = new Ext.tree.TreeNode({
 				id : "remstree",
 				text : "Compound Objects",
 				draggable : false,
 				iconCls : "tree-ore"
 			});
+    /** The root of the tree used to display compound objects that have been loaded during this session */
 	lore.ore.ui.recenttreeroot = new Ext.tree.TreeNode({
 				id : "recenttree",
-				text : "Recently viewed Compound Objects",
+				text : "Recently Viewed Compound Objects",
 				draggable : false,
 				iconCls : "tree-ore"
 			});
-	
+	lore.ore.ui.searchtreeroot = new Ext.tree.TreeNode({
+        id : "searchtree",
+        text: "Search Results",
+        draggable: false,
+        iconCls: "tree-ore"
+    });
 	sourcestreeroot.appendChild(lore.ore.ui.remstreeroot);
 	sourcestreeroot.appendChild(lore.ore.ui.recenttreeroot);
-
+    //sourcestreeroot.appendChild(lore.ore.ui.searchtreeroot);
+    
 	// set up event handlers
 	lore.ore.ui.oreviews.on("beforeremove", lore.ore.closeView);
 	// create a context menu to hide/show optional views
@@ -252,15 +273,15 @@ lore.ore.ui.initExtComponents = function() {
     });
     // summary tab
     Ext.getCmp("remlistview").on("activate", lore.ore.showCompoundObjectSummary);
-    var smiltab = Ext.getCmp("remsmilview");
     var rdftab = Ext.getCmp("remrdfview");
-    var slidetab = Ext.getCmp("remslideview");
     if (rdftab) {
         rdftab.on("activate", lore.ore.updateRDFHTML);
     }
+    var smiltab = Ext.getCmp("remsmilview");
     if (smiltab){
 	   smiltab.on("activate", lore.ore.showSMIL);
     }
+    var slidetab = Ext.getCmp("remslideview");
     if (slidetab){
         slidetab.on("activate",lore.ore.showSlideshow);
         slidetab.body.update("<div id='trailcarousel'></div>");
@@ -291,6 +312,7 @@ lore.ore.ui.initExtComponents = function() {
  * Initialise Compound Objects component of LORE
  */
 lore.ore.ui.init = function() {
+    /** Used to store options relating to parts of the UI that should be disabled */
     lore.ore.ui.disabled = {};
     
     lore.ui.vars=[]; for(var v in this){lore.ui.vars.push(v);} lore.ui.vars.sort();
@@ -299,10 +321,11 @@ lore.ore.ui.init = function() {
     try{
 	
 	lore.ore.ui.topView =  lore.global.ui.topWindowView.get(window.instanceId);
+    /** The url shown in the current browser tab */
 	lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 	lore.ore.resource_metadata_props = [];
 	lore.ore.all_props = lore.ore.METADATA_PROPS;
-
+    /** Indicates whether the ore UI is visible */
 	lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
 	lore.ore.ui.initExtComponents();
     lore.ore.ui.initProperties();
@@ -315,8 +338,10 @@ lore.ore.ui.init = function() {
 	if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != "about:blank"
 			&& lore.ore.ui.currentURL != '' && lore.ore.ui.lorevisible) {          
 		lore.ore.updateCompoundObjectsSourceList(lore.ore.ui.currentURL);
+        /** The URL for which compound object search results have been loaded in the tree */
 		lore.ore.ui.loadedURL = lore.ore.ui.currentURL;
 	}
+    /** Indicates whether the compound objects UI has been initialized */
 	lore.ore.ui.initialized = true;
 	lore.debug.ui("LORE Compound Object init complete", lore);
     } catch (e) {
