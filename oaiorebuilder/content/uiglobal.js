@@ -138,13 +138,29 @@
 
 			this.name = args.name;
 			this.views = {};
+			this.events = {};
 		
 			this.loaded = function(instId){
 				return this.views[instId] != null;
 			};
 			
+			this.onload = function(instId, callback) {
+				
+				if ( !this.events[instId] )
+					this.events[instId] = [callback];
+				else
+					this.events[instId].push(callback);
+			}			
+			
 			this.registerView = function(view, instId){
 				this.views[instId] = util.createWrapper(view, this.name);
+				var e = this.events[instId];
+				if ( e && e.length > 0) {
+					for ( var i =0; i < e.length; i++) {
+						e[i](instId);
+					}
+				}
+				this.events[instId] = null;
 			};
 			
 			this.unregisterView = function(view){

@@ -731,7 +731,9 @@ util = {
         var selText = "";
         if (currentCtxt){
             if ( util.isXPointerImageRange(currentCtxt)){
-				return "Image selected: " + currentCtxt.split(',')[5].split('"')[1]; 				
+				var data = util.parseImageRangeXPointer(currentCtxt, targetDocument);
+				var c = data.coords;
+				return 'Image region (' + c.x1 + ', ' + c.y1 +')-(' + c.x2 +', ' + c.y2 +') selected from ' + data.image.src; 				
 			}
 			var idx = currentCtxt.indexOf('#');
             var sel = util.getSelectionForXPath(currentCtxt.substring(idx + 1), targetDocument);

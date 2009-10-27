@@ -406,7 +406,7 @@ loreuieditor = function (model ) {
 							hiddenName: 'type',
 							store: new Ext.data.SimpleStore({
 								fields: ['typename', 'qtype'],
-								data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"], ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"]]
+								data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ], ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"]]
 							}),
 							valueField: 'qtype',
 							displayField: 'typename',

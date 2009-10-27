@@ -48,10 +48,11 @@ try {
 				try {
 					if (aURI) {
 						var co = loreoverlay.coView();
-						var an = loreoverlay.annoView()
+						var an = loreoverlay.annoView();
+						
 						if (aURI.spec == lore.global.ui.getCurrentURL(loreoverlay.instId)) {
-							if ( co.refreshPage) co.refreshPage();
-							if ( an.refreshPage) an.refreshPage();
+							if ( co && co.refreshPage) co.refreshPage();
+							if ( an && an.refreshPage) an.refreshPage();
 							return;
 						}
 						if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId) && 
@@ -75,7 +76,7 @@ try {
 				}
 				if (stateFlags & WPL.STATE_IS_NETWORK) { // entire page has loaded
 					if (stateFlags & WPL.STATE_STOP) {
-						lore.global.ui.locationLoaded();
+						//lore.global.ui.locationLoaded();
 					}
 				}
 			},
@@ -142,11 +143,12 @@ try {
 			try {
 				
 				var img = loreoverlay.annoView().getCurSelImage();
+				var imgSelArea = document.popupNode.getAttribute("_lore_imgareaselect");
 				
 				gContextMenu.showItem('addanno-lore', gContextMenu.isContentSelected
-				|| (gContextMenu.onImage && img));
+				|| (  imgSelArea  && img));
 				gContextMenu.showItem('modannosel-lore', (gContextMenu.isContentSelected 
-				|| (gContextMenu.onImage && img)) &&
+				|| (  imgSelArea && img)) &&
 				(loreoverlay.annoView().getCurrentAnno() != null));
 				
 				gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
@@ -506,26 +508,18 @@ try {
 				if ( lore.global.ui.annotationView.loaded(this.instId)) {
 					loreoverlay.annoView().show();
 				} else {
-					//TODO: need a better way of doing this
-					window.setTimeout(function(){
+					lore.global.ui.annotationView.onload(this.instId, function () {
 						lore.debug.ui("Annotations: Delayed loreOpen running...");
 						loreoverlay.annoView().show();
-					}, 2000);
+					});
 				}
 				
 			} else {
 				annoContentBox.setAttribute("collapsed", "true");
 				annoContentSplitter.setAttribute("collapsed", "true");
-				
 				if ( lore.global.ui.annotationView.loaded(this.instId) ) {
 					loreoverlay.annoView().hide();
-				} else {
-					//TODO: need a better way of doing this
-					window.setTimeout(function(){
-						lore.debug.ui("Annotations: Delayed loreClose running...");
-						loreoverlay.annoView().hide();
-					}, 2000);
-				}			
+				}		
 			}
 		},
 		/**
@@ -546,23 +540,17 @@ try {
 				if ( lore.global.ui.compoundObjectView.loaded(this.instId)) {
 					loreoverlay.coView().onShow();
 				}else {
-					window.setTimeout(function(){
+					lore.global.ui.compoundObjectView.onload(this.instId, function () {
 						lore.debug.ui("Compount Objects: Delayed loreOpen running...");
 						loreoverlay.coView().onShow();
-					}, 2000);
-					
+					});
 				}
 			} else {
 				contentBox.setAttribute("collapsed", "true");
 				contentSplitter.setAttribute("collapsed", "true");
 				if ( lore.global.ui.compoundObjectView.loaded(this.instId)) {
 					loreoverlay.coView().onHide();
-				} else {
-					window.setTimeout(function(){
-						lore.debug.ui("Compound Objects: Delayed loreClose running...");
-						loreoverlay.coView().onHide();
-					}, 2000);
-				}
+				} 
 			}
 				
 		},

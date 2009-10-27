@@ -223,7 +223,7 @@
 	 */
 	lore.anno.ui.setCurrentAnno = function (rec) {
 		lore.anno.ui.hideMarker();
-		lore.anno.ui.curSelAnno = rec;	
+		lore.anno.ui.curSelAnno = rec;
 	}
 	
 	lore.anno.ui.getCurrentAnno = function () {
@@ -804,8 +804,14 @@
 							 	iconCls: 'anno-icon-timeline',
 							 jscript: "lore.anno.ui.showAnnoInTimeline('" + anno.id + "');"}
 							  ];
-				
-						  
+			
+			var aType = lore.global.util.splitTerm(anno.type).term;
+			var icons = { 'Comment': 'anno-icon', 'Explanation':'anno-icon-explanation','VariationAnnotation':'anno-icon-variation' ,
+			'Question': 'anno-icon-question'};
+			var iCls = icons[aType] || 'anno-icon';
+			
+			
+				  
 			if (lore.anno.isNewAnnotation(anno)) {
 				
 				tmpNode = new lore.anno.ui.LOREColumnTreeNode ( {
@@ -813,7 +819,7 @@
 					nodeType: anno.type,
 					title: lore.anno.ui.getAnnoTitle(anno),
 					text: anno.body || '',
-					iconCls: 'anno-icon',
+					iconCls: iCls,
 					uiProvider: lore.anno.ui.LOREColumnTreeNodeUI,
 					// links: nodeLinks,
 					qtip:  lore.anno.ui.genAnnotationCaption(anno, 't by c, d')
@@ -835,7 +841,7 @@
 					text: lore.anno.ui.genTreeNodeText(anno),
 					title: anno.title,
 					bheader: lore.anno.ui.genAnnotationCaption(anno, 'by c, d r'),
-					iconCls: 'anno-icon',
+					iconCls: iCls,
 					uiProvider: lore.anno.ui.LOREColumnTreeNodeUI,
 					links: nodeLinks,
 					qtip: lore.anno.ui.genAnnotationCaption(anno, 't by c, d')
@@ -1005,6 +1011,7 @@
 					this.target = args.target || lore.global.util.getContentWindow(window).document;
 					this.type  = lore.global.util.isXPointerImageRange(this.xpointer) ? 1:0;
 					this.visible = false;
+					this.bw = args.borderWidth || 1;
 					
 					this.show = function (colour, styleCallback, scroll) {
 						this.colour = colour;
@@ -1019,15 +1026,6 @@
 							var _div = $(lore.global.util.domCreate('span', doc));
 							var _parent = $('body',doc)
 							_parent.append(_div);
-							/*var _img = $(this.data.image);
-							_div.mousedown(function() {
-								try {
-									_img.trigger('click');
-								} catch(e ) {
-									lore.debug.anno("err " + e,e);
-								}
-							});*/
-							
 							this.data.nodes = [_div.get(0)];
 							this.update(); 
 							
@@ -1065,16 +1063,16 @@
 							
 							var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords);
 							var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
+							
 							var _n = $(this.data.nodes[0]);
-							 //$(this.data.nodes[0]).css({
-							// lore.debug.anno( 'z-ind: ' + _n.parent().css('zIndex'));
+							
 							 _n.css({
 							 	position: 'absolute',
-							 	left: c.x1 + o.left,
-							 	top: c.y1 + o.top,
-								border: '1px solid ' + this.colour,
+							 	left: c.x1 + o.left + this.bw,
+							 	top: c.y1 + o.top + this.bw,
+								border: this.bw + 'px solid ' + this.colour,
 								zIndex: _n.parent().css('zIndex')
-							 }).width(c.x2 - c.x1).height(c.y2-c.y1);
+							 }).width(c.x2 - c.x1 - this.bw*2).height(c.y2-c.y1 - this.bw*2);
 							 if ( this.styleCallback) this.styleCallback(this.type, this.data.nodes[0]);
 						}
 					}
@@ -1480,9 +1478,9 @@
 				lore.anno.ui.setAnnotationFormUI(true);
 			}
 			else 
-				if (theVal == 'Comment' || theVal == 'Explanation') {
+				//if (theVal == 'Comment' || theVal == 'Explanation' ) {
 					lore.anno.ui.setAnnotationFormUI(false);
-				}
+				//}
 			
 		}
 		
@@ -1533,6 +1531,7 @@
 					}
 					
 					lore.anno.ui.topView.updateVariationSplitter(ctx, title, show, function(){
+						// when page has loaded perform the following
 						lore.anno.ui.hideMarker();
 						var cw = lore.anno.ui.topView.getVariationContentWindow();
 						lore.anno.ui.enableImageHighlightingForPage(cw);
@@ -1743,7 +1742,7 @@
 				domObj.style.textDecoration = "underline";
 			}
 			else if (type == 1) { 
-					domObj.style.borderWidth = '1px';
+					domObj.style.borderStyle = 'solid';
 			}
 			return domObj;
 		}
@@ -1807,6 +1806,7 @@
 			}
 			for ( var i=0; i < markers.length;i++) {
 				markers[i].show(lore.anno.ui.getCreatorColour(rec.data.creator), annoStyle, true);
+				lore.anno.ui.genTipForAnnotation(rec.data, markers[i]);
 			}
 			return markers;
 				
@@ -2017,6 +2017,9 @@
 		
 		lore.anno.ui.initHighlightData();
 		lore.anno.ui.enableImageHighlightingForPage();
+		 
+		lore.anno.ui.setCurrentAnno(null);
+		
 		//TODO: unselect a currently selected node from the tree and make sure curselanno is empty
 		
 	}
@@ -2035,50 +2038,7 @@
 						
 			lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
 			
-			try {
-				if (!lore.anno.ui.handleLocationChange.windowResizeHandler) {
-					lore.anno.ui.handleLocationChange.windowResizeHandler = function(){
-						try {
-							var markers = lore.anno.ui.curAnnoMarkers.concat(lore.anno.ui.multiSelAnno);
-							for (var i = 0; i < markers.length; i++) {
-								var m = markers[i];
-								if (m.type == 1 && m.target == this.document) {
-									m.update();
-								}
-							}
-							$('img', this.document).each(function(){
-								var inst = $(this).imgAreaSelectInst();
-								if (inst) {
-									// imgarea supports scaling, but it refreshes it scaling
-									// in a retarded way, merely calling update will not work 
-									var s = inst.getSelection();
-									inst.setOptions({});
-									inst.setSelection(s.x1,s.y1,s.x2,s.y2);
-									inst.update();
-								}
-							});
-						} 
-						catch (e) {
-							lore.debug.anno("error occurred during window resize handler: " + e, e);
-						}
-					}
-				}
-					
-					//TODO: should remove these events
-					/*lore.global.util.getContentWindow(window).removeEventListener("resize", 
-											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
-					lore.anno.ui.topView.getVariationContentWindow().removeEventListener("resize", 
-											lore.anno.ui.handleLocationChange.windowResizeHandler, false);*/
-					
-					lore.global.util.getContentWindow(window).addEventListener("resize", 
-											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
-					lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", 
-											lore.anno.ui.handleLocationChange.windowResizeHandler, false);
-					
-				
-			}catch (e) {
-				lore.debug.anno("error occurred setting window handlers: " +e, e);
-			}
+			
 			
 			if ( !initialLoad ) {
 			try{
@@ -2140,7 +2100,6 @@
 		
 		try {
 			lore.anno.ui.enableImageHighlightingForPage();
-			
 			lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
 			lore.anno.updateAnnotationsSourceList(contextURL, function(result, resultMsg){
 				if (result == 'fail') {
@@ -2161,43 +2120,114 @@
 	
 
 lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
-	
-		
-		
-		/*$(doc).ready*/
-		//TODO: Fix this
-		window.setTimeout( function () {
-		try{
+
+
+	var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
+	var doc = cw.document;
+	var e = function(){
+		try {
 			var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
 			var doc = cw.document;
 			
-			if ( doc.getElementsByTagName("head").length == 0) {
+			if ($('span#lore_image_highlighting_inserted', doc).size() > 0) {
+				lore.debug.anno("page already enable for image annotations");
+				return;
+			}
+			
+			if (doc.getElementsByTagName("head").length == 0) {
 				lore.debug.anno("image selection disabled for page.  Either not a HTML page or no <head> element.");
 				lore.anno.ui.loreWarning("Image selection disabled for page. Not a valid HTML page.");
 				return;
 			}
 			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
-			$('img', doc).each(function(){
+			
+			var im = $('img', doc);
+			var imgOnly = doc.contentType.indexOf("image") == 0 && im.size() == 1;
+			lore.debug.anno(im,im);
+			im.each(function(){
 				// preload image scale factor
 				var scale = lore.anno.ui.updateImageData(this);
-	
+				
 				// attach image area select handle for image			
 				$(this).imgAreaSelect({
 					onSelectEnd: lore.anno.ui.handleEndImageSelection,
-					onSelectStart: function () { 
+					onSelectStart: function(){
 						var selObj = cw.getSelection();
 						selObj.removeAllRanges();
 					},
 					handles: 'corners',
 					imageHeight: scale.origHeight,
 					imageWidth: scale.origWidth
-			})});
-
+				})
+			});
+			
+			var e = lore.global.util.domCreate('span', doc);
+			e.id = 'lore_image_highlighting_inserted';
+			$('body', doc).append(e);
+			
 			lore.debug.anno("image selection enabled for the page");
+			
+			var refreshImageMarkers = function(e){
+				try {
+					var markers = lore.anno.ui.curAnnoMarkers.concat(lore.anno.ui.multiSelAnno);
+					var d = this.document || this.ownerDocument;
+					for (var i = 0; i < markers.length; i++) {
+						var m = markers[i];
+						if (m.type == 1 && (m.target == d)) {
+							m.update();
+						}
+					}
+					$('img', d).each(function(){
+						var inst = $(this).imgAreaSelectInst();
+						
+						if (inst) {
+							// imgarea supports scaling, but it refreshes it scaling
+							// in a retarded way, merely calling update will not work
+							 
+							var s = inst.getSelection();
+							inst.setOptions({});
+							inst.setSelection(s.x1, s.y1, s.x2, s.y2);
+							inst.update();
+						}
+					});
+				} 
+				catch (e) {
+					lore.debug.anno("error occurred during window resize handler: " + e, e);
+				}
+			}
+			//TODO: need the remove event handlers
+			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
+			lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
+			if (imgOnly) 
+				im.click(refreshImageMarkers);
+			
+			
 		} 
 		catch (e) {
-			lore.debug.anno("error occurred enabling image highlighting: " +e, e);
-		}}, 1000
-	);
+			lore.debug.anno("error occurred enabling image highlighting: " + e, e);
+		}
+	};
+	var ol = function(){
+		cw.removeEventListener("load", ol, true);
+		e();
+	}
 	
+	// case: dom content not loaded
+	if ( !doc.body) {
+		cw.addEventListener("load", ol, true);
+		return;
+	}
+	
+	var im = $('img', doc);
+	if (im.size() > 0) {
+		var contentLoaded = true;
+		im.each(function () {
+					contentLoaded = contentLoaded && this.offsetWidth;
+		});
+		
+	 	if (!contentLoaded)  // case: dom content loaded, images aren't
+			cw.addEventListener("load", ol, true);
+		else 			// case: page already loaded (i.e switching between preloaded tabs)
+			e(); 
+	}
 }

@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>lore@maenad.itee.uq.edu.au</em:id>
     <em:name>lore</em:name>
-    <em:version>0.311</em:version>
+    <em:version>0.313</em:version>
     <em:creator>UQ ITEE eResearch</em:creator>
     <em:aboutURL>chrome://lore/content/about.xul</em:aboutURL>
     <em:optionsURL>chrome://lore/content/options.xul</em:optionsURL>
