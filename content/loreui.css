@@ -116,9 +116,20 @@
 .x-tree-node .anno-icon {
 	background-image: url(chrome://lore/skin/icons/comment.png);
 }
-.x-tree-node .annoreply-icon {
-	background-image: url(chrome://lore/skin/icons/comments.png);
+.x-tree-node .anno-icon-reply {
+	background-image: url(chrome://lore/skin/icons/reply.png);
 }
+.x-tree-node .anno-icon-variation {
+	background-image: url(chrome://lore/skin/icons/variation.png);
+}
+.x-tree-node .anno-icon-explanation {
+	background-image: url(chrome://lore/skin/icons/explanation.png);
+}
+
+.x-tree-node .anno-icon-question {
+	background-image: url(chrome://lore/skin/icons/question.png);
+}
+
 
 .x-tree-node .anno-view {
 	height: 16px !important;
