@@ -25,7 +25,7 @@ $.imgAreaSelect = function (img, ctx, options) {
 	var context = this.context;
 	
 	function div() {
-		return $('<div/>', context);
+		return $(lore.global.util.domCreate("div", context)).attr("_lore_imgareaselect", "true");
 	}
 
     var
