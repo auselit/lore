@@ -45,14 +45,26 @@ lore.ore.NODE_SPACING = 40;
 lore.ore.MAX_X        = 400;
 
 // TODO: replace with an ontology
-/** Default list of properties that can be specified for compound objects or aggregated resources 
+/** Default list of properties that can be specified for compound objects or resources 
  * @const */
 lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
     "dcterms:created", "dc:contributor", "dc:coverage", "dc:description",
     "dc:format", "dcterms:hasFormat", "dc:identifier", "dc:language",
     "dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
-    "dc:subject", "dc:title"]; 
-    
+    "dc:subject", "dc:title"];
+/** Properties that are mandatory for compound objects
+ *  @const */
+lore.ore.CO_REQUIRED = ["dc:creator","dcterms:created",
+
+    "dcterms:modified", "ore:describes", "rdf:about", "rdf:type"
+];
+/** Properties that are mandatory for an aggregated resource
+ *  @const */
+lore.ore.RES_REQUIRED = ["resource"];
+/** Properties that are mandatory for a relationship 
+ * @const */
+lore.ore.REL_REQUIRED = ["relationship", "namespace"];
+
 /** Display an error message in the ORE statusbar 
  * @param {String} message The message to display */
 lore.ore.ui.loreError = function(/*String*/message){
@@ -116,6 +128,105 @@ lore.ore.setDcCreator = function(creator){
     lore.ore.ui.grid.setSource(remprops);
     /** The name of the default creator used for dc:creator for annotations and compound objects */
     lore.defaultCreator = creator;
+}
+/** Handle click of search button in search panel */
+lore.ore.keywordSearch = function(){
+    lore.debug.ore("kw search triggered");
+    lore.ore.search(null,null,Ext.getCmp("kwsearchval").getValue());
+}
+
+lore.ore.advancedSearch = function(){
+    var searchform = Ext.getCmp("advsearchform").getForm();
+    var searchuri = searchform.findField("searchuri").getValue();
+    var searchpred = searchform.findField("searchpred").getValue();
+    var searchval = searchform.findField("searchval").getValue();
+    //var searchexact = searchform.findField("searchexact").getValue();
+    lore.ore.search(searchuri, searchpred, searchval);
+}
+
+lore.ore.search = function (searchuri, searchpred, searchval){
+    try{
+    var searchtreeroot = Ext.getCmp("searchtree").getRootNode();
+    lore.global.ui.clearTree(searchtreeroot);
+    if (searchuri && searchuri != ""){
+        searchuri = "<" + searchuri + ">";
+    } else {
+        searchuri = "?u";
+    }
+    if (searchpred && searchpred != ""){
+        searchpred = "<" + searchpred + ">";
+    } else {
+        searchpred = "?p";
+    }
+    var filter = "";
+    if (searchval && searchval != ""){
+        filter = "FILTER regex(str(?v), \"" + searchval + "\")"
+    } 
+	var searchquery = lore.ore.reposURL
+        + "?queryLn=sparql&query=" 
+        + "select distinct ?g ?a ?c ?t ?v where {"
+        + " graph ?g {" + escape(searchuri) + " " + searchpred + " ?v ."
+        + filter + "} ."
+        + "{?g <http://purl.org/dc/elements/1.1/creator> ?a} ."
+        + "{?g <http://purl.org/dc/terms/created> ?c} ."
+        + "OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
+    lore.debug.ore("searchquery is",searchquery);
+    var req = new XMLHttpRequest();
+    req.open('GET', searchquery, true);
+    req.onreadystatechange = function(aEvt) {
+        if (req.readyState == 4) {
+            if (req.responseText && req.status != 204
+                    && req.status < 400) {  
+                var xmldoc = req.responseXML;
+                var result = {};
+                if (xmldoc) {
+                    lore.debug.ore("compound object search results: sparql response", req);
+                    result = xmldoc.getElementsByTagNameNS(
+                            lore.constants.NAMESPACES["sparql"], "result");
+                }
+                for (var i = 0; i < result.length; i++) {
+                    var theobj = new lore.ore.CompObjListing(result[i]);
+                    if (!searchtreeroot.findChild('id',theobj.uri + 's')){
+                       try{
+	                       var res = theobj.match;
+                           lore.debug.ore("the val matched is",res);
+	                       var displayres = "";
+	                       if (res) {
+                            // display a snippet to show where search term occurs
+		                       var idx = res.match(searchval).index;
+		                       var s1 = ((idx - 15) < 0) ? 0 : idx - 15;
+		                       var s2 = ((idx + 15) > (res.length))? res.length : idx + 15;
+		                       displayres = " ("+ ((s1 > 0)?"..":"") + res.substring(s1,s2) 
+	                            + ((s2 < (res.length))? "..":"")+ ")";
+	                       }
+	                       var tmpNode = new Ext.tree.TreeNode({
+	                                'text' : theobj.title +  displayres,
+	                                'id' : theobj.uri + 's',
+	                                'uri' : theobj.uri,
+	                                'qtip': "Created by " + theobj.creator + ", " + theobj.created,
+	                                'iconCls' : 'oreresult',
+	                                'leaf' : true,
+	                                'draggable': true
+	                        });
+	                       searchtreeroot.appendChild(tmpNode);
+	                       lore.ore.attachREMEvents(tmpNode);
+                       } catch (ex){
+                           lore.debug.ore("error creating search result",ex);
+                       }
+                    }
+                }        
+                if (!searchtreeroot.isExpanded()) {
+                    searchtreeroot.expand();
+                }    
+            } else if (req.status = 404){
+                lore.debug.ore("404 accessing compound object repository",req);
+            }
+        }
+    }
+    req.send(null);
+    } catch (e){
+        lore.debug.ore("exception in search",e);
+    }
 }
 
 /**
@@ -220,7 +331,98 @@ lore.ore.closeView = function(/*Ext.TabPanel*/tabpanel, /*Ext.panel*/panel) {
     }
     return true;
 }
+lore.ore.ui.hideProps = function(p, animate){
+        p.body.setStyle('display','none');
+       
+};
+lore.ore.ui.showProps = function(p, animate){
+        p.body.setStyle('display','block');
+};
 
+/** Handler for plus tool button on property grids */
+lore.ore.ui.addProperty = function (ev, toolEl, panel){
+    var makeAddMenu  = function(panel){
+	    panel.propMenu = new Ext.menu.Menu({
+	        id: panel.id + "-add-metadata"
+	    });
+        panel.propMenu.panelref = panel.id;
+	    for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
+            var propname = lore.ore.METADATA_PROPS[i];
+            panel.propMenu.add({
+                id: panel.id + "-add-" + propname,
+                text: propname,
+                handler: function (){
+                    try{
+	                    var panel = Ext.getCmp(this.parentMenu.panelref);
+	                    var props = panel.getSource();
+	                    if (props && !props[this.text]){
+	                        props[this.text] = "";
+	                    }
+	                    panel.setSource(props);
+                    } catch (ex){
+                        lore.debug.ore("exception adding prop " + this.text,ex);
+                    }
+                }
+            });
+	    }
+	}
+    if (!panel.propMenu){
+        makeAddMenu(panel);
+    }
+    if (panel.collapsed){
+        panel.expand(false);
+    }
+    panel.propMenu.showAt(ev.xy);
+}
+/** Handler for minus tool button on property grids */
+lore.ore.ui.removeProperty = function (ev, toolEl, panel){ 
+    lore.debug.ore("remove Property was triggered",ev);
+    var sel = panel.getSelectionModel().selection;
+    // don't allow delete when panel is collapsed (user can't see what is selected)
+    if (panel.collapsed){
+        lore.ore.ui.loreInfo("Please expand the properties panel and select the property to remove");
+    } else if (sel){
+             if ((panel.id == "remgrid" && lore.ore.CO_REQUIRED.indexOf(sel.record.data.name)!=-1) ||
+                (panel.id == "nodegrid" && 
+                    (lore.ore.RES_REQUIRED.indexOf(sel.record.data.name) !=-1 ||
+                        lore.ore.REL_REQUIRED.indexOf(sel.record.data.name)!=-1))){
+                lore.ore.ui.loreWarning("Cannot remove mandatory property: " + sel.record.data.name);
+            } else {
+                //panel.getStore().remove(sel.record); // doesn't seem to be working
+                lore.debug.ore("deleting the property",panel.collapsed);
+                var props = panel.getSource();
+                delete props[sel.record.data.name];
+                panel.setSource(props);
+            }
+     } else {
+        lore.ore.ui.loreInfo("Please click on the property to remove prior to selecting the remove button");
+     }
+}
+/** Handler for help tool button on property grids */
+lore.ore.ui.helpProperty = function (ev,toolEl, panel){
+    var sel = panel.getSelectionModel().selection;
+    if (panel.collapsed){
+        lore.ore.ui.loreInfo("Please expand the properties panel and select a property");
+    } else if (sel){
+        var splitprop =  sel.record.data.name.split(":");
+        var infoMsg = "<p style='font-weight:bold;font-size:130%'>" + sel.record.data.name + "</p><p style='font-size:110%;margin:5px;'>" 
+        + sel.record.data.value + "</p>";
+        if (splitprop.length > 1){
+            var ns = lore.constants.NAMESPACES[splitprop[0]]
+            infoMsg += "<p>This property is defined in " 
+                    + "<a style='text-decoration:underline' href='#' onclick='lore.global.util.launchTab(\"" 
+                    + ns + "\");'>" + ns + "</a></p>";
+        }
+        
+        Ext.Msg.show({
+                title : 'About ' + sel.record.data.name,
+                buttons : Ext.MessageBox.OK,
+                msg : infoMsg
+            });
+    } else {
+        lore.ore.ui.loreInfo("Please click on a property prior to selecting the help button");
+    }
+}
 
 /** Helper function to create a view displayed in a closeable tab */
 lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
@@ -356,6 +558,13 @@ lore.ore.CompObjListing = function(/*Node*/result){
         if (attr.nodeValue =='g'){ //graph uri
             node = bindings[j].getElementsByTagName('uri'); 
             this.uri = lore.global.util.safeGetFirstChildValue(node);
+        } else if (attr.nodeValue == 'v'){
+            node = bindings[j].getElementsByTagName('literal');
+            nodeVal = lore.global.util.safeGetFirstChildValue(node);
+            if (!nodeVal){
+                node = bindings[j].getElementsByTagName('uri');
+            }
+            this.match = lore.global.util.safeGetFirstChildValue(node);
         } else {
             node = bindings[j].getElementsByTagName('literal');
             nodeVal = lore.global.util.safeGetFirstChildValue(node);
@@ -365,7 +574,7 @@ lore.ore.CompObjListing = function(/*Node*/result){
                 this.creator = nodeVal;
             } else if (attr.nodeValue == 'c' && nodeVal){ // dcterms:created
                 this.created = nodeVal;
-            }
+            } 
         }
        }
     } catch (ex) {
@@ -549,7 +758,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         // create RDF for resources in aggregation
         // TODO: resource properties eg dcterms:hasFormat, ore:isAggregatedBy
         for (var mprop in fig.metadataproperties) {
-            if (mprop != 'Resource' && !mprop.match('undefined')) {
+            if (mprop != 'resource' && !mprop.match('undefined')) {
                 var mpropval = fig.metadataproperties[mprop];
                 if (mpropval && mpropval != '') {
                     resourcerdf += ltsymb + rdfdescabout + figurl + closetag
@@ -1276,7 +1485,7 @@ lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
     lore.ore.graph.modified = true;
     var theval;
     lore.debug.ore("handle property change " + recid + " " + newval + " " + oldval,source);
-    if (recid == 'Resource') {
+    if (recid == 'resource') {
         // the URL of the resource has changed
         if (newval && newval != '') {
             theval = newval;

@@ -95,16 +95,11 @@ lore.ore.ui.gui_spec = {
             }]
         }]
     }, {
-        region: "west",
-        id: "loresidebar",
-        title: "LORE Compound Objects",         
+        region: "west",       
         width: 300,
-        minWidth: 100,
+        minWidth: 3,
         split: true,
-        collapsible: true,
-        animCollapse: false, 
-        layout: "fit",
-        items: [{
+        
             id:"propertytabs",
             xtype:"tabpanel",
             deferredRender: false,
@@ -114,9 +109,9 @@ lore.ore.ui.gui_spec = {
             },
             fitToFrame: true,
             items:[
-            {
+            { 
                 xtype: "treepanel",
-                title: "Compound Objects",
+                title: "Browse",
                 id: "sourcestree",
                 animate: false,
                 autoScroll: true,
@@ -125,50 +120,177 @@ lore.ore.ui.gui_spec = {
                 containerScroll: true,
                 border: false,
                 enableDrag: true,
+                enableDrop: false,
                 ddGroup: "TreeDD",
-                root: new Ext.tree.TreeNode({}),
-                dropConfig: {
-                    appendOnly: true
-                }    
+                root: new Ext.tree.TreeNode({})
+  
             }, {
-                xtype: 'propertygrid',
-                title: 'Compound Object Properties',
-                id: "remgrid",
-                autoWidth: true,
-                viewConfig: {
-                    forceFit: true,
-                    scrollOffset: 0
-                },
-                tbar: [new Ext.Button({
-                    id: "maddbtn",
-                    text: "Add property"
-                }), new Ext.Button({
-                    id: "mrembtn",
-                    text: "Remove property"
-                })]
-             }, {
-                    xtype: "propertygrid",
-                    title: "Resource/Relationship Properties",
-                    id: "nodegrid",
-                    autoWidth: true,
-                    viewConfig: {
-                        forceFit: true,
-                        scrollOffset: 0
+                xtype: "panel",
+                layout: "anchor",
+                title: "Search",
+                id: "searchpanel",
+                items:[{
+                    xtype: "tabpanel",
+                    anchor: "100%",
+                    id: "searchforms",
+                    items: [
+                    {
+                      xtype: "panel",
+                      layout: "hbox",
+                      title: "Keyword",
+                      id: "kwsearchform",
+                      border: false,
+                      autoHeight: true,
+                      padding: 5,
+                      items: [
+                        {
+                            xtype:"textfield",
+                            id: "kwsearchval", 
+                            listeners: {
+                                specialkey: function(field,el){
+                                    if (el.getKey() == Ext.EventObject.ENTER)
+                                        Ext.getCmp("kwsearchbtn").fireEvent("click");
+                                }
+                            }
+                        },
+                        {
+                            xtype: "button",
+                            text: 'Search',
+                            id: 'kwsearchbtn',
+                            tooltip: 'Run the search'
+                        }
+                     ]
                     },
-                    tbar: [new Ext.Button({
-                        text: "Add property"
-                    }), new Ext.Button({
-                        text: "Remove property"
-                    })]
-              }
+                    {
+                        title: "Advanced",
+	                    xtype: "form",
+	                    id: "advsearchform",
+	                    border: false,
+	                    buttons: [{
+	                        text: 'Search',
+	                        id: 'advsearchbtn',
+	                        tooltip: 'Run the search'
+	                    }
+	                    ],
+                        keys: [{ key: [10, 13], fn: function() {
+                                Ext.getCmp("advsearchbtn").fireEvent('click');
+                            }
+                        }],
+	                    items: [
+	                    {
+	                        xtype: "label",
+	                        text: "Find Compound Objects"
+	                    },
+	                    {
+	                        xtype:"textfield",
+	                        fieldLabel: "containing",
+	                        id: "searchuri",
+	                        emptyText: "any resource"
+	                    },
+	                    {
+	                        xtype: "combo",
+	                        fieldLabel: "having",
+	                        id: "searchpred",
+	                        emptyText: "any property or relationship",
+	                        store: new Ext.data.ArrayStore({
+	                            fields: [],
+	                            data: []
+	                        })
+	                    },
+	                    {
+	                        xtype: "textfield",
+	                        fieldLabel: "matching",
+	                        id: "searchval",
+	                        emptyText: ""
+	                    }/*,
+	                    {
+	                        xtype: "checkbox",
+	                        id: "searchexact",
+	                        boxLabel: "exactly"
+	                    }*/
+	                    ]
+                    }]
+                }, {
+                    anchor: "100%",
+                    xtype: "treepanel",
+                    title: "Search Results",
+                    id: "searchtree",
+                    animate: false,
+                    autoScroll: true,
+                    fitToFrame: true,
+                    rootVisible: false,
+                    border: false,
+                    enableDrag: true,
+                    enableDrop: false,
+                    ddGroup: "TreeDD",
+                    root: new Ext.tree.TreeNode({})  
+                }]
+            }, {
+                xtype: "panel",
+                layout: "anchor",
+                title: "Properties",
+                id: "properties",
+                items: [{
+		                xtype: 'propertygrid',
+		                title: 'Compound Object Properties',
+                        tools: [
+                            {
+                                id:'plus',
+                                qtip: 'Add a property',
+                                handler: lore.ore.ui.addProperty
+                            },
+                            {
+                                id:'minus',
+                                qtip: 'Remove the selected property',
+                                handler: lore.ore.ui.removeProperty
+                            }, {
+                                id: 'help',
+                                qtip: 'Display information about the selected property',
+                                handler: lore.ore.ui.helpProperty
+                            }
+                        ],
+                        collapsible: true,
+                        animCollapse: false,
+		                id: "remgrid",
+                        autoHeight: true,
+                        anchor: "100%",
+		                viewConfig: {
+		                    forceFit: true,
+		                    scrollOffset: 0
+		                }
+		             }, {
+		                    xtype: "propertygrid",
+		                    title: "Resource/Relationship Properties",
+		                    id: "nodegrid",
+                            autoHeight:true,
+                            anchor: "100%",
+		                    viewConfig: {
+		                        forceFit: true,
+		                        scrollOffset: 0
+		                    },
+                            collapsible: true,
+                            animCollapse: false,
+                            tools: [
+                            {
+                                id:'plus',
+                                qtip: 'Add a property',
+                                handler: lore.ore.ui.addProperty
+                            },
+                            {
+                                id:'minus',
+                                qtip: 'Remove the selected property',
+                                handler: lore.ore.ui.removeProperty
+                            }, {
+                                id: 'help',
+                                qtip: 'Display information about the selected property',
+                                handler: lore.ore.ui.helpProperty
+                            }
+                            ]
+		              }
+              ]}
          ]
-            }
-        ]
     }
     ]};
-        
-
-    
     
     
 try {
@@ -181,7 +303,6 @@ try {
 
 lore.ore.disableUIFeatures = function(opts) {
     // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
-	
     lore.debug.ui("LORE Compound Objects: disable ui features?", opts);
     lore.ore.ui.disabled = opts;
     

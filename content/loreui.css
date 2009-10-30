@@ -173,7 +173,7 @@
 	color:blue;
 	text-decoration:underline;
 }
-#loresidebar * .x-tree-node a:hover {
+#propertytabs * .x-tree-node a:hover {
     text-decoration:none;
     color:black;
 }

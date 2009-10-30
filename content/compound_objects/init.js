@@ -33,61 +33,6 @@ lore.ore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getItemLocation(lore.constants.EXTENSION_ID);
 
 /**
- * Create menus for adding/removing additional metadata properties
- * @param {Ext.grid.GridPanel} the_grid The property grid object on which to create the menus
- * @param {String} gridname The display name of the property grid
- */
-lore.ore.ui.setUpMetadataMenu = function(the_grid, gridname) {
-	var make_menu_entry = function(menu, gridname, propname, op) {
-		var funcstr = "";
-		funcstr += "var props = " + gridname + ".getSource();";
-		if (op == "add") {
-			funcstr += "if (props && !props[\"" + propname + "\"]){";
-			funcstr += "props[\"" + propname + "\"] = \"\";";
-		} else {
-			funcstr += "if (props && typeof props[\"" + propname
-					+ "\"] != \"undefined\"){";
-			funcstr += "delete props[\"" + propname + "\"];";
-		}
-		funcstr += gridname + ".setSource(props);}";
-		menu.add({
-					id : menu.id + "-" + op + "-" + propname,
-					text : propname,
-					handler : new Function(funcstr)
-				});
-	};
-	var addMetadataMenu = new Ext.menu.Menu({
-				id : gridname + "-add-metadata-menu"
-			});
-	var remMetadataMenu = new Ext.menu.Menu({
-				id : gridname + "-rem-metadata-menu"
-			});
-	for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
-		make_menu_entry(addMetadataMenu, gridname, lore.ore.METADATA_PROPS[i],
-				"add");
-		make_menu_entry(remMetadataMenu, gridname, lore.ore.METADATA_PROPS[i],
-				"rem");
-	}
-	if (gridname == "lore.ore.ui.nodegrid") {
-		for (var i = 0; i < lore.ore.resource_metadata_props.length; i++) {
-			make_menu_entry(addMetadataMenu, gridname,
-					lore.ore.resource_metadata_props[i], "add");
-			make_menu_entry(remMetadataMenu, gridname,
-					lore.ore.resource_metadata_props[i], "rem");
-		}
-	}
-    var tbar = the_grid.getTopToolbar(); 
-    var addbtn = tbar.items.itemAt(0); 
-    var rembtn = tbar.items.itemAt(1); 
-	if (addbtn) {
-		addbtn.menu = addMetadataMenu;
-	}
-	if (rembtn) {
-		rembtn.menu = remMetadataMenu;
-	}
-}
-
-/**
  * Initialise the graphical view
  */
 lore.ore.ui.initGraphicalView = function() {
@@ -121,6 +66,10 @@ lore.ore.ui.initGraphicalView = function() {
             y: (e.xy[1] - lore.ore.graph.Graph.getAbsoluteY() + lore.ore.graph.Graph.getScrollTop())
         });
         return true;
+    };
+    
+    droptarget.onInvalidDrop = function(e){
+        lore.debug.ore("invalid drop",e);
     };
 	/** Most recently selected figure - updated in SelectionProperties.js */
 	lore.ore.graph.selectedFigure = null;
@@ -156,6 +105,14 @@ lore.ore.ui.initProperties = function() {
                 "dc:title" : ""
 	});
 	lore.ore.ui.nodegrid.on("propertychange", lore.ore.handleNodePropertyChange);
+    lore.ore.ui.nodegrid.on("beforeedit", function(e) {
+                // don't allow format field to be edited
+                if (e.record.id == "dc:format") {
+                    e.cancel = true;
+                }
+    });
+    // TODO: is it possible to listen for deletion from property grid to remove from node?
+    
 	lore.ore.ui.grid.on("beforeedit", function(e) {
 				// don't allow these fields to be edited
 				if (e.record.id == "ore:describes" 
@@ -164,6 +121,7 @@ lore.ore.ui.initProperties = function() {
 					e.cancel = true;
 				}
 	});
+    // update the CO title in the tree if it is changed in the properties
     lore.ore.ui.grid.on("afteredit",function(e){
         if (e.record.id == "dc:title"){
             var treenode = lore.ore.ui.remstreeroot.findChild("id",lore.ore.currentREM);
@@ -176,17 +134,16 @@ lore.ore.ui.initProperties = function() {
             }
         }
     });
-	lore.ore.ui.nodegrid.on("beforeedit", function(e) {
-				// don't allow format field to be edited
-				if (e.record.id == "dc:format") {
-					e.cancel = true;
-				}
-			});
+    // Fix collapsing so that the grids are hidden properly
+    lore.ore.ui.grid.on('beforecollapse', lore.ore.ui.hideProps);
+    lore.ore.ui.nodegrid.on('beforecollapse',lore.ore.ui.hideProps);
     
-	lore.ore.ui.setUpMetadataMenu(lore.ore.ui.grid, "lore.ore.ui.grid");
-	lore.ore.ui.setUpMetadataMenu(lore.ore.ui.nodegrid, "lore.ore.ui.nodegrid");
+    lore.ore.ui.grid.on('beforeexpand', lore.ore.ui.showProps);
+    lore.ore.ui.nodegrid.on('beforeexpand',lore.ore.ui.showProps);
+
 	lore.ore.ui.propertytabs.activate("sourcestree");
 }
+    
 /**
  * Initialise the Extjs UI components and listeners
  */
@@ -204,29 +161,29 @@ lore.ore.ui.initExtComponents = function() {
 	lore.global.ui.clearTree(sourcestreeroot);
 	/** The root of the tree used to display compound objects related to the resource loaded in the browser */
 	lore.ore.ui.remstreeroot = new Ext.tree.TreeNode({
-				id : "remstree",
-				text : "Compound Objects",
-				draggable : false,
-				iconCls : "tree-ore"
-			});
+		id : "remstree",
+		text : "Related Compound Objects",
+        qtip: "Compound Objects that refer to the page displayed in the web browser",
+		draggable : false,
+		iconCls : "tree-ore"
+	});
     /** The root of the tree used to display compound objects that have been loaded during this session */
 	lore.ore.ui.recenttreeroot = new Ext.tree.TreeNode({
-				id : "recenttree",
-				text : "Recently Viewed Compound Objects",
-				draggable : false,
-				iconCls : "tree-ore"
-			});
-	lore.ore.ui.searchtreeroot = new Ext.tree.TreeNode({
-        id : "searchtree",
-        text: "Search Results",
-        draggable: false,
-        iconCls: "tree-ore"
-    });
+		id : "recenttree",
+		text : "Recently Viewed Compound Objects",
+        qtip: "Compound Objects that have been viewed during this browsing session",
+		draggable : false,
+		iconCls : "tree-ore"
+	});
+    
 	sourcestreeroot.appendChild(lore.ore.ui.remstreeroot);
 	sourcestreeroot.appendChild(lore.ore.ui.recenttreeroot);
-    //sourcestreeroot.appendChild(lore.ore.ui.searchtreeroot);
-    
-	// set up event handlers
+
+    // set up search handlers
+    Ext.getCmp("advsearchbtn").on('click', lore.ore.advancedSearch);
+    Ext.getCmp("kwsearchbtn").on('click', lore.ore.keywordSearch);
+    Ext.getCmp("searchforms").activate("kwsearchform");
+	// set up event handlers for tabs
 	lore.ore.ui.oreviews.on("beforeremove", lore.ore.closeView);
 	// create a context menu to hide/show optional views
 	lore.ore.ui.oreviews.contextmenu = new Ext.menu.Menu({
