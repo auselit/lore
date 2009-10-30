@@ -4,33 +4,19 @@ Ext.namespace("lore.ore.explore");
  * @param {} id The URI that identifies the resource map
  */
 /*
- * @include  "/oaiorebuilder/content/lib/jit.js"
+ * @include  "../lib/jit.js"
  */
-lore.ore.explore.showInExploreView = function (id, title){
-    lore.ore.explore.init();
-    lore.ore.explore.loadRem(id, title, function(json){
-        lore.ore.explore.rg.loadJSON(json);
-        lore.ore.explore.rg.refresh();
-        var existhistory = Ext.get('history').dom.innerHTML;
-        // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
-        var action = "lore.global.util.launchTab(\"" + id + "\", window);";
-        var nodelink = "<a title='Show in browser' href='#' onclick='" + action 
-        + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'>" 
-        + "</a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
-        + id + "');\">" + title + "</a>";
-        Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
-    });  
-}
+
 /**
- * Helper: gets resource map as RDF, transforms to JSON and applies f to it
- * @param {} id Identifier of the resource map to be retrieved
- * @param {} f Function to apply
+ * Gets resource map as RDF, transforms to JSON and applies function to it
+ * @param {URI} id Identifier of the compound object to be retrieved
+ * @param {String} title Used as a label for the compound object
+ * @param {function} f Function to apply
  */
 lore.ore.explore.loadRem = function(id, title, f){
    // make json from sparql query
 
-   //var eid = Ext.util.Format.htmlEncode(id);
-    var eid = id.replace(/&amp;/g,'&').replace(/&amp;/g,'&');
+   var eid = id.replace(/&amp;/g,'&').replace(/&amp;/g,'&');
    lore.debug.ore("load sparql for",eid);
    var eid2 = escape(eid);
    try {
@@ -96,11 +82,13 @@ lore.ore.explore.init = function() {
   infovis.innerHTML = "";
   var w = infovis.offsetWidth, h = infovis.offsetHeight;
   // create a new canvas
+  /** The canvas used to render the explore visualization */
   lore.ore.explore.canvas = new Canvas('explorecanvas', {
         'injectInto':'infovis',
         'width': w,
         'height':h
   });
+  /** The JIT RGraph that provides the explore visualization */
   lore.ore.explore.rg=new RGraph(lore.ore.explore.canvas,  {
     Node: {
        overridable: true,
@@ -126,7 +114,6 @@ lore.ore.explore.init = function() {
        } 
     },*/  
     requestGraph: function() {
-        
         lore.ore.explore.loadRem(this.clickedNode.id, this.clickedNode.name, function(json) {
             lore.ore.explore.rg.op.sum(json, {
                 'type': 'fade:con',
@@ -171,4 +158,22 @@ lore.ore.explore.init = function() {
   });
 }
 
-
+/** Initialize the explore view to display resources from the repository related to a compound object
+ * @param {URI} id The URI of the compound object
+ * @param {String} title Label to display for the compound object
+ */
+lore.ore.explore.showInExploreView = function (id, title){
+    lore.ore.explore.init();
+    lore.ore.explore.loadRem(id, title, function(json){
+        lore.ore.explore.rg.loadJSON(json);
+        lore.ore.explore.rg.refresh();
+        var existhistory = Ext.get('history').dom.innerHTML;
+        // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
+        var action = "lore.global.util.launchTab(\"" + id + "\", window);";
+        var nodelink = "<a title='Show in browser' href='#' onclick='" + action 
+        + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'>" 
+        + "</a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
+        + id + "');\">" + title + "</a>";
+        Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
+    });  
+}
