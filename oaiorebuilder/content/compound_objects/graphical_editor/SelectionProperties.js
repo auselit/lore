@@ -13,14 +13,16 @@ lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Fi
 		lore.ore.graph.selectedFigure = figure;
 		if (figure.metadataproperties) {
 			lore.ore.ui.nodegrid.setSource(figure.metadataproperties);
-			lore.ore.ui.propertytabs.activate('nodegrid');
+            lore.ore.ui.propertytabs.activate("properties");
+            lore.ore.ui.nodegrid.expand();
 		}
 		else if (figure.edgetype){
 			lore.ore.ui.nodegrid.setSource({"relationship": figure.edgetype, "namespace": figure.edgens});
-			lore.ore.ui.propertytabs.activate('nodegrid');
+            lore.ore.ui.propertytabs.activate("properties");
+            lore.ore.ui.nodegrid.expand();
 		}
 	} else {
 		lore.ore.ui.nodegrid.setSource({});
-		lore.ore.ui.propertytabs.activate('remgrid');
+        lore.ore.ui.nodegrid.collapse();
 	}
 }

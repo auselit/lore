@@ -15,7 +15,7 @@ lore.ore.graph.ResourceFigure = function() {
 	this.scrollx = 0;
 	this.scrolly = 0;
 	this.metadataproperties = {
-		"Resource" : this.url,
+		"resource" : this.url,
 		"dc:title" : ""
 	};
 	this.cornerHeight = 14.5;
@@ -219,7 +219,7 @@ lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl) {
 
 lore.ore.graph.ResourceFigure.prototype.setMetadata = function(urlparam) {
 	this.url = urlparam;
-	this.metadataproperties.Resource = urlparam;
+	this.metadataproperties.resource = urlparam;
 
 	this.metadataarea.innerHTML = "<ul><li id='" + this.id + "-icon'>"
 			+ "<a onclick='lore.global.util.launchTab(\"" + urlparam
@@ -232,7 +232,7 @@ lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
 			? this.metadataproperties["dc:format"]
 			: "text/html";
 	this.icontype = "mimeicon ";
-    lore.debug.ore("mimetype is" + mimetype,mimetype);
+    //lore.debug.ore("mimetype is" + mimetype,mimetype);
 	if (mimetype.match("html")){
 		this.icontype += "htmlicon";
     }
@@ -275,7 +275,7 @@ lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 		};
 		req.send(null);
 	} else {
-		lore.debug.ore("using stored mimetype for resource figure", this);
+		//lore.debug.ore("using stored mimetype for resource figure", this);
 		this.showContent();
 	}
 };
@@ -380,9 +380,9 @@ lore.ore.graph.clearFields = function() {
 
 lore.ore.graph.ResourceFigure.prototype.updateMetadata = function(source) {
 	this.metadataproperties = source;
-	if (source.Resource != this.url) {
+	if (source.resource != this.url) {
 		clearFields();
-		this.setContent(source.Resource);
+		this.setContent(source.resource);
 	}
 	if (source["dc:title"]) {
 		clearFields();
