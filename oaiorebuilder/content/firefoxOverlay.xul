@@ -68,7 +68,7 @@
     <xul:vbox flex="1" align="stretch" id="oobContentBox" collapsed="true" persist="height" width="100%">
       <xul:toolbox>
         <xul:toolbar id="graph-toolbar">
-         <!--xul:label value="LORE Compound Objects" style="margin-top:5px;margin-right:10px;margin-left:5px;font-weight:bolder" /-->
+         <xul:label value="LORE Compound Objects" style="margin-top:5px;margin-right:10px;margin-left:5px;font-weight:bolder" />
           <xul:toolbarbutton id="oobMenuButton" tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()">
           </xul:toolbarbutton>
           <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
