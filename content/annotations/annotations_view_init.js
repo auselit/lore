@@ -367,9 +367,9 @@ loreuiannoabout = function () {
 /**
  * Helper function for construting 'Annotationg Editor' panel
  * @private
- * @param {Object} model The datastore for the model
+ * @param {Object} store The datastore for the store
  */
-loreuieditor = function (model ) {
+loreuieditor = function (store ) {
 	
 	return {
 			 	region: "south",
@@ -618,9 +618,9 @@ loreuieditor = function (model ) {
 /**
  * Helper function for constructing the panel that contains the annotation tree view and editor
  * @private
- * @param {Object} model The datastore for the model
+ * @param {Object} store The datastore for the store
  */
-loreuiannotreeandeditor = function (model) {
+loreuiannotreeandeditor = function (store) {
 	return {
 			title: "Tree",
 			xtype: "panel",
@@ -656,7 +656,7 @@ loreuiannotreeandeditor = function (model) {
 					}
 				}]
 			}, 
-				loreuieditor(model)]
+				loreuieditor(store)]
 			};
 }
 
@@ -664,9 +664,9 @@ loreuiannotreeandeditor = function (model) {
  * 
  * Helper function that constructs the 'Timeline' panel
  * @private
- * @param {Object} model The datastore for the model
+ * @param {Object} store The datastore for the store
  */
-loreuiannotimeline = function (model)
+loreuiannotimeline = function (store)
 {
 	return {
 		title: "Annotation Timeline",
@@ -675,14 +675,240 @@ loreuiannotimeline = function (model)
 	}
 }
 
+loreuiannocurpage = function (store) {
+
+	/*bbar: new Ext.PagingToolbar({
+			            pageSize: 25,
+			            store: store,
+			            displayInfo: true,
+			            displayMsg: 'Displaying annotations {0} - {1} of {2}',
+			            emptyMsg: "No annotations to display",
+			            items:[
+			                '-', {
+			                pressed: true,
+			                enableToggle:true,
+			                text: 'Show Preview',
+			                cls: 'x-btn-text-icon details',
+			                toggleHandler: function(btn, pressed){
+			                    //var view = grid.getView();
+			                    //view.showPreview = pressed;
+			                   // view.refresh();
+			                }}]})*/
+	return {
+			xtype: "tabpanel",
+			title: "Current Page",
+			id: "curpage",
+			deferredRender: false,
+			activeTab: "treeview",
+			items: [loreuiannotreeandeditor(store), loreuiannotimeline(store)]
+		};
+}
+
+loreuiannosearchform = function (store ) {
+	return { 
+			xtype: "form",
+			collapsible:true,
+			title: 'Search Options',
+			id: "annosearchform",
+				trackResetOnLoad: true,
+				split:true,
+				items: [{
+		 			xtype: 'fieldset',
+		 			layout: 'form',
+		 			autoScroll: true,
+		 			id: 'searchfieldset',
+		 			labelWidth: 100,
+		 			defaultType: 'textfield',
+					labelAlign: 'right',
+					buttonAlign: 'right',
+					style: 'border:none; margin-left:10px;margin-top:10px;',
+					defaults: {
+						hideMode: 'display',
+						anchor: '-30'
+					},
+					
+					items: [
+						{
+							fieldLabel: 'URL',
+							name:'url'
+						},
+					    {
+							fieldLabel: 'Creator',
+							name: 'creator',
+							value: 'Roger Osborne',
+							defaultValue: 'Roger Osborne'
+							
+						},
+						{
+							xtype:'datefield',
+							format: "Y-m-d",
+							fieldLabel: 'Date Created(after)',
+							name: 'datecreatedafter'	
+						},
+						{
+							xtype:'datefield',
+							format: "Y-m-d",
+							fieldLabel: 'Date Created(before)',
+							name: 'datecreatedbefore'
+						},
+						{
+							xtype:'datefield',
+							format: "Y-m-d",
+							fieldLabel: 'Date Modified(after)',
+							name: 'datemodafter'	
+						},
+						{
+							xtype:'datefield',
+							format: "Y-m-d",
+							fieldLabel: 'Date Modified(before)',
+							name: 'datemodbefore'
+						}],
+						buttons: [{
+							text: 'Search',
+							id: 'search',
+							tooltip: 'Search the entire annotation repository'
+						},  {
+							text: 'Reset',
+							id: 'resetSearch',
+							tooltip: 'Reset search fields'
+						}]
+					}]
+	}
+}
+
+loreuiannogrid = function (store ) {
+	/*var expander = new Ext.ux.grid.RowExpander({
+        tpl : new Ext.Template(
+            '<p><b>Annotates:</b> resource</p><br>',
+            '<p><b>Description:</b> body</p>' 
+        )
+    });*/
+
+	return {
+		
+			xtype: "grid",
+			title: 'Search Results',
+			id: 'annosearchgrid',
+			split:true,
+			collapsible: true,
+			store: lore.anno.annosearchds,
+			layout: "fit",
+			autoScroll: true,
+			// grid columns
+			columns: [
+		//	expander,
+			{
+				id: 'title', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
+				header: "title",
+				dataIndex: 'title',
+				sortable: true,
+				width:100,
+			}, 
+			{
+				header: "type",
+				dataIndex: "type",
+				sortable: true,
+				width:32,
+				renderer: function(val, p, rec) {
+					//return "<div style=\"min-width:16,min-height:16,width:16,height:16\" class=\"" + lore.anno.ui.getAnnoTypeIcon(rec.data) + "\" />";
+					p.css = lore.anno.ui.getAnnoTypeIcon(rec.data);
+				}
+			},
+			{
+				header: "creator",
+				dataIndex: 'creator',
+				sortable: true,
+				width:100
+			}, 
+			{
+				header: "created",
+				dataIndex: 'created',
+				sortable: true,
+				width:100
+			}, 
+			{
+				header: 'modified',
+				dataIndex: 'modified',
+				sortable: true,
+				width:100,
+				renderer: function (val, p, rec) {
+					return val ? val: "<i>not yet modified</i>";
+				}
+			},
+			{
+				header: 'annotates',
+				dataIndex: 'resource',
+				sortable: true,
+				width:200,
+				renderer:  function(val, p, rec ) {
+					return String.format("<a class='anno-search'onclick='lore.global.util.launchTab(\"{0}\");'>{1}</a>",rec.data.resource,val);
+				}
+			}], 
+		//	plugin:expander,
+			
+			// customize view config
+			viewConfig: {
+				forceFit: true,
+				enableRowBody: true,
+			},
+			
+			
+
+		
+		// paging bar on the bottom
+		/*bbar: new Ext.PagingToolbar({
+		 pageSize: 25,
+		 store: store,
+		 displayInfo: true,
+		 displayMsg: 'Displaying topics {0} - {1} of {2}',
+		 emptyMsg: "No topics to display",
+		 items:[
+		 '-', {
+		 pressed: true,
+		 enableToggle:true,
+		 text: 'Show Preview',
+		 cls: 'x-btn-text-icon details',
+		 toggleHandler: function(btn, pressed){
+		 var view = grid.getView();
+		 view.showPreview = pressed;
+		 view.refresh();
+		 }
+		 }]
+		 })*/
+		}
+	
+}
+
+loreuiannosearch = function (store ) {
+	 
+	return {
+		title: "Search",
+		xtype: "panel",
+		id: "search",
+		 
+		items: [loreuiannosearchform(store), loreuiannogrid(store)]
+	}
+}
+
+loreuiannonavtabs = function (store) {
+	return {
+				xtype: "tabpanel",
+				title: "Navigation",
+				id: "navigationtabs",
+				deferredRender: false,
+				activeTab: "curpage",
+				items: [loreuiannocurpage(store), loreuiannosearch(store), loreuiannoabout(store) ]
+			};
+}
+
 /**
  * Construct the Ext based GUI and initialize and show the components
- * @param {Object} model The datastore for the model
+ * @param {Object} store The datastore for the store
  */	
-lore.anno.ui.initGUI = function(model){
-	lore.debug.ui("initGUI: model " + model, model);
-	if (!model) {
-		lore.debug.ui("No model found for view");
+lore.anno.ui.initGUI = function(store){
+	lore.debug.ui("initGUI: store " + store, store);
+	if (!store) {
+		lore.debug.ui("No store found for view");
 		return;
 	}
 	
@@ -700,21 +926,7 @@ lore.anno.ui.initGUI = function(model){
 						region: "center",
 						border: false,
 						layout: "fit",
-						items: [{
-							xtype: "tabpanel",
-							title: "Annotations",
-							id: "annotationstab",
-							deferredRender: false,
-							activeTab: "treeview",
-							items: [loreuiannotreeandeditor(model), loreuiannotimeline(model)		
-							, loreuiannoabout() ]
-						},
-						{xtype: "panel",
-						id : "dispanel",
-						visible: false,
-						items: [ { fieldLabel:"This feature is disabled"}]
-						}
-						]
+						items: [ loreuiannonavtabs(store)]
 					}]
 				}]
 			}]
@@ -737,7 +949,7 @@ lore.anno.ui.initExtComponents = function(){
 	try {
 		
 		lore.anno.ui.abouttab = Ext.getCmp("about");
-		lore.anno.ui.views = Ext.getCmp("annotationstab");
+		lore.anno.ui.views = Ext.getCmp("curpage");
 		lore.anno.ui.views.contextmenu = new Ext.menu.Menu({
 				id : "anno-context-menu"
 		});
@@ -772,8 +984,14 @@ lore.anno.ui.initExtComponents = function(){
 		lore.anno.ui.formpanel = Ext.getCmp("annotationslistform")
 		lore.anno.ui.form = lore.anno.ui.formpanel.getForm();
 		lore.anno.ui.formpanel.hide();
-		
+		lore.anno.ui.sformpanel = Ext.getCmp("annosearchform");
+		lore.anno.ui.sform = lore.anno.ui.sformpanel.getForm();
 		// set up the sources tree
+		
+		Ext.getCmp("search").on('click', lore.anno.ui.handleSearchAnnotations);
+		Ext.getCmp("resetSearch").on('click', function () {
+			lore.anno.ui.sform.reset();
+		});
 		
 		Ext.getCmp("resetannobtn")
 				.on('click', function () { lore.anno.ui.rejectChanges()});

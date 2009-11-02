@@ -80,13 +80,134 @@ constants = {
      * @const */
     HIGHLIGHT_STORE : "highlights",
     
-    // Annotation query strings
-    /** Annotea query string for retreiving reply tree of annotation
+    // Annotea protocol constants constants
+    
+	// queries
+	 /**
+     * This is the standard query parameter requests the annotation or annotations
+     * that are replies for an annotation whose URL is given by the parameter's value.
      * @const */
-    REPLY_TREE : "?w3c_reply_tree=",
-    /** Annotea query string for retreiving all annotations on a resource
+    ANNOTEA_REPLY_TREE : "?w3c_reply_tree=",
+     /**
+     * This is the standard query parameter requests the annotation or annotations
+     * for a resource whose URL is given by the parameter's value.
      * @const */
-    ANNOTATES : "?w3c_annotates=",
+    ANNOTEA_ANNOTATES : "?w3c_annotates=",
+	
+	// this parameter is currently not supported by LORE annotations
+	 /**
+     * This is the standard query parameter requests the bookmarks and topics.
+     * for a resource whose URL is given by the parameter's value.  This was not implemented
+     * by AA2.
+     * @const 
+     */
+    ANNOTEA_BOOKMARKS : "w3c_bookmarks",
+	
+	 /**
+     * This Danno-specific request parameter sets the primary query type to select all 
+     * Annotea objects in the triple store; i.e. those with an <rdf:type>  property with
+     * a value of either "http://www.w3.org/2000/10/annotation-ns#Annotation" or 
+     * "http://www.w3.org/2001/03/thread#Reply".
+     * @const
+     */
+	DANNO_ALL_OBJECTS : "?danno_allObjects=true",
+	
+	
+	
+	
+	// query parameters - currently not used/supported by LORE annotations
+	 /**
+     * This Danno-specific request parameter sets the primary query type to select all 
+     * Annotea objects in the triple store; i.e. those with an <rdf:type>  property with
+     * a value of either "http://www.w3.org/2000/10/annotation-ns#Annotation" or 
+     * "http://www.w3.org/2001/03/thread#Reply".
+     */
+    DANNO_ANNOTEA_OBJECTS : "danno_allAnnoteaObjects",
+    
+	/**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * whose 'a:annotates' value matches a regex.
+     */
+     DANNO_RESTRICT_ANNOTATES_REGEX : "danno_annotatesRegex",
+	
+	   /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a given 'dc1.1:creator' value. 
+     */
+     DANNO_RESTRICT_CREATOR : "danno_creator",
+    
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a given 'dc1.1:lang' value. 
+     */
+     DANNO_RESTRICT_LANGUAGE : "danno_language",
+
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'dc1.1:date' datetime value that is less than a given datetime value.
+     */
+     DANNO_RESTRICT_BEFORE_DATE : "danno_beforeDate",
+
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'dc1.1:date' datetime value that is greater or equal to a given datetime value.
+     */
+     DANNO_RESTRICT_AFTER_DATE : "danno_afterDate",
+
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'a:created' datetime value that is less than a given datetime value.
+     */
+     DANNO_RESTRICT_BEFORE_CREATED : "danno_createdBefore",
+
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'dc1.1:created' datetime value that is greater or equal to a given datetime value.
+     */
+     DANNO_RESTRICT_AFTER_CREATED : "danno_createdAfter",
+
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'dc1.1:modified' datetime value that is less than a given datetime value.
+     */
+     DANNO_RESTRICT_BEFORE_MODIFIED : "danno_modifiedBefore",
+
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'dc1.1:modified' datetime value that is greater or equal to a given datetime value.
+     */
+     DANNO_RESTRICT_AFTER_MODIFIED : "danno_modifiedAfter",
+    
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a given 'th:inReplyTo' URI.
+     */
+     DANNO_RESTRICT_IN_REPLY_TO : "danno_inReplyTo",
+    
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a given 'danno:collectionId' URI.
+     */
+     DANNO_RESTRICT_COLLECTION_ID : "danno_collectionId",
+    
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'danno:imported' datetime value that is less than a given datetime value.
+     */
+     DANNO_RESTRICT_BEFORE_IMPORTED : "danno_importedBefore",
+    
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a 'danno:imported' datetime value that is greater equal to a given datetime value.
+     */
+     DANNO_RESTRICT_AFTER_IMPORTED : "danno_importedAfter",
+
+    /**
+     * This Danno-specific request parameter restricts the result-set of a QUERY to records
+     * with a given 'danno:source' value.
+     */
+     DANNO_RESTRICT_SOURCE : "danno_source",
+    
     
     textm : {
     // Calais web service (text mining)
