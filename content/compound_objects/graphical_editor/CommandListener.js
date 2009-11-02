@@ -33,6 +33,11 @@ lore.ore.graph.CommandListener.prototype.stackChanged=function(event){
 	var comm = event.getCommand();
 	var comm_fig = comm.figure;
 	lore.ore.graph.modified = true;
+    
+    if(comm instanceof draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)){
+        // don't allow figures to be moved outside bounds of canvas
+        comm.undo();
+    }
 	if(0!=(details&(draw2d.CommandStack.POST_EXECUTE)))
 	{
 		if(comm instanceof draw2d.CommandDelete){
