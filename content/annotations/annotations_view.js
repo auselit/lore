@@ -823,7 +823,7 @@
 					id: anno.id,
 					nodeType: anno.type,
 					title: lore.anno.ui.getAnnoTitle(anno),
-					text: anno.body || 'Loading content...',
+					text: anno.body || '',
 					iconCls: iCls,
 					uiProvider: lore.anno.ui.LOREColumnTreeNodeUI,
 					// links: nodeLinks,
@@ -948,7 +948,8 @@
                 annodata.bodyURL +
                 "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
             }
-			var body = lore.global.util.externalizeLinks(annodata.body || "Loading content...");
+			var defText = annodata.bodyLoaded ? annodata.body : 'Loading content...';
+			var body = lore.global.util.externalizeLinks(defText);
 			res += body;
 			
 			
@@ -1476,7 +1477,6 @@
 		 */
 		lore.anno.ui.handleUpdateAnnotationContext = function(){
 			try {
-				lore.debug.anno("here1");
 				if (!lore.anno.ui.formpanel.isVisible())
 					 lore.anno.ui.showAnnotation(lore.anno.ui.curSelAnno);
 				var currentCtxt = lore.anno.ui.getCurrentSelection();
@@ -1504,7 +1504,6 @@
 		 */
 		lore.anno.ui.handleUpdateAnnotationVariantContext = function(btn, e){
 			try {
-				lore.debug.anno("here2");
 				var currentCtxt = lore.anno.ui.getCurrentSelection();
 				var theField = lore.anno.ui.form.findField('variantcontext');
 				theField.setValue(currentCtxt);
@@ -2181,7 +2180,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			var doc = cw.document;
 			
 			if ($('span#lore_image_highlighting_inserted', doc).size() > 0) {
-				lore.debug.anno("page already enable for image annotations");
+				lore.debug.anno("page already enabled for image annotations");
 				return;
 			}
 			
@@ -2192,9 +2191,9 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			}
 			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
 			
-			var im = $('img', doc);
+			var im = $('img[offsetWidth!=0]', doc);
 			var imgOnly = doc.contentType.indexOf("image") == 0 && im.size() == 1;
-			lore.debug.anno(im,im);
+			
 			im.each(function(){
 				// preload image scale factor
 				var scale = lore.anno.ui.updateImageData(this);
@@ -2229,12 +2228,12 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 							m.update();
 						}
 					}
-					$('img', d).each(function(){
+					$('img[offsetWidth!=0]', d).each(function(){
 						var inst = $(this).imgAreaSelectInst();
 						
 						if (inst) {
 							// imgarea supports scaling, but it refreshes it scaling
-							// in a retarded way, merely calling update will not work
+							// in a stupid way, merely calling update will not work
 							 
 							var s = inst.getSelection();
 							inst.setOptions({});
@@ -2247,7 +2246,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 					lore.debug.anno("error occurred during window resize handler: " + e, e);
 				}
 			}
-			//TODO: need the remove event handlers
+			//TODO: need the remove event handlers on page unload
 			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
 			lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
 			if (imgOnly) 
@@ -2261,7 +2260,9 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 	};
 	var ol = function(){
 		cw.removeEventListener("load", ol, true);
+		lore.debug.anno("on load image anno handler called");
 		e();
+		
 	}
 	
 	// case: dom content not loaded
@@ -2271,12 +2272,13 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 	}
 	
 	var im = $('img', doc);
+	lore.debug.anno(im,im);
 	if (im.size() > 0) {
 		var contentLoaded = true;
-		im.each(function () {
-					contentLoaded = contentLoaded && this.offsetWidth;
-		});
 		
+		im.each(function () {
+					contentLoaded = contentLoaded && this.offsetWidth != null;
+		});
 	 	if (!contentLoaded)  // case: dom content loaded, images aren't
 			cw.addEventListener("load", ol, true);
 		else 			// case: page already loaded (i.e switching between preloaded tabs)
