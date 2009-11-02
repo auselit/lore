@@ -205,6 +205,7 @@
 			}
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'body');
+			
 			if (!bodyOp || bodyOp == 3) {
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
@@ -218,7 +219,8 @@
 					lore.debug.anno("node " + node[0], node[0]);
 					var serializer = new XMLSerializer();
 					var bodyText = serializer.serializeToString(node[0]);
-					this.body = lore.global.util.sanitizeHTML(bodyText, window);
+					this.body = lore.global.util.sanitizeHTML(bodyText, window) || '';
+					this.bodyLoaded = true;
 				}
 			}
 
@@ -389,10 +391,14 @@
 			title: (parent ? "New Reply":"New Annotation"),
 			type: lore.constants.NAMESPACES["annotype"] + "Comment",
 			lang: "en",
-			isReply: (parent ? true: null)
+			isReply: (parent ? true: null),
 		};
 		
 		lore.anno.annods.loadData([anno], true);
+		var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
+		if ( r)
+			r.data.bodyLoaded = true;
+		
 		
 		return anno;
 	}
@@ -557,8 +563,13 @@
 		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '">';
 		
 		for (var i = 0; i < annos.length; i++) {
-			var anno = annos[i].data || annos[i]; // an array of records or anno objects
+			var anno =  lore.global.util.clone(annos[i].data || annos[i]); // an array of records or anno objects
 			
+			for ( var e in anno) {
+				if ( typeof(anno[e]) == 'string' && e!='title' && e!='body') {
+					anno[e] = anno[e].replace(/&/g, '&amp;');
+				}
+			}
 			rdfxml += '<rdf:Description';
 			if (anno.id && !lore.anno.isNewAnnotation(anno)) {
 				rdfxml += ' rdf:about="' + anno.id + '"';
@@ -595,16 +606,16 @@
 			}
 			else {
 				rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-				'" rdf:resource="' +
-				anno.resource.replace(/&/g, '&amp;') +
+				'" rdf:resource="' + anno.resource +
+				/*anno.resource.replace(/&/g, '&amp;') +*/
 				'"/>';
 			}
 			// also send variant as annotates for backwards compatability with older
 			// clients
 			if (anno.variant) {
 				rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-				'" rdf:resource="' +
-				anno.variant.replace(/&/g, '&amp;') +
+				'" rdf:resource="' + anno.variant + 
+				/*anno.variant.replace(/&/g, '&amp;') +*/
 				'"/>';
 			}
 			if (anno.lang) {
@@ -863,8 +874,13 @@
 		var cback = function(anno, txt){
 			try {
 				var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
-				r.data.body = txt;
-				r.commit();
+				if (r) {
+					r.data.body = txt || '';
+					r.data.bodyLoaded = true;
+					r.commit();
+				} else {
+					lore.debug.anno("getBodyContentAsync: record not found", anno);
+				}
 			} 
 			catch (e) {
 				lore.debug.anno(e, e)
