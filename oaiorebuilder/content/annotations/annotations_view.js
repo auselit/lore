@@ -2272,7 +2272,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 	}
 	
 	var im = $('img', doc);
-	lore.debug.anno(im,im);
+
 	if (im.size() > 0) {
 		var contentLoaded = true;
 		

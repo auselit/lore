@@ -873,6 +873,8 @@
 	
 		var cback = function(anno, txt){
 			try {
+				if ( anno.resource != lore.global.util.getContentWindow(window).location)
+					return;
 				var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
 				if (r) {
 					r.data.body = txt || '';
@@ -1022,7 +1024,9 @@
 		if (resultNodes.length > 0) {
 			var annotations = lore.anno.orderByDate(resultNodes,3);
 			
-			
+			if ( annotations[0].resource != lore.global.util.getContentWindow(window).location)
+					return;
+					
 			lore.anno.annods.loadData(annotations, true);
 		
 			for (var i = 0; i < annotations.length; i++) {
@@ -1063,6 +1067,9 @@
 			var isLeaf = (replyList.length == 0);
 			if (!isLeaf) {
 				replies = lore.anno.orderByDate(replyList,3);
+				
+				if ( replies[0].resource != lore.global.util.getContentWindow(window).location)
+					return;
 				lore.anno.annods.loadData(replies, true);
 				for ( var i=0; i< replies.length; i++) {
 					lore.anno.getBodyContentAsync(replies[i], window);
