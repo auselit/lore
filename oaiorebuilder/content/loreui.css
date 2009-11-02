@@ -113,21 +113,26 @@
 .x-tree-node .oreresult {
 	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png);
 }
-.x-tree-node .anno-icon {
+.x-tree-node .anno-icon, .anno-icon {
 	background-image: url(chrome://lore/skin/icons/comment.png);
+	background-repeat: no-repeat;
 }
-.x-tree-node .anno-icon-reply {
+.x-tree-node .anno-icon-reply, .anno-icon-reply  {
 	background-image: url(chrome://lore/skin/icons/reply.png);
+	background-repeat: no-repeat;
 }
-.x-tree-node .anno-icon-variation {
+.x-tree-node .anno-icon-variation, .anno-icon-variation {
 	background-image: url(chrome://lore/skin/icons/variation.png);
+	background-repeat: no-repeat;
 }
-.x-tree-node .anno-icon-explanation {
+.x-tree-node .anno-icon-explanation, .anno-icon-explanation {
 	background-image: url(chrome://lore/skin/icons/explanation.png);
+	background-repeat: no-repeat;
 }
 
-.x-tree-node .anno-icon-question {
+.x-tree-node .anno-icon-question, .anno-icon-question {
 	background-image: url(chrome://lore/skin/icons/question.png);
+	background-repeat: no-repeat;
 }
 
 
@@ -159,8 +164,9 @@
 	display: inline !important;
 }*/
 
-.x-tree-node a {
-	color:blue;
+.x-tree-node a, .anno-search {
+	color:blue !important;
+	cursor: auto;
 	
 }
 

@@ -39,9 +39,8 @@
 	 * @param {String} theURL  (Currently not utilized)The URL toe create the store for 
 	 */	
 	lore.anno.initModel = function ( theURL ) {
-		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
-		new Ext.data.JsonStore({
-									fields: [
+		
+		var fields = [
 										{name: 'created'}, 
 										{name: 'creator'}, 
 										{name: 'title'}, 
@@ -63,10 +62,19 @@
                                         {name: 'variationplace'},
                                         {name: 'variationdate'},
                                         {name: 'tags'}
-                                        ],
+                                        ];
+										
+		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
+		new Ext.data.JsonStore({
+									fields: fields,
 									data: {}
 								}), theURL);
 		
+		lore.anno.annosearchds = new Ext.data.JsonStore({
+									fields: fields,
+									data: {}
+								});
+								
 		 lore.anno.annods.on("load",  lore.anno.onDSLoad);
 		 lore.anno.annods.on("remove", lore.anno.onDSRemove);
 	}
@@ -125,9 +133,9 @@
  * Class wrapper for an RDF annotation provides access to values modified from
  * dannotate.js
  * @param {Node} rdf Root element of an RDF annotation returned by Danno
- * @param {boolean} fromfiles Optional parameter specifying RDF was loaded from file
+ * @param {boolean} bodyOps Optional parameter specifying RDF was loaded from file
  */
-	lore.anno.Annotation = function(rdf, fromfile){
+	lore.anno.Annotation = function(rdf, bodyOp){
 	
 		var tmp;
 		var node;
@@ -197,14 +205,14 @@
 			}
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'body');
-			if (!fromfile) {
+			if (!bodyOp || bodyOp == 3) {
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
 						this.bodyURL = attr.nodeValue;
 					}
 				}
-			} else {
+			} else if ( bodyOp == 1 ){
 				var node = node[0].getElementsByTagName('body');
 				if ( node[0]) {
 					lore.debug.anno("node " + node[0], node[0]);
@@ -237,8 +245,10 @@
 			this.lang = lore.global.util.safeGetFirstChildValue(node);
 			
 			// body stores the contents of the html body tag as text
-			if (this.bodyURL && !this.body) {
-				this.body = lore.anno.getBodyContent(this.bodyURL, window);
+			if (this.bodyURL && !this.body && ( !bodyOp || bodyOp != 3)) {
+				lore.debug.anno("bodyOp not 3");
+				lore.anno.getBodyContent(this,window);
+				//this.body = lore.anno.getBodyContent(this.bodyURL, window);
 			}
 			// get tags
 			this.tags = "";
@@ -608,7 +618,7 @@
 			}
 			if (anno.creator) {
 				rdfxml += '<creator xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-				anno.creator +
+				lore.global.util.trim(anno.creator) +
 				'</creator>';
 			}
 			if (!anno.created) {
@@ -726,14 +736,14 @@
 	 *
 	 * @param {NodeList} nodeList
 	 *            Raw RDF list in arbitrary order
-	 * @param {Boolean} fromfile (Optional) Specify whether the annotations came from a file. Defaults to false.
+	 * @param {Boolean} bodyOp (Optional) Specify whether the annotations came from a file. Defaults to false.
 	 * @return {Array} ordered array of Annotations
 	 */
-	lore.anno.orderByDate = function(nodeList, fromfile){
+	lore.anno.orderByDate = function(nodeList, bodyOp){
 		var tmp = [];
 		for (var j = 0; j < nodeList.length; j++) {
 			try {
-				tmp[j] = new lore.anno.Annotation(nodeList[j], fromfile);
+				tmp[j] = new lore.anno.Annotation(nodeList[j], bodyOp);
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception processing annotations", ex);
@@ -752,11 +762,88 @@
 	 * @param {window} The window object
 	 * @return {Object} Server response as text or XML document.
 	 */
-	lore.anno.getBodyContent = function(uri, window){
+	//lore.anno.getBodyContent = function(uri, window){
+	lore.anno.getBodyContent = function(anno, window, callback){
+		
+		var uri = anno.bodyURL;
+		var async = callback != null;
 		var req = null;
+		var handleResponse = function(){
+			
+			if (req.status != 200) {
+				var hst = (uri.length < 65) ? uri : uri.substring(0, 64) + '...';
+				throw new Error('Synchronous AJAX request status error.\n  URI: ' + hst +
+				'\n  Status: ' +
+				req.status);
+			}
+			
+			var rtype = req.getResponseHeader('Content-Type');
+			if (rtype == null) {
+				var txt = req.responseText;
+				var doc = null;
+				if (txt && (txt.indexOf(':RDF') > 0)) {
+					doc = req.responseXML;
+					if ((doc == null) && (typeof DOMParser != 'undefined')) {
+						var parser = new DOMParser();
+						doc = parser.parseFromString(txt, 'application/xml');
+					}
+				}
+				
+				if (doc != null) {
+					return doc;
+				}
+				else 
+					if (txt != null) {
+						return txt;
+					}
+			}
+			if (rtype.indexOf(';') > 0) {
+				// strip any charset encoding etc
+				rtype = rtype.substring(0, rtype.indexOf(';'));
+			}
+			var serializer = new XMLSerializer();
+			var bodyContent = "";
+			var result = "";
+			var bodyText = "";
+			if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') {
+				bodyContent = req.responseXML.getElementsByTagName('body');
+				if (bodyContent[0]) {
+					bodyText = serializer.serializeToString(bodyContent[0]);
+				}
+				else {
+					bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
+				}
+			}
+			else {
+				bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
+			}
+			
+			if (bodyText) {
+				return lore.global.util.sanitizeHTML(bodyText, window);
+			}
+			lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
+			return "";
+		}
+		
 		try {
 			req = new XMLHttpRequest();
-			req.open('GET', uri, false);
+			//req.open('GET', uri, false);
+			
+			if (async) {
+				req.onreadystatechange = function(){
+					try {
+			
+						if (req.readyState == 4) {
+							var b = handleResponse();
+							callback(anno, b);
+						}
+					} catch (e ) {
+						lore.debug.anno(e,e);
+					}
+				};
+			}
+			
+			req.open("GET",uri, async);
 			req.setRequestHeader('User-Agent', 'XMLHttpRequest');
 			req.setRequestHeader('Content-Type', 'application/text');
 			req.send(null);
@@ -766,58 +853,24 @@
 			return null;
 		}
 		
-		if (req.status != 200) {
-			var hst = (uri.length < 65) ? uri : uri.substring(0, 64) + '...';
-			throw new Error('Synchronous AJAX request status error.\n  URI: ' + hst +
-			'\n  Status: ' +
-			req.status);
+		if (!async){
+			return handleResponse();
 		}
-		
-		var rtype = req.getResponseHeader('Content-Type');
-		if (rtype == null) {
-			var txt = req.responseText;
-			var doc = null;
-			if (txt && (txt.indexOf(':RDF') > 0)) {
-				doc = req.responseXML;
-				if ((doc == null) && (typeof DOMParser != 'undefined')) {
-					var parser = new DOMParser();
-					doc = parser.parseFromString(txt, 'application/xml');
-				}
-			}
-			
-			if (doc != null) {
-				return doc;
-			}
-			else 
-				if (txt != null) {
-					return txt;
-				}
-		}
-		if (rtype.indexOf(';') > 0) {
-			// strip any charset encoding etc
-			rtype = rtype.substring(0, rtype.indexOf(';'));
-		}
-		var serializer = new XMLSerializer();
-		var bodyContent = "";
-		var result = "";
-		var bodyText = "";
-		if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') {
-			bodyContent = req.responseXML.getElementsByTagName('body');
-			if (bodyContent[0]) {
-				bodyText = serializer.serializeToString(bodyContent[0]);
-			}
-			else {
-				bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
+	}
+	
+	lore.anno.getBodyContentAsync = function(anno, window){
+	
+		var cback = function(anno, txt){
+			try {
+				var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
+				r.data.body = txt;
+				r.commit();
+			} 
+			catch (e) {
+				lore.debug.anno(e, e)
 			}
 		}
-		else {
-			bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
-		}
-		if (bodyText) {
-			return lore.global.util.sanitizeHTML(bodyText, window);
-		}
-		lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
-		return "";
+		lore.anno.getBodyContent(anno,window,cback);
 	}
 	
 	/**
@@ -840,7 +893,7 @@
 		
 		// Get annotations for theURL
 		if (lore.anno.annoURL) {
-			var queryURL = lore.anno.annoURL + lore.constants.ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
+			var queryURL = lore.anno.annoURL + lore.constants.ANNOTEA_ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
 			lore.debug.anno("Updating annotations with request URL: " + queryURL);
 			
 			Ext.Ajax.request({
@@ -869,6 +922,52 @@
 		else {
 			lore.debug.anno("Annotation server URL not set!");
 		}
+	}
+	
+	lore.anno.searchAnnotations = function (url, filters, resultCallback) {
+		
+		//TODO: 
+		// pass into a constructor of a FilterCollection with a list of linked filter objects
+		// linked by an 'and' 'or' operation
+		// conver to a URL
+		
+		// encodeURIComponent(theURL).replace(/%5D/g,'%255d');
+		// lore.constants.ANNOTATES +
+		
+		var queryURL = lore.anno.annoURL + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ALL_OBJECTS);
+		for (var i = 0; i < filters.length; i++) {
+			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter).replace(/%5D/g,'%255d');
+		}
+		  
+		lore.debug.anno("Search annotations with request URL: " + queryURL);
+			
+		Ext.Ajax.request({
+			url: queryURL,
+			method: "GET",
+			disableCaching: false,
+			success: function(resp, opt) {
+				try {
+					var annos = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
+					annos = lore.anno.orderByDate(annos, 2);
+					lore.anno.annosearchds.loadData(annos);
+					if (resultCallback) {
+						
+						resultCallback('success', resp);
+					}
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+			},
+			failure: function(resp, opt){
+				try {
+					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
+				if ( resultCallback) resultCallback('fail', resp);
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+			}
+		});
+		
 	}
 	
 	/**
@@ -905,9 +1004,18 @@
 			});
 			
 		if (resultNodes.length > 0) {
-			var annotations = lore.anno.orderByDate(resultNodes);
-			lore.anno.annods.loadData(annotations, true);
+			var annotations = lore.anno.orderByDate(resultNodes,3);
 			
+			
+			lore.anno.annods.loadData(annotations, true);
+		
+			for (var i = 0; i < annotations.length; i++) {
+				try {
+					lore.anno.getBodyContentAsync(annotations[i], window);
+				} catch (e) {
+					lore.debug.anno('error loading body content: '+e,e);
+				}
+			}
 			var annogriddata = [];
 			for (var i = 0; i < annotations.length; i++) {
 				var anno = annotations[i];
@@ -918,7 +1026,7 @@
 				Ext.Ajax.request({
 					disableCaching: false, // without this the request was failing
 					method: "GET",
-					url: lore.anno.annoURL + lore.constants.REPLY_TREE + annoID,
+					url: lore.anno.annoURL + lore.constants.ANNOTEA_REPLY_TREE + annoID,
 					success: lore.anno.handleAnnotationRepliesLoaded,
 					failure: function(resp, opt){
 						lore.debug.anno("Unable to obtain replies for " + opt.url, resp);
@@ -938,12 +1046,11 @@
 			var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 			var isLeaf = (replyList.length == 0);
 			if (!isLeaf) {
-				replies = lore.anno.orderByDate(replyList);
-				
-				
-				var parent = lore.global.util.findRecordById(lore.anno.annods, replies[0].about);
-				
+				replies = lore.anno.orderByDate(replyList,3);
 				lore.anno.annods.loadData(replies, true);
+				for ( var i=0; i< replies.length; i++) {
+					lore.anno.getBodyContentAsync(replies[i], window);
+				}
 			}
 		} catch (e ) {
 			lore.debug.anno(e,e);
@@ -1096,7 +1203,7 @@
 			return null;
 		};
 			
-		var annotations = lore.anno.orderByDate(resultNodes, true);
+		var annotations = lore.anno.orderByDate(resultNodes, 1);
 		var unprocessed = {};
 		var processed = {};
 		for ( var i =0; i < annotations.length; i++ ) {

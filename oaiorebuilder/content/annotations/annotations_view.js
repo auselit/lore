@@ -40,7 +40,7 @@
 		// set defaults for page
 		lore.anno.ui.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 		
-		lore.anno.ui.initHighlightData = function (){
+		lore.anno.ui.initPageData = function (){
 		
 			lore.anno.ui.multiSelAnno = new Array();
 			lore.anno.ui.colourForOwner = {};
@@ -49,7 +49,7 @@
 			lore.anno.ui.curAnnoMarkers = new Array();
 		}
 		
-		lore.anno.ui.initHighlightData();
+		lore.anno.ui.initPageData();
 		
 	
 
@@ -326,6 +326,14 @@
 		return title;
 	}
 	
+	lore.anno.ui.getAnnoTypeIcon = function(anno) {
+		var aType = lore.global.util.splitTerm(anno.type).term;
+		var icons = { 'Comment': 'anno-icon', 'Explanation':'anno-icon-explanation','VariationAnnotation':'anno-icon-variation' ,
+		'Question': 'anno-icon-question'};
+		
+		return icons[aType] || 'anno-icon';
+	}
+	
 	/**
 	 * Generated a pop up for the given annotation and place the HTML into the
 	 * supplied dom container
@@ -463,10 +471,12 @@
 		lore.anno.ui.updateAnnoInTimeline = function(anno){
 			var evt = lore.anno.ui.annoEventSource.getEvent(anno.id);
 			if (evt) {
-				evt.text = anno.title;
-				evt.caption = lore.anno.ui.genAnnotationCaption(anno, 't by c');
-				evt.description = lore.anno.ui.getTimelineDescription(anno);
+				
+				evt._text = anno.title;
+				evt._caption = lore.anno.ui.genAnnotationCaption(anno, 't by c');
+				evt._description = lore.anno.ui.getTimelineDescription(anno);
 				lore.anno.ui.scheduleTimelineLayout();
+				
 			}
 		}
 		
@@ -475,11 +485,11 @@
 		 * is scheduled to occur the next time the timeline is made visible
 		 */
 		lore.anno.ui.scheduleTimelineLayout = function(){
-			
 			// Timeline needs to be visible to do layout otherwise it goes blank
 			// check if timeline is active tab...
 			var tltab = Ext.getCmp("annotimeline");
-			var activetab = Ext.getCmp("annotationstab").getActiveTab();
+			var activetab = lore.anno.ui.views.getActiveTab();
+			
 			if (activetab == tltab) {
 				lore.anno.ui.annotimeline.layout();
 			}
@@ -805,12 +815,7 @@
 							 jscript: "lore.anno.ui.showAnnoInTimeline('" + anno.id + "');"}
 							  ];
 			
-			var aType = lore.global.util.splitTerm(anno.type).term;
-			var icons = { 'Comment': 'anno-icon', 'Explanation':'anno-icon-explanation','VariationAnnotation':'anno-icon-variation' ,
-			'Question': 'anno-icon-question'};
-			var iCls = icons[aType] || 'anno-icon';
-			
-			
+			var iCls = lore.anno.ui.getAnnoTypeIcon(anno);
 				  
 			if (lore.anno.isNewAnnotation(anno)) {
 				
@@ -818,7 +823,7 @@
 					id: anno.id,
 					nodeType: anno.type,
 					title: lore.anno.ui.getAnnoTitle(anno),
-					text: anno.body || '',
+					text: anno.body || 'Loading content...',
 					iconCls: iCls,
 					uiProvider: lore.anno.ui.LOREColumnTreeNodeUI,
 					// links: nodeLinks,
@@ -943,7 +948,7 @@
                 annodata.bodyURL +
                 "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
             }
-			var body = lore.global.util.externalizeLinks(annodata.body || '');
+			var body = lore.global.util.externalizeLinks(annodata.body || "Loading content...");
 			res += body;
 			
 			
@@ -1030,7 +1035,7 @@
 							this.update(); 
 							
 							if ( scroll )
-								lore.global.util.scrollToElement(this.data.image, this.target.defaultView);
+								lore.global.util.scrollToElement(this.data.nodes[0], this.target.defaultView);
 							
 						} else {
 							var type = this.type;
@@ -1420,6 +1425,50 @@
 			}
 		}
 		
+		
+		/**
+		 * Search the annotation respository for the given filters on the search
+		 * forms and display results in grid
+		 */
+		lore.anno.ui.handleSearchAnnotations = function () {
+			
+			var searchParams = { 
+							  'creator':  lore.constants.DANNO_RESTRICT_CREATOR,
+		 					  'datecreatedafter': lore.constants.DANNO_RESTRICT_AFTER_CREATED,
+							  'datecreatedbefore': lore.constants.DANNO_RESTRICT_BEFORE_CREATED,
+							  'datemodafter': 	lore.constants.DANNO_RESTRICT_AFTER_MODIFIED,
+							  'datemodbefore': 	lore.constants.DANNO_RESTRICT_BEFORE_MODIFIED};
+							  
+			
+			try {
+				var vals = lore.anno.ui.sform.getValues();
+				lore.debug.anno("vals: " + vals, vals);
+				var filters = [];
+				for (var e in vals) {
+					var v = vals[e];
+					
+					if (v && e != 'url') {
+						v = lore.anno.ui.sform.findField(e).getValue()
+						if (e.indexOf('date') == 0) {
+						//	v = v.format("Y-m-d");
+							v = v.format("c");
+						}
+						filters.push({
+							attribute: searchParams[e],
+							filter: v
+						});
+					}
+				}
+				lore.anno.searchAnnotations(vals['url']!='' ? vals['url']:null, filters, function(result, resp){
+	 				lore.debug.anno("result from search: " + result, resp);
+					Ext.getCmp("annosearchgrid").doLayout();
+	 			});
+			} catch (e) {
+				lore.debug.anno("error occurring performing search annotations: " +e, e);
+			}
+			
+		}
+		
 		/**
 		 * Update the annotation xpath context
 		 * @param {Object} btn Not currently used
@@ -1427,6 +1476,7 @@
 		 */
 		lore.anno.ui.handleUpdateAnnotationContext = function(){
 			try {
+				lore.debug.anno("here1");
 				if (!lore.anno.ui.formpanel.isVisible())
 					 lore.anno.ui.showAnnotation(lore.anno.ui.curSelAnno);
 				var currentCtxt = lore.anno.ui.getCurrentSelection();
@@ -1454,6 +1504,7 @@
 		 */
 		lore.anno.ui.handleUpdateAnnotationVariantContext = function(btn, e){
 			try {
+				lore.debug.anno("here2");
 				var currentCtxt = lore.anno.ui.getCurrentSelection();
 				var theField = lore.anno.ui.form.findField('variantcontext');
 				theField.setValue(currentCtxt);
@@ -1472,15 +1523,14 @@
 		 * @param {Combo} combo The Combo field that has changed
 		 */
 		lore.anno.ui.handleAnnotationTypeChange = function(combo){
-		
 			var theVal = combo.getValue();
-			if (theVal == 'Variation') {
+			
+			if ( theVal == 'Variation'){
 				lore.anno.ui.setAnnotationFormUI(true);
 			}
-			else 
-				//if (theVal == 'Comment' || theVal == 'Explanation' ) {
+			else if (theVal == 'Question' ||  theVal == 'Comment' || theVal == 'Explanation' ) {
 					lore.anno.ui.setAnnotationFormUI(false);
-				//}
+			}
 			
 		}
 		
@@ -1713,7 +1763,8 @@
 				}
 				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data));
 				lore.anno.ui.updateAnnoInTimeline(rec.data);
-				lore.anno.ui.showAnnotation(rec, true);
+				if ( lore.anno.ui.curSelAnno == rec )
+					lore.anno.ui.showAnnotation(rec, true);
 				
 				
 			} 
@@ -2015,7 +2066,7 @@
 	lore.anno.ui.refreshPage = function () {
 		lore.debug.anno("page refreshed");
 		
-		lore.anno.ui.initHighlightData();
+		lore.anno.ui.initPageData();
 		lore.anno.ui.enableImageHighlightingForPage();
 		 
 		lore.anno.ui.setCurrentAnno(null);
@@ -2087,7 +2138,7 @@
 						lore.anno.ui.curSelAnno = rec;
 					}
 				} else {
-					lore.anno.ui.initHighlightData();
+					lore.anno.ui.initPageData();
 				}
 				
 			} catch (e ) {
@@ -2095,7 +2146,7 @@
 			}
 			
 		}else {
-					lore.anno.ui.initHighlightData();
+					lore.anno.ui.initPageData();
 		}
 		
 		try {
@@ -2163,6 +2214,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			
 			var e = lore.global.util.domCreate('span', doc);
 			e.id = 'lore_image_highlighting_inserted';
+			e.style.display = "none";
 			$('body', doc).append(e);
 			
 			lore.debug.anno("image selection enabled for the page");

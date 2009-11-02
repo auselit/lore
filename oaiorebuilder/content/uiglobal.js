@@ -28,11 +28,6 @@
 	Components.utils.import("resource://lore/debug.js");
 	Components.utils.import("resource://lore/util.js");
 	
-	// TODO: global logging ( in addition to the logging for each view)
-	// log to a log4j file 
-	// log4j built-in xpc thing in firefox
-	// handy if users experience problems they can send log file in an email
-	
 	/**
 	 * Display an informational message to the user
 	 * @param {String} message The message to display
@@ -57,13 +52,17 @@
      * @param {} instId
 	 */
 	ui.reset = function (win, instId ) {
-		ui.compoundObjectView.unregisterView();
-		ui.annotationView.unregisterView();
-        
-		
-		ui.load(win, instId, true);
+		try {
+			ui.compoundObjectView.unregisterView();
+			ui.annotationView.unregisterView();
+			
+			
+			ui.load(win, instId, true);
 		//win.annographiframe.location.reload(true);
 		//win.graphiframe.location.reload(true);
+		} catch (e ) {
+			debug.ui ("error resetting: " + e,e);
+		}
 	}
 	/**
      * @param {} win
