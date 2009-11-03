@@ -873,7 +873,7 @@
 	
 		var cback = function(anno, txt){
 			try {
-				if ( anno.resource != lore.global.util.getContentWindow(window).location)
+				if ( !anno.isReply && anno.resource != lore.global.util.getContentWindow(window).location)
 					return;
 				var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
 				if (r) {
