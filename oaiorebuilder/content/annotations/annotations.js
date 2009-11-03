@@ -1068,8 +1068,8 @@
 			if (!isLeaf) {
 				replies = lore.anno.orderByDate(replyList,3);
 				
-				if ( replies[0].resource != lore.global.util.getContentWindow(window).location)
-					return;
+				//if ( replies[0].resource != lore.global.util.getContentWindow(window).location)
+				//	return;
 				lore.anno.annods.loadData(replies, true);
 				for ( var i=0; i< replies.length; i++) {
 					lore.anno.getBodyContentAsync(replies[i], window);

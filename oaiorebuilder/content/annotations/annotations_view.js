@@ -61,7 +61,8 @@
 		lore.anno.annods.on( { "update": {fn: lore.anno.ui.updateUIOnUpdate}, 
 							   "load":{fn: lore.anno.ui.updateUI},
 							   "remove":{fn: lore.anno.ui.updateUIOnRemove},
-							   "clear": {fn: lore.anno.ui.updateUIOnClear}
+							   "clear": {fn: lore.anno.ui.updateUIOnClear}//,
+							  // "datachanged": {fn: lore.anno.ui.updateUIOnRefresh},
 							   });
     }
 
@@ -1533,6 +1534,8 @@
 			
 		}
 		
+		
+		
 		/**
 		 * Launch field value in a new window
 		 * @param {Field} field Form field to launch in a new window
@@ -1690,7 +1693,83 @@
 			tree.setRootNode(lore.anno.ui.treeroot);
 		}
 		
-		/**
+		lore.anno.ui.updateUIOnRefresh = function (store) {
+			lore.anno.ui.updateUIOnClear(store);
+			lore.anno.ui.updateUI(store, store.getRange());
+		}
+		
+		lore.anno.ui.handleSortTypeChange = function (combo, rec, index) {
+			//lore.anno.ui.addTreeSorter(rec.data.type, rec.data.direction);
+			
+			lore.anno.ui.treesorter.sortField = rec.data.type;
+			lore.anno.ui.treesorter.direction  = rec.data.direction;
+			try {
+				lore.anno.ui.updateUIOnRefresh(lore.anno.annods);
+			} catch (e ) {
+				lore.debug.anno("Error occurred changing sort type: " + e,e);
+			}
+		}
+		
+		lore.anno.ui.addTreeSorter = function(field, direction){
+			var tree = 	Ext.getCmp("annosourcestree");
+			lore.anno.ui.treesorter = {};
+			lore.anno.ui.treesorter.sortField  = field;
+			lore.anno.ui.treesorter.direction = direction;
+			
+			// taken from TreeSorter Ext, and modified so that
+			// direction can be dynamically changed
+			var sortType =  function(node){
+					try {
+						var r = lore.global.util.findRecordById(lore.anno.annods, node.id)
+						if (r) {
+							return r.data[lore.anno.ui.treesorter.sortField] || r.data.created;
+						}
+					} 
+					catch (e) {
+						lore.debug.anno(e, e);
+					}
+					return "";
+				}
+				
+			var sortFn = function(n1, n2){
+       		 	if(n1.attributes["leaf"] && !n2.attributes["leaf"]){
+	            	    return 1;
+	          	  }
+	           	 if(!n1.attributes["leaf"] && n2.attributes["leaf"]){
+	           	     return -1;
+	            }
+      	  	
+	    		var v1 = sortType(n1).toUpperCase();
+	    		var v2 = sortType(n2).toUpperCase() ;
+				var dsc = lore.anno.ui.treesorter.direction == 'desc';
+	    		if(v1 < v2){
+					return dsc ? +1 : -1;
+				}else if(v1 > v2){
+				return dsc ? -1 : +1;
+	       		 }else{
+		    		return 0;
+	       	 	}
+			 };
+			 
+			var doSort = function(node){
+     		   node.sort(sortFn);
+    		}
+			var compareNodes = function(n1, n2){
+        		return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
+    		}
+    
+    		var updateSort  = function(tree, node){
+        		if(node.childrenRendered){
+            		doSort.defer(1, this, [node]);
+        		}
+    		}
+			tree.on("beforechildrenrendered", doSort, this);
+   			tree.on("append", updateSort, this);
+    		tree.on("insert", updateSort, this);
+    
+	};
+
+  	/**
 		 * Notification function  called when a remove operation occurs in the store.
 		 * Removes a node from the tree and the timeline.
 		 * @param {Store} store The data store that performed the notification
@@ -1771,6 +1850,7 @@
 				lore.debug.ui("Error updating annotation tree view: " + e, e);
 			}
 		}
+		
 		
 		/**
 		 * Highlight the current annotation 
@@ -2150,6 +2230,7 @@
 		
 		try {
 			lore.anno.ui.enableImageHighlightingForPage();
+			lore.anno.ui.gleanRDFa();
 			lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
 			lore.anno.updateAnnotationsSourceList(contextURL, function(result, resultMsg){
 				if (result == 'fail') {
@@ -2284,4 +2365,33 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 		else 			// case: page already loaded (i.e switching between preloaded tabs)
 			e(); 
 	}
+}
+
+lore.anno.ui.gleanRDFa = function () {
+	try {
+		var cw = lore.global.util.getContentWindow(window);
+		var doc = cw.document;
+		
+		lore.anno.ui.pageRDFaEnabled = false;
+		var agent;
+		var r = $('#startContent', doc).rdf()
+		.prefix('foaf', 'http://xmlns.com/foaf/0.1/')
+		.where('?person a foaf:Person')
+		.where('?person foaf:name ?name')
+		.each(function(){
+			try {
+				lore.anno.ui.pageRDFaEnabled = true;
+				lore.debug.anno("rdf object: " + this, this);
+				lore.debug.anno("person: " + this.person, this.person);
+				agent = this.name.value;
+				lore.debug.anno("RDF embedded for agent: " + agent, agent);
+			} catch (e ) {
+				lore.debug.anno(e,e);
+			}
+		});
+		
+	}catch (e) {
+		lore.debug.anno("Error gleaning potential rdfa from page: " +e , e);
+	}
+	
 }
