@@ -2368,7 +2368,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 }
 
 lore.anno.ui.gleanRDFa = function () {
-	try {
+/*	try {
 		var cw = lore.global.util.getContentWindow(window);
 		var doc = cw.document;
 		
@@ -2393,5 +2393,5 @@ lore.anno.ui.gleanRDFa = function () {
 	}catch (e) {
 		lore.debug.anno("Error gleaning potential rdfa from page: " +e , e);
 	}
-	
+	*/
 }
