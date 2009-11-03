@@ -653,6 +653,32 @@ loreuiannotreeandeditor = function (store) {
 					root: new Ext.tree.TreeNode({}),
 					dropConfig: {
 						appendOnly: true
+					},
+					bbar: { xtype: 'toolbar',
+							items: [ 
+							{
+								xtype: "combo",
+								id: "sorttypecombo",
+								name: 'sorttypecombo',
+								hiddenName: 'sorttypecombo',
+								store: new Ext.data.SimpleStore({
+									fields: ['type', 'typename', 'direction'],
+									data: [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
+										   ['creator', 'Creator(Ascending)', 'asc'], ['creator', 'Creator(Descending)', 'desc'],
+										   ['created', 'Creation Date(Ascending)','asc'], ['created', 'Creation Date(Descending)', 'desc'],
+										   ['modified','Modified Date(Ascending)', 'asc' ],['modified','Modified Date(Descending)', 'desc' ],
+										   ['type', 'Type(Ascending)', 'asc'],['type', 'Type(Descending)','desc']]
+								}),
+								valueField: 'type',
+								displayField: 'typename',
+								typeAhead: true,
+								emptyText: "Sort by...",
+								triggerAction: 'all',
+								forceSelection: true,
+								mode: 'local',
+								selectOnFocus: true
+							}
+						]	
 					}
 				}]
 			}, 
@@ -734,10 +760,7 @@ loreuiannosearchform = function (store ) {
 						},
 					    {
 							fieldLabel: 'Creator',
-							name: 'creator',
-							value: 'Roger Osborne',
-							defaultValue: 'Roger Osborne'
-							
+							name: 'creator'
 						},
 						{
 							xtype:'datefield',
@@ -974,12 +997,14 @@ lore.anno.ui.initExtComponents = function(){
 		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
 		lore.global.ui.clearTree(annosourcestreeroot);
 		lore.anno.ui.treeroot = annosourcestreeroot; 
-
 		lore.anno.ui.treeroot.expand();
+		lore.anno.ui.addTreeSorter('created', 'asc');
+
 		
 		Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleAnnotationSelection);
 		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditAnnotation);
 			
+		Ext.getCmp("sorttypecombo").on("select", lore.anno.ui.handleSortTypeChange);
 		
 		lore.anno.ui.formpanel = Ext.getCmp("annotationslistform")
 		lore.anno.ui.form = lore.anno.ui.formpanel.getForm();
