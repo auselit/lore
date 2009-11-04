@@ -2255,6 +2255,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 
 	var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
 	var doc = cw.document;
+	
 	var e = function(){
 		try {
 			var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
@@ -2272,9 +2273,15 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			}
 			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
 			
-			var im = $('img[offsetWidth!=0]', doc);
-			var imgOnly = doc.contentType.indexOf("image") == 0 && im.size() == 1;
-			
+			var im;
+			var imgOnly = doc.contentType.indexOf("image") == 0;
+			if (imgOnly) {
+				im = $('img', doc);
+				lore.debug.anno("image only", im);
+			}
+			else 
+				im = $('img[offsetWidth!=0]', doc);
+
 			im.each(function(){
 				// preload image scale factor
 				var scale = lore.anno.ui.updateImageData(this);
