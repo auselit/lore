@@ -733,8 +733,7 @@ loreuiannocurpage = function (store) {
 loreuiannosearchform = function (store ) {
 	return { 
 			xtype: "form",
-			collapsible:true,
-			title: 'Search Options',
+		
 			id: "annosearchform",
 				trackResetOnLoad: true,
 				split:true,
@@ -812,25 +811,27 @@ loreuiannogrid = function (store ) {
 			xtype: "grid",
 			title: 'Search Results',
 			id: 'annosearchgrid',
-			split:true,
-			collapsible: true,
+			region:'center',
 			store: lore.anno.annosearchds,
-			layout: "fit",
 			autoScroll: true,
+			viewConfig: {
+				forceFit: true
+			},
+			colModel: new Ext.grid.ColumnModel( {
 			// grid columns
+			defaults: {
+				sortable: true
+			},
 			columns: [
 		//	expander,
 			{
 				id: 'title', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
 				header: "title",
 				dataIndex: 'title',
-				sortable: true,
-				width:100,
 			}, 
 			{
 				header: "type",
 				dataIndex: "type",
-				sortable: true,
 				width:32,
 				renderer: function(val, p, rec) {
 					//return "<div style=\"min-width:16,min-height:16,width:16,height:16\" class=\"" + lore.anno.ui.getAnnoTypeIcon(rec.data) + "\" />";
@@ -839,21 +840,15 @@ loreuiannogrid = function (store ) {
 			},
 			{
 				header: "creator",
-				dataIndex: 'creator',
-				sortable: true,
-				width:100
+				dataIndex: 'creator'
 			}, 
 			{
 				header: "created",
-				dataIndex: 'created',
-				sortable: true,
-				width:100
+				dataIndex: 'created'
 			}, 
 			{
 				header: 'modified',
 				dataIndex: 'modified',
-				sortable: true,
-				width:100,
 				renderer: function (val, p, rec) {
 					return val ? val: "<i>not yet modified</i>";
 				}
@@ -861,12 +856,11 @@ loreuiannogrid = function (store ) {
 			{
 				header: 'annotates',
 				dataIndex: 'resource',
-				sortable: true,
-				width:200,
 				renderer:  function(val, p, rec ) {
 					return String.format("<a class='anno-search'onclick='lore.global.util.launchTab(\"{0}\");'>{1}</a>",rec.data.resource,val);
 				}
-			}], 
+			}]
+			}),
 		//	plugin:expander,
 			
 			// customize view config
@@ -875,9 +869,6 @@ loreuiannogrid = function (store ) {
 				enableRowBody: true,
 			},
 			
-			
-
-		
 		// paging bar on the bottom
 		/*bbar: new Ext.PagingToolbar({
 		 pageSize: 25,
@@ -905,11 +896,20 @@ loreuiannogrid = function (store ) {
 loreuiannosearch = function (store ) {
 	 
 	return {
+		xtype:'panel',
+		layout:'border',
 		title: "Search",
+		items:[
+		{
 		xtype: "panel",
+		region: 'north',
 		id: "search",
-		 
-		items: [loreuiannosearchform(store), loreuiannogrid(store)]
+		collapsible:true,
+		title: 'Search Options',
+		items: [loreuiannosearchform(store)]
+		}, loreuiannogrid(store)
+		
+		]
 	}
 }
 
