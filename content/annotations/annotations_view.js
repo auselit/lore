@@ -358,6 +358,7 @@
 			desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span><br />";
 			obj.innerHTML = desc;
 			
+			
 			var tipContainer = doc.getElementById("tipcontainer");
 			
 			// create the tip container and import the script onto the page
@@ -370,6 +371,7 @@
 				doc.body.appendChild(tipContainer);
 				
 				lore.global.util.injectScript("content/lib/wz_tooltip.js", lore.global.util.getContentWindow(window));
+			//	lore.global.util.injectCSS("content/lib/simpletip.css", lore.global.util.getContentWindow(window));
 				
 			}
 			
@@ -392,6 +394,15 @@
 			annodata.title.replace(/'/g, '&apos;') +
 			"');");
 			domContainer.setAttribute("onmouseout", "UnTip();");
+			
+		/*	$(marker.data.nodes[0], doc).simpletip({
+				content: desc,
+				focus: true,
+				boundryCheck:true,
+				hideEffect: 'none',
+				/*position: 'bottom',*/
+			//});
+			
 		} 
 		catch (ex) {
 			lore.debug.anno("Tip creation failure: " + ex, ex);
@@ -1461,8 +1472,11 @@
 						});
 					}
 				}
+				lore.anno.ui.loreInfo("Searching...");
 				lore.anno.searchAnnotations(vals['url']!='' ? vals['url']:null, filters, function(result, resp){
 	 				lore.debug.anno("result from search: " + result, resp);
+					lore.anno.ui.loreInfo("Search Finished");
+					
 					Ext.getCmp("annosearchgrid").doLayout();
 	 			});
 			} catch (e) {
@@ -2255,7 +2269,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 
 	var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
 	var doc = cw.document;
-	
+	var imgOnly = doc.contentType.indexOf("image") == 0;
 	var e = function(){
 		try {
 			var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
@@ -2274,7 +2288,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
 			
 			var im;
-			var imgOnly = doc.contentType.indexOf("image") == 0;
+			
 			if (imgOnly) {
 				im = $('img', doc);
 				lore.debug.anno("image only", im);
@@ -2316,13 +2330,14 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 							m.update();
 						}
 					}
-					$('img[offsetWidth!=0]', d).each(function(){
+					
+					im.each(function(){
+						
 						var inst = $(this).imgAreaSelectInst();
 						
 						if (inst) {
 							// imgarea supports scaling, but it refreshes it scaling
 							// in a stupid way, merely calling update will not work
-							 
 							var s = inst.getSelection();
 							inst.setOptions({});
 							inst.setSelection(s.x1, s.y1, s.x2, s.y2);
@@ -2363,10 +2378,14 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 
 	if (im.size() > 0) {
 		var contentLoaded = true;
-		
-		im.each(function () {
-					contentLoaded = contentLoaded && this.offsetWidth != null;
-		});
+		if ( imgOnly)
+			contentLoaded = im.get(0).offsetWidth != 0;
+		else 
+			im.each(function () {
+					contentLoaded = contentLoaded && this.offsetWidth != null;  
+					
+			});
+			
 	 	if (!contentLoaded)  // case: dom content loaded, images aren't
 			cw.addEventListener("load", ol, true);
 		else 			// case: page already loaded (i.e switching between preloaded tabs)
