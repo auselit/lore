@@ -49,7 +49,8 @@ lore.ore.MAX_X        = 400;
  * @const */
 lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
     "dcterms:created", "dc:contributor", "dc:coverage", "dc:description",
-    "dc:format", "dcterms:hasFormat", "dc:identifier", "dc:language",
+    //"dc:format", "dcterms:hasFormat", 
+    "dc:identifier", "dc:language",
     "dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
     "dc:subject", "dc:title"];
 /** Properties that are mandatory for compound objects
@@ -65,6 +66,10 @@ lore.ore.RES_REQUIRED = ["resource"];
  * @const */
 lore.ore.REL_REQUIRED = ["relationship", "namespace"];
 
+/** Property name displayed for the compound object identifier */
+lore.ore.REM_ID_PROP = "Compound Object ID";
+
+
 /** Display an error message in the ORE statusbar 
  * @param {String} message The message to display */
 lore.ore.ui.loreError = function(/*String*/message){
@@ -76,7 +81,7 @@ lore.ore.ui.loreError = function(/*String*/message){
             }
     });
     lore.global.ui.loreError(message);
-}
+};
 /**
  * Display an information message in the ORE statusbar
  * @param {String} message The message to display
@@ -90,7 +95,7 @@ lore.ore.ui.loreInfo = function(/*String*/message) {
                 }
     });
     lore.global.ui.loreInfo(message);
-}
+};
 /**
  * Display a warning message in the ORE statusbar
  * @param {String} message The message to display
@@ -104,7 +109,7 @@ lore.ore.ui.loreWarning = function(/*String*/message){
         }
     });
     lore.global.ui.loreWarning(message);
-}
+};
 /**
  * Set the global variables for the repository access URLs
  *
@@ -117,23 +122,24 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype){
 	lore.ore.reposURL = rdfrepos;
     /** The type of the compound object repository eg sesame, fedora */
 	lore.ore.reposType = rdfrepostype; // type of compound object repository
-}
+};
 /**
  * Set the DC Creator for the resource map
  * @param {String} creator
  */	
 lore.ore.setDcCreator = function(creator){
-    var remprops = lore.ore.ui.grid.getSource();
-    remprops["dc:creator"] = creator;
-    lore.ore.ui.grid.setSource(remprops);
     /** The name of the default creator used for dc:creator for annotations and compound objects */
     lore.defaultCreator = creator;
-}
+    // TODO: only set if it is a new compound object (i.e. don't override for existing object)
+    /*if (!lore.ore.ui.grid.getStore().getById('dc:creator_0')){
+        lore.ore.ui.grid.getStore().add({id: 'dc:creator_0', name:'dc:creator', value:''});
+    }*/
+};
 /** Handle click of search button in search panel */
 lore.ore.keywordSearch = function(){
     lore.debug.ore("kw search triggered");
     lore.ore.search(null,null,Ext.getCmp("kwsearchval").getValue());
-}
+};
 
 lore.ore.advancedSearch = function(){
     var searchform = Ext.getCmp("advsearchform").getForm();
@@ -142,25 +148,45 @@ lore.ore.advancedSearch = function(){
     var searchval = searchform.findField("searchval").getValue();
     //var searchexact = searchform.findField("searchexact").getValue();
     lore.ore.search(searchuri, searchpred, searchval);
-}
+};
 
 lore.ore.search = function (searchuri, searchpred, searchval){
     try{
-    var searchtreeroot = Ext.getCmp("searchtree").getRootNode();
-    lore.global.ui.clearTree(searchtreeroot);
-    if (searchuri && searchuri != ""){
+    lore.global.ui.clearTree(Ext.getCmp("searchtree").getRootNode());
+    var searchTerms = [];
+    if (searchuri){
+        searchTerms.push("<i>containing: </i>" + searchuri);
+    }
+    if (searchpred){
+        searchTerms.push("<i>having: </i>" + searchpred);
+    }
+    if (searchval){
+        searchTerms.push("<i>matching: </i>" + searchval);
+    }
+    var searchtreeroot = new Ext.tree.TreeNode({
+        id: "searchtree",
+        text: "Search Results",
+        details: searchTerms,
+        uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
+        draggable: false,
+        iconCls:"tree-ore"
+    });
+    Ext.getCmp("searchtree").getRootNode().appendChild(searchtreeroot);
+    
+    
+    if (searchuri && searchuri !== ""){
         searchuri = "<" + searchuri + ">";
     } else {
         searchuri = "?u";
     }
-    if (searchpred && searchpred != ""){
+    if (searchpred && searchpred !== ""){
         searchpred = "<" + searchpred + ">";
     } else {
         searchpred = "?p";
     }
     var filter = "";
     if (searchval && searchval != ""){
-        filter = "FILTER regex(str(?v), \"" + searchval + "\")"
+        filter = "FILTER regex(str(?v), \"" + searchval + "\", \"i\")";
     } 
 	var searchquery = lore.ore.reposURL
         + "?queryLn=sparql&query=" 
@@ -170,7 +196,7 @@ lore.ore.search = function (searchuri, searchpred, searchval){
         + "{?g <http://purl.org/dc/elements/1.1/creator> ?a} ."
         + "{?g <http://purl.org/dc/terms/created> ?c} ."
         + "OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
-    lore.debug.ore("searchquery is",searchquery);
+    lore.debug.ore("compound object search query is",searchquery);
     var req = new XMLHttpRequest();
     req.open('GET', searchquery, true);
     req.onreadystatechange = function(aEvt) {
@@ -190,20 +216,24 @@ lore.ore.search = function (searchuri, searchpred, searchval){
                        try{
 	                       var res = theobj.match;
                            lore.debug.ore("the val matched is",res);
-	                       var displayres = "";
-	                       if (res) {
+	                       var displayres = [];
+	                       if (res && res != -1) {
                             // display a snippet to show where search term occurs
-		                       var idx = res.match(searchval).index;
+		                       var idx = res.toLowerCase().match(searchval.toLowerCase()).index;
 		                       var s1 = ((idx - 15) < 0) ? 0 : idx - 15;
 		                       var s2 = ((idx + 15) > (res.length))? res.length : idx + 15;
-		                       displayres = " ("+ ((s1 > 0)?"..":"") + res.substring(s1,s2) 
-	                            + ((s2 < (res.length))? "..":"")+ ")";
+		                       displayres.push("<i>("+ ((s1 > 0)?"..":"") + res.substring(s1,s2) 
+	                            + ((s2 < (res.length))? "..":"")+ ")</i>");
 	                       }
+                           // display the creator and date
+                           displayres.push(theobj.creator + ", " + theobj.created);
 	                       var tmpNode = new Ext.tree.TreeNode({
-	                                'text' : theobj.title +  displayres,
+	                                'text' : theobj.title,
+                                    uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
+                                    details   : displayres,
 	                                'id' : theobj.uri + 's',
 	                                'uri' : theobj.uri,
-	                                'qtip': "Created by " + theobj.creator + ", " + theobj.created,
+	                                'qtip': "Compound object: " + theobj.uri,
 	                                'iconCls' : 'oreresult',
 	                                'leaf' : true,
 	                                'draggable': true
@@ -218,16 +248,16 @@ lore.ore.search = function (searchuri, searchpred, searchval){
                 if (!searchtreeroot.isExpanded()) {
                     searchtreeroot.expand();
                 }    
-            } else if (req.status = 404){
+            } else if (req.status == 404){
                 lore.debug.ore("404 accessing compound object repository",req);
             }
         }
-    }
+    };
     req.send(null);
     } catch (e){
         lore.debug.ore("exception in search",e);
     }
-}
+};
 
 /**
  * Checks whether the compound object loaded in the editor has been modified
@@ -244,21 +274,22 @@ lore.ore.compoundObjectDirty = function (){
     } else {
         return true;
     }
-}
+};
 
 /** Initialize a new compound object in the editor, prompting first whether to save the current compound object */
 lore.ore.createCompoundObject = function (){
     var newCO = function (){
         var today = new Date();
-        lore.ore.ui.grid.setSource({
-                    "rdf:about" : lore.ore.generateID(),
-                    "ore:describes" : "#aggregation",
-                    "dc:creator" : lore.defaultCreator,
-                    "dcterms:modified" : today,
-                    "dcterms:created" : today,
-                    "rdf:type" : lore.constants.RESOURCE_MAP,
-                    "dc:title" : ""
-        });
+        lore.ore.currentREM = lore.ore.generateID();
+        lore.ore.ui.grid.store.loadData(
+        [
+            {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
+            {id: "dc:creator_0", name: "dc:creator", value: lore.defaultCreator},
+            {id: "dcterms:modified_0", name: "dcterms:modified", value:today},
+            {id:"dcterms:created_0", name:"dcterms:created",value:today},
+            {id: "dc:title_0", name: "dc:title", value: ""}
+        ]  
+    );
         lore.ore.ui.initGraphicalView();
     };
     try{
@@ -284,7 +315,7 @@ lore.ore.createCompoundObject = function (){
     } catch (e){
         lore.debug.ore("Error in createCompoundObject",e);
     }
-}
+};
 
 /** Actions performed when lore Compound Objects panel is shown */
 lore.ore.onShow = function () {
@@ -295,17 +326,17 @@ lore.ore.onShow = function () {
 			lore.ore.updateCompoundObjectsSourceList(lore.ore.ui.currentURL);
 			lore.ore.ui.loadedURL = lore.ore.ui.currentURL;
 		}
-}
+};
 /** Actions performed when lore Compound Objects panel is hidden */
 lore.ore.onHide = function () {
 	lore.ore.ui.lorevisible = false;
-}
+};
 
 // alias used by uiglobal
 // TODO: change this to addNode - make it add to model and get view to listen on model
 lore.ore.addFigure = function (/*URL*/theURL) {
 	lore.ore.graph.addFigure(theURL);
-}
+};
 
 /**
  * Remove listeners and reference to a Compound Object view if it is closed
@@ -330,10 +361,9 @@ lore.ore.closeView = function(/*Ext.TabPanel*/tabpanel, /*Ext.panel*/panel) {
         tab.un("activate",lore.ore.updateTriG);
     }
     return true;
-}
+};
 lore.ore.ui.hideProps = function(p, animate){
-        p.body.setStyle('display','none');
-       
+        p.body.setStyle('display','none');      
 };
 lore.ore.ui.showProps = function(p, animate){
         p.body.setStyle('display','block');
@@ -353,76 +383,92 @@ lore.ore.ui.addProperty = function (ev, toolEl, panel){
                 text: propname,
                 handler: function (){
                     try{
-	                    var panel = Ext.getCmp(this.parentMenu.panelref);
-	                    var props = panel.getSource();
-	                    if (props && !props[this.text]){
-	                        props[this.text] = "";
-	                    }
-	                    panel.setSource(props);
+                        var panel = Ext.getCmp(this.parentMenu.panelref);
+                        var pstore = panel.getStore();
+                        var counter = 0;
+                        var prop = pstore.getById(this.text + "_" + counter);
+                        while (prop) {
+                            counter = counter + 1;
+                            prop = pstore.getById(this.text + "_" + counter);
+                        }
+                        var theid = this.text + "_" + counter;
+                        pstore.loadData([{id: theid, name: this.text, value: ""}],true);
+                        
                     } catch (ex){
                         lore.debug.ore("exception adding prop " + this.text,ex);
                     }
                 }
             });
 	    }
-	}
+	};
     if (!panel.propMenu){
         makeAddMenu(panel);
     }
-    if (panel.collapsed){
-        panel.expand(false);
+    if (panel.id == "remgrid" || lore.ore.graph.selectedFigure instanceof lore.ore.graph.ResourceFigure){
+        if (panel.collapsed){
+            panel.expand(false);
+        }
+        panel.propMenu.showAt(ev.xy);
+    } else {
+        lore.ore.ui.loreInfo("Please click on a Resource node before adding property");
     }
-    panel.propMenu.showAt(ev.xy);
-}
+};
 /** Handler for minus tool button on property grids */
 lore.ore.ui.removeProperty = function (ev, toolEl, panel){ 
+    try{
     lore.debug.ore("remove Property was triggered",ev);
-    var sel = panel.getSelectionModel().selection;
+    var sel = panel.getSelectionModel().getSelected();
     // don't allow delete when panel is collapsed (user can't see what is selected)
     if (panel.collapsed){
         lore.ore.ui.loreInfo("Please expand the properties panel and select the property to remove");
     } else if (sel){
-             if ((panel.id == "remgrid" && lore.ore.CO_REQUIRED.indexOf(sel.record.data.name)!=-1) ||
-                (panel.id == "nodegrid" && 
-                    (lore.ore.RES_REQUIRED.indexOf(sel.record.data.name) !=-1 ||
-                        lore.ore.REL_REQUIRED.indexOf(sel.record.data.name)!=-1))){
-                lore.ore.ui.loreWarning("Cannot remove mandatory property: " + sel.record.data.name);
-            } else {
-                //panel.getStore().remove(sel.record); // doesn't seem to be working
-                lore.debug.ore("deleting the property",panel.collapsed);
-                var props = panel.getSource();
-                delete props[sel.record.data.name];
-                panel.setSource(props);
+        // TODO: should allow first to be deleted as long as another exists
+        // should also probably renumber
+             if (sel.id.match("_0")){ // first instance of property: check if it's mandatory
+                var propId = sel.id.substring(0,sel.id.indexOf("_0"));
+                if ((panel.id == "remgrid" && lore.ore.CO_REQUIRED.indexOf(propId)!=-1) ||
+                    (panel.id == "nodegrid" && 
+                        (lore.ore.RES_REQUIRED.indexOf(propId) !=-1 ||
+                            lore.ore.REL_REQUIRED.indexOf(propId)!=-1))){
+                    lore.ore.ui.loreWarning("Cannot remove mandatory property: " + sel.data.name);
+                } else {
+                    panel.getStore().remove(sel);
+                }
+            } else { // not the first instance of the property: always ok to delete
+                panel.getStore().remove(sel);
             }
      } else {
         lore.ore.ui.loreInfo("Please click on the property to remove prior to selecting the remove button");
      }
-}
+    } catch (ex){
+        lore.debug.ore("error removing property ",ex);
+    }
+};
 /** Handler for help tool button on property grids */
 lore.ore.ui.helpProperty = function (ev,toolEl, panel){
-    var sel = panel.getSelectionModel().selection;
+    var sel = panel.getSelectionModel().getSelected();
     if (panel.collapsed){
         lore.ore.ui.loreInfo("Please expand the properties panel and select a property");
     } else if (sel){
-        var splitprop =  sel.record.data.name.split(":");
-        var infoMsg = "<p style='font-weight:bold;font-size:130%'>" + sel.record.data.name + "</p><p style='font-size:110%;margin:5px;'>" 
-        + sel.record.data.value + "</p>";
+        var splitprop =  sel.data.name.split(":");
+        var infoMsg = "<p style='font-weight:bold;font-size:130%'>" + sel.data.name + "</p><p style='font-size:110%;margin:5px;'>" 
+        + sel.data.value + "</p>";
         if (splitprop.length > 1){
-            var ns = lore.constants.NAMESPACES[splitprop[0]]
+            var ns = lore.constants.NAMESPACES[splitprop[0]];
             infoMsg += "<p>This property is defined in " 
                     + "<a style='text-decoration:underline' href='#' onclick='lore.global.util.launchTab(\"" 
                     + ns + "\");'>" + ns + "</a></p>";
         }
         
         Ext.Msg.show({
-                title : 'About ' + sel.record.data.name,
+                title : 'About ' + sel.data.name,
                 buttons : Ext.MessageBox.OK,
                 msg : infoMsg
             });
     } else {
         lore.ore.ui.loreInfo("Please click on a property prior to selecting the help button");
     }
-}
+};
 
 /** Helper function to create a view displayed in a closeable tab */
 lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
@@ -437,23 +483,23 @@ lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*
         tab.on("activate", activationhandler);
     }
     tab.show();
-}
+};
 
 /** Displays a summary of the resource URIs aggregated by the compound object 
  * @parm {Ext.Panel} summarypanel The panel to show the summary in */
 lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
-    var remprops = lore.ore.ui.grid.getSource();
-
     var newsummary = "<table style='font-size:smaller;border:none'>"
             + "<tr valign='top'><td width='20%'><b>Compound object:</b></td><td>"
-            + remprops["rdf:about"] + "</td></tr>";
-    if (remprops["dc:title"]) {
+            + lore.ore.currentREM + "</td></tr>";
+    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+    if (title) {
         newsummary += "<tr valign='top'><td width='20%'><b>Title:</b></td><td>"
-                + remprops["dc:title"] + "</td></tr>";
+                + title + "</td></tr>";
     }
-    if (remprops["dc:description"]) {
+    var desc = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+    if (desc) {
         newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='80%'>"
-                + remprops["dc:description"] + "</td></tr>";
+                + desc + "</td></tr>";
     }
     newsummary += "</table>";
     newsummary += "<div style='padding-top:1em'><p><b>List of contents:</b></p><ul>";
@@ -461,7 +507,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
     for (var i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
         var figurl = lore.global.util.escapeHTML(fig.url);
-        var title = fig.metadataproperties["dc:title"];
+        var title = fig.getProperty("dc:title_0");
         newsummary += "<li>" + (title? title + ": " : "") 
         + "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>&lt;" 
         + figurl + "&gt;</a></li>";
@@ -469,7 +515,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
     newsummary += "</ul></div>";
     summarypanel.body.update(newsummary);
     lore.ore.ui.loreInfo("Displaying a summary of compound object contents");
-}
+};
 
 /** Generate a SMIL presentation from the current compound object and display a link to launch it */
 lore.ore.showSMIL = function() {
@@ -489,24 +535,23 @@ lore.ore.showSMIL = function() {
     }
     Ext.getCmp("remsmilview").body.update(smilcontents);
     lore.ore.ui.loreInfo("Display a multimedia presentation generated from the compound object contents");
-}
+};
 /** Render the current compound object as RDF/XML in the RDF view */
 lore.ore.updateRDFHTML = function() {
     Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
-}
+};
 lore.ore.refreshTabularEditor = function (panel){
     lore.debug.ore("the tabular editor",panel);
-    // create table if it does not exist, otherwise refresh it
-    
-}
+    // create table if it does not exist, otherwise refresh it   
+};
 /** Render the current compound object as Fedora Object XML in the FOXML view */
 lore.ore.updateFOXML = function (){
     Ext.getCmp("remfoxmlview").body.update(Ext.util.Format.htmlEncode(lore.ore.createFOXML()));
-}
+};
 /** Render the current compound object in TriG format in the TriG view*/
 lore.ore.updateTriG = function (){
     Ext.getCmp("remtrigview").body.update("<pre>" + Ext.util.Format.htmlEncode(lore.ore.serializeREM('trig')) + "</pre>");
-}
+};
 /** Generate a slideshow representing the current compound object */
 lore.ore.showSlideshow = function (){
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
@@ -525,21 +570,21 @@ lore.ore.showSlideshow = function (){
     } catch (ex){
         lore.debug.ore("adding slideshow",ex);
     }
-}
+};
 /** Generate a visualisation to explore compound object connections */
 lore.ore.showExploreUI = function(){
     try{
     if (lore.ore.exploreLoaded !== lore.ore.currentREM) {
         lore.debug.ore("show in explore view", lore.ore.currentREM);
         lore.ore.exploreLoaded = lore.ore.currentREM;
-        lore.ore.explore.showInExploreView(lore.ore.currentREM, lore.ore.ui.grid.getSource()["dc:title"]);
+        lore.ore.explore.showInExploreView(lore.ore.currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid));
     } else {
         lore.debug.ore("refresh explore view");
         lore.ore.explore.rg.refresh();
     }
     }catch(e){lore.debug.ore("error in showExploreUI",e);}
     lore.ore.ui.loreInfo("Click on the nodes to explore connections between compound objects.");
-}
+};
 /**
  * Stores basic metadata about a compound object for the results listing
  * @param {XMLNode} result
@@ -580,7 +625,7 @@ lore.ore.CompObjListing = function(/*Node*/result){
     } catch (ex) {
         lore.debug.ore("Unable to process compound object result list", ex);
     }
-}
+};
 /** Prompt for location to save serialized compound object and save as file
  * @param {String} format The format to which to serialize (rdf, wordml, foxml or trig)
  */
@@ -590,7 +635,7 @@ lore.ore.handleSerializeREM = function (format) {
         "wordml": "xml",
         "foxml": "xml",
         "trig": "txt"  
-    }
+    };
 	try {
         if (!format) {
             format = "rdf";
@@ -604,7 +649,7 @@ lore.ore.handleSerializeREM = function (format) {
 		lore.debug.ore("Error saving Compound Objects data: " + e,e );
 		lore.ore.ui.loreError("Error saving Compound Object: " + e);
 	}
-}
+};
 lore.ore.serializeREM = function(format) {
     if ('foxml' == format) {
         return lore.ore.createFOXML();
@@ -620,7 +665,7 @@ lore.ore.serializeREM = function(format) {
         }
         databank.load(rdfDoc);
     if (format == 'trig') {
-       var result = "<" + lore.ore.ui.grid.getSource()["rdf:about"] + ">\n{\n";
+       var result = "<" + lore.ore.currentREM + ">\n{\n";
        var triples = databank.triples();
        for (var t = 0; t < triples.length; t++){
         var triple = triples[t];
@@ -631,7 +676,7 @@ lore.ore.serializeREM = function(format) {
     } else {
         return databank.dump({format:'application/rdf+xml',serialize:true});
     }
-}
+};
 /**
  * Create the RDF/XML of the current compound object
  * 
@@ -647,12 +692,13 @@ lore.ore.createRDF = function(/*boolean*/escape) {
      */
     var serialise_property = function(propname, properties, ltsymb, nlsymb) {
         var result = "";
-        var propval = properties[propname];
-        if (propval != null && propval != '') {
+        var propval = lore.ore.getPropertyValue(propname, properties);//properties[propname];
+        if (propval && propval != '') {
             result = ltsymb + propname + ">";
             if (nlsymb == "<br/>" && propval) {
                 try {
-                    result += lore.global.util.escapeHTML(propval.toString());
+                    lore.debug.ore("serializing " + propname, properties);
+                    result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"\\\""));
                 } catch (e) {
                     lore.debug.ore("error in serialise_property",e);
                     lore.ore.ui.loreWarning(e.toString());
@@ -664,18 +710,21 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         }
         return result;
     };
+    try{
     var ltsymb = "<";
     var nlsymb = "\n";
     if (escape) {
         ltsymb = "&lt;";
         nlsymb = "<br/>";
     }
-    var remprops = lore.ore.ui.grid.getSource();
     var modifiedDate = new Date();
-    remprops["dcterms:modified"] = modifiedDate;
-    lore.ore.ui.grid.setSource(remprops);
-    var describes = remprops["ore:describes"];
-    var rdfabout = remprops["rdf:about"];
+    var proprecidx = lore.ore.ui.grid.store.find("name","dcterms:modified");
+    if (proprecidx != -1){
+       lore.ore.ui.grid.store.getAt(proprecidx).set("value", modifiedDate);
+       lore.ore.ui.grid.store.commitChanges();
+    }
+    var describes = "#aggregation";
+    var rdfabout = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
 
     // RDF fragments
     var rdfdescabout = "rdf:Description rdf:about=\"";
@@ -707,8 +756,8 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             + modifiedDate.getFullYear() + "-" + monthString
             + "-" + dayString + ltsymb + "/dcterms:modified>"
             + nlsymb;
-    var created = remprops["dcterms:created"]; 
-    if (created != null && created instanceof Date) {
+    var created = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);//remprops["dcterms:created"]; // TODO: fix
+    if (created && created instanceof Date) {
         monthString = created.getMonth() + 1 + "";
         if (monthString.length < 2){
             monthString = '0' + monthString;
@@ -722,7 +771,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                 + created.getFullYear() + "-" + monthString + "-"
                 + dayString + ltsymb + "/dcterms:created>" + nlsymb;
     } 
-    else if (created != null) {
+    else if (created) {
         rdfxml += ltsymb + 'dcterms:created rdf:datatype="'
                 + lore.constants.NAMESPACES["xsd"] + 'date">'
                 + created + ltsymb + "/dcterms:created>" + nlsymb;
@@ -730,40 +779,43 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
         var theprop = lore.ore.METADATA_PROPS[i];
         if (theprop != 'dcterms:modified' && theprop != 'dcterms:created') {
-            rdfxml += serialise_property(theprop, remprops, ltsymb, nlsymb);
+            rdfxml += serialise_property(theprop, lore.ore.ui.grid, ltsymb, nlsymb); 
         }
     }
     rdfxml += ltsymb + rdfdescclose + nlsymb;
 
     // create RDF for aggregation
-    var aggreprops = {
-        "rdf:type" : lore.constants.NAMESPACES["ore"] + "Aggregation"
-    };
     rdfxml += ltsymb + rdfdescabout + describes + closetag + ltsymb
-            + "rdf:type rdf:resource=\"" + aggreprops["rdf:type"]
+            + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
             + fullclosetag;
     // TODO: any other types for aggregation eg Journal Article
 
-    for (i = 0; i < lore.ore.all_props.length; i++) {
-        rdfxml += serialise_property(lore.ore.all_props[i], aggreprops, ltsymb,
+    /*for (i = 0; i < lore.ore.all_props.length; i++) {
+        rdfxml += serialise_property(lore.ore.all_props[i], lore.ore.ui.nodegrid, ltsymb,
                 nlsymb);
-    }
+    }*/
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
     var resourcerdf = "";
     for (i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
-        var figurl = lore.global.util.escapeHTML(fig.url.toString().replace('<', '%3C').replace('>', '%3E'))
+        var figurl = lore.global.util.escapeHTML(fig.url.toString().replace('<', '%3C').replace('>', '%3E'));
         rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                 + fullclosetag;
         // create RDF for resources in aggregation
-        // TODO: resource properties eg dcterms:hasFormat, ore:isAggregatedBy
+        // TODO: resource properties eg ore:isAggregatedBy
         for (var mprop in fig.metadataproperties) {
-            if (mprop != 'resource' && !mprop.match('undefined')) {
+            if (mprop != 'resource_0' && !mprop.match('undefined')) {
                 var mpropval = fig.metadataproperties[mprop];
                 if (mpropval && mpropval != '') {
+                    var tagname = mprop;
+                    var midx = mprop.indexOf("_");
+                    if (midx != -1){
+                        tagname = mprop.substring(0,midx);
+                    }
+                    lore.debug.ore("2 serializing " + tagname, mpropval);
                     resourcerdf += ltsymb + rdfdescabout + figurl + closetag
-                            + ltsymb + mprop + ">" + mpropval + ltsymb + "/"
-                            + mprop + ">" + nlsymb + ltsymb + rdfdescclose
+                            + ltsymb + tagname + ">" + mpropval.replace(/"/g,"\\\"") + ltsymb + "/"
+                            + tagname + ">" + nlsymb + ltsymb + rdfdescclose
                             + nlsymb;
                 }
             }
@@ -809,12 +861,15 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     rdfxml += resourcerdf;
     rdfxml += ltsymb + "/rdf:RDF>";
     return rdfxml;
-}
+    } catch (ex){
+        lore.debug.ore("exception in createRDF",ex);
+    }
+};
 
 lore.ore.generateID = function(){
     // TODO: should use a persistent identifier service to request an identifier
     return "http://austlit.edu.au/rem/" + draw2d.UUID.create();
-}
+};
 
 /**
  * Load a compound object into the graphical view
@@ -829,6 +884,8 @@ lore.ore.loadCompoundObject = function (rdf) {
             }
         }
     };
+    
+    
     var showInTree = false;
     try {
         // reset the graphical view
@@ -860,10 +917,9 @@ lore.ore.loadCompoundObject = function (rdf) {
             lore.debug.ore("no remurl found in RDF",lore.ore.loadedRDF);
             lore.debug.ore("the input rdf was",rdf); 
         }
-	    var theprops = {
-	        "rdf:about" : remurl,
-	        "ore:describes" : "#aggregation"
-	    };
+	    lore.ore.ui.grid.store.loadData([
+            {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: remurl}
+	    ]);
         lore.ore.loadedRDF.about('<' + remurl + '>')
             .each(function(){
                 var propurl = this.property.value.toString();
@@ -874,11 +930,11 @@ lore.ore.loadCompoundObject = function (rdf) {
                 } else {
                     propname = propurl;
                 }
-                //lore.debug.ore("rem props " + propname + " " + this.value.toString(),this);
-                theprops[propname] = this.value.value.toString();
+                if (propname != "ore:describes" && propname != "rdf:type"){
+                    lore.ore.appendPropertyValue(propname, this.value.value.toString(), lore.ore.ui.grid);
+                }
             });
-	     lore.ore.ui.grid.setSource(theprops);
-         
+ 
          
         // create a node figure for each aggregated resource, restoring the layout
         lore.ore.loadedRDF.where('<' + remurl + "#aggregation" + '> ore:aggregates ?url')
@@ -920,13 +976,18 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.ore.loadedRDF.where('?subj ?pred ?obj')
             .filter(function(){
                 // filter out the layout properties and predicates about the resource map
-                if (this.pred.value.toString().match(lore.constants.NAMESPACES["layout"]) 
-                    || this.subj.value.toString().match(remurl)) return false;
-                else return true;
+                if (this.pred.value.toString().match(lore.constants.NAMESPACES["layout"])
+                    || this.pred.value.toString() === (lore.constants.NAMESPACES["dc"]+ "format")
+                    || this.subj.value.toString().match(remurl)) {
+                        return false;
+                    }
+                else {
+                    return true;
+                }
             })
             .each(function(){  
                 // try to find a node that this predicate applies to 
-                var subject = this.subj.value.toString()
+                var subject = this.subj.value.toString();
                 var srcfig = lore.ore.graph
                     .lookupFigure(subject);
                 if (!srcfig) {
@@ -936,7 +997,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                 }
                 if (srcfig) {
                     var relresult = lore.global.util.splitTerm(this.pred.value.toString());
-                    var obj = this.obj.value.toString()
+                    var obj = this.obj.value.toString();
                     var tgtfig = lore.ore.graph.lookupFigure(obj);
                     if (!tgtfig) {
                         tgtfig = lore.ore.graph
@@ -951,7 +1012,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                         lore.ore.graph.Graph.addFigure(c);
                     } else  { 
                         // not a node relationship, show in the property grid 
-                        srcfig.metadataproperties[nsprefix(relresult.ns) + relresult.term] = obj;
+                        srcfig.appendProperty(nsprefix(relresult.ns) + relresult.term, obj);
                         if (relresult.term == "title") {
                             srcfig.setTitle(obj);
                         }
@@ -964,7 +1025,10 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.ore.currentREM = remurl;
        
        if (showInTree && !lore.ore.ui.recenttreeroot.findChild('id',remurl + 'r')){
-	        var title = theprops["dc:title"] ? theprops["dc:title"] : "Untitled";
+	        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+            if (!title){
+                title = "Untitled";
+            }
 	        var recentNode = new Ext.tree.TreeNode({
 	            'text' : title,
 	            'id': remurl + 'r',
@@ -987,7 +1051,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.debug.ore("the RDF string was",rdf);
         lore.debug.ore("the serialized databank is",databank.dump({format:'application/rdf+xml', serialize: true}));
     }
-}
+};
 
 /**
  * Loads a ORE resource map from a URL into the graphical view and property panels
@@ -1004,7 +1068,7 @@ lore.ore.readRDF = function(rdfURL){
                 lore.debug.ore("Unable to load compound object " + opt.url, resp);
             }
         }); 
-}
+};
 
 /** set up listeners for events in the compound objects tree */
 lore.ore.attachREMEvents = function(node){  
@@ -1042,7 +1106,7 @@ lore.ore.attachREMEvents = function(node){
         }
         node.contextmenu.showAt(e.xy);
     });
-}
+};
 
 /**
  * Takes a repository access URI and returns the resource map identifier This is
@@ -1067,7 +1131,7 @@ lore.ore.getOREIdentifier = function(url) {
     } else {
         return theurl;
     }
-}
+};
 /**
  * Load a resource map directly from a URL - prompt the user to enter the URL
  */
@@ -1083,7 +1147,7 @@ lore.ore.loadRDF = function() {
                 },
                 prompt : true
             });
-}
+};
 /**
  * Populate connection context menu with relationship types from the ontology.
  * Assumes that onturl has been set in init from preferences
@@ -1110,14 +1174,43 @@ lore.ore.loadRelationshipsFromOntology = function() {
                     lore.ore.ontrelationships[relresult.term] = relresult.ns;
                 });
                 // TODO: load datatype properties for prop grids
+                // update properties UI eg combo box in search, menu for selecting rel type
             } 
         };
         xhr.send(null);
-     }
-     
-        
-}
-
+     }     
+};
+/** Looks up property value from a grid by name
+ * 
+ * @param {} propname The name of the property to find
+ * @param {} grid The grid
+ * @return Object The value of the property
+ */
+lore.ore.getPropertyValue = function(propname, grid){
+    var proprecidx = grid.store.find("name",propname);
+    if (proprecidx != -1){
+       return grid.store.getAt(proprecidx).get("value");
+    } else {
+        return "";
+    }
+};
+/**
+ * Add a property with the specified value to a property grid
+ * @param {} propname
+ * @param {} propval
+ * @param {} pstore
+ */
+lore.ore.appendPropertyValue = function(propname, propval, grid){
+        var pstore = grid.store;
+        var counter = 0;
+        var prop = pstore.getById(propname + "_" + counter);
+        while (prop) {
+            counter = counter + 1;
+            prop = pstore.getById(propname + "_" + counter);
+        }
+        var theid = propname + "_" + counter;
+        pstore.loadData([{id: theid, name: propname, value: propval}],true);
+};
 /**
  * Delete the compound object from the repository
  */
@@ -1125,8 +1218,8 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
     var remid = aURI;
     var title = aTitle;
     if (!remid){
-        remid = lore.ore.ui.grid.getSource()["rdf:about"];
-        title = lore.ore.ui.grid.getSource()["dc:title"];
+        remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
+        title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
     }
     Ext.Msg.show({
         title : 'Remove Compound Object',
@@ -1155,7 +1248,7 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
             }
         }
     });
-}
+};
 /**
  * Save the compound object to the repository - prompt user to confirm
  */
@@ -1163,7 +1256,7 @@ lore.ore.saveRDFToRepository = function() {
     // TODO: implement Fedora support
     // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
     // update rdfquery to reflect most recent save
-    var remid = lore.ore.ui.grid.getSource()["rdf:about"];
+    var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
     Ext.Msg.show({
         title : 'Save RDF',
         buttons : Ext.MessageBox.OKCANCEL,
@@ -1224,7 +1317,7 @@ lore.ore.saveRDFToRepository = function() {
             }
         }
     });
-}
+};
 /**
  * Set the global variable storing the relationship ontology
  * 
@@ -1238,21 +1331,16 @@ lore.ore.setrelonturl = function(relonturl) {
     } catch (ex){
         lore.debug.ore("exception in setrelonturl", ex);
     }
-}
-
-
+};
 
 lore.ore.handleLocationChange = function (contextURL) {
-    
 	lore.ore.ui.currentURL = contextURL;
-	
-	if ( !lore.ore.ui.lorevisible || ! lore.ore.ui.initialized)
+	if ( !lore.ore.ui.lorevisible || ! lore.ore.ui.initialized){
 		return;
-	
+    }
 	lore.ore.updateCompoundObjectsSourceList(contextURL);
-	lore.ore.ui.loadedURL = contextURL;
-    
-}
+	lore.ore.ui.loadedURL = contextURL; 
+};
 /**
  * Helper function for updateSourceLists: updates the compound objects list with
  * objects that reference the contextURL
@@ -1262,8 +1350,6 @@ lore.ore.handleLocationChange = function (contextURL) {
  */
 lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
     lore.global.ui.clearTree(lore.ore.ui.remstreeroot);
-	
-    
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         try {
             // query for matches of both www and non-www version of URL
@@ -1285,6 +1371,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                 + "} . {?g <http://purl.org/dc/elements/1.1/creator> ?a}"
 	            + ". {?g <http://purl.org/dc/terms/created> ?c}"
 	            + ". OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
+            lore.debug.ore("compound objects browse sparql query",queryURL);
             var req = new XMLHttpRequest();
             req.open('GET', queryURL, true);
             req.onreadystatechange = function(aEvt) {
@@ -1295,7 +1382,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                         var xmldoc = req.responseXML;
                         var result = {};
                         if (xmldoc) {
-                            lore.debug.ore("compound objects: sparql response", req);
+                            lore.debug.ore("compound objects browse: sparql response", req);
                             result = xmldoc.getElementsByTagNameNS(
                                     lore.constants.NAMESPACES["sparql"], "result");
                         }
@@ -1305,9 +1392,11 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                                //lore.debug.ore("processing compound object", theobj);
                                var tmpNode = new Ext.tree.TreeNode({
                                         'text' : theobj.title,
+                                        uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
+                                        details   : [theobj.creator + ", " + theobj.created],
                                         'id' : theobj.uri,
                                         'uri' : theobj.uri,
-                                        'qtip': "Created by " + theobj.creator + ", " + theobj.created,
+                                        'qtip': "Compound Object: " + theobj.uri,//"Created by " + theobj.creator + ", " + theobj.created,
                                         'iconCls' : 'oreresult',
                                         'leaf' : true,
                                         'draggable': true
@@ -1323,7 +1412,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
                         if(lore.ore.ui.remstreeroot.hasChildNodes()){
                             lore.ore.ui.propertytabs.activate("sourcestree");
                         }
-                    } else if (req.status = 404){
+                    } else if (req.status == 404){
                         lore.debug.ore("404 accessing compound object repository",req);
                     }
                 }
@@ -1334,7 +1423,7 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
             lore.ore.ui.loreWarning("Unable to retrieve compound objects");
         }
     }
-}
+};
 /* Graph related functions */
 /**
  * Updates global variables used for figure layout
@@ -1349,7 +1438,7 @@ lore.ore.graph.nextXY = function() {
         lore.ore.graph.dummylayoutx += lore.ore.NODE_WIDTH
                 + lore.ore.NODE_SPACING;
     }
-}
+};
 /**
  * Get the figure that represents a resource
  * 
@@ -1360,7 +1449,7 @@ lore.ore.graph.nextXY = function() {
 lore.ore.graph.lookupFigure = function(theURL) {
     var figid = lore.ore.graph.lookup[theURL];
     return lore.ore.graph.Graph.getDocument().getFigure(figid);
-}
+};
 /**
  * Add a node figure with layout options
  * @param {} theURL
@@ -1370,7 +1459,7 @@ lore.ore.graph.lookupFigure = function(theURL) {
 lore.ore.graph.addFigureWithOpts = function(opts){
     var fig = null;
     var theURL = opts.url;
-    if (theURL && lore.ore.graph.lookup[theURL] == null) {
+    if (theURL && !lore.ore.graph.lookup[theURL]) {
         fig = new lore.ore.graph.ResourceFigure();
         fig.setTitle("Resource");
         if (opts.w && opts.h){
@@ -1386,7 +1475,7 @@ lore.ore.graph.addFigureWithOpts = function(opts){
             fig.scrolly = parseInt(opts.sy);
         }
         if (opts.format){
-            fig.metadataproperties["dc:format"] = opts.format;
+            fig.setProperty("dc:format_0",opts.format);
         }
         fig.setContent(theURL);
         lore.ore.graph.Graph.addFigure(fig, opts.x, opts.y);
@@ -1396,7 +1485,7 @@ lore.ore.graph.addFigureWithOpts = function(opts){
         lore.ore.ui.loreWarning("Resource is already in the compound object: " + theURL);
     }
     return fig;
-}
+};
 
 /**
  * Add a node figure to the graphical view to represent a resource
@@ -1410,11 +1499,11 @@ lore.ore.graph.addFigure = function(theURL) {
         "x": lore.ore.graph.dummylayoutx,
         "y": lore.ore.graph.dummylayouty
     });
-    if (fig != null) {
+    if (fig) {
         lore.ore.graph.nextXY();
     }
     return fig;
-}
+};
 /** Transform RDF/XML of the current compound object using XSLT 
  * @param {String} stylesheetURL The XSLT stylesheet (probably a chrome URI)
  * @param {object} params Any parameters to pass to the XSLT stylesheet
@@ -1422,8 +1511,8 @@ lore.ore.graph.addFigure = function(theURL) {
  * @return {object} String or Fragment containing result of applying the XSLT
  */
 lore.ore.transformORERDF = function(stylesheetURL, params, serialize){
-	 return lore.global.util.transformRDF(stylesheetURL, lore.ore.createRDF(false), params, window, serialize)
-}
+	 return lore.global.util.transformRDF(stylesheetURL, lore.ore.createRDF(false), params, window, serialize);
+};
 /**
  * Use XSLT to generate a smil file from the compound object, plus create an
  * HTML wrapper
@@ -1456,18 +1545,18 @@ lore.ore.createSMIL = function() {
     } catch (e) {
         lore.ore.ui.loreWarning("Unable to generate SMIL: " + e.toString());
     }
-}
+};
 /** Generate FOXML from the current compound object */
 lore.ore.createFOXML = function (){
     try {
-        var params = {'coid': 'demo:' + lore.global.util.splitTerm(lore.ore.ui.grid.getSource()['rdf:about']).term};
+        var params = {'coid': 'demo:' + lore.global.util.splitTerm(lore.ore.currentREM).term};
         return lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/foxml.xsl",params,true);     
     } catch (e) {
         lore.ore.ui.loreWarning("Unable to generate FOXML");
         lore.debug.ore("Unable to generate FOXML: ",e);
         return null;
     }
-}
+};
 /** Generate a Word document from the current compound object */
 lore.ore.createOREWord = function (){
     try {
@@ -1477,45 +1566,57 @@ lore.ore.createOREWord = function (){
         lore.debug.ore("Unable to generate Word document",e);
         return null;
     }
-}
+};
 
+lore.ore.handleNodePropertyRemove = function(store, record, index){
+    lore.debug.ore("deleting property " + record.id,record);
+    lore.ore.graph.selectedFigure.unsetProperty(record.id);
+};
+lore.ore.handleNodePropertyAdd = function(store, records, index){
+    lore.debug.ore("added property " + record.id,record);
+    // user should only be editing a single record at a time
+    // TODO: handle case where node has one record and is selected (triggering add record for existing value)
+    if (records.length == 1){
+        lore.ore.graph.selectedFigure.setProperty(records[0].id,records[0].data.value);
+    }
+};
 /** update the metadataproperties recorded in the figure for that node */
 // TODO: this needs to update the model (and view needs to listen to model)
-lore.ore.handleNodePropertyChange = function(source, recid, newval, oldval) {
-    lore.ore.graph.modified = true;
-    var theval;
-    lore.debug.ore("handle property change " + recid + " " + newval + " " + oldval,source);
-    if (recid == 'resource') {
-        // the URL of the resource has changed
-        if (newval && newval != '') {
-            theval = newval;
-        } else {
-            theval = "about:blank";
+lore.ore.handleNodePropertyChange = function(args) {
+    try{
+	    var theval;
+	    lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
+	    if (lore.ore.graph.selectedFigure instanceof lore.ore.graph.ContextmenuConnection){
+            if (args.record.data.name == 'relationship'){ 
+                lore.ore.graph.selectedFigure.setRelationshipType(
+                    lore.ore.getPropertyValue("namespace",lore.ore.ui.nodegrid),args.value);
+            }
+        } else { // Resource property
+            if (args.record.data.name == 'resource') {
+		        // the URL of the resource has changed
+		        if (args.value && args.value != '') {
+		            theval = args.value;
+		        } else {
+		            theval = "about:blank";
+		        }
+		        if (lore.ore.graph.lookup[theval]) {
+		            lore.ore.ui.loreWarning("Cannot change resource URL: a node already exists for " + theval);
+		            return;
+		        } else {
+		           lore.ore.graph.lookup[theval] = lore.ore.graph.selectedFigure.getId();
+	               delete lore.ore.graph.lookup[args.originalValue];
+		        }
+            }
+            lore.ore.graph.selectedFigure.setProperty(args.record.id,args.value);
         }
-        if (lore.ore.graph.lookup[theval]) {
-            lore.ore.ui.loreWarning("Cannot change resource URL: a node already exists for " + theval);
-            lore.ore.graph.selectedFigure.setContent("about:blank");
-        } else {
-            lore.ore.graph.lookup[theval] = lore.ore.graph.selectedFigure.getId();
-        }
-        delete lore.ore.graph.lookup[oldval];
-    } else if (recid == 'dc:title') {
-        // update figure title
-        lore.ore.graph.selectedFigure.setTitle(newval);
-    } else if (recid == 'relationship'){
-        try{
-        lore.ore.graph.selectedFigure.setRelationshipType(source["namespace"],newval);
-        } catch (e){
-            lore.debug.ore("updating rel",e);
-        }
+        lore.ore.ui.nodegrid.store.commitChanges();
+        lore.ore.graph.modified = true;
+    } catch (e){
+        lore.debug.ore("error handling node property change",e);
     }
-    else {
-        lore.ore.graph.selectedFigure.updateMetadata(source);
-    }
-}
+};
 lore.ore.graph.dummyBatchDialog = function(){
     // dummy dialog for OR09 challenge
-
     var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
     .getService(Components.interfaces.nsIWindowMediator);
     var mainWindow = wm.getMostRecentWindow("navigator:browser");
@@ -1532,34 +1633,31 @@ lore.ore.graph.dummyBatchDialog = function(){
         }
     }
     thehtml += "</div>";
-    
     var win = new Ext.Window({
-                //applyTo     : 'hello-win',
-                layout      : 'fit',
-                width       : 500,
-                height      : 300,
-                closeAction :'hide',
-                plain       : true,
-        
+        //applyTo     : 'hello-win',
+        layout      : 'fit',
+        width       : 500,
+        height      : 300,
+        closeAction :'hide',
+        plain       : true,
+
         html: "<p>Create a compound object using the following content:</p>" + 
         thehtml + 
         "<input type='checkbox' checked='checked'> Create relationships from browser history<br/>" +
         "<input type='checkbox' checked='checked'> Tag automatically using text-mining service<br/>",
-                buttons: [{
-            text     : 'OK',
-            handler: function(){
-                win.hide();
-            }
-            },{
-            text     : 'Cancel',
-            handler  : function(){
-                win.hide();
-            }
-            }]
-            });
-    
+        buttons: [{
+        text     : 'OK',
+        handler: function(){
+            win.hide();
+        }
+        },{
+        text     : 'Cancel',
+        handler  : function(){
+            win.hide();
+        }
+        }]
+    });
     win.show();
-
-    }
+};
 
 

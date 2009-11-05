@@ -77,6 +77,11 @@ lore.ore.ui.initGraphicalView = function() {
 	lore.ore.graph.dummylayoutx = lore.ore.NODE_SPACING;
     /** Used for layout of new nodes */
 	lore.ore.graph.dummylayouty = lore.ore.NODE_SPACING;
+    // clear the node properties
+    if (lore.ore.ui.nodegrid){
+        lore.ore.ui.nodegrid.store.removeAll();
+        lore.ore.ui.nodegrid.collapse();
+    }
 }
 
 /**
@@ -95,19 +100,26 @@ lore.ore.ui.loadPreferences = function() {
  */
 lore.ore.ui.initProperties = function() {
 	var today = new Date();
-	lore.ore.ui.grid.setSource({
-				"rdf:about" : lore.ore.generateID(),
-				"ore:describes" : "#aggregation",
-				"dc:creator" : "",
-				"dcterms:modified" : today,
-				"dcterms:created" : today,
-				"rdf:type" : lore.constants.RESOURCE_MAP,
-                "dc:title" : ""
-	});
-	lore.ore.ui.nodegrid.on("propertychange", lore.ore.handleNodePropertyChange);
+    lore.ore.currentREM = lore.ore.generateID();
+    lore.ore.ui.grid.store.loadData(
+        [
+            {id:'rdf:about_0', name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
+	        //{id:'ore:describes',name: 'ore:describes', value: '#aggregation'},
+	        //{id:'rdf:type', name: 'rdf:type',value: lore.constants.RESOURCE_MAP},
+	        {id: "dc:title_0", name: "dc:title", value: ""},
+	        {id: 'dcterms:modified_0', name: 'dcterms:modified', value:today},
+	        {id:'dcterms:created_0', name:'dcterms:created',value:today}
+        ]  
+    );
+    
+    lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
+    lore.ore.ui.nodegrid.store.on("remove", lore.ore.handleNodePropertyRemove);
+    //lore.ore.ui.nodegrid.store.on("add", lore.ore.handleNodePropertyAdd);
+    
+	//lore.ore.ui.nodegrid.on("propertychange", lore.ore.handleNodePropertyChange);
     lore.ore.ui.nodegrid.on("beforeedit", function(e) {
-                // don't allow format field to be edited
-                if (e.record.id == "dc:format") {
+                // don't allow autocreated format field to be edited
+                if (e.record.id == "dc:format_0" || e.record.id == "namespace") {
                     e.cancel = true;
                 }
     });
@@ -115,15 +127,16 @@ lore.ore.ui.initProperties = function() {
     
 	lore.ore.ui.grid.on("beforeedit", function(e) {
 				// don't allow these fields to be edited
-				if (e.record.id == "ore:describes" 
-                    || e.record.id == "rdf:type" 
-                    || e.record.id == "rdf:about") {
+				if (//e.record.data.name == "ore:describes" 
+                    //|| e.record.data.name == "rdf:type" 
+                    //|| 
+                    e.record.id == "rdf:about_0") {
 					e.cancel = true;
 				}
 	});
     // update the CO title in the tree if it is changed in the properties
     lore.ore.ui.grid.on("afteredit",function(e){
-        if (e.record.id == "dc:title"){
+        if (e.record.id == "dc:title_0"){
             var treenode = lore.ore.ui.remstreeroot.findChild("id",lore.ore.currentREM);
             if (treenode){
                 treenode.setText(e.value);
@@ -133,6 +146,8 @@ lore.ore.ui.initProperties = function() {
                 treenode.setText(e.value);
             }
         }
+        // commit the change to the datastore
+        lore.ore.ui.grid.store.commitChanges();
     });
     // Fix collapsing so that the grids are hidden properly
     lore.ore.ui.grid.on('beforecollapse', lore.ore.ui.hideProps);
@@ -163,6 +178,7 @@ lore.ore.ui.initExtComponents = function() {
 	lore.ore.ui.remstreeroot = new Ext.tree.TreeNode({
 		id : "remstree",
 		text : "Related Compound Objects",
+        uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
         qtip: "Compound Objects that refer to the page displayed in the web browser",
 		draggable : false,
 		iconCls : "tree-ore"
@@ -178,11 +194,26 @@ lore.ore.ui.initExtComponents = function() {
     
 	sourcestreeroot.appendChild(lore.ore.ui.remstreeroot);
 	sourcestreeroot.appendChild(lore.ore.ui.recenttreeroot);
-
+    
     // set up search handlers
     Ext.getCmp("advsearchbtn").on('click', lore.ore.advancedSearch);
     Ext.getCmp("kwsearchbtn").on('click', lore.ore.keywordSearch);
     Ext.getCmp("searchforms").activate("kwsearchform");
+    // populate search combo with dublin core fields
+    try {
+    var searchproplist = [];
+    for (var p = 0; p < lore.ore.METADATA_PROPS.length; p++){
+        var curie = lore.ore.METADATA_PROPS[p];
+        var splitprop = curie.split(":");
+        searchproplist.push(["" + lore.constants.NAMESPACES[splitprop[0]] + splitprop[1],curie]);
+    }
+    
+    Ext.getCmp("searchpred").getStore().loadData(searchproplist);
+    //Ext.getCmp("searchpred").getStore().commitChanges();
+    lore.debug.ore("store is",Ext.getCmp("searchpred").getStore());
+    } catch (e){
+        lore.debug.ui("error setting up search combo",e);
+    }
 	// set up event handlers for tabs
 	lore.ore.ui.oreviews.on("beforeremove", lore.ore.closeView);
 	// create a context menu to hide/show optional views
