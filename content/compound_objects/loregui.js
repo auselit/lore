@@ -179,7 +179,8 @@ lore.ore.ui.gui_spec = {
 	                    items: [
 	                    {
 	                        xtype: "label",
-	                        text: "Find Compound Objects"
+	                        text: "Find Compound Objects",
+                            style: "font-family: arial, tahoma, helvetica, sans-serif; font-size:11px;line-height:2em"
 	                    },
 	                    {
 	                        xtype:"textfield",
@@ -191,9 +192,13 @@ lore.ore.ui.gui_spec = {
 	                        xtype: "combo",
 	                        fieldLabel: "having",
 	                        id: "searchpred",
+                            mode: 'local',
+                            typeAhead: true,
+                            displayField: 'curie',
+                            valueField: 'uri',
 	                        emptyText: "any property or relationship",
 	                        store: new Ext.data.ArrayStore({
-	                            fields: [],
+	                            fields: ['uri','curie'],
 	                            data: []
 	                        })
 	                    },
@@ -231,7 +236,20 @@ lore.ore.ui.gui_spec = {
                 title: "Properties",
                 id: "properties",
                 items: [{
-		                xtype: 'propertygrid',
+                        xtype: "editorgrid",
+                        clicksToEdit: 1,
+                        columnLines: true,
+                        store: new Ext.data.JsonStore({
+                            idProperty: 'id',
+                            fields: [{name: 'id',type:'string'},{name: 'name',type:'string'},{name: 'value', type:'string'}]
+                        }),
+                        colModel: new Ext.grid.ColumnModel({
+                            columns: [
+                            {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
+                            {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, editor: new Ext.form.TextField({})}
+                            ]
+                        }),
+                        sm: new Ext.grid.RowSelectionModel({singleSelect: true}),
 		                title: 'Compound Object Properties',
                         tools: [
                             {
@@ -259,11 +277,26 @@ lore.ore.ui.gui_spec = {
 		                    scrollOffset: 0
 		                }
 		             }, {
-		                    xtype: "propertygrid",
+		                    //xtype: "propertygrid",
+	                        xtype: "editorgrid",
+	                        clicksToEdit: 1,
+	                        columnLines: true,
+	                        store: new Ext.data.JsonStore({
+	                            idProperty: 'id',
+	                            fields: [{name: 'id',type:'string'},{name: 'name',type:'string'},{name: 'value', type:'string'}]
+	                        }),
+	                        colModel: new Ext.grid.ColumnModel({
+	                            columns: [
+	                            {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
+	                            {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, editor: new Ext.form.TextField({})}
+	                            ]
+	                        }),
+	                        sm: new Ext.grid.RowSelectionModel({singleSelect: true}),
 		                    title: "Resource/Relationship Properties",
 		                    id: "nodegrid",
                             autoHeight:true,
                             anchor: "100%",
+                            collapsed: true,
 		                    viewConfig: {
 		                        forceFit: true,
 		                        scrollOffset: 0

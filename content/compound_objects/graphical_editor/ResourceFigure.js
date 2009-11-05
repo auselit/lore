@@ -15,8 +15,8 @@ lore.ore.graph.ResourceFigure = function() {
 	this.scrollx = 0;
 	this.scrolly = 0;
 	this.metadataproperties = {
-		"resource" : this.url,
-		"dc:title" : ""
+		"resource_0" : this.url,
+		"dc:title_0" : ""
 	};
 	this.cornerHeight = 14.5;
 	draw2d.Node.call(this);
@@ -149,6 +149,7 @@ lore.ore.graph.ResourceFigure.prototype.setDimension = function(w, h) {
 	}
 };
 lore.ore.graph.ResourceFigure.prototype.setTitle = function(title) {
+    //lore.debug.ore("ResourceFigure: setTitle " + title);
 	this.header.innerHTML = title;
 };
 
@@ -159,13 +160,13 @@ lore.ore.graph.ResourceFigure.prototype.setContent = function(urlparam) {
 	} else {
 		theurl = "about:blank";
 	}
-	this.setMetadata(theurl);
+	this.setResourceURL(theurl);
 	this.setMimeType(theurl);
 };
 
 lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 	var theurl = this.url;
-	var mimetype = this.metadataproperties["dc:format"];
+	var mimetype = this.metadataproperties["dc:format_0"];
 	this.setIcon(theurl);
 	if (mimetype && mimetype.match("rdf")) {
 		// resource is most likely to be a compound object - don't display content
@@ -179,7 +180,15 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 		this.metadataarea.innerHTML = "<ul><li class='mimeicon oreicon'>"
 				+ identifierURI + "</li></ul>";
 
-	} else if (mimetype && mimetype.match("image")) {
+	} else if (mimetype && (mimetype.match("x-shockwave-flash") || mimetype.match("video"))){
+        // use object tag to preview videos as plugins are disabled in secure iframe
+        // TODO: check if it is from a trusted source eg youtube, google video, 
+        // otherwise create link to watch in browser frame
+        this.iframearea.innerHTML="<object name='" + theurl 
+            + "-data' id='" + theurl + "-data' data='" 
+            + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>"; 
+    }else if (mimetype && mimetype.match("image")) {
+    
 		this.iframearea.innerHTML = "<img id='" + theurl + "-data' src='"
 				+ theurl + "' style='width:auto;z-index:-9001' height='95%'>";
 	} else if (mimetype && !mimetype.match("pdf")) { // Don't display PDFs in
@@ -195,7 +204,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 				this.createPreview(theurl);
 			}
 		} catch (e) {
-			lore.debug.ore("iframe(general): " + e, e);
+			lore.debug.ore("ResourceFigure: iframe(general): " + e, e);
 		}
 	}
 };
@@ -217,22 +226,22 @@ lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl) {
 	this.iframearea.appendChild(iframe);
 };
 
-lore.ore.graph.ResourceFigure.prototype.setMetadata = function(urlparam) {
+lore.ore.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
 	this.url = urlparam;
-	this.metadataproperties.resource = urlparam;
-
+	this.metadataproperties["resource_0"] = urlparam;
 	this.metadataarea.innerHTML = "<ul><li id='" + this.id + "-icon'>"
 			+ "<a onclick='lore.global.util.launchTab(\"" + urlparam
 			+ "\",window);' href='#'>" + urlparam + "</a></li></ul>";
+    lore.debug.ore("set url to " + urlparam,this.metadataarea.innerHTML);
 
 };
 
 lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
-	var mimetype = this.metadataproperties["dc:format"]
-			? this.metadataproperties["dc:format"]
+	var mimetype = this.metadataproperties["dc:format_0"]
+			? this.metadataproperties["dc:format_0"]
 			: "text/html";
 	this.icontype = "mimeicon ";
-    //lore.debug.ore("mimetype is" + mimetype,mimetype);
+    //lore.debug.ore("ResourceFigure: mimetype is" + mimetype,mimetype);
 	if (mimetype.match("html")){
 		this.icontype += "htmlicon";
     }
@@ -254,7 +263,7 @@ lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
     }
 };
 lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
-	if (!this.metadataproperties["dc:format"]) {
+	if (!this.metadataproperties["dc:format_0"]) { 
 		var req = new XMLHttpRequest();
 		req.open('GET', theurl, true);
 		var thisobj = this;
@@ -264,18 +273,19 @@ lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 				try {
 					mimetype = req.getResponseHeader('Content-Type');
 				} catch (e) {
-					lore.debug.ore("exception getting mime type", e);
+					lore.debug.ore("ResourceFigure: exception getting mime type", e);
 				}
 				if (!mimetype){
 					mimetype = "text/html";
                 }
-				thisobj.metadataproperties["dc:format"] = mimetype;
+				thisobj.metadataproperties["dc:format_0"] = mimetype;
+                //lore.debug.ore("ResourceFigure: determined mimetype as " + mimetype,this);
 				thisobj.showContent();
 			}
 		};
 		req.send(null);
 	} else {
-		//lore.debug.ore("using stored mimetype for resource figure", this);
+		//lore.debug.ore("ResourceFigure: using stored mimetype for resource figure", this);
 		this.showContent();
 	}
 };
@@ -363,7 +373,7 @@ lore.ore.graph.ResourceFigure.prototype.toggle = function() {
 	} else {
 		this.setDimension(this.width, this.originalHeight);
 		if (!this.iframearea.firstChild
-				&& !this.metadataproperties["dc:format"].match("pdf")) {
+				&& !this.metadataproperties["dc:format_0"].match("pdf")) {
 			this.createPreview(this.url);
 		}
 		this.iframearea.style.display = "block";
@@ -377,18 +387,55 @@ lore.ore.graph.clearFields = function() {
 	this.scrollx = 0;
 	this.scrolly = 0;
 };
-
-lore.ore.graph.ResourceFigure.prototype.updateMetadata = function(source) {
-	this.metadataproperties = source;
-	if (source.resource != this.url) {
-		clearFields();
-		this.setContent(source.resource);
-	}
-	if (source["dc:title"]) {
-		clearFields();
-		this.setTitle(source["dc:title"]);
-	}
+/** Append a property to the metadata properties
+ * @param {} pname The name of the property to append eg dc:title
+ * @param {} pval The value of the property
+ */
+lore.ore.graph.ResourceFigure.prototype.appendProperty = function(pname, pval){
+    var counter = 0;
+    var prop = this.metadataproperties[pname + "_" + counter];
+    while (prop) {
+        counter = counter + 1;
+        prop = this.metadataproperties[pname + "_" + counter];
+    }
+    this.metadataproperties[(pname + "_" + counter)] = pval;
+    //lore.debug.ore("ResourceFigure: added " + pname + "_" + counter + " = " + pval);
 };
+/** 
+ * Set (or add) a property with a specific id
+ * @param {} pid The id of the metadataproperty eg dc:title_0
+ * @param {} pval The value of the property
+ */
+lore.ore.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
+  //lore.debug.ore("ResourceFigure: setProperty " + pid + " " + pval,this);
+  var oldval = this.metadataproperties[pid];
+  this.metadataproperties[pid] = pval;
+  if (pid == "resource_0" && pval != oldval){
+    this.setContent(pval);
+  } else if (pid == "dc:title_0" && pval != oldval){
+    if (pval && pval != ""){
+        this.setTitle(pval);
+    } else {
+        this.setTitle("Resource");
+    }
+  }
+};
+/**
+ * Unset (remove) a property by id
+ * @param {} pid The id of the property eg dc:title_0
+ */
+lore.ore.graph.ResourceFigure.prototype.unsetProperty = function(pid){
+    delete this.metadataproperties[pid];
+    if (pid == "dc:title_0"){
+        // TODO: store properties as arrays instead (this will leave gaps if there are lots of values for this property)
+ 
+            this.setTitle("Resource");
+    }
+    
+}
+lore.ore.graph.ResourceFigure.prototype.getProperty = function(pid){
+    return this.metadataproperties[pid];
+}
 lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
 	if (this.originalHeight == -1) {
 		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
@@ -401,7 +448,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 	var oThis = this;
 
 	var thisfig = this;
-	if (!this.metadataproperties["dc:format"].match("rdf")) {
+	if (!this.metadataproperties["dc:format_0"].match("rdf")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
 				"Open resource in separate window", null, function() {
 					lore.global.util.launchWindow(thisfig.url, true, window);
@@ -414,7 +461,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 					if (thisfig.url) {
 						lore.ore.exploreLoaded = thisfig.url;
 						lore.ore.explore.showInExploreView(thisfig.url,
-								thisfig.metadataproperties["dc:title"]);
+								thisfig.metadataproperties["dc:title_0"]);
 					}
 				}));
 	}
@@ -423,7 +470,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 
 // Override onKeyDown to cater for Macs without delete
 lore.ore.graph.ResourceFigure.prototype.onKeyDown = function (keyCode, ctrl){
-  lore.debug.ore("ResourceFigure onKeyDown " + keyCode,ctrl);
+  lore.debug.ore("ResourceFigure: onKeyDown " + keyCode,ctrl);
   // on delete or backspace
   if(keyCode==46 || keyCode==8){ 
      this.workflow.getCommandStack().execute(this.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
