@@ -119,7 +119,7 @@
 						</xsl:if>
 					</xsl:for-each>
 				</w:p>
-				<xsl:apply-templates select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates"/>
+				<xsl:apply-templates select="//rdf:Description[contains(@rdf:about,'#aggregation')]/ore:aggregates"/>
 			</wx:sub-section>
 		</wx:sect>
 	</xsl:template>
