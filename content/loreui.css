@@ -434,3 +434,15 @@
     border-right:1px solid #d0d0d0;
 }
 
+
+.x-tree-multiline-node-expanded .x-tree-elbow-line-multiline-expanded {
+    background-image: url(chrome://lore/content/ext/resources/images/default/tree/elbow-line.gif);
+}
+        
+.x-tree-multiline-node-collapsed .x-tree-elbow-line-multiline-expanded {
+    background-image: none;
+}
+.x-tree-multiline-node-details{
+	color:#51666b;
+	font-size:90%
+}
