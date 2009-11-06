@@ -103,15 +103,12 @@ lore.ore.ui.initProperties = function() {
     lore.ore.currentREM = lore.ore.generateID();
     lore.ore.ui.grid.store.loadData(
         [
-            {id:'rdf:about_0', name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
-	        //{id:'ore:describes',name: 'ore:describes', value: '#aggregation'},
-	        //{id:'rdf:type', name: 'rdf:type',value: lore.constants.RESOURCE_MAP},
+            {id: 'rdf:about_0', name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
 	        {id: "dc:title_0", name: "dc:title", value: ""},
 	        {id: 'dcterms:modified_0', name: 'dcterms:modified', value:today},
-	        {id:'dcterms:created_0', name:'dcterms:created',value:today}
+	        {id: 'dcterms:created_0', name:'dcterms:created',value:today}
         ]  
     );
-    
     lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
     lore.ore.ui.nodegrid.store.on("remove", lore.ore.handleNodePropertyRemove);
     //lore.ore.ui.nodegrid.store.on("add", lore.ore.handleNodePropertyAdd);
@@ -130,6 +127,7 @@ lore.ore.ui.initProperties = function() {
 				if (//e.record.data.name == "ore:describes" 
                     //|| e.record.data.name == "rdf:type" 
                     //|| 
+                    e.record.id == "dcterms:modified_0" || e.record.id == "dcterms:created_0" ||
                     e.record.id == "rdf:about_0") {
 					e.cancel = true;
 				}

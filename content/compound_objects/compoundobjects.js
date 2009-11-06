@@ -48,10 +48,11 @@ lore.ore.MAX_X        = 400;
 /** Default list of properties that can be specified for compound objects or resources 
  * @const */
 lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
-    "dcterms:created", "dc:contributor", "dc:coverage", "dc:description",
+    "dc:contributor", "dc:coverage", "dc:description",
     //"dc:format", "dcterms:hasFormat", 
+    "dcterms:created", "dcterms:modified",
     "dc:identifier", "dc:language",
-    "dcterms:modified", "dc:publisher", "dc:rights", "dc:source",
+     "dc:publisher", "dc:rights", "dc:source",
     "dc:subject", "dc:title"];
 /** Properties that are mandatory for compound objects
  *  @const */
@@ -121,7 +122,7 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype){
     /** The compound object repository access URL */
 	lore.ore.reposURL = rdfrepos;
     /** The type of the compound object repository eg sesame, fedora */
-	lore.ore.reposType = rdfrepostype; // type of compound object repository
+	lore.ore.reposType = rdfrepostype;
 };
 /**
  * Set the DC Creator for the resource map
@@ -130,10 +131,10 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype){
 lore.ore.setDcCreator = function(creator){
     /** The name of the default creator used for dc:creator for annotations and compound objects */
     lore.defaultCreator = creator;
-    // TODO: only set if it is a new compound object (i.e. don't override for existing object)
-    /*if (!lore.ore.ui.grid.getStore().getById('dc:creator_0')){
-        lore.ore.ui.grid.getStore().add({id: 'dc:creator_0', name:'dc:creator', value:''});
-    }*/
+    // only set if it is a new (empty) compound object 
+    if (lore.global.util.isEmptyObject(lore.ore.loadedRdf)){
+        lore.ore.ui.grid.store.loadData([{id: "dc:creator_0", name: "dc:creator", value: creator}],true);
+    }
 };
 /** Handle click of search button in search panel */
 lore.ore.keywordSearch = function(){
@@ -264,12 +265,8 @@ lore.ore.search = function (searchuri, searchpred, searchval){
  * @return {Boolean} Returns true if the compound object has been modified
  */
 lore.ore.compoundObjectDirty = function (){
-    var isEmptyObject = function (ob){
-       for(var i in ob){ if(ob.hasOwnProperty(i)){return false;}}
-       return true;
-    };
     // TODO: implement this method - compare lore.ore.loadedRDF with state of model
-    if (isEmptyObject(lore.ore.loadedRDF)){
+    if (lore.global.util.isEmptyObject(lore.ore.loadedRDF)){
         return false;
     } else {
         return true;
