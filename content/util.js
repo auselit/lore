@@ -62,7 +62,14 @@ util = {
         }
         return c;
     },
-	
+    /** Determine if an object is empty (has no properties)
+     * @param {} ob The object to check
+     * @return {Boolean} true if the object is equivalent to {}
+     */
+	isEmptyObject : function (ob){
+       for(var i in ob){ if(ob.hasOwnProperty(i)){return false;}}
+       return true;
+    },
 	/**
 	 * Dynamically create a wrapper around an object and return
 	 * the wrapper object. The wrapper object currently only
