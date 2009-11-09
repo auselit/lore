@@ -344,8 +344,8 @@
 	 */	
 	lore.anno.ui.genTipForAnnotation = function(annodata, marker){
 		try {
-			var doc = lore.global.util.getContentWindow(window).document;
-			
+			var doc = marker.target || lore.global.util.getContentWindow(window).document;
+			var cw = doc.defaultView;
 			var uid = annodata.id;
 			var obj = lore.global.util.domCreate("span", doc);
 			obj.setAttribute("id", uid);
@@ -370,8 +370,8 @@
 				
 				doc.body.appendChild(tipContainer);
 				
-				lore.global.util.injectScript("content/lib/wz_tooltip.js", lore.global.util.getContentWindow(window));
-			//	lore.global.util.injectCSS("content/lib/simpletip.css", lore.global.util.getContentWindow(window));
+				lore.global.util.injectScript("content/lib/wz_tooltip.js", cw);
+			//	lore.global.util.injectCSS("content/lib/simpletip.css", cw);
 				
 			}
 			
@@ -398,10 +398,8 @@
 		/*	$(marker.data.nodes[0], doc).simpletip({
 				content: desc,
 				focus: true,
-				boundryCheck:true,
-				hideEffect: 'none',
-				/*position: 'bottom',*/
-			//});
+				position:'bottom',
+			});*/
 			
 		} 
 		catch (ex) {
