@@ -1026,7 +1026,7 @@
 					lore.anno.annods.remove(rec);
 				}
 			});
-			
+		
 		if (resultNodes.length > 0) {
 			var annotations = lore.anno.orderByDate(resultNodes,3);
 			
@@ -1039,7 +1039,7 @@
 				try {
 					lore.anno.getBodyContentAsync(annotations[i], window);
 				} catch (e) {
-					lore.debug.anno('error loading body content: '+e,e);
+					lore.debug.anno('error loading body content: ' + e, e);
 				}
 			}
 			var annogriddata = [];
@@ -1059,7 +1059,7 @@
 					}
 				});
 			}
-		}
+		};
 	}
 	
 	/**

@@ -467,7 +467,6 @@
 					description: lore.anno.ui.getTimelineDescription(anno)
 				});
 				
-				
 				lore.anno.ui.annoEventSource.add(evt);
 				lore.anno.ui.annotimeline.getBand(0).setCenterVisibleDate(evt.getStart());
 			}
@@ -1703,6 +1702,7 @@
 			var tree = lore.anno.ui.treeroot.getOwnerTree();
 			lore.anno.ui.treeroot = new Ext.tree.TreeNode({});
 			tree.setRootNode(lore.anno.ui.treeroot);
+			lore.anno.ui.annoEventSource.clear();
 		}
 		
 		lore.anno.ui.updateUIOnRefresh = function (store) {
@@ -1732,7 +1732,7 @@
 			// direction can be dynamically changed
 			var sortType =  function(node){
 					try {
-						var r = lore.global.util.findRecordById(lore.anno.annods, node.id)
+						var r = lore.global.util.findRecordById(lore.anno.annods, node.id);
 						if (r) {
 							return r.data[lore.anno.ui.treesorter.sortField] || r.data.created;
 						}
@@ -1791,11 +1791,11 @@
 		lore.anno.ui.updateUIOnRemove = function(store, rec, index){
 			try {
 				var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', rec.data.id);
-				if (!node) {
-					return;
+				if (node) {
+					node.remove();
 				}
 				
-				node.remove();
+				
 				if (!lore.anno.isNewAnnotation(rec)) {
 				
 					// remove from timeline
