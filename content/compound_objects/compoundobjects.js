@@ -44,7 +44,7 @@ lore.ore.NODE_SPACING = 40;
  * @const */
 lore.ore.MAX_X        = 400;
 
-// TODO: replace with an ontology
+// TODO: #10 replace with an ontology
 /** Default list of properties that can be specified for compound objects or resources 
  * @const */
 lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
@@ -192,18 +192,31 @@ lore.ore.compoundObjectDirty = function (){
         return true;
     }
 };
-
+lore.ore.getToday = function(){
+    var today = new Date();
+    var yearString = today.getFullYear();
+    var monthString = today.getMonth() + 1 + "";
+    if (monthString.length < 2){
+        monthString = '0' + monthString;
+    }
+    var dayString = today.getDate() + "";
+    if (dayString.length < 2){
+        dayString = "0" + dayString;
+    }
+   return yearString + "-" + monthString + "-" + dayString;
+}
 /** Initialize a new compound object in the editor, prompting first whether to save the current compound object */
 lore.ore.createCompoundObject = function (){
     var newCO = function (){
-        var today = new Date();
+        var dateString = lore.ore.getToday();
+        // TODO: fix properties - use date string for now
         lore.ore.currentREM = lore.ore.generateID();
         lore.ore.ui.grid.store.loadData(
         [
             {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
             {id: "dc:creator_0", name: "dc:creator", value: lore.defaultCreator},
-            {id: "dcterms:modified_0", name: "dcterms:modified", value:today},
-            {id:"dcterms:created_0", name:"dcterms:created",value:today},
+            {id: "dcterms:modified_0", name: "dcterms:modified", value:dateString},
+            {id:"dcterms:created_0", name:"dcterms:created",value:dateString},
             {id: "dc:title_0", name: "dc:title", value: ""}
         ]  
     );
@@ -218,7 +231,7 @@ lore.ore.createCompoundObject = function (){
 		        msg : 'Would you like to save the compound object before proceeding?<br><br>Any unsaved changes will be lost if you select "No".',
 		        fn : function(btn) {
 		            if (btn === 'yes') {
-                        // TODO: check that the save completed successfully before calling newCO
+                        // TODO: #56 check that the save completed successfully before calling newCO
 		                lore.ore.saveRDFToRepository();
 		                newCO();  
 		            } else if (btn === 'no') {
@@ -250,7 +263,7 @@ lore.ore.onHide = function () {
 };
 
 // alias used by uiglobal
-// TODO: change this to addNode - make it add to model and get view to listen on model
+// TODO: #34 MVC: change this to addNode - make it add to model and get view to listen on model
 lore.ore.addFigure = function (/*URL*/theURL) {
 	lore.ore.graph.addFigure(theURL);
 };
@@ -339,7 +352,7 @@ lore.ore.ui.removeProperty = function (ev, toolEl, panel){
     if (panel.collapsed){
         lore.ore.ui.loreInfo("Please expand the properties panel and select the property to remove");
     } else if (sel){
-        // TODO: should allow first to be deleted as long as another exists
+        // TODO: #2 (refactor): should allow first to be deleted as long as another exists
         // should also probably renumber
              if (sel.id.match("_0")){ // first instance of property: check if it's mandatory
                 var propId = sel.id.substring(0,sel.id.indexOf("_0"));
@@ -673,7 +686,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             + modifiedDate.getFullYear() + "-" + monthString
             + "-" + dayString + ltsymb + "/dcterms:modified>"
             + nlsymb;
-    var created = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);//remprops["dcterms:created"]; // TODO: fix
+    var created = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
     if (created && created instanceof Date) {
         monthString = created.getMonth() + 1 + "";
         if (monthString.length < 2){
@@ -705,12 +718,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     rdfxml += ltsymb + rdfdescabout + describes + closetag + ltsymb
             + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
             + fullclosetag;
-    // TODO: any other types for aggregation eg Journal Article
-
-    /*for (i = 0; i < lore.ore.all_props.length; i++) {
-        rdfxml += serialise_property(lore.ore.all_props[i], lore.ore.ui.nodegrid, ltsymb,
-                nlsymb);
-    }*/
+    
     var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
     var resourcerdf = "";
     for (i = 0; i < allfigures.getSize(); i++) {
@@ -719,7 +727,6 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                 + fullclosetag;
         // create RDF for resources in aggregation
-        // TODO: resource properties eg ore:isAggregatedBy
         for (var mprop in fig.metadataproperties) {
             if (mprop != 'resource_0' && !mprop.match('undefined')) {
                 var mpropval = fig.metadataproperties[mprop];
@@ -784,7 +791,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
 };
 
 lore.ore.generateID = function(){
-    // TODO: should use a persistent identifier service to request an identifier
+    // TODO: #125 should use a persistent identifier service to request an identifier
     return "http://austlit.edu.au/rem/" + draw2d.UUID.create();
 };
 
@@ -1083,7 +1090,7 @@ lore.ore.loadRelationshipsFromOntology = function() {
                     var relresult = lore.global.util.splitTerm(this.prop.value.toString());
                     lore.ore.ontrelationships[relresult.term] = relresult.ns;
                 });
-                // TODO: load datatype properties for prop grids
+                // TODO: #13 load datatype properties for prop grids
                 // update properties UI eg combo box in search, menu for selecting rel type
             } 
         };
@@ -1151,7 +1158,7 @@ lore.ore.afterDeleteCompoundObject = function(deletedrem){
     if (lore.ore.currentREM == deletedrem){
         lore.ore.loadedRDF = {};
         lore.ore.currentREM = "";
-        // TODO: delete from trees
+        // TODO: #124 delete from trees
         lore.ore.createCompoundObject();
         lore.ore.ui.loreInfo("Compound object deleted");
     }
@@ -1426,7 +1433,7 @@ lore.ore.handleNodePropertyAdd = function(store, records, index){
     }
 };
 /** update the metadataproperties recorded in the figure for that node */
-// TODO: this needs to update the model (and view needs to listen to model)
+// TODO: #34 MVC: this needs to update the model (and view needs to listen to model)
 lore.ore.handleNodePropertyChange = function(args) {
     try{
 	    var theval;

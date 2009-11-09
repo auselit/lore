@@ -99,14 +99,14 @@ lore.ore.ui.loadPreferences = function() {
  * Initialise property grids and set up listeners
  */
 lore.ore.ui.initProperties = function() {
-	var today = new Date();
+	var dateString = lore.ore.getToday();
     lore.ore.currentREM = lore.ore.generateID();
     lore.ore.ui.grid.store.loadData(
         [
             {id: 'rdf:about_0', name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
 	        {id: "dc:title_0", name: "dc:title", value: ""},
-	        {id: 'dcterms:modified_0', name: 'dcterms:modified', value:today},
-	        {id: 'dcterms:created_0', name:'dcterms:created',value:today}
+	        {id: 'dcterms:modified_0', name: 'dcterms:modified', value:dateString},
+	        {id: 'dcterms:created_0', name:'dcterms:created',value:dateString}
         ]  
     );
     lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
