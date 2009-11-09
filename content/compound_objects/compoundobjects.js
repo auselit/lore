@@ -153,6 +153,7 @@ lore.ore.advancedSearch = function(){
 
 lore.ore.search = function (searchuri, searchpred, searchval){
     try{
+    // search terms to display in tree
     lore.global.ui.clearTree(Ext.getCmp("searchtree").getRootNode());
     var searchTerms = [];
     if (searchuri){
@@ -173,88 +174,7 @@ lore.ore.search = function (searchuri, searchpred, searchval){
         iconCls:"tree-ore"
     });
     Ext.getCmp("searchtree").getRootNode().appendChild(searchtreeroot);
-    
-    
-    if (searchuri && searchuri !== ""){
-        searchuri = "<" + searchuri + ">";
-    } else {
-        searchuri = "?u";
-    }
-    if (searchpred && searchpred !== ""){
-        searchpred = "<" + searchpred + ">";
-    } else {
-        searchpred = "?p";
-    }
-    var filter = "";
-    if (searchval && searchval != ""){
-        filter = "FILTER regex(str(?v), \"" + searchval + "\", \"i\")";
-    } 
-	var searchquery = lore.ore.reposURL
-        + "?queryLn=sparql&query=" 
-        + "select distinct ?g ?a ?c ?t ?v where {"
-        + " graph ?g {" + escape(searchuri) + " " + searchpred + " ?v ."
-        + filter + "} ."
-        + "{?g <http://purl.org/dc/elements/1.1/creator> ?a} ."
-        + "{?g <http://purl.org/dc/terms/created> ?c} ."
-        + "OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
-    lore.debug.ore("compound object search query is",searchquery);
-    var req = new XMLHttpRequest();
-    req.open('GET', searchquery, true);
-    req.onreadystatechange = function(aEvt) {
-        if (req.readyState == 4) {
-            if (req.responseText && req.status != 204
-                    && req.status < 400) {  
-                var xmldoc = req.responseXML;
-                var result = {};
-                if (xmldoc) {
-                    lore.debug.ore("compound object search results: sparql response", req);
-                    result = xmldoc.getElementsByTagNameNS(
-                            lore.constants.NAMESPACES["sparql"], "result");
-                }
-                for (var i = 0; i < result.length; i++) {
-                    var theobj = new lore.ore.CompObjListing(result[i]);
-                    if (!searchtreeroot.findChild('id',theobj.uri + 's')){
-                       try{
-	                       var res = theobj.match;
-                           lore.debug.ore("the val matched is",res);
-	                       var displayres = [];
-	                       if (res && res != -1) {
-                            // display a snippet to show where search term occurs
-		                       var idx = res.toLowerCase().match(searchval.toLowerCase()).index;
-		                       var s1 = ((idx - 15) < 0) ? 0 : idx - 15;
-		                       var s2 = ((idx + 15) > (res.length))? res.length : idx + 15;
-		                       displayres.push("<i>("+ ((s1 > 0)?"..":"") + res.substring(s1,s2) 
-	                            + ((s2 < (res.length))? "..":"")+ ")</i>");
-	                       }
-                           // display the creator and date
-                           displayres.push(theobj.creator + ", " + theobj.created);
-	                       var tmpNode = new Ext.tree.TreeNode({
-	                                'text' : theobj.title,
-                                    uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
-                                    details   : displayres,
-	                                'id' : theobj.uri + 's',
-	                                'uri' : theobj.uri,
-	                                'qtip': "Compound object: " + theobj.uri,
-	                                'iconCls' : 'oreresult',
-	                                'leaf' : true,
-	                                'draggable': true
-	                        });
-	                       searchtreeroot.appendChild(tmpNode);
-	                       lore.ore.attachREMEvents(tmpNode);
-                       } catch (ex){
-                           lore.debug.ore("error creating search result",ex);
-                       }
-                    }
-                }        
-                if (!searchtreeroot.isExpanded()) {
-                    searchtreeroot.expand();
-                }    
-            } else if (req.status == 404){
-                lore.debug.ore("404 accessing compound object repository",req);
-            }
-        }
-    };
-    req.send(null);
+    lore.ore.sesame.getCompoundObjects(searchuri, searchpred, searchval, true);
     } catch (e){
         lore.debug.ore("exception in search",e);
     }
@@ -694,7 +614,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             result = ltsymb + propname + ">";
             if (nlsymb == "<br/>" && propval) {
                 try {
-                    lore.debug.ore("serializing " + propname, properties);
+                    //lore.debug.ore("serializing " + propname, properties);
                     result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"\\\""));
                 } catch (e) {
                     lore.debug.ore("error in serialise_property",e);
@@ -809,7 +729,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                     if (midx != -1){
                         tagname = mprop.substring(0,midx);
                     }
-                    lore.debug.ore("2 serializing " + tagname, mpropval);
+                    //lore.debug.ore("2 serializing " + tagname, mpropval);
                     resourcerdf += ltsymb + rdfdescabout + figurl + closetag
                             + ltsymb + tagname + ">" + mpropval.replace(/"/g,"\\\"") + ltsymb + "/"
                             + tagname + ">" + nlsymb + ltsymb + rdfdescclose
@@ -1056,15 +976,11 @@ lore.ore.loadCompoundObject = function (rdf) {
  * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
  */
 lore.ore.readRDF = function(rdfURL){
-    Ext.Ajax.request({
-            url: rdfURL,
-            method: "GET",
-            disableCaching: false,
-            success: lore.ore.loadCompoundObject,
-            failure: function(resp, opt){
-                lore.debug.ore("Unable to load compound object " + opt.url, resp);
-            }
-        }); 
+    if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
+        lore.ore.sesame.loadCompoundObject(rdfURL);
+    } else {
+        lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
+    }
 };
 
 /** set up listeners for events in the compound objects tree */
@@ -1093,10 +1009,7 @@ lore.ore.attachREMEvents = function(node){
             node.contextmenu.add({
                 text : "Add as node in compound object editor",
                 handler : function(evt) {
-                    lore.ore.graph
-                            .addFigure(lore.ore.reposURL
-                                    + "/statements?context=<"
-                                    + node.attributes.uri + ">");
+                    lore.ore.graph.addFigure(node.attributes.uri);
                 }
             });
             
@@ -1209,7 +1122,7 @@ lore.ore.appendPropertyValue = function(propname, propval, grid){
         pstore.loadData([{id: theid, name: propname, value: propval}],true);
 };
 /**
- * Delete the compound object from the repository
+ * Delete the compound object
  */
 lore.ore.deleteFromRepository = function(aURI, aTitle){
     var remid = aURI;
@@ -1224,33 +1137,29 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
         msg : 'Are you sure you want to delete this compound object from the repository?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",
         fn : function(btn, theurl) {
             if (btn == 'ok') {
-                try {
-                    var xmlhttp = new XMLHttpRequest();
-                    xmlhttp.open("DELETE",
-                                  lore.ore.reposURL + "/statements?context=<"
-                                        + remid + ">", true);  
-                        xmlhttp.onreadystatechange= function(){
-                            if (xmlhttp.readyState == 4) {
-                                lore.ore.loadedRDF = {};
-                                lore.ore.currentREM = "";
-                                // TODO: delete from tree
-                                lore.ore.createCompoundObject();
-                                lore.ore.ui.loreInfo("Compound object deleted");
-                            }
-                        };
-                        xmlhttp.send(null);
-                } catch (e){
-                    lore.debug.ore("deleting compound object",e);
+                if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
+                    lore.ore.sesame.deleteCompoundObject(remid);
+                } else {
+                    lore.ore.ui.loreWarning("Not yet implemented: please change your repository type preference to sesame");
                 }
             }
         }
     });
 };
+/** Remove a compound object from the UI */
+lore.ore.afterDeleteCompoundObject = function(deletedrem){
+    if (lore.ore.currentREM == deletedrem){
+        lore.ore.loadedRDF = {};
+        lore.ore.currentREM = "";
+        // TODO: delete from trees
+        lore.ore.createCompoundObject();
+        lore.ore.ui.loreInfo("Compound object deleted");
+    }
+};
 /**
  * Save the compound object to the repository - prompt user to confirm
  */
 lore.ore.saveRDFToRepository = function() {
-    // TODO: implement Fedora support
     // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
     // update rdfquery to reflect most recent save
     var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
@@ -1260,56 +1169,11 @@ lore.ore.saveRDFToRepository = function() {
         msg : 'Save this compound object as ' + remid + "?",
         fn : function(btn, theurl) {
             if (btn == 'ok') {
-                if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
-                    var therdf = lore.ore.createRDF(false);
-                    try {
-                        /*(var xmlhttp = new XMLHttpRequest();
-                        xmlhttp.open("DELETE",
-                                  lore.ore.reposURL + "/statements?context=<"
-                                        + remid + ">", true);
-                        
-                        xmlhttp.onreadystatechange= function(){
-                            lore.debug.ore("ready state change from delete",xmlhttp);
-                            if (xmlhttp.readyState == 4) {*/
-                               var xmlhttp2 = new XMLHttpRequest();
-                               xmlhttp2.open("PUT",
-                                lore.ore.reposURL + "/statements?context=<"
-                                        + remid + ">", true);
-		                        xmlhttp2.onreadystatechange = function() {
-                                    lore.debug.ore("ready state change from update",xmlhttp2);
-		                            if (xmlhttp2.readyState == 4) {
-		                                if (xmlhttp2.status == 204) {
-                                            // TODO: add to tree
-                                            lore.debug.ore("RDF saved",xmlhttp2);
-		                                    lore.ore.ui.loreInfo(remid + " saved to "
-		                                            + lore.ore.reposURL);
-		                                } else {
-		                                    lore.ore.ui.loreError('Unable to save to repository'
-		                                                    + xmlhttp2.responseText);
-		                                    Ext.Msg.show({
-		                                        title : 'Problem saving RDF',
-		                                        buttons : Ext.MessageBox.OKCANCEL,
-		                                        msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again or save your compound object to a file using the <i>Save to file</i> menu option and contact the Aus-e-Lit team for further assistance.')
-		                                    });
-		                                }
-		                            }
-		                        };
-		                        xmlhttp2.setRequestHeader("Content-Type",
-		                                "application/rdf+xml");
-		                        xmlhttp2.send(therdf); 
-                            //}
-                        //}
-                       // xmlhttp.send(null);
-                       // lore.debug.ore("clearing" + remid);
-                    } catch (e) {
-                        xmlhttp = false;
-                    }
+                var therdf = lore.ore.createRDF(false);
+                if (lore.ore.reposURL && lore.ore.reposType == 'sesame') { 
+                    lore.ore.sesame.saveCompoundObject(remid,therdf);
                 } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora') {
-                    lore.ore.ui.loreError("Saving to Fedora not yet implemented");
-                    var soaptempl = "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
-                    + "<soap:Body> "
-                            // + "<GetInfoByZIP xmlns=\"http://www.webserviceX.NET\"> <USZip>string</USZip> </GetInfoByZIP>"
-                    + "</soap:Body></soap:Envelope>";
+                    //lore.ore.fedora.createCompoundObject(remid,therdf);
                 }
             }
         }
@@ -1348,79 +1212,63 @@ lore.ore.handleLocationChange = function (contextURL) {
 lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
     lore.global.ui.clearTree(lore.ore.ui.remstreeroot);
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
-        try {
-            // query for matches of both www and non-www version of URL
-           var escapedURL = encodeURIComponent(contextURL);
-            var altURL = "";
-	        if (!contextURL.match("http://www.")){
-	            altURL = escape(contextURL.replace("http://","http://www."));
-	        } else {
-	            altURL = escape(contextURL.replace("http://www.","http://"));
-	        }
-            // TODO: Fedora support
-            var queryURL = lore.ore.reposURL
-	            + "?queryLn=sparql&query=" 
-	            + "select distinct ?g ?a ?c ?t where { graph ?g {" 
-                + "{<" + escapedURL + "> ?p ?o .} UNION " 
-                + "{?s ?p2 <" + escapedURL + ">} UNION "
-                + "{<" + altURL + "> ?p3 ?o2 .} UNION "
-                + "{?s2 ?p4 <" + altURL + ">}"
-                + "} . {?g <http://purl.org/dc/elements/1.1/creator> ?a}"
-	            + ". {?g <http://purl.org/dc/terms/created> ?c}"
-	            + ". OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
-            lore.debug.ore("compound objects browse sparql query",queryURL);
-            var req = new XMLHttpRequest();
-            req.open('GET', queryURL, true);
-            req.onreadystatechange = function(aEvt) {
-                if (req.readyState == 4) {
-                    if (req.responseText && req.status != 204
-                            && req.status < 400) {
-                        
-                        var xmldoc = req.responseXML;
-                        var result = {};
-                        if (xmldoc) {
-                            lore.debug.ore("compound objects browse: sparql response", req);
-                            result = xmldoc.getElementsByTagNameNS(
-                                    lore.constants.NAMESPACES["sparql"], "result");
-                        }
-                        for (var i = 0; i < result.length; i++) {
-                            var theobj = new lore.ore.CompObjListing(result[i]);
-                            if (!lore.ore.ui.remstreeroot.findChild('id',theobj.uri)){
-                               //lore.debug.ore("processing compound object", theobj);
-                               var tmpNode = new Ext.tree.TreeNode({
-                                        'text' : theobj.title,
-                                        uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
-                                        details   : [theobj.creator + ", " + theobj.created],
-                                        'id' : theobj.uri,
-                                        'uri' : theobj.uri,
-                                        'qtip': "Compound Object: " + theobj.uri,//"Created by " + theobj.creator + ", " + theobj.created,
-                                        'iconCls' : 'oreresult',
-                                        'leaf' : true,
-                                        'draggable': true
-                                });
-                               lore.ore.ui.remstreeroot.appendChild(tmpNode);
-                               lore.ore.attachREMEvents(tmpNode);
-                            }
-
-                        }
-                        if (!lore.ore.ui.remstreeroot.isExpanded()) {
-                            lore.ore.ui.remstreeroot.expand();
-                        }
-                        if(lore.ore.ui.remstreeroot.hasChildNodes()){
-                            lore.ore.ui.propertytabs.activate("sourcestree");
-                        }
-                    } else if (req.status == 404){
-                        lore.debug.ore("404 accessing compound object repository",req);
-                    }
-                }
-            };
-            req.send(null);
-        } catch (e) {
-            lore.debug.ore("Unable to retrieve compound objects",e);
-            lore.ore.ui.loreWarning("Unable to retrieve compound objects");
-        }
+        lore.ore.sesame.getCompoundObjects(contextURL); 
     }
 };
+lore.ore.displayCompoundObjectsInTree = function (xmldoc, searchval, isSearchQuery){
+    try{
+    var tree = lore.ore.ui.remstreeroot;
+    if (isSearchQuery) {
+        tree = Ext.getCmp("searchtree").getRootNode(); 
+    }
+    var result = {};
+    if (xmldoc) {
+        lore.debug.ore("compound objects sparql", xmldoc);
+        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
+    }
+    for (var i = 0; i < result.length; i++) {
+        var theobj = new lore.ore.CompObjListing(result[i]);
+        var res = theobj.match;
+                           
+        var details = [];
+        if (searchval && res && res != -1) {
+        // display a snippet to show where search term occurs
+           var idx = res.toLowerCase().match(searchval.toLowerCase()).index;
+           var s1 = ((idx - 15) < 0) ? 0 : idx - 15;
+           var s2 = ((idx + 15) > (res.length))? res.length : idx + 15;
+           details.push("<i>("+ ((s1 > 0)?"..":"") + res.substring(s1,s2) 
+            + ((s2 < (res.length))? "..":"")+ ")</i>");
+        }
+        // display the creator and date
+        details.push(theobj.creator + ", " + theobj.created);
+        if (!tree.findChild('id',theobj.uri)){
+           //lore.debug.ore("processing compound object", theobj);
+           var tmpNode = new Ext.tree.TreeNode({
+                    'text' : theobj.title,
+                    uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
+                    details   : details,
+                    'id' : theobj.uri,
+                    'uri' : theobj.uri,
+                    'qtip': "Compound Object: " + theobj.uri,//"Created by " + theobj.creator + ", " + theobj.created,
+                    'iconCls' : 'oreresult',
+                    'leaf' : true,
+                    'draggable': true
+            });
+           tree.appendChild(tmpNode);
+           lore.ore.attachREMEvents(tmpNode);
+        }
+
+    }
+    if (!tree.isExpanded()) {
+        tree.expand();
+    }
+    if(!isSearchQuery && tree.hasChildNodes()){
+        lore.ore.ui.propertytabs.activate("sourcestree");
+    }
+    } catch (e){
+        lore.debug.ore("problem displaying co results in tree",e);
+    }
+}
 /* Graph related functions */
 /**
  * Updates global variables used for figure layout
