@@ -563,41 +563,47 @@
 		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '">';
 		
 		for (var i = 0; i < annos.length; i++) {
-			var anno =  lore.global.util.clone(annos[i].data || annos[i]); // an array of records or anno objects
-			
-			for ( var e in anno) {
-				if ( typeof(anno[e]) == 'string' && e!='title' && e!='body') {
-					anno[e] = anno[e].replace(/&/g, '&amp;');
+			var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
+			var anno = {};
+			// shallow copy
+			for (var e in annoOrig) {
+				var val = annoOrig[e];
+				if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
+					anno[e] = val.replace(/&/g, '&amp;');
 				}
+				else 
+					anno[e] =val;
+				
 			}
+			
 			rdfxml += '<rdf:Description';
-			if (anno.id && !lore.anno.isNewAnnotation(anno)) {
+			if (annoOrig.id && !lore.anno.isNewAnnotation(annoOrig)) {
 				rdfxml += ' rdf:about="' + anno.id + '"';
 			}
 			rdfxml += ">";
-			if (anno.isReply) {
+			if (annoOrig.isReply) {
 				rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
 			}
 			else {
 				rdfxml += '<rdf:type rdf:resource="' + lore.constants.NAMESPACES["annotea"] +
 				'Annotation"/>';
 			}
-			if (anno.type) {
+			if (annoOrig.type) {
 				rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
 			}
 			
 			
 			
 			
-			if (anno.isReply) {
+			if (annoOrig.isReply) {
 				rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
 				
-				var rootannonode = lore.global.util.findRecordById(lore.anno.annods, anno.about);
+				var rootannonode = lore.global.util.findRecordById(lore.anno.annods, annoOrig.about);
 				if (rootannonode) {
 					while (rootannonode.data.isReply) {
 						rootannonode = lore.global.util.findRecordById(lore.anno.annods, rootannonode.data.about);
 					}
-					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id + '"/>';
+					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id.replace(/&/g,'&amp;') + '"/>';
 				}
 				else {
 					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
@@ -612,27 +618,27 @@
 			}
 			// also send variant as annotates for backwards compatability with older
 			// clients
-			if (anno.variant) {
+			if (annoOrig.variant) {
 				rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
 				'" rdf:resource="' + anno.variant + 
 				/*anno.variant.replace(/&/g, '&amp;') +*/
 				'"/>';
 			}
-			if (anno.lang) {
+			if (annoOrig.lang) {
 				rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
 				anno.lang +
 				'</language>';
 			}
-			if (anno.title) {
+			if (annoOrig.title) {
 				rdfxml += '<title xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' + anno.title +
 				'</title>';
 			}
-			if (anno.creator) {
+			if (annoOrig.creator) {
 				rdfxml += '<creator xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
 				lore.global.util.trim(anno.creator) +
 				'</creator>';
 			}
-			if (!anno.created) {
+			if (!annoOrig.created) {
 				anno.created = new Date();
 			}
 			if (storeDates) {
@@ -643,57 +649,57 @@
 				rdfxml += '<modified xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
 						+ anno.modified.toString() + '</modified>';
 			}
-			if (anno.context) {
+			if (annoOrig.context) {
 				rdfxml += '<context xmlns="' + lore.constants.NAMESPACES["annotea"] + '">' +
 				anno.context +
 				'</context>';
 			}
-			if (anno.type ==
+			if (annoOrig.type ==
 			lore.constants.NAMESPACES["vanno"] +
 			"VariationAnnotation") {
-				if (anno.originalcontext) {
+				if (annoOrig.originalcontext) {
 					rdfxml += '<original-context xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
 					'">' +
 					anno.originalcontext +
 					'</original-context>';
 				}
-				if (anno.variantcontext) {
+				if (annoOrig.variantcontext) {
 					rdfxml += '<variant-context xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
 					'">' +
 					anno.variantcontext +
 					'</variant-context>';
 				}
-				if (anno.variationagent) {
+				if (annoOrig.variationagent) {
 					rdfxml += '<variation-agent xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
 					'">' +
 					anno.variationagent +
 					'</variation-agent>';
 				}
-				if (anno.variationplace) {
+				if (annoOrig.variationplace) {
 					rdfxml += '<variation-place xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
 					'">' +
 					anno.variationplace +
 					'</variation-place>';
 				}
-				if (anno.variationdate) {
+				if (annoOrig.variationdate) {
 					rdfxml += '<variation-date xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
 					'">' +
 					anno.variationdate +
 					'</variation-date>';
 				}
-				if (anno.original) {
+				if (annoOrig.original) {
 					rdfxml += '<original xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
 					'" rdf:resource="' +
 					anno.original +
 					'"/>';
 				}
-				if (anno.variant) {
+				if (annoOrig.variant) {
 					rdfxml += '<variant xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
 					'" rdf:resource="' +
@@ -701,7 +707,7 @@
 					'"/>';
 				}
 			}
-			if (anno.body) {
+			if (annoOrig.body) {
 				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
 				rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
 				'"><rdf:Description>' +
@@ -720,7 +726,7 @@
 				'</Body></rdf:Description>' +
 				'</body>';
 			}
-			if (anno.tags) {
+			if (annoOrig.tags) {
 				var tagsarray = anno.tags.split(',');
 				lore.debug.anno("tags are", tagsarray);
 				for (var ti = 0; ti < tagsarray.length; ti++) {
