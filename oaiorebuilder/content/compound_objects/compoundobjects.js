@@ -131,10 +131,6 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype){
 lore.ore.setDcCreator = function(creator){
     /** The name of the default creator used for dc:creator for annotations and compound objects */
     lore.defaultCreator = creator;
-    // only set if it is a new (empty) compound object 
-    if (lore.global.util.isEmptyObject(lore.ore.loadedRdf)){
-        lore.ore.ui.grid.store.loadData([{id: "dc:creator_0", name: "dc:creator", value: creator}],true);
-    }
 };
 /** Handle click of search button in search panel */
 lore.ore.keywordSearch = function(){
@@ -174,7 +170,11 @@ lore.ore.search = function (searchuri, searchpred, searchval){
         iconCls:"tree-ore"
     });
     Ext.getCmp("searchtree").getRootNode().appendChild(searchtreeroot);
-    lore.ore.sesame.getCompoundObjects(searchuri, searchpred, searchval, true);
+    if (lore.ore.reposURL && lore.ore.reposType == 'sesame'){
+        lore.ore.sesame.getCompoundObjects(searchuri, searchpred, searchval, true);
+    } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
+        // lore.ore.fedora.getCompoundObjects(searchuri, searchpred, searchval, true);
+    }
     } catch (e){
         lore.debug.ore("exception in search",e);
     }
@@ -219,7 +219,7 @@ lore.ore.createCompoundObject = function (){
             {id:"dcterms:created_0", name:"dcterms:created",value:dateString},
             {id: "dc:title_0", name: "dc:title", value: ""}
         ]  
-    );
+        );
         lore.ore.ui.initGraphicalView();
     };
     try{
@@ -985,7 +985,9 @@ lore.ore.loadCompoundObject = function (rdf) {
 lore.ore.readRDF = function(rdfURL){
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         lore.ore.sesame.loadCompoundObject(rdfURL);
-    } else {
+    } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
+        //lore.lore.fedora.loadCompoundObject(rdfURL);
+    }else {
         lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
     }
 };
@@ -1146,6 +1148,8 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
             if (btn == 'ok') {
                 if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
                     lore.ore.sesame.deleteCompoundObject(remid);
+                }else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
+                    //lore.ore.fedora.deleteCompoundObject(remid);
                 } else {
                     lore.ore.ui.loreWarning("Not yet implemented: please change your repository type preference to sesame");
                 }
@@ -1220,6 +1224,8 @@ lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
     lore.global.ui.clearTree(lore.ore.ui.remstreeroot);
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         lore.ore.sesame.getCompoundObjects(contextURL); 
+    } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
+        //lore.ore.fedora.getCompoundObjects(contextURL);
     }
 };
 lore.ore.displayCompoundObjectsInTree = function (xmldoc, searchval, isSearchQuery){

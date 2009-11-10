@@ -101,14 +101,6 @@ lore.ore.ui.loadPreferences = function() {
 lore.ore.ui.initProperties = function() {
 	var dateString = lore.ore.getToday();
     lore.ore.currentREM = lore.ore.generateID();
-    lore.ore.ui.grid.store.loadData(
-        [
-            {id: 'rdf:about_0', name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
-	        {id: "dc:title_0", name: "dc:title", value: ""},
-	        {id: 'dcterms:modified_0', name: 'dcterms:modified', value:dateString},
-	        {id: 'dcterms:created_0', name:'dcterms:created',value:dateString}
-        ]  
-    );
     lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
     lore.ore.ui.nodegrid.store.on("remove", lore.ore.handleNodePropertyRemove);
     //lore.ore.ui.nodegrid.store.on("add", lore.ore.handleNodePropertyAdd);
@@ -315,12 +307,13 @@ lore.ore.ui.init = function() {
 	lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
 	lore.ore.ui.initExtComponents();
     lore.ore.ui.initProperties();
-	lore.ore.ui.initGraphicalView();
-	lore.ore.ui.loreInfo("Welcome to LORE");
+	
+    lore.ore.ui.loreInfo("Welcome to LORE");
  
 	lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId);  
 	lore.ore.ui.loadPreferences();  
-	
+	lore.ore.createCompoundObject();
+    
 	if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != "about:blank"
 			&& lore.ore.ui.currentURL != '' && lore.ore.ui.lorevisible) {          
 		lore.ore.updateCompoundObjectsSourceList(lore.ore.ui.currentURL);
