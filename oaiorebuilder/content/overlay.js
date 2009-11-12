@@ -114,13 +114,18 @@ try {
 		},
         /** Observe if preferences have changed */
 		observe: function(subject, topic, data){
-			if (topic != "nsPref:changed") {
-				return;
+			try {
+				
+				if (topic != "nsPref:changed") {
+					return;
+				}
+				
+				this.loadGlobalPrefs();
+				this.loadCompoundObjectPrefs();
+				this.loadAnnotationPrefs();
+			} catch (e ) {
+				lore.debug.ui("Error updating preferences on prefs change: " + e, e);
 			}
-			
-			this.loadGlobalPrefs();
-			this.loadCompoundObjectPrefs();
-			this.loadAnnotationPrefs();
 			
 		},
         /** Tear down code to remove progress listener */
@@ -355,6 +360,7 @@ try {
 		},
 		
 		loadAnnotationPrefs: function(){
+			
 			if (this.prefs) {
 				
 				var annoserver = this.prefs.getCharPref("annoserver");

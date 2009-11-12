@@ -33,14 +33,14 @@
  */
 	
 	try {
-
-	/*
+	
+		/*
 	 * Initialization
 	 */
 		// set defaults for page
 		lore.anno.ui.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 		
-		lore.anno.ui.initPageData = function (){
+		lore.anno.ui.initPageData = function(){
 		
 			lore.anno.ui.multiSelAnno = new Array();
 			lore.anno.ui.colourForOwner = {};
@@ -51,357 +51,357 @@
 		
 		lore.anno.ui.initPageData();
 		
-	
-
-	/**
+		
+		
+		/**
 	 * Setup the event hooks that notify the view functions of store events
 	 */
-	lore.anno.ui.initModelHandlers = function () {
-		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
-		lore.anno.annods.on( { "update": {fn: lore.anno.ui.updateUIOnUpdate}, 
-							   "load":{fn: lore.anno.ui.updateUI},
-							   "remove":{fn: lore.anno.ui.updateUIOnRemove},
-							   "clear": {fn: lore.anno.ui.updateUIOnClear}//,
-							  // "datachanged": {fn: lore.anno.ui.updateUIOnRefresh},
-							   });
-    }
-
+		lore.anno.ui.initModelHandlers = function(){
+			var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
+			lore.anno.annods.on({
+				"update": {
+					fn: lore.anno.ui.updateUIOnUpdate
+				},
+				"load": {
+					fn: lore.anno.ui.updateUI
+				},
+				"remove": {
+					fn: lore.anno.ui.updateUIOnRemove
+				},
+				"clear": {
+					fn: lore.anno.ui.updateUIOnClear
+				}//,
+			// "datachanged": {fn: lore.anno.ui.updateUIOnRefresh},
+			});
+		}
 		
-	/*
+		
+		/*
 	 * General functions
 	 */
-	
-	/** Helper function to create a view displayed in a closeable tab */
-	lore.anno.ui.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
-	    var tab = Ext.getCmp(panelid);
-	    if (!tab) {
-	       tab =lore.anno.ui.views.add({
-	            'title' : paneltitle,
-	            'id' : panelid,
-	            'autoScroll' : true,
-	            'closable' : true
-	        });
-	        tab.on("activate", activationhandler);
-	    }
-	    tab.show();
-	}
-	
-	/**
+		/** Helper function to create a view displayed in a closeable tab */
+		lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*function*/ activationhandler){
+			var tab = Ext.getCmp(panelid);
+			if (!tab) {
+				tab = lore.anno.ui.views.add({
+					'title': paneltitle,
+					'id': panelid,
+					'autoScroll': true,
+					'closable': true
+				});
+				tab.on("activate", activationhandler);
+			}
+			tab.show();
+		}
+		
+		/**
 	 * Output a message to notification window
-	 * @param {String} message Notification message 
+	 * @param {String} message Notification message
 	 * @param {Object} iconCls CSS Class for notification icon
 	 */
-	lore.anno.ui.loreMsg = function(message, iconCls){
-		if (!lore.anno.ui.loreMsgStack) {
-			lore.anno.ui.loreMsgStack = [];
-		}
-		iconCls = iconCls || '';
-		message = '<div class="status-bubble-icon ' + iconCls + '"></div><div class="status-bubble-msg">' + message + "</div>";
-		
-		lore.anno.ui.loreMsgStack.push(message);
-		Ext.Msg.show({
-			msg: '',
-			modal: false,
-			closable: true,
-			width: window.innerWidth
-		});
-		Ext.Msg.updateText(lore.anno.ui.loreMsgStack.join('<br/>'));
-		var w = Ext.Msg.getDialog();
-		w.setPosition(0, window.innerHeight - w.getBox().height);
-		
-		window.setTimeout(function(){
-			try {
-				if (lore.anno.ui.loreMsgStack.length == 1) {
-					lore.anno.ui.loreMsgStack.pop();
-					Ext.Msg.hide();
-				}
-				else {
-					lore.anno.ui.loreMsgStack.splice(0, 1);
-					Ext.Msg.updateText(lore.anno.ui.loreMsgStack.join('<br/>'));
-					var w = Ext.Msg.getDialog();
-					w.setPosition(0, window.innerHeight - w.getBox().height);
-				}
-			} 
-			catch (e) {
-				lore.debug.ui(e, e);
+		lore.anno.ui.loreMsg = function(message, iconCls){
+			if (!lore.anno.ui.loreMsgStack) {
+				lore.anno.ui.loreMsgStack = [];
 			}
-		}, 3000);
+			iconCls = iconCls || '';
+			message = '<div class="status-bubble-icon ' + iconCls + '"></div><div class="status-bubble-msg">' + message + "</div>";
+			
+			lore.anno.ui.loreMsgStack.push(message);
+			Ext.Msg.show({
+				msg: '',
+				modal: false,
+				closable: true,
+				width: window.innerWidth
+			});
+			Ext.Msg.updateText(lore.anno.ui.loreMsgStack.join('<br/>'));
+			var w = Ext.Msg.getDialog();
+			w.setPosition(0, window.innerHeight - w.getBox().height);
+			
+			window.setTimeout(function(){
+				try {
+					if (lore.anno.ui.loreMsgStack.length == 1) {
+						lore.anno.ui.loreMsgStack.pop();
+						Ext.Msg.hide();
+					}
+					else {
+						lore.anno.ui.loreMsgStack.splice(0, 1);
+						Ext.Msg.updateText(lore.anno.ui.loreMsgStack.join('<br/>'));
+						var w = Ext.Msg.getDialog();
+						w.setPosition(0, window.innerHeight - w.getBox().height);
+					}
+				} 
+				catch (e) {
+					lore.debug.ui(e, e);
+				}
+			}, 3000);
+			
+		}
 		
-	}
-	
-	/**
+		/**
 	 * Output a notification to notification window
-	 * @param {String} message Notification message 
+	 * @param {String} message Notification message
 	 */
-	lore.anno.ui.loreInfo = function(message ) {
-		lore.anno.ui.loreMsg(message, 'info-icon');
-		lore.global.ui.loreInfo(message);
-	}
-	
-	/**
-	 * Output a error message to notification window
-	 * @param {String} message Erro message 
-	 */
-	lore.anno.ui.loreError = function(message) {
-		lore.anno.ui.loreMsg(message, 'error-icon');
-		lore.global.ui.loreError(message);	
+		lore.anno.ui.loreInfo = function(message){
+			lore.anno.ui.loreMsg(message, 'info-icon');
+			lore.global.ui.loreInfo(message);
+		}
 		
-	}
-	
-	/**
-	 * Output a warning to notification window
-	 * @param {String} message Warning message 
+		/**
+	 * Output a error message to notification window
+	 * @param {String} message Erro message
 	 */
-	lore.anno.ui.loreWarning = function(message) {
-		lore.anno.ui.loreMsg(message, 'warning-icon');
-		lore.global.ui.loreWarning(message);
-	}
-	
-	
-	/**
+		lore.anno.ui.loreError = function(message){
+			lore.anno.ui.loreMsg(message, 'error-icon');
+			lore.global.ui.loreError(message);
+			
+		}
+		
+		/**
+	 * Output a warning to notification window
+	 * @param {String} message Warning message
+	 */
+		lore.anno.ui.loreWarning = function(message){
+			lore.anno.ui.loreMsg(message, 'warning-icon');
+			lore.global.ui.loreWarning(message);
+		}
+		
+		
+		/**
 	 * Set the default creator for annotations
 	 * @param {String} creator The default creator of annotations
-	 */		
-	lore.anno.ui.setdccreator = function(creator){
+	 */
+		lore.anno.ui.setdccreator = function(creator){
 			lore.defaultCreator = creator;
-	}
-	
-	/**
+		}
+		
+		/**
 	 * Set the annotation server URL
 	 * @param {String} annoserver The annotation server URL
 	 */
-	lore.anno.ui.setRepos = function(annoserver){
-		lore.anno.annoURL = annoserver; // annotation server
-	}
-	
-	
-	/**
+		lore.anno.ui.setRepos = function(annoserver){
+			lore.anno.annoURL = annoserver; // annotation server
+		}
+		
+		
+		/**
 	 * Show the annotations view. Update the annotations source list
 	 * to match this page
 	 */
-	lore.anno.ui.show = function(){
-		lore.anno.ui.lorevisible = true;
-		
-		if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' &&
-		lore.anno.ui.currentURL != '' &&
-		(!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
-			lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
+		lore.anno.ui.show = function(){
+			lore.anno.ui.lorevisible = true;
+			
+			if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' &&
+			lore.anno.ui.currentURL != '' &&
+			(!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
+				lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
 			//lore.anno.ui.loadedURL = lore.anno.ui.currentURL; 
+			}
 		}
-	}
 		
-	/**
+		/**
 	 * Hide the annotations view
 	 */
-	lore.anno.ui.hide = function(){
-		lore.anno.ui.lorevisible = false;
-	}
-	
-	/**
+		lore.anno.ui.hide = function(){
+			lore.anno.ui.lorevisible = false;
+		}
+		
+		/**
 	 * Update GUI elements based off the record passed in
 	 * @param {Record} rec Ext Annotation record to base update off of
 	 */
-	lore.anno.ui.updateUIElements = function(rec){
-		// update the highlighted fields colour in the event the creator is changed
-		// the colour is identified by the creator's name
-		
-		if (rec) {
-			lore.anno.ui.hideMarker();
-			lore.anno.ui.highlightCurrentAnnotation(rec);
+		lore.anno.ui.updateUIElements = function(rec){
+			// update the highlighted fields colour in the event the creator is changed
+			// the colour is identified by the creator's name
+			
+			if (rec) {
+				lore.anno.ui.hideMarker();
+				lore.anno.ui.highlightCurrentAnnotation(rec);
+			}
+			
+			if (lore.anno.ui.multiSelAnno.length > 0) {
+				// hide then reshow 
+				lore.anno.ui.showAllAnnotations();
+				lore.anno.ui.showAllAnnotations();
+			}
+			
 		}
 		
-		if (lore.anno.ui.multiSelAnno.length > 0) {
-			// hide then reshow 
-			lore.anno.ui.showAllAnnotations();
-			lore.anno.ui.showAllAnnotations();
-		}
-		
-	}
-		
-	/**
+		/**
 	 * Store the annotation that is currently selected in the view
 	 * @param {Record} rec Record Currently selected annotation
 	 */
-	lore.anno.ui.setCurrentAnno = function (rec) {
-		lore.anno.ui.hideMarker();
-		lore.anno.ui.curSelAnno = rec;
-	}
-	
-	lore.anno.ui.getCurrentAnno = function () {
-		return lore.anno.ui.curSelAnno;	
-	}
-	
-	/**
+		lore.anno.ui.setCurrentAnno = function(rec){
+			lore.anno.ui.hideMarker();
+			lore.anno.ui.curSelAnno = rec;
+		}
+		
+		lore.anno.ui.getCurrentAnno = function(){
+			return lore.anno.ui.curSelAnno;
+		}
+		
+		/**
 	 * Generate annotation caption for the given annotation using the formatting
 	 * string
 	 * @param {Object} anno The annotation to retrieve the information from
 	 * @param {String} formatStr Formatting string. The following
 	 */
-	lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
-		var buf = '';
-		
-		
-		for ( var i=0; i < formatStr.length; i++) {
-			switch ( formatStr[i]) {
-				case 't': 
-					buf += lore.global.util.splitTerm(anno.type).term;
-					break;
-				case 'c':
-					buf += anno.creator
-					break;
-				case 'd':
-					buf += lore.global.util.shortDate(anno.created, Date);
-					break;
-				case 'D':
-					buf += lore.global.util.longDate(anno.created, Date);
-					break;
-				case 'r':
-					var replies = "";
-					if ( anno.replies) {
-						var n =anno.replies.count; 
-						if ( n > 0 ){
-							replies = " (" + n + (n == 1 ? " reply" : " replies") + ")";
+		lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
+			var buf = '';
+			
+			
+			for (var i = 0; i < formatStr.length; i++) {
+				switch (formatStr[i]) {
+					case 't':
+						buf += lore.global.util.splitTerm(anno.type).term;
+						break;
+					case 'c':
+						buf += anno.creator
+						break;
+					case 'd':
+						buf += lore.global.util.shortDate(anno.created, Date);
+						break;
+					case 'D':
+						buf += lore.global.util.longDate(anno.created, Date);
+						break;
+					case 'r':
+						var replies = "";
+						if (anno.replies) {
+							var n = anno.replies.count;
+							if (n > 0) {
+								replies = " (" + n + (n == 1 ? " reply" : " replies") + ")";
+							}
 						}
-					}
-					buf += replies;
-					break;
-				case '\\':
-					if ( i < formatStr.length -1 ) {
-						i++;
+						buf += replies;
+						break;
+					case '\\':
+						if (i < formatStr.length - 1) {
+							i++;
+							buf += formatStr[i];
+						}
+						break;
+					default:
 						buf += formatStr[i];
-					}
-					break;
-				default:
-					buf += formatStr[i];
+				}
 			}
+			
+			return buf;
 		}
-	 
-		return buf;
-	}
 		
-	/**
+		/**
 	 * Generate HTML formatted tag list
 	 * @param {Object} annodata The annotation to retrieve the tag information from
 	 * @return {String} HTML formatted tag list
 	 */
-	lore.anno.ui.genTagList = function(annodata){
-		var bodyText = "";
-		if (annodata.tags) {
-			bodyText += '<span style="font-size:smaller;color:#51666b">Tags: ';
-			var tagarray = annodata.tags.split(',');
-			for (var ti = 0; ti < tagarray.length; ti++) {
-				var thetag = tagarray[ti];
-				if (thetag.indexOf('http://') == 0) {
-					try {
-						var tagname = thetag;
-						Ext.getCmp('tagselector').store.findBy(function(rec){
-							if (rec.data.id == thetag) {
-								tagname = rec.data.name;
-							}
-						});
-						bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
-					} 
-					catch (e) {
-						lore.debug.anno("unable to find tag name for " + thetag, e);
+		lore.anno.ui.genTagList = function(annodata){
+			var bodyText = "";
+			if (annodata.tags) {
+				bodyText += '<span style="font-size:smaller;color:#51666b">Tags: ';
+				var tagarray = annodata.tags.split(',');
+				for (var ti = 0; ti < tagarray.length; ti++) {
+					var thetag = tagarray[ti];
+					if (thetag.indexOf('http://') == 0) {
+						try {
+							var tagname = thetag;
+							Ext.getCmp('tagselector').store.findBy(function(rec){
+								if (rec.data.id == thetag) {
+									tagname = rec.data.name;
+								}
+							});
+							bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
+						} 
+						catch (e) {
+							lore.debug.anno("unable to find tag name for " + thetag, e);
+						}
+					}
+					else {
+						bodyText += thetag + ", ";
 					}
 				}
-				else {
-					bodyText += thetag + ", ";
-				}
+				bodyText += "</span>";
 			}
-			bodyText += "</span>";
+			return bodyText;
 		}
-		return bodyText;
-	}
 		
-	/**
-	 * Retrieve the annotation title 
+		/**
+	 * Retrieve the annotation title
 	 * @param {Object} anno The annotation
 	 * @return {String} The annotation titile. The default value is 'Untitled'
 	 */
-	lore.anno.ui.getAnnoTitle = function(anno){
-		var title = anno.title;
-		if (!title || title == '') {
-			title = "Untitled";
+		lore.anno.ui.getAnnoTitle = function(anno){
+			var title = anno.title;
+			if (!title || title == '') {
+				title = "Untitled";
+			}
+			return title;
 		}
-		return title;
-	}
-	
-	lore.anno.ui.getAnnoTypeIcon = function(anno) {
-		var aType = lore.global.util.splitTerm(anno.type).term;
-		var icons = { 'Comment': 'anno-icon', 'Explanation':'anno-icon-explanation','VariationAnnotation':'anno-icon-variation' ,
-		'Question': 'anno-icon-question'};
 		
-		return icons[aType] || 'anno-icon';
-	}
-	
-	/**
+		lore.anno.ui.getAnnoTypeIcon = function(anno){
+			var aType = lore.global.util.splitTerm(anno.type).term;
+			var icons = {
+				'Comment': 'anno-icon',
+				'Explanation': 'anno-icon-explanation',
+				'VariationAnnotation': 'anno-icon-variation',
+				'Question': 'anno-icon-question'
+			};
+			
+			return icons[aType] || 'anno-icon';
+		}
+		
+		/**
 	 * Generated a pop up for the given annotation and place the HTML into the
 	 * supplied dom container
-	 * @param {Object} annodata	The annotation to create the tip for 
+	 * @param {Object} annodata	The annotation to create the tip for
 	 * @param {Object} domContainer An object or an array containing the dom container/s
 	 * to insert the pop up HTML into
-	 */	
-	lore.anno.ui.genTipForAnnotation = function(annodata, marker){
-		try {
-			var doc = marker.target || lore.global.util.getContentWindow(window).document;
-			var cw = doc.defaultView;
-			var uid = annodata.id;
-			var obj = lore.global.util.domCreate("span", doc);
-			obj.setAttribute("id", uid);
-			var desc = "<span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
-			" by " +
-			annodata.creator +
-			"</span><br />";
-			desc += lore.anno.ui.genDescription(annodata, true);
-			var d = lore.global.util.longDate(annodata.created, Date);
-			desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span><br />";
-			obj.innerHTML = desc;
-			
-			
-			var tipContainer = doc.getElementById("tipcontainer");
-			
-			// create the tip container and import the script onto the page
-			// if first time a tip is created			
-			if (tipContainer == null) {
-				tipContainer = lore.global.util.domCreate("div", doc);
-				tipContainer.id = "tipcontainer";
-				tipContainer.style.display = "none";
-				
-				doc.body.appendChild(tipContainer);
-				
-				lore.global.util.injectScript("content/lib/wz_tooltip.js", cw);
-			//	lore.global.util.injectCSS("content/lib/simpletip.css", cw);
-				
-			}
-			
-			// add tip to the container
-			if (doc.getElementById(uid) == null) {
-				tipContainer.appendChild(obj);
-			}
-			else {
-				tipContainer.replaceChild(obj, doc.getElementById(uid));
-			}
-			
-			// set events via DOM so that events are handled in the context of the content window
-			// and not the extension
-			
-			var domContainer = marker.data.nodes[0];
-			
-			domContainer.setAttribute("onmouseover", "TagToTip('" + uid +
-			"',CLOSEBTN, true, STICKY, true, SHADOW, true, BGCOLOR, '#ffffff', " +
-			"BORDERCOLOR, '#51666b', TITLEBGCOLOR, '#cc0000', TITLE,'" +
-			annodata.title.replace(/'/g, '&apos;') +
-			"');");
-			domContainer.setAttribute("onmouseout", "UnTip();");
-			
-		/*	$(marker.data.nodes[0], doc).simpletip({
-				content: desc,
-				focus: true,
-				position:'bottom',
-			});*/
-			
-		} 
+	 */
+		lore.anno.ui.genTipForAnnotation = function(annodata, marker){
+			try {
+					var doc = marker.target || lore.global.util.getContentWindow(window).document;
+					var cw = doc.defaultView;
+					var uid = annodata.id;
+					var desc = "<div style='color:white;background-color:darkred;width:100%'>" + annodata.title + "</div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
+					" by " +
+					annodata.creator +
+					"<br />";
+					desc += lore.anno.ui.genDescription(annodata, true);
+					var d = lore.global.util.longDate(annodata.created, Date);
+					desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span></span><br />";
+					var descDom = document.createElement("span");
+					descDom.setAttribute("style", "font-family:sans-serif");
+					document.body.appendChild(descDom);
+					descDom.innerHTML = desc;
+					document.body.removeChild(descDom);
+										
+		
+				$(marker.data.nodes[0], doc).simpletip({
+					content: descDom,
+					focus: true,
+					boundryCheck: false,
+					position: 'cursor',
+					showEffect: 'custom',
+					showCustom: function(){
+						try {
+							this.context.style.position = 'absolute';
+							this.context.style.opacity = "1";
+							this.context.style.backgroundColor = "#fcfcfc";
+							this.context.style.fontSize = "9pt";
+							this.context.style.fontWeight = "normal";
+							this.context.style.color = "#51666b";
+							this.context.style.border = '1.5px solid darkgrey';
+							this.context.style.zIndex = "3";
+							this.context.style.fontFamily = 'sans-serif';
+							this.context.style.fontSize = 12;
+							jQuery(this).animate({
+								width: 'auto',
+								display: 'block'
+							}, 400);
+						} 
+						catch (e) {
+							lore.debug.anno("error showing tip: " + e, e);
+						}
+					}
+				});
+		}
 		catch (ex) {
 			lore.debug.anno("Tip creation failure: " + ex, ex);
 		}
@@ -1194,10 +1194,64 @@
 						lore.debug.anno("exception creating xpath for new annotation", e);
 					}
 				}
+				
+				
 				if (rec) {
 					lore.anno.addAnnotation(currentContext,  lore.anno.ui.currentURL, rec);
 				}
 				else {
+					/*if ( lore.anno.ui.rdfa){//} && lore.anno.ui.rdfa.agent || lore.anno.ui.rdf.work ) {
+					var data = [];
+					if ( lore.anno.ui.rdfa.agent ) {
+						for (var e in lore.anno.ui.rdfa.agent) {
+							//data.push([e,'Agent->'])
+						}
+					}
+					
+					if ( lore.anno.ui.rdfa.work) {}
+					
+						var win = new Ext.Window(
+						{
+							title:'Associate annotation with...',
+							width:300,
+							items: [
+							{
+								xtype: 'displayfield',
+								value:'This page has embedded information, you can optionally select a field to attach the annotation to.',
+							},							
+							{
+								xtype: "combo",
+								id: "rdffield",
+								name: 'rdffield',
+								hiddenName: 'rdffield',
+								store: new Ext.data.SimpleStore({
+									fields: ['field', 'fieldname' ],
+									data: data
+								}),
+								valueField: 'field',
+								displayField: 'fieldname',
+								typeAhead: true,
+								emptyText: "None",
+								triggerAction: 'all',
+								forceSelection: true,
+								mode: 'local',
+								resizable:true,
+								selectOnFocus: true
+							}],
+							buttons: [
+							{ text: 'Ok',
+								id: 'addanookbtn',
+								handler: function (b,e ) {
+									//TODO: change to make context and original and variant fields arrays
+									lore.anno.ui.curSelAnno.data.context2 = ''; // genTriplePointer(lsdfklfff)
+									win.hide();
+									win.destroy();
+								}
+							}]
+						});
+						win.show(this);
+						
+					}*/
 					lore.anno.addAnnotation(currentContext, lore.anno.ui.currentURL);
 				}
 			} 
@@ -1795,7 +1849,6 @@
 					node.remove();
 				}
 				
-				
 				if (!lore.anno.isNewAnnotation(rec)) {
 				
 					// remove from timeline
@@ -1805,7 +1858,6 @@
 						evt._eventID = "flagdelete";
 						lore.anno.ui.scheduleTimelineLayout();
 					}
-					
 				}
 			} 
 			catch (e) {
@@ -2242,7 +2294,7 @@
 		
 		try {
 			lore.anno.ui.enableImageHighlightingForPage();
-			lore.anno.ui.gleanRDFa();
+			//lore.anno.ui.gleanRDFa();
 			lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
 			lore.anno.updateAnnotationsSourceList(contextURL, function(result, resultMsg){
 				if (result == 'fail') {
@@ -2391,31 +2443,47 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 	}
 }
 
-lore.anno.ui.gleanRDFa = function () {
-/*	try {
-		var cw = lore.global.util.getContentWindow(window);
-		var doc = cw.document;
-		
-		lore.anno.ui.pageRDFaEnabled = false;
-		var agent;
-		var r = $('#startContent', doc).rdf()
-		.prefix('foaf', 'http://xmlns.com/foaf/0.1/')
-		.where('?person a foaf:Person')
-		.where('?person foaf:name ?name')
-		.each(function(){
-			try {
-				lore.anno.ui.pageRDFaEnabled = true;
-				lore.debug.anno("rdf object: " + this, this);
-				lore.debug.anno("person: " + this.person, this.person);
-				agent = this.name.value;
-				lore.debug.anno("RDF embedded for agent: " + agent, agent);
-			} catch (e ) {
-				lore.debug.anno(e,e);
-			}
-		});
-		
+lore.anno.ui.gleanRDFa = function () {	
+	try {
+		window.setTimeout(function() {lore.anno.ui.gleanAustlitRDFa();
+		lore.debug.anno('glean rdfa: ' + lore.anno.ui.rdfa, lore.anno.ui.rdfa);}, 0);		
 	}catch (e) {
 		lore.debug.anno("Error gleaning potential rdfa from page: " +e , e);
 	}
-	*/
+}
+
+lore.anno.ui.gleanAustlitRDFa = function () {
+	lore.anno.ui.rdfa = null;
+	var agent;
+	try {
+		
+		var cw = lore.global.util.getContentWindow(window);
+		var doc = cw.document;
+		
+		var myrdf = $('body', doc).rdf();
+		agent = myrdf.about('<' + decodeURI('http://www.austlit.edu.au' + cw.location.pathname +
+		cw.location.search ) +'#me>');
+		lore.debug.anno('Agent...');
+		agent.each(function(){
+			lore.debug.anno(' has ' + this.property + ' value ' + this.value + "(" + typeof(this.value) + ")");
+		});
+	} catch (e) {
+		lore.debug.ui(e,e);
+	}
+	var work;
+	try {
+		work = myrdf.about('<http://www.austlit.edu.au' + cw.location.pathname + cw.location.search +
+		"#work");
+		lore.debug.anno('Work...');
+		
+		
+	}catch (e) {
+		lore.debug.ui(e,e);
+	}
+	
+	lore.anno.ui.rdfa =  {
+			agent: agent,
+			work: work
+		};
+	 
 }
