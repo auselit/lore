@@ -11,6 +11,9 @@
  * Version : 1.3.1
  * Released: February 5, 2009 - 11:04am
  */
+
+var curtip;
+
 (function($){
 
    function Simpletip(elem, conf)
@@ -24,19 +27,21 @@
                      .addClass(conf.baseClass)
                      .addClass( (conf.fixed) ? conf.fixedClass : '' )
                      .addClass( (conf.persistent) ? conf.persistentClass : '' )
-                     .appendTo(doc.body);
+                     .appendTo(win);
      
-	 if ( typeof(conf.content) == 'string') 
+	 if (typeof(conf.content) == 'string') 
 	 	tooltip.html(conf.content);
-	else
-		tooltip.get(0).appendChild(conf.content);
-		
-     
-	 
-	 				 
-	jQuery(doc.createElement('br')).appendTo(tooltip);
-	//tooltip.appendTo(conf.content);
-					 
+	 else {
+	 	tooltip.append(conf.content);
+	 }
+
+	var closeIcon = null;
+	if ( conf.closeIcon){
+		var closeIcon = jQuery(doc.createElement("img")).css({ position:'absolute' ,right:'0', top:'0'});
+		closeIcon.attr('src', conf.closeIcon);
+		closeIcon.appendTo(tooltip);
+	}
+	
       if(!conf.hidden) tooltip.show();
       else tooltip.hide();
       
@@ -50,19 +55,25 @@
          if(!conf.fixed)
          {
             elem.mousemove( function(event){ 
-               if(tooltip.css('display') !== 'none') self.updatePos(event); 
+               if(tooltip.css('display') !== 'none' && !conf.fixed) self.updatePos(event); 
             });
          };
 		 
 		 if ( conf.focus) {
-		 	  jQuery(win).mousedown(function(event)
-         { 
-            if(tooltip.css('display') !== 'none')
-            {
-               var check = jQuery(event.target).parents('.tooltip').andSelf().filter(function(){ return this === tooltip.get(0) }).length ;
-               if(check === 0) self.hide();
-            };
-         });
+		 	  if ( closeIcon){
+			  	closeIcon.mousedown(function(event) {
+					self.hide();
+				});
+			  } else {
+			  jQuery(win).mousedown(function(event)
+         		{ 
+            		if(tooltip.css('display') !== 'none')
+            		{
+               		var check = jQuery(event.target).parents('.tooltip').andSelf().filter(function(){ return this === tooltip.get(0) }).length ;
+               		if(check === 0) self.hide();
+            		};
+         		});
+			}
 		 }
       }
       else
@@ -125,6 +136,16 @@
          
          show: function(event)
          {
+		 	if ( conf.fixed && tooltip.css('display') != 'none' )
+				return;
+			
+			if (conf.onetip) {
+				if (curtip) {
+					curtip.hide();
+				}
+				curtip = self;
+			}
+			
             conf.onBeforeShow.call(self);
             
             self.updatePos( (conf.fixed && conf.position != 'cursor') ? null : event );
@@ -215,7 +236,6 @@
                }
                else if(jQuery(conf.position).attr('nodeType') === 1)
                {
-			   	
                   var offset = jQuery(conf.position).offset();
                   posX = offset.left;
                   posY = offset.top;
@@ -311,6 +331,8 @@
          offset: [0, 0],
          boundryCheck: true,
          fixed: true,
+		 onetip: false,
+		 closeIcon: null,
          
          // Effects
          showEffect: 'fade',

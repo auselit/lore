@@ -26,6 +26,8 @@
  * @include  "/oaiorebuilder/content/constants.js"
  */
 
+var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
+
 /** 
  * Annotations View
  * @namespace
@@ -359,7 +361,7 @@
 					var doc = marker.target || lore.global.util.getContentWindow(window).document;
 					var cw = doc.defaultView;
 					var uid = annodata.id;
-					var desc = "<div style='color:white;background-color:darkred;width:100%'>" + annodata.title + "</div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
+					var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:16'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
 					" by " +
 					annodata.creator +
 					"<br />";
@@ -371,6 +373,7 @@
 					document.body.appendChild(descDom);
 					descDom.innerHTML = desc;
 					document.body.removeChild(descDom);
+					
 										
 		
 				$(marker.data.nodes[0], doc).simpletip({
@@ -379,6 +382,8 @@
 					boundryCheck: false,
 					position: 'cursor',
 					showEffect: 'custom',
+					onetip: true,
+					closeIcon: closeIcon,
 					showCustom: function(){
 						try {
 							this.context.style.position = 'absolute';
@@ -390,7 +395,11 @@
 							this.context.style.border = '1.5px solid darkgrey';
 							this.context.style.zIndex = "3";
 							this.context.style.fontFamily = 'sans-serif';
-							this.context.style.fontSize = 12;
+							
+							$(this.context).find('img').css({
+								'max-width': '256',
+								'height': 'auto'
+							});
 							jQuery(this).animate({
 								width: 'auto',
 								display: 'block'
