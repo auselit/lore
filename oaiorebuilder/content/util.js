@@ -671,8 +671,8 @@ util = {
     /**
      * Return an XPath for an image
      */
-	getXPathForImageSelection : function (domNode, coords, noScale ) {
-			var scale = noScale ? {x:1,y:1}: util.getImageScaleFactor( domNode);
+	getXPathForImageSelection : function (domNode, doc, coords, noScale ) {
+			var scale = noScale ? {x:1,y:1}: util.getImageScaleFactor( domNode, doc);
 			var x1 = parseInt(coords.x1 * scale.x), y1 = parseInt(coords.y1 * scale.y), 
 				x2 = parseInt(coords.x2 * scale.x), y2 = parseInt(coords.y2 * scale.y);
 			
@@ -709,10 +709,10 @@ util = {
      * visible on the page has been scaled (implicitly or explicitly)
      * @param img The IMG element to test
      */
-    getImageScaleFactor: function  (img)
+    getImageScaleFactor: function  (img, doc)
     {
 		// stripped from dannotate.js
-		var doc = img.ownerDocument;
+		//var doc = img.ownerDocument;
 		var iwidth = parseInt(img.offsetWidth);
 		var iheight = parseInt(img.offsetHeight);
 		var tmpNode = doc.createElement('img');

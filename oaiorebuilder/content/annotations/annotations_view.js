@@ -361,21 +361,25 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 					var doc = marker.target || lore.global.util.getContentWindow(window).document;
 					var cw = doc.defaultView;
 					var uid = annodata.id;
-					var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:16'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
+					var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
 					" by " +
 					annodata.creator +
 					"<br />";
 					desc += lore.anno.ui.genDescription(annodata, true);
 					var d = lore.global.util.longDate(annodata.created, Date);
 					desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span></span><br />";
-					var descDom = document.createElement("span");
+					var descDom = doc.createElement("span");
 					descDom.setAttribute("style", "font-family:sans-serif");
-					document.body.appendChild(descDom);
-					descDom.innerHTML = desc;
-					document.body.removeChild(descDom);
+					descDom.setAttribute("display", "none");
 					
-										
-		
+					// innerHTML does not work for pages that are image/... content type, so parse html
+					// by temporarily adding to local document head. html has been sanitized.
+					var	h=	document.getElementsByTagName("head")[0];
+					h.appendChild(descDom); 
+					descDom.innerHTML = desc;
+					h.removeChild(descDom);
+					descDom.removeAttribute("display");
+
 				$(marker.data.nodes[0], doc).simpletip({
 					content: descDom,
 					focus: true,
@@ -641,7 +645,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 							value: '"' + selText + '"'
 						}]);
 					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
-						lore.anno.ui.updateSplitter(lore.anno.ui.curSelAnno,false); // when content is loaded in splitter
+						lore.anno.ui.updateSplitter(lore.anno.ui.curSelAnno, false); // when content is loaded in splitter
 															// context field will be set
 					}
 					vCtxtField.getEl().setStyle("background-color", lore.anno.ui.getCreatorColour(rec.data.creator));
@@ -979,21 +983,21 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 	 	*
 	 	*/
 		
-		lore.anno.ui.updateImageData = function (img) {
+		lore.anno.ui.updateImageData = function (img, doc) {
 			var _img = $(img);
 			var scale = _img.data("scale");
 							
 			if ( !scale || scale.imgWidth != _img.width() ||
 							scale.imgHeight != _img.height()) {
 								// either no scale information stored, or is out of date
-								scale = lore.global.util.getImageScaleFactor(_img.get(0));
+								scale = lore.global.util.getImageScaleFactor(_img.get(0), doc );
 								_img.data("scale", scale);
 							}
 			return scale;
 		}
 		
-		lore.anno.ui.scaleImageCoords = function (img, coords) {
-			var scale = lore.anno.ui.updateImageData(img); 
+		lore.anno.ui.scaleImageCoords = function (img, coords, doc) {
+			var scale = lore.anno.ui.updateImageData(img, doc); 
 			// scale coords ( getting their unscale state if they are already scaled)
 			var sx = coords.sx || 1;
 			var sy = coords.sy || 1;
@@ -1085,7 +1089,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 							this.colour = colour || this.colour;
 							this.styleCallback = styleCallback || this.styleCallback;
 							
-							var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords);
+							var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords, this.target);
 							var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
 							
 							var _n = $(this.data.nodes[0]);
@@ -1174,9 +1178,11 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 		lore.anno.ui.getCurrentSelection = function(){
 			var selxp = lore.global.util.getXPathForSelection(window);
 			
-			if ( lore.anno.ui.curImage && lore.global.util.trim(selxp) == '') {
-				return lore.global.util.getXPathForImageSelection(lore.anno.ui.curImage.get(0), 
-				lore.anno.ui.curImage.imgAreaSelectInst().getSelection(), true);
+			if ( lore.anno.ui.curImage && lore.global.util.trim(selxp) == '' ) {
+				var sel = lore.anno.ui.curImage.imgAreaSelectInst().getSelection()
+				if (sel.x1 != sel.x2 && sel.y1 != sel.y2) {
+					return lore.global.util.getXPathForImageSelection(lore.anno.ui.curImage.get(0), lore.anno.ui.curImage.get(0).ownerDocument, sel, true);
+				}
 			}
 
 			return selxp;	
@@ -1209,7 +1215,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 					lore.anno.addAnnotation(currentContext,  lore.anno.ui.currentURL, rec);
 				}
 				else {
-					/*if ( lore.anno.ui.rdfa){//} && lore.anno.ui.rdfa.agent || lore.anno.ui.rdf.work ) {
+					if ( lore.anno.ui.rdfa && (lore.anno.ui.rdfa.agent || lore.anno.ui.rdf.work )) {
 					var data = [];
 					if ( lore.anno.ui.rdfa.agent ) {
 						for (var e in lore.anno.ui.rdfa.agent) {
@@ -1260,7 +1266,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 						});
 						win.show(this);
 						
-					}*/
+					}
 					lore.anno.addAnnotation(currentContext, lore.anno.ui.currentURL);
 				}
 			} 
@@ -1642,8 +1648,8 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 		lore.anno.ui.updateSplitter =  function (rec, show) {
 						
 			try {
-			
-				if (rec.data.variantcontext) {
+				
+				if (rec.data.variant) {
 					// show splitter
 					var ctx = null;
 					var title = '';
@@ -1660,7 +1666,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 						// when page has loaded perform the following
 						lore.anno.ui.hideMarker();
 						var cw = lore.anno.ui.topView.getVariationContentWindow();
-						lore.anno.ui.enableImageHighlightingForPage(cw);
+						//lore.anno.ui.enableImageHighlightingForPage(cw);
 						lore.anno.ui.highlightCurrentAnnotation(rec);
 
 						var n = 'rcontextdisp';
@@ -1960,26 +1966,28 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 			
 			var markers = [];
 			
+			
+			
 			// regular non variant case for highlighting
-			if (rec.data.context && !rec.data.variantcontext 
-					&& rec.data.resource == lore.anno.ui.currentURL) {
+			if (rec.data.context && rec.data.resource == lore.anno.ui.currentURL &&
+				rec.data.type!= lore.constants.NAMESPACES["vanno"] + "VariationAnnotation")  {
 					try {
 						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context}));
 					} 
 					catch (e) {
 						lore.debug.anno(e, e);
 					}
-			} else 	if (rec.data.variantcontext) {
+			} else 	{
 			
-				if (rec.data.original && rec.data.original == lore.anno.ui.currentURL) {
+				if (rec.data.original == lore.anno.ui.currentURL) {
 					try {
-						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context}));
+						if ( rec.data.context) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context}));
 					} 
 					catch (e) {
 						lore.debug.anno("Error highlighting variation context: " + e, e);
 					}
 					var cw = lore.anno.ui.topView.getVariationContentWindow();
-					if (lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.variant) {
+					if (rec.data.variantcontext && lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.variant) {
 						try {
 							markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, target:cw.document}));
 						} 
@@ -1989,9 +1997,9 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 						
 					}
 				}
-				if (rec.data.variant == lore.anno.ui.currentURL) {
+				if ( rec.data.variant == lore.anno.ui.currentURL) {
 					try {
-						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext}));
+						if ( rec.data.variantcontext ) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext}));
 					} 
 					catch (e) {
 						lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -2007,6 +2015,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 					}
 				}
 			}
+			
 			for ( var i=0; i < markers.length;i++) {
 				markers[i].show(lore.anno.ui.getCreatorColour(rec.data.creator), annoStyle, true);
 				lore.anno.ui.genTipForAnnotation(rec.data, markers[i]);
@@ -2357,7 +2366,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 
 			im.each(function(){
 				// preload image scale factor
-				var scale = lore.anno.ui.updateImageData(this);
+				var scale = lore.anno.ui.updateImageData(this, doc);
 				
 				// attach image area select handle for image			
 				$(this).imgAreaSelect({
