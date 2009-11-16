@@ -434,13 +434,19 @@ try {
 		 */
 		updateVariationSplitter: function(url,title,show, callBack){
 			try {
+				
 				if (show) {
 					document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "false");
 					document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "false");
 				}
 				
 				var labelValue = title + ': ' + url;
-				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", labelValue);
+				if (labelValue.length > 50)
+					labelValue = labelValue.substring(0,50) + "...";
+					
+				var label = document.getElementById("oobAnnoVarContentLabel");
+				label.setAttribute("value", labelValue);
+
 				var iframe = document.getElementById("oobAnnoVarContent");
 		
 				// location hasn't changed so just call the callback

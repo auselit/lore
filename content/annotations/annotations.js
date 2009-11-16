@@ -565,7 +565,7 @@
 		for (var i = 0; i < annos.length; i++) {
 			var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
 			var anno = {};
-			// shallow copy
+			
 			for (var e in annoOrig) {
 				var val = annoOrig[e];
 				if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
@@ -611,19 +611,28 @@
 				
 			}
 			else {
-				rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-				'" rdf:resource="' + anno.resource +
-				/*anno.resource.replace(/&/g, '&amp;') +*/
-				'"/>';
-			}
-			// also send variant as annotates for backwards compatability with older
+				
+				if (annoOrig.variant) {
+					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
+					'" rdf:resource="' +
+					anno.original +	'"/>';
+					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
+					'" rdf:resource="' +
+					anno.variant +
+					'"/>';
+				}
+				else {
+					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
+					'" rdf:resource="' +
+					anno.resource +
+					'"/>';
+				}
+				
+				// also send variant as annotates for backwards compatability with older
 			// clients
-			if (annoOrig.variant) {
-				rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-				'" rdf:resource="' + anno.variant + 
-				/*anno.variant.replace(/&/g, '&amp;') +*/
-				'"/>';
+				
 			}
+			
 			if (annoOrig.lang) {
 				rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
 				anno.lang +
@@ -879,8 +888,13 @@
 	
 		var cback = function(anno, txt){
 			try {
-				if ( !anno.isReply && anno.resource != lore.global.util.getContentWindow(window).location)
+				var url = lore.global.util.getContentWindow(window).location;
+				if ( !anno.isReply && 
+				 ((!anno.variant && anno.resource != url) 
+			 ||  (anno.variant && anno.original != url &&
+			 	anno.variant != url)))
 					return;
+					
 				var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
 				if (r) {
 					r.data.body = txt || '';
@@ -1018,6 +1032,7 @@
 		var xmldoc = resp.responseXML;
 		if (xmldoc) {
 			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
+		
 		}
 		
 		lore.anno.annods.each(function(rec) {
@@ -1029,8 +1044,10 @@
 		
 		if (resultNodes.length > 0) {
 			var annotations = lore.anno.orderByDate(resultNodes,3);
-			
-			if ( annotations[0].resource != lore.global.util.getContentWindow(window).location)
+			var url = lore.global.util.getContentWindow(window).location;
+			if ( (!annotations[0].variant && annotations[0].resource != url) 
+			 ||  (annotations[0].variant && annotations[0].original != url &&
+			 	annotations[0].variant != url))
 					return;
 					
 			lore.anno.annods.loadData(annotations, true);
