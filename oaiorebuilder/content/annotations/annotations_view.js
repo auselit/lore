@@ -367,7 +367,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 					"<br />";
 					desc += lore.anno.ui.genDescription(annodata, true);
 					var d = lore.global.util.longDate(annodata.created, Date);
-					desc += "<br /><span style=\"font-size:smaller;color:#aaa>" + d + "</span></span><br />";
+					desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
 					var descDom = doc.createElement("span");
 					descDom.setAttribute("style", "font-family:sans-serif");
 					descDom.setAttribute("display", "none");
