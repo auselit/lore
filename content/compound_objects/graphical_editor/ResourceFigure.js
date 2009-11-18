@@ -180,7 +180,32 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 		this.metadataarea.innerHTML = "<ul><li class='mimeicon oreicon'>"
 				+ identifierURI + "</li></ul>";
 
-	} else if (mimetype && (mimetype.match("x-shockwave-flash") || mimetype.match("video"))){
+	} else if (mimetype && mimetype.match("application/xml")){
+        // if it is an annotation, add a stylesheet parameter
+        var annoStyleSheet = "danno_useStylesheet=/danno/stylesheets/annotea-to-html.xslt";
+        var displayUrl = theurl;
+        try{
+        // checks if it matches our annotation server
+        // TODO: allow multiple annotation servers to be specified in prefs and match any of these
+        if (theurl.match(lore.ore.annoServer)){ 
+            if (theurl.match("\\?") && !theurl.match("danno_useStylesheet")){
+                displayUrl = theurl + "&" + annoStyleSheet;
+            } else {
+                displayUrl = theurl + "?" + annoStyleSheet;
+            }
+            var domObj = this.iframearea.firstChild;
+            if (domObj) {
+                this.iframearea.removeChild(domObj);
+            }
+            if (this.originalHeight == -1) {
+                this.createPreview(displayUrl);
+            }
+        }
+        } catch (ex){
+            lore.debug.ore("problem displaying annotation",ex);
+        }
+    }
+    else if (mimetype && (mimetype.match("x-shockwave-flash") || mimetype.match("video"))){
         // use object tag to preview videos as plugins are disabled in secure iframe
         // TODO: check if it is from a trusted source eg youtube, google video, 
         // otherwise create link to watch in browser frame
@@ -427,7 +452,7 @@ lore.ore.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
 lore.ore.graph.ResourceFigure.prototype.unsetProperty = function(pid){
     delete this.metadataproperties[pid];
     if (pid == "dc:title_0"){
-        // TODO: store properties as arrays instead (this will leave gaps if there are lots of values for this property)
+        // TODO: #2 (refactor) : store properties as arrays instead (this will leave gaps if there are lots of values for this property)
  
             this.setTitle("Resource");
     }

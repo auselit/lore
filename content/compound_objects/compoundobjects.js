@@ -118,11 +118,13 @@ lore.ore.ui.loreWarning = function(/*String*/message){
  * @param {}rdfrepostype The type of the repository (eg sesame, fedora)
  * @param {}annoserver The annotation server access URL
  */
-lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype){
+lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*String*/annoserver){
     /** The compound object repository access URL */
 	lore.ore.reposURL = rdfrepos;
     /** The type of the compound object repository eg sesame, fedora */
 	lore.ore.reposType = rdfrepostype;
+    
+    lore.ore.annoServer = annoserver;
 };
 /**
  * Set the DC Creator for the resource map
