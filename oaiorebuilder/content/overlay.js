@@ -349,7 +349,7 @@ try {
 
 				loreoverlay.coView().setDcCreator(dccreator);
 				loreoverlay.coView().setrelonturl(relonturl);
-				loreoverlay.coView().setRepos(rdfrepos, rdfrepostype);
+				loreoverlay.coView().setRepos(rdfrepos, rdfrepostype, annoserver);
                
 				// hide or show related Ext UI depending on prefs
 				loreoverlay.coView().disableUIFeatures({
