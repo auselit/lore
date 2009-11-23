@@ -8,16 +8,16 @@
  * 
  */
 
-lore.ore.graph.ResourceFigure = function() {
+lore.ore.graph.ResourceFigure = function(initprops) {
 	this.cornerWidth = 15;
 	this.originalHeight = -1;
 	this.url = "";
 	this.scrollx = 0;
 	this.scrolly = 0;
-	this.metadataproperties = {
-		"resource_0" : this.url,
-		"dc:title_0" : ""
-	};
+	this.metadataproperties = initprops || {}
+    this.metadataproperties["resource_0"] = this.url;
+	this.metadataproperties["dc:title_0"] = "";
+    lore.debug.ore("ResourceFigure created with properties",this.metadataproperties);
 	this.cornerHeight = 14.5;
 	draw2d.Node.call(this);
 	this.setDimension(250, 150);
@@ -162,36 +162,37 @@ lore.ore.graph.ResourceFigure.prototype.setContent = function(urlparam) {
 	}
 	this.setResourceURL(theurl);
 	this.setMimeType(theurl);
+    this.setRdfType(theurl);
 };
 
 lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 	var theurl = this.url;
 	var mimetype = this.metadataproperties["dc:format_0"];
-	this.setIcon(theurl);
-	if (mimetype && mimetype.match("rdf")) {
-		// resource is most likely to be a compound object - don't display content
-		// TODO: allow annotations as contained objects as well
+    var rdftype = this.metadataproperties["rdf:type_0"];
+    this.setIcon(theurl);
+	if (mimetype && mimetype.match("rdf") && rdftype && rdftype.match("ResourceMap")) {
 		this.iframearea.innerHTML = "<div class='orelink' id='"
 				+ this.id
 				+ "-data'><a href='#' onclick=\"lore.ore.readRDF('"
 				+ theurl
-				+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</div>";
+				+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
 		var identifierURI = lore.ore.getOREIdentifier(theurl);
 		this.metadataarea.innerHTML = "<ul><li class='mimeicon oreicon'>"
 				+ identifierURI + "</li></ul>";
 
 	} else if (mimetype && mimetype.match("application/xml")){
         // if it is an annotation, add a stylesheet parameter
-        var annoStyleSheet = "danno_useStylesheet=/danno/stylesheets/annotea-to-html.xslt";
+        var stylesheet = "danno_useStylesheet="; // danno will use default stylesheet
         var displayUrl = theurl;
         try{
-        // checks if it matches our annotation server
-        // TODO: allow multiple annotation servers to be specified in prefs and match any of these
-        if (theurl.match(lore.ore.annoServer)){ 
-            if (theurl.match("\\?") && !theurl.match("danno_useStylesheet")){
-                displayUrl = theurl + "&" + annoStyleSheet;
+        if ((rdftype  && (rdftype.match(lore.constants.NAMESPACES["annotype"]) || 
+                    rdftype.match(lore.constants.NAMESPACES["annoreply"])))){ 
+                        
+            if (theurl.match("\\?")&& !theurl.match("danno_useStylesheet")){
+                displayUrl = theurl + "&" + stylesheet;
+                
             } else {
-                displayUrl = theurl + "?" + annoStyleSheet;
+                displayUrl = theurl + "?" + stylesheet;
             }
             var domObj = this.iframearea.firstChild;
             if (domObj) {
@@ -200,10 +201,15 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
             if (this.originalHeight == -1) {
                 this.createPreview(displayUrl);
             }
+        } else {
+            this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>XML document (no preview available)</p>";
         }
         } catch (ex){
             lore.debug.ore("problem displaying annotation",ex);
         }
+    } else if (mimetype && mimetype.match("pdf")) {
+        // Don't display PDFs in preview
+        this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>PDF document (no preview available)</p>";
     }
     else if (mimetype && (mimetype.match("x-shockwave-flash") || mimetype.match("video"))){
         // use object tag to preview videos as plugins are disabled in secure iframe
@@ -212,14 +218,12 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
         this.iframearea.innerHTML="<object name='" + theurl 
             + "-data' id='" + theurl + "-data' data='" 
             + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>"; 
-    }else if (mimetype && mimetype.match("image")) {
+    } else if (mimetype && mimetype.match("image")) {
     
 		this.iframearea.innerHTML = "<img id='" + theurl + "-data' src='"
 				+ theurl + "' style='width:auto;z-index:-9001' height='95%'>";
-	} else if (mimetype && !mimetype.match("pdf")) { // Don't display PDFs in
-														// preview
+	} else  { // All other resources displayed in secure iframe 
 		try {
-
 			var domObj = this.iframearea.firstChild;
 			if (domObj) {
 				this.iframearea.removeChild(domObj);
@@ -287,6 +291,16 @@ lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
 	   icon.className = this.icontype;
     }
 };
+lore.ore.graph.ResourceFigure.prototype.setRdfType = function(theurl){
+    if (!this.metadataproperties["rdf:type_0"]){
+        if (theurl.match(lore.ore.annoServer)){
+            // TODO: could parse xml to support any annotation server
+            //this.metadataproperties["rdf:type_0"] = "";
+            // How to determine the correct type? eg reply vs comment vs explanation
+        } 
+        // TODO: try to determine if it's a compound object
+    }
+}
 lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 	if (!this.metadataproperties["dc:format_0"]) { 
 		var req = new XMLHttpRequest();
@@ -418,13 +432,17 @@ lore.ore.graph.clearFields = function() {
  */
 lore.ore.graph.ResourceFigure.prototype.appendProperty = function(pname, pval){
     var counter = 0;
+    var oldrdftype = this.metadataproperties["rdf:type_0"];
     var prop = this.metadataproperties[pname + "_" + counter];
     while (prop) {
         counter = counter + 1;
         prop = this.metadataproperties[pname + "_" + counter];
     }
     this.metadataproperties[(pname + "_" + counter)] = pval;
-    //lore.debug.ore("ResourceFigure: added " + pname + "_" + counter + " = " + pval);
+    // if the rdf:type has changed, call show content (as it might be an annotation or compound object
+    if (oldrdftype != pval){
+        this.showContent();
+    }
 };
 /** 
  * Set (or add) a property with a specific id

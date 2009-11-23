@@ -63,7 +63,8 @@ lore.ore.ui.initGraphicalView = function() {
         lore.ore.graph.addFigureWithOpts({
             url: data.node.attributes.uri, 
             x: (e.xy[0] - lore.ore.graph.Graph.getAbsoluteX() + lore.ore.graph.Graph.getScrollLeft()),
-            y: (e.xy[1] - lore.ore.graph.Graph.getAbsoluteY() + lore.ore.graph.Graph.getScrollTop())
+            y: (e.xy[1] - lore.ore.graph.Graph.getAbsoluteY() + lore.ore.graph.Graph.getScrollTop()),
+            "props": {"rdf:type_0":lore.constants.RESOURCE_MAP}
         });
         return true;
     };
@@ -107,8 +108,8 @@ lore.ore.ui.initProperties = function() {
     
 	//lore.ore.ui.nodegrid.on("propertychange", lore.ore.handleNodePropertyChange);
     lore.ore.ui.nodegrid.on("beforeedit", function(e) {
-                // don't allow autocreated format field to be edited
-                if (e.record.id == "dc:format_0" || e.record.id == "namespace") {
+                // don't allow autocreated format or type field to be edited
+                if (e.record.id == "dc:format_0" || e.record.id == "rdf:type_0") {
                     e.cancel = true;
                 }
     });

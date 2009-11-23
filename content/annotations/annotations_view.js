@@ -932,7 +932,9 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 						text: "Add as node in compound object editor",
 						handler: function(evt){
 							try {
-								lore.global.ui.compoundObjectView.get(window.instanceId).addFigure(node.id);
+                                var rec = lore.global.util.findRecordById(lore.anno.annods, node.id);
+								lore.global.ui.compoundObjectView.get(window.instanceId).addFigure(node.id,
+                                    {"rdf:type_0":rec.data.type});
 							} catch (e ){
 								lore.debug.anno("Error adding node to compound editor:" + e, e);
 							}
@@ -1232,7 +1234,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 							items: [
 							{
 								xtype: 'displayfield',
-								value:'This page has embedded information, you can optionally select a field to attach the annotation to.',
+								value:'This page has embedded information, you can optionally select a field to attach the annotation to.'
 							},							
 							{
 								xtype: "combo",

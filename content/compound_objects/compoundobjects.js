@@ -266,8 +266,8 @@ lore.ore.onHide = function () {
 
 // alias used by uiglobal
 // TODO: #34 MVC: change this to addNode - make it add to model and get view to listen on model
-lore.ore.addFigure = function (/*URL*/theURL) {
-	lore.ore.graph.addFigure(theURL);
+lore.ore.addFigure = function (/*URL*/theURL, props) {
+	lore.ore.graph.addFigure(theURL, props);
 };
 
 /**
@@ -739,10 +739,15 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                         tagname = mprop.substring(0,midx);
                     }
                     //lore.debug.ore("2 serializing " + tagname, mpropval);
+                    if (tagname == "rdf:type"){ // resource
+                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
+                            + ltsymb + tagname + " rdf:resource=\"" + mpropval.replace(/"/g,"\\\"") 
+                            +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
+                    } else { // properties that have literal values
                     resourcerdf += ltsymb + rdfdescabout + figurl + closetag
                             + ltsymb + tagname + ">" + mpropval.replace(/"/g,"\\\"") + ltsymb + "/"
-                            + tagname + ">" + nlsymb + ltsymb + rdfdescclose
-                            + nlsymb;
+                            + tagname + ">" + nlsymb + ltsymb + rdfdescclose + nlsymb;
+                    }
                 }
             }
         }
@@ -1020,7 +1025,7 @@ lore.ore.attachREMEvents = function(node){
             node.contextmenu.add({
                 text : "Add as node in compound object editor",
                 handler : function(evt) {
-                    lore.ore.graph.addFigure(node.attributes.uri);
+                    lore.ore.graph.addFigure(node.attributes.uri,{"rdf:type_0":lore.constants.RESOURCE_MAP});
                 }
             });
             
@@ -1320,7 +1325,7 @@ lore.ore.graph.addFigureWithOpts = function(opts){
     var fig = null;
     var theURL = opts.url;
     if (theURL && !lore.ore.graph.lookup[theURL]) {
-        fig = new lore.ore.graph.ResourceFigure();
+        fig = new lore.ore.graph.ResourceFigure(opts.props);
         fig.setTitle("Resource");
         if (opts.w && opts.h){
             fig.setDimension(opts.w, opts.h);    
@@ -1353,11 +1358,12 @@ lore.ore.graph.addFigureWithOpts = function(opts){
  * @param {}
  *            theURL The URL of the resource to be represented by the node
  */
-lore.ore.graph.addFigure = function(theURL) {
+lore.ore.graph.addFigure = function(theURL,props) {
 	var fig = lore.ore.graph.addFigureWithOpts({
         "url": theURL, 
         "x": lore.ore.graph.dummylayoutx,
-        "y": lore.ore.graph.dummylayouty
+        "y": lore.ore.graph.dummylayouty,
+        "props": props
     });
     if (fig) {
         lore.ore.graph.nextXY();
