@@ -11,14 +11,13 @@
 	<xsl:param name="width" select="'100%'"/>
 	<xsl:param name="height" select="'100%'"/>
 	<xsl:variable name="mwidth" select="'150'"/>
-	
+
 	<xsl:output method="html" indent="yes"/>
 	<xsl:strip-space elements="*"/>
 
 	<xsl:template match="/">
 		<xsl:apply-templates select="//rdf:Description[ore:describes]"/>
 		<xsl:apply-templates select="//rdf:Description[@rdf:about]/ore:aggregates"/>
-		
 	</xsl:template>
 	
 	<xsl:template match="rdf:Description[ore:describes]">
@@ -29,8 +28,10 @@
 				<xsl:otherwise>Compound Object</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
+		<!-- style='background-color:black'-->
 		<div class="item" title="{$title} Slideshow">
-		<div style="text-align:left; padding:20px">
+		<div style="height:100%;text-align:left; padding:20px;"><!--font-size:130%;color:white"-->
+		<!--<img src="chrome://lore/skin/BWlogo.gif" style="float:left;padding:5px"></img>-->
 		<xsl:for-each select="*">
 		<xsl:if test="text() and not (local-name() = 'creator' or local-name() = 'modified' or local-name() = 'created')">
 		<div style="padding-top:1em;">
@@ -39,8 +40,8 @@
 		</div>
 		</xsl:if>	
 		</xsl:for-each>
-		
-		<div style="color:#51666b;padding-top:2em;font-size:smaller">This compound object was created by <xsl:value-of select="dc:creator"/>
+		<!-- color:#297711 -->
+		<div style="color:#51666b;padding-top:2em;font-size:60%">This compound object was created by <xsl:value-of select="dc:creator"/>
 		on <xsl:value-of select="dcterms:created"/> 
 		<xsl:if test="dcterms:modified"> and last updated on <xsl:value-of select="dcterms:modified"/></xsl:if>.</div>
 		</div>
@@ -48,7 +49,7 @@
 	</xsl:template>
 	
 	<!--  display each aggregated resource -->
-	<xsl:template match="rdf:Description[@rdf:about]/ore:aggregates">
+	<xsl:template match="rdf:Description[contains(@rdf:about,'#aggregation')]/ore:aggregates">
 			<xsl:variable name="about" select="@rdf:resource"/>
 			
 			<xsl:variable name="title" select="//rdf:Description[@rdf:about = $about]/dc:title[1]"/>
@@ -92,11 +93,22 @@
         	<xsl:when test="contains($format,'image')">
     			<img src="{$about}" alt="{$about}" style="max-height:{$height}"/> 
     		</xsl:when>
-    		<xsl:when test="contains($format,'application/rdf+xml')">
-    			<!--  most likely another compound object -->
-    			
-    			<p style='color:#51666b;margin-top:3em'>This resource is an RDF/XML document. No preview available</p> 
-    			
+    		<xsl:when test="contains($format, 'application/xml') and //rdf:Description[@rdf:about=$about and (contains(rdf:type/@rdf:resource,'http://www.w3.org/2000/10/annotation') or contains(rdf:type/@rdf:resource,'http://www.w3.org/2001/12/replyType'))]">
+    			<object data="{$about}?danno_useStylesheet="  height="{$height}" width="{($width - $mwidth) - 10}"></object>
+    		</xsl:when>
+    		<xsl:when test="contains($format,'application/rdf+xml') and //rdf:Description[@rdf:about=$about and contains(rdf:type/@rdf:resource,'ResourceMap')]">
+    			<!--  and rdf:type is compound object : show link to open in lore -->
+    			<p style='color:#51666b;margin-top:3em'>
+    			<a href='#'>
+    			 <xsl:attribute name="onclick">
+    			 <xsl:text>lore.ore.readRDF("</xsl:text><xsl:value-of select="$about"/><xsl:text>");</xsl:text>
+    			 </xsl:attribute>
+    			 <xsl:text>Compound Object:</xsl:text> 
+				 <br />
+    			 <img src='../../skin/icons/action_go.gif'/>
+    			 <xsl:text> Load in LORE</xsl:text>
+    			 </a>
+    			 </p> 
     		</xsl:when>
     		<xsl:otherwise>
     			<!--  minus 10 to account for 5px padding on each side of itemdesc -->
