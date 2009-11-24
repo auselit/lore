@@ -267,7 +267,8 @@ lore.ore.ui.initExtComponents = function() {
         lore.ore.ui.carousel = new Ext.ux.Carousel("trailcarousel", {
             itemSelector: "div.item",
             showPlayButton: true,
-            transitionType: "fade"
+            transitionType: "fade",
+            interval: 7
         });
     }
     var exploretab = Ext.getCmp("remexploreview");
