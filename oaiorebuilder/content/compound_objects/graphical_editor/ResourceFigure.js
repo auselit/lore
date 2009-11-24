@@ -175,16 +175,20 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 	var mimetype = this.metadataproperties["dc:format_0"];
     var rdftype = this.metadataproperties["rdf:type_0"];
     this.setIcon(theurl);
-	if (mimetype && mimetype.match("rdf") && rdftype && rdftype.match("ResourceMap")) {
-		this.iframearea.innerHTML = "<div class='orelink' id='"
-				+ this.id
-				+ "-data'><a href='#' onclick=\"lore.ore.readRDF('"
-				+ theurl
-				+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
-		var identifierURI = lore.ore.getOREIdentifier(theurl);
-		this.metadataarea.innerHTML = "<ul><li class='mimeicon oreicon'>"
-				+ identifierURI + "</li></ul>";
-
+	if (mimetype && mimetype.match("rdf")){
+        if (rdftype && rdftype.match("ResourceMap")) {
+    
+			this.iframearea.innerHTML = "<div class='orelink' id='"
+					+ this.id
+					+ "-data'><a href='#' onclick=\"lore.ore.readRDF('"
+					+ theurl
+					+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
+			var identifierURI = lore.ore.getOREIdentifier(theurl);
+			this.metadataarea.innerHTML = "<ul><li class='mimeicon oreicon'>"
+					+ identifierURI + "</li></ul>";
+        } else {
+            this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>RDF document (no preview available)</p>";
+        }
 	} else if (mimetype && mimetype.match("application/xml")){
         // if it is an annotation, add a stylesheet parameter
         var stylesheet = "danno_useStylesheet="; // danno will use default stylesheet
