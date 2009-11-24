@@ -150,6 +150,10 @@ lore.ore.advancedSearch = function(){
 };
 
 lore.ore.search = function (searchuri, searchpred, searchval){
+    if (!searchuri && !searchpred && !searchval){
+        // blank search returns all compound objects for now (not scalable!)
+        searchval = lore.constants.RESOURCE_MAP;
+    }
     try{
     // search terms to display in tree
     lore.global.ui.clearTree(Ext.getCmp("searchtree").getRootNode());
