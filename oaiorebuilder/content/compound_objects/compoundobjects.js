@@ -428,10 +428,15 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
         newsummary += "<tr valign='top'><td width='20%'><b>Title:</b></td><td>"
                 + title + "</td></tr>";
     }
-    var desc = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+    var desc = lore.ore.getPropertyValue("dc:description",lore.ore.ui.grid);
     if (desc) {
         newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='80%'>"
                 + desc + "</td></tr>";
+    }
+    var abst = lore.ore.getPropertyValue("dcterms:abstract",lore.ore.ui.grid);
+    if (abst) {
+        newsummary += "<tr valign='top'><td><b>Abstract:</b></td><td width='80%'>"
+            + abst + "</td></tr>";
     }
     newsummary += "</table>";
     newsummary += "<div style='padding-top:1em'><p><b>List of contents:</b></p><ul>";
@@ -545,6 +550,7 @@ lore.ore.CompObjListing = function(/*Node*/result){
         } else {
             node = bindings[j].getElementsByTagName('literal');
             nodeVal = lore.global.util.safeGetFirstChildValue(node);
+            lore.debug.ore("in compobjlisting " + nodeVal,node);
             if (attr.nodeValue == 't' && nodeVal){ //title
                 this.title = nodeVal;
             } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
@@ -622,9 +628,8 @@ lore.ore.createRDF = function(/*boolean*/escape) {
      * than symbol nlsymb New line symbol returns The RDF/XML representation of
      * the property
      */
-    var serialise_property = function(propname, properties, ltsymb, nlsymb) {
+    var serialise_property = function(propname, propval, ltsymb, nlsymb) {
         var result = "";
-        var propval = lore.ore.getPropertyValue(propname, properties);//properties[propname];
         if (propval && propval != '') {
             result = ltsymb + propname + ">";
             if (nlsymb == "<br/>" && propval) {
@@ -708,12 +713,13 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                 + lore.constants.NAMESPACES["xsd"] + 'date">'
                 + created + ltsymb + "/dcterms:created>" + nlsymb;
     }
-    for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
-        var theprop = lore.ore.METADATA_PROPS[i];
-        if (theprop != 'dcterms:modified' && theprop != 'dcterms:created') {
-            rdfxml += serialise_property(theprop, lore.ore.ui.grid, ltsymb, nlsymb); 
-        }
-    }
+    // serialize compound object properties
+    lore.ore.ui.grid.store.each(function (rec){
+       var propname = rec.id.substring(0,rec.id.indexOf("_"));
+       if (propname != 'dcterms:modified' && propname != 'dcterms:created' && propname != 'rdf:about'){
+        rdfxml += serialise_property(propname, rec.data.value, ltsymb, nlsymb);
+       }
+    });
     rdfxml += ltsymb + rdfdescclose + nlsymb;
 
     // create RDF for aggregation
@@ -839,7 +845,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.ore.loadedRDF = jQuery.rdf({databank: databank});
         
         // Display the properties for the compound object
-	    var remQuery = lore.ore.loadedRDF.where('?rem rdf:type <' + lore.constants.RESOURCE_MAP + '>');
+	    var remQuery = lore.ore.loadedRDF.where('?aggre rdf:type ore:Aggregation').where('?rem ore:describes ?aggre');
         var remurl, res = remQuery.get(0);
         if (res){
 	       remurl = res.rem.value.toString();
