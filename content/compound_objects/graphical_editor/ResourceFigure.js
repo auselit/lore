@@ -10,15 +10,20 @@
 
 lore.ore.graph.ResourceFigure = function(initprops) {
 	this.cornerWidth = 15;
-	this.originalHeight = -1;
-	this.url = "";
+	this.cornerHeight = 14.5;
+    this.originalHeight = -1;
 	this.scrollx = 0;
 	this.scrolly = 0;
-	this.metadataproperties = initprops || {}
-    this.metadataproperties["resource_0"] = this.url;
-	this.metadataproperties["dc:title_0"] = "";
-    lore.debug.ore("ResourceFigure created with properties",this.metadataproperties);
-	this.cornerHeight = 14.5;
+    this.metadataproperties = initprops || {}
+    if(!this.metadataproperties["resource_0"]){
+        this.metadataproperties["resource_0"] = "";
+    }
+    
+    if (!this.metadataproperties["dc:title_0"]){
+	   this.metadataproperties["dc:title_0"] = "";
+    }
+    this.url = this.metadataproperties["resource_0"];
+	
 	draw2d.Node.call(this);
 	this.setDimension(250, 150);
 };
