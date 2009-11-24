@@ -28,22 +28,61 @@
 				<xsl:otherwise>Compound Object</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-		<!-- style='background-color:black'-->
 		<div class="item" title="{$title} Slideshow">
-		<div style="height:100%;text-align:left; padding:20px;"><!--font-size:130%;color:white"-->
-		<!--<img src="chrome://lore/skin/BWlogo.gif" style="float:left;padding:5px"></img>-->
-		<xsl:for-each select="*">
-		<xsl:if test="text() and not (local-name() = 'creator' or local-name() = 'modified' or local-name() = 'created')">
-		<div style="padding-top:1em;">
-		<span style="font-weight:bold"><xsl:call-template name="capitalize-first"><xsl:with-param name="str" select="local-name()"/></xsl:call-template>: </span>
-		<xsl:value-of select="."/>
-		</div>
-		</xsl:if>	
+		<div style="height:100%;text-align:left; padding:20px;">
+		
+		<!-- Title, creator, date, contributor, abstract, source, coverage, rights, then the others  -->
+
+		<div style="color:#cc0000;font-weight:bold;font-size:120%;padding-bottom:0.5em"><xsl:value-of select="$title"/></div>
+		<table style="width:100%;font-size:80%;color:#465458;border-top:1px solid #cc0000;padding-top:0.5em;line-height:1.3em">
+		<tr style="vertical-align:top">
+		<td colspan="2">Created by <xsl:value-of select="dc:creator"/> on <xsl:value-of select="dcterms:created"/> 
+		<xsl:if test="dcterms:modified">, last updated on <xsl:value-of select="dcterms:modified"/></xsl:if>
+		</td>
+		</tr>
+		<xsl:if test="dc:contributor">
+		<tr style="vertical-align:top">
+		<td>
+			<xsl:text>Contributor</xsl:text>
+			<xsl:if test="count(dc:contributor) &gt; 1">s</xsl:if>
+			<xsl:text>: </xsl:text>
+		</td>
+		<td style="width:90%">
+			<xsl:for-each select="dc:contributor">
+				<xsl:value-of select="."/>
+				<xsl:if test="position() != last()">, </xsl:if>
+			</xsl:for-each>
+		</td></tr>
+		</xsl:if>
+		<xsl:for-each select="dcterms:abstract">
+		<tr style="vertical-align:top">
+		<td>Abstract: </td><td style="width:90%"><xsl:value-of select="."/></td>
+		</tr>
 		</xsl:for-each>
-		<!-- color:#297711 -->
-		<div style="color:#51666b;padding-top:2em;font-size:60%">This compound object was created by <xsl:value-of select="dc:creator"/>
-		on <xsl:value-of select="dcterms:created"/> 
-		<xsl:if test="dcterms:modified"> and last updated on <xsl:value-of select="dcterms:modified"/></xsl:if>.</div>
+		<xsl:for-each select="dc:source">
+		<tr style="vertical-align:top">
+		<td>Source: </td><td style="width:90%"><xsl:value-of select="."/></td>
+		</tr>
+		</xsl:for-each>
+		<xsl:for-each select="dc:coverage">
+		<tr style="vertical-align:top">
+		<td>Coverage: </td><td style="width:90%"><xsl:value-of select="."/></td>
+		</tr>
+		</xsl:for-each>
+		<xsl:for-each select="dc:rights">
+		<tr style="vertical-align:top">
+		<td>Rights: </td><td style="width:90%"><xsl:value-of select="."/></td>
+		</tr>
+		</xsl:for-each>
+		<!--  all other properties including those from the domain ontology -->
+		<xsl:for-each select="*[text() and not (local-name() = 'source' or local-name() = 'rights' or local-name() = 'coverage' or local-name() = 'abstract' or local-name() = 'contributor' or local-name() = 'title' or local-name() = 'creator' or local-name() = 'modified' or local-name() = 'created')]">
+			<tr style="vertical-align:top">
+			<td><xsl:call-template name="capitalize-first"><xsl:with-param name="str" select="local-name()"/></xsl:call-template>: </td>
+			<td style="width:90%"><xsl:value-of select="."/></td>
+		</tr>
+		
+		</xsl:for-each>
+		</table>
 		</div>
 		</div>
 	</xsl:template>
