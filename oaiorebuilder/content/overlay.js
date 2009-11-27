@@ -204,6 +204,8 @@ try {
 	               toolsMenuItem.removeAttribute("checked");
 	                this.setAnnotationsVisibility(false);
 	                this.setCompoundObjectsVisibility(false); 
+					if ( this.variationContentWindowIsVisible())
+						this.hideVariationSplitter();
 	            } else {
 	               toolsMenuItem.setAttribute("checked", "true");
 	               this.setAnnotationsVisibility(true);
