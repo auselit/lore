@@ -28,9 +28,6 @@ lore.ore.graph.ContextmenuConnection.prototype=new draw2d.Connection;
 lore.ore.graph.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype, symmetric){
 	this.edgetype=etype;
 	this.edgens=enamespace;
-    // TODO: don't do this if the function was called on change of property
-    // FIXME
-	//lore.ore.ui.nodegrid.setSource({"Relationship":etype, "Schema": enamespace});
 	this.label.setText(etype);
     try{
     if (symmetric){
