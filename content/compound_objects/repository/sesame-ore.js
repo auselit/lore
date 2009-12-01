@@ -21,18 +21,17 @@
 /* Compound object functions for Sesame 2 repositories */
 lore.ore.sesame = {};
 
-//getRepositoryList
+
 /**
- * 
+ * Gets compound objects that match the parameters
  * @param {} matchuri The URI to match 
  * @param {} matchpred The predicate to match
  * @param {} matchval The value to search for
- * @param {Boolean} isSearchQuery Whether this is a search or browse query
+ * @param {Boolean} isSearchQuery Whether this is a search query (otherwise it is a browse query)
  */
 lore.ore.sesame.getCompoundObjects = function(matchuri, matchpred, matchval, isSearchQuery){
-    // TODO refactor so that this can be either a browse or search query
     try {
-       // query for matches of both www and non-www version of URL
+       // browse matches both www and non-www version of URL
        var escapedURL = "";
        var altURL = "";
        if (matchuri){
@@ -132,7 +131,7 @@ lore.ore.sesame.saveCompoundObject = function (remid,therdf){
        xmlhttp2.onreadystatechange = function() {
             if (xmlhttp2.readyState == 4) {
                 if (xmlhttp2.status == 204) {
-                    // TODO: add to tree
+                    // TODO: #124 add to tree
                     lore.debug.ore("sesame: RDF saved",xmlhttp2);
                     lore.ore.ui.loreInfo(remid + " saved to " + lore.ore.reposURL);
                 } else {
@@ -175,4 +174,3 @@ lore.ore.sesame.deleteCompoundObject = function(remid){
     }        
 };
  
- //sparqlQuery
