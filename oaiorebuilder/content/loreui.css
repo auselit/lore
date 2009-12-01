@@ -104,6 +104,11 @@
 	list-style-image: url(chrome://lore/skin/icons/oaioreicon-sm.png); padding-top:2px;
 }
 
+.rdficon {
+	background-image: url(chrome://lore/skin/icons/rdf.png) !important;
+	
+}
+
 /* Source tree styles */
 
 /* suppress icons for top level tree nodes */
@@ -272,6 +277,8 @@
 .annochanged {
 	background-color: #ffcccc !important;
 }
+
+
 .x-grid3-cell-inner {
 	height: 1.2em;
 }
@@ -283,11 +290,12 @@
 #delannobtn .x-btn-center .x-btn-text {
 	color:red;
 }
-#updctxtbtn, #updrctxtbtn {
+#updctxtbtn, #updrctxtbtn, #addmetabtn, #remmetabtn, #chgmetactxbtn {
     width:70px !important;
     margin-left:auto;margin-right:13px;
     margin-bottom:3px;margin-top:3px;
 }
+
 .x-combo-list, .x-combo-list-inner {min-width:200px;}
 
 /* Annotation timeline styles */

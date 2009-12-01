@@ -61,12 +61,12 @@
                                         {name: 'variationagent'},
                                         {name: 'variationplace'},
                                         {name: 'variationdate'},
-                                        {name: 'tags'}
+                                        {name: 'tags'},
+										{name: 'meta'}
                                         ];
 										
 		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
-		new Ext.data.JsonStore({
-									fields: fields,
+		new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								}), theURL);
 		
@@ -74,6 +74,15 @@
 									fields: fields,
 									data: {}
 								});
+		var mfields = [  {name: 'type'}, {name: 'prop'}, {name: 'value'}];
+		/*lore.anno.annopagemetads = new Ext.data.JsonStore( {
+			fields: mfields,
+			data: {} 
+		})	
+		lore.anno.annousermetads = new Ext.data.JsonStore( {
+			fields: mfields,
+			data: {} 
+		})	*/
 								
 		 lore.anno.annods.on("load",  lore.anno.onDSLoad);
 		 lore.anno.annods.on("remove", lore.anno.onDSRemove);
@@ -229,14 +238,56 @@
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
 			this.modified = lore.global.util.safeGetFirstChildValue(node);
 			
+			this.meta = { context: null, fields: []};
 			if (this.isReply) {
 				this.context = '';
 			}
 			else {
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'context');
 				this.context = lore.global.util.safeGetFirstChildValue(node);
+				//TODO: change namespace
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
+				if (node && node.length > 0) {
+					this.meta.context = lore.global.util.safeGetFirstChildValue(node);
+					lore.debug.anno(this.meta.context, this.meta.context);
+					this.meta.context = this.meta.context.split('\n');
+					lore.debug.anno(this.meta.context, this.meta.context);
+
+					
+				}
+				/*node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta');
+				if (node && node.length > 0) {
+					lore.debug.anno(node.childNodes, node.childNodes);
+					if (node.childNodes) {
+						for (var i = 0; i < node.childNodes.length; i++) {
+						
+							var n = node.childNodes[i];
+							lore.debug.anno(n, n);
+							var type = n.getAttribute("typeof");
+							lore.debug.anno(type, type);
+							if (n.childNodes) {
+								for (var j = 0; j < n.childNodes.length; j++) {
+									var m = n.childNodes[i];
+									lore.debug.anno(m, m);
+									var prop = m.nodeName;
+									var value = lore.global.util.safeGetFirstChildValue(m);
+									lore.debug.anno(prop + ": " + value, {
+										p: prop,
+										v: value
+									});
+									this.meta.fields.push({
+										type: type,
+										prop: prop,
+										value: value
+									});
+								}
+							}
+						}
+					}
+				}*/
 			}
 			
+						
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'creator');
 			this.creator = lore.global.util.safeGetFirstChildValue(node, 'anon');
 			
@@ -392,6 +443,10 @@
 			type: lore.constants.NAMESPACES["annotype"] + "Comment",
 			lang: "en",
 			isReply: (parent ? true: null),
+			meta: {
+				context: null,
+				fields: []
+			}
 		};
 		
 		lore.anno.annods.loadData([anno], true);
@@ -660,8 +715,19 @@
 			}
 			if (annoOrig.context) {
 				rdfxml += '<context xmlns="' + lore.constants.NAMESPACES["annotea"] + '">' +
-				anno.context +
+				//TODO: need to have url passed in as opposed to checking the window object directly
+				lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.context +
 				'</context>';
+			}
+			
+			if ( annoOrig.meta.context) {
+				// TODO: merge with the current context, as a multi-part xpointer or perhaps have another
+				// line in the context with the meta-context, depending on whether that breaks dannotate
+				rdfxml += '<meta-context xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
+				for ( var i =0; i < anno.meta.context.length; i++ ) {
+					rdfxml += lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.meta.context[i] + "\n";
+				}
+				rdfxml += '</meta-context>';
 			}
 			if (annoOrig.type ==
 			lore.constants.NAMESPACES["vanno"] +
@@ -749,6 +815,21 @@
 					}
 				}
 			}
+
+			/*if (annoOrig.meta.fields.length > 0) {
+				rdfxml += '<meta xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
+				
+				//var cw = lore.global.util.getContentWindow(window);
+				//var url = '&lt;' + ('http://www.austlit.edu.au' + cw.location.pathname +	cw.location.search + '#me').replace(/&/g, '&amp;') + '&gt;';
+						
+				Ext.each(anno.meta.fields, function (item, index, all) {
+					var prop = "&lt;" + this.prop + "&gt;";
+					var type = "&lt;" + this.type + "&gt;";
+					rdfxml += type + " " + prop + " " +  this.value + " .\n";
+				});
+				rdfxml += '</meta>';
+			}*/
+
 			rdfxml += '</rdf:Description>';
 		}
 		rdfxml += '</rdf:RDF>';
