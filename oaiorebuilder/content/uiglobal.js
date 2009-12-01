@@ -54,14 +54,18 @@
 	ui.reset = function (win, instId ) {
 		try {
 			ui.compoundObjectView.unregisterView();
+        } catch (e1) {
+            debug.ui ("error unregistering coview: " + e1,e1);
+        }
+        try {    
 			ui.annotationView.unregisterView();
-			
-			
+        } catch (e2) {
+            debug.ui("error unregistering annoview: " + e2,e2);
+        }
+        try {
 			ui.load(win, instId, true);
-		//win.annographiframe.location.reload(true);
-		//win.graphiframe.location.reload(true);
-		} catch (e ) {
-			debug.ui ("error resetting: " + e,e);
+		} catch (e3) {
+			debug.ui ("error loading ui on reset: " + e3,e3);
 		}
 	}
 	/**
