@@ -97,6 +97,24 @@ util = {
 		return wrapper;
 	},
 	
+	ELFHash: function(str) {
+     var hash = 0;
+     var x    = 0;
+
+      for(var i = 0; i < str.length; i++)
+      {
+         hash = (hash << 4) + str.charCodeAt(i);
+
+         if((x = hash & 0xF0000000) != 0)
+         {
+            hash ^= (x >> 24);
+         }
+         hash &= ~x;
+      }
+
+      return hash;
+   },
+   
 	trim : function (str) {
 		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	},
@@ -377,8 +395,16 @@ util = {
      * @param {} xp
      */
     normalizeXPointer : function(xp) {
-        var idx = xp.indexOf('#');
-        return xp.substring(idx + 1);
+	if (typeof(xp) == 'string') {
+		var idx = xp.indexOf('#');
+		return xp.substring(idx + 1);
+	}
+
+	for ( var i =0; i < xp.length;i++) {
+		xp[i] = xp[i].substring(xp[i].indexOf("#")+1);
+	}
+	return xp;
+
     },
     
     /**
@@ -637,10 +663,14 @@ util = {
      */
     getNodeForXPath : function(xp, targetDocument) {
 		//return targetDocument.evaluate( xp, targetDocument, null, win.XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
+		if ( xp.indexOf("#") != -1)
+			xp = xp.substring(xp.indexOf("#")+1);
 		return targetDocument.evaluate( xp, targetDocument, null, 0, null ).iterateNext();
     },
 	
 	getNodeForXPointer: function(xp, targetDocument) {
+		if ( xp.indexOf("#") != -1)
+			xp = xp.substring(xp.indexOf("#")+1);
 		return m_xps.parseXPointerToNode(xp, targetDocument);
 	},
 	
@@ -681,6 +711,69 @@ util = {
 			 
 			debug.ui("The image region Xpointer is: " + xp);
 			return xp;	
+	},
+	
+	tripleToStringHash: function( triple ) {
+		return util.ELFHash(triple.subject.toString() + "_" + triple.property.toString() + "_" + triple.object.value.toString());
+	},
+	
+	  
+	
+	getMetaSelection: function(triple) {
+		var stringHash = '';
+		var sel = [];
+		try {
+			stringHash = util.tripleToStringHash(triple);
+			sel.push(stringHash);
+		} catch (e) {
+			debug.anno("Error occurred generating string hash for triple: " +e ,e );
+		}
+		
+		if (!triple.source) {
+			debug.ui ( "Couldn't find dom context", triple);
+			return sel;
+		}
+		
+		try {
+			var xp = "xpointer(" + m_xps.xptrCreator.create_child_XPointer(triple.source) + ")";
+			sel.push(xp);
+		} catch (e) {
+			debug.anno("Error occurred generating xpointer for tirple:  " +e, e);
+		}
+		return sel;
+	},
+	
+	stringHashToTriple: function( srcHash, triples ) {
+		if ( srcHash.indexOf("#")!=-1)
+			srcHash = srcHash.substring(srcHash.indexOf("#")+1); 
+		debug.anno(srcHash);
+		for (var i = 0; i < triples.length; i++) {
+			
+			var hash = util.tripleToStringHash(triples[i]) + '';
+			debug.anno("B: " + hash);
+			if (srcHash == hash) {
+				debug.anno('oh?', triples[i].source);
+				return triples[i];
+			}
+		}
+		return null;
+	},
+	
+	getSelectionForHash: function( srcHash, triples ){
+		try {
+			var triple = util.stringHashToTriple(srcHash, triples).source;
+			if ( triple ) {
+				
+				var r = triple.ownerDocument.createRange();
+				r.selectNode(triple);
+				return r;
+			}
+			return null;
+		} catch (e) {
+			debug.anno(e,e);
+		}
+		
+		return null;
 	},
 	
 	isXPointerImageRange: function ( xp) {

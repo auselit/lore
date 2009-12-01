@@ -406,7 +406,9 @@ loreuieditor = function (store ) {
 							hiddenName: 'type',
 							store: new Ext.data.SimpleStore({
 								fields: ['typename', 'qtype'],
-								data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ], ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"]]
+								data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ], 
+								['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"],
+								['Semantic',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#SemanticAnnotation" ]]
 							}),
 							valueField: 'qtype',
 							displayField: 'typename',
@@ -458,7 +460,7 @@ loreuieditor = function (store ) {
 								border: 'none',
 								'font-size': '90%'
 							},
-							labelStyle: 'font-size:90%;'
+							//labelStyle: 'font-size:90%;'
 						
 						}, {
 							fieldLabel: 'Context',
@@ -472,8 +474,7 @@ loreuieditor = function (store ) {
 								padding: 0,
 								margin: 0
 							}
-						}, 
-						
+						},  
 						 {
 							fieldLabel: 'Original resource',
 							name: 'original',
@@ -506,7 +507,7 @@ loreuieditor = function (store ) {
 								border: 'none',
 								'font-size': '90%'
 							},
-							labelStyle: 'font-size:90%;'
+							//labelStyle: 'font-size:90%;'
 						}, {
 							xtype:"button",
 							text: 'Update Selection',
@@ -524,7 +525,7 @@ loreuieditor = function (store ) {
 								border: 'none',
 								'font-size': '90%'
 							},
-							labelStyle: 'font-size:90%'
+							//labelStyle: 'font-size:90%'
 						}, {
 							fieldLabel: 'Variant Context Xpointer',
 							name: 'variantcontext',
@@ -546,7 +547,7 @@ loreuieditor = function (store ) {
 								border: 'none',
 								'font-size': '90%'
 							},
-							labelStyle: 'font-size:90%'
+						//	labelStyle: 'font-size:90%'
 						},{
 							xtype:"button",
 							text: 'Update Variant Selection',
@@ -554,7 +555,161 @@ loreuieditor = function (store ) {
 							id: 'updrctxtbtn',
 							hidden: true,
 							tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
-						}, 
+						},
+									{
+									fieldLabel : 'Annotates Fact',
+									name: 'metares',
+									id: 'metares',
+									readOnly: true,
+									hideParent: true,
+									style: {
+										background: 'none',
+										border: 'none',
+										'font-size':'90%'
+									},
+									//labelStyle: 'font-size:90%;'
+								},
+								
+								
+								{
+									xtype: "button",
+									text: 'Change Metadata Selection',
+									fieldLabel: '',
+									id: 'chgmetactxbtn',
+									tooltip: 'Set the metadata context of the annotation to the field chosen from popup window',
+									handler: lore.anno.ui.handleChangeMetaSelection
+								},
+							/*	{
+									fieldLabel: 'Facts From Page',
+									name: 'metapagelbl',
+									readOnly: true,
+									style: {
+										background: 'none',
+										border: 'none',
+										'font-size':'90%'
+									}
+								},
+								{
+									xtype: "grid",
+									
+									id: 'metapagegrid',
+									name: 'metapagegrid',
+									store: lore.anno.annopagemetads,
+									height: 200,
+									forceFit: true,
+							 		colModel: new Ext.grid.ColumnModel( {
+									// grid columns
+									defaults: {
+										sortable: true
+									},
+									columns: [
+									{
+										id: 'type', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
+										header: 'Type',
+										dataIndex: 'type',
+										width:50,
+									 
+									}, 
+									{
+										header: "Property",
+										dataIndex: "prop"
+								 	}, 
+									{
+										header: "value",
+										dataIndex: 'value',
+									}, 
+								]
+									}),
+						},
+						{
+									fieldLabel: 'Facts from Users',
+									name: 'metauserlbl',
+									readOnly: true,
+									style: {
+										background: 'none',
+										border: 'none',
+										'font-size':'90%'
+									}
+								},
+								
+								{
+									xtype: "editorgrid",
+									
+									id: 'metausergrid',
+									name: 'metausergrid',
+									store: lore.anno.annousermetads,
+									//deferRowRender: false,
+									height: 200,
+									forceFit: true,
+							
+							 		colModel: new Ext.grid.ColumnModel( {
+									// grid columns
+									defaults: {
+										sortable: true
+									},
+									columns: [
+									{
+										id: 'type', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
+										header: 'Type',
+										dataIndex: 'type',
+										width:50,
+										editor: {
+											xtype: 'combo',
+											store: new Ext.data.ArrayStore( {
+												id: '',
+												fields: ['type', 'displayType'],
+												data: [['http://austlit.edu.au/owl/austlit.owl#Agent', 'Agent'], ['http://austlit.edu.au/owl/austlit.owl#Work','Work']]
+											}),
+											mode: 'local', 
+											valueField: 'type',
+											displayField: 'displayType',
+											triggerAction: 'all'
+										},
+										renderer: function (value) {
+											return value.indexOf("#")!=-1 ? value.substring(value.indexOf("#")+1):value; 
+										}
+									}, 
+									{
+										header: "Property",
+										dataIndex: 'prop',
+										editor:{
+											xtype: 'combo',
+											store: new Ext.data.ArrayStore( {
+												id: '',
+												fields: ['prop', 'property'],
+												data: []
+											}),
+											mode: 'local', 
+											valueField: 'prop',
+											displayField: 'property',
+											triggerAction: 'all'
+										}
+									}, 
+									{
+										header: "value",
+										dataIndex: 'value',
+										editor: new Ext.form.TextField({ allowBlank:false})
+									}, 
+								]
+									}),
+						},
+						 
+						{
+							xtype:"button",
+							text: 'Add',
+							fieldLabel: '',
+							id: 'addmetabtn',
+							tooltip: 'Add metadata about this page to the annotation',
+							
+						},
+						{
+							xtype:"button",
+							text: 'Remove',
+							id: 'remmetabtn',
+							tooltip: 'Remove user created metadata about this page from the annotation',
+							
+						},
+						*/
 						{
 							id: 'tagselector',
 							xtype: 'superboxselect',
@@ -674,9 +829,25 @@ loreuiannotreeandeditor = function (store) {
 								typeAhead: true,
 								emptyText: "Sort by...",
 								triggerAction: 'all',
-								forceSelection: true,
 								mode: 'local',
+								forceSelection: true,
 								selectOnFocus: true
+							},
+							{
+								xtype: 'button',
+								id: 'gleanrdfbtn',
+								iconCls: 'rdficon',
+								tooltip: 'Extract rdfa from the page',
+								handler : function (){
+									try {
+										lore.anno.ui.gleanRDFa();
+										if (lore.anno.ui.rdfa && (lore.anno.ui.rdfa.work || lore.anno.ui.rdfa.agent)) {
+											lore.anno.ui.loreInfo("RDFa extracted from current page.");
+										}
+									} catch (e) {
+										lore.debug.anno(e,e);
+									}
+				        		}
 							}
 						]	
 					}
@@ -990,6 +1161,8 @@ lore.anno.ui.initExtComponents = function(){
 						}
         	}
     	});
+	 
+		
 		lore.anno.ui.views.on("contextmenu", function(tabpanel, tab, e){
         	lore.anno.ui.views.contextmenu.showAt(e.xy);
     	});
@@ -1003,7 +1176,6 @@ lore.anno.ui.initExtComponents = function(){
 		
 		Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleAnnotationSelection);
 		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditAnnotation);
-			
 		Ext.getCmp("sorttypecombo").on("select", lore.anno.ui.handleSortTypeChange);
 		
 		lore.anno.ui.formpanel = Ext.getCmp("annotationslistform")
@@ -1011,6 +1183,10 @@ lore.anno.ui.initExtComponents = function(){
 		lore.anno.ui.formpanel.hide();
 		lore.anno.ui.sformpanel = Ext.getCmp("annosearchform");
 		lore.anno.ui.sform = lore.anno.ui.sformpanel.getForm();
+		
+		//lore.anno.ui.metapagegrid = Ext.getCmp('metapagegrid');
+		//lore.anno.ui.metausergrid = Ext.getCmp('metausergrid');
+		
 		// set up the sources tree
 		
 		Ext.getCmp("search").on('click', lore.anno.ui.handleSearchAnnotations);
@@ -1030,6 +1206,12 @@ lore.anno.ui.initExtComponents = function(){
 		Ext.getCmp("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("typecombo").on('valid', lore.anno.ui.handleAnnotationTypeChange);
+		//Ext.getCmp("addmetabtn").on('click', lore.anno.ui.handleAddMeta);
+		//Ext.getCmp("remmetabtn").on('click', lore.anno.ui.handleRemMeta);
+		
+		//Ext.getCmp("addmetabtn").on('click', lore.anno.ui.handleAddMeta );
+		//Ext.getCmp("remmetabtn").on('click', lore.anno.ui.handelRemMeta);
+		
 		lore.anno.ui.form.findField("body").on("push", function(field, html) {
 			// this is hack to stop this field being flagged as dirty because
 			// originalValue is XML and the value field is converted to HTML
@@ -1037,7 +1219,7 @@ lore.anno.ui.initExtComponents = function(){
 			
 		});
 		
-		lore.anno.ui.setAnnotationFormUI(false);
+		lore.anno.ui.setAnnotationFormUI(false, false);
 		
 		lore.anno.ui.abouttab.body.update("<iframe height='100%' width='100%' "
 			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");
