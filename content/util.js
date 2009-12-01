@@ -96,7 +96,6 @@ util = {
 		}
 		return wrapper;
 	},
-	
 	ELFHash: function(str) {
      var hash = 0;
      var x    = 0;
@@ -114,7 +113,12 @@ util = {
 
       return hash;
    },
-   
+   /**
+     * Make sure that characters that might cause sparql errors are encoded
+     * */
+    preEncode : function (str) {
+        return str.replace(/}/,"%7D").replace(/{/,"%7B").replace(/</, '%3C').replace(/>/, '%3E');    
+    },
 	trim : function (str) {
 		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	},
