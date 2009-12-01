@@ -20,7 +20,7 @@
 		<xsl:processing-instruction name="mso-application">progid="Word.Document"</xsl:processing-instruction>
 		<w:wordDocument>
 			<o:DocumentProperties>
-				<xsl:variable name="title" select="rdf:Description[ore:describes]/dc:title"/>
+				<xsl:variable name="title" select="//rdf:Description[ore:describes]/dc:title"/>
 	  			<o:Title>
 		  			<xsl:choose>
 		  				<xsl:when test="$title"><xsl:value-of select="$title"/></xsl:when>
@@ -28,8 +28,20 @@
 		  			</xsl:choose>
 	  			</o:Title>
 	  			<o:Author>
-	  				<xsl:value-of select="rdf:Description[ore:describes]/dc:creator"/>
+	  				<xsl:value-of select="//rdf:Description[ore:describes]/dc:creator"/>
 	  			</o:Author>
+	  			<xsl:variable name="subject">
+	  				<xsl:for-each select="//rdf:Description[ore:describes]/dc:subject">
+	  					<xsl:value-of select="."/>
+	  					<xsl:if test="position() != last()">, </xsl:if>
+	  				</xsl:for-each>
+	  			</xsl:variable>
+	  			<xsl:if test="$subject">
+	  				<o:Subject>
+	  					<xsl:value-of select="$subject"/>
+	  				</o:Subject>
+	  			</xsl:if>
+	  			<!--  o:Created -->
 	  		</o:DocumentProperties>
 	  		<w:styles>
 	            <w:style w:type="paragraph" w:styleId="Heading1">
@@ -43,7 +55,7 @@
 	                <w:rPr>
 	                    <w:rFonts w:ascii="Arial" w:h-ansi="Arial"/>
 	                    <w:b/>
-	                    <w:sz w:val="24"/>
+	                    <w:sz w:val="32"/>
 	                </w:rPr>
 	            </w:style>
 	            <w:style w:type="paragraph" w:styleId="Heading2">
@@ -57,7 +69,7 @@
 	                <w:rPr>
 	                    <w:rFonts w:ascii="Arial" w:h-ansi="Arial"/>
 	                    <w:b/>
-	                    <w:sz w:val="18"/>
+	                    <w:sz w:val="24"/>
 	                </w:rPr>
 	            </w:style>
 	            <w:style w:type="character" w:styleId="Hyperlink">
@@ -83,13 +95,19 @@
 						<w:pStyle w:val="Heading1" />
 					</w:pPr>
 					<w:r>
-						<w:t>Compound Object: <xsl:value-of select="@rdf:about"/></w:t>
+						<w:t><xsl:value-of select="dc:title"/><xsl:if test="dc:title">&#160;</xsl:if>Compound Object</w:t>
+					</w:r>
+					
+				</w:p>
+				<w:p>
+					<w:r>
+						<w:t> (<xsl:value-of select="@rdf:about"/>)</w:t>
 					</w:r>
 				</w:p>
 				<!--  properties -->
 				<w:p>
 					<xsl:for-each select="*">
-					<xsl:if test="name()!='ore:describes'">
+					<xsl:if test="name()!='ore:describes' and name() !='rdf:type'">
 						<w:r>
 	                        <w:rPr>
 	                            <w:b/>
@@ -127,19 +145,32 @@
 	<!--  about each aggregated resource -->
 	<xsl:template match="rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
 		<xsl:variable name="res" select="@rdf:resource"/>
+		<xsl:variable name="displaytitle">
+			<xsl:choose>
+				<xsl:when test="//rdf:Description[@rdf:about = $res]/dc:title">
+					<xsl:value-of select="//rdf:Description[@rdf:about = $res]/dc:title"/>
+				</xsl:when>
+				<xsl:otherwise>Untitled Resource</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 			<wx:sub-section>
 				<!--  heading for this section -->
                 <w:p>
 					<w:pPr>
                         <w:pStyle w:val="Heading2"/>
                     </w:pPr>
+                    <w:r>
+                    	<w:t><xsl:value-of select="$displaytitle"/></w:t>
+                    </w:r>
+                </w:p>
+                <w:p>
                     <w:hlink w:dest="{$res}">
                         <w:r>
                             <w:rPr>
                                 <w:rStyle w:val="Hyperlink"/>
                             </w:rPr>
                             <w:t>
-                                <xsl:value-of select="$res"/>
+                                (<xsl:value-of select="$res"/>)
                             </w:t>
                         </w:r>
                     </w:hlink>
