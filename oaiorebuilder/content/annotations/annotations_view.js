@@ -27,6 +27,7 @@
  */
 
 var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
+var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2QkJBS0omqn6QgAAAZRJREFUeNrFkz1rFUEUhp+Z7OoNRCEgiYSAWCRYKEYQ/4LaaMBOAjYKIjbBQmzt7ARBhIS0aW5hEySFRTobRbC1sJDUkRjW3fNlMXvVRKxu4YFhzgwzz3De90yKCMaJzJgxNqBieOkfNTiIgwqog3SgVvYM6AJaqABYuH3krh8e5mBWcrE+V9jZ7AEA+7vgTlh/QJUwBVFCpaxFCFVQoZ45B02MAAERcPkJqT5BfHxFmJEv3gVtsDer5OvPSfUAqgGysQwi0AQZ1VJbONQniXdPSUv3C3dyGtt+RL7yEOQAGd6je3mVcP8DIFIAHpArmDoDrqSz135rMjVLOrVIdWuNYw+2wUuJtEFF86PU504C0vk7xOct4tsX0uyFAmi/Q3eArN3szc/l0TbItFpo7uCCv39BWlwmvn4A65i4sY59GkKuD7ukCgIpns0FSysEe0V1VUKK0iG9+iMXVMGMMOP45Dy8fktFEyBCsgFpZKFZ8T56cbPDhEEKqLw41keKx6cDiV+dhQV0R2aldJ//3bTpv//Gn8UfBkFlLEJ3AAAAAElFTkSuQmCC";
 
 /** 
  * Annotations View
@@ -672,7 +673,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 				//lore.anno.annopagemetads.removeAll();
 			//	lore.anno.annousermetads.removeAll();
 				lore.anno.ui.form.findField('metares').setValue('');
-				if (lore.anno.ui.rdfa != null && (lore.anno.ui.rdfa.agent != null || lore.anno.ui.rdfa.work != null)) {
+				if (lore.anno.ui.rdfa != null  ) {
 				
 					var theField =  lore.anno.ui.form.findField('metares');
 					
@@ -681,20 +682,20 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 							var d = lore.global.util.getContentWindow(window).document;
 							var triple;
 							
-							if ( lore.anno.ui.rdfa) {
-								lore.debug.anno("resolving context from hashed triple");
+							if ( lore.anno.ui.rdfa.triples.length > 0) {
+								lore.debug.anno("resolving context from hashed triple", rec.data.meta.context);
 								triple = lore.global.util.stringHashToTriple(rec.data.meta.context[0], lore.anno.ui.rdfa.rdf.databank.triples());	
 							} else {
 								var n = lore.global.util.getNodeForXPointer(rec.data.meta.context[1], d);
 								triple = $(n.firstChild).rdfa().databank.triples()[0];
 							}
 							
-							theField.setValue(lore.anno.ui.tripleToString('Agent', triple, lore.anno.ui.rdfa.rdf));
+							//theField.setValue(lore.anno.ui.tripleToString(triple, lore.anno.ui.rdfa.rdf));
+							theField.setValue(lore.anno.ui.tripleURIToString(triple.property));
 						}
-						
-	 					lore.anno.ui.addPageMetadataToStore(lore.anno.annopagemetads);
-						
+	 					//lore.anno.ui.addPageMetadataToStore(lore.anno.annopagemetads);
 						theField.getEl().setStyle("background-color", lore.anno.ui.getCreatorColour(rec.data.creator));
+						
 				} catch (e) {
 					lore.debug.anno(e,e);	
 				}
@@ -1650,21 +1651,103 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 			}
 		}
 		
-		lore.anno.ui.handleUpdateMetaSelection = function (b, e) {
-					//TODO: change to make context and original and variant fields arrays
+		lore.anno.ui.handleUpdateMetaSelection = function () {
+
 					try {
-						var val = Ext.getCmp('rdffield').getValue(); 
-						if ( val) 
-							lore.anno.ui.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(val);
-						lore.debug.anno("meta-context set to: " + lore.anno.ui.curSelAnno.data.meta.context, lore.anno.ui.curSelAnno.data.meta.context);
-						lore.anno.ui.rdfaContextWin.hide();
-						lore.anno.ui.rdfaContextWin.destroy();
-						var theField = lore.anno.ui.form.findField('metares');
-						theField.setValue(lore.anno.ui.tripleToString('Agent', val, lore.anno.ui.rdfa.rdf));
+					 
+						try {
+							var triple = lore.anno.ui.rdfa.triples[this.getAttribute("rdfIndex")];
+							
+							if (triple) 
+								lore.anno.ui.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(triple);
+								
+							lore.debug.anno("meta-context set to: " + lore.anno.ui.curSelAnno.data.meta.context, {
+								val: triple,
+								ctx: lore.anno.ui.curSelAnno.data.meta.context
+							});
+							
+							var theField = lore.anno.ui.form.findField('metares');
+							theField.setValue(lore.anno.ui.tripleURIToString(triple.property));
+						} catch (e ) {
+							lore.debug.anno(e,e);
+						}
+						lore.anno.ui.setVisibilityForPageTriples(false);
+						
 					} catch (e) {
 						lore.debug.anno(e,e);
 					}
 		}
+		
+		lore.anno.ui.setVisibilityForPageTriples = function( show ) {
+			if (!show) {
+				for (var i = 0; i < lore.anno.ui.metaSelections.length; i++) {
+					try {
+						var n = lore.anno.ui.metaSelections[i];
+						n.removeChild(n.firstChild);
+						lore.global.util.removeNodePreserveChildren(n, lore.global.util.getContentWindow(window));
+					} 
+					catch (e) {
+						lore.debug.anno('error removing node for meta selection: ' + e, e);
+					}
+				}
+				lore.anno.ui.metaSelections = [];
+			} else {
+				if (lore.anno.ui.rdfa.triples.length > 0) {
+					
+					for ( var i =0 ;i < lore.anno.ui.rdfa.triples.length; i++ ) {
+						var z = lore.anno.ui.rdfa.triples[i];
+						if (z.source && z.subject.type != 'bnode') {
+							var cw = lore.global.util.getContentWindow(window);
+							var doc = cw.document;
+							var r = doc.createRange();
+							r.selectNode(z.source);
+							var span = lore.global.util.domCreate("span", doc);
+							r.surroundContents(span);
+																					
+							lore.anno.ui.metaSelections.push(span);
+							var marker = lore.global.util.domCreate("img", doc);
+							marker.src = rdfIcon;
+							marker.setAttribute("rdfIndex", i);
+							span.insertBefore(marker, z.source);
+							var s = $(marker);
+					 	
+							marker.title = lore.anno.ui.tripleURIToString(z.property);
+							
+							s.hover(function () {
+								$(this).parent().css({
+									'background-color': 'yellow'
+								});},
+								function() {
+									$(this).parent().css({
+										'background-color': ''
+									});
+								});
+							s.click(lore.anno.ui.handleUpdateMetaSelection);
+	 				}
+				}
+			 }  
+				
+			}
+		}
+		lore.anno.ui.handleChangeMetaSelection = function () {
+			 try {
+			 	if (!lore.anno.ui.rdfa) {
+			 		lore.anno.ui.gleanRDFa();
+			 	}
+			 	
+			 	if (!lore.anno.ui.metaSelections) 
+			 		lore.anno.ui.metaSelections = [];
+					
+				if (lore.anno.ui.metaSelections.length == 0)
+					lore.anno.ui.setVisibilityForPageTriples(true);
+				else
+					lore.anno.ui.setVisibilityForPageTriples(false);
+			} catch (e) {
+				lore.debug.anno(e,e);
+			}
+		}	
+		
+		/*
 		
 		lore.anno.ui.addPageMetadataToStore = function(store) {
 			var data = [];
@@ -1673,11 +1756,11 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 				Ext.each(a, function () {
 					var p = this.property.toString()
 					if ( p.indexOf("#type") == -1) {
-					//var r = {
+					
 					var r = new store.recordType ( {
 						type: 'Agent',
 						source: 'Page',
-						prop: lore.anno.ui.triplePropertyToString(this.property),
+						prop: lore.anno.ui.tripleURIToString(this.property),
 						value: this.object.value.toString()
 					});
 					data.push(r);
@@ -1692,7 +1775,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 					}
 					data.push(r);
 				});
-			}*/
+			}
 			
 			//store.loadData(data,true);
 			try {
@@ -1704,68 +1787,28 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 			}
 			
 		}
+		
+		
 		lore.anno.ui.pageMetadata = function () {
 			var data = [];
 			if (lore.anno.ui.rdfa.agent) {
 				var a = lore.anno.ui.flattenTriples(lore.anno.ui.rdfa.agent);
 				Ext.each(a, function(){
-					var t = lore.anno.ui.tripleToString("Agent", this);
+					var t = lore.anno.ui.tripleToString(this);
 					if ( t) data.push([this,t ]);
 				});
 			}
 			if (lore.anno.ui.rdfa.work) {
 				var a = lore.anno.ui.flattenTriples(lore.anno.ui.rdfa.work);
 				Ext.each(a, function(){
-					var t = lore.anno.ui.tripleToString("Work", this);
+					var t = lore.anno.ui.tripleToString(this);
 					if ( t) data.push([this, t]);
 				});
 			}
 			return data;
 		}
-		lore.anno.ui.handleChangeMetaSelection = function () {
-			var data =  lore.anno.ui.pageMetadata();
-			lore.anno.ui.rdfaContextWin = new Ext.Window(
-						{
-							title:'Associate annotation with...',
-							width:300,
-							items: [
-							{
-								xtype: 'displayfield',
-								value:'This page has embedded information, you can optionally select a field to attach the annotation to.',
-							},							
-							{
-								xtype: "combo",
-								id: "rdffield",
-								name: 'rdffield',
-								hiddenName: 'rdffield',
-								store: new Ext.data.SimpleStore({
-									fields: ['field', 'fieldname' ],
-									data: data
-								}),
-								valueField: 'field',
-								displayField: 'fieldname',
-								typeAhead: true,
-								emptyText: "None",
-								triggerAction: 'all',
-								forceSelection: true,
-								mode: 'local',
-								resizable:true,
-								selectOnFocus: true
-							}],
-							buttons: [
-							{ text: 'Ok',
-								id: 'addannokbtn',
-								handler: lore.anno.ui.handleUpdateMetaSelection
-							},
-							{ text: 'Not interested',
-							  id: 'notannobtn',
-							  handler: function(b,e){
-							  	lore.anno.ui.rdfaContextWin.hide();
-								lore.anno.ui.rdfaContextWin.destroy();
-							  }}]
-						});
-				lore.anno.ui.rdfaContextWin.show(this);
-		}
+		
+		
 		
 		lore.anno.ui.flattenTriples = function (triples, rdf) {
 			var data = [];
@@ -1774,25 +1817,27 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 			})
 			return data;
 		}
-		lore.anno.ui.flattenTriple = function (triple, rdf) {
+		lore.anno.ui.flattenTriple = function (triple, rdf, parent) {
 			rdf = rdf || lore.anno.ui.rdfa.rdf;
-			
+			var z = parent || triple;
+			lore.debug.anno(triple.subject.toString() + ": " + z.subject.toString(), z);
 			if (triple.object.type == 'bnode') {
-					var trips = rdf.about(triple.object.value.toString()).sources();
-					var data = [];
-					trips.each( function(){
-						var t = lore.anno.ui.flattenTriple(this[0]);
-						data = data.concat(t);
-					});
-					return data;
+				var trips = rdf.about(triple.object.value.toString()).sources();
+				var data = [];
+				trips.each(function(){
+					var t = lore.anno.ui.flattenTriple(this[0], rdf, parent || triple);
+					data = data.concat(t);
+				});
+				return data;
 			}
-			else	
+			else {
+				triple.parentSubject = parent ? parent.subject: triple.subject;
 				return [triple];
+			}
 			
 		}
 		
-		// ***8
-		/*lore.anno.ui.handleAddMeta = function () {
+		 lore.anno.ui.handleAddMeta = function () {
 			if ( !lore.anno.ui.curSelAnno.data.meta)
 				lore.anno.ui.curSelAnno.data.meta = {};
 				
@@ -1851,28 +1896,35 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 		
 		// ***8
 		
-		lore.anno.ui.triplePropertyToString = function ( prop) {
+		lore.anno.ui.tripleURIToString = function ( prop) {
 			prop = prop.toString();
-			prop = prop.substring(prop.indexOf("#") + 1, prop.length - 1);
+			if ( prop.indexOf('#')!=-1)
+				prop = prop.substring(prop.indexOf("#") + 1, prop.length - 1);
+			else if ( prop.lastIndexOf("/")!=-1) {
+				prop = prop.substring(prop.lastIndexOf("/")+1, prop.length -1);
+			}
 			return prop;
 		}
-		lore.anno.ui.tripleToString = function ( category, triple, rdf) {
+		/*lore.anno.ui.tripleToString = function (triple, rdf, parent) {
 				rdf = rdf ||  lore.anno.ui.rdfa.rdf;
 				
 					if (triple.property.toString().indexOf("#type") == -1 ) {
 						var val = triple.object.value.toString();
 						
 						if (triple.object.type == 'uri') {
-							val = triple.object.value.toString();
-							val = val.substring(val.indexOf("#") + 1, val.length - 1);
+							val = lore.anno.ui.tripleURIToString(triple.object.value);
 						}
-						var prop = lore.anno.ui.triplePropertyToString(triple.property);
+						var prop = lore.anno.ui.tripleURIToString(triple.property);
 						if ( val.length > 50)
 							val = val.substring(0,50) + "...";
-						return category + "->" + prop + ": " + val;
+						
+						var sub = parent || triple.parentSubject.toString();
+						sub = lore.anno.ui.tripleURIToString(sub);
+						
+						return sub + "->" + prop + ": " + val;
 					}
 				return '';
-		}
+		}*/
 				
 		/**
 		 * Launch field value in a new window
@@ -2289,6 +2341,7 @@ var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8
 					lore.debug.anno(node.style.border, node);
 					return node;
 				});
+				lore.anno.ui.genTipForAnnotation(rec.data, m);
 			}
 			
 			return markers;
@@ -2745,21 +2798,31 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 
 lore.anno.ui.gleanRDFa = function () {	
 	try {
-		lore.anno.ui.gleanAustlitRDFa();
+		//lore.anno.ui.gleanAustlitRDFa();
+		var cw = lore.global.util.getContentWindow(window);
+		var doc = cw.document;
 		
-		if ((lore.anno.ui.rdfa.work ||
+		var myrdf = $('body', doc).rdfa();
+		lore.debug.anno("rdfa for the page...", myrdf.databank.triples());
+		lore.anno.ui.rdfa = {
+			triples: myrdf.databank.triples(),
+			rdf: myrdf
+		};
+		
+		
+		/*if ((lore.anno.ui.rdfa.work ||
 		lore.anno.ui.rdfa.agent) && lore.anno.ui.formpanel.isVisible() &&
 		lore.global.util.splitTerm(Ext.getCmp("typecombo").getValue()).term == 'SemanticAnnotation') {
-			lore.anno.ui.addPageMetadataToStore(lore.anno.annopagemetads);
+		lore.anno.ui.addPageMetadataToStore(lore.anno.annopagemetads);
 			
-		}
+		}*/
 		lore.debug.anno('glean rdfa: ' + lore.anno.ui.rdfa, lore.anno.ui.rdfa);		
 	}catch (e) {
 		lore.debug.anno("Error gleaning potential rdfa from page: " +e , e);
 	}
 }
 
-lore.anno.ui.gleanAustlitRDFa = function () {
+/*lore.anno.ui.gleanAustlitRDFa = function () {
 	lore.anno.ui.rdfa = null;
 	var agent;
 	try {
@@ -2767,9 +2830,10 @@ lore.anno.ui.gleanAustlitRDFa = function () {
 		var doc = cw.document;
 		
 		var myrdf = $('body', doc).rdfa();
+		lore.debug.anno("rdfa for the page...", myrdf.databank.triples());
 		 
 		agent = myrdf.about('<' + decodeURI('http://www.austlit.edu.au' + cw.location.pathname +
-		cw.location.search ) +'#me>').sources() ;
+		cw.location.search ) +'#Agent>').sources() ;
 		
 		
 		
@@ -2781,12 +2845,13 @@ lore.anno.ui.gleanAustlitRDFa = function () {
 	}
 	var work;
 	try {
-		work = myrdf.about('<http://www.austlit.edu.au' + cw.location.pathname + cw.location.search +
-		"#work");
+		work = myrdf.about('<' + decodeURI('http://www.austlit.edu.au' + cw.location.pathname +
+		cw.location.search ) +'#Work>').sources();
 		lore.debug.anno('Work...');
-		
-		
-	}catch (e) {
+		work.each(function(){
+			lore.debug.anno(' has ' + this[0].property + ' value ' + this[0].object.value.toString() , this[0]);
+		});
+	} catch (e) {
 		lore.debug.ui(e,e);
 	}
 	
@@ -2796,4 +2861,4 @@ lore.anno.ui.gleanAustlitRDFa = function () {
 			rdf : myrdf
 		};
 	 
-}
+}*/
