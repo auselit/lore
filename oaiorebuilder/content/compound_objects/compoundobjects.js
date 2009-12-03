@@ -271,7 +271,7 @@ lore.ore.onHide = function () {
 // alias used by uiglobal
 // TODO: #34 MVC: change this to addNode - make it add to model and get view to listen on model
 lore.ore.addFigure = function (/*URL*/theURL, props) {
-	lore.ore.graph.addFigure(theURL, props);
+	lore.ore.graph.addFigure(lore.global.util.preEncode(theURL), props);
 };
 
 /**
@@ -444,7 +444,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
     }
     newsummary += "</table>";
     newsummary += "<div style='padding-top:1em'><p><b>List of contents:</b></p><ul>";
-    var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
+    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
     for (var i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
         var figurl = lore.global.util.escapeHTML(fig.url);
@@ -461,7 +461,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
 /** Generate a SMIL presentation from the current compound object and display a link to launch it */
 lore.ore.showSMIL = function() {
     
-    var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
+    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
     var smilcontents = "<p><a title='smil test hover' href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
     if (numfigs > 0) {
@@ -495,7 +495,7 @@ lore.ore.updateTriG = function (){
 };
 /** Generate a slideshow representing the current compound object */
 lore.ore.showSlideshow = function (){
-    var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
+    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
 		
     var sscontents = "";
@@ -731,11 +731,11 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
             + fullclosetag;
     
-    var allfigures = lore.ore.graph.Graph.getDocument().getFigures();
+    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
     var resourcerdf = "";
     for (i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
-        var figurl = lore.global.util.escapeHTML(fig.url.toString().replace('<', '%3C').replace('>', '%3E'));
+        var figurl = lore.global.util.escapeHTML(lore.global.util.preEncode(fig.url.toString()));
         rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                 + fullclosetag;
         // create RDF for resources in aggregation
@@ -932,6 +932,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                 var srcfig = lore.ore.graph
                     .lookupFigure(subject);
                 if (!srcfig) {
+                    // TODO: fix this as now preEncode is called - implement unPreEncode or something
                    srcfig = lore.ore.graph
                     .lookupFigure(lore.global.util.unescapeHTML(subject.replace(
                     '%3C', '<').replace('%3F', '>')));
@@ -950,7 +951,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                         c.setSource(srcfig.getPort("output"));
                         c.setTarget(tgtfig.getPort("input"));
                         c.setRelationshipType(relresult.ns, relresult.term);
-                        lore.ore.graph.Graph.addFigure(c);
+                        lore.ore.graph.coGraph.addFigure(c);
                     } else  { 
                         // not a node relationship, show in the property grid 
                         srcfig.appendProperty(nsprefix(relresult.ns) + relresult.term, obj);
@@ -985,6 +986,7 @@ lore.ore.loadCompoundObject = function (rdf) {
 	                .removeChild(lore.ore.ui.recenttreeroot.firstChild);
 	        }
 	        lore.ore.ui.recenttreeroot.appendChild(recentNode);
+            //lore.ore.graph.doLayout();
        }
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
@@ -1223,7 +1225,7 @@ lore.ore.setrelonturl = function(relonturl) {
 };
 
 lore.ore.handleLocationChange = function (contextURL) {
-	lore.ore.ui.currentURL = contextURL;
+	lore.ore.ui.currentURL = lore.global.util.preEncode(contextURL);
 	if ( !lore.ore.ui.lorevisible || ! lore.ore.ui.initialized){
 		return;
     }
@@ -1300,6 +1302,9 @@ lore.ore.displayCompoundObjectsInTree = function (xmldoc, searchval, isSearchQue
     }
 }
 /* Graph related functions */
+lore.ore.doLayout = function(){
+    lore.ore.graph.coGraph.doLayout();
+}
 /**
  * Updates global variables used for figure layout
  */
@@ -1323,7 +1328,7 @@ lore.ore.graph.nextXY = function() {
  */
 lore.ore.graph.lookupFigure = function(theURL) {
     var figid = lore.ore.graph.lookup[theURL];
-    return lore.ore.graph.Graph.getDocument().getFigure(figid);
+    return lore.ore.graph.coGraph.getDocument().getFigure(figid);
 };
 /**
  * Add a node figure with layout options
@@ -1353,12 +1358,16 @@ lore.ore.graph.addFigureWithOpts = function(opts){
             fig.setProperty("dc:format_0",opts.format);
         }
         fig.setContent(theURL);
-        lore.ore.graph.Graph.addFigure(fig, opts.x, opts.y);
+        lore.ore.graph.coGraph.addFigure(fig, opts.x, opts.y);
         lore.ore.graph.lookup[theURL] = fig.getId();
-      	  lore.ore.ui.oreviews.activate("drawingarea");
+      	lore.ore.ui.oreviews.activate("drawingarea");
     } else {
         lore.ore.ui.loreWarning("Resource is already in the compound object: " + theURL);
     }
+    // TODO: Advance autolayout even if layout was stored - we really need a proper layouter
+	if (fig){
+	    lore.ore.graph.nextXY();
+	}
     return fig;
 };
 
@@ -1370,14 +1379,12 @@ lore.ore.graph.addFigureWithOpts = function(opts){
  */
 lore.ore.graph.addFigure = function(theURL,props) {
 	var fig = lore.ore.graph.addFigureWithOpts({
-        "url": theURL, 
+        "url": lore.global.util.preEncode(theURL), 
         "x": lore.ore.graph.dummylayoutx,
         "y": lore.ore.graph.dummylayouty,
         "props": props
     });
-    if (fig) {
-        lore.ore.graph.nextXY();
-    }
+    // TODO: scroll to fig
     return fig;
 };
 /** Transform RDF/XML of the current compound object using XSLT 

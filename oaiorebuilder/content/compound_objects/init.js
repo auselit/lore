@@ -43,27 +43,27 @@ lore.ore.ui.initGraphicalView = function() {
     lore.ore.loadedRDF = {};
     /** Indicates whether the compound object has been edited since being loaded */
 	lore.ore.graph.modified = false;
-	if (lore.ore.graph.Graph) {
-		lore.ore.graph.Graph.getCommandStack()
+	if (lore.ore.graph.coGraph) {
+		lore.ore.graph.coGraph.getCommandStack()
 				.removeCommandStackEventListener(lore.ore.graph.gCommandListener);
-		lore.ore.graph.Graph.removeSelectionListener(lore.ore.graph.gSelectionListener);
-		lore.ore.graph.Graph.clear();
+		lore.ore.graph.coGraph.removeSelectionListener(lore.ore.graph.gSelectionListener);
+		lore.ore.graph.coGraph.clear();
 	} else {
-		lore.ore.graph.Graph = new draw2d.Workflow("drawingarea");
-		lore.ore.graph.Graph.scrollArea = document.getElementById("drawingarea").parentNode;
+		lore.ore.graph.coGraph = new lore.ore.graph.COGraph("drawingarea");
+		lore.ore.graph.coGraph.scrollArea = document.getElementById("drawingarea").parentNode;
 	}
-	lore.ore.graph.gSelectionListener = new lore.ore.graph.SelectionProperties(lore.ore.graph.Graph);
-	lore.ore.graph.Graph.addSelectionListener(lore.ore.graph.gSelectionListener);
+	lore.ore.graph.gSelectionListener = new lore.ore.graph.SelectionProperties(lore.ore.graph.coGraph);
+	lore.ore.graph.coGraph.addSelectionListener(lore.ore.graph.gSelectionListener);
 	lore.ore.graph.gCommandListener = new lore.ore.graph.CommandListener();
-	lore.ore.graph.Graph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
+	lore.ore.graph.coGraph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
     // create drop target for dropping new nodes onto editor from the sources tree
     var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD'});
     droptarget.notifyDrop = function (dd, e, data){
         lore.debug.ore("notifydrop",data);
         lore.ore.graph.addFigureWithOpts({
             url: data.node.attributes.uri, 
-            x: (e.xy[0] - lore.ore.graph.Graph.getAbsoluteX() + lore.ore.graph.Graph.getScrollLeft()),
-            y: (e.xy[1] - lore.ore.graph.Graph.getAbsoluteY() + lore.ore.graph.Graph.getScrollTop()),
+            x: (e.xy[0] - lore.ore.graph.coGraph.getAbsoluteX() + lore.ore.graph.coGraph.getScrollLeft()),
+            y: (e.xy[1] - lore.ore.graph.coGraph.getAbsoluteY() + lore.ore.graph.coGraph.getScrollTop()),
             "props": {"rdf:type_0":lore.constants.RESOURCE_MAP}
         });
         return true;
@@ -271,6 +271,9 @@ lore.ore.ui.initExtComponents = function() {
             interval: 7
         });
     }
+    // init custom views
+    //var customviewstab = Ext.getCmp("remcustomviews");
+    
     var exploretab = Ext.getCmp("remexploreview");
     var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
         + "<script type='text/javascript' src='chrome://lore/content/compound_objects/lore_explore.js'></script>"
