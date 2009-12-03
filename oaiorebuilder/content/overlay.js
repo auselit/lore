@@ -303,6 +303,9 @@ try {
 		addGraphNode: function(){
 			loreoverlay.coView().addFigure(window.content.location.href);
 		},
+        layoutGraph: function(){
+            loreoverlay.coView().doLayout();  
+        },
         createCompoundObject: function(){
             loreoverlay.coView().createCompoundObject();  
         },

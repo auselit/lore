@@ -77,7 +77,7 @@
           <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/> -->
           <xul:toolbarseparator id="cosep"/>
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/>
-          
+          <xul:toolbarbutton id="layout-co" tooltiptext="&lore.layoutTip;"  oncommand="loreoverlay.layoutGraph();"/>
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="create-co" tooltiptext="&lore.createCOTip;" oncommand="loreoverlay.createCompoundObject();"/>
           <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
