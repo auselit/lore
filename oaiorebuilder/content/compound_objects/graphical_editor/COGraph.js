@@ -6,8 +6,8 @@ lore.ore.graph.COGraph = function(id){
     draw2d.Workflow.call(this, id);
     try{
 	    this.layouter = new uwm.diagram.autolayout.Layouter(this);
-	    this.layouter.setPreferredEdgeLength(130);
-        this.layouter.setIterations(30);
+	    this.layouter.setPreferredEdgeLength(180);
+        //this.layouter.setIterations(50);
         //this.layouter.setSprings(uwm.diagram.autolayout.Layouter.spring.LINEAR);
         //this.layouter.setVertexVertexRepulsion(uwm.diagram.autolayout.Layouter.vvRepulsion.INVERSE);
     } catch (ex){
