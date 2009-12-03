@@ -38,6 +38,9 @@
 #add-node {
 	list-style-image: url(chrome://lore/skin/icons/add.png);
 }
+#layout-co {
+	list-style-image: url(chrome://lore/skin/icons/layout.png);
+}
 #add-annotation {
 	list-style-image: url(chrome://lore/skin/icons/comment_add.png);
 }

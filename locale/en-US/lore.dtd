@@ -9,6 +9,7 @@
 <!ENTITY loreToolbar.tooltip "Toggle LORE">
 <!ENTITY lore.addNodeLabel "Add Resource">
 <!ENTITY lore.addNodeTip "Add the current URL to the compound object">
+<!ENTITY lore.layoutTip "Rearrange the resources in the compound object using automatic layout">
 <!ENTITY lore.createCOTip "Create a new compound object">
 <!ENTITY lore.saveMoreTip "Import/Export compound object as file">
 <!ENTITY lore.saveFileLabel "Export to RDF/XML">
