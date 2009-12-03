@@ -1,8 +1,37 @@
 /**
+ * The Graphical compound object editing view
+ * @param {} id
+ */
+lore.ore.graph.COGraph = function(id){
+    draw2d.Workflow.call(this, id);
+    try{
+	    this.layouter = new uwm.diagram.autolayout.Layouter(this);
+	    this.layouter.setPreferredEdgeLength(130);
+        this.layouter.setIterations(30);
+        //this.layouter.setSprings(uwm.diagram.autolayout.Layouter.spring.LINEAR);
+        //this.layouter.setVertexVertexRepulsion(uwm.diagram.autolayout.Layouter.vvRepulsion.INVERSE);
+    } catch (ex){
+        lore.debug.ore("error setting up layouter",ex);
+    }
+}
+Ext.extend(lore.ore.graph.COGraph, draw2d.Workflow);
+lore.ore.graph.COGraph.prototype.type = "lore.ore.graph.COGraph";
+
+lore.ore.graph.COGraph.prototype.doLayout = function(){
+    try {
+        //if (this.getDocument().getLines().getSize() > 0){
+            this.layouter.doLayout();
+        //}
+    } catch (e){
+        lore.debug.ore("failed to do layout",e);
+    }
+}
+
+/**
  * Override showResizeHandles to change the appearance
  * @param {} figure
  */
-draw2d.Workflow.prototype.showResizeHandles=function(/*:draw2d.Figure*/ figure)
+lore.ore.graph.COGraph.prototype.showResizeHandles=function(/*:draw2d.Figure*/ figure)
 {
   this.hideLineResizeHandles();
   this.hideResizeHandles();
@@ -102,10 +131,11 @@ draw2d.Workflow.prototype.showResizeHandles=function(/*:draw2d.Figure*/ figure)
   }
 }
 /**
+ * Customize the resize handles
  * @param {draw2d.Line} line The line for the resize handles.
  * @private
  **/
-draw2d.Workflow.prototype.showLineResizeHandles=function(/*:draw2d.Line*/ figure )
+lore.ore.graph.COGraph.prototype.showLineResizeHandles=function(/*:draw2d.Line*/ figure )
 {
   var blue = new draw2d.Color(217,232,251);
   var brightblue = new draw2d.Color(170,204,246);
@@ -134,8 +164,12 @@ draw2d.Workflow.prototype.showLineResizeHandles=function(/*:draw2d.Line*/ figure
     this.resizeHandleEnd.setBackgroundColor(null);
   }
 }
-
-draw2d.Workflow.prototype.onKeyDown=function( /*:int*/ keyCode, /*:boolean*/ ctrl)
+/**
+ * Delete/backspace key can trigger node deletion including on Macs
+ * @param {} keyCode
+ * @param {} ctrl
+ */
+lore.ore.graph.COGraph.prototype.onKeyDown=function( /*:int*/ keyCode, /*:boolean*/ ctrl)
 {
   lore.debug.ore("Workflow onKeyDown " + keyCode,ctrl);
   if((keyCode==46 || keyCode==8) && this.currentSelection!=null)
