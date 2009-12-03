@@ -750,13 +750,10 @@ util = {
 	stringHashToTriple: function( srcHash, triples ) {
 		if ( srcHash.indexOf("#")!=-1)
 			srcHash = srcHash.substring(srcHash.indexOf("#")+1); 
-		debug.anno(srcHash);
+		
 		for (var i = 0; i < triples.length; i++) {
-			
 			var hash = util.tripleToStringHash(triples[i]) + '';
-			debug.anno("B: " + hash);
 			if (srcHash == hash) {
-				debug.anno('oh?', triples[i].source);
 				return triples[i];
 			}
 		}

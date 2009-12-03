@@ -557,7 +557,7 @@ loreuieditor = function (store ) {
 							tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
 						},
 									{
-									fieldLabel : 'Annotates Fact',
+									fieldLabel : 'Annotates Relationship',
 									name: 'metares',
 									id: 'metares',
 									readOnly: true,
