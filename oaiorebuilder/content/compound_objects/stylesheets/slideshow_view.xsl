@@ -130,10 +130,10 @@
 		<div class="preview">
         <xsl:choose>
         	<xsl:when test="contains($format,'image')">
-    			<img src="{$about}" alt="{$about}" style="max-height:{$height}"/> 
+    			<img class="sspreview" src="{$about}" alt="{$about}" style="max-height:{$height}"/> 
     		</xsl:when>
     		<xsl:when test="contains($format, 'application/xml') and //rdf:Description[@rdf:about=$about and (contains(rdf:type/@rdf:resource,'http://www.w3.org/2000/10/annotation') or contains(rdf:type/@rdf:resource,'http://www.w3.org/2001/12/replyType'))]">
-    			<object data="{$about}?danno_useStylesheet="  height="{$height}" width="{($width - $mwidth) - 10}"></object>
+    			<object class="sspreview" data="{$about}?danno_useStylesheet="  height="{$height}" width="{($width - $mwidth) - 10}"></object>
     		</xsl:when>
     		<xsl:when test="contains($format,'application/rdf+xml') and //rdf:Description[@rdf:about=$about and contains(rdf:type/@rdf:resource,'ResourceMap')]">
     			<!--  and rdf:type is compound object : show link to open in lore -->
@@ -151,7 +151,7 @@
     		</xsl:when>
     		<xsl:otherwise>
     			<!--  minus 10 to account for 5px padding on each side of itemdesc -->
-    			<object data="{$about}"  height="{$height}" width="{($width - $mwidth) - 10}"></object>
+    			<object class="sspreview" data="{$about}"  height="{$height}" width="{($width - $mwidth) - 10}"></object>
     		</xsl:otherwise>
     	</xsl:choose>
 		</div>		

@@ -512,6 +512,22 @@ lore.ore.showSlideshow = function (){
         lore.debug.ore("adding slideshow",ex);
     }
 };
+lore.ore.resizeSlideshow = function (comp,adjWidth, adjHeight, rawWidth, rawHeight){
+    try {
+	    var carouselel = Ext.get("trailcarousel");
+	    var w = carouselel.getWidth() - 160;
+	    var h = carouselel.getHeight();
+	    lore.debug.ore("setting carousel width to " + w + " and height to " + h);
+	    jQuery("object.sspreview").attr("height",(h - 29));//.attr("width",w);
+        jQuery("img.sspreview").css("max-height",(h-29) + "px");
+        //jQuery(".ux-carousel-slide").attr("width",carouselel.getWidth()).attr("height",h);
+        //jQuery(".preview").attr("width",w).attr("height",h);
+        jQuery(".itemdesc").css("height",(h-29)+ "px");//.css("width",150);
+        jQuery(".ux-carousel-container").css("height",h+"px");//.css("width",carouselel.getWidth() + "px");
+    } catch (ex){
+        lore.debug.ore("error resizing slideshow",ex);
+    }
+}
 /** Generate a visualisation to explore compound object connections */
 lore.ore.showExploreUI = function(){
     try{
