@@ -46,7 +46,7 @@
 		    borderWidth : Ext.isBorderBox ? 0 : 2, // the combined left/right border for each cell
 		    cls : 'x-column-tree',
 			expandBefore: true,
-			scrollOffset:19,
+			scrollOffset: 19,
 			
 		    onRender : function(){
 		        lore.anno.ui.LOREColumnTree.superclass.onRender.apply(this, arguments);
@@ -579,137 +579,6 @@ loreuieditor = function (store ) {
 									tooltip: 'Set the metadata context of the annotation to the field chosen from popup window',
 									handler: lore.anno.ui.handleChangeMetaSelection
 								},
-							/*	{
-									fieldLabel: 'Facts From Page',
-									name: 'metapagelbl',
-									readOnly: true,
-									style: {
-										background: 'none',
-										border: 'none',
-										'font-size':'90%'
-									}
-								},
-								{
-									xtype: "grid",
-									
-									id: 'metapagegrid',
-									name: 'metapagegrid',
-									store: lore.anno.annopagemetads,
-									height: 200,
-									forceFit: true,
-							 		colModel: new Ext.grid.ColumnModel( {
-									// grid columns
-									defaults: {
-										sortable: true
-									},
-									columns: [
-									{
-										id: 'type', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
-										header: 'Type',
-										dataIndex: 'type',
-										width:50,
-									 
-									}, 
-									{
-										header: "Property",
-										dataIndex: "prop"
-								 	}, 
-									{
-										header: "value",
-										dataIndex: 'value',
-									}, 
-								]
-									}),
-						},
-						{
-									fieldLabel: 'Facts from Users',
-									name: 'metauserlbl',
-									readOnly: true,
-									style: {
-										background: 'none',
-										border: 'none',
-										'font-size':'90%'
-									}
-								},
-								
-								{
-									xtype: "editorgrid",
-									
-									id: 'metausergrid',
-									name: 'metausergrid',
-									store: lore.anno.annousermetads,
-									//deferRowRender: false,
-									height: 200,
-									forceFit: true,
-							
-							 		colModel: new Ext.grid.ColumnModel( {
-									// grid columns
-									defaults: {
-										sortable: true
-									},
-									columns: [
-									{
-										id: 'type', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
-										header: 'Type',
-										dataIndex: 'type',
-										width:50,
-										editor: {
-											xtype: 'combo',
-											store: new Ext.data.ArrayStore( {
-												id: '',
-												fields: ['type', 'displayType'],
-												data: [['http://austlit.edu.au/owl/austlit.owl#Agent', 'Agent'], ['http://austlit.edu.au/owl/austlit.owl#Work','Work']]
-											}),
-											mode: 'local', 
-											valueField: 'type',
-											displayField: 'displayType',
-											triggerAction: 'all'
-										},
-										renderer: function (value) {
-											return value.indexOf("#")!=-1 ? value.substring(value.indexOf("#")+1):value; 
-										}
-									}, 
-									{
-										header: "Property",
-										dataIndex: 'prop',
-										editor:{
-											xtype: 'combo',
-											store: new Ext.data.ArrayStore( {
-												id: '',
-												fields: ['prop', 'property'],
-												data: []
-											}),
-											mode: 'local', 
-											valueField: 'prop',
-											displayField: 'property',
-											triggerAction: 'all'
-										}
-									}, 
-									{
-										header: "value",
-										dataIndex: 'value',
-										editor: new Ext.form.TextField({ allowBlank:false})
-									}, 
-								]
-									}),
-						},
-						 
-						{
-							xtype:"button",
-							text: 'Add',
-							fieldLabel: '',
-							id: 'addmetabtn',
-							tooltip: 'Add metadata about this page to the annotation',
-							
-						},
-						{
-							xtype:"button",
-							text: 'Remove',
-							id: 'remmetabtn',
-							tooltip: 'Remove user created metadata about this page from the annotation',
-							
-						},
-						*/
 						{
 							id: 'tagselector',
 							xtype: 'superboxselect',
@@ -1184,9 +1053,22 @@ lore.anno.ui.initExtComponents = function(){
 		lore.anno.ui.sformpanel = Ext.getCmp("annosearchform");
 		lore.anno.ui.sform = lore.anno.ui.sformpanel.getForm();
 		
-		//lore.anno.ui.metapagegrid = Ext.getCmp('metapagegrid');
-		//lore.anno.ui.metausergrid = Ext.getCmp('metausergrid');
 		
+		lore.anno.ui.sgrid = Ext.getCmp("annosearchgrid");
+		
+		lore.anno.ui.sgrid.contextmenu = new Ext.menu.Menu({
+					id: lore.anno.ui.sgrid.id + "-context-menu"
+				});
+				
+		lore.anno.ui.sgrid.contextmenu.add({
+					text: "Add as node/s in compound object editor",
+					handler: lore.anno.ui.handleAddResultsToCO
+				});
+		
+		lore.anno.ui.sgrid.on('contextmenu', function(e) {
+			lore.anno.ui.sgrid.contextmenu.showAt(e.xy);
+    	});
+				
 		// set up the sources tree
 		
 		Ext.getCmp("search").on('click', lore.anno.ui.handleSearchAnnotations);

@@ -1579,12 +1579,25 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 	 				lore.debug.anno("result from search: " + result, resp);
 					lore.anno.ui.loreInfo("Search Finished");
 					
-					Ext.getCmp("annosearchgrid").doLayout();
+					lore.anno.ui.sgrid.doLayout();
 	 			});
 			} catch (e) {
 				lore.debug.anno("error occurring performing search annotations: " +e, e);
 			}
 			
+		}
+		
+		lore.anno.ui.handleAddResultsToCO = function(evt){
+			try {
+				var sels = lore.anno.ui.sgrid.getSelectionModel().getSelections();
+				for (var i =0; i < sels.length; i++ ) {								
+                var rec = sels[i];
+				lore.global.ui.compoundObjectView.get(window.instanceId).addFigure(rec.data.id,
+                {"rdf:type_0":rec.data.type});
+				}
+			} catch (e ){
+				lore.debug.anno("Error adding node/s to compound editor:" + e, e);
+			}
 		}
 		
 		/**
