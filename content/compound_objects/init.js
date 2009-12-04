@@ -262,7 +262,7 @@ lore.ore.ui.initExtComponents = function() {
     }
     var slidetab = Ext.getCmp("remslideview");
     if (slidetab){
-        slidetab.on("activate",lore.ore.showSlideshow);
+        
         slidetab.body.update("<div id='trailcarousel'></div>");
         lore.ore.ui.carousel = new Ext.ux.Carousel("trailcarousel", {
             itemSelector: "div.item",
@@ -270,6 +270,8 @@ lore.ore.ui.initExtComponents = function() {
             transitionType: "fade",
             interval: 7
         });
+        slidetab.on("activate",lore.ore.showSlideshow);
+        slidetab.on("resize",lore.ore.resizeSlideshow);
     }
     // init custom views
     //var customviewstab = Ext.getCmp("remcustomviews");
