@@ -48,8 +48,11 @@ var curtip;
       if(!conf.persistent)
       {
          elem.hover(
-            function(event){ self.show(event) },
-            function(){ if (!conf.focus) self.hide() }
+            function(event){  
+					if ( event.relatedTarget != tooltip.get(0) &&  (!closeIcon || (closeIcon && event.relatedTarget != closeIcon.get(0)))) 
+						self.show(event) 
+			},
+            function(event){ if (!conf.focus) self.hide() }
          );
          
          if(!conf.fixed)
