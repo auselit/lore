@@ -283,7 +283,7 @@ try {
 		
 		/** Annotations Toolbar button handler: Trigger highlighting all annotation contexts in the page */
 		showAnnotations: function(){
-			loreoverlay.annoView().showAllAnnotations();
+			loreoverlay.annoView().toggleAllAnnotations();
 		},
         /** Compound Objects Toolbar button handler: Trigger saving the current compound object to the repository */
 		saveRDF: function(){
@@ -451,6 +451,7 @@ try {
 					
 				var label = document.getElementById("oobAnnoVarContentLabel");
 				label.setAttribute("value", labelValue);
+				
 
 				var iframe = document.getElementById("oobAnnoVarContent");
 		

@@ -199,6 +199,12 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 				lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
 			//lore.anno.ui.loadedURL = lore.anno.ui.currentURL; 
 			}
+			if ( lore.anno.ui.curAnnoMarkers.length > 0 && lore.anno.ui.curSelAnno) {
+				var cc = lore.anno.ui.getCreatorColour(lore.anno.ui.curSelAnno.data.creator);
+				for (var i = 0; i < lore.anno.ui.curAnnoMarkers.length; i++) {
+					lore.anno.ui.curAnnoMarkers[i].show(cc, lore.anno.ui.setCurAnnoStyle,true);
+				}
+			}
 		}
 		
 		/**
@@ -206,6 +212,14 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 	 */
 		lore.anno.ui.hide = function(){
 			lore.anno.ui.lorevisible = false;
+			if ( lore.anno.ui.multiSelAnno.length > 0) {
+				lore.anno.ui.toggleAllAnnotations();
+			}
+			if ( lore.anno.ui.curAnnoMarkers.length > 0) {
+				for (var i = 0; i < lore.anno.ui.curAnnoMarkers.length; i++) {
+					lore.anno.ui.curAnnoMarkers[i].hide();
+				}
+			}
 		}
 		
 		/**
@@ -223,8 +237,8 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 			
 			if (lore.anno.ui.multiSelAnno.length > 0) {
 				// hide then reshow 
-				lore.anno.ui.showAllAnnotations();
-				lore.anno.ui.showAllAnnotations();
+				lore.anno.ui.toggleAllAnnotations();
+				lore.anno.ui.toggleAllAnnotations();
 			}
 			
 		}
@@ -366,7 +380,10 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					" by " +
 					annodata.creator +
 					"<br />";
+					desc += "<div style='max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
 					desc += lore.anno.ui.genDescription(annodata, true);
+					desc += '</div>';
+					//desc += lore.anno.ui.genDescription(annodata, true);
 					var d = lore.global.util.longDate(annodata.created, Date);
 					desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
 					var descDom = doc.createElement("span");
@@ -400,17 +417,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 							this.context.style.border = '1.5px solid darkgrey';
 							this.context.style.zIndex = "3";
 							this.context.style.fontFamily = 'sans-serif';
-							
-							$(this.context).find('img').each(function(){
-								var t = $(this);
-								// max-width was being overriden
-								
-								
-								t.css({
-								'width': (this.width > 256 ? '256': this.width),
-								'height': 'auto'
-								});
-								});
+							this.context.style.maxWidth = cw.innerWidth * 0.75;
+							this.context.style.maxHeight = cw.innerHeight * 0.75;
+							//this.context.style.overflow = 'auto';
 								
 							
 							jQuery(this).animate({
@@ -1314,7 +1323,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		/**
 	 	* Highlight all annotations on the current page
 	 	*/
-		lore.anno.ui.showAllAnnotations = function(){
+		lore.anno.ui.toggleAllAnnotations = function(){
 		
 			if (lore.anno.ui.multiSelAnno.length == 0) {
 				// toggle to highlight all
@@ -1709,7 +1718,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					
 					for ( var i =0 ;i < lore.anno.ui.rdfa.triples.length; i++ ) {
 						var z = lore.anno.ui.rdfa.triples[i];
-						if (z.source && z.subject.type != 'bnode') {
+						if (z.source && z.subject.type != 'bnode' && z.property.toString().indexOf("#type")==-1) {
 							var cw = lore.global.util.getContentWindow(window);
 							var doc = cw.document;
 							var r = doc.createRange();
@@ -1759,155 +1768,6 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 				lore.debug.anno(e,e);
 			}
 		}	
-		
-		/*
-		
-		lore.anno.ui.addPageMetadataToStore = function(store) {
-			var data = [];
-			if ( lore.anno.ui.rdfa.agent) {
-				var a = lore.anno.ui.flattenTriples(lore.anno.ui.rdfa.agent);
-				Ext.each(a, function () {
-					var p = this.property.toString()
-					if ( p.indexOf("#type") == -1) {
-					
-					var r = new store.recordType ( {
-						type: 'Agent',
-						source: 'Page',
-						prop: lore.anno.ui.tripleURIToString(this.property),
-						value: this.object.value.toString()
-					});
-					data.push(r);
-					}
-				});
-			}
-			/*if ( lore.anno.ui.rdfa.work) {
-				var a = lore.anno.ui.flattenTriples(lore.anno.ui.rdfa.work);
-				Ext.each(a, function () {
-					var r = {
-						type: 'Work',
-					}
-					data.push(r);
-				});
-			}
-			
-			//store.loadData(data,true);
-			try {
-				Ext.each(data, function(){
-						store.insert(0, this);
-				});
-			}catch (e ) {
-				lore.debug.anno(e,e);
-			}
-			
-		}
-		
-		
-		lore.anno.ui.pageMetadata = function () {
-			var data = [];
-			if (lore.anno.ui.rdfa.agent) {
-				var a = lore.anno.ui.flattenTriples(lore.anno.ui.rdfa.agent);
-				Ext.each(a, function(){
-					var t = lore.anno.ui.tripleToString(this);
-					if ( t) data.push([this,t ]);
-				});
-			}
-			if (lore.anno.ui.rdfa.work) {
-				var a = lore.anno.ui.flattenTriples(lore.anno.ui.rdfa.work);
-				Ext.each(a, function(){
-					var t = lore.anno.ui.tripleToString(this);
-					if ( t) data.push([this, t]);
-				});
-			}
-			return data;
-		}
-		
-		
-		
-		lore.anno.ui.flattenTriples = function (triples, rdf) {
-			var data = [];
-			triples.each(function (){
-				data = data.concat(lore.anno.ui.flattenTriple(this.length ? this[0]: this,rdf));
-			})
-			return data;
-		}
-		lore.anno.ui.flattenTriple = function (triple, rdf, parent) {
-			rdf = rdf || lore.anno.ui.rdfa.rdf;
-			var z = parent || triple;
-			lore.debug.anno(triple.subject.toString() + ": " + z.subject.toString(), z);
-			if (triple.object.type == 'bnode') {
-				var trips = rdf.about(triple.object.value.toString()).sources();
-				var data = [];
-				trips.each(function(){
-					var t = lore.anno.ui.flattenTriple(this[0], rdf, parent || triple);
-					data = data.concat(t);
-				});
-				return data;
-			}
-			else {
-				triple.parentSubject = parent ? parent.subject: triple.subject;
-				return [triple];
-			}
-			
-		}
-		
-		 lore.anno.ui.handleAddMeta = function () {
-			if ( !lore.anno.ui.curSelAnno.data.meta)
-				lore.anno.ui.curSelAnno.data.meta = {};
-				
-			var cmb = Ext.getCmp('metacmb');
-			var val = cmb.getValue() || '';
-			if (val == '' )
-				return;
-			
-			lore.anno.ui.curSelAnno.data.meta[cmb.getRawValue()] = val;
-			var output ='';
-			for ( var e in lore.anno.ui.curSelAnno.data.meta) {
-				output += e + '\r\n';
-			}
-			lore.anno.ui.form.findField('metafields').setValue(output);
-		}
-		
-		lore.anno.ui.handleRemMeta = function () {
-			if ( !lore.anno.ui.curSelAnno.data.meta)
-				lore.anno.ui.curSelAnno.data.meta = {};
-				
-			var cmb = Ext.getCmp('metacmb');
-			var val = cmb.getValue() || '';
-			if (val == '' )
-				return;
-			
-			lore.anno.ui.curSelAnno.data.meta[cmb.getRawValue()] = null;
-			var output ='';
-			for ( var e in lore.anno.ui.curSelAnno.data.meta) {
-				output += e + '<br />';
-			}
-			lore.anno.ui.form.findField('metafields').setValue(output);
-		}*/
-		
-		/*lore.anno.ui.handleAddMeta = function () {
-			try {
-					var defRec = new lore.anno.annousermetads.recordType({
-						type: 'Agent',
-						source: 'User',
-						prop: 'displayName',
-						value: ''
-					})
-					
-					lore.anno.annousermetads.add(defRec);
-				
-			} catch (e) {
-				lore.debug.anno(e,e );
-			}
-		}
-		
-		lore.anno.ui.handleRemData = function () {
-			var rec = lore.anno.ui.metausergrid.getSelectionModel().getSelected();
-			if ( rec) {
-				lore.anno.annousermetads.remove(rec);
-			}
-		}*/
-		
-		// ***8
 		
 		lore.anno.ui.tripleURIToString = function ( prop) {
 			prop = prop.toString();
@@ -2822,56 +2682,8 @@ lore.anno.ui.gleanRDFa = function () {
 			rdf: myrdf
 		};
 		
-		
-		/*if ((lore.anno.ui.rdfa.work ||
-		lore.anno.ui.rdfa.agent) && lore.anno.ui.formpanel.isVisible() &&
-		lore.global.util.splitTerm(Ext.getCmp("typecombo").getValue()).term == 'SemanticAnnotation') {
-		lore.anno.ui.addPageMetadataToStore(lore.anno.annopagemetads);
-			
-		}*/
-		lore.debug.anno('glean rdfa: ' + lore.anno.ui.rdfa, lore.anno.ui.rdfa);		
+ 		lore.debug.anno('glean rdfa: ' + lore.anno.ui.rdfa, lore.anno.ui.rdfa);		
 	}catch (e) {
 		lore.debug.anno("Error gleaning potential rdfa from page: " +e , e);
 	}
 }
-
-/*lore.anno.ui.gleanAustlitRDFa = function () {
-	lore.anno.ui.rdfa = null;
-	var agent;
-	try {
-		var cw = lore.global.util.getContentWindow(window);
-		var doc = cw.document;
-		
-		var myrdf = $('body', doc).rdfa();
-		lore.debug.anno("rdfa for the page...", myrdf.databank.triples());
-		 
-		agent = myrdf.about('<' + decodeURI('http://www.austlit.edu.au' + cw.location.pathname +
-		cw.location.search ) +'#Agent>').sources() ;
-		
-		
-		
-		agent.each(function(){
-			lore.debug.anno(' has ' + this[0].property + ' value ' + this[0].object.value.toString() , this[0]);
-		});
-	} catch (e) {
-		lore.debug.ui(e,e);
-	}
-	var work;
-	try {
-		work = myrdf.about('<' + decodeURI('http://www.austlit.edu.au' + cw.location.pathname +
-		cw.location.search ) +'#Work>').sources();
-		lore.debug.anno('Work...');
-		work.each(function(){
-			lore.debug.anno(' has ' + this[0].property + ' value ' + this[0].object.value.toString() , this[0]);
-		});
-	} catch (e) {
-		lore.debug.ui(e,e);
-	}
-	
-	lore.anno.ui.rdfa =  {
-			agent: agent,
-			work: work,
-			rdf : myrdf
-		};
-	 
-}*/
