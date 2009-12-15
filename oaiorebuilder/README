@@ -16,3 +16,26 @@ rdfquery (replacing parser.js): http://code.google.com/p/rdfquery/
 From DIAS-B project:
 Modified version of nsXPointerServer : MPL 1.1/GPL 2.0/LGPL 2.1 
 dannotate : GPL 3.0 : http://maenad.itee.uq.edu.au/dias-b/dannotate.html
+
+DISTRIBUTION
+LORE is distributed an an XPI file (Firefox extension).
+
+The extension can be installed into Firefox by opening the XPI via File > Open 
+or dragging the file onto the Browser.
+See http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/demos.php for video demos
+
+DEVELOPMENT
+I use eclipse with Spket IDE http://spket.com/ for development of LORE
+Use ant (dist-nojar) to build the XPI file
+
+You can point Firefox directly at the eclipse project during development.
+We recommend setting up a new profile for development (see https://developer.mozilla.org/en/Setting_up_extension_development_environment)
+Create a text file named lore@maenad.itee.uq.edu.au in your Firefox profile extension directory eg
+C:\Documents and Settings\(username)\Application Data\Mozilla\Firefox\Profiles\(profile name)\extensions
+The contents of that text file should be the location of the oaiorebuilder project eg
+C:\Workspace\oaiorebuilder
+
+If you want to see LORE debug output, you'll need Firebug and Chromebug installed in your development profile.
+I'm currently using Firebug 1.4X.5 and Chromebug 1.5.0a6
+The X in Firebug is important - it has tracing enabled. You can get it from here:
+http://getfirebug.com/releases/firebug/1.4X/
