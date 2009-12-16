@@ -570,7 +570,6 @@ lore.ore.CompObjListing = function(/*Node*/result){
         } else {
             node = bindings[j].getElementsByTagName('literal');
             nodeVal = lore.global.util.safeGetFirstChildValue(node);
-            lore.debug.ore("in compobjlisting " + nodeVal,node);
             if (attr.nodeValue == 't' && nodeVal){ //title
                 this.title = nodeVal;
             } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
@@ -865,10 +864,13 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.ore.loadedRDF = jQuery.rdf({databank: databank});
         
         // Display the properties for the compound object
-	    var remQuery = lore.ore.loadedRDF.where('?aggre rdf:type ore:Aggregation').where('?rem ore:describes ?aggre');
-        var remurl, res = remQuery.get(0);
+	    var remQuery = lore.ore.loadedRDF.where('?aggre rdf:type ore:Aggregation')
+            .where('?rem ore:describes ?aggre');
+        var aggreurl, remurl, res = remQuery.get(0);
+        
         if (res){
 	       remurl = res.rem.value.toString();
+           aggreurl = res.aggre.value.toString();
         }  else {
             lore.ore.ui.loreWarning("No compound object found");
             lore.debug.ore("no remurl found in RDF",lore.ore.loadedRDF);
@@ -894,7 +896,7 @@ lore.ore.loadCompoundObject = function (rdf) {
  
          
         // create a node figure for each aggregated resource, restoring the layout
-        lore.ore.loadedRDF.where('<' + remurl + "#aggregation" + '> ore:aggregates ?url')
+        lore.ore.loadedRDF.where('<' + aggreurl  + '> ore:aggregates ?url')
             .optional('?url layout:x ?x')
             .optional('?url layout:y ?y')
             .optional('?url layout:width ?w')
@@ -903,6 +905,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             .optional('?url layout:scrollx ?sx')
             .optional('?url layout:scrolly ?sy')
             .optional('?url dc:format ?format')
+            .optional('?url rdf:type ?rdftype')
             .each(function(){
              var resourceURL = this.url.value.toString(); 
              lore.debug.ore("found aggregated resource " + resourceURL,this);
@@ -911,7 +914,7 @@ lore.ore.loadCompoundObject = function (rdf) {
              if (this.x && this.y) {
                 var opts = {};
                 for (prop in this) {
-                    if (prop != 'url' && prop != 'format'){
+                    if (prop != 'url' && prop != 'format' && prop != 'rdftype'){
                         opts[prop] = parseInt(this[prop].value);
                     } else {
                         opts[prop] = this[prop].value.toString();
@@ -1192,14 +1195,51 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
         }
     });
 };
+/** display saved compound object in the UI */
+lore.ore.afterSaveCompoundObject = function(remid){
+    try{
+    if (!lore.ore.ui.remstreeroot.findChild('id',remid)){
+        var details = [];
+        var title = "Untitled";
+        if (remid == lore.ore.currentREM){
+            title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+            details.push(lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid) 
+                + ", " + lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid));
+        }
+        var tmpNode = new Ext.tree.TreeNode({
+                'text' : title,
+                uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
+                details   : details,
+                'id' : remid,
+                'uri' : remid,
+                'qtip': "Compound Object: " + remid,
+                'iconCls' : 'oreresult',
+                'leaf' : true,
+                'draggable': true
+        });
+        lore.ore.ui.remstreeroot.appendChild(tmpNode);
+        lore.ore.attachREMEvents(tmpNode);           
+    }
+    } catch (ex) {
+        lore.debug.ore("Error after saving compound object",ex);
+    }
+}
 /** Remove a compound object from the UI */
 lore.ore.afterDeleteCompoundObject = function(deletedrem){
-    if (lore.ore.currentREM == deletedrem){
-        lore.ore.loadedRDF = {};
-        lore.ore.currentREM = "";
-        // TODO: #124 delete from trees
-        lore.ore.createCompoundObject();
-        lore.ore.ui.loreInfo("Compound object deleted");
+    try{
+	    if (lore.ore.currentREM == deletedrem){
+	        lore.ore.loadedRDF = {};
+	        lore.ore.currentREM = "";
+	        lore.ore.createCompoundObject(); 
+	    }
+	    // delete from sources tree
+	    var treenode = lore.ore.ui.remstreeroot.findChild('id',deletedrem);
+	    if (treenode){
+	        treenode.remove();
+	    } 
+	    lore.ore.ui.loreInfo("Compound object deleted");
+    } catch (ex){
+        lore.debug.ore("Error after deleting compound object",ex);
     }
 };
 /**
@@ -1302,7 +1342,10 @@ lore.ore.displayCompoundObjectsInTree = function (xmldoc, searchval, isSearchQue
                     'leaf' : true,
                     'draggable': true
             });
+           
            tree.appendChild(tmpNode);
+           
+
            lore.ore.attachREMEvents(tmpNode);
         }
 
@@ -1372,6 +1415,9 @@ lore.ore.graph.addFigureWithOpts = function(opts){
         }
         if (opts.format){
             fig.setProperty("dc:format_0",opts.format);
+        }
+        if (opts.rdftype){
+            fig.setProperty("rdf:type_0",opts.rdftype);
         }
         fig.setContent(theURL);
         lore.ore.graph.coGraph.addFigure(fig, opts.x, opts.y);
