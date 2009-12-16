@@ -45,24 +45,25 @@ try {
 			},
             /** Respond to the URL loaded in the browser changing */
 			onLocationChange: function(aProgress, aRequest, aURI){
+                var updateURI = "about:blank";
 				try {
 					if (aURI) {
-						var co = loreoverlay.coView();
-						var an = loreoverlay.annoView();
+                        updateURI = aURI.spec;
+                    }
+					var co = loreoverlay.coView();
+					var an = loreoverlay.annoView();
+					
+					if (updateURI == lore.global.ui.getCurrentURL(loreoverlay.instId)) {
+						if ( co && co.refreshPage) co.refreshPage();
+						if ( an && an.refreshPage) an.refreshPage();
+						return;
+					}
+					if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId) && 
+						 lore.global.ui.annotationView.loaded(loreoverlay.instId) ) {
+						lore.global.ui.setCurrentURL(loreoverlay.instId, updateURI);
+						co.handleLocationChange(updateURI);
+						an.handleLocationChange(updateURI);
 						
-						if (aURI.spec == lore.global.ui.getCurrentURL(loreoverlay.instId)) {
-							if ( co && co.refreshPage) co.refreshPage();
-							if ( an && an.refreshPage) an.refreshPage();
-							return;
-						}
-						if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId) && 
-							 lore.global.ui.annotationView.loaded(loreoverlay.instId) ) {
-							lore.global.ui.setCurrentURL(loreoverlay.instId, aURI.spec);
-							//this.oldURL = aURI.spec;
-							co.handleLocationChange(aURI.spec);
-							an.handleLocationChange(aURI.spec);
-							
-						}
 					}
 				} catch(e) {
 					alert(e + " " +  e.stack);
