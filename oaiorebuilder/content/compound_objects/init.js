@@ -56,6 +56,19 @@ lore.ore.ui.initGraphicalView = function() {
 	lore.ore.graph.coGraph.addSelectionListener(lore.ore.graph.gSelectionListener);
 	lore.ore.graph.gCommandListener = new lore.ore.graph.CommandListener();
 	lore.ore.graph.coGraph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
+    // ignore nodes dropped back onto the tree
+    lore.ore.ddoverrides = {
+        onInvalidDrop : function(e){
+            this.invalidDrop = true;
+        },
+        endDrag : function(){
+            if (this.invalidDrop){
+                this.hideProxy();
+		        delete this.invalidDrop;
+            }
+        }
+    };
+    Ext.apply(Ext.getCmp("sourcestree").dragZone,lore.ore.ddoverrides);
     // create drop target for dropping new nodes onto editor from the sources tree
     var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD'});
     droptarget.notifyDrop = function (dd, e, data){
@@ -69,9 +82,6 @@ lore.ore.ui.initGraphicalView = function() {
         return true;
     };
     
-    droptarget.onInvalidDrop = function(e){
-        lore.debug.ore("invalid drop",e);
-    };
 	/** Most recently selected figure - updated in SelectionProperties.js */
 	lore.ore.graph.selectedFigure = null;
     /** Used for layout of new nodes */
