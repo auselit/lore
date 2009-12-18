@@ -646,7 +646,7 @@ loreuieditor = function (store ) {
  */
 loreuiannotreeandeditor = function (store) {
 	return {
-			title: "Tree",
+			title: "Annotation List",
 			xtype: "panel",
 			id: "treeview",
 			layout: "border",
@@ -762,7 +762,7 @@ loreuiannocurpage = function (store) {
 			                }}]})*/
 	return {
 			xtype: "tabpanel",
-			title: "Current Page",
+			title: "Browse",
 			id: "curpage",
 			deferredRender: false,
 			activeTab: "treeview",
