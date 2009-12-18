@@ -773,7 +773,10 @@ loreuiannocurpage = function (store) {
 loreuiannosearchform = function (store ) {
 	return { 
 			xtype: "form",
-		
+		    keys: [{ key: [10, 13], fn: function() {
+                      Ext.getCmp("search").fireEvent('click');
+                   }
+            }],
 			id: "annosearchform",
 				trackResetOnLoad: true,
 				split:true,
