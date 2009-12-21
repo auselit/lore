@@ -385,11 +385,13 @@ try {
 				document.getElementById('save-all-annotations').hidden = disable_anno;
 				document.getElementById('import-export-anno').hidden = disable_anno;
 				
+				var annomode = this.prefs.getBoolPref("annotationmode");
+				
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps?  
 				loreoverlay.annoView().setdccreator(dccreator);
 				loreoverlay.annoView().setRepos(annoserver);
-				
+				loreoverlay.annoView().setAnnotationMode(annomode);
 				loreoverlay.annoView().disableUIFeatures({
 					'disable_annotations': disable_anno
 				});
@@ -446,13 +448,16 @@ try {
 					document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "false");
 				}
 				
-				var labelValue = title + ': ' + url;
-				if (labelValue.length > 50)
-					labelValue = labelValue.substring(0,50) + "...";
+				//var labelValue = title + ': ' + url;
+//				if (labelValue.length > 50)
+	//				labelValue = labelValue.substring(0,50) + "...";
 					
-				var label = document.getElementById("oobAnnoVarContentLabel");
-				label.setAttribute("value", labelValue);
+				//var label = document.getElementById("oobAnnoVarContentLabel");
+				//var labelURL = document.getElementById("oobAnnoVarContentLabelURL");
+				//label.setAttribute("value", labelValue);
 				
+				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", title);
+				document.getElementById("oobAnnoVarContentLabelURL").setAttribute("value", url);
 
 				var iframe = document.getElementById("oobAnnoVarContent");
 		
@@ -490,7 +495,7 @@ try {
 			if (splitter.getAttribute("collapsed") == "false") {
 				document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "true");
 				document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "true");
-				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", "Annotation Variation Resource:");
+				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", "");
 				document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
 			}
 		},
