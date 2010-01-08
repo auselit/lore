@@ -191,7 +191,7 @@ lore.ore.search = function (searchuri, searchpred, searchval){
  * @return {Boolean} Returns true if the compound object has been modified
  */
 lore.ore.compoundObjectDirty = function (){
-    // TODO: implement this method - compare lore.ore.loadedRDF with state of model
+    // TODO: #56 implement this method - compare lore.ore.loadedRDF with state of model
     if (lore.global.util.isEmptyObject(lore.ore.loadedRDF)){
         return false;
     } else {
@@ -481,6 +481,56 @@ lore.ore.showSMIL = function() {
 lore.ore.updateRDFHTML = function() {
     Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
 };
+
+lore.ore.displayHistory = function (){
+    try{
+    var query = lore.ore.historyService.getNewQuery();
+    query.annotation = "lore/compoundObject";
+    var options = lore.ore.historyService.getNewQueryOptions();
+    options.sortingMode = options.SORT_BY_DATE_DESCENDING;
+    options.includeHidden = true;
+    options.maxResults = 20;
+    var result = lore.ore.historyService.executeQuery(query, options);
+    result.root.containerOpen = true;
+    var count = result.root.childCount;
+    for (var i = 0; i < count; i++) {
+        var theobj = {};
+        var node = result.root.getChild(i);
+        var title = node.title;
+        var uri = node.uri;
+        var visited = node.accessCount;
+        var lastVisitedTimeInMicrosecs = node.time;
+        var thedate = new Date();
+        thedate.setTime(lastVisitedTimeInMicrosecs / 1000);
+        var details = [];
+        // display the creator and date
+        details.push("Last accessed " + thedate.format('Y-m-d')); 
+        //", Accessed " + visited + " time" 
+        //+ (visited == 1? "" : "s"));
+        if (!lore.ore.ui.recenttreeroot.findChild('id',uri + "r")){
+           var tmpNode = new Ext.tree.TreeNode({
+                    'text' : title,
+                    uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
+                    details   : details,
+                    'id' : uri + "r",
+                    'uri' : uri,
+                    'qtip': "Compound Object: " + uri,
+                    'iconCls' : 'oreresult',
+                    'leaf' : true,
+                    'draggable': true
+            });
+           
+           lore.ore.ui.recenttreeroot.appendChild(tmpNode);
+           lore.ore.attachREMEvents(tmpNode);
+        }
+    }
+
+    result.root.containerOpen = false;
+ 
+  } catch (e) {
+    lore.debug.ore("error displaying history",e);
+  }
+}
 lore.ore.refreshTabularEditor = function (panel){
     lore.debug.ore("the tabular editor",panel);
     // create table if it does not exist, otherwise refresh it   
@@ -748,7 +798,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     
     var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
     var resourcerdf = "";
-    for (i = 0; i < allfigures.getSize(); i++) {
+    for (var i = 0; i < allfigures.getSize(); i++) {
         var fig = allfigures.get(i);
         var figurl = lore.global.util.escapeHTML(lore.global.util.preEncode(fig.url.toString()));
         rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
@@ -826,7 +876,41 @@ lore.ore.generateID = function(){
     // TODO: #125 should use a persistent identifier service to request an identifier
     return "http://austlit.edu.au/rem/" + draw2d.UUID.create();
 };
-
+lore.ore.addToHistory = function(remurl, title){
+  try {
+     var theuri = Components.classes["@mozilla.org/network/io-service;1"].
+         getService(Components.interfaces.nsIIOService).
+         newURI(remurl, null, null);
+     // Use Firefox annotation to mark it as a compound object
+     lore.ore.mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
+        title, 0, lore.ore.mozannoService.EXPIRE_WITH_HISTORY);
+     // Add it to browser history
+     var visitDate = new Date();
+     var browserHistory = lore.ore.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
+     browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
+     var details = ["Last accessed " + visitDate.format('Y-m-d')]; 
+     var existNode = lore.ore.ui.recenttreeroot.findChild('id',remurl + "r");
+     if (existNode) {
+         lore.ore.ui.recenttreeroot.removeChild(existNode);
+     }
+     var tmpNode = new Ext.tree.TreeNode({
+        'text' : title,
+        uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
+        details   : details,
+        'id' : remurl + "r",
+        'uri' : remurl,
+        'qtip': "Compound Object: " + remurl,
+        'iconCls' : 'oreresult',
+        'leaf' : true,
+        'draggable': true
+      });
+   
+      lore.ore.ui.recenttreeroot.appendChild(tmpNode);
+      lore.ore.attachREMEvents(tmpNode);
+  } catch (e){
+      lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
+  }
+}
 /**
  * Load a compound object into the graphical view
  * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
@@ -840,9 +924,8 @@ lore.ore.loadCompoundObject = function (rdf) {
             }
         }
     };
-    
-    
-    var showInTree = false;
+
+    var showInHistory = false;
     try {
         // reset the graphical view
         lore.ore.ui.initGraphicalView();
@@ -852,7 +935,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         if (typeof rdf != 'object'){ 
 	       rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
         } else {
-            showInTree = true;
+            showInHistory = true;
             rdfDoc = rdf.responseXML;
         }
 	    var databank = jQuery.rdf.databank();
@@ -984,28 +1067,13 @@ lore.ore.loadCompoundObject = function (rdf) {
 
         lore.ore.ui.loreInfo("Loading compound object");
         lore.ore.currentREM = remurl;
-       
-       if (showInTree && !lore.ore.ui.recenttreeroot.findChild('id',remurl + 'r')){
+
+       if (showInHistory){
 	        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
             if (!title){
                 title = "Untitled";
             }
-	        var recentNode = new Ext.tree.TreeNode({
-	            'text' : title,
-	            'id': remurl + 'r',
-	            'uri': remurl,
-	            'iconCls' : 'oreresult',
-	            'leaf' : true,
-                'draggable' : true
-	        });
-	        lore.ore.attachREMEvents(recentNode);
-	        var childNodes = lore.ore.ui.recenttreeroot.childNodes;
-	        if (childNodes.length >= 5) {
-	            lore.ore.ui.recenttreeroot
-	                .removeChild(lore.ore.ui.recenttreeroot.firstChild);
-	        }
-	        lore.ore.ui.recenttreeroot.appendChild(recentNode);
-            //lore.ore.graph.doLayout();
+            lore.ore.addToHistory(remurl, title);  
        }
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");

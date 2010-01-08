@@ -73,7 +73,7 @@ lore.ore.ui.initGraphicalView = function() {
     Ext.apply(Ext.getCmp("searchtree").dragZone,lore.ore.ddoverrides);
     
     // create drop target for dropping new nodes onto editor from the sources and search trees
-    var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD'});
+    var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD', 'copy':false});
     droptarget.notifyDrop = function (dd, e, data){
         lore.debug.ore("notifydrop",data);
         lore.ore.graph.addFigureWithOpts({
@@ -82,7 +82,6 @@ lore.ore.ui.initGraphicalView = function() {
             y: (e.xy[1] - lore.ore.graph.coGraph.getAbsoluteY() + lore.ore.graph.coGraph.getScrollTop()),
             "props": {"rdf:type_0":lore.constants.RESOURCE_MAP}
         });
-        return true;
     };
     
 	/** Most recently selected figure - updated in SelectionProperties.js */
@@ -305,6 +304,47 @@ lore.ore.ui.initExtComponents = function() {
     Ext.QuickTips.init();
 }
 
+lore.ore.ui.initHistory = function (){
+    lore.ore.historyService = Components.classes["@mozilla.org/browser/nav-history-service;1"]
+              .getService(Components.interfaces.nsINavHistoryService);
+    lore.ore.mozannoService = Components.classes["@mozilla.org/browser/annotation-service;1"]
+              .getService(Components.interfaces.nsIAnnotationService);
+    var observer = {
+	  onBeginUpdateBatch: function() {
+	  },
+	  onEndUpdateBatch: function() {
+        lore.global.ui.clearTree(lore.ore.ui.recenttreeroot);
+        lore.ore.displayHistory();
+	  },
+	  onVisit: function(aURI, aVisitID, aTime, aSessionID, aReferringID, aTransitionType) {
+	  },
+	  onTitleChanged: function(aURI, aPageTitle) {
+	  },
+	  onDeleteURI: function(aURI) {
+        var thenode = lore.ore.ui.recenttreeroot.findChild('id',aURI.spec + "r");
+        if (thenode){
+            lore.ore.ui.recenttreeroot.removeChild(thenode);
+        }
+	  },
+	  onClearHistory: function() {
+        lore.global.ui.clearTree(lore.ore.ui.recenttreeroot);
+	  },
+	  onPageChanged: function(aURI, aWhat, aValue) {
+	  },
+	  onPageExpired: function(aURI, aVisitTime, aWholeEntry) {
+	  },
+	  QueryInterface: function(iid) {
+	    if (iid.equals(Components.interfaces.nsINavHistoryObserver) ||
+	        iid.equals(Components.interfaces.nsISupports)) {
+	      return this;
+	    }
+	    throw Components.results.NS_ERROR_NO_INTERFACE;
+      }
+    };
+    lore.ore.historyService.addObserver(observer,false);
+    lore.ore.displayHistory();
+}
+
 
 /**
  * Initialise Compound Objects component of LORE
@@ -327,7 +367,7 @@ lore.ore.ui.init = function() {
 	lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
 	lore.ore.ui.initExtComponents();
     lore.ore.ui.initProperties();
-	
+	lore.ore.ui.initHistory();
     lore.ore.ui.loreInfo("Welcome to LORE");
  
 	lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId);  
