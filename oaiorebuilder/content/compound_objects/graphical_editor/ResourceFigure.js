@@ -195,6 +195,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
         var displayUrl = theurl;
         try{
         if ((rdftype  && (rdftype.match(lore.constants.NAMESPACES["annotype"]) || 
+                    rdftype.match(lore.constants.NAMESPACES["vanno"]) ||
                     rdftype.match(lore.constants.NAMESPACES["annoreply"])))){ 
                         
             if (theurl.match("\\?")&& !theurl.match("danno_useStylesheet")){
