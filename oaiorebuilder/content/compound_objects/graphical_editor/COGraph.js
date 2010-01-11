@@ -180,3 +180,44 @@ lore.ore.graph.COGraph.prototype.onKeyDown=function( /*:int*/ keyCode, /*:boolea
      this.commandStack.redo();
 
 }
+
+lore.ore.graph.COGraph.prototype.getContextMenu=function(){
+	var menu=new draw2d.Menu();
+    menu.appendMenuItem(new draw2d.MenuItem("Add current URL",
+        "chrome://lore/skin/icons/add.png",
+        function(x,y){
+            lore.ore.addFigure(lore.ore.ui.currentURL);  
+        })
+    );
+	menu.appendMenuItem(new draw2d.MenuItem("Auto layout",
+        "chrome://lore/skin/icons/layout.png",
+        function(x,y){
+	       lore.ore.doLayout();  
+        })
+    );
+    menu.appendMenuItem(new draw2d.MenuItem("New Compound Object",
+        "chrome://lore/skin/icons/database_add.png",
+        function(x,y){
+            lore.ore.createCompoundObject();
+        })
+    );
+	menu.appendMenuItem(new draw2d.MenuItem("Save Compound Object",
+        "chrome://lore/skin/icons/database_save.png",
+        function(x,y){
+	       lore.ore.saveRDFToRepository();
+	    })
+    );
+    menu.appendMenuItem(new draw2d.MenuItem("Delete Compound Object",
+        "chrome://lore/skin/icons/database_delete.png",
+        function(x,y){
+            lore.ore.deleteFromRepository();
+        })
+    );
+    menu.appendMenuItem(new draw2d.MenuItem("Open LORE preferences",
+        "chrome://lore/skin/icons/cog.png",
+        function(x,y){
+            window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
+        })
+    );
+	return menu;
+};
