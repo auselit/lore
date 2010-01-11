@@ -385,13 +385,13 @@ try {
 				document.getElementById('save-all-annotations').hidden = disable_anno;
 				document.getElementById('import-export-anno').hidden = disable_anno;
 				
-				var annomode = this.prefs.getBoolPref("annotationmode");
+				//var annomode = this.prefs.getBoolPref("annotationmode");
 				
 				// TODO: Cache store, views/model have listeners that listen to
 				// changes in settings instead perhaps?  
 				loreoverlay.annoView().setdccreator(dccreator);
 				loreoverlay.annoView().setRepos(annoserver);
-				loreoverlay.annoView().setAnnotationMode(annomode);
+				//loreoverlay.annoView().setAnnotationMode(annomode);
 				loreoverlay.annoView().disableUIFeatures({
 					'disable_annotations': disable_anno
 				});
