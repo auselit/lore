@@ -589,9 +589,11 @@ loreuieditor = function (store ) {
 							emptyText: 'Type or select tags',
 							resizable: true,
 							name: 'tags',
-							store: new Ext.data.SimpleStore({
+                            pageSize: 10,
+							store: new Ext.ux.data.PagingArrayStore({
 								fields: ['id', 'name'],
-								data: lore.anno.thesaurus
+								data: lore.anno.thesaurus,
+                                lastOptions: {params: {start:0,limit:10}}
 							}),
 							mode: 'local',
 							displayField: 'name',
