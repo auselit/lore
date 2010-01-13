@@ -387,7 +387,7 @@ loreuieditor = function (store ) {
 		 			layout: 'form',
 		 			autoScroll: true,
 		 			id: 'annotationsform',
-		 			labelWidth: 100,
+		 			labelWidth: 85,
 		 			
 						defaultType: 'textfield',
 						labelAlign: 'right',
