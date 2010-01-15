@@ -18,14 +18,11 @@ lore.ore.graph.ResourceFigure = function(initprops) {
     if(!this.metadataproperties["resource_0"]){
         this.metadataproperties["resource_0"] = "";
     }
-    
-    if (!this.metadataproperties["dc:title_0"]){
-	   this.metadataproperties["dc:title_0"] = "";
-    }
     this.url = this.metadataproperties["resource_0"];
-	
 	draw2d.Node.call(this);
 	this.setDimension(250, 150);
+    var title = this.metadataproperties["dc:title_0"];
+    this.setTitle((title? title : 'Resource'));
 };
 
 lore.ore.graph.ResourceFigure.prototype = new draw2d.Node;
@@ -271,7 +268,7 @@ lore.ore.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
 	this.metadataarea.innerHTML = "<ul><li id='" + this.id + "-icon'>"
 			+ "<a onclick='lore.global.util.launchTab(\"" + urlparam
 			+ "\",window);' href='#'>" + urlparam + "</a></li></ul>";
-    lore.debug.ore("set url to " + urlparam,this.metadataarea.innerHTML);
+    //lore.debug.ore("set url to " + urlparam,this.metadataarea.innerHTML);
 
 };
 
@@ -460,8 +457,9 @@ lore.ore.graph.ResourceFigure.prototype.appendProperty = function(pname, pval){
  * @param {} pval The value of the property
  */
 lore.ore.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
-  //lore.debug.ore("ResourceFigure: setProperty " + pid + " " + pval,this);
+  
   var oldval = this.metadataproperties[pid];
+  //lore.debug.ore("ResourceFigure: setProperty " + pid + " " + pval,this);
   this.metadataproperties[pid] = pval;
   if (pid == "resource_0" && pval != oldval){
     this.setContent(pval);
