@@ -115,6 +115,12 @@
 .tree-anno, .tree-ore {
     display:none;
 }
+.x-tree-node .rel-in {
+	background-image: url(chrome://lore/skin/icons/arrow_left.png);
+}
+.x-tree-node .rel-out {
+	background-image: url(chrome://lore/skin/icons/arrow_right.png);
+}
 .x-tree-node .oreresult {
 	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png);
 }
@@ -453,4 +459,8 @@
 .x-tree-multiline-node-details{
 	color:#51666b;
 	font-size:90%
+}
+.x-form-field-wrap .x-form-ellipsis-trigger{
+    background-image:url(chrome://lore/skin/icons/ellipsis-trigger-grey.gif);
+    border-bottom-color:#b5b8c8;
 }
