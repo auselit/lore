@@ -56,16 +56,6 @@ lore.ore.ui.initGraphicalView = function() {
 	lore.ore.graph.coGraph.addSelectionListener(lore.ore.graph.gSelectionListener);
 	lore.ore.graph.gCommandListener = new lore.ore.graph.CommandListener();
 	lore.ore.graph.coGraph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
-    
-    // ignore nodes dropped back onto the tree
-    lore.ore.ddoverrides = {
-        onInvalidDrop: function(){
-            this.hideProxy();
-        }
-    };
-
-    Ext.apply(Ext.getCmp("sourcestree").dragZone,lore.ore.ddoverrides);
-    Ext.apply(Ext.getCmp("searchtree").dragZone,lore.ore.ddoverrides);
 
     // create drop target for dropping new nodes onto editor from the sources and search trees
     var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD', 'copy':false});
