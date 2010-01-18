@@ -40,6 +40,8 @@ Ext.ns('Ext.ux.tree');
 * @author Lars Dittrich (<a href="http://www.extjs.com/forum/member.php?u=41094">Adversus</a>)   (published by Joseph Francis <a href="http://www.extjs.com/forum/member.php?u=2345">Joe</a>)
 * @license <a href="http://www.gnu.org/licenses/lgpl.html">LGPL 3.0</a>
 * @version 1.00 - March 26, 2009
+* 
+* Modified for LORE to add ability to update details
 */
 
 Ext.ux.tree.MultilineTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
@@ -59,11 +61,13 @@ Ext.ux.tree.MultilineTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
             cb ? ('<input class="x-tree-node-cb" type="checkbox" ' + (a.checked ? 'checked="checked" />' : '/>')) : '',
             '<a hidefocus="on" class="x-tree-node-anchor" href="', href, '" tabIndex="1" ',
              a.hrefTarget ? ' target="' + a.hrefTarget + '"' : "", '><span unselectable="on">', n.text, "</span></a>"].join('');
-
+        buf += "<div class='x-tree-node-details'>";
         if (n.attributes.details) {
             for (var x = 0; x < n.attributes.details.length; x++) {
-
-                buf += ["<br/>",
+                if (x > 0) {
+                    buf += "<br>";
+                }
+                buf += [
                         '<span class="x-tree-node-indent">', this.indentMarkup, "</span>",
                         (!n.nextSibling && n.hasChildNodes()) ? '<span style="margin-left: 16px;"></span>' : '',
                         n.nextSibling ? '<img src="' + this.emptyIcon + '" class="x-tree-ec-icon x-tree-elbow-line" />' : '',
@@ -73,6 +77,7 @@ Ext.ux.tree.MultilineTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 
             }
         }
+        buf += "</div>";
         buf += ["</div>",
             '<ul class="x-tree-node-ct" style="display:none;"></ul>',
             "</li>"].join('');
@@ -99,8 +104,32 @@ Ext.ux.tree.MultilineTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
         }
         this.anchor = cs[index];
         this.textNode = cs[index].firstChild;
+        this.detailsNode = cs[++index];   
     },
-
+    onDetailsChange: function(n, details,oldDetails){
+        lore.debug.ore("ondetailschange",this);
+        if(this.rendered){
+            var buf = "";
+            for (var x = 0; x < details.length; x++) {
+                if (x > 0) {
+                    buf += "<br>";
+                }
+                buf += [
+                        '<span class="x-tree-node-indent">', this.indentMarkup, "</span>",
+                        (!n.nextSibling && n.hasChildNodes()) ? '<span style="margin-left: 16px;"></span>' : '',
+                        n.nextSibling ? '<img src="' + this.emptyIcon + '" class="x-tree-ec-icon x-tree-elbow-line" />' : '',
+                        (n.hasChildNodes()) ? '<img src="' + this.emptyIcon + '" class="x-tree-ec-icon x-tree-elbow-line-multiline-expanded" style="margin-right: 2px;"/>' : '<span style="margin-left: 16px;"></span>',
+                        (n.isLast() && !n.isExpandable()) ? '<span style="margin-left: 16px;"></span>' : '',
+                        '<span class="x-tree-multiline-node-details">' + details[x] + '</span>'].join('');
+            }
+            if (this.detailsNode){
+                this.detailsNode.innerHTML = buf;
+            } else {
+                
+            }
+        }
+        
+    },
     //private
     updateExpandIcon: function() {
 
