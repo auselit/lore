@@ -846,8 +846,10 @@ lore.ore.addToHistory = function(remurl, title){
          getService(Components.interfaces.nsIIOService).
          newURI(remurl, null, null);
      // Use Firefox annotation to mark it as a compound object
-     lore.ore.mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
-        title, 0, lore.ore.mozannoService.EXPIRE_WITH_HISTORY);
+     var mozannoService = Components.classes["@mozilla.org/browser/annotation-service;1"]
+              .getService(Components.interfaces.nsIAnnotationService);
+     mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
+        title, 0, mozannoService.EXPIRE_WITH_HISTORY);
      // Add it to browser history
      var visitDate = new Date();
      var browserHistory = lore.ore.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
