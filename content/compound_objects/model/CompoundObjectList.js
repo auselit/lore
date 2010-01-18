@@ -24,7 +24,14 @@ lore.ore.model.CompoundObjectList = Ext.extend(Ext.util.Observable, {
      * @param {} uri The URI of the compound object to be removed
      */
     remove: function(uri){
-        delete this.compoundObjects[uri];
+        
+        for (var i = 0; i < this.compoundObjects.length; i++){
+            var co = this.compoundObjects[i];
+            if (co.getUri() == uri){
+                this.compoundObjects = this.compoundObjects.splice(i,1);
+                break;
+            }
+        }
         this.fireEvent('remove',uri);
     },
     /** Add a batch of compound objects to the list
@@ -180,7 +187,7 @@ lore.ore.model.CompoundObjectListManager.prototype.clear = function(listname){
     this.lists[listname].clearList();
 }
 lore.ore.model.CompoundObjectListManager.prototype.remove = function(uri){
-  for (l in this.lists){
-    l.remove(uri);
+  for (colist in this.lists){
+    this.lists[colist].remove(uri);
   }
 };
