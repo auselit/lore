@@ -187,7 +187,10 @@ lore.ore.ui.initExtComponents = function() {
         qtip: "Compound Objects that refer to the page displayed in the web browser"
 	});
     lore.ore.ui.remstreeroot.addModel(lore.ore.coListManager.getList("browse"));
-    
+    // display browse tree if nodes are added
+    lore.ore.ui.remstreeroot.on("append",function(){
+       lore.ore.ui.propertytabs.activate("sourcestree"); 
+    });
     /** The root of the tree used to display compound objects from history */
 	lore.ore.ui.recenttreeroot = new lore.ore.ui.CompoundObjectGroupNode({
 		id : "recenttree",
