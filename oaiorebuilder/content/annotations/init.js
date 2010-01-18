@@ -85,5 +85,5 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		lore.anno.ui.hideMarker(); 
 	}
 	
-	Ext.EventManager.onDocumentReady(lore.anno.ui.init);
+	//Ext.EventManager.onDocumentReady(lore.anno.ui.init);
 
