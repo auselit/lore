@@ -29,6 +29,9 @@
 var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
 var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2QkJBS0omqn6QgAAAZRJREFUeNrFkz1rFUEUhp+Z7OoNRCEgiYSAWCRYKEYQ/4LaaMBOAjYKIjbBQmzt7ARBhIS0aW5hEySFRTobRbC1sJDUkRjW3fNlMXvVRKxu4YFhzgwzz3De90yKCMaJzJgxNqBieOkfNTiIgwqog3SgVvYM6AJaqABYuH3krh8e5mBWcrE+V9jZ7AEA+7vgTlh/QJUwBVFCpaxFCFVQoZ45B02MAAERcPkJqT5BfHxFmJEv3gVtsDer5OvPSfUAqgGysQwi0AQZ1VJbONQniXdPSUv3C3dyGtt+RL7yEOQAGd6je3mVcP8DIFIAHpArmDoDrqSz135rMjVLOrVIdWuNYw+2wUuJtEFF86PU504C0vk7xOct4tsX0uyFAmi/Q3eArN3szc/l0TbItFpo7uCCv39BWlwmvn4A65i4sY59GkKuD7ukCgIpns0FSysEe0V1VUKK0iG9+iMXVMGMMOP45Dy8fktFEyBCsgFpZKFZ8T56cbPDhEEKqLw41keKx6cDiV+dhQV0R2aldJ//3bTpv//Gn8UfBkFlLEJ3AAAAAElFTkSuQmCC";
 
+
+ 
+
 /** 
  * Annotations View
  * @namespace
@@ -184,6 +187,24 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		lore.anno.ui.setRepos = function(annoserver){
 			lore.anno.annoURL = annoserver; // annotation server
 		}
+		
+		lore.anno.ui.getAnnotationMode = function () {
+			if ( !lore.anno.ui.annomode)
+				return lore.constants.ANNOMODE_NORMAL;
+			
+			return lore.anno.ui.annomode ? lore.constants.ANNOMODE_SCHOLARLY: lore.constants.ANNOMODE_NORMAL;	
+		}
+		
+		lore.anno.ui.setAnnotationMode = function(mode) {
+			lore.anno.ui.annomode = mode;
+			lore.anno.ui.setAnnotationFormUI(null, null, lore.anno.ui.getAnnotationMode());
+		}
+		
+		lore.anno.ui.setCacheTimeout = function ( millis) {
+			//TODO: should be at a finer granularity 
+			lore.anno.cachetimeout = millis;
+		}
+		
 		
 		
 		/**
@@ -614,6 +635,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		 */
 		lore.anno.ui.showAnnotation = function(rec, loadOnly){
 			try {
+				
 				// display contents of context
 				if (rec.data.context) {
 					
@@ -679,9 +701,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					ctxtField.getEl().setStyle("background-color", "inherit");
 				}
 				
-				//lore.anno.annopagemetads.removeAll();
-			//	lore.anno.annousermetads.removeAll();
-				lore.anno.ui.form.findField('metares').setValue('');
+	 			lore.anno.ui.form.findField('metares').setValue('');
 				if (lore.anno.ui.rdfa != null  ) {
 				
 					var theField =  lore.anno.ui.form.findField('metares');
@@ -713,20 +733,13 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 			}
 			else {
 				lore.anno.ui.form.findField('metares').setValue('RDFa needs to be extracted from page...');
-			}
-				
-				
-				
-				/*if (rec.data.context && rec.data.variantcontext) {
-					if ( rec.data.original == rec.data.context)
-						url = rec.data.variant;
-					else
-						url = rec.data.original;
-					lore.anno.ui.topView.updateVariationSplitter(ctx, title, true, function(){
-						lore.anno.ui.hideMarker();
-						lore.anno.ui.highlightCurrentAnnotation(rec);
-					});
-				}*/
+		 	}
+			
+			var isNormal = lore.anno.ui.getAnnotationMode() == lore.constants.ANNOMODE_NORMAL;
+			lore.anno.ui.setVisibilityFormField('importance', 	isNormal);
+			lore.anno.ui.setVisibilityFormField('altbody', 		isNormal);
+			lore.anno.ui.setVisibilityFormField('references', 	isNormal);
+		
 				
 				if (!loadOnly) {
 					lore.anno.ui.formpanel.show();
@@ -813,12 +826,26 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		 * Show hide fields depending on whether the current annotation is a variation
 		 * @param {Boolean} variation Specify whether the annotation is variation annotation or not
 		 */
-		lore.anno.ui.setAnnotationFormUI = function(variation, rdfa){
+		lore.anno.ui.setAnnotationFormUI = function(variation, rdfa, annomode){
 		
 			var nonVariationFields = ['res'];
 			var variationFields = ['original', 'variant', 'rcontextdisp', 'variationagent', 'variationplace', 'variationdate'];
-		//	var rdfaFields = ['metares', 'metafields','metacmb'];
 			var rdfaFields = ['metares','metauserlbl','metapagelbl'];
+			
+			var scholarlyFields = ['importance', 'references', 'altbody'];
+			// annotation mode
+			
+			if (annomode != null) {
+			
+				if ( annomode == lore.constants.ANNOMODE_NORMAL) {
+					lore.anno.ui.hideFormFields(scholarlyFields);
+				}
+				else {
+					lore.anno.ui.showFormFields(scholarlyFields);
+				}
+			}
+			
+			// variation
 			if (variation != null) {
 				if (variation) {
 					lore.anno.ui.hideFormFields(nonVariationFields);
@@ -835,6 +862,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 				}
 			}
 			
+			// rdfa
 			if (rdfa != null) {
 				if (rdfa) {
 					lore.anno.ui.showFormFields(rdfaFields);
@@ -843,14 +871,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					lore.anno.ui.hideFormFields(rdfaFields);
 				
 				Ext.getCmp('chgmetactxbtn').setVisible(rdfa );
-				//Ext.getCmp('metapagegrid').setVisible(rdfa);
-				//Ext.getCmp('metausergrid').setVisible(rdfa);
-				
-				//Ext.getCmp('metacmb').setVisible(rdfa );
-				//Ext.getCmp('addmetabtn').setVisible(rdfa);
-				//Ext.getCmp('remmetabtn').setVisible(rdfa);
 			}
-			
+
+						
 		}
 		
 		/**
@@ -1054,6 +1077,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
                 annodata.bodyURL +
                 "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
             }
+			
 			var defText = annodata.bodyLoaded ? annodata.body : 'Loading content...';
 			var body = lore.global.util.externalizeLinks(defText);
 			res += body;
@@ -1674,32 +1698,51 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		lore.anno.ui.handleUpdateMetaSelection = function () {
-
-					try {
-					 
-						try {
-							var triple = lore.anno.ui.rdfa.triples[this.getAttribute("rdfIndex")];
-							
-							if (triple) 
-								lore.anno.ui.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(triple);
-								
-							lore.debug.anno("meta-context set to: " + lore.anno.ui.curSelAnno.data.meta.context, {
-								val: triple,
-								ctx: lore.anno.ui.curSelAnno.data.meta.context
-							});
-							
-							var theField = lore.anno.ui.form.findField('metares');
-							theField.setValue(lore.anno.ui.tripleURIToString(triple.property));
-						} catch (e ) {
-							lore.debug.anno(e,e);
-						}
-						lore.anno.ui.setVisibilityForPageTriples(false);
+			try {
+			 
+				try {
+					var triple = lore.anno.ui.rdfa.triples[this.getAttribute("rdfIndex")];
+					
+					if (triple) 
+						lore.anno.ui.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(triple);
 						
-					} catch (e) {
-						lore.debug.anno(e,e);
-					}
+					lore.debug.anno("meta-context set to: " + lore.anno.ui.curSelAnno.data.meta.context, {
+						val: triple,
+						ctx: lore.anno.ui.curSelAnno.data.meta.context
+					});
+					
+					var theField = lore.anno.ui.form.findField('metares');
+					theField.setValue(lore.anno.ui.tripleURIToString(triple.property));
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+				lore.anno.ui.setVisibilityForPageTriples(false);
+				
+			} catch (e) {
+				lore.debug.anno(e,e);
+			}
 		}
 		
+		lore.anno.ui.isHumanReadableTriple = function( triple) {
+			var valid = ["isRecordFor", "birthName", "alternateName", "usesPseudoAgent", "birthOf", "deathOf", "gender", "biography",
+			"influenceOnWork"];
+			
+			//work record
+			valid = valid.concat( ["title", "form", "producedOutput" ]);
+			
+			if ( triple.source && triple.subject.type != 'bnode') {
+			 	var rel = triple.property.toString();
+				
+				for (var i = 0; i < valid.length; i++) {
+				
+					if ( rel.lastIndexOf("#" + valid[i]) != -1 || rel.lastIndexOf("/" + valid[i]) != -1)
+						return true;
+				}
+			} 
+			return false;
+		//	return true;
+		}
+					
 		lore.anno.ui.setVisibilityForPageTriples = function( show ) {
 			if (!show) {
 				for (var i = 0; i < lore.anno.ui.metaSelections.length; i++) {
@@ -1718,7 +1761,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					
 					for ( var i =0 ;i < lore.anno.ui.rdfa.triples.length; i++ ) {
 						var z = lore.anno.ui.rdfa.triples[i];
-						if (z.source && z.subject.type != 'bnode' && z.property.toString().indexOf("#type")==-1) {
+						if ( lore.anno.ui.isHumanReadableTriple(z)){
 							var cw = lore.global.util.getContentWindow(window);
 							var doc = cw.document;
 							var r = doc.createRange();

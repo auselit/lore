@@ -3,6 +3,7 @@
 <!ENTITY co.label "Compound Object authoring">
 <!ENTITY general.label "General">
 <!ENTITY expert.label "Expert">
+<!ENTITY annotation_mode.label "Scholary View" >
 <!ENTITY prefwindow.title "LORE preferences">
 <!ENTITY relonturl.label "Relationship Ontology URL:">
 <!ENTITY relonturl.accesskey "U">
@@ -17,6 +18,7 @@
 <!ENTITY dccreator.label "Creator (your name):">
 <!ENTITY dccreator.accesskey "C">
 <!ENTITY annoserver.label "Annotation Server URL:">
+<!ENTITY annocachetimeout.label "Page cache timeout" >
 <!ENTITY disable_anno.label "Disable annotation features">
 <!ENTITY disable_co.label "Disable compound object features">
 <!ENTITY debug.label "Debugging" >

@@ -44,7 +44,8 @@
 										{name: 'created'}, 
 										{name: 'creator'}, 
 										{name: 'title'}, 
-										{name: 'body'}, 
+										{name: 'body'},
+										{name: 'bodyLoaded'},  
 										{name: 'modified'}, 
 										{name: 'type'}, 
 										{name: 'lang'},
@@ -62,7 +63,8 @@
                                         {name: 'variationplace'},
                                         {name: 'variationdate'},
                                         {name: 'tags'},
-										{name: 'meta'}
+										{name: 'meta'},
+										{name: 'scholarly'}
                                         ];
 										
 		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
@@ -300,7 +302,8 @@
 			// body stores the contents of the html body tag as text
 			if (this.bodyURL && !this.body && ( !bodyOp || bodyOp != 3)) {
 				lore.debug.anno("bodyOp not 3");
-				lore.anno.getBodyContent(this,window);
+				this.body = lore.anno.getBodyContent(this,window);
+				this.bodyLoaded = true;
 				//this.body = lore.anno.getBodyContent(this.bodyURL, window);
 			}
 			// get tags
@@ -536,6 +539,7 @@
 					if (resultCallback) {
 						var result = xhr.status == 201 ? 'success' : 'fail';
 						resultCallback('create', result, xhr.responseText ? xhr.responseText : xhr.statusText);
+						lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
 						lore.anno.updateAnnotationsSourceList(currentURL);
 						
 					}
@@ -590,6 +594,9 @@
 					url: anno.data.id,
 					success: function(resp){
 						lore.debug.anno("Deletion success: " + resp );
+						
+						//TODO: remove from the cache
+						//lore.global.store.remove(lore.anno.annods, );
 						if ( resultCallback) {
 							resultCallback('success', resp);
 						}
@@ -785,21 +792,7 @@
 			if (annoOrig.body) {
 				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
 				rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
-				'"><rdf:Description>' +
-				'<ContentType xmlns="' +
-				lore.constants.NAMESPACES["http"] +
-				'">text/html</ContentType>' +
-				'<Body xmlns="' +
-				lore.constants.NAMESPACES["http"] +
-				'" rdf:parseType="Literal">' +
-				'<html xmlns="http://www.w3.org/TR/REC-html40"><head><title>' +
-				(anno.title ? anno.title : 'Annotation') +
-				'</title></head>' +
-				'<body>' +
-				anno.body +
-				'</body></html>' +
-				'</Body></rdf:Description>' +
-				'</body>';
+				'">' + lore.anno.getBodyInnerRDF(anno.title, anno.body) + '</body>';
 			}
 			if (annoOrig.tags) {
 				var tagsarray = anno.tags.split(',');
@@ -813,6 +806,26 @@
 					else {
 						rdfxml += '>' + thetag + '</tag>';
 					}
+				}
+			}
+			
+			if ( annoOrig.scholarly) {
+				if ( annoOrig.scholarly.references) {
+					rdfxml += '<references xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
+					rdfxml += anno.scholarly.references;
+					rdfxml += '</references>'; 
+				}
+				
+				if ( annoOrig.scholarly.importance) {
+					rdfxml += '<importance xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
+					rdfxml += anno.scholarly.importance;
+					rdfxml += '</importance>';
+				}
+				
+				if (annoOrig.scholarly.altbody) {
+					anno.scholarly.altbody = lore.global.util.sanitizeHTML(anno.scholarly.altbody, window);
+					rdfxml += '<altbody xmlns="' + lore.constants.NAMESPACES["vanno"] + 
+					'">' + lore.anno.getBodyInnerRDF(anno.title, anno.scholarly.altbody) + '</altbody>';
 				}
 			}
 
@@ -835,6 +848,23 @@
 		rdfxml += '</rdf:RDF>';
 		
 		return rdfxml;
+	}
+	
+	lore.anno.getBodyInnerRDF = function (title, body) {
+		return '<rdf:Description>' +
+				'<ContentType xmlns="' +
+				lore.constants.NAMESPACES["http"] +
+				'">text/html</ContentType>' +
+				'<Body xmlns="' +
+				lore.constants.NAMESPACES["http"] +
+				'" rdf:parseType="Literal">' +
+				'<html xmlns="http://www.w3.org/TR/REC-html40"><head><title>' +
+				(title ? title : 'Annotation') +
+				'</title></head>' +
+				'<body>' +
+				body +
+				'</body></html>' +
+				'</Body></rdf:Description>';
 	}
 	
 	/**
@@ -1003,13 +1033,14 @@
 	 */
 	lore.anno.updateAnnotationsSourceList = function(theURL, callbackFunc){
 	
-		//var ds = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
-		//if (ds) {
-			// TODO:
-			// update so that triggers events lsiterenes to update the view to the
-			// model 
-		//	}
-		
+		var annotations = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
+		if (annotations) {
+			lore.debug.anno("Using cached annotation data...");
+			lore.anno.clearAnnotationStore();
+			lore.anno.annods.loadData(annotations, true);
+			return; 
+		}
+						
 		// Get annotations for theURL
 		if (lore.anno.annoURL) {
 			var queryURL = lore.anno.annoURL + lore.constants.ANNOTEA_ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
@@ -1101,6 +1132,41 @@
 		return lore.anno.annods.getAt(annoIndex);
 	}
 	
+	lore.anno.clearAnnotationStore = function() {
+		lore.anno.annods.each(function(rec) {
+				
+				if ( !lore.anno.isNewAnnotation(rec)) {
+					lore.anno.annods.remove(rec);
+				}
+			});
+	}
+	
+	lore.anno.loadAnnotation = function ( annotations) {
+		if ( !annotations.length)
+			annotations = [annotations];
+		var a = annotations[0];
+		var url = a.resource;
+		
+		while(a && a.isReply ) {
+			a = lore.global.util.findRecordById(lore.anno.annods, a.resource).data;
+			url = a.resource;
+		}
+		
+		if ( url == lore.anno.ui.currentURL) {
+			lore.anno.annods.loadData(annotations, true);
+		}
+		
+		var ds = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, url);
+		if ( !ds )
+			ds = [];
+		
+		ds = ds.concat(annotations);
+		
+		lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds,url, lore.anno.cachetimeout);		
+		
+		
+		//lore.anno.annods.loadData(annotations,true)
+	}
 	
 	/**
 	 * Handler function that's called when annotation information is successfully
@@ -1111,18 +1177,18 @@
 	lore.anno.handleAnnotationsLoaded = function(resp){
 		var resultNodes = {};
 		var xmldoc = resp.responseXML;
+		
 		if (xmldoc) {
 			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
 		
 		}
+		lore.debug.anno('handleAnnotationsLoaded()', {
+			xml: xmldoc,
+			nodes: resultNodes
+		});
 		
-		lore.anno.annods.each(function(rec) {
+		lore.anno.clearAnnotationStore();
 				
-				if ( !lore.anno.isNewAnnotation(rec)) {
-					lore.anno.annods.remove(rec);
-				}
-			});
-		
 		if (resultNodes.length > 0) {
 			var annotations = lore.anno.orderByDate(resultNodes,3);
 			var url = lore.global.util.getContentWindow(window).location;
@@ -1130,8 +1196,21 @@
 			 ||  (annotations[0].variant && annotations[0].original != url &&
 			 	annotations[0].variant != url))
 					return;
+				
+			for (var i = 0; i < annotations.length; i++) {
+				try {
+					annotations[i].body = lore.anno.getBodyContent(annotations[i], window);
+					annotations[i].bodyLoaded = true;
 					
-			lore.anno.annods.loadData(annotations, true);
+				} 
+				catch (e) {
+					lore.debug.anno('error loading body content: ' + e, e);
+				}
+			}
+			
+			lore.anno.loadAnnotation(annotations);
+							
+			/*lore.anno.annods.loadData(annotations, true);
 		
 			for (var i = 0; i < annotations.length; i++) {
 				try {
@@ -1139,7 +1218,8 @@
 				} catch (e) {
 					lore.debug.anno('error loading body content: ' + e, e);
 				}
-			}
+			}*/
+			
 			var annogriddata = [];
 			for (var i = 0; i < annotations.length; i++) {
 				var anno = annotations[i];
@@ -1174,10 +1254,15 @@
 				
 				//if ( replies[0].resource != lore.global.util.getContentWindow(window).location)
 				//	return;
-				lore.anno.annods.loadData(replies, true);
 				for ( var i=0; i< replies.length; i++) {
-					lore.anno.getBodyContentAsync(replies[i], window);
+					replies[i].body = lore.anno.getBodyContent(replies[i], window);
+					replies[i].bodyLoaded = true;
 				}
+				lore.anno.loadAnnotation(replies);
+				//lore.anno.annods.loadData(replies, true);
+				/*for ( var i=0; i< replies.length; i++) {
+					lore.anno.getBodyContentAsync(replies[i], window);
+				}*/
 			}
 		} catch (e ) {
 			lore.debug.anno(e,e);

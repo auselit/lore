@@ -9,12 +9,17 @@
       <preference id="disable_anno" name="extensions.lore.disable_annotations" type="bool"/>
       <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
       <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
+      <preference id="annotation_mode" name="extensions.lore.annotationmode" type="bool" />
     </preferences>
     <label accesskey="&dccreator.accesskey;" control="text_dccreator">&dccreator.label;</label><textbox id="text_dccreator" preference="dccreator_pref"/>
     <groupbox>
         <caption label="&ui.label;"/>
         <checkbox label="&disable_anno.label;" preference="disable_anno"/>
         <checkbox label="&disable_co.label;" preference="disable_co"/>
+    </groupbox>
+    <groupbox>
+    	<caption label="&anno.label;" />
+    	<checkbox label="&annotation_mode.label;" preference ="annotation_mode" />
     </groupbox>
   </prefpane>
   <prefpane image="chrome://lore/skin/icons/wrench_orange.png" id="expert-pref" label="&expert.label;" style="width:350px">
@@ -24,10 +29,12 @@
       <preference id="typepref" name="extensions.lore.rdfrepostype" type="string"/>
       <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
       <preference id="filelogging_pref" name="extensions.lore.filelogging" type="bool" />
+      <preference id="annocachetimeout_pref" name="extensions.lore.annocache_timeout" type = "int" />
     </preferences>
     <groupbox>
         <caption label="&anno.label;"/>
         <label control="text_annoserver">&annoserver.label;</label><textbox id="text_annoserver" preference="annoserver_pref"/>
+        <label control="text_annocachetimeout">&annocachetimeout.label;</label><textbox id="text_annocachetimeout" preference="annocachetimeout_pref" />
     </groupbox>
     <groupbox>
         <caption label="&co.label;"/>

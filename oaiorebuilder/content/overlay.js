@@ -349,11 +349,7 @@ try {
 				document.getElementById('load-rdf').hidden = disable_co;
 				document.getElementById('import-export').hidden = disable_co;
 				
-				// TODO: Cache store, views/model have listeners that listen to
-				// changes in settings instead perhaps? 
-				//lore.global.store.get("lore_preferences") 
-
-				loreoverlay.coView().setDcCreator(dccreator);
+					loreoverlay.coView().setDcCreator(dccreator);
 				loreoverlay.coView().setrelonturl(relonturl);
 				loreoverlay.coView().setRepos(rdfrepos, rdfrepostype, annoserver);
                
@@ -386,15 +382,15 @@ try {
 				document.getElementById('import-export-anno').hidden = disable_anno;
 				
 				//var annomode = this.prefs.getBoolPref("annotationmode");
-				
-				// TODO: Cache store, views/model have listeners that listen to
-				// changes in settings instead perhaps?  
+				var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
+								
 				loreoverlay.annoView().setdccreator(dccreator);
 				loreoverlay.annoView().setRepos(annoserver);
 				//loreoverlay.annoView().setAnnotationMode(annomode);
 				loreoverlay.annoView().disableUIFeatures({
 					'disable_annotations': disable_anno
 				});
+				loreoverlay.annoView().setCacheTimeout(timeout);
 			}
 			else {
 				lore.debug.ui("preferences object not loaded, can't read in annotation preferences!");
