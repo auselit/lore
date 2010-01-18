@@ -214,8 +214,16 @@ lore.ore.ui.CompoundObjectTree = Ext.extend(Ext.tree.TreePanel, {
         Ext.apply(this, {
             root: new Ext.tree.TreeNode({'draggable':false})
         });
-        
         lore.ore.ui.CompoundObjectTree.superclass.initComponent.apply(this, arguments);
+    },
+    initEvents: function(){
+        lore.ore.ui.CompoundObjectTree.superclass.initEvents.call(this);
+        // override so that dragged element is hidden when nodes are dropped back onto the tree
+        Ext.apply(this.dragZone,{
+            onInvalidDrop: function(){
+                this.hideProxy();
+            }
+        });
     }
     
 });
