@@ -23,7 +23,7 @@ lore.ore.sesame = {};
 
 
 /**
- * Gets compound objects that match the parameters
+ * Gets compound objects that match the parameters and add them to the model
  * @param {} matchuri The URI to match 
  * @param {} matchpred The predicate to match
  * @param {} matchval The value to search for
@@ -78,7 +78,7 @@ lore.ore.sesame.getCompoundObjects = function(matchuri, matchpred, matchval, isS
 	            + "} . {?g <http://purl.org/dc/elements/1.1/creator> ?a}"
 	            + ". {?g <http://purl.org/dc/terms/created> ?c}"
 	            + ". OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
-	        lore.debug.ore("compound object browse query is",queryURL);
+	        //lore.debug.ore("compound object browse query is",queryURL);
        }
         
         var req = new XMLHttpRequest();
@@ -88,7 +88,9 @@ lore.ore.sesame.getCompoundObjects = function(matchuri, matchpred, matchval, isS
                 if (req.responseText && req.status != 204
                         && req.status < 400) {
                     var xmldoc = req.responseXML;
-                    lore.ore.displayCompoundObjectsInTree(xmldoc, matchval, isSearchQuery);
+                    // TODO: this should be a callback and should add to model instead
+                    lore.ore.addCompoundObjectsFromSearch(xmldoc, matchval, isSearchQuery);
+
                 } else if (req.status == 404){
                     lore.debug.ore("404 accessing compound object repository",req);
                 }
@@ -131,9 +133,10 @@ lore.ore.sesame.saveCompoundObject = function (remid,therdf){
        xmlhttp2.onreadystatechange = function() {
             if (xmlhttp2.readyState == 4) {
                 if (xmlhttp2.status == 204) {
-                    // TODO: #124 add to tree
                     lore.debug.ore("sesame: RDF saved",xmlhttp2);
                     lore.ore.ui.loreInfo(remid + " saved to " + lore.ore.reposURL);
+                    // add to model
+                    lore.ore.afterSaveCompoundObject(remid);
                 } else {
                     lore.ore.ui.loreError('Unable to save to repository' + xmlhttp2.responseText);
                     Ext.Msg.show({
@@ -165,7 +168,7 @@ lore.ore.sesame.deleteCompoundObject = function(remid){
             lore.ore.reposURL + "/statements?context=<" + remid + ">", true);  
         xmlhttp.onreadystatechange= function(){
             if (xmlhttp.readyState == 4) {
-                lore.ore.afterDeleteCompoundObject();
+                lore.ore.afterDeleteCompoundObject(remid);
             }
         };
         xmlhttp.send(null);

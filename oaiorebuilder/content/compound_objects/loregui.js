@@ -18,10 +18,52 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 /*
  * @include  "/oaiorebuilder/content/lib/ext/ux/uxvismode.js"
  * @include  "/oaiorebuilder/content/lib/ext/ux/StatusBar.js"
  */
+ // TODO display mimetype as icon
+lore.ore.ui.pagingData = [
+            ['Bulletin Story Book','http://www.austlit.edu.au/common/loredemo/asal/bullstory.html'],
+            ['Danno server','http://austlit.edu.au/danno/']
+            ,
+            ['Photos of Ned Kelly','http://austlit.edu.au/rem/kellypics'],
+            ['Jerilderie Post Office','http://maenad.itee.uq.edu.au/lore/kellydemo/places_maps/Jerilderie-ned-kelly-post-office.jpg'],
+            ['Jerilderie Letter 1879','http://www.austlit.edu.au/run?ex=ShowWork&workId=Cs%2c%7b'],
+            ['Kelly Gang','http://austlit.edu.au/run?ex=ShowThes&tid=Jxj'],
+            ['Transcript','http://maenad.itee.uq.edu.au/lore/kellydemo/transcript14-15.html']
+            ];
+lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
+        fields: ['title', 'uri','display'], 
+        data: [],//lore.ore.ui.pagingData,
+        lastOptions: {params: {start:0,limit:5}}
+});
+lore.ore.ui.resselectcombo = new Ext.form.ComboBox({
+    displayField:'display',
+    id: "resselectcombo",
+    itemSelector: 'div.res-listing',
+    emptyText: "Select resource to display... ",
+    triggerAction: "all",
+    mode: 'local',
+    pageSize: 5,
+    tpl: new Ext.XTemplate('<tpl for="."><div class="x-combo-list-item res-listing">',
+        '<h3>{title}</h3>',
+        '<i>{uri}</i>',
+        '</div></tpl>'),
+    valueField: 'uri',
+    typeAhead: false,
+    store: lore.ore.resourceStore
+});
+lore.ore.ui.propedittrigger = new Ext.form.TriggerField({
+    id: "propedittrigger",
+    'triggerClass': 'x-form-ellipsis-trigger',
+    'onTriggerClick': function(ev) {
+        lore.debug.ore("triggered for ",[this,ev]);
+        
+    }
+});
+
 /** Ext plugin to change hideMode to ensure tab contents are not destroyed/reloaded */
 lore.ore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
 /** Ext specification of compound objects UI */
@@ -47,41 +89,136 @@ lore.ore.ui.gui_spec = {
                     autoScroll: true,
                     items: [
 						{
-                            title: "Editor",
+                            title: "Graphical Editor",
                             xtype: "panel",
                             id: "drawingarea",
 							autoScroll: true  
-                        }, {
+                        },
+                        {
                             title: "Summary",
                             xtype: "panel",
                             id: "remlistview",
-							autoScroll: true
-        					
-                        },{
+                            autoScroll: true
+                            
+                        }, {
+                            title: "Resource Details",
+                            xtype: "panel",
+                            autoScroll: true,
+                            id: "remresedit",
+                            layout: "border",
+                            items: [
+                                {
+                                    region: "north",
+                                    xtype: "panel",
+                                    layout: "border",
+                                    id: "resselect",
+                                    height: 23,
+                                    items:[
+                                        {
+	                                        xtype: "panel",
+	                                        region:"center",
+	                                        layout: "fit",
+	                                        items:[
+	                                            lore.ore.ui.resselectcombo
+                                            ]
+                                        },{
+	                                        region: "east",
+	                                        width:20,
+	                                        xtype:"panel",
+	                                        html:"<div style='height:100%;width:100%;background-color:#d0d0d0'>"
+                                            + "<a href='#' onclick='if(lore.ore.ui.resselectcombo.value){lore.global.util.launchTab(lore.ore.ui.resselectcombo.value, window);}'>"
+	                                        + "<img alt='go' title='Show in browser' style='padding-top:1px;padding-left:1px'"
+                                            + " src='chrome://lore/skin/icons/page_go.png'>"
+	                                        + "</a></div>"
+                                        }
+                                    ]
+                                    
+                                    
+                                },
+                                {
+                                    region: "west",
+                                    split: true,
+                                    layout: "fit",
+                                    title: " ",
+                                    //collapseMode:'mini',
+                                    width: 150,
+                                    xtype: "treepanel",
+                                    id: "respreview",
+                                    tools: [
+                                    {
+		                                id:'plus',
+		                                qtip: 'Add a property or relationship',
+		                                handler: lore.ore.ui.addProperty
+                                    },
+                                    {
+                                        id:'minus',
+                                        qtip: 'Remove the selected property or relationship',
+                                        handler: lore.ore.ui.removeProperty
+                                    }
+                                    ],
+					                id: "resdetailstree",
+					                animate: false,
+					                autoScroll: true,
+					                fitToFrame: true,
+					                rootVisible: false,
+					                containerScroll: true,
+					                border: false,
+					                root: new Ext.tree.TreeNode({})
+                                    },
+                                {
+	                                xtype: "panel",
+                                    title: "Property / Relationship Editor",
+                                    id: "respropeditor",
+                                    disabled: true,
+	                                split: true,
+	                                region: "center",
+                                    layout: "fit",
+                                    
+                                    tools:[
+                                        
+                                        {
+                                            id: 'refresh',
+                                            qtip: 'Cancel edits and restore original value',
+                                            handler: lore.ore.ui.restorePropValue
+                                        }
+                                    ]
+                                    /*,
+                                    labelAlign: "top",
+                                    items:[
+                                        {
+                                            xtype: "textarea",
+                                            //fieldLabel: "Title",
+                                            anchor: "100%",
+                                            grow: true
+                                        },
+                                        {
+                                            xtype: "textarea",
+                                            fieldLabel: "Description",
+                                            anchor: "100%",
+                                            grow: true
+                                        }
+                                    ]*/
+                                }
+                            ]
+                        }
+                        ,{
                             title: "Slideshow",
                             id: "remslideview",
-                            autoScroll: false
-                        } /*,{
-                            title: "SMIL",
-                            xtype: "panel",
-                            id: "remsmilview",
-							autoScroll: true,
-							closable: true
-                        
-                        }*/,{
+                            autoScroll: false,
+                            html: "<div id='trailcarousel'></div>"
+                        } ,{
                             title: "Explore",
                             id: "remexploreview",
+                            forceLayout:true,
                             autoScroll:true
                         }
-                        //],
-                       //.. activeTab: "drawingarea"
-                    // }, {
 				,{
                         title: "Using Compound Objects",
                         id: "welcome",
                         autoWidth: true,
                         autoScroll: true,
-                        iconCls: "welcome-icon"
+                        iconCls: "welcome-icon",
+                        html: "<iframe height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
                     
                     }]
                 }
@@ -96,10 +233,11 @@ lore.ore.ui.gui_spec = {
         }]
     }, {
         region: "west",       
-        width: 300,
-        minWidth: 3,
-        split: true,
+        width: 280,
         
+        split: true,
+        //collapsible: true,
+        collapseMode:'mini',
             id:"propertytabs",
             xtype:"tabpanel",
             deferredRender: false,
@@ -110,19 +248,20 @@ lore.ore.ui.gui_spec = {
             fitToFrame: true,
             items:[
             { 
-                xtype: "treepanel",
+                //xtype: "treepanel",
+                xtype: "cotree",
                 title: "Browse",
-                id: "sourcestree",
-                animate: false,
-                autoScroll: true,
-                fitToFrame: true,
-                rootVisible: false,
-                containerScroll: true,
-                border: false,
-                enableDrag: true,
-                enableDrop: false,
-                ddGroup: "TreeDD",
-                root: new Ext.tree.TreeNode({})
+                id: "sourcestree"
+                //animate: false,
+                //autoScroll: true,
+                //fitToFrame: true,
+                //rootVisible: false,
+                //containerScroll: true,
+                //border: false,
+                //enableDrag: true,
+                //enableDrop: false,
+                //ddGroup: "TreeDD",
+                //root: new Ext.tree.TreeNode({'draggable':false})
   
             }, {
                 xtype: "panel",
@@ -217,18 +356,20 @@ lore.ore.ui.gui_spec = {
                     }]
                 }, {
                     anchor: "100%",
-                    xtype: "treepanel",
+                    //xtype: "treepanel",
+                    xtype: "cotree",
                     title: "Search Results",
-                    id: "searchtree",
-                    animate: false,
-                    autoScroll: true,
-                    fitToFrame: true,
-                    rootVisible: false,
-                    border: false,
-                    enableDrag: true,
-                    enableDrop: false,
-                    ddGroup: "TreeDD",
-                    root: new Ext.tree.TreeNode({})  
+                    id: "searchtree"
+                    //animate: false,
+                    //autoScroll: true,
+                    //fitToFrame: true,
+                    //rootVisible: false,
+                    //border: false,
+                    //enableDrag: true,
+                   // enableDrop: false,
+                    //containerScroll: true,
+                    //ddGroup: "TreeDD",
+                    //root: new Ext.tree.TreeNode({})  
                 }]
             }, {
                 xtype: "panel",
@@ -246,7 +387,9 @@ lore.ore.ui.gui_spec = {
                         colModel: new Ext.grid.ColumnModel({
                             columns: [
                             {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
-                            {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, editor: new Ext.form.TextField({})}
+                            {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, 
+                            editor:  lore.ore.ui.propedittrigger
+                            }
                             ]
                         }),
                         sm: new Ext.grid.RowSelectionModel({singleSelect: true}),
@@ -288,7 +431,12 @@ lore.ore.ui.gui_spec = {
 	                        colModel: new Ext.grid.ColumnModel({
 	                            columns: [
 	                            {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
-	                            {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, editor: new Ext.form.TextField({})}
+	                            {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, 
+                                //editor: new Ext.form.TextField({})
+                                editor:  lore.ore.ui.propedittrigger
+                                }
+                                
+                                
 	                            ]
 	                        }),
 	                        sm: new Ext.grid.RowSelectionModel({singleSelect: true}),
@@ -335,7 +483,6 @@ try {
 }
 
 lore.ore.disableUIFeatures = function(opts) {
-    // TODO: should add UI elements back manually when re-enabling, but easier to reset via reload for now
     lore.debug.ui("LORE Compound Objects: disable ui features?", opts);
     lore.ore.ui.disabled = opts;
     
