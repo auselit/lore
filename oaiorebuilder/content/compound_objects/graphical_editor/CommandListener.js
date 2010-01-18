@@ -33,7 +33,12 @@ lore.ore.graph.CommandListener.prototype.stackChanged=function(event){
 	var comm = event.getCommand();
 	var comm_fig = comm.figure;
 	lore.ore.graph.modified = true;
-    
+    if(comm instanceof draw2d.CommandMove 
+        && comm.oldX == lore.ore.graph.dummylayoutprevx 
+        && comm.oldY == lore.ore.graph.dummylayoutprevy){
+            // reset dummy graph layout position to prevent new nodes being added too far from content
+            lore.ore.graph.nextXY(comm.newX, comm.newY);
+    }
     if(comm instanceof draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)){
         // don't allow figures to be moved outside bounds of canvas
         comm.undo();
