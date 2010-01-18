@@ -155,7 +155,6 @@ lore.ore.search = function (searchuri, searchpred, searchval){
         searchval = lore.constants.RESOURCE_MAP;
     }
     try{
-    lore.debug.ore("clear search tree");
     lore.ore.coListManager.clear("search");
     var searchTerms = [];
     if (searchuri){
@@ -862,25 +861,6 @@ lore.ore.addToHistory = function(remurl, title){
         })],
         'history'
      );
-     /*var details = ["Last accessed " + visitDate.format('Y-m-d')]; 
-     var existNode = lore.ore.ui.recenttreeroot.findChild('id',remurl + "r");
-     if (existNode) {
-         lore.ore.ui.recenttreeroot.removeChild(existNode);
-     }
-     var tmpNode = new Ext.tree.TreeNode({
-        'text' : title,
-        uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
-        details   : details,
-        'id' : remurl + "r",
-        'uri' : remurl,
-        'qtip': "Compound Object: " + remurl,
-        'iconCls' : 'oreresult',
-        'leaf' : true,
-        'draggable': true
-      });
-   
-      lore.ore.ui.recenttreeroot.appendChild(tmpNode);
-      lore.ore.attachREMEvents(tmpNode);*/
   } catch (e){
       lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
   }
@@ -888,7 +868,6 @@ lore.ore.addToHistory = function(remurl, title){
 /**
  * Load a compound object into the graphical view
  * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
- * @param {} showInTree boolean indicating whether to display in the recently viewed tree
  */
 lore.ore.loadCompoundObject = function (rdf) {
     var nsprefix = function(ns) {
@@ -1073,42 +1052,6 @@ lore.ore.readRDF = function(rdfURL){
     }
 };
 
-/** set up listeners for events in the compound objects tree */
-lore.ore.attachREMEvents = function(node){  
-    node.on('dblclick', function(node) {
-         lore.ore.readRDF(node.attributes.uri);
-    });
-    node.on('contextmenu', function(node, e) {
-        node.select();
-        if (!node.contextmenu) {
-            node.contextmenu = new Ext.menu.Menu({
-                        id : node.attributes.uri + "-context-menu"
-                    });
-           node.contextmenu.add({
-                text : "Edit compound object",
-                handler : function(evt) {
-                    lore.ore.readRDF(node.attributes.uri);
-                }
-            });
-            node.contextmenu.add({
-                text : "Delete compound object",
-                handler : function(evt) {
-                    lore.ore.deleteFromRepository(node.attributes.uri,node.text);
-                }
-            });
-            node.contextmenu.add({
-                text : "Add as node in compound object editor",
-                handler : function(evt) {
-                    lore.ore.graph.addFigure(node.attributes.uri,{
-                        "rdf:type_0":lore.constants.RESOURCE_MAP,
-                        "dc:title_0": node.text});
-                }
-            });
-            
-        }
-        node.contextmenu.showAt(e.xy);
-    });
-};
 
 /**
  * Takes a repository access URI and returns the resource map identifier This is
@@ -1241,8 +1184,9 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
     });
 };
 /** display saved compound object in the UI */
+// TODO: move this to repository classes
 lore.ore.afterSaveCompoundObject = function(remid){
-    var title = title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Untitled";
+    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Untitled";
     lore.ore.coListManager.add(
 	    [new lore.ore.model.CompoundObjectSummary(
 	    {
@@ -1261,11 +1205,7 @@ lore.ore.afterDeleteCompoundObject = function(deletedrem){
 	        lore.ore.currentREM = "";
 	        lore.ore.createCompoundObject(); 
 	    }
-	    // delete from sources tree
-	    var treenode = lore.ore.ui.remstreeroot.findChild('id',deletedrem);
-	    if (treenode){
-	        treenode.remove();
-	    } 
+        lore.ore.coListManager.remove(deletedrem);
 	    lore.ore.ui.loreInfo("Compound object deleted");
     } catch (ex){
         lore.debug.ore("Error after deleting compound object",ex);
@@ -1325,57 +1265,14 @@ lore.ore.handleLocationChange = function (contextURL) {
  * @param {String} contextURL The escaped URL
  */
 lore.ore.updateCompoundObjectsBrowseList = function(contextURL) {
-    
-    try {
-        lore.ore.coListManager.clear("browse");
-    } catch (e){
-        lore.debug.ore("can't clear browse list",e);
-    }
+    lore.ore.coListManager.clear("browse");
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         lore.ore.sesame.getCompoundObjects(contextURL); 
     } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
         //lore.ore.fedora.getCompoundObjects(contextURL);
     }
 };
-lore.ore.processSPARQLResult = function(xmldoc, searchval, isSearchQuery){
-    if (xmldoc) {
-        lore.debug.ore("compound objects sparql", xmldoc);
-        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
-    }
-    if (result.length > 0){
-	    var resultCos = [result.length];
-	    for (var i = 0; i < result.length; i++) {
-	        var theobj = new lore.ore.model.CompoundObjectSummary(result[i]).getProperties();
-	        theobj.searchval = searchval;
-	        resultCos[i] = theobj;
-	    }
-        var listname = (isSearchQuery? "search" : "browse");
-        lore.ore.coListManager.add(resultCos,listname);
-    }
-};
-lore.ore.addCompoundObjectsFromSearch = function (xmldoc, searchval, isSearchQuery){
-    try{
-    var treename = (isSearchQuery? "search" : "browse");  
-    var result = {};
-    if (xmldoc) {
-        lore.debug.ore("compound objects sparql " + treename, xmldoc);
-        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
-    }
-    var coList = [];
-    for (var i = 0; i < result.length; i++) {
-        var theobj = new lore.ore.model.CompoundObjectSummary(result[i]);
-        if (searchval) {theobj.setSearchVal(searchval);}
-        coList.push(theobj); 
-    }
-    lore.ore.coListManager.add(coList,treename);
-    
-    if(!isSearchQuery && result.length > 0){
-        lore.ore.ui.propertytabs.activate("sourcestree");
-    }
-    } catch (e){
-        lore.debug.ore("problem displaying co results in tree",e);
-    }
-}
+
 /* Graph related functions */
 lore.ore.doLayout = function(){
     lore.ore.graph.coGraph.doLayout();

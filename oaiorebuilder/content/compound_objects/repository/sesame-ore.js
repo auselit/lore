@@ -88,9 +88,22 @@ lore.ore.sesame.getCompoundObjects = function(matchuri, matchpred, matchval, isS
                 if (req.responseText && req.status != 204
                         && req.status < 400) {
                     var xmldoc = req.responseXML;
-                    // TODO: this should be a callback and should add to model instead
-                    lore.ore.addCompoundObjectsFromSearch(xmldoc, matchval, isSearchQuery);
-
+                    var listname = (isSearchQuery? "search" : "browse");  
+				    var result = {};
+				    if (xmldoc) {
+				        lore.debug.ore("compound objects sparql " + listname, xmldoc);
+				        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
+				    }
+				    if (result.length > 0){
+                        // add the results to the model
+				        var coList = [result.length];
+				        for (var i = 0; i < result.length; i++) {
+				            var theobj = new lore.ore.model.CompoundObjectSummary(result[i]);
+				            if (matchval) {theobj.setSearchVal(matchval);}
+				            coList[i] = theobj; 
+				        }
+				        lore.ore.coListManager.add(coList,listname);
+				    } 
                 } else if (req.status == 404){
                     lore.debug.ore("404 accessing compound object repository",req);
                 }
@@ -176,4 +189,6 @@ lore.ore.sesame.deleteCompoundObject = function(remid){
         lore.debug.ore("sesame: error deleting compound object",e);
     }        
 };
+
+
  
