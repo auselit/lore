@@ -426,6 +426,28 @@ loreuieditor = function (store ) {
 							name: 'creator'
 							
 						}, {
+							fieldLabel: 'References',
+							name: 'references'
+						},
+						{
+							xtype: "combo",
+							id: "importance",
+							fieldLabel: 'Importance',
+							name: 'importance',
+							hiddenName: 'importance',
+							store: new Ext.data.SimpleStore({
+								fields: ['impname', 'qimpname'],
+								data: [['Very Important', "VeryImportant"], ['Important', "Important"],['Trivial','Trivial' ]]
+							}),
+							valueField: 'qimpname',
+							displayField: 'impname',
+							typeAhead: true,
+							triggerAction: 'all',
+							forceSelection: true,
+							mode: 'local',
+							selectOnFocus: true
+						},
+						{
 							fieldLabel: 'Variation Agent',
 							name: 'variationagent',
 							
@@ -618,7 +640,19 @@ loreuieditor = function (store ) {
 							enableColors: false,
 							enableSourceEdit: false,
 							anchor: '-30 100%'
-						}],
+						},
+						{
+							fieldLabel: 'Alt Body',
+							xtype: 'htmleditor',
+							plugins: [new Ext.ux.form.HtmlEditor.Img()],
+							name: 'altbody',
+							enableFont: false,
+							enableColors: false,
+							enableSourceEdit: false,
+							anchor: '-30 100%'
+						}
+						
+						],
 						buttons: [{
 							text: 'Hide Editor',
 							id: 'hideeditbtn',
@@ -1106,7 +1140,7 @@ lore.anno.ui.initExtComponents = function(){
 			
 		});
 		
-		lore.anno.ui.setAnnotationFormUI(false, false);
+		lore.anno.ui.setAnnotationFormUI(false, false );
 		
 		lore.anno.ui.abouttab.body.update("<iframe height='100%' width='100%' "
 			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");

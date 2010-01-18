@@ -24,12 +24,17 @@
  */ 
  var EXPORTED_SYMBOLS = ['store'];
  
+// lore.debug
+Components.utils.import("resource://lore/debug.js");	
+	
+ 
  store =  {
 	/** @lends lore.store */
 	
 	 uidcache: {},
 	 datastores : {},
 	 uid: "",
+	 METADATA : "METADATA",
 	 
 	 /**
 	  * Set the context for the current cache
@@ -49,16 +54,27 @@
 	  * @param {String} uid (Optional) The context uid
 	  */
 	 get : function (datastoreName,  uid) {
-	 	if ( uid ) {
-			
-			var datastores = store.uidcache[uid]
-			if (datastores) {
-				return datastores[datastoreName];
-			} else {
-				return null;
-			}
+	 	var datastores = store.datastores;
+		if ( uid ) {
+			datastores = store.uidcache[uid]
 		}
-		return store.datastores[datastoreName];
+
+		if (datastores) {
+			this.invalidate(datastores, datastoreName);			
+			return datastores[datastoreName];
+		} else {
+			return null;
+		}
+	 },
+	 
+	 invalidate: function(s, dsName) {
+	 	var meta = s[this.METADATA];
+		if ( !meta || meta.timeout[dsName] == 0)
+			return;
+			
+	 	if ( (new Date().getTime() - meta.timestamp[dsName]) > meta.timeout[dsName]) {
+			s[dsName] = null;
+		} 
 	 },
 	 
 	/**
@@ -68,17 +84,22 @@
 	  * @param {Object} datastore The data store to hash into the supplied/current context
 	  * @param {String} uid (Optional) The context uid
 	  */
-	 set : function (datastoreName, datastore, uid ) {
-	 	if (uid) {
+	 set : function (datastoreName, datastore, uid, timeout ) {
+	 	var s;
+		if (uid) {
 			if (!store.uidcache[uid]) {
 				store.uidcache[uid] = {};
 			}
+			s = store.uidcache[uid];
+		} else {
+			s = store.datastores;
+		}
+		s[datastoreName] = datastore;
+		if ( !s[this.METADATA])
+			s[this.METADATA] = { timestamp: {}, timeout: {} };
 			
-			(store.uidcache[uid])[datastoreName] = datastore;
-		}
-		else {
-			store.datastores[datastoreName] = datastore;
-		}
+		s[this.METADATA].timestamp[datastoreName] = new Date().getTime();
+		s[this.METADATA].timeout[datastoreName] = timeout || 0;
 	 },
 	 
 	 /**
@@ -95,5 +116,10 @@
 		store.datastores[datastoreName] = thestore;
 		
 	 	return store.datastores[datastoreName];	
+	 },
+	 
+	 remove : function( datastoreName, uid ) {
+	 	if ( store.uidcache[uid])
+			(store.uidcache[uid])[datastoreName] = null;
 	 }
  }

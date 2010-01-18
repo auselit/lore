@@ -80,7 +80,10 @@ constants = {
      * @const */
     HIGHLIGHT_STORE : "highlights",
     
-    // Annotea protocol constants constants
+    ANNOMODE_NORMAL : "NORMAL",
+	ANNOMODE_SCHOLARLY: "SCHOLARLY",
+		
+	// Annotea protocol constants constants
     
 	// queries
 	 /**
