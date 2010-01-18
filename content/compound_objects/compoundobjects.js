@@ -42,7 +42,7 @@ lore.ore.NODE_HEIGHT  = 170;
 lore.ore.NODE_SPACING = 40;
 /** Used for layout in graphical editor - Maximum width before nodes are positioned on new row 
  * @const */
-lore.ore.MAX_X        = 400;
+lore.ore.ROW_WIDTH        = 400;
 
 // TODO: #10 replace with an ontology
 /** Default list of properties that can be specified for compound objects or resources 
@@ -155,8 +155,8 @@ lore.ore.search = function (searchuri, searchpred, searchval){
         searchval = lore.constants.RESOURCE_MAP;
     }
     try{
-    // search terms to display in tree
-    lore.global.ui.clearTree(Ext.getCmp("searchtree").getRootNode());
+    lore.debug.ore("clear search tree");
+    lore.ore.coListManager.clear("search");
     var searchTerms = [];
     if (searchuri){
         searchTerms.push("<i>containing: </i>" + searchuri);
@@ -167,15 +167,8 @@ lore.ore.search = function (searchuri, searchpred, searchval){
     if (searchval){
         searchTerms.push("<i>matching: </i>" + searchval);
     }
-    var searchtreeroot = new Ext.tree.TreeNode({
-        id: "searchtree",
-        text: "Search Results",
-        details: searchTerms,
-        uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
-        draggable: false,
-        iconCls:"tree-ore"
-    });
-    Ext.getCmp("searchtree").getRootNode().appendChild(searchtreeroot);
+    lore.ore.ui.searchtreeroot.setDetails(searchTerms);
+    
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame'){
         lore.ore.sesame.getCompoundObjects(searchuri, searchpred, searchval, true);
     } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
@@ -227,6 +220,7 @@ lore.ore.createCompoundObject = function (){
         ]  
         );
         lore.ore.ui.initGraphicalView();
+        lore.ore.populateResourceDetailsCombo();
     };
     try{
         // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
@@ -259,7 +253,7 @@ lore.ore.onShow = function () {
 	if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != 'about:blank' &&
 		lore.ore.ui.currentURL != '' &&
 		(!lore.ore.ui.loadedURL || lore.ore.ui.currentURL != lore.ore.ui.loadedURL)) {
-			lore.ore.updateCompoundObjectsSourceList(lore.ore.ui.currentURL);
+			lore.ore.updateCompoundObjectsBrowseList(lore.ore.ui.currentURL);
 			lore.ore.ui.loadedURL = lore.ore.ui.currentURL;
 		}
 };
@@ -423,9 +417,16 @@ lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*
 
 /** Displays a summary of the resource URIs aggregated by the compound object 
  * @parm {Ext.Panel} summarypanel The panel to show the summary in */
+// TODO: either use XSLT or listen to model rather than updating entire view each time
 lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
-    var newsummary = "<table style='font-size:smaller;border:none'>"
-            + "<tr valign='top'><td width='20%'><b>Compound object:</b></td><td>"
+    var newsummary = 
+            "<table style='width:100%;font-size:smaller;border:none'>"
+            + "<tr valign='top'><td width='20%'>" 
+            + "<b>Compound object:</b></td><td>"
+            + "<div style='float:right;padding-right:5px'>" 
+            + "<a href='#' onclick='lore.ore.handleSerializeREM(\"wordml\")'>"
+            + "<img src='chrome://lore/skin/icons/page_white_word.png' title='Export summary to MS Word'>"
+            + "</a></div>"
             + lore.ore.currentREM + "</td></tr>";
     var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
     if (title) {
@@ -443,18 +444,38 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
             + abst + "</td></tr>";
     }
     newsummary += "</table>";
-    newsummary += "<div style='padding-top:1em'><p><b>List of contents:</b></p><ul>";
-    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
-    for (var i = 0; i < allfigures.getSize(); i++) {
-        var fig = allfigures.get(i);
-        var figurl = lore.global.util.escapeHTML(fig.url);
-        var title = fig.getProperty("dc:title_0");
-        newsummary += "<li>" + (title? title + ": " : "") 
-        + "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>&lt;" 
-        + figurl + "&gt;</a></li>";
+    var newsummarydetail = "<div style='padding-top:1em'>";
+    newsummary += "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
+    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures().data;
+    allfigures.sort(lore.ore.graph.figSortingFunction);
+    for (var i = 0; i < allfigures.length; i++) {
+        var fig = allfigures[i];
+        if (fig instanceof lore.ore.graph.ResourceFigure){
+	        var figurl = lore.global.util.escapeHTML(fig.url);
+	        var title = fig.getProperty("dc:title_0") || "Untitled Resource";
+	        newsummary += "<li>" + title + ": "
+	        + "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>&lt;" 
+	        + figurl + "&gt;</a><a href='#res" + i + "'>(details)</a></li>";
+            newsummarydetail += "<div style='border-top: 1px solid rgb(220, 224, 225); width: 100%; margin-top: 0.5em;'> </div>";
+            newsummarydetail += "<p id='res"+ i + "'><b>" + title + "</b><br><i>" + figurl + "</i></p><p>";
+            for (p in fig.metadataproperties){
+                var pname = p;
+                var pidx = p.indexOf("_");
+                if (pidx != -1){
+                    pname = p.substring(0,pidx);
+                }
+                if (pname != 'resource' && pname != 'dc:format' && pname != 'rdf:type'){
+                    newsummarydetail += "<a href='#' onclick='lore.ore.editResDetail(\"" + fig.url + "\",\"" +  p + "\");'><img title='Edit in Resource Details view' src='chrome://lore/skin/icons/pencil.png'></a>&nbsp;<b>" + pname + "</b>: " + fig.metadataproperties[p] + "<br>";
+                }
+            }
+            newsummarydetail += "</p>";
+                    
+        }
     }
     newsummary += "</ul></div>";
-    summarypanel.body.update(newsummary);
+    newsummarydetail += "</div>";
+    summarypanel.body.update(newsummary + newsummarydetail);
+    
     lore.ore.ui.loreInfo("Displaying a summary of compound object contents");
 };
 
@@ -487,7 +508,7 @@ lore.ore.displayHistory = function (){
     var query = lore.ore.historyService.getNewQuery();
     query.annotation = "lore/compoundObject";
     var options = lore.ore.historyService.getNewQueryOptions();
-    options.sortingMode = options.SORT_BY_DATE_DESCENDING;
+    options.sortingMode = options.SORT_BY_DATE_ASCENDING;
     options.includeHidden = true;
     options.maxResults = 20;
     var result = lore.ore.historyService.executeQuery(query, options);
@@ -498,43 +519,27 @@ lore.ore.displayHistory = function (){
         var node = result.root.getChild(i);
         var title = node.title;
         var uri = node.uri;
-        var visited = node.accessCount;
+        //var visited = node.accessCount;
         var lastVisitedTimeInMicrosecs = node.time;
         var thedate = new Date();
         thedate.setTime(lastVisitedTimeInMicrosecs / 1000);
-        var details = [];
-        // display the creator and date
-        details.push("Last accessed " + thedate.format('Y-m-d')); 
-        //", Accessed " + visited + " time" 
-        //+ (visited == 1? "" : "s"));
-        if (!lore.ore.ui.recenttreeroot.findChild('id',uri + "r")){
-           var tmpNode = new Ext.tree.TreeNode({
-                    'text' : title,
-                    uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
-                    details   : details,
-                    'id' : uri + "r",
-                    'uri' : uri,
-                    'qtip': "Compound Object: " + uri,
-                    'iconCls' : 'oreresult',
-                    'leaf' : true,
-                    'draggable': true
-            });
-           
-           lore.ore.ui.recenttreeroot.appendChild(tmpNode);
-           lore.ore.attachREMEvents(tmpNode);
-        }
+        lore.ore.coListManager.add(
+                [new lore.ore.model.CompoundObjectSummary(
+                {
+                    'uri': uri,
+                    'title': title,
+                    'accessed': thedate
+                })],
+                'history'
+        );
     }
-
     result.root.containerOpen = false;
- 
   } catch (e) {
     lore.debug.ore("error displaying history",e);
   }
 }
-lore.ore.refreshTabularEditor = function (panel){
-    lore.debug.ore("the tabular editor",panel);
-    // create table if it does not exist, otherwise refresh it   
-};
+
+
 /** Render the current compound object as Fedora Object XML in the FOXML view */
 lore.ore.updateFOXML = function (){
     Ext.getCmp("remfoxmlview").body.update(Ext.util.Format.htmlEncode(lore.ore.createFOXML()));
@@ -545,9 +550,6 @@ lore.ore.updateTriG = function (){
 };
 /** Generate a slideshow representing the current compound object */
 lore.ore.showSlideshow = function (){
-    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
-    var numfigs = allfigures.getSize();
-		
     var sscontents = "";
     var carouselel = Ext.get("trailcarousel");
     try{
@@ -592,47 +594,7 @@ lore.ore.showExploreUI = function(){
     }catch(e){lore.debug.ore("error in showExploreUI",e);}
     lore.ore.ui.loreInfo("Click on the nodes to explore connections between compound objects.");
 };
-/**
- * Stores basic metadata about a compound object for the results listing
- * @param {XMLNode} result
- */
-lore.ore.CompObjListing = function(/*Node*/result){
-    var bindings;
-    var node;
-    var attr;
-    var nodeVal;
-    this.title = "Untitled";
-    this.creator = "Anonymous";
-    try {  
-       bindings = result.getElementsByTagName('binding');
-       for (var j = 0; j < bindings.length; j++){  
-        attr = bindings[j].getAttributeNode('name');
-        if (attr.nodeValue =='g'){ //graph uri
-            node = bindings[j].getElementsByTagName('uri'); 
-            this.uri = lore.global.util.safeGetFirstChildValue(node);
-        } else if (attr.nodeValue == 'v'){
-            node = bindings[j].getElementsByTagName('literal');
-            nodeVal = lore.global.util.safeGetFirstChildValue(node);
-            if (!nodeVal){
-                node = bindings[j].getElementsByTagName('uri');
-            }
-            this.match = lore.global.util.safeGetFirstChildValue(node);
-        } else {
-            node = bindings[j].getElementsByTagName('literal');
-            nodeVal = lore.global.util.safeGetFirstChildValue(node);
-            if (attr.nodeValue == 't' && nodeVal){ //title
-                this.title = nodeVal;
-            } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
-                this.creator = nodeVal;
-            } else if (attr.nodeValue == 'c' && nodeVal){ // dcterms:created
-                this.created = nodeVal;
-            } 
-        }
-       }
-    } catch (ex) {
-        lore.debug.ore("Unable to process compound object result list", ex);
-    }
-};
+
 /** Prompt for location to save serialized compound object and save as file
  * @param {String} format The format to which to serialize (rdf, wordml, foxml or trig)
  */
@@ -795,73 +757,76 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     rdfxml += ltsymb + rdfdescabout + describes + closetag + ltsymb
             + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
             + fullclosetag;
-    
-    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures();
+    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures().data;
+    allfigures.sort(lore.ore.graph.figSortingFunction);
     var resourcerdf = "";
-    for (var i = 0; i < allfigures.getSize(); i++) {
-        var fig = allfigures.get(i);
-        var figurl = lore.global.util.escapeHTML(lore.global.util.preEncode(fig.url.toString()));
-        rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
-                + fullclosetag;
-        // create RDF for resources in aggregation
-        for (var mprop in fig.metadataproperties) {
-            if (mprop != 'resource_0' && !mprop.match('undefined')) {
-                var mpropval = fig.metadataproperties[mprop];
-                if (mpropval && mpropval != '') {
-                    var tagname = mprop;
-                    var midx = mprop.indexOf("_");
-                    if (midx != -1){
-                        tagname = mprop.substring(0,midx);
-                    }
-                    //lore.debug.ore("2 serializing " + tagname, mpropval);
-                    if (tagname == "rdf:type"){ // resource
-                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
-                            + ltsymb + tagname + " rdf:resource=\"" + mpropval.replace(/"/g,"\\\"") 
-                            +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
-                    } else { // properties that have literal values
-                    resourcerdf += ltsymb + rdfdescabout + figurl + closetag
-                            + ltsymb + tagname + ">" + mpropval.replace(/"/g,"\\\"") + ltsymb + "/"
-                            + tagname + ">" + nlsymb + ltsymb + rdfdescclose + nlsymb;
-                    }
-                }
-            }
-        }
-        /* persist node layout */
-
-        var objframe = window.frames[fig.url + "-data"];
-        resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
-                + "layout:x>" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb
-                + ltsymb + "layout:y>" + fig.y + ltsymb + "/" + "layout:y>"
-                + nlsymb + ltsymb + "layout:width>" + fig.width + ltsymb + "/"
-                + "layout:width>" + nlsymb + ltsymb + "layout:height>"
-                + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
-                + ltsymb + "layout:originalHeight>" + fig.originalHeight
-                + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
-        
-        if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
-            resourcerdf += ltsymb + "layout:scrollx>" + objframe.scrollX
-                    + ltsymb + "/" + "layout:scrollx>" + nlsymb + ltsymb
-                    + "layout:scrolly>" + objframe.scrollY + ltsymb + "/"
-                    + "layout:scrolly>" + nlsymb;
-        }
-        resourcerdf += ltsymb + rdfdescclose + nlsymb;
-        
-        // iterate over all ports' connections and serialize if this fig is the source of the connection
-        var ports = fig.getPorts();
-        for (var p = 0; p < ports.getSize(); p++){
-            var outgoingconnections = ports.get(p).getConnections();
-            for (var j = 0; j < outgoingconnections.getSize(); j++) {
-	            var theconnector = outgoingconnections.get(j);
-                if (figurl == lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url)){
-	               var relpred = theconnector.edgetype;
-	               var relns = theconnector.edgens;
-	               var relobj = lore.global.util.escapeHTML(theconnector.targetPort.parentNode.url);
-	               resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
-	                    + relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
-	                    + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
-                }
+    for (var i = 0; i < allfigures.length; i++) {
+        var fig = allfigures[i];
+        if (fig instanceof lore.ore.graph.ResourceFigure){
+	        lore.debug.ore("fig " + i,fig);
+	        var figurl = lore.global.util.escapeHTML(lore.global.util.preEncode(fig.url.toString()));
+	        rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
+	                + fullclosetag;
+	        // create RDF for resources in aggregation
+	        for (var mprop in fig.metadataproperties) {
+	            if (mprop != 'resource_0' && !mprop.match('undefined')) {
+	                var mpropval = fig.metadataproperties[mprop];
+	                if (mpropval && mpropval != '') {
+	                    var tagname = mprop;
+	                    var midx = mprop.indexOf("_");
+	                    if (midx != -1){
+	                        tagname = mprop.substring(0,midx);
+	                    }
+	                    //lore.debug.ore("2 serializing " + tagname, mpropval);
+	                    if (tagname == "rdf:type"){ // resource
+	                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
+	                            + ltsymb + tagname + " rdf:resource=\"" + mpropval.replace(/"/g,"\\\"") 
+	                            +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
+	                    } else { // properties that have literal values
+	                    resourcerdf += ltsymb + rdfdescabout + figurl + closetag
+	                            + ltsymb + tagname + ">" + mpropval.replace(/"/g,"\\\"") + ltsymb + "/"
+	                            + tagname + ">" + nlsymb + ltsymb + rdfdescclose + nlsymb;
+	                    }
+	                }
+	            }
 	        }
-        }    
+	        /* persist node layout */
+	
+	        var objframe = window.frames[fig.url + "-data"];
+	        resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
+	                + "layout:x>" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb
+	                + ltsymb + "layout:y>" + fig.y + ltsymb + "/" + "layout:y>"
+	                + nlsymb + ltsymb + "layout:width>" + fig.width + ltsymb + "/"
+	                + "layout:width>" + nlsymb + ltsymb + "layout:height>"
+	                + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
+	                + ltsymb + "layout:originalHeight>" + fig.originalHeight
+	                + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
+	        
+	        if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
+	            resourcerdf += ltsymb + "layout:scrollx>" + objframe.scrollX
+	                    + ltsymb + "/" + "layout:scrollx>" + nlsymb + ltsymb
+	                    + "layout:scrolly>" + objframe.scrollY + ltsymb + "/"
+	                    + "layout:scrolly>" + nlsymb;
+	        }
+	        resourcerdf += ltsymb + rdfdescclose + nlsymb;
+	        
+	        // iterate over all ports' connections and serialize if this fig is the source of the connection
+	        var ports = fig.getPorts();
+	        for (var p = 0; p < ports.getSize(); p++){
+	            var outgoingconnections = ports.get(p).getConnections();
+	            for (var j = 0; j < outgoingconnections.getSize(); j++) {
+		            var theconnector = outgoingconnections.get(j);
+	                if (figurl == lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url)){
+		               var relpred = theconnector.edgetype;
+		               var relns = theconnector.edgens;
+		               var relobj = lore.global.util.escapeHTML(theconnector.targetPort.parentNode.url);
+		               resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
+		                    + relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
+		                    + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
+	                }
+		        }
+	        } 
+        }
     }
     rdfxml += ltsymb + rdfdescclose + nlsymb;
     rdfxml += resourcerdf;
@@ -888,7 +853,16 @@ lore.ore.addToHistory = function(remurl, title){
      var visitDate = new Date();
      var browserHistory = lore.ore.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
      browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
-     var details = ["Last accessed " + visitDate.format('Y-m-d')]; 
+     lore.ore.coListManager.add(
+        [new lore.ore.model.CompoundObjectSummary(
+        {
+            'uri': remurl,
+            'title': title,
+            'accessed': visitDate
+        })],
+        'history'
+     );
+     /*var details = ["Last accessed " + visitDate.format('Y-m-d')]; 
      var existNode = lore.ore.ui.recenttreeroot.findChild('id',remurl + "r");
      if (existNode) {
          lore.ore.ui.recenttreeroot.removeChild(existNode);
@@ -906,7 +880,7 @@ lore.ore.addToHistory = function(remurl, title){
       });
    
       lore.ore.ui.recenttreeroot.appendChild(tmpNode);
-      lore.ore.attachREMEvents(tmpNode);
+      lore.ore.attachREMEvents(tmpNode);*/
   } catch (e){
       lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
   }
@@ -991,7 +965,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             .optional('?url rdf:type ?rdftype')
             .each(function(){
              var resourceURL = this.url.value.toString(); 
-             lore.debug.ore("found aggregated resource " + resourceURL,this);
+             //lore.debug.ore("found aggregated resource " + resourceURL,this);
              var fig;
              
              if (this.x && this.y) {
@@ -1058,6 +1032,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                         // not a node relationship, show in the property grid 
                         srcfig.appendProperty(nsprefix(relresult.ns) + relresult.term, obj);
                         if (relresult.term == "title") {
+                            // TODO this should not be necessary - send props to addFigureWithOpts
                             srcfig.setTitle(obj);
                         }
                     }
@@ -1067,7 +1042,7 @@ lore.ore.loadCompoundObject = function (rdf) {
 
         lore.ore.ui.loreInfo("Loading compound object");
         lore.ore.currentREM = remurl;
-
+        lore.ore.populateResourceDetailsCombo();
        if (showInHistory){
 	        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
             if (!title){
@@ -1124,7 +1099,9 @@ lore.ore.attachREMEvents = function(node){
             node.contextmenu.add({
                 text : "Add as node in compound object editor",
                 handler : function(evt) {
-                    lore.ore.graph.addFigure(node.attributes.uri,{"rdf:type_0":lore.constants.RESOURCE_MAP});
+                    lore.ore.graph.addFigure(node.attributes.uri,{
+                        "rdf:type_0":lore.constants.RESOURCE_MAP,
+                        "dc:title_0": node.text});
                 }
             });
             
@@ -1265,32 +1242,16 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
 };
 /** display saved compound object in the UI */
 lore.ore.afterSaveCompoundObject = function(remid){
-    try{
-    if (!lore.ore.ui.remstreeroot.findChild('id',remid)){
-        var details = [];
-        var title = "Untitled";
-        if (remid == lore.ore.currentREM){
-            title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
-            details.push(lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid) 
-                + ", " + lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid));
-        }
-        var tmpNode = new Ext.tree.TreeNode({
-                'text' : title,
-                uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
-                details   : details,
-                'id' : remid,
-                'uri' : remid,
-                'qtip': "Compound Object: " + remid,
-                'iconCls' : 'oreresult',
-                'leaf' : true,
-                'draggable': true
-        });
-        lore.ore.ui.remstreeroot.appendChild(tmpNode);
-        lore.ore.attachREMEvents(tmpNode);           
-    }
-    } catch (ex) {
-        lore.debug.ore("Error after saving compound object",ex);
-    }
+    var title = title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Untitled";
+    lore.ore.coListManager.add(
+	    [new lore.ore.model.CompoundObjectSummary(
+	    {
+	        'uri': remid,
+	        'title': title,
+	        'creator': lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid),
+	        'created': lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid)
+	    })]
+    );
 }
 /** Remove a compound object from the UI */
 lore.ore.afterDeleteCompoundObject = function(deletedrem){
@@ -1349,79 +1310,66 @@ lore.ore.setrelonturl = function(relonturl) {
 };
 
 lore.ore.handleLocationChange = function (contextURL) {
+    lore.debug.ore("update browse list",[lore.ore.ui.lorevisible, lore.ore.ui.initialized]);
 	lore.ore.ui.currentURL = lore.global.util.preEncode(contextURL);
 	if ( !lore.ore.ui.lorevisible || ! lore.ore.ui.initialized){
 		return;
     }
-	lore.ore.updateCompoundObjectsSourceList(contextURL);
+    
+	lore.ore.updateCompoundObjectsBrowseList(contextURL);
 	lore.ore.ui.loadedURL = contextURL; 
 };
 /**
- * Helper function for updateSourceLists: updates the compound objects list with
- * objects that reference the contextURL
+ * Updates the compound objects browse list with objects that reference the contextURL
  * 
- * @param {}
- *            contextURL The escaped URL
+ * @param {String} contextURL The escaped URL
  */
-lore.ore.updateCompoundObjectsSourceList = function(contextURL) {
-    lore.global.ui.clearTree(lore.ore.ui.remstreeroot);
+lore.ore.updateCompoundObjectsBrowseList = function(contextURL) {
+    
+    try {
+        lore.ore.coListManager.clear("browse");
+    } catch (e){
+        lore.debug.ore("can't clear browse list",e);
+    }
     if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
         lore.ore.sesame.getCompoundObjects(contextURL); 
     } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
         //lore.ore.fedora.getCompoundObjects(contextURL);
     }
 };
-lore.ore.displayCompoundObjectsInTree = function (xmldoc, searchval, isSearchQuery){
-    try{
-    var tree = lore.ore.ui.remstreeroot;
-    if (isSearchQuery) {
-        tree = Ext.getCmp("searchtree").getRootNode(); 
-    }
-    var result = {};
+lore.ore.processSPARQLResult = function(xmldoc, searchval, isSearchQuery){
     if (xmldoc) {
         lore.debug.ore("compound objects sparql", xmldoc);
         result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
     }
+    if (result.length > 0){
+	    var resultCos = [result.length];
+	    for (var i = 0; i < result.length; i++) {
+	        var theobj = new lore.ore.model.CompoundObjectSummary(result[i]).getProperties();
+	        theobj.searchval = searchval;
+	        resultCos[i] = theobj;
+	    }
+        var listname = (isSearchQuery? "search" : "browse");
+        lore.ore.coListManager.add(resultCos,listname);
+    }
+};
+lore.ore.addCompoundObjectsFromSearch = function (xmldoc, searchval, isSearchQuery){
+    try{
+    var treename = (isSearchQuery? "search" : "browse");  
+    var result = {};
+    if (xmldoc) {
+        lore.debug.ore("compound objects sparql " + treename, xmldoc);
+        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
+    }
+    var coList = [];
     for (var i = 0; i < result.length; i++) {
-        var theobj = new lore.ore.CompObjListing(result[i]);
-        var res = theobj.match;
-                           
-        var details = [];
-        if (searchval && res && res != -1) {
-        // display a snippet to show where search term occurs
-           var idx = res.toLowerCase().match(searchval.toLowerCase()).index;
-           var s1 = ((idx - 15) < 0) ? 0 : idx - 15;
-           var s2 = ((idx + 15) > (res.length))? res.length : idx + 15;
-           details.push("<i>("+ ((s1 > 0)?"..":"") + res.substring(s1,s2) 
-            + ((s2 < (res.length))? "..":"")+ ")</i>");
-        }
-        // display the creator and date
-        details.push(theobj.creator + ", " + theobj.created);
-        if (!tree.findChild('id',theobj.uri)){
-           //lore.debug.ore("processing compound object", theobj);
-           var tmpNode = new Ext.tree.TreeNode({
-                    'text' : theobj.title,
-                    uiProvider: Ext.ux.tree.MultilineTreeNodeUI,
-                    details   : details,
-                    'id' : theobj.uri,
-                    'uri' : theobj.uri,
-                    'qtip': "Compound Object: " + theobj.uri,//"Created by " + theobj.creator + ", " + theobj.created,
-                    'iconCls' : 'oreresult',
-                    'leaf' : true,
-                    'draggable': true
-            });
-           
-           tree.appendChild(tmpNode);
-           
-
-           lore.ore.attachREMEvents(tmpNode);
-        }
-
+        var theobj = new lore.ore.model.CompoundObjectSummary(result[i]);
+        if (searchval) {theobj.setSearchVal(searchval);}
+        coList.push(theobj); 
     }
-    if (!tree.isExpanded()) {
-        tree.expand();
-    }
-    if(!isSearchQuery && tree.hasChildNodes()){
+    lore.ore.coListManager.add(coList,treename);
+    
+    if(!isSearchQuery && result.length > 0){
         lore.ore.ui.propertytabs.activate("sourcestree");
     }
     } catch (e){
@@ -1435,15 +1383,18 @@ lore.ore.doLayout = function(){
 /**
  * Updates global variables used for figure layout
  */
-lore.ore.graph.nextXY = function() {
+lore.ore.graph.nextXY = function(prevx, prevy) {
     // TODO: Need a real graph layout algorithm
-    if (lore.ore.graph.dummylayoutx > lore.ore.MAX_X) {
+    lore.ore.graph.dummylayoutprevx = prevx;
+    lore.ore.graph.dummylayoutprevy = prevy;
+    if (prevx > lore.ore.ROW_WIDTH) {
         lore.ore.graph.dummylayoutx = 50;
-        lore.ore.graph.dummylayouty += lore.ore.NODE_HEIGHT
+        lore.ore.graph.dummylayouty = prevy + lore.ore.NODE_HEIGHT
                 + lore.ore.NODE_SPACING;
     } else {
-        lore.ore.graph.dummylayoutx += lore.ore.NODE_WIDTH
+        lore.ore.graph.dummylayoutx = prevx + lore.ore.NODE_WIDTH
                 + lore.ore.NODE_SPACING;
+        lore.ore.graph.dummylayouty = prevy;
     }
 };
 /**
@@ -1457,6 +1408,16 @@ lore.ore.graph.lookupFigure = function(theURL) {
     var figid = lore.ore.graph.lookup[theURL];
     return lore.ore.graph.coGraph.getDocument().getFigure(figid);
 };
+
+/**
+ *  sort figures according to their x and y coordinates 
+ **/
+lore.ore.graph.figSortingFunction = function(figa,figb){        
+    if (figa.x == figb.x)
+        return figa.y > figb.y;
+    else
+        return figa.x > figb.x;
+};
 /**
  * Add a node figure with layout options
  * @param {} theURL
@@ -1468,7 +1429,6 @@ lore.ore.graph.addFigureWithOpts = function(opts){
     var theURL = opts.url;
     if (theURL && !lore.ore.graph.lookup[theURL]) {
         fig = new lore.ore.graph.ResourceFigure(opts.props);
-        fig.setTitle("Resource");
         if (opts.w && opts.h){
             fig.setDimension(opts.w, opts.h);    
         } else {
@@ -1494,9 +1454,8 @@ lore.ore.graph.addFigureWithOpts = function(opts){
     } else {
         lore.ore.ui.loreWarning("Resource is already in the compound object: " + theURL);
     }
-    // TODO: Advance autolayout even if layout was stored - we really need a proper layouter
 	if (fig){
-	    lore.ore.graph.nextXY();
+	    lore.ore.graph.nextXY(opts.x,opts.y);
 	}
     return fig;
 };
@@ -1508,6 +1467,7 @@ lore.ore.graph.addFigureWithOpts = function(opts){
  *            theURL The URL of the resource to be represented by the node
  */
 lore.ore.graph.addFigure = function(theURL,props) {
+    lore.debug.ore("add figure props are",props);
 	var fig = lore.ore.graph.addFigureWithOpts({
         "url": lore.global.util.preEncode(theURL), 
         "x": lore.ore.graph.dummylayoutx,
@@ -1585,6 +1545,7 @@ lore.ore.handleNodePropertyRemove = function(store, record, index){
     lore.debug.ore("deleting property " + record.id,record);
     lore.ore.graph.selectedFigure.unsetProperty(record.id);
 };
+
 lore.ore.handleNodePropertyAdd = function(store, records, index){
     lore.debug.ore("added property " + record.id,record);
     // user should only be editing a single record at a time
@@ -1672,5 +1633,117 @@ lore.ore.graph.dummyBatchDialog = function(){
     });
     win.show();
 };
-
+/** Called on beforeclick of details tree nodes - use to update property values **/
+lore.ore.updateResDetails = function(node,ev){
+    try{
+    var currSelectedNode = Ext.getCmp("resdetailstree").getSelectionModel().getSelectedNode();
+    lore.debug.ore("prev node was",[currSelectedNode,node]);
+    // TODO: update property/rel for previous node (using value from respropeditor)
+    var respropeditor = Ext.getCmp("respropeditor");
+    respropeditor.body.update("");
+    if (!node.isLeaf()){
+        respropeditor.disable();
+    } else {
+        respropeditor.enable();
+        respropeditor.body.update(node.attributes.value);
+    }
+    } catch (e){
+        lore.debug.ore("error updating res detail",e);
+    }
+};
+/** Jump to edit field **/
+lore.ore.editResDetail = function(resURI,pname){
+    lore.debug.ore("editing resource detail " + pname,resURI);
+    
+};
+lore.ore.populateResourceDetailsCombo = function (){
+    // add compound object
+    lore.ore.resourceStore.loadData([["Current Compound Object", lore.ore.currentREM, "Current Compound Object (" + lore.ore.currentREM + ")"]]);
+    // add all resources in compound object
+    var allfigures = lore.ore.graph.coGraph.getDocument().getFigures().data;
+    allfigures.sort(lore.ore.graph.figSortingFunction);
+    for (var i = 0; i < allfigures.length; i++) {
+        var fig = allfigures[i];
+        if (fig instanceof lore.ore.graph.ResourceFigure){
+            var title = fig.metadataproperties["dc:title_0"] || "Untitled Resource";
+            lore.ore.resourceStore.loadData([[title,fig.url,title + " ("+ fig.url +")"]],true);
+        }
+    }
+}
+// TODO: refactor to use model classes
+lore.ore.loadResourceDetails = function(combo,record,index){
+    lore.global.ui.clearTree(lore.ore.ui.resproptreeroot);
+    lore.global.ui.clearTree(lore.ore.ui.resreltreeroot); 
+    var tmpNode;
+    var resurl = record.data.uri;
+    if (resurl == lore.ore.currentREM){
+        // it's the current compound object - load props from the grid
+        lore.ore.ui.grid.store.each(function (rec){
+            var propname = rec.id.substring(0,rec.id.indexOf("_"));
+            tmpNode = new Ext.tree.TreeNode({
+                text: propname,
+                value: rec.data.value,
+                leaf: true
+            });
+            lore.ore.ui.resproptreeroot.appendChild(tmpNode);
+            tmpNode.on("beforeclick",lore.ore.updateResDetails);
+        });
+    } else {
+        // it's a resource - get the props and rels from the figure
+	    var fig = lore.ore.graph.lookupFigure(resurl);
+	    if (fig){
+	            for (p in fig.metadataproperties){
+	                var pname = p;
+	                var pidx = p.indexOf("_");
+	                if (pidx != -1){
+	                    pname = p.substring(0,pidx);
+	                }
+	                tmpNode = new Ext.tree.TreeNode({
+	                    id: p,
+	                    text: pname,
+	                    leaf: true,
+	                    value: fig.metadataproperties[p]
+	                });
+	                lore.ore.ui.resproptreeroot.appendChild(tmpNode);
+	                tmpNode.on("beforeclick",lore.ore.updateResDetails);
+	            }
+	            
+	            var ports = fig.getPorts();
+	            
+	            for (var port = 0; port < ports.getSize(); port++){
+	                var connections = ports.get(port).getConnections();
+	                
+	                for (var j = 0; j < connections.getSize(); j++) {
+	                    var theconnector = connections.get(j);
+	                    var linkedres;
+	                    var cls;
+	                    if (resurl == lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url)){
+	                        // it's an outgoing connection
+	                        linkedres=lore.global.util.escapeHTML(theconnector.targetPort.parentNode.url);
+	                        cls = "rel-out";
+	                    }else{
+	                        // incoming connection
+	                        linkedres = lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url);
+	                        cls = "rel-in";
+	                    }
+	                    var relpred = theconnector.edgetype;
+	                    var relns = theconnector.edgens;
+	                    
+	                    tmpNode = new Ext.tree.TreeNode({
+	                        text: relpred,
+	                        value: linkedres,
+	                        leaf: true,
+	                        iconCls: cls
+	                    });
+	                    lore.ore.ui.resreltreeroot.appendChild(tmpNode);
+	                    tmpNode.on("beforeclick",lore.ore.updateResDetails);
+	                }
+	                
+	            }   
+        }
+        
+    }
+    lore.ore.ui.resreltreeroot.expand();
+    lore.ore.ui.resproptreeroot.expand();
+};
 
