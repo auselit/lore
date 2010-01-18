@@ -78,7 +78,8 @@
 		
 		iframe1.addEventListener("load", function onLoadTrigger(event){
 			iframe1.removeEventListener("load", onLoadTrigger, true);
-			iframe1.contentWindow.instanceId = instId; 
+			iframe1.contentWindow.instanceId = instId;
+            iframe1.contentWindow.lore.anno.ui.init();
 		}, true);
 		if (reload) {
 			win.annographiframe.location.reload(true);
@@ -86,18 +87,20 @@
 		else {
 			iframe1.setAttribute("src", "chrome://lore/content/annotations/loreui_anno.html");
 		}
-
+        
 		var iframe2 = win.document.getElementById("graphiframe");
 		iframe2.addEventListener("load", function onLoadTrigger(event){
-			iframe2.removeEventListener("load", onLoadTrigger, true);
-			iframe2.contentWindow.instanceId = instId;
+            iframe2.removeEventListener("load", onLoadTrigger, true);
+            iframe2.contentWindow.instanceId = instId;
+            iframe2.contentWindow.lore.ore.ui.init();
 		}, true);
 		if (reload) {
 			win.graphiframe.location.reload(true);
 		}
-		else {
-			iframe2.setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
-		}
+	    else {
+		    iframe2.setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
+	    }
+        
 	}
 	
 	/**
@@ -106,7 +109,7 @@
 	 */
 	ui.clearTree = function(treeRoot){
 		while (treeRoot.firstChild) {
-			treeRoot.removeChild(treeRoot.firstChild);
+			treeRoot.removeChild(treeRoot.firstChild,true);
 		}
 	}
 	
@@ -121,15 +124,15 @@
 	}
 	/**
      * @return {}
-	 */
-	ui.genInstanceID = function () {
-		if ( !ui.genInstanceID.counter) {
-			ui.genInstanceID.counter = 1;
-		} else {
-			ui.genInstanceID.counter++;
-		}
-		return ui.genInstanceID.counter;
-	}
+    */
+    ui.genInstanceID = function () {
+        if ( !ui.genInstanceID.counter) {
+            ui.genInstanceID.counter = 1;
+        } else {
+            ui.genInstanceID.counter++;
+        }
+        return ui.genInstanceID.counter;
+    }
 	
 	/**
 	 * UI View 
