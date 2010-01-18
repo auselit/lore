@@ -70,7 +70,22 @@ lore.ore.REL_REQUIRED = ["relationship", "namespace"];
 /** Property name displayed for the compound object identifier */
 lore.ore.REM_ID_PROP = "Compound Object ID";
 
-
+lore.ore.disableUIFeatures = function(opts) {
+    lore.debug.ui("LORE Compound Objects: disable ui features?", opts);
+    lore.ore.ui.disabled = opts;
+    
+    if (!lore.ore.disableUIFeatures.initialCall) {
+        lore.ore.disableUIFeatures.initialCall = 1;
+    }
+    else {
+        if (opts.disable_compoundobjects) {
+            lore.ore.ui.topView.setCompoundObjectsVisibility(false);
+        }
+        else {
+            lore.ore.ui.topView.setCompoundObjectsVisibility(true);
+        }
+    }
+}
 /** Display an error message in the ORE statusbar 
  * @param {String} message The message to display */
 lore.ore.ui.loreError = function(/*String*/message){
@@ -1252,7 +1267,6 @@ lore.ore.setrelonturl = function(relonturl) {
 };
 
 lore.ore.handleLocationChange = function (contextURL) {
-    lore.debug.ore("update browse list",[lore.ore.ui.lorevisible, lore.ore.ui.initialized]);
 	lore.ore.ui.currentURL = lore.global.util.preEncode(contextURL);
 	if ( !lore.ore.ui.lorevisible || ! lore.ore.ui.initialized){
 		return;

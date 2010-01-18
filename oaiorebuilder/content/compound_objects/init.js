@@ -26,11 +26,6 @@
  */
 
 
-/** Reference to the Extension */
-lore.ore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
-		.getService(Components.interfaces.nsIExtensionManager)
-		.getInstallLocation(lore.constants.EXTENSION_ID)
-		.getItemLocation(lore.constants.EXTENSION_ID);
 
 /**
  * Initialise the graphical view
@@ -65,7 +60,7 @@ lore.ore.ui.initGraphicalView = function() {
             url: data.node.attributes.uri, 
             x: (e.xy[0] - lore.ore.graph.coGraph.getAbsoluteX() + lore.ore.graph.coGraph.getScrollLeft()),
             y: (e.xy[1] - lore.ore.graph.coGraph.getAbsoluteY() + lore.ore.graph.coGraph.getScrollTop()),
-            "props": {"rdf:type_0":lore.constants.RESOURCE_MAP, "dc:title_0": data.node.text}
+            props: {"rdf:type_0":lore.constants.RESOURCE_MAP, "dc:title_0": data.node.text}
         });
         return true;
     };
@@ -150,7 +145,428 @@ lore.ore.ui.initProperties = function() {
 /**
  * Initialise the Extjs UI components and listeners
  */
-lore.ore.ui.initExtComponents = function() {
+lore.ore.ui.initUIComponents = function() {
+    
+  /** Ext plugin to change hideMode to ensure tab contents are not destroyed/reloaded */
+  lore.ore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
+  
+	lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
+	        fields: ['title', 'uri','display'], 
+	        data: [],
+	        lastOptions: {params: {start:0,limit:5}}
+	});
+	lore.ore.ui.resselectcombo = new Ext.form.ComboBox({
+	    displayField:'display',
+	    id: "resselectcombo",
+	    itemSelector: 'div.res-listing',
+	    emptyText: "Select resource to display... ",
+	    triggerAction: "all",
+	    mode: 'local',
+	    pageSize: 5,
+	    tpl: new Ext.XTemplate('<tpl for="."><div class="x-combo-list-item res-listing">',
+	        '<h3>{title}</h3>',
+	        '<i>{uri}</i>',
+	        '</div></tpl>'),
+	    valueField: 'uri',
+	    typeAhead: false,
+	    store: lore.ore.resourceStore
+	});
+	lore.ore.ui.propedittrigger = new Ext.form.TriggerField({
+	    id: "propedittrigger",
+	    'triggerClass': 'x-form-ellipsis-trigger',
+	    'onTriggerClick': function(ev) {
+	        lore.debug.ore("triggered for ",[this,ev]);
+	        
+	    }
+	});
+  /** Ext specification of compound objects UI */
+  lore.ore.ui.gui_spec = {
+    layout: "border",
+    items: [{region:"north", layout: "fit"},{
+        region: "center",
+        layout: "fit",
+        border: false,
+        items: [{
+            layout: "border",
+            border: false,
+            items: [{
+                region: "center",
+                border: false,
+                layout: "fit",
+                items: [{
+                    xtype: "tabpanel",
+                    id: "loreviews",
+                    enableTabScroll: true,
+                    plugins : lore.ore.ui.vismode,
+                    deferredRender: false,
+                    autoScroll: true,
+                    items: [
+                        {
+                            title: "Graphical Editor",
+                            xtype: "panel",
+                            id: "drawingarea",
+                            autoScroll: true  
+                        },
+                        {
+                            title: "Summary",
+                            xtype: "panel",
+                            id: "remlistview",
+                            autoScroll: true
+                            
+                        }, {
+                            title: "Resource Details",
+                            xtype: "panel",
+                            autoScroll: true,
+                            id: "remresedit",
+                            layout: "border",
+                            items: [
+                                {
+                                    region: "north",
+                                    xtype: "panel",
+                                    layout: "border",
+                                    id: "resselect",
+                                    height: 23,
+                                    items:[
+                                        {
+                                            xtype: "panel",
+                                            region:"center",
+                                            layout: "fit",
+                                            items:[
+                                                lore.ore.ui.resselectcombo
+                                            ]
+                                        },{
+                                            region: "east",
+                                            width:20,
+                                            xtype:"panel",
+                                            html:"<div style='height:100%;width:100%;background-color:#d0d0d0'>"
+                                            + "<a href='#' onclick='if(lore.ore.ui.resselectcombo.value){lore.global.util.launchTab(lore.ore.ui.resselectcombo.value, window);}'>"
+                                            + "<img alt='go' title='Show in browser' style='padding-top:1px;padding-left:1px'"
+                                            + " src='chrome://lore/skin/icons/page_go.png'>"
+                                            + "</a></div>"
+                                        }
+                                    ]
+                                    
+                                    
+                                },
+                                {
+                                    region: "west",
+                                    split: true,
+                                    layout: "fit",
+                                    title: " ",
+                                    //collapseMode:'mini',
+                                    width: 150,
+                                    xtype: "treepanel",
+                                    id: "respreview",
+                                    tools: [
+                                    {
+                                        id:'plus',
+                                        qtip: 'Add a property or relationship',
+                                        handler: lore.ore.ui.addProperty
+                                    },
+                                    {
+                                        id:'minus',
+                                        qtip: 'Remove the selected property or relationship',
+                                        handler: lore.ore.ui.removeProperty
+                                    }
+                                    ],
+                                    id: "resdetailstree",
+                                    animate: false,
+                                    autoScroll: true,
+                                    fitToFrame: true,
+                                    rootVisible: false,
+                                    containerScroll: true,
+                                    border: false,
+                                    root: new Ext.tree.TreeNode({})
+                                    },
+                                {
+                                    xtype: "panel",
+                                    title: "Property / Relationship Editor",
+                                    id: "respropeditor",
+                                    disabled: true,
+                                    split: true,
+                                    region: "center",
+                                    layout: "fit",
+                                    
+                                    tools:[
+                                        
+                                        {
+                                            id: 'refresh',
+                                            qtip: 'Cancel edits and restore original value',
+                                            handler: lore.ore.ui.restorePropValue
+                                        }
+                                    ]
+                                    /*,
+                                    labelAlign: "top",
+                                    items:[
+                                        {
+                                            xtype: "textarea",
+                                            //fieldLabel: "Title",
+                                            anchor: "100%",
+                                            grow: true
+                                        },
+                                        {
+                                            xtype: "textarea",
+                                            fieldLabel: "Description",
+                                            anchor: "100%",
+                                            grow: true
+                                        }
+                                    ]*/
+                                }
+                            ]
+                        }
+                        ,{
+                            title: "Slideshow",
+                            id: "remslideview",
+                            autoScroll: false,
+                            html: "<div id='trailcarousel'></div>"
+                        } ,{
+                            title: "Explore",
+                            id: "remexploreview",
+                            forceLayout:true,
+                            autoScroll:true
+                        }
+                ,{
+                        title: "Using Compound Objects",
+                        id: "welcome",
+                        autoWidth: true,
+                        autoScroll: true,
+                        iconCls: "welcome-icon",
+                        html: "<iframe height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
+                    
+                    }]
+                }
+                ]
+            }, {
+                region: "south",
+                xtype: "statusbar",
+                id: "lorestatus",
+                defaultText: "",
+                autoClear: 6000
+            }]
+        }]
+    }, {
+        region: "west",       
+        width: 280,
+        
+        split: true,
+        collapseMode:'mini',
+            id:"propertytabs",
+            xtype:"tabpanel",
+            deferredRender: false,
+            enableTabScroll: true,
+            defaults: {
+            autoScroll: true
+            },
+            fitToFrame: true,
+            items:[
+            { 
+                xtype: "cotree",
+                title: "Browse",
+                id: "sourcestree"
+            }, {
+                xtype: "panel",
+                layout: "anchor",
+                title: "Search",
+                id: "searchpanel",
+                items:[{
+                    xtype: "tabpanel",
+                    anchor: "100%",
+                    id: "searchforms",
+                    items: [
+                    {
+                      xtype: "panel",
+                      layout: "hbox",
+                      title: "Keyword",
+                      id: "kwsearchform",
+                      border: false,
+                      autoHeight: true,
+                      padding: 5,
+                      items: [
+                        {
+                            xtype:"textfield",
+                            id: "kwsearchval", 
+                            listeners: {
+                                specialkey: function(field,el){
+                                    if (el.getKey() == Ext.EventObject.ENTER)
+                                        Ext.getCmp("kwsearchbtn").fireEvent("click");
+                                }
+                            }
+                        },
+                        {
+                            xtype: "button",
+                            text: 'Search',
+                            id: 'kwsearchbtn',
+                            tooltip: 'Run the search'
+                        }
+                     ]
+                    },
+                    {
+                        title: "Advanced",
+                        xtype: "form",
+                        id: "advsearchform",
+                        border: false,
+                        buttons: [{
+                            text: 'Search',
+                            id: 'advsearchbtn',
+                            tooltip: 'Run the search'
+                        }
+                        ],
+                        keys: [{ key: [10, 13], fn: function() {
+                                Ext.getCmp("advsearchbtn").fireEvent('click');
+                            }
+                        }],
+                        items: [
+                        {
+                            xtype: "label",
+                            text: "Find Compound Objects",
+                            style: "font-family: arial, tahoma, helvetica, sans-serif; font-size:11px;line-height:2em"
+                        },
+                        {
+                            xtype:"textfield",
+                            fieldLabel: "containing",
+                            id: "searchuri",
+                            emptyText: "any resource"
+                        },
+                        {
+                            xtype: "combo",
+                            fieldLabel: "having",
+                            id: "searchpred",
+                            mode: 'local',
+                            typeAhead: true,
+                            displayField: 'curie',
+                            valueField: 'uri',
+                            emptyText: "any property or relationship",
+                            store: new Ext.data.ArrayStore({
+                                fields: ['uri','curie'],
+                                data: []
+                            })
+                        },
+                        {
+                            xtype: "textfield",
+                            fieldLabel: "matching",
+                            id: "searchval",
+                            emptyText: ""
+                        }/*,
+                        {
+                            xtype: "checkbox",
+                            id: "searchexact",
+                            boxLabel: "exactly"
+                        }*/
+                        ]
+                    }]
+                }, {
+                    anchor: "100%",
+                    xtype: "cotree",
+                    title: "Search Results",
+                    id: "searchtree" 
+                }]
+            }, {
+                xtype: "panel",
+                layout: "anchor",
+                title: "Properties",
+                id: "properties",
+                items: [{
+                        xtype: "editorgrid",
+                        clicksToEdit: 1,
+                        columnLines: true,
+                        store: new Ext.data.JsonStore({
+                            idProperty: 'id',
+                            fields: [{name: 'id',type:'string'},{name: 'name',type:'string'},{name: 'value', type:'string'}]
+                        }),
+                        colModel: new Ext.grid.ColumnModel({
+                            columns: [
+                            {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
+                            {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, 
+                            editor:  lore.ore.ui.propedittrigger
+                            }
+                            ]
+                        }),
+                        sm: new Ext.grid.RowSelectionModel({singleSelect: true}),
+                        title: 'Compound Object Properties',
+                        tools: [
+                            {
+                                id:'plus',
+                                qtip: 'Add a property',
+                                handler: lore.ore.ui.addProperty
+                            },
+                            {
+                                id:'minus',
+                                qtip: 'Remove the selected property',
+                                handler: lore.ore.ui.removeProperty
+                            }, {
+                                id: 'help',
+                                qtip: 'Display information about the selected property',
+                                handler: lore.ore.ui.helpProperty
+                            }
+                        ],
+                        collapsible: true,
+                        animCollapse: false,
+                        id: "remgrid",
+                        autoHeight: true,
+                        anchor: "100%",
+                        viewConfig: {
+                            forceFit: true,
+                            scrollOffset: 0
+                        }
+                     }, {
+                            xtype: "editorgrid",
+                            clicksToEdit: 1,
+                            columnLines: true,
+                            store: new Ext.data.JsonStore({
+                                idProperty: 'id',
+                                fields: [{name: 'id',type:'string'},{name: 'name',type:'string'},{name: 'value', type:'string'}]
+                            }),
+                            colModel: new Ext.grid.ColumnModel({
+                                columns: [
+                                {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
+                                {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, 
+                                editor:  lore.ore.ui.propedittrigger
+                                }
+                                
+                                
+                                ]
+                            }),
+                            sm: new Ext.grid.RowSelectionModel({singleSelect: true}),
+                            title: "Resource/Relationship Properties",
+                            id: "nodegrid",
+                            autoHeight:true,
+                            anchor: "100%",
+                            collapsed: true,
+                            viewConfig: {
+                                forceFit: true,
+                                scrollOffset: 0
+                            },
+                            collapsible: true,
+                            animCollapse: false,
+                            tools: [
+                            {
+                                id:'plus',
+                                qtip: 'Add a property',
+                                handler: lore.ore.ui.addProperty
+                            },
+                            {
+                                id:'minus',
+                                qtip: 'Remove the selected property',
+                                handler: lore.ore.ui.removeProperty
+                            }, {
+                                id: 'help',
+                                qtip: 'Display information about the selected property',
+                                handler: lore.ore.ui.helpProperty
+                            }
+                            ]
+                      }
+              ]}
+         ]
+    }
+    ]};
+    try {
+        lore.ore.ui.main_window = new Ext.Viewport(lore.ore.ui.gui_spec);
+        lore.ore.ui.main_window.show();    
+    } catch (e){
+        lore.debug.ore("Error creating Ext UI components",e);
+    }
+    
+    
 	// set up glocal variable references to main UI components
 	lore.ore.ui.propertytabs = Ext.getCmp("propertytabs");
 	lore.ore.ui.grid = Ext.getCmp("remgrid");
@@ -358,6 +774,7 @@ lore.ore.ui.initHistory = function (){
 lore.ore.initModel = function (){
     lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();    
 }
+
 lore.ore.ui.initVars = function (){
     lore.ui.vars=[]; 
     for(var v in this){
@@ -365,34 +782,38 @@ lore.ore.ui.initVars = function (){
     } 
     lore.ui.vars.sort();
 }
+
 /**
  * Initialise Compound Objects component of LORE
  */
 lore.ore.ui.init = function() {
-    /** Used to store options relating to parts of the UI that should be disabled */
-    lore.ore.ui.disabled = {};
-    
-    lore.ore.ui.initVars();
-    //lore.debug.ui("vars (" + lore.ui.vars.length + ")", lore.ui.vars);
-    
     try{
+        /** Used to store options relating to parts of the UI that should be disabled */
+        lore.ore.ui.disabled = {};
+        lore.ore.ui.initVars();
+        //lore.debug.ui("vars (" + lore.ui.vars.length + ")", lore.ui.vars);
+    
+        /** Reference to the Extension */
+        lore.ore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
+            .getService(Components.interfaces.nsIExtensionManager)
+            .getInstallLocation(lore.constants.EXTENSION_ID)
+            .getItemLocation(lore.constants.EXTENSION_ID);
+
+    
 		lore.ore.ui.topView =  lore.global.ui.topWindowView.get(window.instanceId);
         
 	    /** The url shown in the current browser tab */
 		lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 		lore.ore.resource_metadata_props = [];
 		lore.ore.all_props = lore.ore.METADATA_PROPS;
-	    /** Indicates whether the ore UI is visible */
-	    try {
-		   lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
-           lore.debug.ore("topView", lore.ore.ui.topView);
-           lore.debug.ore("lorevisible is " + lore.ore.ui.lorevisible);
-	    } catch (e){
-	        lore.debug.ore("exception getting lorevisible from topView",e);
-	        lore.ore.ui.lorevisible = true;
-	    }
+
+        /** Indicates whether the ore UI is visible */
+	    lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
+           
+	    
         lore.ore.initModel();
-		lore.ore.ui.initExtComponents();
+        
+		lore.ore.ui.initUIComponents();
 	    lore.ore.ui.initProperties();
 		lore.ore.ui.initHistory();
 	    lore.ore.ui.loreInfo("Welcome to LORE");
