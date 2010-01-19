@@ -517,7 +517,7 @@ lore.ore.updateRDFHTML = function() {
     Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
 };
 
-lore.ore.displayHistory = function (){
+/*lore.ore.displayHistory = function (){
     try{
     var query = lore.ore.historyService.getNewQuery();
     query.annotation = "lore/compoundObject";
@@ -551,7 +551,7 @@ lore.ore.displayHistory = function (){
   } catch (e) {
     lore.debug.ore("error displaying history",e);
   }
-}
+}*/
 
 
 /** Render the current compound object as Fedora Object XML in the FOXML view */
@@ -855,7 +855,7 @@ lore.ore.generateID = function(){
     // TODO: #125 should use a persistent identifier service to request an identifier
     return "http://austlit.edu.au/rem/" + draw2d.UUID.create();
 };
-lore.ore.addToHistory = function(remurl, title){
+/*lore.ore.addToHistory = function(remurl, title){
   try {
      var theuri = Components.classes["@mozilla.org/network/io-service;1"].
          getService(Components.interfaces.nsIIOService).
@@ -881,7 +881,7 @@ lore.ore.addToHistory = function(remurl, title){
   } catch (e){
       lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
   }
-}
+}*/
 /**
  * Load a compound object into the graphical view
  * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
@@ -1044,7 +1044,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             if (!title){
                 title = "Untitled";
             }
-            lore.ore.addToHistory(remurl, title);  
+            lore.ore.historyManager.addToHistory(remurl, title);  
        }
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
