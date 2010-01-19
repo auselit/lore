@@ -508,7 +508,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 	if (Ext.getCmp("remexploreview")) {
 		menu.appendMenuItem(new draw2d.MenuItem("Show in explore view", null,
 				function() {
-					lore.ore.ui.oreviews.activate("remexploreview");
+					Ext.getCmp("loreviews").activate("remexploreview");
 					if (thisfig.url) {
 						lore.ore.exploreLoaded = thisfig.url;
 						lore.ore.explore.showInExploreView(thisfig.url,
@@ -521,7 +521,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 
 // Override onKeyDown to cater for Macs without delete
 lore.ore.graph.ResourceFigure.prototype.onKeyDown = function (keyCode, ctrl){
-  lore.debug.ore("ResourceFigure: onKeyDown " + keyCode,ctrl);
+  //lore.debug.ore("ResourceFigure: onKeyDown " + keyCode,ctrl);
   // on delete or backspace
   if(keyCode==46 || keyCode==8){ 
      this.workflow.getCommandStack().execute(this.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
