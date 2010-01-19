@@ -103,6 +103,11 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
             this.model.on("add", this.addCompoundObjects, this);
             this.model.on("clear",this.clearChildren,this);
             this.model.on("remove", this.removeCompoundObject, this);
+            // load contents from model
+            var initialContents = this.model.getCompoundObjectsList();
+            if (initialContents){
+                this.addCompoundObjects(initialContents);
+            }
         }
     },
     /**
@@ -120,28 +125,31 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
     addCompoundObjects : function(coList){
         try{
         //lore.debug.ore("addCompoundObjects " + coList.length,coList);
-        for (var i=0; i<coList.length;i++){   
-            var remuri = coList[i].getUri();
-            // if node already exists remove it
-            this.removeCompoundObject(remuri); 
-            var newNode = new lore.ore.ui.CompoundObjectTreeNode(
-                {
-                    'id': this.generateNodeId(remuri),
-                    'model':coList[i]
-                }
-            );
-            
-            if (this.reverse && this.firstChild){
-                    this.insertBefore(newNode, this.firstChild);
-            } else {
-                this.appendChild(newNode);  
-                
-            }
-            this.attachRemActions(newNode); 
+        if (coList){
+	        for (var i=0; i<coList.length;i++){   
+	            var remuri = coList[i].getUri();
+	            // if node already exists remove it
+	            this.removeCompoundObject(remuri); 
+	            var newNode = new lore.ore.ui.CompoundObjectTreeNode(
+	                {
+	                    'id': this.generateNodeId(remuri),
+	                    'model':coList[i]
+	                }
+	            );
+	            
+	            if (this.reverse && this.firstChild){
+	                    this.insertBefore(newNode, this.firstChild);
+	            } else {
+	                this.appendChild(newNode);  
+	                
+	            }
+	            this.attachRemActions(newNode); 
+	        }
+            // only expand if this node has been added to a tree
+	        if (this.getOwnerTree()) {this.expand();}
         }
-        this.expand();
         } catch (e){
-            lore.debug.ore("CompoundObjectTree.addCompoundObject:",ex);
+            lore.debug.ore("CompoundObjectTree.addCompoundObject:",e);
         }
     },
     /** 
