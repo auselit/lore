@@ -22,43 +22,37 @@
  * to map resource URLs to figure IDs
  * @class
  **/
-lore.ore.graph.CommandListener=function(){
-draw2d.CommandStackEventListener.call(this);};
-lore.ore.graph.CommandListener.prototype=new draw2d.CommandStackEventListener;
-lore.ore.graph.CommandListener.prototype.type="lore.ore.graph.CommandListener";
-lore.ore.graph.CommandListener.prototype.stackChanged=function(event){
-	lore.debug.ore("CommandListener stackChanged", event);
-	// remove the url from lookup if node is deleted, add it back if it is undone
-	var details=event.getDetails();
-	var comm = event.getCommand();
-	var comm_fig = comm.figure;
-	lore.ore.graph.modified = true;
-    if(comm instanceof draw2d.CommandMove 
-        && comm.oldX == lore.ore.graph.dummylayoutprevx 
-        && comm.oldY == lore.ore.graph.dummylayoutprevy){
-            // reset dummy graph layout position to prevent new nodes being added too far from content
-            lore.ore.graph.nextXY(comm.newX, comm.newY);
-    }
-    if(comm instanceof draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)){
+lore.ore.graph.CommandListener = Ext.extend(draw2d.CommandStackEventListener, {
+    type : "lore.ore.graph.CommandListener",
+    stackChanged : function(event){
+	    var details = event.getDetails();
+	    var comm = event.getCommand();
+	    var comm_fig = comm.figure;
+	    lore.ore.graph.modified = true;
+        // reset dummy graph layout position to prevent new nodes being added too far from content
+	    if (comm instanceof draw2d.CommandMove  && comm.oldX == lore.ore.graph.dummylayoutprevx 
+	        && comm.oldY == lore.ore.graph.dummylayoutprevy) {   
+	            lore.ore.graph.nextXY(comm.newX, comm.newY);
+	    }
         // don't allow figures to be moved outside bounds of canvas
-        comm.undo();
+	    if (comm instanceof draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)) {
+	        comm.undo();
+	    }
+        // remove the url from lookup if node is deleted, add it back if it is undone
+	    if (0!=(details&(draw2d.CommandStack.POST_EXECUTE))) {
+	        if (comm instanceof draw2d.CommandDelete) {
+	            delete lore.ore.graph.lookup[comm_fig.url];
+	        }
+	    }
+	    else if (0!=(details&(draw2d.CommandStack.POST_UNDO))) {
+	           if (comm instanceof draw2d.CommandDelete) {
+	                lore.ore.graph.lookup[comm_fig.url] = comm_fig.getId();
+	           }
+        }   
+	    else if (0!=(details&(draw2d.CommandStack.POST_REDO))) {
+	        if (comm instanceof draw2d.CommandDelete) {
+	            delete lore.ore.graph.lookup[comm_gif.url];
+	        }
+        }
     }
-	if(0!=(details&(draw2d.CommandStack.POST_EXECUTE)))
-	{
-		if(comm instanceof draw2d.CommandDelete){
-			delete lore.ore.graph.lookup[comm_fig.url];
-		}
-	}
-	else{if(0!=(details&(draw2d.CommandStack.POST_UNDO)))
-	{
-		if(comm instanceof draw2d.CommandDelete){
-			lore.ore.graph.lookup[comm_fig.url] = comm_fig.getId();
-		}
-	}
-	else{if(0!=(details&(draw2d.CommandStack.POST_REDO)))
-	{
-		if(comm instanceof draw2d.CommandDelete){
-			delete lore.ore.graph.lookup[comm_gif.url];
-		}
-	}}}
-};
+});
