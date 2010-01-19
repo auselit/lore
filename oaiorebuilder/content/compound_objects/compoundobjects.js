@@ -418,7 +418,7 @@ lore.ore.ui.helpProperty = function (ev,toolEl, panel){
 lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
     var tab = Ext.getCmp(panelid);
     if (!tab) {
-       tab = lore.ore.ui.oreviews.add({
+       tab = Ext.getCmp("loreviews").add({
             'title' : paneltitle,
             'id' : panelid,
             'autoScroll' : true,
@@ -900,7 +900,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         // reset the graphical view
         lore.ore.ui.initGraphicalView();
         
-        lore.ore.ui.oreviews.activate("drawingarea");
+        Ext.getCmp("loreviews").activate("drawingarea");
         var rdfDoc;
         if (typeof rdf != 'object'){ 
 	       rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
@@ -1363,7 +1363,7 @@ lore.ore.graph.addFigureWithOpts = function(opts){
         fig.setContent(theURL);
         lore.ore.graph.coGraph.addFigure(fig, opts.x, opts.y);
         lore.ore.graph.lookup[theURL] = fig.getId();
-      	lore.ore.ui.oreviews.activate("drawingarea");
+      	Ext.getCmp("loreviews").activate("drawingarea");
     } else {
         lore.ore.ui.loreWarning("Resource is already in the compound object: " + theURL);
     }
