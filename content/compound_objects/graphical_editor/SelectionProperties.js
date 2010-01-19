@@ -9,7 +9,7 @@ lore.ore.graph.SelectionProperties=function(/*:workflow*/ workflow)
 lore.ore.graph.SelectionProperties.prototype.type="lore.ore.graph.SelectionProperties";
 lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Figure*/figure){
 	if (figure != null) {
-		lore.debug.ore("User selected figure in graph editor", figure);
+		//lore.debug.ore("User selected figure in graph editor", figure);
 		lore.ore.graph.selectedFigure = figure;
         lore.ore.ui.nodegrid.store.removeAll();
 		if (figure.metadataproperties) {
@@ -22,7 +22,7 @@ lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Fi
                 //lore.ore.appendPropertyValue(p,figure.metadataproperties[p],lore.ore.ui.nodegrid);
                 lore.ore.ui.nodegrid.store.loadData([{id: p, name: pname, value: figure.metadataproperties[p]}],true);
             }
-            lore.ore.ui.propertytabs.activate("properties");
+            Ext.getCmp("propertytabs").activate("properties");
             lore.ore.ui.nodegrid.expand();
 		}
 		else if (figure.edgetype){
@@ -30,7 +30,7 @@ lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Fi
                 {name:'relationship',id:'relationship',value:figure.edgetype},
                 {name: 'namespace', id: 'namespace', value:figure.edgens}
             ]);
-            lore.ore.ui.propertytabs.activate("properties");
+            Ext.getCmp("propertytabs").activate("properties");
             lore.ore.ui.nodegrid.expand();
 		}
 	} else {
