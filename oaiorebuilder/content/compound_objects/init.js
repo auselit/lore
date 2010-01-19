@@ -85,8 +85,7 @@ lore.ore.ui.loadPreferences = function() {
     try{
 	  lore.ore.ui.topView.loadCompoundObjectPrefs();
     } catch (ex){
-        //alert(ex + " " + ex.stack);
-        lore.debug.ore("error loading preferences",ex);
+        lore.debug.ore("Error loading preferences",ex);
     }
 }
 
@@ -732,45 +731,6 @@ lore.ore.ui.initUIComponents = function() {
     Ext.QuickTips.init();
 }
 
-lore.ore.ui.initHistory = function (){
-    lore.ore.historyService = Components.classes["@mozilla.org/browser/nav-history-service;1"]
-              .getService(Components.interfaces.nsINavHistoryService);
-    var observer = {
-	  onBeginUpdateBatch: function() {
-	  },
-	  onEndUpdateBatch: function() {
-        lore.global.ui.clearTree(lore.ore.ui.recenttreeroot);
-        lore.ore.displayHistory();
-	  },
-	  onVisit: function(aURI, aVisitID, aTime, aSessionID, aReferringID, aTransitionType) {
-	  },
-	  onTitleChanged: function(aURI, aPageTitle) {
-	  },
-	  onDeleteURI: function(aURI) {
-        var thenode = lore.ore.ui.recenttreeroot.findChild('id',aURI.spec + "r");
-        if (thenode){
-            lore.ore.ui.recenttreeroot.removeChild(thenode);
-        }
-	  },
-	  onClearHistory: function() {
-        lore.global.ui.clearTree(lore.ore.ui.recenttreeroot);
-	  },
-	  onPageChanged: function(aURI, aWhat, aValue) {
-	  },
-	  onPageExpired: function(aURI, aVisitTime, aWholeEntry) {
-	  },
-	  QueryInterface: function(iid) {
-	    if (iid.equals(Components.interfaces.nsINavHistoryObserver) ||
-	        iid.equals(Components.interfaces.nsISupports)) {
-	      return this;
-	    }
-	    throw Components.results.NS_ERROR_NO_INTERFACE;
-      }
-    };
-    lore.ore.historyService.addObserver(observer,false);
-    lore.ore.displayHistory();
-}
-
 lore.ore.initModel = function (){
     lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();    
 }
@@ -815,7 +775,9 @@ lore.ore.ui.init = function() {
         
 		lore.ore.ui.initUIComponents();
 	    lore.ore.ui.initProperties();
-		lore.ore.ui.initHistory();
+        
+		lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
+        
 	    lore.ore.ui.loreInfo("Welcome to LORE");
 	 
 		lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId);  
