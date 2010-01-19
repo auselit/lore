@@ -1,6 +1,23 @@
-
+/*
+ * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
 lore.ore.model = lore.ore.model || {};
-
 /** 
  * Represents a list of compound object summaries 
  **/
@@ -157,30 +174,30 @@ lore.ore.model.CompoundObjectListManager = function(){
         "history": new lore.ore.model.CompoundObjectList({'name':'history'})
     }
 };
-lore.ore.model.CompoundObjectListManager.prototype.getList = function(listname){
-    return this.lists[listname];
-};
-/**
- * Add compound objects to the list
- * @param {lore.ore.model.CompoundObjectSummary []} coSummaries Array of compound objects to be added
- * @param {String} listname The list to which to add the compound objects. This is optional, the browse list will be added to by default.
- */
-lore.ore.model.CompoundObjectListManager.prototype.add = function(coSummaries, listname){
-    if (!listname){
-        listname = "browse";
-    }
-    this.lists[listname].add(coSummaries);
-    //lore.debug.ore("added " + coSummaries.length + " summaries to " + listname);
-    
-};
-lore.ore.model.CompoundObjectListManager.prototype.clear = function(listname){
-    if (!listname){
-        listname = "browse";   
-    }
-    this.lists[listname].clearList();
+lore.ore.model.CompoundObjectListManager.prototype = {
+	getList : function(listname){
+	    return this.lists[listname];
+	},
+	/**
+	 * Add compound objects to the list
+	 * @param {lore.ore.model.CompoundObjectSummary []} coSummaries Array of compound objects to be added
+	 * @param {String} listname The list to which to add the compound objects. This is optional, the browse list will be added to by default.
+	 */
+	add: function(coSummaries, listname){
+	    if (!listname){
+	        listname = "browse";
+	    }
+	    this.lists[listname].add(coSummaries);
+	},
+    clear: function(listname){
+	    if (!listname){
+	        listname = "browse";   
+	    }
+	    this.lists[listname].clearList();
+	},
+	remove : function(uri){
+	  for (colist in this.lists){
+	    this.lists[colist].remove(uri);
+	  }
+	}
 }
-lore.ore.model.CompoundObjectListManager.prototype.remove = function(uri){
-  for (colist in this.lists){
-    this.lists[colist].remove(uri);
-  }
-};
