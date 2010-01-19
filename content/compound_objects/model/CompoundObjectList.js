@@ -46,17 +46,10 @@ lore.ore.model.CompoundObjectList = Ext.extend(Ext.util.Observable, {
         }
         this.fireEvent('add',coSummaries); 
     },
-    /** 
-     * Add a single compound object to the list
-     * @param {lore.ore.model.CompoundObjectSummary} coDetail The details of the compound object to be added
+    /**
+     * Get the contents of the list
+     * @return {lore.ore.model.CompoundObjectSummary []} The objects in the list 
      */
-   /* addCompoundObject: function(coSummary){
-        if (!coSummary instanceof lore.ore.model.CompoundObjectSummary){
-            throw "Argument to add must be a lore.ore.model.CompoundObjectSummary";
-        }
-        this.compoundObjects.push(coSummary);
-        this.fireEvent('add',coSummary);
-	},*/
     getCompoundObjectsList: function(){
         return this.compoundObjects;
     }
