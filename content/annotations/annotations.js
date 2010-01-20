@@ -442,7 +442,7 @@
 			created:  new Date().format('c'),
 			modified: new Date().format('c'),
 			body: "",
-			title: (parent ? "New Reply":"New Annotation"),
+			title: (parent ? "Re: " + parent.data.title:"New Annotation"),
 			type: lore.constants.NAMESPACES["annotype"] + "Comment",
 			lang: "en",
 			isReply: (parent ? true: null),
