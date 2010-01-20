@@ -1080,7 +1080,11 @@ lore.anno.ui.initExtComponents = function(){
 		lore.anno.ui.treeroot = annosourcestreeroot; 
 		lore.anno.ui.treeroot.expand();
 		lore.anno.ui.addTreeSorter('created', 'asc');
-
+		Ext.getCmp("annosourcestree").on("expandnode", function (node) {
+			if ( node != lore.anno.ui.treeroot) {
+				node.expandChildNodes(false);
+			}	
+		});
 		
 		Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleAnnotationSelection);
 		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditAnnotation);
