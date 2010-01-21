@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc>
+    <sources>
+        <source src="../content/compound_objects"/>
+        <source src="../content/annotations"/>
+        <source src="../content/uiglobal.js"/>
+        <source src="../content/constants.js"/>
+	    <source src="../content/util.js" />
+        <source src="../content/debug.js"/>
+        <source src="../content/tracing.js"/>
+        <source src="../content/overlay.js"/>
+        <source src="../content/tracing.js"/>
+        <source src="../content/lib/"/>
+        <!--source src="../content/lib/ext/ext-all-debug.js"/-->
+    </sources>
+    <tags>
+        <tag name="xtype" title="xtype"/> 
+    </tags>
+</doc>

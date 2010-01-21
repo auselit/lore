@@ -53,4 +53,9 @@
 		<delete dir="${dist.dir}" />
 	</target>
 
+    <target name="doc">
+        <java jar="doc/ext-doc.jar" fork="true">
+             <arg line="-p doc/ext-doc.xml -o doc/output -t doc/template/template.xml -verbose"/>
+        </java>
+    </target>
 </project>
