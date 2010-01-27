@@ -23,11 +23,6 @@
  * @include  "/oaiorebuilder/content/util.js"
  */
 
-/** 
- * Annotations View
- * @namespace
- * @name lore.anno.ui
- */
 
 /* Class definitions */
 
@@ -481,7 +476,7 @@ loreuieditor = function (store ) {
 								background: 'none',
 								border: 'none',
 								'font-size': '90%'
-							},
+							}
 							//labelStyle: 'font-size:90%;'
 						
 						}, {
@@ -521,22 +516,33 @@ loreuieditor = function (store ) {
 							hidden: true,
 							hideLabel: true
 						}, {
+                            
 							fieldLabel: 'Selection',
 							name: 'contextdisp',
 							readOnly: true,
 							style: {
 								background: 'none',
-								border: 'none',
+								'border-top': 'none',
+                                'border-bottom': 'none',
+                                'border-left': 'none',
 								'font-size': '90%'
+                               
+                           
 							},
 							//labelStyle: 'font-size:90%;'
-						}, {
+                             xtype: "trigger",
+                            'triggerClass': 'x-form-ellipsis-trigger',
+                            'onTriggerClick': lore.anno.ui.handleUpdateAnnotationContext
+                            
+                        
+						}/*, {
+                            
 							xtype:"button",
 							text: 'Update Selection',
 							fieldLabel: '',
 							id: 'updctxtbtn',
 							tooltip: 'Set the context of the annotation to be the current selection from the main browser window'
-						},
+						}*/,
 						{
 							fieldLabel: 'Variant resource',
 							name: 'variant',
@@ -546,7 +552,8 @@ loreuieditor = function (store ) {
 								background: 'none',
 								border: 'none',
 								'font-size': '90%'
-							},
+							}
+                            
 							//labelStyle: 'font-size:90%'
 						}, {
 							fieldLabel: 'Variant Context Xpointer',
@@ -566,18 +573,23 @@ loreuieditor = function (store ) {
 							readOnly: true,
 							style: {
 								background: 'none',
-								border: 'none',
+                                'border-top': 'none',
+                                'border-bottom': 'none',
+                                'border-left': 'none',
 								'font-size': '90%'
 							},
+                            xtype: "trigger",
+                            'triggerClass': 'x-form-ellipsis-trigger',
+                            'onTriggerClick': lore.anno.ui.handleUpdateAnnotationVariantContext
 						//	labelStyle: 'font-size:90%'
-						},{
+						},/*{
 							xtype:"button",
 							text: 'Update Variant Selection',
 							fieldLabel: '',
 							id: 'updrctxtbtn',
 							hidden: true,
 							tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
-						},
+						},*/
 									{
 									fieldLabel : 'Annotates Relationship',
 									name: 'metares',
@@ -588,7 +600,7 @@ loreuieditor = function (store ) {
 										background: 'none',
 										border: 'none',
 										'font-size':'90%'
-									},
+									}
 									//labelStyle: 'font-size:90%;'
 								},
 								
@@ -906,7 +918,7 @@ loreuiannogrid = function (store ) {
 			{
 				id: 'title', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
 				header: "title",
-				dataIndex: 'title',
+				dataIndex: 'title'
 			}, 
 			{
 				header: "type",
@@ -945,8 +957,8 @@ loreuiannogrid = function (store ) {
 			// customize view config
 			viewConfig: {
 				forceFit: true,
-				enableRowBody: true,
-			},
+				enableRowBody: true
+			}
 			
 		// paging bar on the bottom
 		/*bbar: new Ext.PagingToolbar({
@@ -1124,10 +1136,10 @@ lore.anno.ui.initExtComponents = function(){
 		Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.hideAnnotation);
 		Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
 		Ext.getCmp("delannobtn").on('click', lore.anno.ui.handleDeleteAnnotation);
-		Ext.getCmp("updctxtbtn").on('click',
+		/*Ext.getCmp("updctxtbtn").on('click',
 				lore.anno.ui.handleUpdateAnnotationContext);
 		Ext.getCmp("updrctxtbtn").on('click',
-				lore.anno.ui.handleUpdateAnnotationVariantContext);
+				lore.anno.ui.handleUpdateAnnotationVariantContext);*/
 		Ext.getCmp("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("typecombo").on('valid', lore.anno.ui.handleAnnotationTypeChange);

@@ -28,15 +28,15 @@
 
 /** 
  * Annotations
- * @namespace
- * @name lore.anno
+ * @singleton
+ * @class lore.anno
  */
 
 
 	/**
 	 * Intialize the 'model', the store which holds the working copies
 	 * of annotations for a given page.  
-	 * @param {String} theURL  (Currently not utilized)The URL toe create the store for 
+	 * @param {String} theURL  (Currently not utilized)The URL for which to create the store
 	 */	
 	lore.anno.initModel = function ( theURL ) {
 		
@@ -66,12 +66,19 @@
 										{name: 'meta'},
 										{name: 'scholarly'}
                                         ];
-										
+		/** @property annods
+         * @type Ext.data.JsonStore
+         * The annotation store
+		 */								
 		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								}), theURL);
-		
+		/**
+         * @property 
+         * @type Ext.data.JsonStore
+         * The annotation search data store
+		 */
 		lore.anno.annosearchds = new Ext.data.JsonStore({
 									fields: fields,
 									data: {}
@@ -89,7 +96,12 @@
 		 lore.anno.annods.on("load",  lore.anno.onDSLoad);
 		 lore.anno.annods.on("remove", lore.anno.onDSRemove);
 	}
-	
+	/**
+     * Update annotation replies when {@link #annods} loads
+     * @param {} store
+     * @param {} records
+     * @param {} options
+	 */
 	lore.anno.onDSLoad = function(store, records, options) {
 		for( var i =0; i < records.length;i++) {
 			
@@ -116,7 +128,12 @@
 			records[i].data.replies = { count:0, localcount:0, map:{}};
 		}
 	}
-	
+	/**
+     * Update replies when a record is removed from {@link #annods}
+     * @param {} store
+     * @param {} record
+     * @param {} index
+	 */
 	lore.anno.onDSRemove = function(store, record, index){
 			
 			var decParentReplies = function (rec, countonly) {
@@ -143,6 +160,7 @@
 /**
  * Class wrapper for an RDF annotation provides access to values modified from
  * dannotate.js
+ * @class lore.anno.Annotation
  * @param {Node} rdf Root element of an RDF annotation returned by Danno
  * @param {boolean} bodyOps Optional parameter specifying RDF was loaded from file
  */
@@ -151,12 +169,17 @@
 		var tmp;
 		var node;
 		var attr;
-		
+		/** @property rdf
+         * The wrappered rdf
+		 */
 		this.rdf = rdf;
 		
 		try {
 			attr = rdf.getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'about');
 			if (attr) {
+                /** @property id
+                 * Annotation URI (identifier)
+                 */
 				this.id = attr.nodeValue;
 			}
 			var isReply = false;
@@ -167,6 +190,9 @@
 					tmp = attr.nodeValue;
 				}
 				if (tmp.indexOf(lore.constants.NAMESPACES["annotype"]) == 0) {
+                    /** @property type
+                     * The annotation type
+                     */
 					this.type = tmp;
 				}
 				else 
@@ -183,6 +209,10 @@
 							}
 				
 			}
+            /** @property isReply
+             * @type boolean
+             * Indicates whether this is a reply type of Annotation
+             */
 			this.isReply = isReply;
 			
 			if (!this.isReply) {
@@ -191,6 +221,9 @@
 				
 				attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 				if (attr) {
+                    /** @property resource
+                     * The URI of the resource annotated (from Annotea annotates)
+                     */
 					this.resource = attr.nodeValue;
 				}
 				this.about = null;
@@ -210,6 +243,9 @@
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
+                        /** @property about
+                         *  If the annotation is a reply, about is the URI of the annotation to which is replies (from Annotea inReplyTo)
+                         */
 						this.about = attr.nodeValue;
 					}
 				}
@@ -221,6 +257,9 @@
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
+                        /** @property bodyURL
+                         * The URI of the body resource
+                         */
 						this.bodyURL = attr.nodeValue;
 					}
 				}
@@ -230,14 +269,27 @@
 					lore.debug.anno("node " + node[0], node[0]);
 					var serializer = new XMLSerializer();
 					var bodyText = serializer.serializeToString(node[0]);
+                    /** @property body
+                     * The content of the body resource
+                     */
 					this.body = lore.global.util.sanitizeHTML(bodyText, window) || '';
+                    /** @property bodyLoaded
+                     * @type boolean
+                     * True if the {@link #body} property has been loaded from {@link #bodyURL}
+                     */
 					this.bodyLoaded = true;
 				}
 			}
 
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'created');
+            /** @property created
+             * From Annotea created (the date and time when the annotation was created)
+             */
 			this.created = lore.global.util.safeGetFirstChildValue(node);
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
+            /** @property modified
+             * From Annotea modified (the date and time when the annotation was last modified)
+             */
 			this.modified = lore.global.util.safeGetFirstChildValue(node);
 			
 			this.meta = { context: null, fields: []};
@@ -246,6 +298,9 @@
 			}
 			else {
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'context');
+                /** @property context
+                 * From Annotea context
+                 */
 				this.context = lore.global.util.safeGetFirstChildValue(node);
 				//TODO: change namespace
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
@@ -291,12 +346,21 @@
 			
 						
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'creator');
+            /** @property creator
+             * dc:creator of the annotation
+             */
 			this.creator = lore.global.util.safeGetFirstChildValue(node, 'anon');
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'title');
+            /** @property title
+             * dc:title of the annotation
+             */
 			this.title = lore.global.util.safeGetFirstChildValue(node);
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'language');
+            /** @property lang
+             * dc:lang of the annotation
+             */
 			this.lang = lore.global.util.safeGetFirstChildValue(node);
 			
 			// body stores the contents of the html body tag as text
@@ -324,6 +388,9 @@
 				if (tagval) {
 					if (j > 0) 
 						this.tags += ",";
+                        /** @property tags
+                         * Tags attached to the annotation
+                         */
 					this.tags += tagval;
 				}
 			}
@@ -337,6 +404,9 @@
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
+                        /** @property variant
+                         * For a VariationAnnotation, the URI of the variant resource
+                         */
 						this.variant = attr.nodeValue;
 					}
 				}
@@ -344,15 +414,24 @@
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
+                        /** @property original
+                         * For a VariationAnnotation, the URI of the original resource
+                         */
 						this.original = attr.nodeValue;
 					}
 				}
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original-context');
+                /** @property originalcontext
+                 * For a VariationAnnotation, the context associated with the {@link #original} resource
+                 */
 				this.originalcontext = lore.global.util.safeGetFirstChildValue(node);
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant-context');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised-context');
 				}
+                /** @property variantcontext
+                 * For a VariationAnnotation, the context associated with the {@link #variant} resource
+                 */
 				this.variantcontext = lore.global.util.safeGetFirstChildValue(node);
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-agent');
 				if (node.length == 0) {

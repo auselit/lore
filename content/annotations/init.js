@@ -27,10 +27,13 @@
 
 /**
  * Annotations View
- * @namespace
- * @name lore.anno.ui
+ * @singleton
+ * @class lore.anno.ui
  */
-// Reference to the Extension
+/**
+ * @property extension 
+ * Reference to the Extension
+ */
 lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
 		.getInstallLocation(lore.constants.EXTENSION_ID)
@@ -71,7 +74,7 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 				lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
 				//lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
 			}
-			
+
 			lore.debug.anno("Annotation init");
 		} catch (e ) {
 			lore.debug.ui("Except in anno init ! " + e, e);
@@ -84,6 +87,4 @@ lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
 	lore.anno.ui.uninit = function () {
 		lore.anno.ui.hideMarker(); 
 	}
-	
-	//Ext.EventManager.onDocumentReady(lore.anno.ui.init);
 
