@@ -29,14 +29,6 @@
 var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
 var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2QkJBS0omqn6QgAAAZRJREFUeNrFkz1rFUEUhp+Z7OoNRCEgiYSAWCRYKEYQ/4LaaMBOAjYKIjbBQmzt7ARBhIS0aW5hEySFRTobRbC1sJDUkRjW3fNlMXvVRKxu4YFhzgwzz3De90yKCMaJzJgxNqBieOkfNTiIgwqog3SgVvYM6AJaqABYuH3krh8e5mBWcrE+V9jZ7AEA+7vgTlh/QJUwBVFCpaxFCFVQoZ45B02MAAERcPkJqT5BfHxFmJEv3gVtsDer5OvPSfUAqgGysQwi0AQZ1VJbONQniXdPSUv3C3dyGtt+RL7yEOQAGd6je3mVcP8DIFIAHpArmDoDrqSz135rMjVLOrVIdWuNYw+2wUuJtEFF86PU504C0vk7xOct4tsX0uyFAmi/Q3eArN3szc/l0TbItFpo7uCCv39BWlwmvn4A65i4sY59GkKuD7ukCgIpns0FSysEe0V1VUKK0iG9+iMXVMGMMOP45Dy8fktFEyBCsgFpZKFZ8T56cbPDhEEKqLw41keKx6cDiV+dhQV0R2aldJ//3bTpv//Gn8UfBkFlLEJ3AAAAAElFTkSuQmCC";
 
-
- 
-
-/** 
- * Annotations View
- * @namespace
- * @name lore.anno.ui
- */
 	
 	try {
 	
@@ -59,7 +51,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		
 		
 		
-		/**
+    /**
 	 * Setup the event hooks that notify the view functions of store events
 	 */
 		lore.anno.ui.initModelHandlers = function(){
@@ -762,12 +754,12 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 						
 				if ( !loadOnly){	
 					if (rec.data.isReply) {
-						Ext.getCmp("updctxtbtn").hide();
-						Ext.getCmp("updrctxtbtn").hide();
+						//Ext.getCmp("updctxtbtn").hide();
+						//Ext.getCmp("updrctxtbtn").hide();
 							
 					}
 					else {
-						Ext.getCmp("updctxtbtn").show();
+						//Ext.getCmp("updctxtbtn").show();
 					}
 				}
 				
@@ -852,11 +844,11 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					lore.anno.ui.showFormFields(variationFields);
 					var isReply = (lore.anno.ui.curSelAnno && lore.anno.ui.curSelAnno.data.isReply);
 					if (!isReply) {
-						Ext.getCmp('updrctxtbtn').setVisible(true);
+						//Ext.getCmp('updrctxtbtn').setVisible(true);
 					}
 				}
 				else {
-					Ext.getCmp('updrctxtbtn').setVisible(false);
+					//Ext.getCmp('updrctxtbtn').setVisible(false);
 					lore.anno.ui.hideFormFields(variationFields);
 					lore.anno.ui.showFormFields(nonVariationFields);
 				}

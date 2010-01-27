@@ -17,19 +17,18 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
-
-/** 
- * @namespace
- * @name lore.store
- */ 
+ 
  var EXPORTED_SYMBOLS = ['store'];
  
 // lore.debug
 Components.utils.import("resource://lore/debug.js");	
 	
- 
+ /** 
+  * Annotations store
+  * @class lore.store
+  * @singleton
+  */
  store =  {
-	/** @lends lore.store */
 	
 	 uidcache: {},
 	 datastores : {},
