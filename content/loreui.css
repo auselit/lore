@@ -464,3 +464,7 @@
     background-image:url(chrome://lore/skin/icons/ellipsis-trigger-grey.gif);
     border-bottom-color:#b5b8c8;
 }
+.x-form-field-wrap .x-form-set-trigger{
+    background-image:url(chrome://lore/skin/icons/set-trigger-grey.gif);
+    border-bottom-color:#b5b8c8;
+}

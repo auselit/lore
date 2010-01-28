@@ -531,7 +531,7 @@ loreuieditor = function (store ) {
 							},
 							//labelStyle: 'font-size:90%;'
                              xtype: "trigger",
-                            'triggerClass': 'x-form-ellipsis-trigger',
+                            'triggerClass': 'x-form-set-trigger',
                             'onTriggerClick': lore.anno.ui.handleUpdateAnnotationContext
                             
                         
@@ -579,7 +579,7 @@ loreuieditor = function (store ) {
 								'font-size': '90%'
 							},
                             xtype: "trigger",
-                            'triggerClass': 'x-form-ellipsis-trigger',
+                            'triggerClass': 'x-form-set-trigger',
                             'onTriggerClick': lore.anno.ui.handleUpdateAnnotationVariantContext
 						//	labelStyle: 'font-size:90%'
 						},/*{
@@ -591,7 +591,7 @@ loreuieditor = function (store ) {
 							tooltip: 'For Variation Annotations: set the context in the variant resource to be the current selection from the main browser window'
 						},*/
 									{
-									fieldLabel : 'Annotates Relationship',
+									fieldLabel : 'Semantic selection',
 									name: 'metares',
 									id: 'metares',
 									readOnly: true,
@@ -607,10 +607,10 @@ loreuieditor = function (store ) {
 								
 								{
 									xtype: "button",
-									text: 'Change Metadata Selection',
+									text: 'Choose semantic selection',
 									fieldLabel: '',
 									id: 'chgmetactxbtn',
-									tooltip: 'Set the metadata context of the annotation to the field chosen from popup window',
+									tooltip: 'Select the item or relationship to annotate',
 									handler: lore.anno.ui.handleChangeMetaSelection
 								},
 						{
