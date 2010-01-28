@@ -3,7 +3,7 @@
 <!ENTITY co.label "Compound Object authoring">
 <!ENTITY general.label "General">
 <!ENTITY expert.label "Expert">
-<!ENTITY annotation_mode.label "Scholary View" >
+<!ENTITY annotation_mode.label "Scholarly View" >
 <!ENTITY prefwindow.title "LORE preferences">
 <!ENTITY relonturl.label "Relationship Ontology URL:">
 <!ENTITY relonturl.accesskey "U">
