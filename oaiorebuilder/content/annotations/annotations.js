@@ -74,6 +74,10 @@
 		new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								}), theURL);
+		lore.anno.annodsunsaved = new Ext.data.JsonStore({	fields: fields,
+									data: {}
+								});
+								
 		/**
          * @property 
          * @type Ext.data.JsonStore
@@ -87,11 +91,11 @@
 		/*lore.anno.annopagemetads = new Ext.data.JsonStore( {
 			fields: mfields,
 			data: {} 
-		})	
+		})*/
 		lore.anno.annousermetads = new Ext.data.JsonStore( {
 			fields: mfields,
 			data: {} 
-		})	*/
+		})	
 								
 		 lore.anno.annods.on("load",  lore.anno.onDSLoad);
 		 lore.anno.annods.on("remove", lore.anno.onDSRemove);
@@ -528,13 +532,16 @@
 			meta: {
 				context: null,
 				fields: []
-			}
+			},
+			bodyLoaded: true
 		};
 		
 		lore.anno.annods.loadData([anno], true);
-		var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
-		if ( r)
-			r.data.bodyLoaded = true;
+		lore.anno.annodsunsaved.loadData([anno], true); // change to add
+		
+		//var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
+		//if ( r)
+		//	r.data.bodyLoaded = true;
 		
 		
 		return anno;
@@ -553,7 +560,7 @@
 	 */
 	lore.anno.updateAnnotations = function (currentURL, resultCallback) {
 		
-		lore.anno.annods.each( function (rec) 
+		lore.anno.annodsunsaved.each( function (rec) 
 		{
 			if ( rec.dirty ) {
 				lore.anno.updateAnnotation(rec, currentURL, function (action,result,resultMsg) {
@@ -627,6 +634,7 @@
 			xhr.send(annoRDF);
 			lore.debug.anno("RDF of new annotation", annoRDF);
 			lore.anno.annods.remove(anno);
+			lore.anno.annodsunsaved.removed(anno);
 		}
 		else {
 			// Update the annotation on the server via HTTP PUT
@@ -642,6 +650,7 @@
 			};
 			xhr.send(annoRDF);
 			lore.debug.anno("RDF of updated annotation", annoRDF);
+			lore.anno.annodsunsaved.remove(anno);
 		}
 
 	}
@@ -667,6 +676,7 @@
 			var existsInBackend = !lore.anno.isNewAnnotation(anno);
 			
 			lore.anno.annods.remove(anno);
+			lore.anno.annodsunsaved.remove(anno);
 			if (existsInBackend) {
 
 				Ext.Ajax.request({
@@ -1213,10 +1223,8 @@
 	
 	lore.anno.clearAnnotationStore = function() {
 		lore.anno.annods.each(function(rec) {
-				
-				if ( !lore.anno.isNewAnnotation(rec)) {
+				//if ( !lore.anno.isNewAnnotation(rec) && !rec.dirty) 
 					lore.anno.annods.remove(rec);
-				}
 			});
 	}
 	
@@ -1271,22 +1279,35 @@
 		if (resultNodes.length > 0) {
 			var annotations = lore.anno.orderByDate(resultNodes,3);
 			var url = lore.global.util.getContentWindow(window).location;
+			// cater for tab change while annotations were downloaded from server
 			if ( (!annotations[0].variant && annotations[0].resource != url) 
 			 ||  (annotations[0].variant && annotations[0].original != url &&
 			 	annotations[0].variant != url))
 					return;
-				
+			
+	
 			for (var i = 0; i < annotations.length; i++) {
 				try {
 					annotations[i].body = lore.anno.getBodyContent(annotations[i], window);
 					annotations[i].bodyLoaded = true;
-					
 				} 
 				catch (e) {
 					lore.debug.anno('error loading body content: ' + e, e);
 				}
 			}
 			
+			// don't add records that are already in the datastore
+			var recs = lore.anno.annods.getRange();
+			
+			for ( var i =0; i < recs.length; i++) {
+				for (var j = 0; j < annotations.length; j++) {
+					if (recs[i].data.id == annotations[j].id) {
+						lore.debug.anno("j: " + j + ", " + recs[i].data.id, recs[i]);
+						annotations[i] = recs[i].data;
+						lore.anno.annods.remove(recs[i]);
+					}
+				}
+			}
 			lore.anno.loadAnnotation(annotations);
 							
 			/*lore.anno.annods.loadData(annotations, true);
@@ -1336,6 +1357,18 @@
 				for ( var i=0; i< replies.length; i++) {
 					replies[i].body = lore.anno.getBodyContent(replies[i], window);
 					replies[i].bodyLoaded = true;
+				}
+				
+				// don't add records that are already in the datastore
+				var recs = lore.anno.annods.getRange();
+				for ( var i =0; i < recs.length; i++) {
+					for (var j = 0; j < replies.length; j++) {
+						if (recs[i].data.id == replies[j].id) {
+							lore.debug.anno("j: " + j + ", " + recs[i].data.id, recs[i]);
+							replies[i] = recs[i].data;
+							
+						}
+					}
 				}
 				lore.anno.loadAnnotation(replies);
 				//lore.anno.annods.loadData(replies, true);

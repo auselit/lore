@@ -27,14 +27,19 @@
  */
 
 var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
-var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2QkJBS0omqn6QgAAAZRJREFUeNrFkz1rFUEUhp+Z7OoNRCEgiYSAWCRYKEYQ/4LaaMBOAjYKIjbBQmzt7ARBhIS0aW5hEySFRTobRbC1sJDUkRjW3fNlMXvVRKxu4YFhzgwzz3De90yKCMaJzJgxNqBieOkfNTiIgwqog3SgVvYM6AJaqABYuH3krh8e5mBWcrE+V9jZ7AEA+7vgTlh/QJUwBVFCpaxFCFVQoZ45B02MAAERcPkJqT5BfHxFmJEv3gVtsDer5OvPSfUAqgGysQwi0AQZ1VJbONQniXdPSUv3C3dyGtt+RL7yEOQAGd6je3mVcP8DIFIAHpArmDoDrqSz135rMjVLOrVIdWuNYw+2wUuJtEFF86PU504C0vk7xOct4tsX0uyFAmi/Q3eArN3szc/l0TbItFpo7uCCv39BWlwmvn4A65i4sY59GkKuD7ukCgIpns0FSysEe0V1VUKK0iG9+iMXVMGMMOP45Dy8fktFEyBCsgFpZKFZ8T56cbPDhEEKqLw41keKx6cDiV+dhQV0R2aldJ//3bTpv//Gn8UfBkFlLEJ3AAAAAElFTkSuQmCC";
+//var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2QkJBS0omqn6QgAAAZRJREFUeNrFkz1rFUEUhp+Z7OoNRCEgiYSAWCRYKEYQ/4LaaMBOAjYKIjbBQmzt7ARBhIS0aW5hEySFRTobRbC1sJDUkRjW3fNlMXvVRKxu4YFhzgwzz3De90yKCMaJzJgxNqBieOkfNTiIgwqog3SgVvYM6AJaqABYuH3krh8e5mBWcrE+V9jZ7AEA+7vgTlh/QJUwBVFCpaxFCFVQoZ45B02MAAERcPkJqT5BfHxFmJEv3gVtsDer5OvPSfUAqgGysQwi0AQZ1VJbONQniXdPSUv3C3dyGtt+RL7yEOQAGd6je3mVcP8DIFIAHpArmDoDrqSz135rMjVLOrVIdWuNYw+2wUuJtEFF86PU504C0vk7xOct4tsX0uyFAmi/Q3eArN3szc/l0TbItFpo7uCCv39BWlwmvn4A65i4sY59GkKuD7ukCgIpns0FSysEe0V1VUKK0iG9+iMXVMGMMOP45Dy8fktFEyBCsgFpZKFZ8T56cbPDhEEKqLw41keKx6cDiV+dhQV0R2aldJ//3bTpv//Gn8UfBkFlLEJ3AAAAAElFTkSuQmCC";
+
+//var objectIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2QkJBS0omqn6QgAAAZRJREFUeNrFkz1rFUEUhp+Z7OoNRCEgiYSAWCRYKEYQ/4LaaMBOAjYKIjbBQmzt7ARBhIS0aW5hEySFRTobRbC1sJDUkRjW3fNlMXvVRKxu4YFhzgwzz3De90yKCMaJzJgxNqBieOkfNTiIgwqog3SgVvYM6AJaqABYuH3krh8e5mBWcrE+V9jZ7AEA+7vgTlh/QJUwBVFCpaxFCFVQoZ45B02MAAERcPkJqT5BfHxFmJEv3gVtsDer5OvPSfUAqgGysQwi0AQZ1VJbONQniXdPSUv3C3dyGtt+RL7yEOQAGd6je3mVcP8DIFIAHpArmDoDrqSz135rMjVLOrVIdWuNYw+2wUuJtEFF86PU504C0vk7xOct4tsX0uyFAmi/Q3eArN3szc/l0TbItFpo7uCCv39BWlwmvn4A65i4sY59GkKuD7ukCgIpns0FSysEe0V1VUKK0iG9+iMXVMGMMOP45Dy8fktFEyBCsgFpZKFZ8T56cbPDhEEKqLw41keKx6cDiV+dhQV0R2aldJ//3bTpv//Gn8UfBkFlLEJ3AAAAAElFTkSuQmCC";
+var objectIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFWSURBVBgZBcE/SFQBAAfg792dppJeEhjZn80MChpqdQ2iscmlscGi1nBPaGkviKKhONSpvSGHcCrBiDDjEhOC0I68sjvf+/V9RQCsLHRu7k0yvtN8MTMPICJieaLVS5IkafVeTkZEFLGy0JndO6vWNGVafPJVh2p8q/lqZl60DpIkaWcpa1nLYtpJkqR1EPVLz+pX4rj47FDbD2NKJ1U+6jTeTRdL/YuNrkLdhhuAZVP6ukqbh7V0TzmtadSEDZXKhhMG7ekZl24jGDLgtwEd6+jbdWAAEY0gKsPO+KPy01+jGgqlUjTK4ZroK/UVKoeOgJ5CpRyq5e2qjhF1laAS8c+Ymk1ZrVXXt2+9+fJBYUwDpZ4RR7Wtf9u9m2tF8Hwi9zJ3/tg5pW2FHVv7eZJHd75TBPD0QuYze7n4Zdv+ch7cfg8UAcDjq7mfwTycew1AEQAAAMB/0x+5JQ3zQMYAAAAASUVORK5CYII=";
+var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII=";
+
 
 	
 	try {
 	
 		/*
-	 * Initialization
-	 */
+		 * Initialization
+		 */
 		// set defaults for page
 		lore.anno.ui.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 		
@@ -49,11 +54,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		
 		lore.anno.ui.initPageData();
 		
-		
-		
     /**
-	 * Setup the event hooks that notify the view functions of store events
-	 */
+		 * Setup the event hooks that notify the view functions of store events
+		 */
 		lore.anno.ui.initModelHandlers = function(){
 			var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
 			lore.anno.annods.on({
@@ -73,10 +76,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 			});
 		}
 		
-		
 		/*
-	 * General functions
-	 */
+		 * General functions
+		 */
 		/** Helper function to create a view displayed in a closeable tab */
 		lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*function*/ activationhandler){
 			var tab = Ext.getCmp(panelid);
@@ -93,10 +95,10 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Output a message to notification window
-	 * @param {String} message Notification message
-	 * @param {Object} iconCls CSS Class for notification icon
-	 */
+		 * Output a message to notification window
+		 * @param {String} message Notification message
+		 * @param {Object} iconCls CSS Class for notification icon
+		 */
 		lore.anno.ui.loreMsg = function(message, iconCls){
 			if (!lore.anno.ui.loreMsgStack) {
 				lore.anno.ui.loreMsgStack = [];
@@ -136,18 +138,18 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Output a notification to notification window
-	 * @param {String} message Notification message
-	 */
+		 * Output a notification to notification window
+		 * @param {String} message Notification message
+		 */
 		lore.anno.ui.loreInfo = function(message){
 			lore.anno.ui.loreMsg(message, 'info-icon');
 			lore.global.ui.loreInfo(message);
 		}
 		
 		/**
-	 * Output a error message to notification window
-	 * @param {String} message Erro message
-	 */
+		 * Output a error message to notification window
+		 * @param {String} message Erro message
+		 */
 		lore.anno.ui.loreError = function(message){
 			lore.anno.ui.loreMsg(message, 'error-icon');
 			lore.global.ui.loreError(message);
@@ -155,9 +157,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Output a warning to notification window
-	 * @param {String} message Warning message
-	 */
+		 * Output a warning to notification window
+		 * @param {String} message Warning message
+		 */
 		lore.anno.ui.loreWarning = function(message){
 			lore.anno.ui.loreMsg(message, 'warning-icon');
 			lore.global.ui.loreWarning(message);
@@ -165,17 +167,17 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		
 		
 		/**
-	 * Set the default creator for annotations
-	 * @param {String} creator The default creator of annotations
-	 */
+		 * Set the default creator for annotations
+		 * @param {String} creator The default creator of annotations
+		 */
 		lore.anno.ui.setdccreator = function(creator){
 			lore.defaultCreator = creator;
 		}
 		
 		/**
-	 * Set the annotation server URL
-	 * @param {String} annoserver The annotation server URL
-	 */
+		 * Set the annotation server URL
+		 * @param {String} annoserver The annotation server URL
+		 */
 		lore.anno.ui.setRepos = function(annoserver){
 			lore.anno.annoURL = annoserver; // annotation server
 		}
@@ -200,9 +202,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		
 		
 		/**
-	 * Show the annotations view. Update the annotations source list
-	 * to match this page
-	 */
+		 * Show the annotations view. Update the annotations source list
+		 * to match this page
+		 */
 		lore.anno.ui.show = function(){
 			lore.anno.ui.lorevisible = true;
 			
@@ -221,8 +223,8 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Hide the annotations view
-	 */
+		 * Hide the annotations view
+		 */
 		lore.anno.ui.hide = function(){
 			lore.anno.ui.lorevisible = false;
 			if ( lore.anno.ui.multiSelAnno.length > 0) {
@@ -236,9 +238,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Update GUI elements based off the record passed in
-	 * @param {Record} rec Ext Annotation record to base update off of
-	 */
+		 * Update GUI elements based off the record passed in
+		 * @param {Record} rec Ext Annotation record to base update off of
+		 */
 		lore.anno.ui.updateUIElements = function(rec){
 			// update the highlighted fields colour in the event the creator is changed
 			// the colour is identified by the creator's name
@@ -253,13 +255,12 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 				lore.anno.ui.toggleAllAnnotations();
 				lore.anno.ui.toggleAllAnnotations();
 			}
-			
 		}
 		
 		/**
-	 * Store the annotation that is currently selected in the view
-	 * @param {Record} rec Record Currently selected annotation
-	 */
+		 * Store the annotation that is currently selected in the view
+		 * @param {Record} rec Record Currently selected annotation
+		 */
 		lore.anno.ui.setCurrentAnno = function(rec){
 			lore.anno.ui.hideMarker();
 			lore.anno.ui.curSelAnno = rec;
@@ -270,11 +271,11 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Generate annotation caption for the given annotation using the formatting
-	 * string
-	 * @param {Object} anno The annotation to retrieve the information from
-	 * @param {String} formatStr Formatting string. The following
-	 */
+		 * Generate annotation caption for the given annotation using the formatting
+		 * string
+		 * @param {Object} anno The annotation to retrieve the information from
+		 * @param {String} formatStr Formatting string. The following
+		 */
 		lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
 			var buf = '';
 			
@@ -318,10 +319,10 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Generate HTML formatted tag list
-	 * @param {Object} annodata The annotation to retrieve the tag information from
-	 * @return {String} HTML formatted tag list
-	 */
+		 * Generate HTML formatted tag list
+		 * @param {Object} annodata The annotation to retrieve the tag information from
+		 * @return {String} HTML formatted tag list
+		 */
 		lore.anno.ui.genTagList = function(annodata){
 			var bodyText = "";
 			if (annodata.tags) {
@@ -353,10 +354,10 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-	 * Retrieve the annotation title
-	 * @param {Object} anno The annotation
-	 * @return {String} The annotation titile. The default value is 'Untitled'
-	 */
+		 * Retrieve the annotation title
+		 * @param {Object} anno The annotation
+		 * @return {String} The annotation titile. The default value is 'Untitled'
+		 */
 		lore.anno.ui.getAnnoTitle = function(anno){
 			var title = anno.title;
 			if (!title || title == '') {
@@ -474,7 +475,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		}
 		
 		/**
-		 * Add an annotation to the timelne
+		 * Add an annotation to the timeline
 		 * @param {Object} anno The annotation to add to the timeline
 		 * @param {Object} title The title to give 
 		 */
@@ -920,7 +921,9 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		
 			if ( !parent && anno.isReply) {
 				parent = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', anno.about);				
-			} else {
+			} 
+
+			if ( !parent){
 				parent = lore.anno.ui.treeroot;
 			}
 			
@@ -1715,12 +1718,42 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 			}
 		}
 		
+		lore.anno.ui.handleUpdateMetaObject = function () {
+					try {
+			 
+				try {
+					var triple = lore.anno.ui.rdfa.triples[this.getAttribute("rdfIndex")];
+					
+					//TODO: This needs to be changed to store object not triple
+					if (triple) 
+						lore.anno.ui.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(triple);
+						
+					lore.debug.anno("meta-context set to: " + lore.anno.ui.curSelAnno.data.meta.context, {
+						val: triple,
+						ctx: lore.anno.ui.curSelAnno.data.meta.context
+					});
+					
+					var theField = lore.anno.ui.form.findField('metares');
+					theField.setValue(lore.anno.ui.tripleURIToString(triple.object));
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+				lore.anno.ui.setVisibilityForPageTriples(false);
+				
+			} catch (e) {
+				lore.debug.anno(e,e);
+			}
+		}
+		
 		lore.anno.ui.isHumanReadableTriple = function( triple) {
 			var valid = ["isRecordFor", "birthName", "alternateName", "usesPseudoAgent", "birthOf", "deathOf", "gender", "biography",
-			"influenceOnWork"];
+			"influenceOnWork", "type"];
 			
 			//work record
 			valid = valid.concat( ["title", "form", "producedOutput" ]);
+			
+			//manifestation
+			valid = valid.concat( ['hasReprint']);
 			
 			if ( triple.source && triple.subject.type != 'bnode') {
 			 	var rel = triple.property.toString();
@@ -1754,6 +1787,15 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					for ( var i =0 ;i < lore.anno.ui.rdfa.triples.length; i++ ) {
 						var z = lore.anno.ui.rdfa.triples[i];
 						if ( lore.anno.ui.isHumanReadableTriple(z)){
+							
+							var isObject = z.property.toString().indexOf("#type") != -1;
+							//var val = z.object.toString();
+							//val = val.substring(val.lastIndexOf("#")+1, val.lastIndexOf(">"));
+							var val = lore.anno.ui.tripleURIToString(z.object);
+							lore.debug.anno(val, z);
+							if ( isObject &&  val !='Agent' && val !='Work'
+							 && val != 'manifestation')
+							 	continue;
 							var cw = lore.global.util.getContentWindow(window);
 							var doc = cw.document;
 							var r = doc.createRange();
@@ -1763,12 +1805,14 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 																					
 							lore.anno.ui.metaSelections.push(span);
 							var marker = lore.global.util.domCreate("img", doc);
-							marker.src = rdfIcon;
+							
+							lore.debug.anno("isObject: " + isObject);
+							marker.src = isObject ? objectIcon: relIcon;
 							marker.setAttribute("rdfIndex", i);
 							span.insertBefore(marker, z.source);
 							var s = $(marker);
 					 	
-							marker.title = lore.anno.ui.tripleURIToString(z.property);
+							marker.title = isObject ? val : lore.anno.ui.tripleURIToString(z.property);
 							
 							s.hover(function () {
 								$(this).parent().css({
@@ -1779,7 +1823,11 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 										'background-color': ''
 									});
 								});
-							s.click(lore.anno.ui.handleUpdateMetaSelection);
+							if ( isObject)
+								s.click(lore.anno.ui.handleUpdateMetaObject);
+							else
+								s.click(lore.anno.ui.handleUpdateMetaSelection);
+							
 	 				}
 				}
 			 }  
@@ -1923,6 +1971,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		 */
 		lore.anno.ui.updateUI = function(store, records, options){
 			
+			
 			try {
 				// add
 				if (records.length == 1 && lore.anno.isNewAnnotation(records[0])) {
@@ -1952,6 +2001,8 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					lore.anno.ui.setCurrentAnno(rec);
 					
 					node.select();
+				//	if ( rec.dirty)
+				//		node.getUI().addClass("annochanged");
 					
 				}
 				else {
@@ -1961,7 +2012,12 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 						var anno = rec.data;
 						
 						try {
-							lore.anno.ui.createAndInsertTreeNode(anno);
+							var node = lore.anno.ui.createAndInsertTreeNode(anno);
+							//lore.debug.anno('eh?');
+						//	if (rec.dirty) {
+						//		node.getUI().addClass("annochanged");
+						////		lore.debug.anno('huh?');
+						//	}
 						} 
 						catch (e) {
 							lore.debug.anno("error loading: " + rec.id, e);
@@ -2386,6 +2442,30 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		alert(e + " " + e.stack);
 	}
 
+
+lore.anno.ui.handleAddMeta = function () {
+			try {
+					var defRec = new lore.anno.annousermetads.recordType({
+						type: 'Agent',
+						source: 'User',
+						prop: 'displayName',
+						value: ''
+					})
+					
+					lore.anno.annousermetads.add(defRec);
+				
+			} catch (e) {
+				lore.debug.anno(e,e );
+			}
+		}
+		
+		lore.anno.ui.handleRemData = function () {
+			var rec = lore.anno.ui.metausergrid.getSelectionModel().getSelected();
+			if ( rec) {
+				lore.anno.annousermetads.remove(rec);
+			}
+		}
+		
 	/**
 	 * Serialize the annotations on the page into the supplied format to a file.  Opens a save as
 	 * dialog to allow the user to select the file path.
@@ -2451,9 +2531,15 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 			lore.anno.ui.loreInfo("Importing annotations...");
 			lore.anno.importRDF(theRDF, lore.anno.ui.currentURL, output);
 		} catch(e) {
-			lore.debug.anno("Error importing annotations: " +e, e);
+			lore.debug.anno("Error importing annotations: " + e, e);
 			lore.anno.ui.loreError("Error importing annotations: " + e );
 		}
+	}
+	
+	lore.anno.ui.handleCloseSaveChanges = function (uri ) {
+		lore.debug.anno("herro herro herro thre!");
+		/*lore.anno.annods.each( function ( rec ) {
+		}*/
 	}
 	
 	lore.anno.ui.refreshPage = function () {
@@ -2467,6 +2553,7 @@ var rdfIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		//TODO: unselect a currently selected node from the tree and make sure curselanno is empty
 		
 	}
+	
 	/**
 	 * Notifiation function called when a change in location is detected in the currently
 	 * selected tab
