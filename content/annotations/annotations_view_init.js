@@ -94,7 +94,8 @@
 							if (node.isExpanded()) {
 								var n = node.childNodes;
 								for (var i = 0; i < n.length; i++) {
-									n[i].ui.refresh(n[i]);
+									if ( n[i].ui.refresh)
+										n[i].ui.refresh(n[i]);
 									f(n[i]);
 								}
 							}
@@ -603,8 +604,6 @@ loreuieditor = function (store ) {
 									}
 									//labelStyle: 'font-size:90%;'
 								},
-								
-								
 								{
 									xtype: "button",
 									text: 'Choose semantic selection',
@@ -613,6 +612,96 @@ loreuieditor = function (store ) {
 									tooltip: 'Select the item or relationship to annotate',
 									handler: lore.anno.ui.handleChangeMetaSelection
 								},
+								/*{
+									fieldLabel : 'Metadata',
+									name: '',
+									id: '',
+								},*/
+								{
+									xtype: "editorgrid",
+									
+									id: 'metausergrid',
+									name: 'metausergrid',
+									store: lore.anno.annousermetads,
+									//deferRowRender: false,
+									height: 100,
+									viewConfig: {
+									forceFit: true
+								},
+									//forceFit: true,
+							
+							 		colModel: new Ext.grid.ColumnModel( {
+									// grid columns
+									defaults: {
+										sortable: true
+									},
+									columns: [
+										{
+											id: 'type', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
+											header: 'Type',
+											dataIndex: 'type',
+											width:50,
+											editor: {
+												xtype: 'combo',
+												store: new Ext.data.ArrayStore( {
+													id: '',
+													fields: ['type', 'displayType'],
+													data: [
+													['http://austlit.edu.au/owl/austlit.owl#Agent', 'Agent'], 
+													['http://austlit.edu.au/owl/austlit.owl#Work','Work'],
+													['http://austlit.edu.au/owl/austlit.owl#Manifestation','Manifestation']]
+												}),
+												mode: 'local', 
+												valueField: 'type',
+												displayField: 'displayType',
+												triggerAction: 'all'
+											},
+											renderer: function (value) {
+												return value.indexOf("#")!=-1 ? value.substring(value.indexOf("#")+1):value; 
+											}
+										}, 
+										{
+											header: "Property",
+											dataIndex: 'prop',
+											editor:{
+												xtype: 'combo',
+												store: new Ext.data.ArrayStore( {
+													id: '',
+													fields: ['prop', 'property'],
+													data: [['displayName','displayName'], ['influencedWork','influencedWork'],
+													['hasReprint','hasReprint'],
+													['alternateTitle', 'alternateTitle'],
+													 ['biography','biography']]
+												}),
+												mode: 'local', 
+												valueField: 'prop',
+												displayField: 'property',
+												triggerAction: 'all'
+											}
+										}, 
+										{
+											header: "value",
+											dataIndex: 'value',
+											editor: new Ext.form.TextField({ allowBlank:false})
+										}, 
+									]
+									})
+								},
+									{
+							xtype:"button",
+							text: 'Add',
+							fieldLabel: '',
+							id: 'addmetabtn',
+							tooltip: 'Add metadata about this page to the annotation',
+							
+						},
+						{
+							xtype:"button",
+							text: 'Remove',
+							id: 'remmetabtn',
+							tooltip: 'Remove user created metadata about this page from the annotation',
+							
+						},
 						{
 							id: 'tagselector',
 							xtype: 'superboxselect',
@@ -1087,9 +1176,12 @@ lore.anno.ui.initExtComponents = function(){
         	lore.anno.ui.views.contextmenu.showAt(e.xy);
     	});
 
-		var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
-		lore.global.ui.clearTree(annosourcestreeroot);
-		lore.anno.ui.treeroot = annosourcestreeroot; 
+		lore.anno.ui.treerealroot = Ext.getCmp("annosourcestree").getRootNode(); 
+		lore.anno.ui.treeroot =  new Ext.tree.TreeNode({text:'Current Page'});
+		lore.anno.ui.treeunsaved = new Ext.tree.TreeNode({text:'Unsaved Changes'});
+		
+		lore.anno.ui.treerealroot.appendChild([ lore.anno.ui.treeroot, lore.anno.ui.treeunsaved]);
+
 		lore.anno.ui.treeroot.expand();
 		lore.anno.ui.addTreeSorter('created', 'asc');
 		Ext.getCmp("annosourcestree").on("expandnode", function (node) {
@@ -1143,8 +1235,8 @@ lore.anno.ui.initExtComponents = function(){
 		Ext.getCmp("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 		Ext.getCmp("typecombo").on('valid', lore.anno.ui.handleAnnotationTypeChange);
-		//Ext.getCmp("addmetabtn").on('click', lore.anno.ui.handleAddMeta);
-		//Ext.getCmp("remmetabtn").on('click', lore.anno.ui.handleRemMeta);
+		Ext.getCmp("addmetabtn").on('click', lore.anno.ui.handleAddMeta);
+		Ext.getCmp("remmetabtn").on('click', lore.anno.ui.handleRemMeta);
 		
 		//Ext.getCmp("addmetabtn").on('click', lore.anno.ui.handleAddMeta );
 		//Ext.getCmp("remmetabtn").on('click', lore.anno.ui.handelRemMeta);
