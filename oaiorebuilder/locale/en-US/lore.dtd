@@ -18,10 +18,12 @@
 <!ENTITY lore.loadRDFTip "Import a compound object from a RDF/XML file">
 <!ENTITY lore.loadRDFURLLabel "Import from RDF/XML URL">
 <!ENTITY lore.loadRDFURLTip "Import a compound object from a URL">
-<!ENTITY lore.saveWordTip "Export compound object as a MS Word document">
-<!ENTITY lore.saveWordLabel "Export to Word">
+<!ENTITY lore.saveWordTip "Export compound object summary as a MS Word document">
+<!ENTITY lore.saveWordLabel "Export Summary to Word">
 <!ENTITY lore.saveTrigTip "Export compound object as RDF in TriG format">
 <!ENTITY lore.saveTrigLabel "Export to TriG">
+<!ENTITY lore.saveJsonTip "Export compound object in Javascript Object Notation">
+<!ENTITY lore.saveJsonLabel "Export to JSON">
 <!ENTITY lore.saveFOXMLTip "Export compound object to Fedora Object XML">
 <!ENTITY lore.saveFOXMLLabel "Export FOXML">
 <!ENTITY lore.resetGraphLabel "Reset Graph">
