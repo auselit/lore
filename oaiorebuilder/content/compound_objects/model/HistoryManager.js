@@ -20,6 +20,7 @@
 /**
  * History manager that observes the browser history and updates 
  * the list of recently viewed compound objects and records new visits
+ * @class lore.ore.model.HistoryManager
  * @param {lore.ore.model.CompoundObjectListManager} listManager
  */
 lore.ore.model.HistoryManager = function (listManager){
@@ -73,7 +74,7 @@ lore.ore.model.HistoryManager.prototype = {
 		    var options = this.historyService.getNewQueryOptions();
 		    options.sortingMode = options.SORT_BY_DATE_ASCENDING;
 		    options.includeHidden = true;
-		    options.maxResults = 20;
+		    //options.maxResults = 20;
 		    var result = this.historyService.executeQuery(query, options);
 		    result.root.containerOpen = true;
 		    var count = result.root.childCount;
