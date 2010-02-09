@@ -23,8 +23,8 @@ var EXPORTED_SYMBOLS = ['debug'];
 Components.utils.import("resource://lore/constants.js");
 
 /**
- * @namespace
- * @name lore.debug 
+ * @class lore.debug 
+ * @singleton
  */
 debug = {
 	FB_UI: '[UI] ',
@@ -35,10 +35,7 @@ debug = {
 	ANNO: 'LORE-ANNO ',
 	ORE: 'LORE-ORE ',
 	TM: 'LORE-TM ',
-	
-    /** @lends lore.debug */
 
-	
 	/**
 	 * Log message to the built-in mozilla console service
 	 * can attach listeners which peform further formatting
@@ -63,7 +60,7 @@ debug = {
 	 */
 	ui : function (message, obj){
 	    if (debug.ui_pref){
-	        debug.FBTrace.sysout(debug.FB_UI + message, obj);
+	        debug.fbTrace.sysout(debug.FB_UI + message, obj);
 	    } 
 		debug.mozConsole(debug.UI, message, obj);
 	},
@@ -74,7 +71,7 @@ debug = {
 	 */
 	anno : function (message, obj){
 	    if (debug.anno_pref){
-	        debug.FBTrace.sysout(debug.FB_ANNO + message, obj);
+	        debug.fbTrace.sysout(debug.FB_ANNO + message, obj);
 	    } 
 		debug.mozConsole(debug.ANNO, message, obj);
 	},
@@ -85,7 +82,7 @@ debug = {
 	 */
 	ore : function (message, obj){
 	    if (debug.ore_pref){
-	        debug.FBTrace.sysout(debug.FB_ORE + message, obj);
+	        debug.fbTrace.sysout(debug.FB_ORE + message, obj);
 	    } 
 		debug.mozConsole(debug.ORE, message, obj);
 	},
@@ -96,7 +93,7 @@ debug = {
 	 */
 	tm : function (message, obj){
 	    if (debug.tm_pref){
-	        debug.FBTrace.sysout(debugFB_TM + message, obj);
+	        debug.fbTrace.sysout(debugFB_TM + message, obj);
 	    } 
 		debug.mozConsole(debug.TM, message, obj);
     },
@@ -119,8 +116,13 @@ debug = {
     ore_pref  : false,
     /** Preference for Text mining messages */
     tm_pref   : false
+    /** @property fbTrace
+     * Instance of Firebug Tracer */
 };
-
+/**
+ * @class lore.MozillaFileLogger
+ * Allow logging to file
+ */
 function MozillaFileLogger(){
 	this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService)
 	
@@ -198,18 +200,16 @@ MozillaFileLogger.prototype.destruct = function() {
 
 //Use Firebug trace console for debug logs - edit the extension preferences to enable (about:config)
 try {
-    /** Firebug Tracer 
-     * @name lore.FBTrace */
-    debug.FBTrace = Components.classes["@joehewitt.com/firebug-trace-service;1"]
+    /* Firebug Tracer */
+    debug.fbTrace = Components.classes["@joehewitt.com/firebug-trace-service;1"]
         .getService(Components.interfaces.nsISupports)
         .wrappedJSObject
         .getTracer("extensions.lore");
-        
-    debug.ui_pref   = debug.FBTrace.DBG_LORE_UI;
-    debug.anno_pref = debug.FBTrace.DBG_LORE_ANNOTATIONS;
-    debug.ore_pref  = debug.FBTrace.DBG_LORE_COMPOUND_OBJECTS;
-    debug.tm_pref   = debug.FBTrace.DBG_LORE_TEXT_MINING;
+    debug.ui_pref   = debug.fbTrace.DBG_LORE_UI;
+    debug.anno_pref = debug.fbTrace.DBG_LORE_ANNOTATIONS;
+    debug.ore_pref  = debug.fbTrace.DBG_LORE_COMPOUND_OBJECTS;
+    debug.tm_pref   = debug.fbTrace.DBG_LORE_TEXT_MINING;
 	
 } catch (ex) {
-    // suppress errors if getting FBTrace fails - Firebug probably not enabled
+    // suppress errors if getting fbTrace fails - Firebug probably not enabled
 }
