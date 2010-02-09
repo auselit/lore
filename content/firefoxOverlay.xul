@@ -91,6 +91,7 @@
                     <xul:menuitem id="save-wordml" label="&lore.saveWordLabel;" tooltiptext="&lore.saveWordTip;" oncommand="loreoverlay.serializeREM('wordml')"/>
                     <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeREM('rdf')"/>
                     <xul:menuitem id="save-trig" label="&lore.saveTrigLabel;" tooltiptext="&lore.saveTrigTip;" oncommand="loreoverlay.serializeREM('trig')"/>
+                    <xul:menuitem id="save-json" label="&lore.saveJsonLabel;" tooltiptext="&lore.saveJsonTip;" oncommand="loreoverlay.serializeREM('json')"/>
                     <xul:menuitem id="save-foxml" label="&lore.saveFOXMLLabel;" tooltiptext="&lore.saveFOXMLTip;" oncommand="loreoverlay.serializeREM('foxml')"/>
                     <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadRDF()"/>
                     <xul:menuitem id="load-rdf-url" label="&lore.loadRDFURLLabel;" tooltiptext="&lore.loadRDFURLTip;" oncommand="loreoverlay.loadRDFURL()"/>
