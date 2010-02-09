@@ -31,7 +31,7 @@
  * Initialise the graphical view
  */
 lore.ore.ui.initGraphicalView = function() {
-	lore.ore.ui.oreviews.activate("drawingarea");
+    Ext.getCmp("loreviews").activate("drawingarea");
 	/** Used to lookup figures by their URIs in the graphical editor */
 	lore.ore.graph.lookup = {};
     /** Triple store representing the compound object last loaded from the repository */
@@ -55,7 +55,6 @@ lore.ore.ui.initGraphicalView = function() {
     // create drop target for dropping new nodes onto editor from the sources and search trees
     var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD', 'copy':false});
     droptarget.notifyDrop = function (dd, e, data){
-        lore.debug.ore("notifydrop",data);
         lore.ore.graph.addFigureWithOpts({
             url: data.node.attributes.uri, 
             x: (e.xy[0] - lore.ore.graph.coGraph.getAbsoluteX() + lore.ore.graph.coGraph.getScrollLeft()),
@@ -79,7 +78,7 @@ lore.ore.ui.initGraphicalView = function() {
 }
 
 /**
- * Load the preferences (which will init domain ontology)
+ * Load LORE preferences
  */
 lore.ore.ui.loadPreferences = function() {
     try{
@@ -138,7 +137,7 @@ lore.ore.ui.initProperties = function() {
     lore.ore.ui.grid.on('beforeexpand', lore.ore.ui.showProps);
     lore.ore.ui.nodegrid.on('beforeexpand',lore.ore.ui.showProps);
 
-	lore.ore.ui.propertytabs.activate("sourcestree");
+	Ext.getCmp("propertytabs").activate("sourcestree");
 }
     
 /**
@@ -146,14 +145,9 @@ lore.ore.ui.initProperties = function() {
  */
 lore.ore.ui.initUIComponents = function() {
     
-  /** Ext plugin to change hideMode to ensure tab contents are not destroyed/reloaded */
-  lore.ore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
-  
-	lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
-	        fields: ['title', 'uri','display'], 
-	        data: [],
-	        lastOptions: {params: {start:0,limit:5}}
-	});
+    /** Ext plugin to change hideMode to ensure tab contents are not destroyed/reloaded */
+    lore.ore.ui.vismode = new Ext.ux.plugin.VisibilityMode({hideMode: 'nosize', bubble: false});
+
 	lore.ore.ui.resselectcombo = new Ext.form.ComboBox({
 	    displayField:'display',
 	    id: "resselectcombo",
@@ -170,6 +164,7 @@ lore.ore.ui.initUIComponents = function() {
 	    typeAhead: false,
 	    store: lore.ore.resourceStore
 	});
+    
 	lore.ore.ui.propedittrigger = new Ext.form.TriggerField({
 	    id: "propedittrigger",
 	    'triggerClass': 'x-form-ellipsis-trigger',
@@ -179,7 +174,7 @@ lore.ore.ui.initUIComponents = function() {
 	    }
 	});
   /** Ext specification of compound objects UI */
-  lore.ore.ui.gui_spec = {
+  var lore_gui_spec = {
     layout: "border",
     items: [{region:"north", layout: "fit"},{
         region: "center",
@@ -445,12 +440,7 @@ lore.ore.ui.initUIComponents = function() {
                             fieldLabel: "matching",
                             id: "searchval",
                             emptyText: ""
-                        }/*,
-                        {
-                            xtype: "checkbox",
-                            id: "searchexact",
-                            boxLabel: "exactly"
-                        }*/
+                        }
                         ]
                     }]
                 }, {
@@ -476,7 +466,14 @@ lore.ore.ui.initUIComponents = function() {
                             columns: [
                             {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
                             {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, 
-                            editor:  lore.ore.ui.propedittrigger
+                            editor:  new Ext.form.TriggerField({
+							        id: "propedittrigger",
+							        'triggerClass': 'x-form-ellipsis-trigger',
+							        'onTriggerClick': function(ev) {
+							            lore.debug.ore("triggered for ",[this,ev]);
+							            
+							        }
+							    })
                             }
                             ]
                         }),
@@ -519,7 +516,16 @@ lore.ore.ui.initUIComponents = function() {
                                 columns: [
                                 {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
                                 {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, 
-                                editor:  lore.ore.ui.propedittrigger
+                                /*editor:  new Ext.form.TriggerField({
+								        id: "propedittrigger",
+								        'triggerClass': 'x-form-ellipsis-trigger',
+								        'onTriggerClick': function(ev) {
+								            lore.debug.ore("triggered for ",[this,ev]);
+								            
+								        }
+								    })
+                                    */
+                                editor : new Ext.form.TextField()
                                 }
                                 
                                 
@@ -559,34 +565,27 @@ lore.ore.ui.initUIComponents = function() {
     }
     ]};
     try {
-        lore.ore.ui.main_window = new Ext.Viewport(lore.ore.ui.gui_spec);
+        lore.ore.ui.main_window = new Ext.Viewport(lore_gui_spec);
         lore.ore.ui.main_window.show();    
     } catch (e){
-        lore.debug.ore("Error creating Ext UI components",e);
+        lore.debug.ore("Error creating Ext UI components from spec",e);
     }
     
     
 	// set up glocal variable references to main UI components
-	lore.ore.ui.propertytabs = Ext.getCmp("propertytabs");
 	lore.ore.ui.grid = Ext.getCmp("remgrid");
 	lore.ore.ui.nodegrid = Ext.getCmp("nodegrid");
 	lore.ore.ui.status = Ext.getCmp("lorestatus");
-	lore.ore.ui.oreviews = Ext.getCmp("loreviews");
-	lore.ore.ui.textminingtab = Ext.getCmp("textmining");
-    
-	// set up the sources tree
-	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
-	lore.global.ui.clearTree(sourcestreeroot);
+	
 	/** The root of the tree used to display compound objects related to the resource loaded in the browser */
 	lore.ore.ui.remstreeroot = new lore.ore.ui.CompoundObjectGroupNode({
 		id : "remstree",
 		text : "Related Compound Objects",
         qtip: "Compound Objects that refer to the page displayed in the web browser"
 	});
-    lore.ore.ui.remstreeroot.addModel(lore.ore.coListManager.getList("browse"));
     // display browse tree if nodes are added
     lore.ore.ui.remstreeroot.on("append",function(){
-       lore.ore.ui.propertytabs.activate("sourcestree"); 
+       Ext.getCmp("propertytabs").activate("sourcestree"); 
     });
     /** The root of the tree used to display compound objects from history */
 	lore.ore.ui.recenttreeroot = new lore.ore.ui.CompoundObjectGroupNode({
@@ -595,19 +594,20 @@ lore.ore.ui.initUIComponents = function() {
         qtip: "Compound Objects that have been viewed during this browsing session",
         reverse: true
 	});
-    lore.ore.ui.recenttreeroot.addModel(lore.ore.coListManager.getList("history"));
-
+    // set up the sources tree
+    var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
 	sourcestreeroot.appendChild(lore.ore.ui.remstreeroot);
 	sourcestreeroot.appendChild(lore.ore.ui.recenttreeroot);
+    lore.ore.ui.remstreeroot.addModel(lore.ore.coListManager.getList("browse"));
+    lore.ore.ui.recenttreeroot.addModel(lore.ore.coListManager.getList("history"));
     
     /** Tree used to display search results */
     lore.ore.ui.searchtreeroot = new lore.ore.ui.CompoundObjectGroupNode({
         id: "searchtree",
         text: "Search Results"
     });
-    lore.ore.ui.searchtreeroot.addModel(lore.ore.coListManager.getList("search"));
     Ext.getCmp("searchtree").getRootNode().appendChild(lore.ore.ui.searchtreeroot);
-    
+    lore.ore.ui.searchtreeroot.addModel(lore.ore.coListManager.getList("search"));
     
     /** Tree used to display properties in resource details editor */
     lore.ore.ui.resproptreeroot = new Ext.tree.TreeNode({
@@ -654,45 +654,46 @@ lore.ore.ui.initUIComponents = function() {
     // load resource details handler
     lore.ore.ui.resselectcombo.on("select",lore.ore.loadResourceDetails);
     
+    var loreviews = Ext.getCmp("loreviews");
     // set up event handlers for tabs
-	lore.ore.ui.oreviews.on("beforeremove", lore.ore.closeView);
+	loreviews.on("beforeremove", lore.ore.closeView);
 	// create a context menu to hide/show optional views
-	lore.ore.ui.oreviews.contextmenu = new Ext.menu.Menu({
+	loreviews.contextmenu = new Ext.menu.Menu({
 				id : "co-context-menu"
 	});
-	lore.ore.ui.oreviews.contextmenu.add({
+	loreviews.contextmenu.add({
         text: "Show Text Mining view",
         handler: function (){
             lore.ore.openView("remtmview","Text Mining",lore.ore.textm.requestTextMiningMetadata);
         }
     });
-    lore.ore.ui.oreviews.contextmenu.add({
+    loreviews.contextmenu.add({
 		text: "Show SMIL View",
 		handler: function(){
             lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
         }
 	});
-    lore.ore.ui.oreviews.contextmenu.add({
+    loreviews.contextmenu.add({
         text : "Show RDF/XML",
         handler : function (){
             lore.ore.openView("remrdfview","RDF/XML",lore.ore.updateRDFHTML);
         }
     });
-    lore.ore.ui.oreviews.contextmenu.add({
+    loreviews.contextmenu.add({
        text: "Show TriG",
        handler: function (){
             lore.ore.openView("remtrigview","TriG",lore.ore.updateTriG);
        }
     });
-    lore.ore.ui.oreviews.contextmenu.add({
+    loreviews.contextmenu.add({
        text: "Show FOXML",
        handler: function(){
             lore.ore.openView("remfoxmlview","FOXML",lore.ore.updateFOXML);
        }
     });
     
-	lore.ore.ui.oreviews.on("contextmenu", function(tabpanel, tab, e){
-        lore.ore.ui.oreviews.contextmenu.showAt(e.xy);
+	loreviews.on("contextmenu", function(tabpanel, tab, e){
+        Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
     });
     // summary tab
     Ext.getCmp("remlistview").on("activate", lore.ore.showCompoundObjectSummary);
@@ -732,15 +733,16 @@ lore.ore.ui.initUIComponents = function() {
 }
 
 lore.ore.initModel = function (){
-    lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();    
-}
-
-lore.ore.ui.initVars = function (){
-    lore.ui.vars=[]; 
-    for(var v in this){
-        lore.ui.vars.push(v);
-    } 
-    lore.ui.vars.sort();
+    lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();  
+    lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
+    lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
+            fields: ['title', 'uri','display'], 
+            data: [],
+            lastOptions: {params: {start:0,limit:5}}
+    });
+    
+    lore.ore.resource_metadata_props = [];
+    lore.ore.all_props = lore.ore.METADATA_PROPS;
 }
 
 /**
@@ -750,40 +752,29 @@ lore.ore.ui.init = function() {
     try{
         /** Used to store options relating to parts of the UI that should be disabled */
         lore.ore.ui.disabled = {};
-        lore.ore.ui.initVars();
-        //lore.debug.ui("vars (" + lore.ui.vars.length + ")", lore.ui.vars);
-    
+        
         /** Reference to the Extension */
         lore.ore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
             .getService(Components.interfaces.nsIExtensionManager)
             .getInstallLocation(lore.constants.EXTENSION_ID)
             .getItemLocation(lore.constants.EXTENSION_ID);
 
-    
-		lore.ore.ui.topView =  lore.global.ui.topWindowView.get(window.instanceId);
-        
+		lore.ore.ui.topView =  lore.global.ui.topWindowView.get(window.instanceId); 
 	    /** The url shown in the current browser tab */
 		lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
-		lore.ore.resource_metadata_props = [];
-		lore.ore.all_props = lore.ore.METADATA_PROPS;
-
-        /** Indicates whether the ore UI is visible */
+        /** Indicates whether the Compound Object UI is visible */
 	    lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
-           
-	    
+
         lore.ore.initModel();
-        
 		lore.ore.ui.initUIComponents();
 	    lore.ore.ui.initProperties();
+	    
+		lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId); 
+		lore.ore.ui.loadPreferences();
         
-		lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
-        
-	    lore.ore.ui.loreInfo("Welcome to LORE");
-	 
-		lore.global.ui.compoundObjectView.registerView(lore.ore, window.instanceId);  
-		lore.ore.ui.loadPreferences();  
-        
+        lore.ore.ui.loreInfo("Welcome to LORE");
 		lore.ore.createCompoundObject();
+        
 		if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != "about:blank"
 				&& lore.ore.ui.currentURL != '' && lore.ore.ui.lorevisible) {          
 			lore.ore.updateCompoundObjectsBrowseList(lore.ore.ui.currentURL);
@@ -794,7 +785,7 @@ lore.ore.ui.init = function() {
 		lore.ore.ui.initialized = true;
 		lore.debug.ui("LORE Compound Object init complete", lore);
     } catch (e) {
-        lore.debug.ui("exception in ORE init",e);
+        lore.debug.ui("Exception in Compound Object init",e);
     }
 }
 
