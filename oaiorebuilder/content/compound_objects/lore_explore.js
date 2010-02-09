@@ -1,3 +1,7 @@
+/** 
+ * @class lore.ore.explore
+ * @singleton
+ */
 Ext.namespace("lore.ore.explore");
 /**
  * Display a resource map in the explore view
@@ -29,6 +33,7 @@ lore.ore.explore.loadRem = function(id, title, f){
     + "UNION {<"+ eid2 + "> ?somerel ?something . FILTER isURI(?something). FILTER (?somerel != rdf:type) . FILTER (?somerel != ore:describes) . OPTIONAL {?something dc:title ?sometitle.}}"
     + "UNION {<" + eid2 + "> ore:describes ?aggre .?aggre ?somerel ?something . FILTER (?somerel != rdf:type) .OPTIONAL {?something dc:title ?sometitle . }}}";
     // should remid be escaped?
+    // TODO: use repos adapter
     var queryURL = "http://austlit.edu.au/openrdf-sesame/repositories/lore"
             + "?queryLn=sparql&query=" 
             + thequery;
