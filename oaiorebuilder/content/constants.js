@@ -21,12 +21,10 @@
 var EXPORTED_SYMBOLS = ['constants'];
 
 /** Constants used in LORE
- * @namespace
- * @name lore.constants
+ * @singleton
+ * @class lore.constants
  */
 constants = {
-    /** @lends lore.constants */
-    
     /** The name of the Firefox extension 
      * @const */
     EXTENSION_ID: "lore@maenad.itee.uq.edu.au",
