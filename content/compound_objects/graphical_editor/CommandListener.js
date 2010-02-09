@@ -20,10 +20,14 @@
 /**
  * Listens for commands such as delete, undo, redo and updates the graph lookup object that is used
  * to map resource URLs to figure IDs
- * @class
+ * @class lore.ore.graph.CommandListener
  **/
 lore.ore.graph.CommandListener = Ext.extend(draw2d.CommandStackEventListener, {
     type : "lore.ore.graph.CommandListener",
+    /**
+     * Respond to move, delete, undo and redo commands in the graphical editor
+     * @param {} event
+     */
     stackChanged : function(event){
 	    var details = event.getDetails();
 	    var comm = event.getCommand();
