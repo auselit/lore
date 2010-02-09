@@ -20,8 +20,8 @@
 
 	var EXPORTED_SYMBOLS = ['ui'];	
 	/**
-     * @namespace
-     * @name lore.global.ui 
+     * @singleton
+     * @class lore.global.ui 
 	 */
 	ui = {};
 	
