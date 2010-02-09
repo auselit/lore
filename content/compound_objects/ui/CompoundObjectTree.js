@@ -1,9 +1,15 @@
 
 
-/** Tree node for representing Compound objects */
+/** Tree node for representing Compound objects 
+ * @class lore.ore.ui.CompoundObjectTreeNode
+ * @extends Ext.tree.TreeNode */
 lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
    constructor: function(config){
         this.config = config || {};
+        /** 
+         * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
+         * @property 
+         * */
         this.model = config.model;
         this.initConfig(this.model);
         // listen for model property changes
@@ -11,6 +17,8 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
         this.addEvents('detailschange');
         lore.ore.ui.CompoundObjectTreeNode.superclass.constructor.call(this, this.config); 
    },
+   /** Update the details displayed under the node text 
+    * @param {Array} details Strings to be displayed */
    setDetails : function(details){
         var oldDetails = this.attributes.details;
         this.attributes.details = details;
@@ -37,6 +45,11 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
             'qtip'       : "Compound Object: " + coProps.uri
         });
    },
+   /**
+    * Construct the details to be displayed from model properties
+    * @param {Object} coProps The properties from the model object
+    * @return {Array} Array of strings to be used for details displayed under node text
+    */
    generateDetails: function(coProps){
         var details = [];
                 //if (searchval && res && res != -1) {
@@ -63,12 +76,18 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
         }
         return details;
    },
+   /** Update the node display if the model properties change
+    * @param {Object} oldProps The old properties
+    * @param {Object} newProps The new properties
+    */
    handleModelPropertiesChanged: function (oldProps, newProps){
     this.setText(newProps.title);
     this.setDetails(this.generateDetails(newProps));
    }
 });
-/** Tree node for grouping compound objects eg browse results, history, search */
+/** Tree node for grouping compound objects eg browse results, history, search 
+ * @class lore.ore.ui.CompoundObjectGroupNode
+ * @extends Ext.tree.TreeNode */
 lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
     constructor: function(config){
         this.reverse = config.reverse || false;
@@ -77,6 +96,8 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
 	    config.uiProvider = Ext.ux.tree.MultilineTreeNodeUI;
 	    lore.ore.ui.CompoundObjectGroupNode.superclass.constructor.call(this, config); 
     },
+    /** Update the details displayed under the node text 
+    * @param {Array} details Strings to be displayed */
     setDetails : function(details){
         var oldDetails = this.attributes.details;
         this.attributes.details = details;
@@ -193,7 +214,7 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
                     text : "Add as node in compound object editor",
                     handler : function(evt) {
                         lore.ore.graph.addFigure(node.attributes.uri,{
-                            "rdf:type_0":lore.constants.RESOURCE_MAP,
+                            "rdf:type_0": lore.constants.RESOURCE_MAP,
                             "dc:title_0": node.text});
                     }
                 });
@@ -207,6 +228,7 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
  * Displays a list of Compound Objects
  * @class lore.ore.ui.CompoundObjectTree
  * @extends Ext.tree.TreePanel
+ * @xtype cotree
  **/
 lore.ore.ui.CompoundObjectTree = Ext.extend(Ext.tree.TreePanel, {
     animate         : false,
@@ -224,9 +246,12 @@ lore.ore.ui.CompoundObjectTree = Ext.extend(Ext.tree.TreePanel, {
         });
         lore.ore.ui.CompoundObjectTree.superclass.initComponent.apply(this, arguments);
     },
+    /** 
+     * Override the onInvalidDrop function on the dragZone  so that dragged element is 
+     * hidden when nodes are dropped back onto the tree
+     */
     initEvents: function(){
         lore.ore.ui.CompoundObjectTree.superclass.initEvents.call(this);
-        // override so that dragged element is hidden when nodes are dropped back onto the tree
         Ext.apply(this.dragZone,{
             onInvalidDrop: function(){
                 this.hideProxy();
