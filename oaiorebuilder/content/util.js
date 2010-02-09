@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 var EXPORTED_SYMBOLS = ['util'];
 
 Components.utils.import("resource://lore/constants.js");
@@ -25,23 +25,22 @@ Components.utils.import("resource://lore/debug.js");
 Components.utils.import("resource://lore/lib/nsXPointerService.js");
 
 /**
- * @name lore.global.xps
+ * @property lore.global.util.xps
  * @type XPointerService
+ * Used for generating xpointers for annotations
  */
 m_xps = new XPointerService(); 
 
 /**
  * General utility functions for I/O, manipulating the DOM, selections etc 
- * @namespace
- * @name lore.global.util
+ * @class lore.global.util
+ * @singleton
  */
 util = {
-    /** @lends lore.global.util */
-    
     /**
      * Create a clone of an object
-     * @param {} o The object to clone
-     * @return {} The clone
+     * @param {Object} o The object to clone
+     * @return {Object} The clone
      */
     clone : function(o) {
         if(!o || 'object' !== typeof o) {
@@ -63,7 +62,7 @@ util = {
         return c;
     },
     /** Determine if an object is empty (has no properties)
-     * @param {} ob The object to check
+     * @param {Object} ob The object to check
      * @return {Boolean} true if the object is equivalent to {}
      */
 	isEmptyObject : function (ob){
@@ -78,7 +77,7 @@ util = {
      * @param {String} name Currently not used
      * @param {Object} pre Currently not used
      * @param {Object} post Currently not used
-     * @return {}
+     * @return {Object} The wrapper
 	 */
 	createWrapper: function(srcObj, name, pre, post) {
 		var wrapper = { _real: srcObj, _pre: pre, _post: post};
@@ -115,10 +114,15 @@ util = {
    },
    /**
      * Make sure that characters that might cause sparql errors are encoded
+     * @param {String} str
      * */
     preEncode : function (str) {
         return str.replace(/}/,"%7D").replace(/{/,"%7B").replace(/</, '%3C').replace(/>/, '%3E');    
     },
+    /**
+     * Trim whitespace from a string
+     * @param {String} str
+     */
 	trim : function (str) {
 		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	},
@@ -245,53 +249,6 @@ util = {
     shortDate : function (adate, dateObj ) {
         return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
     },
-  
-    /*
-    (Not currently used)
-     *******
-     * Returns a boolean value for determing if the platform is linux
-     * @return {boolean} returns true if the platform is linux
-     *
-    isLinux : function() {
-        return (navigator.platform.toLowerCase().indexOf('linux') > -1);
-    },
-    
-    /*
-     * Returns a boolean value for determing if the platform is mac
-     * @return {boolean} returns true if the platform is mac
-     *
-    
-    isMac : function() { 
-        return (navigator.platform.toLowerCase().indexOf('mac') > -1);
-    },
-    
-    /*
-     * Returns a boolean value for determing if the platform is windows
-     * @return {boolean} returns true if the platform is windows
-     *
-    
-    isWindows : function () {
-        return (navigator.platform.toLowerCase().indexOf('win32') > -1);
-    },  
-    
-    /*
-     * Return the file separator used by the OS
-     * @return {String} file separator
-     *
-    fSeparator : function () {
-        if ( util.isWindows() ) {
-            return "\\";
-        } else if ( util.isMac() || util.isLinux() ) {
-            return "/";
-        } else {
-            // default to forward slash
-            debug.ui("fSeparator: Could not determine platform, defaulting to '/'", navigator.platform);
-            return "/";
-        }
-    },
-    ******
-    (Not currently used)
-    */
 	
 	/**
 	 * Retrieve an instance of the nsiLocalFile interface, initializing it with the
@@ -333,7 +290,14 @@ util = {
                 throw new Error("Unable to write to file" + e.toString());
             }
     },
-	
+	/**
+     * Prompts user to choose a file to save to (creating it if it does not exist)
+     * @param {} title
+     * @param {} defExtension
+     * @param {} callback
+     * @param {} win
+     * @return {}
+	 */
 	writeFileWithSaveAs: function (title, defExtension, callback, win) {
 			var nsIFilePicker = Components.interfaces.nsIFilePicker;
 			var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
@@ -344,9 +308,6 @@ util = {
 	        } else if ("txt" == defExtension){
 	            fp.appendFilters(nsIFilePicker.filterText);  
 	        } 
-	        //else if ("doc" ==  defExtension){
-	        //    fp.appendFilter("MS Word Documents", "*.doc");    
-	        //}
 			fp.appendFilters(nsIFilePicker.filterAll);
 			fp.init(win, title, nsIFilePicker.modeSave);
 			var res = fp.show();
@@ -364,7 +325,13 @@ util = {
 			return null;
 			
 	},
-	
+	/**
+     * Prompts user to choose a file and loads that file
+     * @param {} title
+     * @param {} defExtension
+     * @param {} win
+     * @return {}
+	 */
 	loadFileWithOpen: function(title, defExtension, win) {
 		 
 		 var nsIFilePicker = Components.interfaces.nsIFilePicker;
@@ -441,7 +408,11 @@ util = {
         script.innerHTML = buffer;
         doc.getElementsByTagName("head")[0].appendChild(script);   
     },
-	
+	/**
+     * Inject contents of local stylesheet into document
+     * @param {} chromefile
+     * @param {} win
+	 */
 	injectCSS : function ( chromefile, win ) {
 		var doc = win.document;
         var buffer = util.readChromeFile(chromefile, win);
@@ -476,8 +447,11 @@ util = {
 	/**
 	 * Disect the range into multiple ranges IF a selection passes it's containing DOM 
 	 * element's DOM boundary  
-	 */
-	
+     * @param {} targetDocument
+     * @param {} r
+     * @param {} nodeTmpl
+     * @return {}
+     */
 	safeSurroundContents: function(targetDocument, r, nodeTmpl) {
 		var nodes = [];
 			
@@ -671,7 +645,12 @@ util = {
 			xp = xp.substring(xp.indexOf("#")+1);
 		return targetDocument.evaluate( xp, targetDocument, null, 0, null ).iterateNext();
     },
-	
+	/**
+     * 
+     * @param {} xp
+     * @param {} targetDocument
+     * @return {}
+	 */
 	getNodeForXPointer: function(xp, targetDocument) {
 		if ( xp.indexOf("#") != -1)
 			xp = xp.substring(xp.indexOf("#")+1);
@@ -716,13 +695,21 @@ util = {
 			debug.ui("The image region Xpointer is: " + xp);
 			return xp;	
 	},
-	
+	/**
+     * Creates a hash to represent a triple
+     * @param {} triple
+     * @return {}
+	 */
 	tripleToStringHash: function( triple ) {
 		return util.ELFHash(triple.subject.toString() + "_" + triple.property.toString() + "_" + triple.object.value.toString());
 	},
 	
 	  
-	
+	/**
+     * 
+     * @param {} triple
+     * @return {}
+	 */
 	getMetaSelection: function(triple) {
 		var stringHash = '';
 		var sel = [];
@@ -746,7 +733,12 @@ util = {
 		}
 		return sel;
 	},
-	
+	/**
+     * 
+     * @param {} srcHash
+     * @param {} triples
+     * @return {}
+	 */
 	stringHashToTriple: function( srcHash, triples ) {
 		if ( srcHash.indexOf("#")!=-1)
 			srcHash = srcHash.substring(srcHash.indexOf("#")+1); 
@@ -759,7 +751,12 @@ util = {
 		}
 		return null;
 	},
-	
+	/**
+     * 
+     * @param {} srcHash
+     * @param {} triples
+     * @return {}
+	 */
 	getSelectionForHash: function( srcHash, triples ){
 		try {
 			var triple = util.stringHashToTriple(srcHash, triples).source;
@@ -776,11 +773,20 @@ util = {
 		
 		return null;
 	},
-	
+	/**
+     * Checks if xpointer contains an image range
+     * @param {} xp The xpointer to check
+     * @return {Boolean} True if xp contains an image range
+	 */
 	isXPointerImageRange: function ( xp) {
 		return xp.indexOf("image-range") != -1;
 	},
-	
+	/**
+     * 
+     * @param {} xpointer
+     * @param {} targetDocument
+     * @return {}
+	 */
 	parseImageRangeXPointer: function (xpointer, targetDocument) {
 		if (!util.isXPointerImageRange(xpointer))
 			return null;
@@ -1046,7 +1052,15 @@ util = {
     normalize : function(str) {
         return str.replace(/^\s*|\s(?=\s)|\s*$/g, "");
     },
-	
+	/**
+     * Transform RDF to a presentation format using an XSLT stylesheet
+     * @param {} stylesheetURL
+     * @param {} theRDF
+     * @param {} params
+     * @param {} win
+     * @param {} serialize
+     * @return {}
+	 */
 	transformRDF: function(stylesheetURL, theRDF, params, win, serialize) {
 	
 		var xsltproc = new win.XSLTProcessor();
@@ -1065,7 +1079,11 @@ util = {
 	    
 	    var parser = new win.DOMParser();
 	    var rdfDoc = parser.parseFromString(theRDF, "text/xml");
+        try{
 	    var resultFrag = xsltproc.transformToFragment(rdfDoc, win.document);
+        } catch (e){
+            debug.ui("Error transforming RDF",e);
+        }
 	    if (serialize){
 	         var serializer = new win.XMLSerializer();
 	         return serializer.serializeToString(resultFrag);
