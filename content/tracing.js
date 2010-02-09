@@ -1,16 +1,24 @@
 if (typeof(FBL) != "undefined"){
 FBL.ns(function() { with (FBL) { 
-
+/**
+ * Functions used for debug to Firebug tracing console
+ * @class Firebug.LoreTracingModel
+ * @extends Firebug.Module
+ */
 Firebug.LoreTracingModel = extend(Firebug.Module, 
 { 
+    /**
+     * Open new FB Tracing Console window
+     */
     initialize: function() 
     {
     	// Add listener for log customization
         Firebug.TraceModule.addListener(this);
-        // Open new FB Tracing Console window
         Firebug.TraceModule.openConsole("extensions.lore");
     },
-
+    /**
+     * Shutdown tracing console
+     */
     shutdown: function() 
     {
         Firebug.TraceModule.removeListener(this);
@@ -20,7 +28,11 @@ Firebug.LoreTracingModel = extend(Firebug.Module,
     {
   
     },
-    // Called when console window is loaded to add custom message stylesheet
+    /** 
+     * Called when console window is loaded to add custom message stylesheet
+     * @param {} win
+     * @param {} rootNode
+     */
     onLoadConsole: function(win, rootNode)
     {
         var doc = rootNode.ownerDocument;
@@ -30,7 +42,10 @@ Firebug.LoreTracingModel = extend(Firebug.Module,
         styleSheet.setAttribute("id", "loreTracingStyles");
 	    addStyleSheet(doc, styleSheet);
     },
-    // Called when a new message is logged in to the trace-console window to color-code log entries
+    /**
+     * Called when a new message is logged in to the trace-console window to color-code log entries
+     * @param {} message
+     */
     onDump: function(message)
     {
     	// Last item NOTYPE is the default fallback
