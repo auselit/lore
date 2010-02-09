@@ -1,6 +1,10 @@
 /**
+ * @class draw2d.Menu
+ */
+ 
+/**
  * Fix problem in draw2d menu: not displaying icons
- *
+ * 
  **/
 draw2d.Menu.prototype.createList=function()
 {
