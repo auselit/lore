@@ -18,6 +18,9 @@ lore.ore.graph.ResourceFigure = function(initprops) {
     if(!this.metadataproperties["resource_0"]){
         this.metadataproperties["resource_0"] = "";
     }
+    if (!this.metadataproperties["dc:title_0"]){
+        this.metadataproperties["dc:title_0"] = "";
+    }
     this.url = this.metadataproperties["resource_0"];
 	draw2d.Node.call(this);
 	this.setDimension(250, 150);
