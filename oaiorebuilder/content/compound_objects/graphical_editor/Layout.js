@@ -9,6 +9,9 @@
  * http://www.eclipse.org/legal/epl-v10.html. If redistributing this code, this
  * entire header must remain intact.
  */
+ /**
+  * @namespace uwm.diagram.autolayout
+  */
 Ext.namespace("uwm.diagram.autolayout");
 uwm.diagram.autolayout.JiggleObject = function() {
     this.booleanField = false;
@@ -16,15 +19,27 @@ uwm.diagram.autolayout.JiggleObject = function() {
     this.objectField = null;
     this.context = null;
 }
+/**
+ * 
+ */
 uwm.diagram.autolayout.JiggleObject.prototype.getContext = function() {
     return this.context;
 }
+/**
+ * 
+ */
 uwm.diagram.autolayout.JiggleObject.prototype.setContext = function(c) {
     this.context = c;
 }
+/**
+ * 
+ */
 uwm.diagram.autolayout.JiggleObject.prototype.square = function(d) {
     return d * d;
 }
+/**
+ * 
+ */
 uwm.diagram.autolayout.JiggleObject.prototype.cube = function(d) {
     return d * d * d;
 }

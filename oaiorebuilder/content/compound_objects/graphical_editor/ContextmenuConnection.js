@@ -1,6 +1,8 @@
-/*
+/**
  * Connection figure that provides a context menu to set the connection type
  * The types are sourced from ontrelationships, which is populated from an ontology (see uifunctions.js)
+ * @class lore.ore.graph.ContextmenuConnection
+ * @extends draw2d.Connection
  */
 lore.ore.graph.ContextmenuConnection=function(){
 	draw2d.Connection.call(this);
@@ -24,7 +26,12 @@ lore.ore.graph.ContextmenuConnection=function(){
 };
 
 lore.ore.graph.ContextmenuConnection.prototype=new draw2d.Connection;
-
+/**
+ * Update the type of relationship that the connection represents
+ * @param {} enamespace
+ * @param {} etype
+ * @param {} symmetric
+ */
 lore.ore.graph.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype, symmetric){
 	this.edgetype=etype;
 	this.edgens=enamespace;
@@ -41,6 +48,10 @@ lore.ore.graph.ContextmenuConnection.prototype.setRelationshipType=function(enam
         lore.debug.ore("Exception setting connection rel type",ex);
     }
 };
+/**
+ * Construct the context menu for selecting the connection type
+ * @return {}
+ */
 lore.ore.graph.ContextmenuConnection.prototype.getContextMenu=function() {
     try {
     // use the cached menu if the relationship ontology has not changed
