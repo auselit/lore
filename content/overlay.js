@@ -1,6 +1,6 @@
 /**
- * @namespace
- * @name loreoverlay
+ * @singleton
+ * @class loreoverlay
  */
 try {
 	// Load and cache global ui functions
@@ -43,7 +43,13 @@ try {
 					return this;
 				throw Components.results.NS_NOINTERFACE;
 			},
-            /** Respond to the URL loaded in the browser changing */
+            /** 
+             * Respond to the URL loaded in the browser changing  
+             * @param {} aProgress
+             * @param {} aRequest
+             * @param {} aURI
+             */
+             
 			onLocationChange: function(aProgress, aRequest, aURI){
                 var updateURI = "about:blank";
 				try {
@@ -69,7 +75,13 @@ try {
 					alert(e + " " +  e.stack);
 				}
 			},
-            /** Respond to a page loading in the browser */
+            /** 
+             * Respond to a page loading in the browser 
+             * @param {} aProgress
+             * @param {} aRequest
+             * @param {} stateFlags
+             * @param {} status
+             * */
 			onStateChange: function(aProgress, aRequest, stateFlags, status){
 				var WPL = Components.interfaces.nsIWebProgressListener;
 				if (stateFlags & WPL.STATE_IS_DOCUMENT) {
@@ -90,6 +102,9 @@ try {
 			onLinkIconAvailable: function(){
 			}
 		},
+        /**
+         * The URL that was previously visisted
+         */
 		oldURL: null,
         /**
          * Initialization code performed onLoad
@@ -113,7 +128,12 @@ try {
 				alert("Error on load: " + e.stack, e);
 			}
 		},
-        /** Observe if preferences have changed */
+        /** 
+         * Observe if preferences have changed 
+         * @param {} subject
+         * @param {} topic
+         * @param {} data
+         **/
 		observe: function(subject, topic, data){
 			try {
 				
@@ -135,17 +155,26 @@ try {
 				gBrowser.removeProgressListener(this.oreLocationListener);
 			}
 		},
-        /** Toggle LORE visibility when the status bar icon is clicked */
+        /** 
+         * Toggle LORE visibility when the status bar icon is clicked 
+         * @param {} event
+         * */
 		onClickStatusIcon: function(event){
 			this.toggleBar();
 		},
-        /** Trigger adding a node to the compound object editor from browser context menu on links */
-		onMenuItemCommand: function(e){
+        /**
+         *  Trigger adding a node to the compound object editor from browser context menu on links
+         *  @param {} event
+         **/
+		onMenuItemCommand: function(event){
 			if (gContextMenu.onLink) 
 				loreoverlay.coView().addFigure(gContextMenu.linkURL);
 		},
-        /** Show a context menu in the browser on images, links and background images, for creating nodes in compound object editor */
-		onMenuPopup: function(e){
+        /** 
+         * Show a context menu in the browser on images, links and background images, for creating nodes in compound object editor 
+         * @param {] event
+         * */
+		onMenuPopup: function(event){
 			try {
 				
 				var img = loreoverlay.annoView().getCurSelImage();
@@ -161,16 +190,16 @@ try {
 				gContextMenu.showItem('addlink-lore', gContextMenu.onLink);
 				gContextMenu.showItem('addbgimg-lore', gContextMenu.hasBGImage);
 				gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
-			} catch (e ) {
+			} catch (e) {
 				lore.debug.ui(e);
 			}
 		},
 		
 		/** Begin selecting a region of the image to highlight for an annotation 
 		 * 
-		 * @param {Object} e
+		 * @param {Object} event
 		 */
-		selImageMenuItemCommand: function(e) {
+		selImageMenuItemCommand: function(event) {
 			//TODO: Security risk? document.popupNode?
 			try {
 				loreoverlay.annoView().handleBeginImageSelection(document.popupNode);
