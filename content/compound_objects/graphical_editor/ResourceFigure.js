@@ -189,6 +189,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
         } else {
             this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>RDF document (no preview available)</p>";
         }
+    
 	} else if (mimetype && mimetype.match("application/xml")){
         // if it is an annotation, add a stylesheet parameter
         var stylesheet = "danno_useStylesheet="; // danno will use default stylesheet
@@ -233,6 +234,10 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 		this.iframearea.innerHTML = "<img id='" + theurl + "-data' src='"
 				+ theurl + "' style='width:auto;z-index:-9001' height='95%'>";
 	} else  { // All other resources displayed in secure iframe 
+        var displayUrl = theurl;
+         if (theurl.match("austlit.edu.au") && (theurl.match("ex=ShowWork") || theurl.match("ex=ShowAgent"))) {
+            displayUrl = theurl + "&printPreview=y";
+         }
 		try {
 			var domObj = this.iframearea.firstChild;
 			if (domObj) {
@@ -240,7 +245,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 			}
 
 			if (this.originalHeight == -1) {
-				this.createPreview(theurl);
+				this.createPreview(displayUrl);
 			}
 		} catch (e) {
 			lore.debug.ore("ResourceFigure: iframe(general): " + e, e);
