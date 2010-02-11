@@ -204,7 +204,8 @@ lore.ore.search = function (searchuri, searchpred, searchval){
  */
 lore.ore.compoundObjectDirty = function (){
     // TODO: #56 implement this method - compare lore.ore.loadedRDF with state of model
-    if (lore.global.util.isEmptyObject(lore.ore.loadedRDF)){
+    // If it was a new compound object and the graphical view is either not defined or has no resources, don't consider it to be dirty
+    if (lore.global.util.isEmptyObject(lore.ore.loadedRDF) && (!lore.ore.graph.coGraph || (lore.ore.graph.coGraph && lore.ore.graph.coGraph.getDocument().getFigures().getSize() == 0))){
         return false;
     } else {
         return true;
@@ -244,24 +245,30 @@ lore.ore.createCompoundObject = function (){
     };
     try{
         // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
-	    /*if (lore.ore.compoundObjectDirty()){
+	    if (lore.ore.compoundObjectDirty()){
 	        Ext.Msg.show({
 		        title : 'Save Compound Object?',
 		        buttons : Ext.MessageBox.YESNOCANCEL,
 		        msg : 'Would you like to save the compound object before proceeding?<br><br>Any unsaved changes will be lost if you select "No".',
+                //msg: 'Any unsaved changes to the current compound object will be lost. Would you like to continue anyway?',
 		        fn : function(btn) {
 		            if (btn === 'yes') {
                         // TODO: #56 check that the save completed successfully before calling newCO
-		                lore.ore.saveRDFToRepository();
-		                newCO();  
+                        var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
+                        var therdf = lore.ore.createRDF(false);
+                        lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
+                            lore.ore.afterSaveCompoundObject(remid);
+                            newCO();  
+                        });
+		                
 		            } else if (btn === 'no') {
                         newCO();
                     }
 		        }
 		    });
-        } else {*/
+        } else {
             newCO();
-        //}
+        }
     } catch (e){
         lore.debug.ore("Error in createCompoundObject",e);
     }
@@ -1317,7 +1324,7 @@ lore.ore.afterDeleteCompoundObject = function(deletedrem){
 /**
  * Save the compound object to the repository - prompt user to confirm
  */
-lore.ore.saveRDFToRepository = function() {
+lore.ore.saveRDFToRepository = function(callback) {
     // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
     // update rdfquery to reflect most recent save
     var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
