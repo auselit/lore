@@ -948,6 +948,9 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 			
 
 			lore.anno.ui.form.updateRecord(unsavedRec);
+			if ( unsavedRec)
+				lore.debug.anno("Annotation record updated.");
+			
 			/*var r = lore.anno.ui.metausergrid.getStore().getRange();
 			for (var i =0; i < r.length; i++) {
 				var d = r[i].data;
@@ -1210,7 +1213,7 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 					this.type  = lore.global.util.isXPointerImageRange(this.xpointer) ? 1:0;
 					this.visible = false;
 					this.bw = args.borderWidth || 1;
-					lore.debug.anno("xpointer: " + this.xpointer);
+					// lore.debug.anno("xpointer: " + this.xpointer);
 					this.show = function (colour, styleCallback, scroll) {
 						this.colour = colour;
 						this.styleCallback = styleCallback;
@@ -1612,6 +1615,7 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 	       if (lore.anno.ui.curSelAnno ){
 		   	if ( lore.anno.ui.curSelAnnoStore == lore.anno.annodsunsaved) {
 				 lore.anno.annodsunsaved.remove(lore.anno.ui.curSelAnno);
+				 lore.anno.ui.setCurrentAnno(null, null);
 				 return;
 			}
 		 
@@ -2023,7 +2027,7 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 						// when page has loaded perform the following
 						lore.anno.ui.hideMarker();
 						var cw = lore.anno.ui.topView.getVariationContentWindow();
-						//lore.anno.ui.enableImageHighlightingForPage(cw);
+						lore.anno.ui.enableImageHighlightingForPage(cw);
 						lore.anno.ui.highlightCurrentAnnotation(rec);
 
 						var n = 'rcontextdisp';
@@ -2068,7 +2072,7 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 						((lore.anno.ui.form.isDirty()||
 							lore.anno.isNewAnnotation(lore.anno.ui.curSelAnno)) && 
 							lore.anno.ui.form.findField('id').getValue() == lore.anno.ui.curSelAnno.data.id)) {
-							lore.debug.anno("here");
+							
 							lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.curSelAnno);
 					}
 					
@@ -2269,6 +2273,8 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 				var node = lore.anno.ui.findNode(rec.data.id + '-unsaved', lore.anno.ui.treeunsaved );
 				if (node) {
 					node.remove();
+				} else {
+					lore.debug.anno("node not found to remove: " + rec.data.id);
 				}
 			} 
 			catch (e) {
