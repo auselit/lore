@@ -536,7 +536,7 @@
 			bodyLoaded: true
 		};
 		
-		lore.anno.annods.loadData([anno], true);
+		//lore.anno.annods.loadData([anno], true);
 		lore.anno.annodsunsaved.loadData([anno], true); // change to add
 		
 		//var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
@@ -558,12 +558,16 @@
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	lore.anno.updateAnnotations = function (currentURL, resultCallback) {
+	lore.anno.updateAnnotations = function (currentURL, filterURL, resultCallback) {
 		
 		lore.anno.annodsunsaved.each( function (rec) 
 		{
+			//TODO: fix for replies
+			if ( filterURL && rec.data.context!= filterURL )
+				return;
+			
 			if ( rec.dirty ) {
-				lore.anno.updateAnnotation(rec, currentURL, function (action,result,resultMsg) {
+				lore.anno.updateAnnotation(rec, currentURL, false, function (action,result,resultMsg) {
 					resultCallback(rec, action, result, resultMsg);
 				});
 				
@@ -605,10 +609,10 @@
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	lore.anno.updateAnnotation = function(anno, currentURL, resultCallback){
+	lore.anno.updateAnnotation = function(anno, currentURL, refresh, resultCallback){
 	
 		// don't send out update notification if it's a new annotation as we'll
-		// be reloading tree
+		// be reloading datasource
 		anno.commit(lore.anno.isNewAnnotation(anno));
 		
 		var annoRDF = lore.anno.createAnnotationRDF([anno.data]);
@@ -621,6 +625,8 @@
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
 			xhr.onreadystatechange = function(){
+				try {
+				
 				if (xhr.readyState == 4) {
 					if (resultCallback) {
 						var result = xhr.status == 201 ? 'success' : 'fail';
@@ -630,11 +636,15 @@
 						
 					}
 				}
+				
+			} catch(e ) {
+				lore.debug.anno("error: " + e);
+			}
 			};
 			xhr.send(annoRDF);
 			lore.debug.anno("RDF of new annotation", annoRDF);
 			lore.anno.annods.remove(anno);
-			lore.anno.annodsunsaved.removed(anno);
+			lore.anno.annodsunsaved.remove(anno);
 		}
 		else {
 			// Update the annotation on the server via HTTP PUT
@@ -645,6 +655,10 @@
 					if (resultCallback) {
 						var result = xhr.status == 200 ? 'success' : 'fail';
 						resultCallback('update', result, xhr.statusText);
+						if (refresh) {
+							lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+							lore.anno.updateAnnotationsSourceList(currentURL);
+						}
 					}
 				}
 			};
@@ -1214,11 +1228,11 @@
 	 * @param {String} annoid
 	 * @return {Object} Annotation object or null
 	 */
-	lore.anno.getAnnoData = function(annoid){
-		var annoIndex = lore.anno.annods.findBy(function(record, id){
+	lore.anno.getAnnoData = function(annoid, store){
+		var annoIndex = store.findBy(function(record, id){
 			return (annoid == record.json.id);
 		});
-		return lore.anno.annods.getAt(annoIndex);
+		return store.getAt(annoIndex);
 	}
 	
 	lore.anno.clearAnnotationStore = function() {
@@ -1302,7 +1316,7 @@
 			for ( var i =0; i < recs.length; i++) {
 				for (var j = 0; j < annotations.length; j++) {
 					if (recs[i].data.id == annotations[j].id) {
-						lore.debug.anno("j: " + j + ", " + recs[i].data.id, recs[i]);
+						//lore.debug.anno("j: " + j + ", " + recs[i].data.id, recs[i]);
 						annotations[i] = recs[i].data;
 						lore.anno.annods.remove(recs[i]);
 					}

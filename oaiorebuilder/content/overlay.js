@@ -115,6 +115,8 @@ try {
 				
 				lore.global.ui.topWindowView.registerView(this, this.instId);
 				gBrowser.addProgressListener(this.oreLocationListener, Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
+				window.addEventListener("close", this.onClose, false); 
+				
 				this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
 				this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 				this.loadGlobalPrefs();
@@ -128,7 +130,27 @@ try {
 				alert("Error on load: " + e.stack, e);
 			}
 		},
-        /** 
+		
+		/**
+         * Trigger save changes if closing
+         * @param {} subject
+         * @param {} topic
+         * @param {} data
+		 */
+		onClose: function(event) {
+			try {
+				lore.debug.ui("onClose()");
+				if (loreoverlay.annoView().isDirty()) {
+					if (confirm("Click 'Ok' to save changes to modified annotations.")) {
+						loreoverlay.annoView().handleSaveAllAnnotationChanges();
+					}
+				}
+			} catch(e) {
+				alert(e);
+			}
+		},
+		
+          /** 
          * Observe if preferences have changed 
          * @param {} subject
          * @param {} topic
