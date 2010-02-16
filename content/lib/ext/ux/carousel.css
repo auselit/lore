@@ -43,7 +43,7 @@
 }
 
 .ux-carousel-nav {
-    height: 29px;
+    height:35px;
     width: 100%;
     background-color: #d1ccc7;
     position: absolute;
@@ -54,14 +54,13 @@
 }
 
 .ux-carousel-caption {
-    font-size: 20px;
+    font-size: 14px;
     float: left;
-    padding: 2px 5px;
     margin: 0;
     text-transform: none;
     color: black;
     overflow: hidden;
-    height: 29px;
+    height: 35px;
     width: 100px;
 }
 
@@ -71,7 +70,7 @@
     height: 24px;
     display: block;
     float: right;
-    margin: 2px 0;
+    margin: 5px 0;
     background-position: 0 24px;
 }
 
@@ -111,7 +110,7 @@
     background-position: 0 0;
 }
 div.item {
-   margin-top: 29px;
+   margin-top: 35px;
    font-family:Arial,sans-serif;
 }
 div.item .desctitle {
