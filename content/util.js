@@ -366,16 +366,18 @@ util = {
      * @param {} xp
      */
     normalizeXPointer : function(xp) {
+		
 	if (typeof(xp) == 'string') {
 		var idx = xp.indexOf('#');
 		return xp.substring(idx + 1);
 	}
 
 	for ( var i =0; i < xp.length;i++) {
+		xp[i] = xp[i] + '';
 		xp[i] = xp[i].substring(xp[i].indexOf("#")+1);
 	}
-	return xp;
 
+	return xp;
     },
     
     /**
@@ -643,6 +645,7 @@ util = {
 		//return targetDocument.evaluate( xp, targetDocument, null, win.XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 		if ( xp.indexOf("#") != -1)
 			xp = xp.substring(xp.indexOf("#")+1);
+		
 		return targetDocument.evaluate( xp, targetDocument, null, 0, null ).iterateNext();
     },
 	/**
@@ -740,6 +743,7 @@ util = {
      * @return {}
 	 */
 	stringHashToTriple: function( srcHash, triples ) {
+		srcHash = srcHash + '';
 		if ( srcHash.indexOf("#")!=-1)
 			srcHash = srcHash.substring(srcHash.indexOf("#")+1); 
 		
@@ -791,8 +795,11 @@ util = {
 		if (!util.isXPointerImageRange(xpointer))
 			return null;
 		
+		xpointer = util.normalizeXPointer(xpointer);
+		
 		var xpBits = xpointer.substring("xpointer(image-range(".length ).split(',');
 		var xp =  xpBits[0];
+		//debug.ui("xpath is " + xp, targetDocument);
 		var img = util.getNodeForXPath(xp, targetDocument);
 	
 		// co-ordinates
@@ -838,6 +845,7 @@ util = {
         var selText = "";
         if (currentCtxt){
             if ( util.isXPointerImageRange(currentCtxt)){
+				
 				var data = util.parseImageRangeXPointer(currentCtxt, targetDocument);
 				var c = data.coords;
 				return 'Image region (' + c.x1 + ', ' + c.y1 +')-(' + c.x2 +', ' + c.y2 +') selected from ' + data.image.src; 				
