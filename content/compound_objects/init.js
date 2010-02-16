@@ -165,14 +165,6 @@ lore.ore.ui.initUIComponents = function() {
 	    store: lore.ore.resourceStore
 	});
     
-	lore.ore.ui.propedittrigger = new Ext.form.TriggerField({
-	    id: "propedittrigger",
-	    'triggerClass': 'x-form-ellipsis-trigger',
-	    'onTriggerClick': function(ev) {
-	        lore.debug.ore("triggered for ",[this,ev]);
-	        
-	    }
-	});
   /** Ext specification of compound objects UI */
   var lore_gui_spec = {
     layout: "border",
@@ -207,7 +199,7 @@ lore.ore.ui.initUIComponents = function() {
                             id: "remlistview",
                             autoScroll: true
                             
-                        }, {
+                        }, /*{
                             title: "Resource Details",
                             xtype: "panel",
                             autoScroll: true,
@@ -276,7 +268,6 @@ lore.ore.ui.initUIComponents = function() {
                                     xtype: "panel",
                                     title: "Property / Relationship Editor",
                                     id: "respropeditor",
-                                    disabled: true,
                                     split: true,
                                     region: "center",
                                     layout: "fit",
@@ -285,30 +276,19 @@ lore.ore.ui.initUIComponents = function() {
                                         
                                         {
                                             id: 'refresh',
-                                            qtip: 'Cancel edits and restore original value',
+                                            qtip: 'Cancel editing this field and restore last saved value',
                                             handler: lore.ore.ui.restorePropValue
                                         }
-                                    ]
-                                    /*,
-                                    labelAlign: "top",
-                                    items:[
-                                        {
-                                            xtype: "textarea",
-                                            //fieldLabel: "Title",
-                                            anchor: "100%",
-                                            grow: true
-                                        },
-                                        {
-                                            xtype: "textarea",
-                                            fieldLabel: "Description",
-                                            anchor: "100%",
-                                            grow: true
-                                        }
-                                    ]*/
+                                    ],
+                                    items: [ {
+                                      xtype: "textarea",
+                                      id: "detaileditor",
+                                      anchor: "100% 100%"
+                                    }]
                                 }
                             ]
                         }
-                        ,{
+                        ,*/{
                             title: "Slideshow",
                             id: "remslideview",
                             autoScroll: false,
@@ -466,14 +446,15 @@ lore.ore.ui.initUIComponents = function() {
                             columns: [
                             {id: 'name', header: 'Property Name', sortable: true, dataIndex: 'name',menuDisabled:true},
                             {id: 'value',header: 'Value', dataIndex: 'value', menuDisabled:true, 
-                            editor:  new Ext.form.TriggerField({
+                            editor: new Ext.form.TextField()
+                            /*new Ext.form.TriggerField({
 							        id: "propedittrigger",
 							        'triggerClass': 'x-form-ellipsis-trigger',
 							        'onTriggerClick': function(ev) {
-							            lore.debug.ore("triggered for ",[this,ev]);
-							            
+							            lore.ore.editResDetail(lore.ore.currentREM, this.gridEditor.record.id, this.getValue());
 							        }
-							    })
+							    })*/
+                            
                             }
                             ]
                         }),
@@ -619,18 +600,23 @@ lore.ore.ui.initUIComponents = function() {
     
     
     /** Tree used to display relationships in resource details editor */
-    lore.ore.ui.resreltreeroot = new Ext.tree.TreeNode({
-        id: "resreltree",
-        text: "Relationships",
-        qtip: "The resource's relationships",
-        iconCls: "tree-ore"
-    });
-    var resdetailstree = Ext.getCmp("resdetailstree").getRootNode();
-    resdetailstree.appendChild(lore.ore.ui.resproptreeroot);
-    resdetailstree.appendChild(lore.ore.ui.resreltreeroot);
-    lore.ore.ui.resproptreeroot.on("beforeclick",lore.ore.updateResDetails);
-    lore.ore.ui.resreltreeroot.on("beforeclick",lore.ore.updateResDetails);
+    if (Ext.getCmp("remresedit")){
+	    lore.ore.ui.resreltreeroot = new Ext.tree.TreeNode({
+	        id: "resreltree",
+	        text: "Relationships",
+	        qtip: "The resource's relationships",
+	        iconCls: "tree-ore"
+	    });
+	    var resdetailstree = Ext.getCmp("resdetailstree").getRootNode();
+	    resdetailstree.appendChild(lore.ore.ui.resproptreeroot);
+	    resdetailstree.appendChild(lore.ore.ui.resreltreeroot);
+	    lore.ore.ui.resproptreeroot.on("beforeclick",lore.ore.updateResDetails);
+	    lore.ore.ui.resreltreeroot.on("beforeclick",lore.ore.updateResDetails);
+        // load resource details handler
+        lore.ore.ui.resselectcombo.on("select",lore.ore.loadResourceDetails);
     
+    
+    }
     // set up search handlers
     Ext.getCmp("advsearchbtn").on('click', lore.ore.advancedSearch);
     Ext.getCmp("kwsearchbtn").on('click', lore.ore.keywordSearch);
@@ -651,8 +637,6 @@ lore.ore.ui.initUIComponents = function() {
         lore.debug.ui("error setting up search combo",e);
     }
 
-    // load resource details handler
-    lore.ore.ui.resselectcombo.on("select",lore.ore.loadResourceDetails);
     
     var loreviews = Ext.getCmp("loreviews");
     // set up event handlers for tabs

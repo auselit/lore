@@ -1659,27 +1659,76 @@ lore.ore.graph.dummyBatchDialog = function(){
 /** Called on beforeclick of details tree nodes - use to update property values **/
 lore.ore.updateResDetails = function(node,ev){
     try{
+    var respropeditor = Ext.getCmp("detaileditor");
     var currSelectedNode = Ext.getCmp("resdetailstree").getSelectionModel().getSelectedNode();
     lore.debug.ore("prev node was",[currSelectedNode,node]);
-    // TODO: update property/rel for previous node (using value from respropeditor)
-    var respropeditor = Ext.getCmp("respropeditor");
-    respropeditor.body.update("");
+    // update property/rel for previous node (using value from respropeditor)
+    if (currSelectedNode){
+        var newval = respropeditor.getValue();
+        var currURI = Ext.getCmp("resselectcombo").getValue();
+        // TODO use a proper mvc
+        if (currURI == lore.ore.currentREM){
+            // update node details grid
+            try{
+                if (lore.ore.ui.grid){
+                    var proprecidx = lore.ore.ui.grid.store.find("id",currSelectedNode.id);
+                    if (proprecidx != -1){
+                        lore.ore.ui.grid.store.getAt(proprecidx).set("value", newval);
+                        lore.ore.ui.grid.store.commitChanges();
+                        currSelectedNode.attributes.value = newval;
+                    }
+                }
+            } catch (e){
+                lore.debug.ore("error adding to resource map store",e);
+            }
+        } else {
+            // update figure
+        }
+    }
+   
+    respropeditor.setValue("");
     if (!node.isLeaf()){
         respropeditor.disable();
     } else {
         respropeditor.enable();
-        respropeditor.body.update(node.attributes.value);
+        respropeditor.setValue(node.attributes.value);
     }
     } catch (e){
         lore.debug.ore("error updating res detail",e);
     }
 };
 /** Jump to edit field **/
-lore.ore.editResDetail = function(resURI,pname){
-    lore.debug.ore("editing resource detail " + pname,resURI);
+lore.ore.editResDetail = function(resURI,pname,val){
+    // TODO read val from model
+    try{
+    lore.debug.ore("editing resource detail " + pname,[resURI,val]);
+    // loadResourceDetails for resURI
+    var detailscombo = Ext.getCmp("resselectcombo");
+    var found = lore.ore.resourceStore.findExact('uri',resURI);
+    lore.debug.ore("found? " + found);
+    if (found != -1){
+        detailscombo.setValue(resURI);
+        lore.ore.loadResourceDetails(detailscombo, lore.ore.resourceStore.getAt(found),found);
     
+        // find pname in tree
+        var propnode = lore.ore.ui.resproptreeroot.findChild('id',pname);
+        if (propnode){
+            propnode.select();
+        }
+        // set value to val
+        if (val) {
+            Ext.getCmp("detaileditor").setValue(val);
+        }
+    }
+    // call updateResDetails
+    } catch  (e){
+        lore.debug.ore("problem in editResDetail",e);
+    }
 };
 lore.ore.populateResourceDetailsCombo = function (){
+    if (!Ext.getCmp("remresedit")){
+        return;
+    }
     // add compound object
     lore.ore.resourceStore.loadData([["Current Compound Object", lore.ore.currentREM, "Current Compound Object (" + lore.ore.currentREM + ")"]]);
     // add all resources in compound object
@@ -1692,6 +1741,8 @@ lore.ore.populateResourceDetailsCombo = function (){
             lore.ore.resourceStore.loadData([[title,fig.url,title + " ("+ fig.url +")"]],true);
         }
     }
+    Ext.getCmp("resselectcombo").setValue(lore.ore.currentREM);
+    lore.ore.loadResourceDetails(Ext.getCmp("resselectcombo"), lore.ore.resourceStore.getAt(0),0);
 }
 // TODO: refactor to use model classes
 /**
@@ -1702,20 +1753,23 @@ lore.ore.populateResourceDetailsCombo = function (){
  */
 lore.ore.loadResourceDetails = function(combo,record,index){
     lore.global.ui.clearTree(lore.ore.ui.resproptreeroot);
-    lore.global.ui.clearTree(lore.ore.ui.resreltreeroot); 
+    lore.global.ui.clearTree(lore.ore.ui.resreltreeroot);
     var tmpNode;
     var resurl = record.data.uri;
     if (resurl == lore.ore.currentREM){
         // it's the current compound object - load props from the grid
         lore.ore.ui.grid.store.each(function (rec){
             var propname = rec.id.substring(0,rec.id.indexOf("_"));
-            tmpNode = new Ext.tree.TreeNode({
-                text: propname,
-                value: rec.data.value,
-                leaf: true
-            });
-            lore.ore.ui.resproptreeroot.appendChild(tmpNode);
-            tmpNode.on("beforeclick",lore.ore.updateResDetails);
+            if (propname != "rdf:about"){
+	            tmpNode = new Ext.tree.TreeNode({
+                    id: rec.id,
+	                text: propname,
+	                value: rec.data.value,
+	                leaf: true
+	            });
+	            lore.ore.ui.resproptreeroot.appendChild(tmpNode);
+	            tmpNode.on("beforeclick",lore.ore.updateResDetails);
+            }
         });
     } else {
         // it's a resource - get the props and rels from the figure
@@ -1727,14 +1781,16 @@ lore.ore.loadResourceDetails = function(combo,record,index){
 	                if (pidx != -1){
 	                    pname = p.substring(0,pidx);
 	                }
-	                tmpNode = new Ext.tree.TreeNode({
-	                    id: p,
-	                    text: pname,
-	                    leaf: true,
-	                    value: fig.metadataproperties[p]
-	                });
-	                lore.ore.ui.resproptreeroot.appendChild(tmpNode);
-	                tmpNode.on("beforeclick",lore.ore.updateResDetails);
+                    if (pname != "dc:format" && pname != "resource"){
+		                tmpNode = new Ext.tree.TreeNode({
+		                    id: p,
+		                    text: pname,
+		                    leaf: true,
+		                    value: fig.metadataproperties[p]
+		                });
+		                lore.ore.ui.resproptreeroot.appendChild(tmpNode);
+		                tmpNode.on("beforeclick",lore.ore.updateResDetails);
+                    }
 	            }
 	            
 	            var ports = fig.getPorts();
@@ -1774,5 +1830,9 @@ lore.ore.loadResourceDetails = function(combo,record,index){
     }
     lore.ore.ui.resreltreeroot.expand();
     lore.ore.ui.resproptreeroot.expand();
+    if (lore.ore.ui.resproptreeroot.firstChild){
+        lore.ore.ui.resproptreeroot.firstChild.select();
+        lore.ore.updateResDetails(lore.ore.ui.resproptreeroot.firstChild,null);
+    }
 };
 
