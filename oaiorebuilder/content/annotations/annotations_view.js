@@ -884,9 +884,15 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 				}
 				
 				Ext.getCmp('chgmetactxbtn').setVisible(rdfa);
-				Ext.getCmp('addmetabtn').setVisible(rdfa);
-				Ext.getCmp('remmetabtn').setVisible(rdfa);
-				Ext.getCmp('metausergrid').setVisible(rdfa);
+				//TODO: temporary until this component properly implemented
+				//Ext.getCmp('metausergrid').setVisible(rdfa);
+				//Ext.getCmp('addmetabtn').setVisible(rdfa);
+				//Ext.getCmp('remmetabtn').setVisible(rdfa);
+				
+				Ext.getCmp('metausergrid').setVisible(false);
+				Ext.getCmp('addmetabtn').setVisible(false);
+				Ext.getCmp('remmetabtn').setVisible(false);
+				
 			}
 		}
 		
