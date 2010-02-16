@@ -611,7 +611,7 @@ lore.ore.showSlideshow = function (){
     sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/slideshow_view.xsl",params,true);
     //sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/TrailDetail.xsl",params,true);
     lore.debug.ore("slideshow html is",sscontents);
-	carouselel.update(sscontents);
+	carouselel.update(sscontents,true);
     lore.ore.ui.carousel.reloadMarkup();
     } catch (ex){
         lore.debug.ore("adding slideshow",ex);
@@ -1154,7 +1154,9 @@ lore.ore.readRDF = function(rdfURL){
     }else {
         lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
     }*/
-    lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.loadCompoundObject);
+    if (lore.ore.reposAdapter){
+        lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.loadCompoundObject);
+    }
 };
 
 
@@ -1381,7 +1383,9 @@ lore.ore.updateCompoundObjectsBrowseList = function(contextURL) {
     } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
         //lore.ore.fedora.getCompoundObjects(contextURL);
     }*/
-    lore.ore.reposAdapter.getCompoundObjects(contextURL);
+    if (lore.ore.reposAdapter){
+        lore.ore.reposAdapter.getCompoundObjects(contextURL);
+    }
 };
 
 /* Graph related functions */

@@ -149,14 +149,14 @@
     			 </a>
     			 </p> 
     		</xsl:when>
-    		<xsl:when test="contains($about,'austlit.edu.au')">
-    			<object class="sspreview" data="{$about}&amp;printPreview=y"  height="500px" width="{($width - $mwidth) - 10}"></object>
+    		<xsl:when test="contains($about,'austlit.edu.au') and (contains($about,'ShowWork') or contains($about,'ShowAgent'))">
+    			<object class="sspreview" data="{$about}&amp;printPreview=y"  height="{$height}" width="{($width - $mwidth) - 10}"></object>
     		</xsl:when>
     		<xsl:otherwise>
     			<!--  minus 10 to account for 5px padding on each side of itemdesc -->
     			<!--  object class="sspreview" data="{$about}"  width="{($width - $mwidth) - 10}"></object-->
     			<div style='height:50px;width:{($width - $mwidth) - 10}px;color:#51666b;margin-top:3em;'>
-    			<a title="Open in new window" target="_blank" href="{$about}"><xsl:value-of select="$about"/></a>
+    			<a title="Open in new tab" onclick="lore.global.util.launchTab('{$about}');return false;" href="{$about}"><xsl:value-of select="$about"/></a>
     			</div>
     		</xsl:otherwise>
     		
