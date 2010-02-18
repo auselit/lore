@@ -521,7 +521,7 @@ try {
 							callBack();
 							iframe.removeEventListener("load", variationCallback, true);
 						} catch (e ) {
-							lore.debug.anno("Error showVarionSplitter callback: " +e, e);
+							lore.debug.anno("Error showVariationSplitter callback: " +e, e);
 						}
 						
 					}, true);
@@ -544,6 +544,7 @@ try {
 				document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "true");
 				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", "");
 				document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
+				loreoverlay.annoView().hideMarker(document.getElementById("oobAnnoVarContent").contentWindow);
 			}
 		},
 		/**

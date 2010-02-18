@@ -210,9 +210,7 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		lore.anno.ui.setCacheTimeout = function ( millis) {
 			//TODO: should be at a finer granularity 
 			lore.anno.cachetimeout = millis;
-		}
-		
-		
+		}		
 		
 		/**
 		 * Show the annotations view. Update the annotations source list
@@ -946,10 +944,10 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 				}
 			}
 			
-
-			lore.anno.ui.form.updateRecord(unsavedRec);
-			if ( unsavedRec)
+			if (unsavedRec) {
+				lore.anno.ui.form.updateRecord(unsavedRec);
 				lore.debug.anno("Annotation record updated.");
+			}
 			
 			/*var r = lore.anno.ui.metausergrid.getStore().getRange();
 			for (var i =0; i < r.length; i++) {
@@ -1281,17 +1279,19 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 								var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords, this.target);
 								var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
 								
-								var _n = $(this.data.nodes[0]);
-								
-								_n.css({
-									position: 'absolute',
-									left: c.x1 + o.left + this.bw,
-									top: c.y1 + o.top + this.bw,
-									border: this.bw + 'px solid ' + this.colour,
-									zIndex: _n.parent().css('zIndex')
-								}).width(c.x2 - c.x1 - this.bw * 2).height(c.y2 - c.y1 - this.bw * 2);
-								if (this.styleCallback) 
-									this.styleCallback(this.type, this.data.nodes[0]);
+								//if (this.target && this.target.defaultView.innerWidth > 0) {
+									var _n = $(this.data.nodes[0]);
+								//	lore.debug.anno('z:' + this.xpointer, this.xpointer);
+									_n.css({
+										position: 'absolute',
+										left: c.x1 + o.left + this.bw,
+										top: c.y1 + o.top + this.bw,
+										border: this.bw + 'px solid ' + this.colour,
+										zIndex: _n.parent().css('zIndex')
+									}).width(c.x2 - c.x1 - this.bw * 2).height(c.y2 - c.y1 - this.bw * 2);
+									if (this.styleCallback) 
+										this.styleCallback(this.type, this.data.nodes[0]);
+							//	}
 							}
 						}catch (e ) {
 							lore.debug.anno(e,e);
@@ -1305,12 +1305,16 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 								if (this.type == 0) {
 									for (var i = 0; i < this.data.nodes.length; i++) {
 										var n = this.data.nodes[i];
-										if (n) 
+										if (n) {
+											n.display = 'none'; // in the event removal fails, the marker
+																// will at least be hidden
 											lore.global.util.removeNodePreserveChildren(n, w);
+										}
 									}
 									this.data = null;
 								}
 								else {
+									this.data.nodes[0].display = 'none';
 									lore.global.util.removeNodePreserveChildren(this.data.nodes[0], w);
 								}
 							}
@@ -1324,15 +1328,27 @@ var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9
 		/**
 		 * Hide the currently selected annotation markers
 		 */
-		lore.anno.ui.hideMarker = function(){
+		lore.anno.ui.hideMarker = function(cw){
+			
 			try {
 				if (lore.anno.ui.curAnnoMarkers) {
 					for (var i = 0; i < lore.anno.ui.curAnnoMarkers.length; i++) {
 						var m = lore.anno.ui.curAnnoMarkers[i];
-						m.hide();
-						delete m; 
+						if (cw) {
+							if ( m.target.defaultView == cw ) {
+								m.hide();
+								delete m;
+								lore.anno.ui.curAnnoMarkers.splice(i,1);
+								i--;
+							}
+						}
+						else {
+							m.hide();
+							delete m;
+						} 
 					}
-					lore.anno.ui.curAnnoMarkers = [];
+					if (!cw)
+						lore.anno.ui.curAnnoMarkers = [];
 				}
 			} 
 			catch (ex) {
