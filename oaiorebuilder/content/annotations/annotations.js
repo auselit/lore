@@ -1102,11 +1102,11 @@
 	
 		var cback = function(anno, txt){
 			try {
-				var url = lore.global.util.getContentWindow(window).location;
+				var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
 				if ( !anno.isReply && 
-				 ((!anno.variant && anno.resource != url) 
-			 ||  (anno.variant && anno.original != url &&
-			 	anno.variant != url)))
+				 ((!anno.variant && encodeURIComponent(anno.resource) != url) 
+			 ||  (anno.variant && encodeURIComponent(anno.original) != url &&
+			 	encodeURIComponent(anno.variant) != url)))
 					return;
 					
 				var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
@@ -1246,25 +1246,26 @@
 		if ( !annotations.length)
 			annotations = [annotations];
 		var a = annotations[0];
-		var url = a.resource;
 		
 		while(a && a.isReply ) {
 			a = lore.global.util.findRecordById(lore.anno.annods, a.resource).data;
-			url = a.resource;
 		}
 		
-		if ( url == lore.anno.ui.currentURL) {
+		if ( a.resource == lore.anno.ui.currentURL || ( (a.variant && a.variant == lore.anno.ui.currentURL) ||
+			(a.original && a.original == lore.anno.ui.currentURL) )) {
 			lore.anno.annods.loadData(annotations, true);
+			
+			var ds = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, lore.anno.ui.currentURL);
+			if ( !ds )
+				ds = [];
+		
+			ds = ds.concat(annotations);
+		
+			lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds, lore.anno.ui.currentURL, lore.anno.cachetimeout);
+					
+		} else {
+			//TODO:  they've switched pages, continue to load data for caching purposes
 		}
-		
-		var ds = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, url);
-		if ( !ds )
-			ds = [];
-		
-		ds = ds.concat(annotations);
-		
-		lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds,url, lore.anno.cachetimeout);		
-		
 		
 		//lore.anno.annods.loadData(annotations,true)
 	}
@@ -1291,14 +1292,15 @@
 		lore.anno.clearAnnotationStore();
 				
 		if (resultNodes.length > 0) {
-			var annotations = lore.anno.orderByDate(resultNodes,3);
-			var url = lore.global.util.getContentWindow(window).location;
+			var annotations = lore.anno.orderByDate(resultNodes, 3);
+			var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
+
 			// cater for tab change while annotations were downloaded from server
-			if ( (!annotations[0].variant && annotations[0].resource != url) 
-			 ||  (annotations[0].variant && annotations[0].original != url &&
-			 	annotations[0].variant != url))
+			/*if ( (!annotations[0].variant && encodeURIComponent(annotations[0].resource) != url) 
+			 ||  (annotations[0].variant && encodeURIComponent(annotations[0].original) != url &&
+			 	encodeURIComponent(annotations[0].variant) != url))
 					return;
-			
+			lore.debug.anno("POST:there's stuff and i'm here", annotations);*/
 	
 			for (var i = 0; i < annotations.length; i++) {
 				try {
