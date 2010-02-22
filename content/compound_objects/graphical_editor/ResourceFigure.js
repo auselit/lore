@@ -1,13 +1,28 @@
-
 /*
- * Based on ExtJS UI integration example from draw2d.org Modified for use with
- * OAI-ORE Graph Builder Anna Gerber, UQ ITEE eResearch, May 2008 Copyright (c)
- * 2008 The University of Queensland
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
  * 
- * Displays a resource identified by a url and stored associated metadata
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
  * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
-
+/**
+ * Displays a resource identified by a url and stored associated metadata
+ * @class lore.ore.graph.ResourceFigure
+ * @extends draw2d.Node
+ * @param {Object} initprops initial properties
+ */
 lore.ore.graph.ResourceFigure = function(initprops) {
 	this.cornerWidth = 15;
 	this.cornerHeight = 14.5;
@@ -30,7 +45,11 @@ lore.ore.graph.ResourceFigure = function(initprops) {
 
 lore.ore.graph.ResourceFigure.prototype = new draw2d.Node;
 lore.ore.graph.ResourceFigure.prototype.type = "lore.ore.graph.ResourceFigure";
-
+/**
+ * Create the HTML to represent the figure
+ * @private
+ * @return {}
+ */
 lore.ore.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	var item = document.createElement("div");
 	item.id = this.id;
@@ -122,7 +141,11 @@ lore.ore.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	item.appendChild(this.bottom_right);
 	return item;
 };
-
+/**
+ * Set the dimensions of the figure
+ * @param {number} w Width in pixels
+ * @param {number} h Height in pixels
+ */
 lore.ore.graph.ResourceFigure.prototype.setDimension = function(w, h) {
 	draw2d.Node.prototype.setDimension.call(this, w, h);
 	if (this.top_left) {
@@ -153,11 +176,18 @@ lore.ore.graph.ResourceFigure.prototype.setDimension = function(w, h) {
 		this.outputPort2.setPosition(this.width / 2, this.height + 5);
 	}
 };
+/**
+ * Set the title in the header of the figure
+ * @param {string} title
+ */
 lore.ore.graph.ResourceFigure.prototype.setTitle = function(title) {
     //lore.debug.ore("ResourceFigure: setTitle " + title);
 	this.header.innerHTML = title;
 };
-
+/**
+ * Set the URL of the resource represented by this figure
+ * @param {string} urlparam The URL of the resource
+ */
 lore.ore.graph.ResourceFigure.prototype.setContent = function(urlparam) {
     var theurl;
 	if (urlparam && urlparam !== "") {
@@ -169,7 +199,9 @@ lore.ore.graph.ResourceFigure.prototype.setContent = function(urlparam) {
 	this.setMimeType(theurl);
     this.setRdfType(theurl);
 };
-
+/**
+ * Loads the content URL into the preview area
+ */
 lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 	var theurl = this.url;
 	var mimetype = this.metadataproperties["dc:format_0"];
@@ -252,7 +284,10 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 		}
 	}
 };
-
+/**
+ * Creates a secure iframe to be used to display the content URL
+ * @param {string} theurl
+ */
 lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl) {
 	var iframe = lore.global.util.createSecureIFrame(window.top, theurl);
 	/*
@@ -269,7 +304,10 @@ lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl) {
 	iframe.scrolling = "yes";
 	this.iframearea.appendChild(iframe);
 };
-
+/**
+ * Set the URL of the resource represented by this figure
+ * @param {string} urlparam
+ */
 lore.ore.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
 	this.url = urlparam;
 	this.metadataproperties["resource_0"] = urlparam;
@@ -279,8 +317,10 @@ lore.ore.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
     //lore.debug.ore("set url to " + urlparam,this.metadataarea.innerHTML);
 
 };
-
-lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
+/**
+ * Displays an icon depending on the mimetype of the resource
+ */
+lore.ore.graph.ResourceFigure.prototype.setIcon = function() {
 	var mimetype = this.metadataproperties["dc:format_0"]
 			? this.metadataproperties["dc:format_0"]
 			: "text/html";
@@ -306,6 +346,10 @@ lore.ore.graph.ResourceFigure.prototype.setIcon = function(theurl) {
 	   icon.className = this.icontype;
     }
 };
+/**
+ * 
+ * @param {} theurl
+ */
 lore.ore.graph.ResourceFigure.prototype.setRdfType = function(theurl){
     if (!this.metadataproperties["rdf:type_0"]){
         if (theurl.match(lore.ore.annoServer)){
@@ -316,6 +360,10 @@ lore.ore.graph.ResourceFigure.prototype.setRdfType = function(theurl){
         // TODO: try to determine if it's a compound object
     }
 }
+/**
+ * Determine the mime type of the resource and use to populate dc:format property
+ * @param {} theurl
+ */
 lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 	if (!this.metadataproperties["dc:format_0"]) { 
 		var req = new XMLHttpRequest();
@@ -343,7 +391,12 @@ lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 		this.showContent();
 	}
 };
-
+/**
+ * 
+ * @param {} x
+ * @param {} y
+ * @return {Boolean}
+ */
 lore.ore.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
 	var _4677 = draw2d.Node.prototype.onDragstart.call(this, x, y);
 	if (!this.header) {
@@ -367,7 +420,10 @@ lore.ore.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
 		return _4677;
 	}
 };
-
+/**
+ * 
+ * @param {} flag
+ */
 lore.ore.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
 	draw2d.Node.prototype.setCanDrag.call(this, flag);
 	this.html.style.cursor = "";
@@ -380,6 +436,10 @@ lore.ore.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
 		this.header.style.cursor = "";
 	}
 };
+/**
+ * 
+ * @param {lore.ore.graph.COGraph} wf The parent draw2d.Workflow object 
+ */
 lore.ore.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 	draw2d.Node.prototype.setWorkflow.call(this, wf);
 	if (wf && !this.inputPort) {
@@ -415,7 +475,9 @@ lore.ore.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 
 	}
 };
-
+/**
+ * Toggle whether the figure is open or closed
+ */
 lore.ore.graph.ResourceFigure.prototype.toggle = function() {
 	if (this.originalHeight == -1) {
 		this.originalHeight = this.height;
@@ -436,7 +498,9 @@ lore.ore.graph.ResourceFigure.prototype.toggle = function() {
 	}
 	this.createPlusMinusIcon();
 };
-
+/**
+ * 
+ */
 lore.ore.graph.clearFields = function() {
 	this.scrollx = 0;
 	this.scrolly = 0;
@@ -492,9 +556,18 @@ lore.ore.graph.ResourceFigure.prototype.unsetProperty = function(pid){
     }
     
 }
+/**
+ * Get a property
+ * @param {string} pid Fully qualified property index eg dc:format_0
+ * @return {} the property value
+ */
 lore.ore.graph.ResourceFigure.prototype.getProperty = function(pid){
     return this.metadataproperties[pid];
 }
+/**
+ * Generate the markup for the plus/minus icon used to toggle the preview area
+ * @private
+ */
 lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
 	if (this.originalHeight == -1) {
 		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
@@ -502,6 +575,9 @@ lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
 		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right";
 	}
 };
+/** Generate a context menu for the figure
+ * @return {draw2d.Menu} the context menu
+ */
 lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 	var menu = new draw2d.Menu();
 	var oThis = this;
@@ -527,7 +603,10 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
 	return menu;
 };
 
-// Override onKeyDown to cater for Macs without delete
+/** Override onKeyDown to cater for Macs without delete
+ * @param {} keyCode
+ * @param {} ctrl
+ */
 lore.ore.graph.ResourceFigure.prototype.onKeyDown = function (keyCode, ctrl){
   //lore.debug.ore("ResourceFigure: onKeyDown " + keyCode,ctrl);
   // on delete or backspace
