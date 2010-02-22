@@ -494,15 +494,6 @@ try {
 					document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "false");
 					document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "false");
 				}
-				
-				//var labelValue = title + ': ' + url;
-//				if (labelValue.length > 50)
-	//				labelValue = labelValue.substring(0,50) + "...";
-					
-				//var label = document.getElementById("oobAnnoVarContentLabel");
-				//var labelURL = document.getElementById("oobAnnoVarContentLabelURL");
-				//label.setAttribute("value", labelValue);
-				
 				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", title);
 				document.getElementById("oobAnnoVarContentLabelURL").setAttribute("value", url);
 
@@ -521,17 +512,17 @@ try {
 							callBack();
 							iframe.removeEventListener("load", variationCallback, true);
 						} catch (e ) {
-							lore.debug.anno("Error showVariationSplitter callback: " +e, e);
+							lore.debug.anno("Error updateVariationSplitter callback: " +e, e);
 						}
 						
 					}, true);
 				}
+
 				// Must use .location not the src attriubte of iframe
 				// as it's not updated by users action within the iframe
 				iframe.contentWindow.location = url;
-
 			} catch ( e ) {
-				alert(e + " " +  e.stack);
+				lore.debug.anno(e,e);
 			}
 		},
 		/**
