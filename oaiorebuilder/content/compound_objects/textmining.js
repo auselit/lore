@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
  * 
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
@@ -115,9 +115,9 @@ lore.ore.textm.requestTextMiningMetadata = function(tmtab) {
     lore.debug.tm("requested text mining");
     
     // TODO: do this async
-    lore.ore.textm.processRDFa(tmtab);
+    //lore.ore.textm.processRDFa(tmtab);
     
-    // TODO: call semantic text mining services such as Open Calais
+    // TODO: #59 call semantic text mining services such as Open Calais
     /*var ocParams = '<c:params xmlns:c="http://s.opencalais.com/1/pred/">'
             + '<c:processingDirectives c:contentType="text/txt" c:outputFormat="application/json"></c:processingDirectives>'
             + '<c:userDirectives c:allowDistribution="true" c:allowSearch="true"/><c:externalMetadata />'
@@ -147,7 +147,7 @@ lore.ore.textm.requestTextMiningMetadata = function(tmtab) {
         }
     });*/
    
-    //lore.ore.ui.textminingtab.body.update(myresult);
+    //Ext.getCmp("textmining").body.update(myresult);
 }
 /*lore.ore.textm.handleOpenCalaisMetadata = function(resp) {
     // get the contents of the string element
@@ -158,7 +158,7 @@ lore.ore.textm.requestTextMiningMetadata = function(tmtab) {
             '</string>', '');
     // load into an object
     var jsonObj;
-    lore.ore.ui.textminingtab.body.update(res + lore.ore.textm.POWEREDBY_CALAIS);
+    Ext.getCmp("textmining").body.update(res + lore.ore.textm.POWEREDBY_CALAIS);
     var nativeJSON = Components.classes["@mozilla.org/dom/json;1"]
                  .createInstance(Components.interfaces.nsIJSON);
 

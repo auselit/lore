@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
  * 
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
@@ -88,13 +88,14 @@ lore.ore.disableUIFeatures = function(opts) {
 /** Display an error message in the ORE statusbar 
  * @param {String} message The message to display */
 lore.ore.ui.loreError = function(/*String*/message){
-    lore.ore.ui.status.setStatus({
+    var statusopts = {
             'text': message,
             'iconCls': 'error-icon',
             'clear': {
                 'wait': 3000
             }
-    });
+    };
+    lore.ore.ui.status.setStatus(statusopts);
     lore.global.ui.loreError(message);
 };
 /**
@@ -102,13 +103,14 @@ lore.ore.ui.loreError = function(/*String*/message){
  * @param {String} message The message to display
  */
 lore.ore.ui.loreInfo = function(/*String*/message) {
-    lore.ore.ui.status.setStatus({
+    var statusopts = {
                 'text': message,
                 'iconCls': 'info-icon',
                 'clear': {
                     'wait': 3000
                 }
-    });
+    };
+    lore.ore.ui.status.setStatus(statusopts);
     lore.global.ui.loreInfo(message);
 };
 /**
@@ -116,13 +118,14 @@ lore.ore.ui.loreInfo = function(/*String*/message) {
  * @param {String} message The message to display
  */
 lore.ore.ui.loreWarning = function(/*String*/message){
-    lore.ore.ui.status.setStatus({
+    var statusopts = {
         'text': message,
         'iconCls': 'warning-icon',
         'clear': {
             'wait': 3000
         }
-    });
+    };
+    lore.ore.ui.status.setStatus(statusopts);
     lore.global.ui.loreWarning(message);
 };
 /**
@@ -133,16 +136,17 @@ lore.ore.ui.loreWarning = function(/*String*/message){
  * @param {}annoserver The annotation server access URL
  */
 lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*String*/annoserver){
-    /** Access the repository */
+    // Access the repository 
     if (rdfrepostype == 'sesame'){
+        /** Adapter used to access the repository */
         lore.ore.reposAdapter = new lore.ore.SesameAdapter(rdfrepos);
     } else {
         lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
     }
 	//lore.ore.reposURL = rdfrepos;
-    /** The type of the compound object repository eg sesame, fedora */
+    // The type of the compound object repository eg sesame, fedora 
 	//lore.ore.reposType = rdfrepostype;
-    
+    /** The access URL of the annotation server */
     lore.ore.annoServer = annoserver;
 };
 /**
@@ -912,7 +916,7 @@ lore.ore.loadCompoundObjectContents = function (rdf,elem){
         }
     };
     try{
-	    rdfDoc = rdf.responseXML;
+	    var rdfDoc = rdf.responseXML;
 	    var databank = jQuery.rdf.databank();
 	    for (ns in lore.constants.NAMESPACES){
 	            databank.prefix(ns,lore.constants.NAMESPACES[ns]);
@@ -1298,14 +1302,13 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
 lore.ore.afterSaveCompoundObject = function(remid){
     var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Untitled";
     // TODO: check first that it is related to the current URL
-    lore.ore.coListManager.add(
-	    [new lore.ore.model.CompoundObjectSummary(
-	    {
-	        'uri': remid,
-	        'title': title,
-	        'creator': lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid),
-	        'created': lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid)
-	    })]
+    var coopts = {
+            'uri': remid,
+            'title': title,
+            'creator': lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid),
+            'created': lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid)
+    };
+    lore.ore.coListManager.add([new lore.ore.model.CompoundObjectSummary(coopts)]
     );
     lore.ore.historyManager.addToHistory(remid, title);  
 }

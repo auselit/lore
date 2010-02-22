@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
  * 
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
@@ -55,12 +55,13 @@ lore.ore.ui.initGraphicalView = function() {
     // create drop target for dropping new nodes onto editor from the sources and search trees
     var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD', 'copy':false});
     droptarget.notifyDrop = function (dd, e, data){
-        lore.ore.graph.addFigureWithOpts({
+        var figopts = {
             url: data.node.attributes.uri, 
             x: (e.xy[0] - lore.ore.graph.coGraph.getAbsoluteX() + lore.ore.graph.coGraph.getScrollLeft()),
             y: (e.xy[1] - lore.ore.graph.coGraph.getAbsoluteY() + lore.ore.graph.coGraph.getScrollTop()),
             props: {"rdf:type_0":lore.constants.RESOURCE_MAP, "dc:title_0": data.node.text}
-        });
+        };
+        lore.ore.graph.addFigureWithOpts(figopts);
         return true;
     };
     
