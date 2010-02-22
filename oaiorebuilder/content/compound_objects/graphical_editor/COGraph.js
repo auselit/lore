@@ -26,7 +26,7 @@
 lore.ore.graph.COGraph = function(id){
     draw2d.Workflow.call(this, id);
     try{
-	    this.layouter = new uwm.diagram.autolayout.Layouter(this);
+	    this.layouter = new lore.ore.graph.autolayout.Layouter(this);
 	    this.layouter.setPreferredEdgeLength(180);
         //this.layouter.setIterations(50);
         //this.layouter.setSprings(uwm.diagram.autolayout.Layouter.spring.LINEAR);
