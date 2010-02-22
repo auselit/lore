@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
  * 
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
