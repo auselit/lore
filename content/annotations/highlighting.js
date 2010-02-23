@@ -556,18 +556,19 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			im.each(function(){
 				// preload image scale factor
 				var scale = lore.anno.ui.updateImageData(this, doc);
-				
-				// attach image area select handle for image			
-				$(this).imgAreaSelect({
-					onSelectEnd: lore.anno.ui.handleEndImageSelection,
-					onSelectStart: function(){
-						var selObj = cw.getSelection();
-						selObj.removeAllRanges();
-					},
-					handles: 'corners',
-					imageHeight: scale.origHeight,
-					imageWidth: scale.origWidth
-				})
+				if (scale.origHeight >= 32){
+					// attach image area select handle for image			
+					$(this).imgAreaSelect({
+						onSelectEnd: lore.anno.ui.handleEndImageSelection,
+						onSelectStart: function(){
+							var selObj = cw.getSelection();
+							selObj.removeAllRanges();
+						},
+						handles: 'corners',
+						imageHeight: scale.origHeight,
+						imageWidth: scale.origWidth
+					})
+                }
 			});
 			
 			var e = lore.global.util.domCreate('span', doc);
