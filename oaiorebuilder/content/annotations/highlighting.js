@@ -23,6 +23,15 @@
 	lore.anno.ui.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 	var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
 	
+	/**
+	 * Class that abstracts a highlighted area of text or of an image based off an xpointer or semantic pointer. This
+	 * highlighted area can have tooltip based off of annotation data.
+	 * @param {Object} args Valid arguments are 
+	 * {
+	 * 	xpointer: The xpointer pointing to the image region or area of text to be highlighted
+	 *  borderWidth: The width of the border used for highlighting 
+	 *  target: The target document the xpointer applies to. Defaults to the current content window (tab).
+	 */
 	lore.anno.ui.Marker = function(args) {
 					
 					this.xpointer = lore.global.util.normalizeXPointer(args.xpointer);
@@ -30,7 +39,13 @@
 					this.type  = lore.global.util.isXPointerImageRange(this.xpointer) ? 1:0;
 					this.visible = false;
 					this.bw = args.borderWidth || 1;
-					// lore.debug.anno("xpointer: " + this.xpointer);
+					
+					/**
+					 * Highlight the marker and 
+					 * @param {Colour} colour Colour of the highlighting border
+					 * @param {Function} styleCallback Callback function to override how the highlighting is performed
+					 * @param {Boolean} scroll Specify whether to scroll to the highlighted DOM element defaults to false
+					 */
 					this.show = function (colour, styleCallback, scroll) {
 						this.colour = colour;
 						this.styleCallback = styleCallback;
@@ -88,6 +103,12 @@
 						this.visible = true;		
 					}
 
+					/**
+					 * Updates the position and size of the marker based off any changes made
+					 * to the window size and parameters passed in.
+					 * @param {Object} colour The colour the border should be changed to
+					 * @param {Object} styleCallback The callback function that overrides how the highlighting is displayed
+					 */
 					this.update = function(colour, styleCallback){
 						try {
 							if (this.data.nodes && this.type == 1) {
@@ -116,7 +137,11 @@
 							lore.debug.anno(e,e);
 						}
 					}
-										
+							
+					/**
+					 * Hide the highlighted area of text or image and remove the marker
+					 * DOM entry from the document.
+					 */			
 					this.hide = function(){
 						try {
 							if (this.data && (this.data.image || this.data.nodes)) {
@@ -142,13 +167,95 @@
 							lore.debug.anno(e,e);
 						}
 					}
+					
+				/**
+				 * Generated a pop up for the given annotation and place the HTML into the
+				 * supplied dom container
+				 * @param {Object} annodata	The annotation to create the tip for
+				 * @param {Object} domContainer An object or an array containing the dom container/s
+				 * to insert the pop up HTML into
+				 */
+		 		this.tip = function(annodata){
+				try {
+					var doc = this.target || lore.global.util.getContentWindow(window).document;
+					var cw = doc.defaultView;
+					var uid = annodata.id;
+					var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
+					" by " +
+					annodata.creator +
+					"<br />";
+					desc += "<div style='max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
+					desc += lore.anno.ui.genDescription(annodata, true);
+					desc += '</div>';
+					//desc += lore.anno.ui.genDescription(annodata, true);
+					var d = lore.global.util.longDate(annodata.created, Date);
+					desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
+					var descDom = doc.createElement("span");
+					descDom.setAttribute("style", "font-family:sans-serif");
+					descDom.setAttribute("display", "none");
+					
+					// innerHTML does not work for pages that are image/... content type, so parse html
+					// by temporarily adding to local document head. html has been sanitized.
+					var	h =	document.getElementsByTagName("head")[0];
+					h.appendChild(descDom); 
+					descDom.innerHTML = desc;
+					h.removeChild(descDom);
+					descDom.removeAttribute("display");
+
+				$(this.data.nodes[0], doc).simpletip({
+					content: descDom,
+					focus: true,
+					boundryCheck: false,
+					position: 'cursor',
+					showEffect: 'custom',
+					onetip: true,
+					closeIcon: closeIcon,
+					showCustom: function(){
+						try {
+								Ext.apply(this.context.style, 
+								{
+									position : 'absolute',
+									opacity  : "1",
+									backgroundColor : "#fcfcfc",
+									fontSize : "9pt",
+									fontWeight : "normal",
+									color : "#51666b",
+									border : '1.5px solid darkgrey',
+									zIndex : "3",
+									fontFamily : 'sans-serif',
+									maxWidth : cw.innerWidth * 0.75,
+									maxHeight : cw.innerHeight * 0.75
+									//overflow : 'auto'
+								});
+								
+							jQuery(this).animate({
+								width: 'auto',
+								display: 'block'
+							}, 400);
+						} 
+						catch (e) {
+							lore.debug.anno("error showing tip: " + e, e);
+						}
+					}
+				});
+		}
+		catch (ex) {
+			lore.debug.anno("Tip creation failure: " + ex, ex);
+		}
+	}
 			}
 			
-			/*
-	 	* Highlighting functions
+	
+		/*
+	 	* General highlighting functions
 	 	*
 	 	*/
 		
+		/**
+		 * Update the image scale information if necessary
+		 * @param {Object} img
+		 * @param {Object} doc
+		 */ 
 		lore.anno.ui.updateImageData = function (img, doc) {
 			var _img = $(img);
 			var scale = _img.data("scale");
@@ -162,6 +269,12 @@
 			return scale;
 		}
 		
+		/**
+		 * Scale the image co-ordinates
+		 * @param {Element} img DOM element for the image i.e <img>
+		 * @param {Object} coords Object containing the co-ordinates and scale factor {x1,y1,x2,y2,sx,sy}
+		 * @param {Object} doc The target document 
+		 */
 		lore.anno.ui.scaleImageCoords = function (img, coords, doc) {
 			var scale = lore.anno.ui.updateImageData(img, doc); 
 			// scale coords ( getting their unscale state if they are already scaled)
@@ -177,6 +290,11 @@
 			};
 		}
 		
+		/**
+		 * Calculate the image's absolute position on the page
+		 * @param {Object} img DOM element for image i.e <img>
+		 * @param {Object} doc The target document
+		 */
 		lore.anno.ui.calcImageOffsets = function(img, doc){
 			var _img = $(img);
 			var _parent = $('body', doc);
@@ -203,6 +321,7 @@
 	
 		/**
 		 * Hide the currently selected annotation markers
+		 * @param {Object} cw Content window that this applies to
 		 */
 		lore.anno.ui.hideMarker = function(cw){
 			
@@ -233,7 +352,7 @@
 		}
 		
 		/**
-		 * Get a colour based of the creator name.  This is retrieve from a predefined
+		 * Get a colour based off the creator's name.  This is retrieve from a predefined
 		 * table of colours.  If there a no colours available from the table, then a
 		 * colour is generated.
 		 * @param {String} creator Creator name
@@ -255,16 +374,24 @@
 			return colour;
 		}
 		
+		/**
+		 * Set the currently selected image
+		 * @param {Object} img The dom element for the image i.e <img>
+		 */
 		lore.anno.ui.setCurSelImage = function (img) {
-				
 			lore.anno.ui.page.curImage = $(img);
-			
 		}
 		
+		/**
+		 * Get the currently selected image 
+		 */
 		lore.anno.ui.getCurSelImage = function () {
 			return lore.anno.ui.page.curImage ? lore.anno.ui.page.curImage.get(0):null;
 		}
 		
+		/**
+		 * Retrieve th current selection whether that is selected text or selected part of an image
+		 */
 		lore.anno.ui.getCurrentSelection = function(){
 			var selxp = lore.global.util.getXPathForSelection(window);
 			
@@ -281,7 +408,7 @@
 		
 		/**
 		 * Highlight the current annotation 
-		 * @param {Record} rec The record of the annoation to highlight 
+		 * @param {Record} rec The record of the annotation to highlight 
 		 */
 		lore.anno.ui.highlightCurrentAnnotation = function(rec){
 			if ( lore.anno.ui.page.curImage) {
@@ -304,79 +431,7 @@
 			return domObj;
 		}
 		
-			/**
-	 * Generated a pop up for the given annotation and place the HTML into the
-	 * supplied dom container
-	 * @param {Object} annodata	The annotation to create the tip for
-	 * @param {Object} domContainer An object or an array containing the dom container/s
-	 * to insert the pop up HTML into
-	 */
-		lore.anno.ui.genTipForAnnotation = function(annodata, marker){
-			try {
-					var doc = marker.target || lore.global.util.getContentWindow(window).document;
-					var cw = doc.defaultView;
-					var uid = annodata.id;
-					var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
-					" by " +
-					annodata.creator +
-					"<br />";
-					desc += "<div style='max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
-					desc += lore.anno.ui.genDescription(annodata, true);
-					desc += '</div>';
-					//desc += lore.anno.ui.genDescription(annodata, true);
-					var d = lore.global.util.longDate(annodata.created, Date);
-					desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
-					var descDom = doc.createElement("span");
-					descDom.setAttribute("style", "font-family:sans-serif");
-					descDom.setAttribute("display", "none");
-					
-					// innerHTML does not work for pages that are image/... content type, so parse html
-					// by temporarily adding to local document head. html has been sanitized.
-					var	h =	document.getElementsByTagName("head")[0];
-					h.appendChild(descDom); 
-					descDom.innerHTML = desc;
-					h.removeChild(descDom);
-					descDom.removeAttribute("display");
-
-				$(marker.data.nodes[0], doc).simpletip({
-					content: descDom,
-					focus: true,
-					boundryCheck: false,
-					position: 'cursor',
-					showEffect: 'custom',
-					onetip: true,
-					closeIcon: closeIcon,
-					showCustom: function(){
-						try {
-							this.context.style.position = 'absolute';
-							this.context.style.opacity = "1";
-							this.context.style.backgroundColor = "#fcfcfc";
-							this.context.style.fontSize = "9pt";
-							this.context.style.fontWeight = "normal";
-							this.context.style.color = "#51666b";
-							this.context.style.border = '1.5px solid darkgrey';
-							this.context.style.zIndex = "3";
-							this.context.style.fontFamily = 'sans-serif';
-							this.context.style.maxWidth = cw.innerWidth * 0.75;
-							this.context.style.maxHeight = cw.innerHeight * 0.75;
-							//this.context.style.overflow = 'auto';
-								
-							
-							jQuery(this).animate({
-								width: 'auto',
-								display: 'block'
-							}, 400);
-						} 
-						catch (e) {
-							lore.debug.anno("error showing tip: " + e, e);
-						}
-					}
-				});
-		}
-		catch (ex) {
-			lore.debug.anno("Tip creation failure: " + ex, ex);
-		}
-	}
+		
 	
 		/**
 		 * Highlight an annotation.
@@ -439,7 +494,7 @@
 			var cc = lore.anno.ui.getCreatorColour(rec.data.creator);
 			for ( var i=0; i < markers.length;i++) {
 				markers[i].show(cc, annoStyle, true);
-				lore.anno.ui.genTipForAnnotation(rec.data, markers[i]);
+				markers[i].tip(rec.data);
 			}
 			if ( rec.data.meta.context){
 				var m = new lore.anno.ui.Marker({xpointer:rec.data.meta.context});
@@ -450,7 +505,7 @@
 					lore.debug.anno(node.style.border, node);
 					return node;
 				});
-				lore.anno.ui.genTipForAnnotation(rec.data, m);
+				m.tip(rec.data);
 			}
 			
 			return markers;
@@ -488,7 +543,8 @@
 								lore.anno.ui.page.multiSelAnno = lore.anno.ui.page.multiSelAnno.concat(markers);
 								// create the tip div in the content window
 								for ( var i =0 ; i < markers.length;i++)						
-									lore.anno.ui.genTipForAnnotation(rec.data, markers[i]);
+									markers[i].tip(rec.data);
+									
 							}
 							else {
 								lore.debug.anno("marker null for context: " + rec.data.context, rec);

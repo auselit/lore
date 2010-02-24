@@ -1,3 +1,29 @@
+/*
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * @include  "/oaiorebuilder/content/annotations/annotations.js"
+ * @include  "/oaiorebuilder/content/debug.js"
+ * @include  "/oaiorebuilder/content/util.js"
+  */
+
 /*  Tree UI Class Definitions */
   
 		/**
@@ -277,6 +303,34 @@
 		
 		initComponent: function(){
       	  	try {
+				lore.debug.anno("the model for anno column tree is: " + this.model, this.model);
+				
+				var cmbname = this.id + "_sorttypecombo";
+				
+				this.sorttypecombo = new Ext.form.ComboBox({
+					xtype: "combo",
+					id: cmbname ,
+					name: cmbname,
+					hiddenName: cmbname,
+					store: new Ext.data.SimpleStore({
+						fields: ['type', 'typename', 'direction'],
+						data: [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
+							   ['creator', 'Creator(Ascending)', 'asc'], ['creator', 'Creator(Descending)', 'desc'],
+							   ['created', 'Creation Date(Ascending)','asc'], ['created', 'Creation Date(Descending)', 'desc'],
+							   ['modified','Modified Date(Ascending)', 'asc' ],['modified','Modified Date(Descending)', 'desc' ],
+							   ['type', 'Type(Ascending)', 'asc'],['type', 'Type(Descending)','desc']]
+					}),
+					valueField: 'type',
+					displayField: 'typename',
+					typeAhead: true,
+					emptyText: "Sort by...",
+					triggerAction: 'all',
+					mode: 'local',
+					forceSelection: true,
+					selectOnFocus: true
+					});
+					
+					
 				Ext.apply(this, {
 					animate    	: true,
 		          	autoScroll	: true,
@@ -302,71 +356,45 @@
 			},
 			bbar: { xtype: 'toolbar', //TODO: Turn this into a separate class
 				items: [ 
-				{
-					xtype: "combo",
-					id: "sorttypecombo",
-					name: 'sorttypecombo',
-					hiddenName: 'sorttypecombo',
-					store: new Ext.data.SimpleStore({
-						fields: ['type', 'typename', 'direction'],
-						data: [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
-							   ['creator', 'Creator(Ascending)', 'asc'], ['creator', 'Creator(Descending)', 'desc'],
-							   ['created', 'Creation Date(Ascending)','asc'], ['created', 'Creation Date(Descending)', 'desc'],
-							   ['modified','Modified Date(Ascending)', 'asc' ],['modified','Modified Date(Descending)', 'desc' ],
-							   ['type', 'Type(Ascending)', 'asc'],['type', 'Type(Descending)','desc']]
-					}),
-					valueField: 'type',
-					displayField: 'typename',
-					typeAhead: true,
-					emptyText: "Sort by...",
-					triggerAction: 'all',
-					mode: 'local',
-					forceSelection: true,
-					selectOnFocus: true
-				},
-				/*{
-					xtype: 'button',
-					id: 'gleanrdfbtn',
-					iconCls: 'rdficon',
-					tooltip: 'Extract rdfa from the page',
-					handler : function (){
-						try {
-							lore.anno.ui.gleanRDFa();
-							if (lore.anno.ui.rdfa && (lore.anno.ui.rdfa.work || lore.anno.ui.rdfa.agent)) {
-								lore.anno.ui.loreInfo("RDFa extracted from current page.");
-							}
-						} catch (e) {
-							lore.debug.anno(e,e);
-						}
-	        		}
-				}*/
+				
+					this.sorttypecombo
+				
 			]	
 		},
 				});
 				lore.anno.ui.AnnoColumnTree.superclass.initComponent.apply(this, arguments);
+				
+				this.addTreeSorter('created', 'asc');
+				this.sorttypecombo.on("select", this.handleSortTypeChange);
+				
 			} catch(e){
 				lore.debug.anno("AnnoColumnTree:initComponent() - " + e, e);
 			}
 		},
-		});
 		
-		lore.anno.ui.handleSortTypeChange = function (combo, rec, index) {
-			//lore.anno.ui.addTreeSorter(rec.data.type, rec.data.direction);
+		handleSortTypeChange : function (combo, rec, index) {
 			
-			lore.anno.ui.treesorter.sortField = rec.data.type;
-			lore.anno.ui.treesorter.direction  = rec.data.direction;
 			try {
+				this.ownerCt.ownerCt.treesorter = {
+					sortField : rec.data.type,
+					direction  : rec.data.direction
+				}
+				
+				
+				//TODO: needs to be updated
 				lore.anno.ui.updateUIOnRefresh(lore.anno.annods);
 			} catch (e ) {
 				lore.debug.anno("Error occurred changing sort type: " + e,e);
 			}
-		}
+			
+		},
 		
-		lore.anno.ui.addTreeSorter = function(field, direction){
-			var tree = 	Ext.getCmp("annosourcestree");
-			lore.anno.ui.treesorter = {};
-			lore.anno.ui.treesorter.sortField  = field;
-			lore.anno.ui.treesorter.direction = direction;
+   addTreeSorter: function(field, direction){
+			
+		  var ts = this.treesorter = {
+				sortField: field,
+				direction: direction
+			}
 			
 			// taken from TreeSorter Ext, and modified so that
 			// direction can be dynamically changed
@@ -374,7 +402,7 @@
 					try {
 						var r = lore.global.util.findRecordById(lore.anno.annods, lore.anno.ui.recIdForNode(node));
 						if (r) {
-							return r.data[lore.anno.ui.treesorter.sortField] || r.data.created;
+							return r.data[ts.sortField] || r.data.created;
 						}
 					} 
 					catch (e) {
@@ -384,58 +412,202 @@
 				}
 				
 			var sortFn = function(n1, n2){
-       		 	if(n1.attributes["leaf"] && !n2.attributes["leaf"]){
-	            	    return 1;
-	          	  }
-	           	 if(!n1.attributes["leaf"] && n2.attributes["leaf"]){
-	           	     return -1;
-	            }
-      	  	
-	    		var v1 = sortType(n1).toUpperCase();
-	    		var v2 = sortType(n2).toUpperCase() ;
-				var dsc = lore.anno.ui.treesorter.direction == 'desc';
-	    		if(v1 < v2){
-					return dsc ? +1 : -1;
-				}else if(v1 > v2){
-				return dsc ? -1 : +1;
-	       		 }else{
-		    		return 0;
-	       	 	}
+       		 	try {
+					if (n1.attributes["leaf"] && !n2.attributes["leaf"]) {
+						return 1;
+					}
+					if (!n1.attributes["leaf"] && n2.attributes["leaf"]) {
+						return -1;
+					}
+					
+					var v1 = sortType(n1).toUpperCase();
+					var v2 = sortType(n2).toUpperCase();
+					var dsc = ts.direction == 'desc';
+					var z = ts;
+					
+					if (v1 < v2) {
+						return dsc ? +1 : -1;
+					}
+					else 
+						if (v1 > v2) {
+							return dsc ? -1 : +1;
+						}
+						else {
+							return 0;
+						}
+				} catch (e ) {
+					lore.debug.anno("sortFn: " + e, e);
+				}
 			 };
 			 
 			var doSort = function(node){
-     		   node.sort(sortFn);
+     		   ts = this.treesorter;
+			   node.sort(sortFn);
     		}
 			var compareNodes = function(n1, n2){
         		return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
     		}
     
     		var updateSort  = function(tree, node){
+				
         		if(node.childrenRendered){
             		doSort.defer(1, this, [node]);
         		}
     		}
-			tree.on("beforechildrenrendered", doSort, this);
-   			tree.on("append", updateSort, this);
-    		tree.on("insert", updateSort, this);
+			this.on("beforechildrenrendered", doSort, this);
+   			this.on("append", updateSort, this);
+    		this.on("insert", updateSort, this);
     
-	};
+	}
+		});
 		
-		 			 
+		
+	
+		
+		
+
 				
-					
-/** Tree node for representing Compound objects 
- * @class lore.ore.ui.AnnoColumnTreeNode
- * @extends Ext.tree.TreeNode */
-lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
-   constructor: function(config){
-        this.config = config || {};
+lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode, 
+{
+	constructor: function(config ){
+		  this.config = config || {};
         /** 
          * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
          * @property 
          * */
         this.model = config.model;
         this.initConfig(this.model);
+        
+		this.model.on("load", this.handleLoad, this);
+		this.model.on("remove", this.handleRemove, this);
+		this.model.on("update", this.handleUpdate, this);
+		this.model.on("clear", this.handleClear, this);
+		
+        lore.anno.ui.AnnoPageTreeNode.superclass.constructor.call(this, this.config); 
+	},
+	
+	initConfig: function(model) {
+		Ext.apply(this, {});
+	},
+	
+		/**
+	 * Notification function called when a load operation occurs in the store.
+	 * This is called when annotations are loaded in bulk from the server or when
+	 * an individual annotation was added by a user.  Adds one or more nodes to the
+	 * tree
+	 * @param {Store} store The data store that created the notification
+	 * @param {Array} records The list of records that have been added to the store
+	 * @param {Object} options Not used
+	 */
+	handleLoad : function(store, records, options ) {
+		
+		try {
+				lore.debug.anno("handleLoad()", records);
+				for (var i = 0; i < records.length; i++) {
+					var rec = records[i];
+				 	var anno = rec.data;
+					
+					try {
+						var n = new lore.anno.ui.AnnoColumnTreeNode({
+							anno: anno
+						})
+						lore.debug.anno("created annocolumntreenode: " + n, n);
+						var parent = null;
+						if (  anno.isReply) 
+							parent = lore.anno.ui.findNode(anno.about, this);				
+						else 
+							parent = this;
+						lore.debug.anno("appending to " + parent, parent);
+						parent.appendChild(n);
+				
+					} 
+					catch (e) {
+						lore.debug.anno("error loading: " + rec.id, e);
+					}
+				}
+			
+				if (!this.isExpanded())
+					this.expand();
+			} 
+			catch (e) {
+				lore.debug.ui("Error loading annotation tree view: " + e, e);
+			}
+		
+		
+	},
+	
+		/**
+		 * Notification function  called when a remove operation occurs in the store.
+		 * Removes a node from the tree and the timeline.
+		 * @param {Store} store The data store that performed the notification
+		 * @param {Record} rec  The record for the annotation that has been removed
+		 * @param {Integer} index Not used
+		 */	
+	handleRemove: function(store, rec, ind ) {
+	try {
+			var node = lore.anno.ui.findNode(rec.data.id, this);
+			if (node) {
+				node.remove();
+			}
+		} 
+		catch (e) {
+			lore.debug.ui("AnnoPageTreeNode:handleRemove() Error removing node : " + e, e);
+		}
+	},
+
+	/**
+		 * Notification function called when an update operation occurs in the store
+		 * Update the values of a node in tree
+		 * @param {Object} store The datastore that perofmred the notification
+		 * @param {Object} rec The record of the annotation that has changed
+		 * @param {Object} operation The update operation that occurred to the record
+		 */			
+	handleUpdate: function(store, rec, operation) {
+		try {
+			var node = lore.anno.ui.findNode(rec.data.id, this);
+			
+			if (!node) {
+				return;
+			}
+
+			var info = ' ';
+			info = lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
+			node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data));
+
+			//TODO: this goes onto a editor handler which will update if rec updates.
+			if ( lore.anno.ui.page.curSelAnno == rec )
+				lore.anno.ui.showAnnotation(rec, true);
+		} 
+		catch (e) {
+			lore.debug.ui("Error updating annotation tree view: " + e, e);
+		}
+	},
+	
+});
+
+
+ 
+
+lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
+	
+});
+ 
+				
+					
+/** Tree node for representing Compound objects 
+ * @class lore.ore.ui.AnnoColumnTreeNode
+ * @extends Ext.tree.TreeNode */
+lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
+  
+  
+   constructor: function(config){
+        this.config = config || {};
+        /** 
+         * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
+         * @property 
+         * */
+      
+        this.initConfig();
         // listen for model property changes
 		//TODO: move handeUpdateUI on handlers to here... yay!
         //this.model.on("propertiesChanged", this.handleModelPropertiesChanged, this);
@@ -446,44 +618,55 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
     * Set the intial config values for text, uri etc from the model object
     * @param {lore.ore.model.CompoundObjectSummary} coSummary Model object for this tree node
     */
-   initConfig: function( model){
-         /*tmpNode = new lore.anno.ui.AnnoColumnTreeNode ( {
-					id: anno.id + nodeid,
-					nodeType: anno.type,
-					title: lore.anno.ui.getAnnoTitle(anno),
-					text: anno.body || '',
-					iconCls: iCls,
-					uiProvider: lore.anno.ui.ColumnTreeNodeUI,
-					// links: nodeLinks,
-					qtip:  lore.anno.ui.genAnnotationCaption(anno, 't by c, d')
+   initConfig: function(){
+		try {
+			var anno = this.config.anno;
+			var iCls = lore.anno.ui.getAnnoTypeIcon(anno);
+			
+			Ext.apply(this.config, {
+				id: anno.id,
+				iconCls: iCls,
+				title: lore.anno.ui.getAnnoTitle(anno),
+				uiProvider: lore.anno.ui.ColumnTreeNodeUI,
+				qtip: lore.anno.ui.genAnnotationCaption(anno, 't by c, d'),
+				nodeType: anno.type
+			});
+			
+			if (lore.anno.isNewAnnotation(anno)) {
+				Ext.apply(this.config, {
+					text: anno.body || ''
 				});
+			}
+			else {
+				var nodeLinks = [{
+					title: 'View annotation body in a new window',
+					iconCls: 'anno-icon-launchWindow',
+					jscript: "lore.global.util.launchWindow('" + anno.bodyURL + "',false, window);"
+				}, {
+					title: 'View annotation in the timeline',
+					iconCls: 'anno-icon-timeline',
+					jscript: "lore.anno.ui.timeline.showAnnoInTimeline('" + anno.id + "');"
+				}];
 				
-				var args = {
-					id: anno.id + nodeid,
-					nodeType: anno.type,
-					text: lore.anno.ui.genTreeNodeText(anno, store ),
-					title: anno.title,
+				if (lore.global.util.splitTerm(anno.type).term == 'VariationAnnotation') {
+					nodeLinks.push({
+						title: 'Show Variation Window',
+						iconCls: 'anno-icon-splitter',
+						jscript: "lore.anno.ui.showSplitter('" + anno.id + "');"
+					});
+				}
+				
+				Ext.apply(this.config, {
+					text: lore.anno.ui.genTreeNodeText(anno),
 					bheader: lore.anno.ui.genAnnotationCaption(anno, 'by c, d r'),
-					iconCls: iCls,
-					uiProvider: lore.anno.ui.ColumnTreeNodeUI,
 					links: nodeLinks,
-					qtip: lore.anno.ui.genAnnotationCaption(anno, 't by c, d')
-				};
-				
-				
-				
-        Ext.apply(this.config,{
-            'iconCls'    : 'oreresult',
-            'leaf'       : true,
-            'draggable'  : true,
-            'uiProvider' : Ext.ux.tree.MultilineTreeNodeUI,
-            'text'       : coProps.title || "Untitled",
-            'details'    : this.generateDetails(coProps),
-            'uri'        : coProps.uri,
-            'qtip'       : "Compound Object: " + coProps.uri
-        });*/
-   },
-  });
+				});
+			}
+		} catch (e ) {
+			lore.debug.anno("AnnoColumnTreeNode:initConfig() " + e, e);
+		}
+  }
+});
   
 					
 				 
@@ -492,4 +675,6 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 		
 Ext.reg('columntreepanel', lore.anno.ui.ColumnTree);
 Ext.reg('annocolumntreepanel', lore.anno.ui.AnnoColumnTree);
+Ext.reg('annopagetreenode', lore.anno.ui.AnnoPageTreeNode);
+Ext.reg('annomodpagetreenode', lore.anno.ui.AnnoPageTreeNode);
 

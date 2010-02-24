@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
  * 
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
@@ -28,26 +28,38 @@
 
 	try {
 	
-		/*
-		 * Initialization
-		 */
-		
-		/*lore.anno.ui.initPageData = function(){
-		
-			lore.anno.ui.page.multiSelAnno = new Array();
-			lore.anno.ui.page.colourForOwner = {};
-			lore.anno.ui.page.colourCount = 0;
-			lore.anno.ui.page.curSelAnno;
-			lore.anno.ui.page.curAnnoMarkers = new Array();
+		lore.anno.ui.PageManager = function (pagedata, model) {
+			
+			this.page = pagedata;
+			this.model = model;	
+			this.model.on('load', this.handleLoad, this);
+			this.model.on('remove', this.handleRemove, this);	
 		}
 		
-		lore.anno.ui.initPageData();*/
-		
-		
-		
+		lore.anno.ui.PageManager.prototype = {
+			tog : function () {
+				if (this.page.multiSelAnno.length > 0) {
+					// hide then reshow 
+					lore.anno.ui.toggleAllAnnotations();
+					lore.anno.ui.toggleAllAnnotations();
+				}
+			},
+			
+			handleLoad: function(store, records, options) {
+				this.tog();
+			},
+			
+			handleRemove: function(store, rec, ind) {
+				this.tog();
+			}
+		}
+				
 		lore.anno.ui.PageData = function(){
+			this.clear();
+		}
 		
-			this.store = function(url){
+		lore.anno.ui.PageData.prototype = {
+			store : function(url){
 				var update_ds = {
 					multiSelAnno: this.multiSelAnno.slice(),
 					colourForOwner: lore.global.util.clone(this.colourForOwner),
@@ -59,17 +71,17 @@
 				};
 				
 				lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, url);
-			};
+			},
 			
-			this.clear = function () {
+			clear : function () {
 				this.multiSelAnno = new Array();
 				this.colourForOwner = {};
 				this.colourCount = 0;
 				this.curSelAnno;
 				this.curAnnoMarkers = new Array();
-			}
+			},
 			
-			this.load = function(url, clear){
+			load : function(url, clear){
 				var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, url);
 				if (ds) {
 					this.multiSelAnno = ds.multiSelAnno;
@@ -88,28 +100,29 @@
 				} else if ( clear)
 					this.clear();
 			}
-			
-			this.clear();
 		}
 		
-		lore.anno.ui.page = new lore.anno.ui.PageData();
+	
 				
-				
+		lore.anno.ui.initPage = function(model){
+			if (!lore.anno.ui.page) 
+				lore.anno.ui.page = new lore.anno.ui.PageData();
+			if (!lore.anno.ui.pageman)
+				lore.anno.ui.pageman = new lore.anno.ui.PageManager(lore.anno.ui.page, model);
+		}	
+		lore.anno.ui.initView = function ( model) {
+			lore.anno.ui.initGUIConfig({ annods: lore.anno.annods});
+			lore.anno.ui.initModelHandlers();
+			lore.anno.ui.initPage(lore.anno.annods);
+			
+		
+		}
     /**
 		 * Setup the event hooks that notify the view functions of store events
 		 */
 		lore.anno.ui.initModelHandlers = function(){
 			var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
 			lore.anno.annods.on({
-				"update": {
-					fn: lore.anno.ui.updateUIOnUpdate
-				},
-				"load": {
-					fn: lore.anno.ui.updateUI
-				},
-				"remove": {
-					fn: lore.anno.ui.updateUIOnRemove
-				},
 				"clear": {
 					fn: lore.anno.ui.updateUIOnClear
 				}//,
@@ -131,41 +144,6 @@
 		}
 		
 	
-		
-		
-		/**
-		 * Set the default creator for annotations
-		 * @param {String} creator The default creator of annotations
-		 */
-		lore.anno.ui.setdccreator = function(creator){
-			lore.defaultCreator = creator;
-		}
-		
-		/**
-		 * Set the annotation server URL
-		 * @param {String} annoserver The annotation server URL
-		 */
-		lore.anno.ui.setRepos = function(annoserver){
-			lore.anno.annoURL = annoserver; // annotation server
-		}
-		
-		lore.anno.ui.getAnnotationMode = function () {
-			if ( !lore.anno.ui.annomode)
-				return lore.constants.ANNOMODE_NORMAL;
-			
-			return lore.anno.ui.annomode ? lore.constants.ANNOMODE_SCHOLARLY: lore.constants.ANNOMODE_NORMAL;	
-		}
-		
-		lore.anno.ui.setAnnotationMode = function(mode) {
-			lore.anno.ui.annomode = mode;
-			lore.anno.ui.setAnnotationFormUI(null, null, lore.anno.ui.getAnnotationMode());
-		}
-		
-		lore.anno.ui.setCacheTimeout = function ( millis) {
-			//TODO: should be at a finer granularity 
-			lore.anno.cachetimeout = millis;
-		}		
-		
 		/**
 		 * Show the annotations view. Update the annotations source list
 		 * to match this page
@@ -215,11 +193,11 @@
 				lore.anno.ui.highlightCurrentAnnotation(rec);
 			}
 			
-			if (lore.anno.ui.page.multiSelAnno.length > 0) {
+		/*	if (lore.anno.ui.page.multiSelAnno.length > 0) {
 				// hide then reshow 
 				lore.anno.ui.toggleAllAnnotations();
 				lore.anno.ui.toggleAllAnnotations();
-			}
+				*/
 		}
 		
 		/**
@@ -600,7 +578,7 @@
 		 * Generate the tree node text
 		 * @param {Object} anno Annotation to generate the node text for
 		 */
-		lore.anno.ui.genTreeNodeText = function(anno, store){
+		lore.anno.ui.genTreeNodeText = function(anno){
 		
 			return lore.anno.ui.genDescription(anno, true);
 			
@@ -608,99 +586,20 @@
 		
 				
 		
-		/**
-		 * Create a tree node and insert into the tree. If it's a new annotation then set
-		 * inital values.  If it's not a new annotation, add it to the timeline. 
-		 * @param {Object} anno  Annotation to add as a tree node
-		 * @param {Object} defparent (Optional) The default parent to add the annotation to
-		 */
-		lore.anno.ui.createAndInsertTreeNode = function(anno, nodeid, defparent, store){
-			
-			var parent = null;
-			
-			if ( defparent ) {
-				parent = defparent;
-			}
 		
-			if ( !parent && anno.isReply) {
-				parent = lore.anno.ui.findNode(anno.about, lore.anno.ui.treeroot);				
-			} 
-
-			if ( !parent){
-				parent = lore.anno.ui.treeroot;
-			}
-			
-			var tmpNode;
-			var nodeLinks = [{title: 'View annotation body in a new window',
-							iconCls: 'anno-icon-launchWindow',
-							 jscript: "lore.global.util.launchWindow('" + anno.bodyURL + "',false, window);"},
-							
-							 { title: 'View annotation in the timeline',
-							 	iconCls: 'anno-icon-timeline',
-							 jscript: "lore.anno.ui.showAnnoInTimeline('" + anno.id + "');"}
-							  ];
-			
-			var iCls = lore.anno.ui.getAnnoTypeIcon(anno);
-				  
-			if (lore.anno.isNewAnnotation(anno)) {
-				
-				tmpNode = new lore.anno.ui.AnnoColumnTreeNode ( {
-					id: anno.id + nodeid,
-					nodeType: anno.type,
-					title: lore.anno.ui.getAnnoTitle(anno),
-					text: anno.body || '',
-					iconCls: iCls,
-					uiProvider: lore.anno.ui.ColumnTreeNodeUI,
-					// links: nodeLinks,
-					qtip:  lore.anno.ui.genAnnotationCaption(anno, 't by c, d')
-				});
-				
-				parent.appendChild(tmpNode);
-				
-			}
-			else {
-				if (lore.global.util.splitTerm(anno.type).term == 'VariationAnnotation' ) {
-					nodeLinks.push({ title: 'Show Variation Window',
-									 iconCls:'anno-icon-splitter', 
-									 jscript: "lore.anno.ui.showSplitter('" + anno.id + "');"});
-				}
-				
-				var args = {
-					id: anno.id + nodeid,
-					nodeType: anno.type,
-					text: lore.anno.ui.genTreeNodeText(anno, store ),
-					title: anno.title,
-					bheader: lore.anno.ui.genAnnotationCaption(anno, 'by c, d r'),
-					iconCls: iCls,
-					uiProvider: lore.anno.ui.ColumnTreeNodeUI,
-					links: nodeLinks,
-					qtip: lore.anno.ui.genAnnotationCaption(anno, 't by c, d')
-				};
-				
-				tmpNode = new lore.anno.ui.AnnoColumnTreeNode (args );
-				
-				parent.appendChild(tmpNode);
-				///TODO: timeline no no a go go for unsaved changes, need to have a check here, param passed in etc
-  			    lore.anno.ui.addAnnoToTimeline(anno, lore.anno.ui.getAnnoTitle(anno));
-				
-			}
-			lore.anno.ui.attachAnnoCtxMenuEvents(tmpNode);
-			
-			return tmpNode;
-			
-		}
 		
 		/**
 		 * Attach context menu events to a tree node
-		 * @param {TreeNode} annoNode  The tree node to attach the events to
+		 * @param {TreeNode} childNode  The tree node to attach the events to
 		 */
-		lore.anno.ui.attachAnnoCtxMenuEvents = function(annoNode){
-			 annoNode.on('contextmenu', function(node, ev){
+		lore.anno.ui.attachAnnoCtxMenuEvents = function(tree, thus, childNode, index){
+			 
+			 childNode.on('contextmenu', function(node, ev){
 			 	node.select();
 			 });
 			 
 			 
-			 annoNode.on('contextmenu', function(node, e){
+			 childNode.on('contextmenu', function(node, e){
 			 	if (!node.contextmenu) {
 				 node.contextmenu = new Ext.menu.Menu({
 				 id: node.id + "-context-menu"
@@ -712,7 +611,7 @@
 					node.contextmenu.add({
 						text: "Show in Timeline",
 						handler: function(evt){
-							lore.anno.ui.showAnnoInTimeline(node.id);
+							lore.anno.ui.timeline.showAnnoInTimeline(node.id);
 						}
 					});
 					node.contextmenu.add({
@@ -1002,50 +901,7 @@
 		}
 		
 		
-		/**
-		 * Search the annotation respository for the given filters on the search
-		 * forms and display results in grid
-		 */
-		lore.anno.ui.handleSearchAnnotations = function () {
-			
-			var searchParams = { 
-							  'creator':  lore.constants.DANNO_RESTRICT_CREATOR,
-		 					  'datecreatedafter': lore.constants.DANNO_RESTRICT_AFTER_CREATED,
-							  'datecreatedbefore': lore.constants.DANNO_RESTRICT_BEFORE_CREATED,
-							  'datemodafter': 	lore.constants.DANNO_RESTRICT_AFTER_MODIFIED,
-							  'datemodbefore': 	lore.constants.DANNO_RESTRICT_BEFORE_MODIFIED};
-							  
-			
-			try {
-				var vals = lore.anno.ui.sform.getValues();
-				lore.debug.anno("vals: " + vals, vals);
-				var filters = [];
-				for (var e in vals) {
-					var v = vals[e];
-					
-					if (v && e != 'url') {
-						v = lore.anno.ui.sform.findField(e).getValue()
-						if (e.indexOf('date') == 0) {
-							v = v.format("c");
-						}
-						filters.push({
-							attribute: searchParams[e],
-							filter: v
-						});
-					}
-				}
-				lore.anno.ui.loreInfo("Searching...");
-				lore.anno.searchAnnotations(vals['url']!='' ? vals['url']:null, filters, function(result, resp){
-	 				lore.debug.anno("result from search: " + result, resp);
-					lore.anno.ui.loreInfo("Search Finished");
-					
-					lore.anno.ui.sgrid.doLayout();
-	 			});
-			} catch (e) {
-				lore.debug.anno("error occurring performing search annotations: " +e, e);
-			}
-			
-		}
+		
 		
 		lore.anno.ui.handleAddResultsToCO = function(evt){
 			try {
@@ -1348,51 +1204,7 @@
 				lore.debug.ui("Error loading annotation tree view: " + e, e);
 			}
 		}
-		/**
-		 * Notification function called when a load operation occurs in the store.
-		 * This is called when annotations are loaded in bulk from the server or when
-		 * an individual annotation was added by a user.  Adds one or more nodes to the
-		 * tree
-		 * @param {Store} store The data store that created the notification
-		 * @param {Array} records The list of records that have been added to the store
-		 * @param {Object} options Not used
-		 */
-		lore.anno.ui.updateUI = function(store, records, options){
-			
-			
-			try {
-				
-					lore.debug.anno("updateUI() - load", records);
-					for (var i = 0; i < records.length; i++) {
-						var rec = records[i];
-						var anno = rec.data;
-						
-						try {
-							var node = lore.anno.ui.createAndInsertTreeNode(anno, '', null, lore.anno.annods);
-							//lore.debug.anno('eh?');
-						//	if (rec.dirty) {
-						//		node.getUI().addClass("annochanged");
-						////		lore.debug.anno('huh?');
-						//	}
-						} 
-						catch (e) {
-							lore.debug.anno("error loading: " + rec.id, e);
-						}
-					}
-					lore.anno.ui.scheduleTimelineLayout();
-					lore.anno.ui.updateUIElements();
-				//}
-				
-				if (!lore.anno.ui.treeroot.isExpanded()) {
-					lore.anno.ui.treeroot.expand();
-				}
-				
-			} 
-			catch (e) {
-				lore.debug.ui("Error loading annotation tree view: " + e, e);
-			}
-		}
-		
+	
 		/**
 		 * Notification function called when a clear operation occurs in the store.
 		 * Clears the tree.
@@ -1400,8 +1212,11 @@
 		 */
 		lore.anno.ui.updateUIOnClear = function(store) {
 			var tree = lore.anno.ui.treeroot.getOwnerTree();
-			lore.anno.ui.treeroot = new Ext.tree.TreeNode({});
-			tree.setRootNode(lore.anno.ui.treeroot);
+			var n = tree.getRootNode();
+			var old = lore.anno.ui.treeroot;
+			lore.anno.ui.treeroot =  new Ext.tree.TreeNode({text:'Current Page'});
+			n.replaceChild( lore.anno.ui.treeroot, old);
+			
 			lore.anno.ui.annoEventSource.clear();
 		}
 		
@@ -1422,35 +1237,7 @@
 		
 		return n;
 	}
-  	/**
-		 * Notification function  called when a remove operation occurs in the store.
-		 * Removes a node from the tree and the timeline.
-		 * @param {Store} store The data store that performed the notification
-		 * @param {Record} rec  The record for the annotation that has been removed
-		 * @param {Integer} index Not used
-		 */
-		lore.anno.ui.updateUIOnRemove = function(store, rec, index){
-			try {
-				var node = lore.anno.ui.findNode(rec.data.id, lore.anno.ui.treeroot);
-				if (node) {
-					node.remove();
-				}
-				
-				if (!lore.anno.isNewAnnotation(rec)) {
-				
-					// remove from timeline
-					
-					var evt = lore.anno.ui.annoEventSource.getEvent(rec.data.id);
-					if (evt) {
-						evt._eventID = "flagdelete";
-						lore.anno.ui.scheduleTimelineLayout();
-					}
-				}
-			} 
-			catch (e) {
-				lore.debug.ui("Error removing annotation from tree view: " + e, e);
-			}
-		}
+  	
 		
 		lore.anno.ui.updateUIOnRemoveUnsavedChanges = function(store, rec, index) {
 			try {
@@ -1466,55 +1253,6 @@
 			}
 		}
 		
-		/**
-		 * Notification function called when an update operation occurs in the store
-		 * Update the values of a node in tree
-		 * @param {Object} store The datastore that perofmred the notification
-		 * @param {Object} rec The record of the annotation that has changed
-		 * @param {Object} operation The update operation that occurred to the record
-		 */
-		lore.anno.ui.updateUIOnUpdate = function(store, rec, operation){
-			
-			try {
-				var node = lore.anno.ui.findNode(rec.data.id, lore.anno.ui.treeroot);
-				
-				if (!node) {
-					return;
-				}
-				
-			/*	if (rec.dirty) {
-					if (operation == Ext.data.Record.EDIT) {
-						node.getUI().addClass("annochanged");
-					}
-				}
-				if ( operation == Ext.data.Record.COMMIT || 
-						( operation == Ext.data.Record.REJECT 
-						&& !lore.anno.isNewAnnotation(rec)) ) {
-						
-						node.getUI().removeClass("annochanged");
-				}*/
-				
-				var info = ' ';
-			//	if (!lore.anno.isNewAnnotation(rec)) {
-					info = lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
-			//	}
-			/*	else if (lore.anno.isNewAnnotation(rec)) {
-					var url = rec.data.resource; 
-					if ( url != lore.anno.ui.currentURL) {
-						info = "Unsaved annotation from " + url;
-					}
-				} */
-				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data, lore.anno.annods));
-				lore.anno.ui.updateAnnoInTimeline(rec.data);
-				if ( lore.anno.ui.page.curSelAnno == rec )
-					lore.anno.ui.showAnnotation(rec, true);
-				
-				
-			} 
-			catch (e) {
-				lore.debug.ui("Error updating annotation tree view: " + e, e);
-			}
-		}
 		
 		lore.anno.ui.updateUIOnUpdateUnsavedChanges = function(store, rec, operation){
 			
@@ -1536,7 +1274,7 @@
 				}
 				
 				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data, lore.anno.annodsunsaved));
-				lore.anno.ui.updateAnnoInTimeline(rec.data);
+				
 				if ( lore.anno.ui.page.curSelAnno == rec )
 					lore.anno.ui.showAnnotation(rec, true);
 				
@@ -1606,6 +1344,7 @@
 		 * to the currently selected annotation
 		 */
 		lore.anno.ui.handleReplyToAnnotation = function(arg){
+			
 			lore.anno.ui.views.activate('treeview');
 			try {
 				var rec;
@@ -1809,12 +1548,18 @@ lore.anno.ui.handleAddMeta = function () {
 	lore.anno.ui.refreshPage = function () {
 		lore.debug.anno("page refreshed");
 		
-		//lore.anno.ui.initPageData();
-		lore.anno.ui.page.clear();
-		lore.anno.ui.enableImageHighlightingForPage();
-		 
-		lore.anno.ui.setCurrentAnno(null);
-		
+		try {
+			if (lore.anno.ui.page) 
+				lore.anno.ui.page.clear();
+			else 
+				lore.anno.ui.initPage(lore.anno.annods);
+			
+			lore.anno.ui.enableImageHighlightingForPage();
+			
+			lore.anno.ui.setCurrentAnno(null);
+		} catch(e ){
+			lore.debug.anno("refreshPage(): " + e, e);
+		}
 		//TODO: unselect a currently selected node from the tree and make sure curselanno is empty
 		
 	}
@@ -1838,25 +1583,7 @@ lore.anno.ui.handleAddMeta = function () {
 			
 			if ( !initialLoad ) {
 			try{
-				lore.debug.anno("Setting/Getting cached annotation page data");
-				
-				//lore.anno.ui.page.store(oldurl);
-				
-				//TODO: need some de-/serialization function with an array of variable names instead of this
-		/*		var update_ds = {
-					multiSelAnno: lore.anno.ui.page.multiSelAnno.slice(),
-					colourForOwner: lore.global.util.clone(lore.anno.ui.page.colourForOwner),
-					colourCount: lore.anno.ui.page.colourCount,
-					curSelAnnoId: lore.anno.ui.page.curSelAnno ? lore.anno.ui.page.curSelAnno.data.id:null,
-					curAnnoMarkers: lore.anno.ui.page.curAnnoMarkers.slice(),
-					curImage: lore.anno.ui.page.curImage,
-					//rdfa: lore.global.util.clone(lore.anno.ui.rdfa) 
-				};
-				
-				lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, oldurl);*/
-				
 				lore.anno.ui.page.store(oldurl);
-				
 				lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.page.curSelAnno);
 				
 				// tag any unsaved new annotations for the new page
@@ -1878,33 +1605,17 @@ lore.anno.ui.handleAddMeta = function () {
 				}
 				
 				lore.anno.ui.page.load(contextURL, true);
-				/*var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, contextURL);
-				if (ds) {
-					lore.anno.ui.page.multiSelAnno = ds.multiSelAnno;
-					lore.anno.ui.page.colourForOwner = ds.colourForOwner;
-					lore.anno.ui.page.colourCount = ds.colourCount
-					var curSelAnnoId = ds.curSelAnnoId;
-					lore.anno.ui.page.curAnnoMarkers = ds.curAnnoMarkers;
-					lore.anno.ui.page.curImage = ds.curImage;
-					//lore.anno.ui.rdfa = ds.rdfa;
-					
-					//TODO: should find unsaved version first?
-					var rec = lore.global.util.findRecordById(lore.anno.annods, curSelAnnoId);
-					if (rec) {
-						lore.anno.ui.page.curSelAnno = rec;
-					}
-					*/
-					
-			//	} else {
-				//	lore.anno.ui.page.clear();//lore.anno.ui.initPageData();
-				//}
+				 
 			lore.anno.ui.rdfa = null;	
 			} catch (e ) {
 				lore.debug.anno(e,e);
 			}
 			
 		}else {
-			lore.anno.ui.page.clear();//lore.anno.ui.initPageData();
+			if (lore.anno.ui.page)
+			lore.anno.ui.page.clear();
+		else 
+			lore.anno.ui.initPage(lore.anno.annods);
 		}
 		
 		try {
