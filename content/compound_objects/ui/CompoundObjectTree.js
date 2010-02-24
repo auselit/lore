@@ -1,4 +1,22 @@
-
+/*
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /** Tree node for representing Compound objects 
  * @class lore.ore.ui.CompoundObjectTreeNode
@@ -7,7 +25,7 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
    constructor: function(config){
         this.config = config || {};
         /** 
-         * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
+         * @cfg {lore.ore.model.CompoundObjectSummary} model The compound object represented by this tree node 
          * @property 
          * */
         this.model = config.model;
@@ -183,12 +201,13 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
             existingNode.remove(true);
         } 
     },
+        
     /** 
      * Set up actions such as opening upon double click and context menu options
      * @param {Ext.tree.TreeNode} node The node to which to attach actions
      **/
-    // TODO: should this go in TreeNode?
     attachRemActions: function (node){
+        // TODO: should this go in TreeNode?
         node.on('dblclick', function(node) {
             lore.ore.readRDF(node.attributes.uri);
         });
