@@ -1,3 +1,30 @@
+/*
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * @include  "/oaiorebuilder/content/annotations/annotations.js"
+ * @include  "/oaiorebuilder/content/debug.js"
+ * @include  "/oaiorebuilder/content/util.js"
+ * @include  "/oaiorebuilder/content/uiglobal.js"
+ * @include  "/oaiorebuilder/content/constants.js"
+ */
 	/*
 		 * General functions
 		 */
@@ -223,3 +250,36 @@ lore.anno.ui.disableUIFeatures = function(opts) {
 			
 			return icons[aType] || 'anno-icon';
 		}
+		
+			/**
+		 * Set the default creator for annotations
+		 * @param {String} creator The default creator of annotations
+		 */
+		lore.anno.ui.setdccreator = function(creator){
+			lore.defaultCreator = creator;
+		}
+		
+		/**
+		 * Set the annotation server URL
+		 * @param {String} annoserver The annotation server URL
+		 */
+		lore.anno.ui.setRepos = function(annoserver){
+			lore.anno.annoURL = annoserver; // annotation server
+		}
+		
+		lore.anno.ui.getAnnotationMode = function () {
+			if ( !lore.anno.ui.annomode)
+				return lore.constants.ANNOMODE_NORMAL;
+			
+			return lore.anno.ui.annomode ? lore.constants.ANNOMODE_SCHOLARLY: lore.constants.ANNOMODE_NORMAL;	
+		}
+		
+		lore.anno.ui.setAnnotationMode = function(mode) {
+			lore.anno.ui.annomode = mode;
+			lore.anno.ui.setAnnotationFormUI(null, null, lore.anno.ui.getAnnotationMode());
+		}
+		
+		lore.anno.ui.setCacheTimeout = function ( millis) {
+			//TODO: should be at a finer granularity 
+			lore.anno.cachetimeout = millis;
+		}		
