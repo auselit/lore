@@ -33,44 +33,44 @@
 lore.ore.ui.initGraphicalView = function() {
     Ext.getCmp("loreviews").activate("drawingarea");
 	/** Used to lookup figures by their URIs in the graphical editor */
-	lore.ore.graph.lookup = {};
+	lore.ore.ui.graph.lookup = {};
     /** Triple store representing the compound object last loaded from the repository */
     lore.ore.loadedRDF = {};
     /** Indicates whether the compound object has been edited since being loaded */
-	lore.ore.graph.modified = false;
-	if (lore.ore.graph.coGraph) {
-		lore.ore.graph.coGraph.getCommandStack()
-				.removeCommandStackEventListener(lore.ore.graph.gCommandListener);
-		lore.ore.graph.coGraph.removeSelectionListener(lore.ore.graph.gSelectionListener);
-		lore.ore.graph.coGraph.clear();
+	lore.ore.ui.graph.modified = false;
+	if (lore.ore.ui.graph.coGraph) {
+		lore.ore.ui.graph.coGraph.getCommandStack()
+				.removeCommandStackEventListener(lore.ore.ui.graph.gCommandListener);
+		lore.ore.ui.graph.coGraph.removeSelectionListener(lore.ore.ui.graph.gSelectionListener);
+		lore.ore.ui.graph.coGraph.clear();
 	} else {
-		lore.ore.graph.coGraph = new lore.ore.graph.COGraph("drawingarea");
-		lore.ore.graph.coGraph.scrollArea = document.getElementById("drawingarea").parentNode;
+		lore.ore.ui.graph.coGraph = new lore.ore.ui.graph.COGraph("drawingarea");
+		lore.ore.ui.graph.coGraph.scrollArea = document.getElementById("drawingarea").parentNode;
 	}
-	lore.ore.graph.gSelectionListener = new lore.ore.graph.SelectionProperties(lore.ore.graph.coGraph);
-	lore.ore.graph.coGraph.addSelectionListener(lore.ore.graph.gSelectionListener);
-	lore.ore.graph.gCommandListener = new lore.ore.graph.CommandListener();
-	lore.ore.graph.coGraph.getCommandStack().addCommandStackEventListener(lore.ore.graph.gCommandListener);
+	lore.ore.ui.graph.gSelectionListener = new lore.ore.ui.graph.SelectionProperties(lore.ore.ui.graph.coGraph);
+	lore.ore.ui.graph.coGraph.addSelectionListener(lore.ore.ui.graph.gSelectionListener);
+	lore.ore.ui.graph.gCommandListener = new lore.ore.ui.graph.CommandListener();
+	lore.ore.ui.graph.coGraph.getCommandStack().addCommandStackEventListener(lore.ore.ui.graph.gCommandListener);
 
     // create drop target for dropping new nodes onto editor from the sources and search trees
     var droptarget = new Ext.dd.DropTarget("drawingarea",{'ddGroup':'TreeDD', 'copy':false});
     droptarget.notifyDrop = function (dd, e, data){
         var figopts = {
             url: data.node.attributes.uri, 
-            x: (e.xy[0] - lore.ore.graph.coGraph.getAbsoluteX() + lore.ore.graph.coGraph.getScrollLeft()),
-            y: (e.xy[1] - lore.ore.graph.coGraph.getAbsoluteY() + lore.ore.graph.coGraph.getScrollTop()),
+            x: (e.xy[0] - lore.ore.ui.graph.coGraph.getAbsoluteX() + lore.ore.ui.graph.coGraph.getScrollLeft()),
+            y: (e.xy[1] - lore.ore.ui.graph.coGraph.getAbsoluteY() + lore.ore.ui.graph.coGraph.getScrollTop()),
             props: {"rdf:type_0":lore.constants.RESOURCE_MAP, "dc:title_0": data.node.text}
         };
-        lore.ore.graph.addFigureWithOpts(figopts);
+        lore.ore.ui.graph.addFigureWithOpts(figopts);
         return true;
     };
     
 	/** Most recently selected figure - updated in SelectionProperties.js */
-	lore.ore.graph.selectedFigure = null;
+	lore.ore.ui.graph.selectedFigure = null;
     /** Used for layout of new nodes */
-	lore.ore.graph.dummylayoutx = lore.ore.NODE_SPACING;
+	lore.ore.ui.graph.dummylayoutx = lore.ore.NODE_SPACING;
     /** Used for layout of new nodes */
-	lore.ore.graph.dummylayouty = lore.ore.NODE_SPACING;
+	lore.ore.ui.graph.dummylayouty = lore.ore.NODE_SPACING;
     // clear the node properties
     if (lore.ore.ui.nodegrid){
         lore.ore.ui.nodegrid.store.removeAll();

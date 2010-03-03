@@ -232,7 +232,7 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
                 node.contextmenu.add({
                     text : "Add as node in compound object editor",
                     handler : function(evt) {
-                        lore.ore.graph.addFigure(node.attributes.uri,{
+                        lore.ore.ui.graph.addFigure(node.attributes.uri,{
                             "rdf:type_0": lore.constants.RESOURCE_MAP,
                             "dc:title_0": node.text});
                     }

@@ -13,12 +13,12 @@
  * 
  */
  /**
-  * @namespace lore.ore.graph.autolayout
+  * @namespace lore.ore.ui.graph.autolayout
   */
-Ext.namespace("lore.ore.graph.autolayout");
+Ext.namespace("lore.ore.ui.graph.autolayout");
 /**
- * @class lore.ore.graph.autolayout.JiggleObject */
-lore.ore.graph.autolayout.JiggleObject = function() {
+ * @class lore.ore.ui.graph.autolayout.JiggleObject */
+lore.ore.ui.graph.autolayout.JiggleObject = function() {
     this.booleanField = false;
     this.intField = 0;
     this.objectField = null;
@@ -28,14 +28,14 @@ lore.ore.graph.autolayout.JiggleObject = function() {
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.JiggleObject.prototype.getContext = function() {
+lore.ore.ui.graph.autolayout.JiggleObject.prototype.getContext = function() {
     return this.context;
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.JiggleObject.prototype.setContext = function(c) {
+lore.ore.ui.graph.autolayout.JiggleObject.prototype.setContext = function(c) {
     this.context = c;
 }
 /**
@@ -43,7 +43,7 @@ lore.ore.graph.autolayout.JiggleObject.prototype.setContext = function(c) {
  * @param {} d
  * @return {}
  */
-lore.ore.graph.autolayout.JiggleObject.prototype.square = function(d) {
+lore.ore.ui.graph.autolayout.JiggleObject.prototype.square = function(d) {
     return d * d;
 }
 /**
@@ -51,7 +51,7 @@ lore.ore.graph.autolayout.JiggleObject.prototype.square = function(d) {
  * @param {} d
  * @return {}
  */
-lore.ore.graph.autolayout.JiggleObject.prototype.cube = function(d) {
+lore.ore.ui.graph.autolayout.JiggleObject.prototype.cube = function(d) {
     return d * d * d;
 }
 /**
@@ -59,7 +59,7 @@ lore.ore.graph.autolayout.JiggleObject.prototype.cube = function(d) {
  * @param {} n
  * @return {}
  */
-lore.ore.graph.autolayout.JiggleObject.prototype.intSquare = function(n) {
+lore.ore.ui.graph.autolayout.JiggleObject.prototype.intSquare = function(n) {
     return n * n;
 }
 /**
@@ -68,7 +68,7 @@ lore.ore.graph.autolayout.JiggleObject.prototype.intSquare = function(n) {
  * @param {} d
  * @return {Number}
  */
-lore.ore.graph.autolayout.JiggleObject.prototype.power = function(base, d) {
+lore.ore.ui.graph.autolayout.JiggleObject.prototype.power = function(base, d) {
     if (d == 0)
         return 1;
     else if (d == 1)
@@ -79,46 +79,46 @@ lore.ore.graph.autolayout.JiggleObject.prototype.power = function(base, d) {
         return base * this.intSquare(this.power(base, d / 2));
 }
 /**
- * @class lore.ore.graph.autolayout.ForceLaw
- * @extends lore.ore.graph.autolayout.JiggleObject
+ * @class lore.ore.ui.graph.autolayout.ForceLaw
+ * @extends lore.ore.ui.graph.autolayout.JiggleObject
  * @param {} graph
  */
-lore.ore.graph.autolayout.ForceLaw = function(graph) {
-    lore.ore.graph.autolayout.JiggleObject.call(this);
+lore.ore.ui.graph.autolayout.ForceLaw = function(graph) {
+    lore.ore.ui.graph.autolayout.JiggleObject.call(this);
     this.graph = graph;
     this.cap = Number.MAX_VALUE / 1000
 }
-lore.ore.graph.autolayout.ForceLaw.prototype = new lore.ore.graph.autolayout.JiggleObject;
+lore.ore.ui.graph.autolayout.ForceLaw.prototype = new lore.ore.ui.graph.autolayout.JiggleObject;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.ForceLaw.prototype.getCap = function() {
+lore.ore.ui.graph.autolayout.ForceLaw.prototype.getCap = function() {
     return this.cap;
 }
 /**
  * 
  * @param {} cap
  */
-lore.ore.graph.autolayout.ForceLaw.prototype.setCap = function(cap) {
+lore.ore.ui.graph.autolayout.ForceLaw.prototype.setCap = function(cap) {
     this.cap = cap;
 }
 /**
- * @class lore.ore.graph.autolayout.SpringLaw
- * @extends lore.ore.graph.autolayout.ForceLaw
+ * @class lore.ore.ui.graph.autolayout.SpringLaw
+ * @extends lore.ore.ui.graph.autolayout.ForceLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  */
-lore.ore.graph.autolayout.SpringLaw = function(graph, preferredEdgeLength) {
-    lore.ore.graph.autolayout.ForceLaw.call(this, graph);
+lore.ore.ui.graph.autolayout.SpringLaw = function(graph, preferredEdgeLength) {
+    lore.ore.ui.graph.autolayout.ForceLaw.call(this, graph);
     this.preferredEdgeLength = preferredEdgeLength;
 }
-lore.ore.graph.autolayout.SpringLaw.prototype = new lore.ore.graph.autolayout.ForceLaw;
+lore.ore.ui.graph.autolayout.SpringLaw.prototype = new lore.ore.ui.graph.autolayout.ForceLaw;
 /**
  * 
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.SpringLaw.prototype.apply = function(negativeGradient) {
+lore.ore.ui.graph.autolayout.SpringLaw.prototype.apply = function(negativeGradient) {
     var m = this.graph.numberOfEdges;
     var d = this.graph.getDimensions();
     for (var i = 0; i < m; i++) {
@@ -140,52 +140,52 @@ lore.ore.graph.autolayout.SpringLaw.prototype.apply = function(negativeGradient)
     }
 }
 /**
- * @class lore.ore.graph.autolayout.QuadraticSpringLaw
- * @extends lore.ore.graph.autolayout.SpringLaw
+ * @class lore.ore.ui.graph.autolayout.QuadraticSpringLaw
+ * @extends lore.ore.ui.graph.autolayout.SpringLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  */
-lore.ore.graph.autolayout.QuadraticSpringLaw = function(graph, preferredEdgeLength) {
-    lore.ore.graph.autolayout.SpringLaw.call(this, graph, preferredEdgeLength);
+lore.ore.ui.graph.autolayout.QuadraticSpringLaw = function(graph, preferredEdgeLength) {
+    lore.ore.ui.graph.autolayout.SpringLaw.call(this, graph, preferredEdgeLength);
 }
-lore.ore.graph.autolayout.QuadraticSpringLaw.prototype = new lore.ore.graph.autolayout.SpringLaw;
+lore.ore.ui.graph.autolayout.QuadraticSpringLaw.prototype = new lore.ore.ui.graph.autolayout.SpringLaw;
 /**
  * 
  * @param {} edge
  * @return {}
  */
-lore.ore.graph.autolayout.QuadraticSpringLaw.prototype.springAttraction = function(
+lore.ore.ui.graph.autolayout.QuadraticSpringLaw.prototype.springAttraction = function(
         edge) {
-    var r = lore.ore.graph.autolayout.Cell.prototype.sumOfRadii(edge.getFrom(),
+    var r = lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii(edge.getFrom(),
             edge.getTo());
     var len = edge.getLength();
     return (len - r) / this.preferredEdgeLength;
 }
 /**
- * @class lore.ore.graph.autolayout.VertexVertexRepulsionLaw
- * @extends lore.ore.graph.autolayout.ForceLaw
+ * @class lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw
+ * @extends lore.ore.ui.graph.autolayout.ForceLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw = function(graph,
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw = function(graph,
         preferredEdgeLength) {
-    lore.ore.graph.autolayout.ForceLaw.call(this, graph);
+    lore.ore.ui.graph.autolayout.ForceLaw.call(this, graph);
     this.preferredEdgeLength = preferredEdgeLength;
     this.barnesHutTheta = 0;
 }
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype = new lore.ore.graph.autolayout.ForceLaw;
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype = new lore.ore.ui.graph.autolayout.ForceLaw;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.getBarnesHutTheta = function() {
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype.getBarnesHutTheta = function() {
     return this.barnesHutTheta;
 }
 /**
  * 
  * @param {} t
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.setBarnesHutTheta = function(
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype.setBarnesHutTheta = function(
         t) {
     this.barnesHutTheta = t;
 }
@@ -193,7 +193,7 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.setBarnesHutTheta =
  * 
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.apply = function(
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype.apply = function(
         negativeGradient) {
     if (this.barnesHutTheta > 0) {
         this.applyUsingBarnesHut(negativeGradient);
@@ -207,7 +207,7 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.apply = function(
         for (var j = i + 1; j < n; j++) {
             var v2 = this.graph.vertices.get(j);
             var w = Math.min(this.pairwiseRepulsion(v1, v2), this.cap
-                            / lore.ore.graph.autolayout.Vertex.prototype
+                            / lore.ore.ui.graph.autolayout.Vertex.prototype
                                     .getDistance(v1, v2));
             var v2Coords = v2.getCoords();
             var weight2 = v2.getWeight();
@@ -223,14 +223,14 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.apply = function(
  * 
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.applyUsingBarnesHut = function(
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype.applyUsingBarnesHut = function(
         negativeGradient) {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
     if (n <= 1)
         return;
     this.graph.recomputeBoundaries();
-    var root = new lore.ore.graph.autolayout.QuadTree(this.graph);
+    var root = new lore.ore.ui.graph.autolayout.QuadTree(this.graph);
     for (var i = 0; i < n; i++) {
         var v = this.graph.vertices.get(i);
         var qt = v.getContext();
@@ -263,7 +263,7 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.applyUsingBarnesHut
  * @param {} cell
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.computeQTRepulsion = function(
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype.computeQTRepulsion = function(
         leaf, cell, negativeGradient) {
     if (cell == null)
         return;
@@ -275,7 +275,7 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.computeQTRepulsion 
         }
     } else {
         var w = Math.min(this.pairwiseRepulsion(leaf, cell), this.cap
-                        / lore.ore.graph.autolayout.Cell.prototype.getDistance(
+                        / lore.ore.ui.graph.autolayout.Cell.prototype.getDistance(
                                 leaf, cell));
         var leafWeight = leaf.getWeight();
         var cellWeight = cell.getWeight();
@@ -295,7 +295,7 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.computeQTRepulsion 
  * @param {} cell
  * @return {Boolean}
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.wellSeparated = function(
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype.wellSeparated = function(
         leaf, cell) {
     if (cell == null)
         throw new Error("cell == null");
@@ -309,7 +309,7 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.wellSeparated = fun
         for (var i = 0; i < d; i++) {
             len = Math.min(len, hi[i] - lo[i]);
         }
-        var dist = lore.ore.graph.autolayout.Cell.prototype
+        var dist = lore.ore.ui.graph.autolayout.Cell.prototype
                 .getDistance(leaf, cell);
         return ((len / dist) < this.barnesHutTheta);
     }
@@ -318,7 +318,7 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.wellSeparated = fun
  * 
  * @param {} qt
  */
-lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.pushForcesDownTree = function(
+lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.prototype.pushForcesDownTree = function(
         qt) {
     if ((qt != null) && (qt.objectField == null) && (qt.getWeight() > 0)) {
         var d = qt.getDimensions();
@@ -334,41 +334,41 @@ lore.ore.graph.autolayout.VertexVertexRepulsionLaw.prototype.pushForcesDownTree 
     }
 }
 /**
- * @class lore.ore.graph.autolayout.HybridVertexVertexRepulsionLaw
- * @extends lore.ore.graph.autolayout.VertexVertexRepulsionLaw
+ * @class lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw
+ * @extends lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  */
-lore.ore.graph.autolayout.HybridVertexVertexRepulsionLaw = function(graph,
+lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw = function(graph,
         preferredEdgeLength) {
-    lore.ore.graph.autolayout.VertexVertexRepulsionLaw.call(this, graph,
+    lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.call(this, graph,
             preferredEdgeLength);
 }
-lore.ore.graph.autolayout.HybridVertexVertexRepulsionLaw.prototype = new lore.ore.graph.autolayout.VertexVertexRepulsionLaw;
+lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw.prototype = new lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw;
 /**
  * 
  * @param {} c1
  * @param {} c2
  * @return {}
  */
-lore.ore.graph.autolayout.HybridVertexVertexRepulsionLaw.prototype.pairwiseRepulsion = function(
+lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw.prototype.pairwiseRepulsion = function(
         c1, c2) {
-    var r = lore.ore.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
+    var r = lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
     var k = this.preferredEdgeLength + r;
-    var dSquared = lore.ore.graph.autolayout.Cell.prototype.getDistanceSquared(c1,
+    var dSquared = lore.ore.ui.graph.autolayout.Cell.prototype.getDistanceSquared(c1,
             c2);
     if (dSquared < k * k) {
         return k * k / dSquared;
     } else {
         return this.cube(k
-                / lore.ore.graph.autolayout.Cell.prototype.getDistance(c1, c2));
+                / lore.ore.ui.graph.autolayout.Cell.prototype.getDistance(c1, c2));
     }
 }
 /**
- * @class lore.ore.graph.autolayout.ForceModel
+ * @class lore.ore.ui.graph.autolayout.ForceModel
  * @param {} graph
  */
-lore.ore.graph.autolayout.ForceModel = function(graph) {
+lore.ore.ui.graph.autolayout.ForceModel = function(graph) {
     this.graph = graph;
     this.preferredEdgeLength = 0;
     this.forceLaws = new draw2d.ArrayList();
@@ -378,49 +378,49 @@ lore.ore.graph.autolayout.ForceModel = function(graph) {
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.ForceModel.prototype.getPreferredEdgeLength = function() {
+lore.ore.ui.graph.autolayout.ForceModel.prototype.getPreferredEdgeLength = function() {
     return this.preferredEdgeLength;
 }
 /**
  * 
  * @param {} k
  */
-lore.ore.graph.autolayout.ForceModel.prototype.setPreferredEdgeLength = function(k) {
+lore.ore.ui.graph.autolayout.ForceModel.prototype.setPreferredEdgeLength = function(k) {
     this.preferredEdgeLength = k;
 }
 /**
  * 
  * @param {} fl
  */
-lore.ore.graph.autolayout.ForceModel.prototype.addForceLaw = function(fl) {
+lore.ore.ui.graph.autolayout.ForceModel.prototype.addForceLaw = function(fl) {
     this.forceLaws.add(fl);
 }
 /**
  * 
  * @param {} fl
  */
-lore.ore.graph.autolayout.ForceModel.prototype.removeForceLaw = function(fl) {
+lore.ore.ui.graph.autolayout.ForceModel.prototype.removeForceLaw = function(fl) {
     this.forceLaws.remove(fl);
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.ForceModel.prototype.addConstraint = function(c) {
+lore.ore.ui.graph.autolayout.ForceModel.prototype.addConstraint = function(c) {
     this.constraints.add(c);
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.ForceModel.prototype.removeConstraint = function(c) {
+lore.ore.ui.graph.autolayout.ForceModel.prototype.removeConstraint = function(c) {
     this.constraints.remove(c);
 }
 /**
  * 
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.ForceModel.prototype.getNegativeGradient = function(
+lore.ore.ui.graph.autolayout.ForceModel.prototype.getNegativeGradient = function(
         negativeGradient) {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
@@ -439,7 +439,7 @@ lore.ore.graph.autolayout.ForceModel.prototype.getNegativeGradient = function(
  * 
  * @param {} penaltyVector
  */
-lore.ore.graph.autolayout.ForceModel.prototype.getPenaltyVector = function(
+lore.ore.ui.graph.autolayout.ForceModel.prototype.getPenaltyVector = function(
         penaltyVector) {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
@@ -455,31 +455,31 @@ lore.ore.graph.autolayout.ForceModel.prototype.getPenaltyVector = function(
     }
 }
 /**
- *@class lore.ore.graph.autolayout.Constraint
- *@extends lore.ore.graph.autolayout.JiggleObject
+ *@class lore.ore.ui.graph.autolayout.Constraint
+ *@extends lore.ore.ui.graph.autolayout.JiggleObject
  * @param {} graph
  */
-lore.ore.graph.autolayout.Constraint = function(graph) {
-    lore.ore.graph.autolayout.JiggleObject.call(this);
+lore.ore.ui.graph.autolayout.Constraint = function(graph) {
+    lore.ore.ui.graph.autolayout.JiggleObject.call(this);
     this.graph = graph;
 }
-lore.ore.graph.autolayout.Constraint.prototype = new lore.ore.graph.autolayout.JiggleObject;
+lore.ore.ui.graph.autolayout.Constraint.prototype = new lore.ore.ui.graph.autolayout.JiggleObject;
 /**
- * @class lore.ore.graph.autolayout.ProjectionConstraint
- * @extends lore.ore.graph.autolayout.Constraint
+ * @class lore.ore.ui.graph.autolayout.ProjectionConstraint
+ * @extends lore.ore.ui.graph.autolayout.Constraint
  * @param {} graph
  * @param {} dimensions
  */
-lore.ore.graph.autolayout.ProjectionConstraint = function(graph, dimensions) {
-    lore.ore.graph.autolayout.Constraint.call(this, graph);
+lore.ore.ui.graph.autolayout.ProjectionConstraint = function(graph, dimensions) {
+    lore.ore.ui.graph.autolayout.Constraint.call(this, graph);
     this.dimensions = dimensions;
 }
-lore.ore.graph.autolayout.ProjectionConstraint.prototype = new lore.ore.graph.autolayout.Constraint;
+lore.ore.ui.graph.autolayout.ProjectionConstraint.prototype = new lore.ore.ui.graph.autolayout.Constraint;
 /**
  * 
  * @param {} penalty
  */
-lore.ore.graph.autolayout.ProjectionConstraint.prototype.apply = function(penalty) {
+lore.ore.ui.graph.autolayout.ProjectionConstraint.prototype.apply = function(penalty) {
     var d = this.graph.getDimensions();
     var n = this.graph.numberOfVertices;
     for (var i = 0; i < n; i++) {
@@ -490,43 +490,43 @@ lore.ore.graph.autolayout.ProjectionConstraint.prototype.apply = function(penalt
     }
 }
 /**
- * @class lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure
- * @extends lore.ore.graph.autolayout.JiggleObject
+ * @class lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure
+ * @extends lore.ore.ui.graph.autolayout.JiggleObject
  * @param {} graph
  * @param {} fm
  */
-lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure = function(graph, fm) {
-    lore.ore.graph.autolayout.JiggleObject.call(this);
+lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure = function(graph, fm) {
+    lore.ore.ui.graph.autolayout.JiggleObject.call(this);
     this.graph = graph;
     this.forceModel = fm;
     this.constrained = false;
 }
-lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure.prototype = new lore.ore.graph.autolayout.JiggleObject;
+lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure.prototype = new lore.ore.ui.graph.autolayout.JiggleObject;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure.prototype.getConstrained = function() {
+lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure.prototype.getConstrained = function() {
     return this.constrained;
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure.prototype.setConstrained = function(
+lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure.prototype.setConstrained = function(
         c) {
     this.constrained = c;
 }
 /**
- * @class lore.ore.graph.autolayout.FirstOrderOptimizationProcedure
- * @extends lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure
+ * @class lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure
+ * @extends lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure
  * @param {} graph
  * @param {} fm
  * @param {} accuracy
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure = function(graph, fm,
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure = function(graph, fm,
         accuracy) {
-    lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure.call(this, graph,
+    lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure.call(this, graph,
             fm);
     this.maxCos = accuracy;
     this.negativeGradient = null;
@@ -536,12 +536,12 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure = function(graph, fm,
     this.stepSize = 0.1;
     this.previousStepSize = 0;
 }
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype = new lore.ore.graph.autolayout.ForceDirectedOptimizationProcedure;
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype = new lore.ore.ui.graph.autolayout.ForceDirectedOptimizationProcedure;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.improveGraph = function() {
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.improveGraph = function() {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
     if ((this.negativeGradient == null) || (this.negativeGradient.length != n)) {
@@ -559,14 +559,14 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.improveGraph
 /**
  * 
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.reset = function() {
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.reset = function() {
     this.negativeGradient = null;
     this.penaltyFactor = 0;
 }
 /**
  * 
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.computePenaltyFactor = function() {
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.computePenaltyFactor = function() {
     var m1 = this.l2Norm(this.negativeGradient);
     var m2 = this.l2Norm(this.penaltyVector);
     if (m2 == 0) {
@@ -583,7 +583,7 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.computePenal
 /**
  * 
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.getNegativeGradient = function() {
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.getNegativeGradient = function() {
     this.forceModel.getNegativeGradient(this.negativeGradient);
     if (this.constrained) {
         this.getPenaltyVector();
@@ -601,14 +601,14 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.getNegativeG
 /**
  * 
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.getPenaltyVector = function() {
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.getPenaltyVector = function() {
     this.forceModel.getPenaltyVector(this.penaltyVector);
 }
 /**
  * 
  * @return {Number}
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.lineSearch = function() {
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.lineSearch = function() {
     this.previousStepSize = 0;
     var n = this.graph.numberOfVertices;
     var magDescDir = this.l2Norm(this.descentDirection);
@@ -647,7 +647,7 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.lineSearch =
 /**
  * 
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.step = function() {
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.step = function() {
     var n = this.graph.numberOfVertices;
     var s = this.stepSize - this.previousStepSize;
     for (var i = 0; i < n; i++) {
@@ -661,7 +661,7 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.step = funct
  * @param {} v
  * @return {}
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.dotProduct = function(
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.dotProduct = function(
         u, v) {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
@@ -678,7 +678,7 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.dotProduct =
  * @param {} vect
  * @return {}
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.l2Norm = function(
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.l2Norm = function(
         vect) {
     return Math.sqrt(this.dotProduct(vect, vect));
 }
@@ -687,7 +687,7 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.l2Norm = fun
  * @param {} vect
  * @return {}
  */
-lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.lInfinityNorm = function(
+lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.prototype.lInfinityNorm = function(
         vect) {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
@@ -700,16 +700,16 @@ lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.prototype.lInfinityNor
     return max;
 }
 /**
- * @class lore.ore.graph.autolayout.ConjugateGradients
- * @extends lore.ore.graph.autolayout.FirstOrderOptimizationProcedure
+ * @class lore.ore.ui.graph.autolayout.ConjugateGradients
+ * @extends lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure
  * @param {} graph
  * @param {} fm
  * @param {} accuracy
  * @param {} restartThreshold
  */
-lore.ore.graph.autolayout.ConjugateGradients = function(graph, fm, accuracy,
+lore.ore.ui.graph.autolayout.ConjugateGradients = function(graph, fm, accuracy,
         restartThreshold) {
-    lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.call(this, graph,
+    lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.call(this, graph,
             fm, accuracy);
     this.magnitudeOfPreviousGradientSquared = null;
     this.previousDescentDirection = null;
@@ -718,18 +718,18 @@ lore.ore.graph.autolayout.ConjugateGradients = function(graph, fm, accuracy,
         this.restartThreshold = restartThreshold;
     }
 }
-lore.ore.graph.autolayout.ConjugateGradients.prototype = new lore.ore.graph.autolayout.FirstOrderOptimizationProcedure;
+lore.ore.ui.graph.autolayout.ConjugateGradients.prototype = new lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure;
 /**
  * 
  */
-lore.ore.graph.autolayout.ConjugateGradients.prototype.reset = function() {
+lore.ore.ui.graph.autolayout.ConjugateGradients.prototype.reset = function() {
     this.negativeGradient = null;
     this.descentDirection = null;
 }
 /**
  * 
  */
-lore.ore.graph.autolayout.ConjugateGradients.prototype.computeDescentDirection = function() {
+lore.ore.ui.graph.autolayout.ConjugateGradients.prototype.computeDescentDirection = function() {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
     var magnitudeOfCurrentGradientSquared = 0;
@@ -792,11 +792,11 @@ lore.ore.graph.autolayout.ConjugateGradients.prototype.computeDescentDirection =
     }
 }
 /**
- * @class lore.ore.graph.autolayout.Cell
- * @extends lore.ore.graph.autolayout.JiggleObject
+ * @class lore.ore.ui.graph.autolayout.Cell
+ * @extends lore.ore.ui.graph.autolayout.JiggleObject
  */
-lore.ore.graph.autolayout.Cell = function() {
-    lore.ore.graph.autolayout.JiggleObject.call(this);
+lore.ore.ui.graph.autolayout.Cell = function() {
+    lore.ore.ui.graph.autolayout.JiggleObject.call(this);
     this.dimensions = 2;
     this.weight = 0;
     this.coords = null;
@@ -805,33 +805,33 @@ lore.ore.graph.autolayout.Cell = function() {
     this.size = null;
     this.setDimensions(2);
 }
-lore.ore.graph.autolayout.Cell.prototype = new lore.ore.graph.autolayout.JiggleObject;
+lore.ore.ui.graph.autolayout.Cell.prototype = new lore.ore.ui.graph.autolayout.JiggleObject;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getWeight = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.getWeight = function() {
     return this.weight;
 }
 /**
  * 
  * @param {} w
  */
-lore.ore.graph.autolayout.Cell.prototype.setWeight = function(w) {
+lore.ore.ui.graph.autolayout.Cell.prototype.setWeight = function(w) {
     this.weight = w;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getDimensions = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.getDimensions = function() {
     return this.dimensions;
 }
 /**
  * 
  * @param {} d
  */
-lore.ore.graph.autolayout.Cell.prototype.setDimensions = function(d) {
+lore.ore.ui.graph.autolayout.Cell.prototype.setDimensions = function(d) {
     this.dimensions = d;
     this.coords = new Array();
     this.size = new Array();
@@ -842,14 +842,14 @@ lore.ore.graph.autolayout.Cell.prototype.setDimensions = function(d) {
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getCoords = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.getCoords = function() {
     return this.coords;
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.Cell.prototype.setCoords = function(c) {
+lore.ore.ui.graph.autolayout.Cell.prototype.setCoords = function(c) {
     for (var i = 0; i < this.dimensions; i++) {
         this.coords[i] = c[i];
     }
@@ -858,14 +858,14 @@ lore.ore.graph.autolayout.Cell.prototype.setCoords = function(c) {
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getMin = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.getMin = function() {
     return this.min;
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.Cell.prototype.setMin = function(c) {
+lore.ore.ui.graph.autolayout.Cell.prototype.setMin = function(c) {
     for (var i = 0; i < this.dimensions; i++) {
         this.min[i] = c[i];
     }
@@ -875,14 +875,14 @@ lore.ore.graph.autolayout.Cell.prototype.setMin = function(c) {
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getMax = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.getMax = function() {
     return this.max;
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.Cell.prototype.setMax = function(c) {
+lore.ore.ui.graph.autolayout.Cell.prototype.setMax = function(c) {
     for (var i = 0; i < this.dimensions; i++) {
         this.max[i] = c[i];
     }
@@ -891,7 +891,7 @@ lore.ore.graph.autolayout.Cell.prototype.setMax = function(c) {
 /**
  * 
  */
-lore.ore.graph.autolayout.Cell.prototype.recomputeSize = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.recomputeSize = function() {
     for (var i = 0; i < this.dimensions; i++) {
         this.size[i] = this.max[i] - this.min[i];
     }
@@ -900,14 +900,14 @@ lore.ore.graph.autolayout.Cell.prototype.recomputeSize = function() {
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getSize = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.getSize = function() {
     return this.size;
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.Cell.prototype.setSize = function(c) {
+lore.ore.ui.graph.autolayout.Cell.prototype.setSize = function(c) {
     for (var i = 0; i < this.dimensions; i++) {
         this.size[i] = c[i];
     }
@@ -916,7 +916,7 @@ lore.ore.graph.autolayout.Cell.prototype.setSize = function(c) {
 /**
  * 
  */
-lore.ore.graph.autolayout.Cell.prototype.recomputeBoundaries = function() {
+lore.ore.ui.graph.autolayout.Cell.prototype.recomputeBoundaries = function() {
     for (var i = 0; i < this.dimensions; i++) {
         this.min[i] = this.coords[i] - this.size[i] / 2;
         this.max[i] = this.coords[i] + this.size[i] / 2;
@@ -927,7 +927,7 @@ lore.ore.graph.autolayout.Cell.prototype.recomputeBoundaries = function() {
  * @param {} scalar
  * @param {} vector
  */
-lore.ore.graph.autolayout.Cell.prototype.translate = function(scalar, vector) {
+lore.ore.ui.graph.autolayout.Cell.prototype.translate = function(scalar, vector) {
     if (!vector) {
         scalar = vector;
         scalar = 1;
@@ -945,7 +945,7 @@ lore.ore.graph.autolayout.Cell.prototype.translate = function(scalar, vector) {
  * @param {} c2
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getDistanceSquared = function(c1, c2) {
+lore.ore.ui.graph.autolayout.Cell.prototype.getDistanceSquared = function(c1, c2) {
     var sum = 0;
     var d = c1.getDimensions();
     for (var i = 0; i < d; i++)
@@ -958,7 +958,7 @@ lore.ore.graph.autolayout.Cell.prototype.getDistanceSquared = function(c1, c2) {
  * @param {} point
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getDistanceSquaredPoint = function(cell,
+lore.ore.ui.graph.autolayout.Cell.prototype.getDistanceSquaredPoint = function(cell,
         point) {
     var sum = 0;
     var d = cell.getDimensions();
@@ -972,7 +972,7 @@ lore.ore.graph.autolayout.Cell.prototype.getDistanceSquaredPoint = function(cell
  * @param {} c2
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getDistance = function(c1, c2) {
+lore.ore.ui.graph.autolayout.Cell.prototype.getDistance = function(c1, c2) {
     return Math.sqrt(this.getDistanceSquared(c1, c2));
 }
 /**
@@ -981,7 +981,7 @@ lore.ore.graph.autolayout.Cell.prototype.getDistance = function(c1, c2) {
  * @param {} point
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.getDistancePoint = function(cell, point) {
+lore.ore.ui.graph.autolayout.Cell.prototype.getDistancePoint = function(cell, point) {
     return Math.sqrt(this.getDistanceSquaredPoint(cell, point));
 }
 /**
@@ -990,7 +990,7 @@ lore.ore.graph.autolayout.Cell.prototype.getDistancePoint = function(cell, point
  * @param {} c2
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.sumOfRadii = function(c1, c2) {
+lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii = function(c1, c2) {
     var d = c1.getDimensions();
     var coords1 = c1.getCoords();
     var coords2 = c2.getCoords();
@@ -1007,7 +1007,7 @@ lore.ore.graph.autolayout.Cell.prototype.sumOfRadii = function(c1, c2) {
  * @param {} point
  * @return {}
  */
-lore.ore.graph.autolayout.Cell.prototype.radius = function(cell, point) {
+lore.ore.ui.graph.autolayout.Cell.prototype.radius = function(cell, point) {
     var d = cell.getDimensions();
     var coords = cell.getCoords();
     var seg = new Array();
@@ -1023,7 +1023,7 @@ lore.ore.graph.autolayout.Cell.prototype.radius = function(cell, point) {
  * @param {} segment
  * @return {Number}
  */
-lore.ore.graph.autolayout.Cell.prototype.radiusSegment = function(d, cellSize,
+lore.ore.ui.graph.autolayout.Cell.prototype.radiusSegment = function(d, cellSize,
         segment) {
     var sum = 0;
     for (var i = 0; i < d; i++) {
@@ -1043,14 +1043,14 @@ lore.ore.graph.autolayout.Cell.prototype.radiusSegment = function(d, cellSize,
     return Math.sqrt(lengthSquared) / 2;
 }
 /**
- * @class lore.ore.graph.autolayout.QuadTree
- * @extends lore.ore.graph.autolayout.Cell
+ * @class lore.ore.ui.graph.autolayout.QuadTree
+ * @extends lore.ore.ui.graph.autolayout.Cell
  * @param {} graph
  * @param {} max
  * @param {} parent
  */
-lore.ore.graph.autolayout.QuadTree = function(graph, max, parent) {
-    lore.ore.graph.autolayout.Cell.call(this);
+lore.ore.ui.graph.autolayout.QuadTree = function(graph, max, parent) {
+    lore.ore.ui.graph.autolayout.Cell.call(this);
     this.objectField = null;
     this.subtrees = new Array();
     var d;
@@ -1079,13 +1079,13 @@ lore.ore.graph.autolayout.QuadTree = function(graph, max, parent) {
         this.force[i] = 0;
     }
 }
-lore.ore.graph.autolayout.QuadTree.prototype = new lore.ore.graph.autolayout.Cell;
+lore.ore.ui.graph.autolayout.QuadTree.prototype = new lore.ore.ui.graph.autolayout.Cell;
 /**
  * 
  * @param {} v
  * @return {}
  */
-lore.ore.graph.autolayout.QuadTree.prototype.lookUp = function(v) {
+lore.ore.ui.graph.autolayout.QuadTree.prototype.lookUp = function(v) {
     if (this.objectField == v) {
         return this;
     } else if (this.objectField != null) {
@@ -1099,7 +1099,7 @@ lore.ore.graph.autolayout.QuadTree.prototype.lookUp = function(v) {
  * @param {} v
  * @return {}
  */
-lore.ore.graph.autolayout.QuadTree.prototype.getIndex = function(v) {
+lore.ore.ui.graph.autolayout.QuadTree.prototype.getIndex = function(v) {
     var c = v.getCoords();
     var center = this.getCenter();
     var d = this.getDimensions();
@@ -1117,7 +1117,7 @@ lore.ore.graph.autolayout.QuadTree.prototype.getIndex = function(v) {
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.QuadTree.prototype.getCenter = function() {
+lore.ore.ui.graph.autolayout.QuadTree.prototype.getCenter = function() {
     var d = this.getDimensions();
     var mp = new Array();
     var lo = this.getMin();
@@ -1130,18 +1130,18 @@ lore.ore.graph.autolayout.QuadTree.prototype.getCenter = function() {
 /**
  * Empty
  */
-lore.ore.graph.autolayout.QuadTree.prototype.recomputeSize = function() {
+lore.ore.ui.graph.autolayout.QuadTree.prototype.recomputeSize = function() {
 }
 /**
  * Empty
  */
-lore.ore.graph.autolayout.QuadTree.prototype.recomputeBoundaries = function() {
+lore.ore.ui.graph.autolayout.QuadTree.prototype.recomputeBoundaries = function() {
 }
 /**
  * 
  * @param {} v
  */
-lore.ore.graph.autolayout.QuadTree.prototype.insert = function(v) {
+lore.ore.ui.graph.autolayout.QuadTree.prototype.insert = function(v) {
     var w = this.getWeight();
     var vw = v.getWeight();
     var d = this.getDimensions();
@@ -1170,7 +1170,7 @@ lore.ore.graph.autolayout.QuadTree.prototype.insert = function(v) {
 /**
  * 
  */
-lore.ore.graph.autolayout.QuadTree.prototype.splitCell = function() {
+lore.ore.ui.graph.autolayout.QuadTree.prototype.splitCell = function() {
     var v = this.objectField;
     this.objectField = null;
     var cellMin = this.getMin();
@@ -1192,17 +1192,17 @@ lore.ore.graph.autolayout.QuadTree.prototype.splitCell = function() {
             }
             column *= 2;
         }
-        this.subtrees[index] = new lore.ore.graph.autolayout.QuadTree(lo, hi, this);
+        this.subtrees[index] = new lore.ore.ui.graph.autolayout.QuadTree(lo, hi, this);
     }
     this.subtrees[this.getIndex(v)].insert(v);
 }
 /**
- * @class lore.ore.graph.autolayout.Vertex
- * @extends.lore.ore.graph.autolayout.Cell
+ * @class lore.ore.ui.graph.autolayout.Vertex
+ * @extends.lore.ore.ui.graph.autolayout.Cell
  * @param {} graph
  */
-lore.ore.graph.autolayout.Vertex = function(graph) {
-    lore.ore.graph.autolayout.Cell.call(this);
+lore.ore.ui.graph.autolayout.Vertex = function(graph) {
+    lore.ore.ui.graph.autolayout.Cell.call(this);
     this.undirectedDegree = 0;
     this.inDegree = 0
     this.outDegree = 0;
@@ -1218,40 +1218,40 @@ lore.ore.graph.autolayout.Vertex = function(graph) {
     this.setWeight(1);
     this.setDimensions(graph.getDimensions());
 }
-lore.ore.graph.autolayout.Vertex.prototype = new lore.ore.graph.autolayout.Cell;
+lore.ore.ui.graph.autolayout.Vertex.prototype = new lore.ore.ui.graph.autolayout.Cell;
 /**
  * 
  * @return {string}
  */
-lore.ore.graph.autolayout.Vertex.prototype.getName = function() {
+lore.ore.ui.graph.autolayout.Vertex.prototype.getName = function() {
     return this.name;
 }
 /**
  * 
  * @param {string} str
  */
-lore.ore.graph.autolayout.Vertex.prototype.setName = function(str) {
+lore.ore.ui.graph.autolayout.Vertex.prototype.setName = function(str) {
     this.name = str;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Vertex.prototype.getFixed = function() {
+lore.ore.ui.graph.autolayout.Vertex.prototype.getFixed = function() {
     return this.fixed;
 }
 /**
  * 
  * @param {} f
  */
-lore.ore.graph.autolayout.Vertex.prototype.setFixed = function(f) {
+lore.ore.ui.graph.autolayout.Vertex.prototype.setFixed = function(f) {
     this.fixed = f;
 }
 /**
  * 
  * @param {} e
  */
-lore.ore.graph.autolayout.Vertex.prototype.insertNeighbor = function(e) {
+lore.ore.ui.graph.autolayout.Vertex.prototype.insertNeighbor = function(e) {
     var from = e.getFrom();
     var to = e.getTo();
     var v = null;
@@ -1260,7 +1260,7 @@ lore.ore.graph.autolayout.Vertex.prototype.insertNeighbor = function(e) {
     } else if (this == to) {
         v = from;
     } else {
-        throw new lore.ore.graph.autolayout.Error(e + " not incident to " + this);
+        throw new lore.ore.ui.graph.autolayout.Error(e + " not incident to " + this);
     }
     if (!e.getDirected()) {
         this.undirectedEdges.add(e);
@@ -1280,7 +1280,7 @@ lore.ore.graph.autolayout.Vertex.prototype.insertNeighbor = function(e) {
  * 
  * @param {} e
  */
-lore.ore.graph.autolayout.Vertex.prototype.deleteNeighbor = function(e) {
+lore.ore.ui.graph.autolayout.Vertex.prototype.deleteNeighbor = function(e) {
     var from = e.getFrom();
     var to = e.getTo();
     var v = null;
@@ -1289,7 +1289,7 @@ lore.ore.graph.autolayout.Vertex.prototype.deleteNeighbor = function(e) {
     } else if (this == to) {
         v = from;
     } else {
-        throw new lore.ore.graph.autolayout.Error(e + " not incident to " + this);
+        throw new lore.ore.ui.graph.autolayout.Error(e + " not incident to " + this);
     }
     try {
         if (!e.getDirected()) {
@@ -1306,26 +1306,26 @@ lore.ore.graph.autolayout.Vertex.prototype.deleteNeighbor = function(e) {
             this.inDegree--;
         }
     } catch (exc) {
-        throw new lore.ore.graph.autolayout.Error(e + " not incident to " + this);
+        throw new lore.ore.ui.graph.autolayout.Error(e + " not incident to " + this);
     }
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Vertex.prototype.toString = function() {
+lore.ore.ui.graph.autolayout.Vertex.prototype.toString = function() {
     return "(Vertex: " + this.name + ")";
 }
 /**
- * @class lore.ore.graph.autolayout.Edge
- * @extends lore.ore.graph.autolayout.JiggleObject
+ * @class lore.ore.ui.graph.autolayout.Edge
+ * @extends lore.ore.ui.graph.autolayout.JiggleObject
  * @param {} graph
  * @param {} from
  * @param {} to
  * @param {} directed
  */
-lore.ore.graph.autolayout.Edge = function(graph, from, to, directed) {
-    lore.ore.graph.autolayout.JiggleObject.call(this);
+lore.ore.ui.graph.autolayout.Edge = function(graph, from, to, directed) {
+    lore.ore.ui.graph.autolayout.JiggleObject.call(this);
     this.from = from;
     this.to = to;
     this.label = null;
@@ -1336,126 +1336,126 @@ lore.ore.graph.autolayout.Edge = function(graph, from, to, directed) {
     this.preferredLength = 0;
     this.setContext(graph);
 }
-lore.ore.graph.autolayout.Edge.prototype = new lore.ore.graph.autolayout.JiggleObject;
+lore.ore.ui.graph.autolayout.Edge.prototype = new lore.ore.ui.graph.autolayout.JiggleObject;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.getFrom = function() {
+lore.ore.ui.graph.autolayout.Edge.prototype.getFrom = function() {
     return this.from;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.getTo = function() {
+lore.ore.ui.graph.autolayout.Edge.prototype.getTo = function() {
     return this.to;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.getLabel = function() {
+lore.ore.ui.graph.autolayout.Edge.prototype.getLabel = function() {
     return this.label;
 }
 /**
  * 
  * @param {} lbl
  */
-lore.ore.graph.autolayout.Edge.prototype.setLabel = function(lbl) {
+lore.ore.ui.graph.autolayout.Edge.prototype.setLabel = function(lbl) {
     this.label = lbl;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.getDirected = function() {
+lore.ore.ui.graph.autolayout.Edge.prototype.getDirected = function() {
     return this.directed;
 }
 /**
  * 
  * @param {} d
  */
-lore.ore.graph.autolayout.Edge.prototype.setDirected = function(d) {
+lore.ore.ui.graph.autolayout.Edge.prototype.setDirected = function(d) {
     this.directed = d;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.getPreferredLength = function() {
+lore.ore.ui.graph.autolayout.Edge.prototype.getPreferredLength = function() {
     return this.preferredLength;
 }
 /**
  * 
  * @param {} len
  */
-lore.ore.graph.autolayout.Edge.prototype.setPreferredLength = function(len) {
+lore.ore.ui.graph.autolayout.Edge.prototype.setPreferredLength = function(len) {
     this.preferredLength = len;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.getLengthSquared = function() {
-    return lore.ore.graph.autolayout.Vertex.prototype.getDistanceSquared(
+lore.ore.ui.graph.autolayout.Edge.prototype.getLengthSquared = function() {
+    return lore.ore.ui.graph.autolayout.Vertex.prototype.getDistanceSquared(
             this.from, this.to);
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.getLength = function() {
-    return lore.ore.graph.autolayout.Vertex.prototype.getDistance(this.from,
+lore.ore.ui.graph.autolayout.Edge.prototype.getLength = function() {
+    return lore.ore.ui.graph.autolayout.Vertex.prototype.getDistance(this.from,
             this.to);
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Edge.prototype.toString = function() {
+lore.ore.ui.graph.autolayout.Edge.prototype.toString = function() {
     return "(Edge: " + this.from + ", " + this.to + ", "
             + (this.directed ? "directed" : "undirected") + ")";
 }
 /**
- * @class lore.ore.graph.autolayout.EdgeLabel
- * @extends lore.ore.graph.autolayout.Cell
+ * @class lore.ore.ui.graph.autolayout.EdgeLabel
+ * @extends lore.ore.ui.graph.autolayout.Cell
  * @param {} edge
  * @param {} name
  */
-lore.ore.graph.autolayout.EdgeLabel = function(edge, name) {
-    lore.ore.graph.autolayout.Cell.call(this);
+lore.ore.ui.graph.autolayout.EdgeLabel = function(edge, name) {
+    lore.ore.ui.graph.autolayout.Cell.call(this);
     this.name = name;
     this.setContext(e)
 }
-lore.ore.graph.autolayout.EdgeLabel.prototype = new lore.ore.graph.autolayout.Cell;
+lore.ore.ui.graph.autolayout.EdgeLabel.prototype = new lore.ore.ui.graph.autolayout.Cell;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.EdgeLabel.prototype.getName = function() {
+lore.ore.ui.graph.autolayout.EdgeLabel.prototype.getName = function() {
     return this.name;
 }
 /**
  * 
  * @param {} str
  */
-lore.ore.graph.autolayout.EdgeLabel.prototype.setName = function(str) {
+lore.ore.ui.graph.autolayout.EdgeLabel.prototype.setName = function(str) {
     this.name = str;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.EdgeLabel.prototype.toString = function() {
+lore.ore.ui.graph.autolayout.EdgeLabel.prototype.toString = function() {
     return "(EdgeLabel: " + this.name + ")";
 }
 /**
- * @class lore.ore.graph.autolayout.Graph
+ * @class lore.ore.ui.graph.autolayout.Graph
  * @param {} dimensions
  */
-lore.ore.graph.autolayout.Graph = function(dimensions) {
-    lore.ore.graph.autolayout.Cell.call(this);
+lore.ore.ui.graph.autolayout.Graph = function(dimensions) {
+    lore.ore.ui.graph.autolayout.Cell.call(this);
     this.numberOfVertices = 0;
     this.numberOfMarkedVertices = 0;
     this.numberOfEdges = 0;
@@ -1465,12 +1465,12 @@ lore.ore.graph.autolayout.Graph = function(dimensions) {
         this.setDimensions(dimensions);
     }
 }
-lore.ore.graph.autolayout.Graph.prototype = new lore.ore.graph.autolayout.Cell;
+lore.ore.ui.graph.autolayout.Graph.prototype = new lore.ore.ui.graph.autolayout.Cell;
 /**
  * @return {}
  */
-lore.ore.graph.autolayout.Graph.prototype.insertVertex = function() {
-    var v = new lore.ore.graph.autolayout.Vertex(this);
+lore.ore.ui.graph.autolayout.Graph.prototype.insertVertex = function() {
+    var v = new lore.ore.ui.graph.autolayout.Vertex(this);
     this.vertices.add(v);
     this.numberOfVertices++;
     return v;
@@ -1482,11 +1482,11 @@ lore.ore.graph.autolayout.Graph.prototype.insertVertex = function() {
  * @param {} dir
  * @return {}
  */
-lore.ore.graph.autolayout.Graph.prototype.insertEdge = function(from, to, dir) {
+lore.ore.ui.graph.autolayout.Graph.prototype.insertEdge = function(from, to, dir) {
     if (!dir) {
         dir = false;
     }
-    var e = new lore.ore.graph.autolayout.Edge(this, from, to, dir);
+    var e = new lore.ore.ui.graph.autolayout.Edge(this, from, to, dir);
     from.insertNeighbor(e);
     to.insertNeighbor(e);
     this.edges.add(e);
@@ -1497,7 +1497,7 @@ lore.ore.graph.autolayout.Graph.prototype.insertEdge = function(from, to, dir) {
  * 
  * @param {} v
  */
-lore.ore.graph.autolayout.Graph.prototype.deleteVertex = function(v) {
+lore.ore.ui.graph.autolayout.Graph.prototype.deleteVertex = function(v) {
     try {
         for (var i = 0; i < v.inDegree; i++) {
             var e = v.undirectedEdges.get(i);
@@ -1520,27 +1520,27 @@ lore.ore.graph.autolayout.Graph.prototype.deleteVertex = function(v) {
         this.vertices.remove(v);
         this.numberOfVertices--;
     } catch (exc) {
-        throw new lore.ore.graph.autolayout.Error(v + " not found");
+        throw new lore.ore.ui.graph.autolayout.Error(v + " not found");
     }
 }
 /**
  * 
  * @param {} e
  */
-lore.ore.graph.autolayout.Graph.prototype.deleteEdge = function(e) {
+lore.ore.ui.graph.autolayout.Graph.prototype.deleteEdge = function(e) {
     try {
         e.getFrom().deleteNeighbor(e);
         e.getTo().deleteNeighbor(e);
         this.edges.remove(e);
         this.numberOfEdges--;
     } catch (exc) {
-        throw new lore.ore.graph.autolayout.Error(e + " not found");
+        throw new lore.ore.ui.graph.autolayout.Error(e + " not found");
     }
 }
 /**
  * 
  */
-lore.ore.graph.autolayout.Graph.prototype.recomputeBoundaries = function() {
+lore.ore.ui.graph.autolayout.Graph.prototype.recomputeBoundaries = function() {
     var d = this.getDimensions();
     var lo = this.getMin();
     var hi = this.getMax();
@@ -1562,7 +1562,7 @@ lore.ore.graph.autolayout.Graph.prototype.recomputeBoundaries = function() {
  * 
  * @return {Boolean}
  */
-lore.ore.graph.autolayout.Graph.prototype.isConnected = function() {
+lore.ore.ui.graph.autolayout.Graph.prototype.isConnected = function() {
     if (this.numberOfVertices == 0) {
         return false;
     }
@@ -1577,7 +1577,7 @@ lore.ore.graph.autolayout.Graph.prototype.isConnected = function() {
  * 
  * @param {} v
  */
-lore.ore.graph.autolayout.Graph.prototype.dft = function(v) {
+lore.ore.ui.graph.autolayout.Graph.prototype.dft = function(v) {
     v.booleanField = true;
     ++this.numberOfMarkedVertices;
     for (var i = 0; i < v.undirectedDegree; i++) {
@@ -1600,15 +1600,15 @@ lore.ore.graph.autolayout.Graph.prototype.dft = function(v) {
     }
 }
 /**
- * @class lore.ore.graph.autolayout.VertexEdgeRepulsionLaw
- * @extends lore.ore.graph.autolayout.ForceLaw
+ * @class lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw
+ * @extends lore.ore.ui.graph.autolayout.ForceLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  * @param {} strength
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw = function(graph,
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw = function(graph,
         preferredEdgeLength, strength) {
-    lore.ore.graph.autolayout.ForceLaw.call(this, graph);
+    lore.ore.ui.graph.autolayout.ForceLaw.call(this, graph);
     this.preferredEdgeLength = preferredEdgeLength;
     this.strength = 1;
     this.gridding = false;
@@ -1616,19 +1616,19 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw = function(graph,
         this.strength = strength;
     }
 }
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype = new lore.ore.graph.autolayout.ForceLaw;
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype = new lore.ore.ui.graph.autolayout.ForceLaw;
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.getGridding = function() {
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype.getGridding = function() {
     return gridding;
 }
 /**
  * 
  * @param {} b
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.setGridding = function(
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype.setGridding = function(
         b) {
     this.gridding = b;
 }
@@ -1636,7 +1636,7 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.setGridding = functio
  * 
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.apply = function(
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype.apply = function(
         negativeGradient) {
     if (this.gridding) {
         this.applyUsingGridding(negativeGradient);
@@ -1658,7 +1658,7 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.apply = function(
  * 
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.applyUsingGridding = function(
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype.applyUsingGridding = function(
         negativeGradient) {
     this.graph.recomputeBoundaries();
     var n = this.graph.numberOfVertices;
@@ -1757,7 +1757,7 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.applyUsingGridding = 
  * @param {} v
  * @return {Boolean}
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.equal = function(u, v) {
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype.equal = function(u, v) {
     var d = u.length;
     for (var i = 0; i < d; i++) {
         if (u[i] != v[i]) {
@@ -1772,7 +1772,7 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.equal = function(u, v
  * @param {} e
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.computeRepulsion = function(
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype.computeRepulsion = function(
         v, e, negativeGradient) {
     var from = e.getFrom();
     var to = e.getTo();
@@ -1801,7 +1801,7 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.computeRepulsion = fu
         }
         var w = Math.min(this.strength
                         * this.pairwiseRepulsionCoords(v, pCoords), this.cap
-                        / lore.ore.graph.autolayout.Vertex.prototype
+                        / lore.ore.ui.graph.autolayout.Vertex.prototype
                                 .getDistancePoint(v, pCoords));
         if (w == 0) {
             return;
@@ -1825,11 +1825,11 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.computeRepulsion = fu
  * @param {} v2
  * @param {} negativeGradient
  */
-lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.computeRepulsionVertex = function(
+lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.prototype.computeRepulsionVertex = function(
         v1, v2, negativeGradient) {
     var d = v1.getDimensions();
     var w = Math.min(this.strength * this.pairwiseRepulsion(v1, v2), this.cap
-                    / lore.ore.graph.autolayout.Vertex.prototype.getDistance(v1,
+                    / lore.ore.ui.graph.autolayout.Vertex.prototype.getDistance(v1,
                             v2));
     if (w == 0) {
         return;
@@ -1845,32 +1845,32 @@ lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.prototype.computeRepulsionVerte
     }
 }
 /**
- * @class lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw
- * @extends lore.ore.graph.autolayout.VertexEdgeRepulsionLaw
+ * @class lore.ore.ui.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw
+ * @extends lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  * @param {} strength
  */
-lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw = function(graph,
+lore.ore.ui.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw = function(graph,
         preferredEdgeLength, strength) {
     if (!strength) {
         strength = 1;
     }
-    lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.call(this, graph,
+    lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.call(this, graph,
             preferredEdgeLength, strength);
 }
-lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype = new lore.ore.graph.autolayout.VertexEdgeRepulsionLaw;
+lore.ore.ui.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype = new lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw;
 /**
  * 
  * @param {} c1
  * @param {} c2
  * @return {Number}
  */
-lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype.pairwiseRepulsion = function(
+lore.ore.ui.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype.pairwiseRepulsion = function(
         c1, c2) {
     var k = this.preferredEdgeLength
-            + lore.ore.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
-    var d = lore.ore.graph.autolayout.Cell.prototype.getDistance(c1, c2);
+            + lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
+    var d = lore.ore.ui.graph.autolayout.Cell.prototype.getDistance(c1, c2);
     if (d >= k) {
         return 0;
     } else {
@@ -1883,11 +1883,11 @@ lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype.pairwise
  * @param {} coords
  * @return {Number}
  */
-lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype.pairwiseRepulsionCoords = function(
+lore.ore.ui.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype.pairwiseRepulsionCoords = function(
         cell, coords) {
     var k = this.preferredEdgeLength
-            + lore.ore.graph.autolayout.Cell.prototype.radius(cell, coords);
-    var d = lore.ore.graph.autolayout.Cell.prototype
+            + lore.ore.ui.graph.autolayout.Cell.prototype.radius(cell, coords);
+    var d = lore.ore.ui.graph.autolayout.Cell.prototype
             .getDistancePoint(cell, coords);
     if (d >= k) {
         return 0;
@@ -1896,57 +1896,57 @@ lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw.prototype.pairwise
     }
 }
 /**
- * @class lore.ore.graph.autolayout.InverseSquareVertexVertexRepulsionLaw
- * @extends lore.ore.graph.autolayout.VertexVertexRepulsionLaw
+ * @class lore.ore.ui.graph.autolayout.InverseSquareVertexVertexRepulsionLaw
+ * @extends lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  */
-lore.ore.graph.autolayout.InverseSquareVertexVertexRepulsionLaw = function(graph,
+lore.ore.ui.graph.autolayout.InverseSquareVertexVertexRepulsionLaw = function(graph,
         preferredEdgeLength) {
-    lore.ore.graph.autolayout.VertexVertexRepulsionLaw.call(this, graph,
+    lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.call(this, graph,
             preferredEdgeLength);
 }
-lore.ore.graph.autolayout.InverseSquareVertexVertexRepulsionLaw.prototype = new lore.ore.graph.autolayout.VertexVertexRepulsionLaw;
+lore.ore.ui.graph.autolayout.InverseSquareVertexVertexRepulsionLaw.prototype = new lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw;
 /**
  * 
  * @param {} c1
  * @param {} c2
  * @return {}
  */
-lore.ore.graph.autolayout.InverseSquareVertexVertexRepulsionLaw.prototype.pairwiseRepulsion = function(
+lore.ore.ui.graph.autolayout.InverseSquareVertexVertexRepulsionLaw.prototype.pairwiseRepulsion = function(
         c1, c2) {
     var k = this.preferredEdgeLength
-            + lore.ore.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
+            + lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
     return this.cube(k
-            / lore.ore.graph.autolayout.Cell.prototype.getDistance(c1, c2));
+            / lore.ore.ui.graph.autolayout.Cell.prototype.getDistance(c1, c2));
 }
 /**
- * @class lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw
- * @extends lore.ore.graph.autolayout.VertexEdgeRepulsionLaw
+ * @class lore.ore.ui.graph.autolayout.InverseVertexEdgeRepulsionLaw
+ * @extends lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  * @param {} strength
  */
-lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw = function(graph,
+lore.ore.ui.graph.autolayout.InverseVertexEdgeRepulsionLaw = function(graph,
         preferredEdgeLength, strength) {
     if (!strength) {
         strength = 1;
     }
-    lore.ore.graph.autolayout.VertexEdgeRepulsionLaw.call(this, graph,
+    lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw.call(this, graph,
             preferredEdgeLength, strength);
 }
-lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype = new lore.ore.graph.autolayout.VertexEdgeRepulsionLaw;
+lore.ore.ui.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype = new lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw;
 /**
  * 
  * @param {} c1
  * @param {} c2
  * @return {Number}
  */
-lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype.pairwiseRepulsion = function(
+lore.ore.ui.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype.pairwiseRepulsion = function(
         c1, c2) {
     var k = this.preferredEdgeLength
-            + lore.ore.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
-    var dSquared = lore.ore.graph.autolayout.Cell.prototype.getDistanceSquared(c1,
+            + lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
+    var dSquared = lore.ore.ui.graph.autolayout.Cell.prototype.getDistanceSquared(c1,
             c2);
     if (dSquared >= this.square(k)) {
         return 0;
@@ -1960,11 +1960,11 @@ lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype.pairwiseRepuls
  * @param {} coords
  * @return {Number}
  */
-lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype.pairwiseRepulsionCoords = function(
+lore.ore.ui.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype.pairwiseRepulsionCoords = function(
         cell, coords) {
     var k = this.preferredEdgeLength
-            + lore.ore.graph.autolayout.Cell.prototype.radius(cell, coords);
-    var dSquared = lore.ore.graph.autolayout.Cell.prototype
+            + lore.ore.ui.graph.autolayout.Cell.prototype.radius(cell, coords);
+    var dSquared = lore.ore.ui.graph.autolayout.Cell.prototype
             .getDistanceSquaredPoint(cell, coords);
     if (dSquared >= this.square(k)) {
         return 0;
@@ -1973,47 +1973,47 @@ lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw.prototype.pairwiseRepuls
     }
 }
 /**
- * @class lore.ore.graph.autolayout.InverseVertexVertexRepulsionLaw 
- * @extends lore.ore.graph.autolayout.VertexVertexRepulsionLaw
+ * @class lore.ore.ui.graph.autolayout.InverseVertexVertexRepulsionLaw 
+ * @extends lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  */
-lore.ore.graph.autolayout.InverseVertexVertexRepulsionLaw = function(graph,
+lore.ore.ui.graph.autolayout.InverseVertexVertexRepulsionLaw = function(graph,
         preferredEdgeLength) {
-    lore.ore.graph.autolayout.VertexVertexRepulsionLaw.call(this, graph,
+    lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw.call(this, graph,
             preferredEdgeLength);
 }
-lore.ore.graph.autolayout.InverseVertexVertexRepulsionLaw.prototype = new lore.ore.graph.autolayout.VertexVertexRepulsionLaw;
+lore.ore.ui.graph.autolayout.InverseVertexVertexRepulsionLaw.prototype = new lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw;
 /**
  * 
  * @param {} c1
  * @param {} c2
  * @return {}
  */
-lore.ore.graph.autolayout.InverseVertexVertexRepulsionLaw.prototype.pairwiseRepulsion = function(
+lore.ore.ui.graph.autolayout.InverseVertexVertexRepulsionLaw.prototype.pairwiseRepulsion = function(
         c1, c2) {
     var k = this.preferredEdgeLength
-            + lore.ore.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
+            + lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii(c1, c2);
     return k * k
-            / lore.ore.graph.autolayout.Cell.prototype.getDistanceSquared(c1, c2);
+            / lore.ore.ui.graph.autolayout.Cell.prototype.getDistanceSquared(c1, c2);
 }
 /**
- * @class lore.ore.graph.autolayout.LinearSpringLaw
- * @extends lore.ore.graph.autolayout.SpringLaw
+ * @class lore.ore.ui.graph.autolayout.LinearSpringLaw
+ * @extends lore.ore.ui.graph.autolayout.SpringLaw
  * @param {} graph
  * @param {} preferredEdgeLength
  */
-lore.ore.graph.autolayout.LinearSpringLaw = function(graph, preferredEdgeLength) {
-    lore.ore.graph.autolayout.SpringLaw.call(this, graph, preferredEdgeLength);
+lore.ore.ui.graph.autolayout.LinearSpringLaw = function(graph, preferredEdgeLength) {
+    lore.ore.ui.graph.autolayout.SpringLaw.call(this, graph, preferredEdgeLength);
 }
-lore.ore.graph.autolayout.LinearSpringLaw.prototype = new lore.ore.graph.autolayout.SpringLaw;
+lore.ore.ui.graph.autolayout.LinearSpringLaw.prototype = new lore.ore.ui.graph.autolayout.SpringLaw;
 /**
  * 
  * @param {} e
  * @return {Number}
  */
-lore.ore.graph.autolayout.LinearSpringLaw.prototype.springAttraction = function(e) {
-    var r = lore.ore.graph.autolayout.Cell.prototype.sumOfRadii(e.getFrom(), e
+lore.ore.ui.graph.autolayout.LinearSpringLaw.prototype.springAttraction = function(e) {
+    var r = lore.ore.ui.graph.autolayout.Cell.prototype.sumOfRadii(e.getFrom(), e
                     .getTo());
     if (r == 0) {
         return 1;
@@ -2022,42 +2022,42 @@ lore.ore.graph.autolayout.LinearSpringLaw.prototype.springAttraction = function(
     }
 }
 /**
- * @class lore.ore.graph.autolayout.StandardForceModel
- * @extends lore.ore.graph.autolayout.ForceModel
+ * @class lore.ore.ui.graph.autolayout.StandardForceModel
+ * @extends lore.ore.ui.graph.autolayout.ForceModel
  * @param {} graph
  * @param {} preferredEdgeLength
  * @param {} theta
  */
-lore.ore.graph.autolayout.StandardForceModel = function(graph,
+lore.ore.ui.graph.autolayout.StandardForceModel = function(graph,
         preferredEdgeLength, theta) {
-    lore.ore.graph.autolayout.ForceModel.call(this, graph);
+    lore.ore.ui.graph.autolayout.ForceModel.call(this, graph);
     this.preferredEdgeLength = preferredEdgeLength;
-    var springLaw = new lore.ore.graph.autolayout.QuadraticSpringLaw(graph,
+    var springLaw = new lore.ore.ui.graph.autolayout.QuadraticSpringLaw(graph,
             preferredEdgeLength);
-    var vvRepulsionLaw = new lore.ore.graph.autolayout.HybridVertexVertexRepulsionLaw(
+    var vvRepulsionLaw = new lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw(
             graph, preferredEdgeLength);
     this.addForceLaw(springLaw);
     this.addForceLaw(vvRepulsionLaw);
     this
-            .addConstraint(new lore.ore.graph.autolayout.ProjectionConstraint(
+            .addConstraint(new lore.ore.ui.graph.autolayout.ProjectionConstraint(
                     graph, 2));
 }
 /**
- * @class lore.ore.graph.autolayout.SteepestDescent
- * @extends lore.ore.graph.autolayout.FirstOrderOptimizationProcedure
+ * @class lore.ore.ui.graph.autolayout.SteepestDescent
+ * @extends lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure
  * @param {} graph
  * @param {} fm
  * @param {} accuracy
  */
-lore.ore.graph.autolayout.SteepestDescent = function(graph, fm, accuracy) {
-    lore.ore.graph.autolayout.FirstOrderOptimizationProcedure.call(this, graph,
+lore.ore.ui.graph.autolayout.SteepestDescent = function(graph, fm, accuracy) {
+    lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure.call(this, graph,
             fm, accuracy);
 }
-lore.ore.graph.autolayout.SteepestDescent.prototype = new lore.ore.graph.autolayout.FirstOrderOptimizationProcedure;
+lore.ore.ui.graph.autolayout.SteepestDescent.prototype = new lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure;
 /**
  * 
  */
-lore.ore.graph.autolayout.SteepestDescent.prototype.computeDescentDirection = function() {
+lore.ore.ui.graph.autolayout.SteepestDescent.prototype.computeDescentDirection = function() {
     var n = this.graph.numberOfVertices;
     var d = this.graph.getDimensions();
     if ((this.descentDirection == null) || (this.descentDirection.length != n)) {
@@ -2073,199 +2073,199 @@ lore.ore.graph.autolayout.SteepestDescent.prototype.computeDescentDirection = fu
     }
 }
 /**
- * @class lore.ore.graph.autolayout.Layouter
+ * @class lore.ore.ui.graph.autolayout.Layouter
  * @param {} workflow
  */
-lore.ore.graph.autolayout.Layouter = function(workflow) {
+lore.ore.ui.graph.autolayout.Layouter = function(workflow) {
     this.workflow = workflow;
     this.dimensions = 2;
     this.preferredEdgeLength = 100;
-    this.optimizationProcedure = lore.ore.graph.autolayout.Layouter.opt.CONJUGATE_GRADIENTS;
+    this.optimizationProcedure = lore.ore.ui.graph.autolayout.Layouter.opt.CONJUGATE_GRADIENTS;
     this.lineSearchAccuracy = 0.5;
     this.cgRestartThreshold = 0.2;
-    this.springs = lore.ore.graph.autolayout.Layouter.spring.QUADRATIC;
-    this.vertexVertexRepulsion = lore.ore.graph.autolayout.Layouter.vvRepulsion.INVERSE_SQUARE;
+    this.springs = lore.ore.ui.graph.autolayout.Layouter.spring.QUADRATIC;
+    this.vertexVertexRepulsion = lore.ore.ui.graph.autolayout.Layouter.vvRepulsion.INVERSE_SQUARE;
     this.gridding = false;
     this.barnesHut = false;
     this.theta = 0.9;
     this.iterations = 25;
 }
 /** ConjugateGradients or SteepestDescent */
-lore.ore.graph.autolayout.Layouter.opt = {
-    CONJUGATE_GRADIENTS : lore.ore.graph.autolayout.ConjugateGradients,
-    STEEPEST_DESCENT : lore.ore.graph.autolayout.SteepestDescent
+lore.ore.ui.graph.autolayout.Layouter.opt = {
+    CONJUGATE_GRADIENTS : lore.ore.ui.graph.autolayout.ConjugateGradients,
+    STEEPEST_DESCENT : lore.ore.ui.graph.autolayout.SteepestDescent
 };
 /** Quadratic or Linear */
-lore.ore.graph.autolayout.Layouter.spring = {
-    QUADRATIC : lore.ore.graph.autolayout.QuadraticSpringLaw,
-    LINEAR : lore.ore.graph.autolayout.LinearSpringLaw
+lore.ore.ui.graph.autolayout.Layouter.spring = {
+    QUADRATIC : lore.ore.ui.graph.autolayout.QuadraticSpringLaw,
+    LINEAR : lore.ore.ui.graph.autolayout.LinearSpringLaw
 };
 /** Inverse Square, Inverse, Hybrid, Inverse Square Edge or Inverse Edge */
-lore.ore.graph.autolayout.Layouter.vvRepulsion = {
-    INVERSE_SQUARE : lore.ore.graph.autolayout.InverseSquareVertexVertexRepulsionLaw,
-    INVERSE : lore.ore.graph.autolayout.InverseVertexVertexRepulsionLaw,
-    HYBRID : lore.ore.graph.autolayout.HybridVertexVertexRepulsionLaw,
-    INVERSE_SQUARE_EDGE : lore.ore.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw,
-    INVERSE_EDGE : lore.ore.graph.autolayout.InverseVertexEdgeRepulsionLaw
+lore.ore.ui.graph.autolayout.Layouter.vvRepulsion = {
+    INVERSE_SQUARE : lore.ore.ui.graph.autolayout.InverseSquareVertexVertexRepulsionLaw,
+    INVERSE : lore.ore.ui.graph.autolayout.InverseVertexVertexRepulsionLaw,
+    HYBRID : lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw,
+    INVERSE_SQUARE_EDGE : lore.ore.ui.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw,
+    INVERSE_EDGE : lore.ore.ui.graph.autolayout.InverseVertexEdgeRepulsionLaw
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getDimensions = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getDimensions = function() {
     return this.dimensions;
 }
 /**
  * 
  * @param {} d
  */
-lore.ore.graph.autolayout.Layouter.prototype.setDimenstion = function(d) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setDimenstion = function(d) {
     this.dimensions = d;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getPreferredEdgeLength = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getPreferredEdgeLength = function() {
     return this.preferredEdgeLength;
 }
 /**
  * 
  * @param {} k
  */
-lore.ore.graph.autolayout.Layouter.prototype.setPreferredEdgeLength = function(k) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setPreferredEdgeLength = function(k) {
     this.preferredEdgeLength = k;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getOptimizationProcedure = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getOptimizationProcedure = function() {
     return this.optimizationProcedure;
 }
 /**
  * 
  * @param {} o
  */
-lore.ore.graph.autolayout.Layouter.prototype.setOptimizationProcedure = function(o) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setOptimizationProcedure = function(o) {
     this.optimizationProcedure = o;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getLineSearchAccuracy = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getLineSearchAccuracy = function() {
     return this.lineSearchAccuracy;
 }
 /**
  * 
  * @param {} l
  */
-lore.ore.graph.autolayout.Layouter.prototype.setLineSearchAccuracy = function(l) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setLineSearchAccuracy = function(l) {
     this.lineSearchAccuracy = l;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getCgRestartThreshold = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getCgRestartThreshold = function() {
     return this.cgRestartThreshold;
 }
 /**
  * 
  * @param {} c
  */
-lore.ore.graph.autolayout.Layouter.prototype.setCgRestartThreshold = function(c) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setCgRestartThreshold = function(c) {
     this.cgRestartThreshold = c;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getSprings = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getSprings = function() {
     return this.springs;
 }
 /**
  * 
  * @param {} s
  */
-lore.ore.graph.autolayout.Layouter.prototype.setSprings = function(s) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setSprings = function(s) {
     this.springs = s;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getVertexVertexRepulsion = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getVertexVertexRepulsion = function() {
     return this.vertexVertexRepulsion;
 }
 /**
  * 
  * @param {} v
  */
-lore.ore.graph.autolayout.Layouter.prototype.setVertexVertexRepulsion = function(v) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setVertexVertexRepulsion = function(v) {
     this.vertexVertexRepulsion = v;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getGridding = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getGridding = function() {
     return this.gridding;
 }
 /**
  * 
  * @param {} u
  */
-lore.ore.graph.autolayout.Layouter.prototype.setGridding = function(u) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setGridding = function(u) {
     this.gridding = u;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getBarnesHut = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getBarnesHut = function() {
     return this.barnesHut;
 }
 /**
  * 
  * @param {} b
  */
-lore.ore.graph.autolayout.Layouter.prototype.setBarnesHut = function(b) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setBarnesHut = function(b) {
     this.barnesHut = b;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getTheta = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getTheta = function() {
     return this.theta;
 }
 /**
  * 
  * @param {} t
  */
-lore.ore.graph.autolayout.Layouter.prototype.setTheta = function(t) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setTheta = function(t) {
     this.theta = t;
 }
 /**
  * 
  * @return {}
  */
-lore.ore.graph.autolayout.Layouter.prototype.getIterations = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.getIterations = function() {
     return this.iterations;
 }
 /**
  * 
  * @param {} i
  */
-lore.ore.graph.autolayout.Layouter.prototype.setIterations = function(i) {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setIterations = function(i) {
     this.iterations = i;
 }
 /**
  * 
  */
-lore.ore.graph.autolayout.Layouter.prototype.doLayout = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.doLayout = function() {
     this.setupGraph();
     this.setupAndExecuteOptimization();
     this.moveFigures();
@@ -2273,8 +2273,8 @@ lore.ore.graph.autolayout.Layouter.prototype.doLayout = function() {
 /**
  * 
  */
-lore.ore.graph.autolayout.Layouter.prototype.setupGraph = function() {
-    this.graph = new lore.ore.graph.autolayout.Graph(this.dimensions);
+lore.ore.ui.graph.autolayout.Layouter.prototype.setupGraph = function() {
+    this.graph = new lore.ore.ui.graph.autolayout.Graph(this.dimensions);
     this.graph.setSize([this.workflow.getWidth(), this.workflow.getHeight()]);
     var workflowFigures = this.workflow.getFigures();
     this.figures = new draw2d.ArrayList();
@@ -2347,23 +2347,23 @@ lore.ore.graph.autolayout.Layouter.prototype.setupGraph = function() {
 /**
  * 
  */
-lore.ore.graph.autolayout.Layouter.prototype.setupAndExecuteOptimization = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.setupAndExecuteOptimization = function() {
     var springLaw = new this.springs(this.graph, this.preferredEdgeLength);
     var vvRepulsionLaw = new this.vertexVertexRepulsion(this.graph,
             this.preferredEdgeLength);
-    if (vvRepulsionLaw instanceof lore.ore.graph.autolayout.VertexVertexRepulsionLaw
+    if (vvRepulsionLaw instanceof lore.ore.ui.graph.autolayout.VertexVertexRepulsionLaw
             && this.barnesHut) {
         vvRepulsionLaw.setBarnesHutTheta(this.theta);
     }
-    if (vvRepulsionLaw instanceof lore.ore.graph.autolayout.VertexEdgeRepulsionLaw) {
+    if (vvRepulsionLaw instanceof lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw) {
         vvRepulsionLaw.setGridding(this.gridding);
     }
-    var forceModel = new lore.ore.graph.autolayout.ForceModel(this.graph);
+    var forceModel = new lore.ore.ui.graph.autolayout.ForceModel(this.graph);
     forceModel.addForceLaw(springLaw);
     forceModel.addForceLaw(vvRepulsionLaw);
     if (this.dimensions > 0) {
         forceModel
-                .addConstraint(new lore.ore.graph.autolayout.ProjectionConstraint(
+                .addConstraint(new lore.ore.ui.graph.autolayout.ProjectionConstraint(
                         this.graph, this.dimensions));
     }
     var opt = new this.optimizationProcedure(this.graph, forceModel,
@@ -2375,7 +2375,7 @@ lore.ore.graph.autolayout.Layouter.prototype.setupAndExecuteOptimization = funct
 /**
  * 
  */
-lore.ore.graph.autolayout.Layouter.prototype.moveFigures = function() {
+lore.ore.ui.graph.autolayout.Layouter.prototype.moveFigures = function() {
     for (var i = 0; i < this.vertexes.getSize(); i++) {
         var vertex = this.vertexes.get(i);
         var figure = this.figures.get(i);
@@ -2391,7 +2391,7 @@ lore.ore.graph.autolayout.Layouter.prototype.moveFigures = function() {
  * @param {} clusterIds
  * @param {} thisClusterId
  */
-lore.ore.graph.autolayout.Layouter.prototype.walkAndPopulateClusters = function(
+lore.ore.ui.graph.autolayout.Layouter.prototype.walkAndPopulateClusters = function(
         index, clusterIds, thisClusterId) {
     var figure = this.figures.get(index);
     if (!clusterIds[index]) {

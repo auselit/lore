@@ -20,10 +20,10 @@
 /**
  * Connection figure that provides a context menu to set the connection type
  * The types are sourced from ontrelationships, which is populated from an ontology (see uifunctions.js)
- * @class lore.ore.graph.ContextmenuConnection
+ * @class lore.ore.ui.graph.ContextmenuConnection
  * @extends draw2d.Connection
  */
-lore.ore.graph.ContextmenuConnection=function(){
+lore.ore.ui.graph.ContextmenuConnection=function(){
 	draw2d.Connection.call(this);
 	this.lineColor = new draw2d.Color(174,174,174); // light grey
 	this.labelColor = new draw2d.Color(51,51,51); // dark grey
@@ -44,14 +44,14 @@ lore.ore.graph.ContextmenuConnection=function(){
 	this.setTargetAnchor(new draw2d.ChopboxConnectionAnchor());
 };
 
-lore.ore.graph.ContextmenuConnection.prototype=new draw2d.Connection;
+lore.ore.ui.graph.ContextmenuConnection.prototype=new draw2d.Connection;
 /**
  * Update the type of relationship that the connection represents
  * @param {} enamespace
  * @param {} etype
  * @param {} symmetric
  */
-lore.ore.graph.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype, symmetric){
+lore.ore.ui.graph.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype, symmetric){
 	this.edgetype=etype;
 	this.edgens=enamespace;
 	this.label.setText(etype);
@@ -71,15 +71,15 @@ lore.ore.graph.ContextmenuConnection.prototype.setRelationshipType=function(enam
  * Construct the context menu for selecting the connection type
  * @return {}
  */
-lore.ore.graph.ContextmenuConnection.prototype.getContextMenu=function() {
+lore.ore.ui.graph.ContextmenuConnection.prototype.getContextMenu=function() {
     try {
     // use the cached menu if the relationship ontology has not changed
-    if (lore.ore.graph.ContextmenuConnection.contextMenu && (
-            lore.ore.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl)) {
-        return lore.ore.graph.ContextmenuConnection.contextMenu;
+    if (lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
+            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl)) {
+        return lore.ore.ui.graph.ContextmenuConnection.contextMenu;
     } else {
         lore.debug.ore("generating context menu for connection",this);
-	    lore.ore.graph.ContextmenuConnection.contextMenu=new draw2d.Menu();
+	    lore.ore.ui.graph.ContextmenuConnection.contextMenu=new draw2d.Menu();
 		// sort the menu entries alphabetically
 		var keys = [];
 	 	for (var rel in lore.ore.ontrelationships){
@@ -92,11 +92,11 @@ lore.ore.graph.ContextmenuConnection.prototype.getContextMenu=function() {
             var symmquery = lore.ore.relOntology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
                 .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
 	        var symm = symmquery.length > 0;
-			var functionstr = "lore.ore.graph.selectedFigure.setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
-	 		lore.ore.graph.ContextmenuConnection.contextMenu.appendMenuItem(new draw2d.MenuItem(rel,null,new Function(functionstr)));
+			var functionstr = "lore.ore.ui.graph.selectedFigure.setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
+	 		lore.ore.ui.graph.ContextmenuConnection.contextMenu.appendMenuItem(new draw2d.MenuItem(rel,null,new Function(functionstr)));
 	 	}
-        lore.ore.graph.ContextmenuConnection.loadedOntology = lore.ore.onturl;
-		return lore.ore.graph.ContextmenuConnection.contextMenu;
+        lore.ore.ui.graph.ContextmenuConnection.loadedOntology = lore.ore.onturl;
+		return lore.ore.ui.graph.ContextmenuConnection.contextMenu;
     }
     } catch (ex){
         lore.debug.ore("problem generating context menu for connection",ex);

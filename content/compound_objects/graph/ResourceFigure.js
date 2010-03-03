@@ -19,11 +19,11 @@
  */
 /**
  * Displays a resource identified by a url and stored associated metadata
- * @class lore.ore.graph.ResourceFigure
+ * @class lore.ore.ui.graph.ResourceFigure
  * @extends draw2d.Node
  * @param {Object} initprops initial properties
  */
-lore.ore.graph.ResourceFigure = function(initprops) {
+lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	this.cornerWidth = 15;
 	this.cornerHeight = 14.5;
     this.originalHeight = -1;
@@ -43,14 +43,14 @@ lore.ore.graph.ResourceFigure = function(initprops) {
     this.setTitle((title? title : 'Resource'));
 };
 
-lore.ore.graph.ResourceFigure.prototype = new draw2d.Node;
-lore.ore.graph.ResourceFigure.prototype.type = "lore.ore.graph.ResourceFigure";
+lore.ore.ui.graph.ResourceFigure.prototype = new draw2d.Node;
+lore.ore.ui.graph.ResourceFigure.prototype.type = "lore.ore.ui.graph.ResourceFigure";
 /**
  * Create the HTML to represent the figure
  * @private
  * @return {}
  */
-lore.ore.graph.ResourceFigure.prototype.createHTMLElement = function() {
+lore.ore.ui.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	var item = document.createElement("div");
 	item.id = this.id;
 	item.style.position = "absolute";
@@ -127,6 +127,8 @@ lore.ore.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	this.metadataarea.style.paddingLeft = "3px";
 	this.metadataarea.style.color = "#333333";
 	this.metadataarea.style.borderBottom = "1px solid #aeaeae";
+    this.metadataarea.style.overflow = "hidden";
+    this.uriexpander = "<img class=\"hideuri\" style=\"margin-left:-7px\" onclick=\"if(this.className){this.className = '';this.parentNode.parentNode.className='';} else {this.className = 'hideuri';this.parentNode.parentNode.className='hideuribox';}\" src=\"../../skin/icons/bullet_arrow_down.png\">";
 	this.iframearea = document.createElement("div");
 	this.iframearea.style.border = "none";
 	this.textarea.appendChild(this.metadataarea);
@@ -146,7 +148,7 @@ lore.ore.graph.ResourceFigure.prototype.createHTMLElement = function() {
  * @param {number} w Width in pixels
  * @param {number} h Height in pixels
  */
-lore.ore.graph.ResourceFigure.prototype.setDimension = function(w, h) {
+lore.ore.ui.graph.ResourceFigure.prototype.setDimension = function(w, h) {
 	draw2d.Node.prototype.setDimension.call(this, w, h);
 	if (this.top_left) {
 		this.top_right.style.left = (this.width - this.cornerWidth) + "px";
@@ -180,7 +182,7 @@ lore.ore.graph.ResourceFigure.prototype.setDimension = function(w, h) {
  * Set the title in the header of the figure
  * @param {string} title
  */
-lore.ore.graph.ResourceFigure.prototype.setTitle = function(title) {
+lore.ore.ui.graph.ResourceFigure.prototype.setTitle = function(title) {
     //lore.debug.ore("ResourceFigure: setTitle " + title);
 	this.header.innerHTML = title;
 };
@@ -188,7 +190,7 @@ lore.ore.graph.ResourceFigure.prototype.setTitle = function(title) {
  * Set the URL of the resource represented by this figure
  * @param {string} urlparam The URL of the resource
  */
-lore.ore.graph.ResourceFigure.prototype.setContent = function(urlparam) {
+lore.ore.ui.graph.ResourceFigure.prototype.setContent = function(urlparam) {
     var theurl;
 	if (urlparam && urlparam !== "") {
 		theurl = urlparam;
@@ -202,7 +204,7 @@ lore.ore.graph.ResourceFigure.prototype.setContent = function(urlparam) {
 /**
  * Loads the content URL into the preview area
  */
-lore.ore.graph.ResourceFigure.prototype.showContent = function() {
+lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
 	var theurl = this.url;
 	var mimetype = this.metadataproperties["dc:format_0"];
     var rdftype = this.metadataproperties["rdf:type_0"];
@@ -216,8 +218,9 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
 					+ theurl
 					+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
 			var identifierURI = lore.ore.getOREIdentifier(theurl);
-			this.metadataarea.innerHTML = "<ul><li class='mimeicon oreicon'>"
-					+ identifierURI + "</li></ul>";
+			this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='" + identifierURI +"' class='mimeicon oreicon'>"
+                + this.uriexpander
+				+ identifierURI + "</li></ul>";
         } else {
             this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>RDF document (no preview available)</p>";
         }
@@ -288,7 +291,7 @@ lore.ore.graph.ResourceFigure.prototype.showContent = function() {
  * Creates a secure iframe to be used to display the content URL
  * @param {string} theurl
  */
-lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl) {
+lore.ore.ui.graph.ResourceFigure.prototype.createPreview = function(theurl) {
 	var iframe = lore.global.util.createSecureIFrame(window.top, theurl);
 	/*
 	 * function () { if ( this.scrollx != 0 || this.scrolly != 0 ) {
@@ -308,11 +311,12 @@ lore.ore.graph.ResourceFigure.prototype.createPreview = function(theurl) {
  * Set the URL of the resource represented by this figure
  * @param {string} urlparam
  */
-lore.ore.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
+lore.ore.ui.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
 	this.url = urlparam;
 	this.metadataproperties["resource_0"] = urlparam;
-	this.metadataarea.innerHTML = "<ul><li id='" + this.id + "-icon'>"
-			+ "<a onclick='lore.global.util.launchTab(\"" + urlparam
+	this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='" + this.id + "-icon'>"
+            + this.uriexpander
+			+ "<a title='" + urlparam +"' onclick='lore.global.util.launchTab(\"" + urlparam
 			+ "\",window);' href='#'>" + urlparam + "</a></li></ul>";
     //lore.debug.ore("set url to " + urlparam,this.metadataarea.innerHTML);
 
@@ -320,7 +324,7 @@ lore.ore.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
 /**
  * Displays an icon depending on the mimetype of the resource
  */
-lore.ore.graph.ResourceFigure.prototype.setIcon = function() {
+lore.ore.ui.graph.ResourceFigure.prototype.setIcon = function() {
 	var mimetype = this.metadataproperties["dc:format_0"]
 			? this.metadataproperties["dc:format_0"]
 			: "text/html";
@@ -350,7 +354,7 @@ lore.ore.graph.ResourceFigure.prototype.setIcon = function() {
  * 
  * @param {} theurl
  */
-lore.ore.graph.ResourceFigure.prototype.setRdfType = function(theurl){
+lore.ore.ui.graph.ResourceFigure.prototype.setRdfType = function(theurl){
     if (!this.metadataproperties["rdf:type_0"]){
         if (theurl.match(lore.ore.annoServer)){
             // TODO: could parse xml to support any annotation server
@@ -364,7 +368,7 @@ lore.ore.graph.ResourceFigure.prototype.setRdfType = function(theurl){
  * Determine the mime type of the resource and use to populate dc:format property
  * @param {} theurl
  */
-lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
+lore.ore.ui.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 	if (!this.metadataproperties["dc:format_0"]) { 
 		var req = new XMLHttpRequest();
 		req.open('GET', theurl, true);
@@ -397,7 +401,7 @@ lore.ore.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
  * @param {} y
  * @return {Boolean}
  */
-lore.ore.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
+lore.ore.ui.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
 	var _4677 = draw2d.Node.prototype.onDragstart.call(this, x, y);
 	if (!this.header) {
 		return false;
@@ -424,7 +428,7 @@ lore.ore.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
  * 
  * @param {} flag
  */
-lore.ore.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
+lore.ore.ui.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
 	draw2d.Node.prototype.setCanDrag.call(this, flag);
 	this.html.style.cursor = "";
 	if (!this.header) {
@@ -438,35 +442,35 @@ lore.ore.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
 };
 /**
  * 
- * @param {lore.ore.graph.COGraph} wf The parent draw2d.Workflow object 
+ * @param {lore.ore.ui.graph.COGraph} wf The parent draw2d.Workflow object 
  */
-lore.ore.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
+lore.ore.ui.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 	draw2d.Node.prototype.setWorkflow.call(this, wf);
 	if (wf && !this.inputPort) {
 		var orange = new draw2d.Color(255, 252, 182);
 		var grey = new draw2d.Color(174, 174, 174);
-		this.inputPort = new lore.ore.graph.Port();
+		this.inputPort = new lore.ore.ui.graph.Port();
 		this.inputPort.setWorkflow(wf);
 		this.inputPort.setName("input");
 		this.inputPort.setBackgroundColor(orange);
 		this.inputPort.setColor(grey);
 		this.addPort(this.inputPort, -5, this.height / 2);
 
-		this.inputPort2 = new lore.ore.graph.Port();
+		this.inputPort2 = new lore.ore.ui.graph.Port();
 		this.inputPort2.setWorkflow(wf);
 		this.inputPort2.setName("input2");
 		this.inputPort2.setBackgroundColor(orange);
 		this.inputPort2.setColor(grey);
 		this.addPort(this.inputPort2, this.width / 2, -5);
 
-		this.outputPort = new lore.ore.graph.Port();
+		this.outputPort = new lore.ore.ui.graph.Port();
 		this.outputPort.setWorkflow(wf);
 		this.outputPort.setName("output");
 		this.outputPort.setBackgroundColor(orange);
 		this.outputPort.setColor(grey);
 		this.addPort(this.outputPort, this.width + 5, this.height / 2);
 
-		this.outputPort2 = new lore.ore.graph.Port();
+		this.outputPort2 = new lore.ore.ui.graph.Port();
 		this.outputPort2.setWorkflow(wf);
 		this.outputPort2.setName("output2");
 		this.outputPort2.setBackgroundColor(orange);
@@ -475,10 +479,24 @@ lore.ore.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 
 	}
 };
+/** Toggle whether URI display is open or closed */
+lore.ore.ui.graph.ResourceFigure.prototype.toggleURI = function(){
+    
+}
+/** Determine if figure needs to be resized (after toggling or URI hiding 
+ * @private
+ */
+lore.ore.ui.graph.ResourceFigure.prototype.recalcDimensions = function (){
+    var newHeight = this.header.offsetHeight 
+        + this.metadataarea.offsetHeight
+        + this.iframearea.offsetHeight
+        + this.footer.offsetHeight - 4; 
+    this.setDimension(this.width, newHeight);
+}
 /**
  * Toggle whether the figure is open or closed
  */
-lore.ore.graph.ResourceFigure.prototype.toggle = function() {
+lore.ore.ui.graph.ResourceFigure.prototype.toggle = function() {
 	if (this.originalHeight == -1) {
 		this.originalHeight = this.height;
 		this.iframearea.style.display = "none";
@@ -501,7 +519,7 @@ lore.ore.graph.ResourceFigure.prototype.toggle = function() {
 /**
  * 
  */
-lore.ore.graph.clearFields = function() {
+lore.ore.ui.graph.clearFields = function() {
 	this.scrollx = 0;
 	this.scrolly = 0;
 };
@@ -509,7 +527,7 @@ lore.ore.graph.clearFields = function() {
  * @param {} pname The name of the property to append eg dc:title
  * @param {} pval The value of the property
  */
-lore.ore.graph.ResourceFigure.prototype.appendProperty = function(pname, pval){
+lore.ore.ui.graph.ResourceFigure.prototype.appendProperty = function(pname, pval){
     var counter = 0;
     var oldrdftype = this.metadataproperties["rdf:type_0"];
     var prop = this.metadataproperties[pname + "_" + counter];
@@ -528,7 +546,7 @@ lore.ore.graph.ResourceFigure.prototype.appendProperty = function(pname, pval){
  * @param {} pid The id of the metadataproperty eg dc:title_0
  * @param {} pval The value of the property
  */
-lore.ore.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
+lore.ore.ui.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
   
   var oldval = this.metadataproperties[pid];
   //lore.debug.ore("ResourceFigure: setProperty " + pid + " " + pval,this);
@@ -547,7 +565,7 @@ lore.ore.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
  * Unset (remove) a property by id
  * @param {} pid The id of the property eg dc:title_0
  */
-lore.ore.graph.ResourceFigure.prototype.unsetProperty = function(pid){
+lore.ore.ui.graph.ResourceFigure.prototype.unsetProperty = function(pid){
     delete this.metadataproperties[pid];
     if (pid == "dc:title_0"){
         // TODO: #2 (refactor) : store properties as arrays instead (this will leave gaps if there are lots of values for this property)
@@ -561,14 +579,14 @@ lore.ore.graph.ResourceFigure.prototype.unsetProperty = function(pid){
  * @param {string} pid Fully qualified property index eg dc:format_0
  * @return {} the property value
  */
-lore.ore.graph.ResourceFigure.prototype.getProperty = function(pid){
+lore.ore.ui.graph.ResourceFigure.prototype.getProperty = function(pid){
     return this.metadataproperties[pid];
 }
 /**
  * Generate the markup for the plus/minus icon used to toggle the preview area
  * @private
  */
-lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
+lore.ore.ui.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
 	if (this.originalHeight == -1) {
 		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
 	} else {
@@ -578,11 +596,15 @@ lore.ore.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
 /** Generate a context menu for the figure
  * @return {draw2d.Menu} the context menu
  */
-lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
+lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
 	var menu = new draw2d.Menu();
 	var oThis = this;
 
 	var thisfig = this;
+    menu.appendMenuItem(new draw2d.MenuItem("Show in Summary View", null,
+        function (){
+            // TODO jump to resource in summary view
+        }));
 	if (!this.metadataproperties["dc:format_0"].match("rdf")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
 				"Open resource in separate window", null, function() {
@@ -607,7 +629,7 @@ lore.ore.graph.ResourceFigure.prototype.getContextMenu = function() {
  * @param {} keyCode
  * @param {} ctrl
  */
-lore.ore.graph.ResourceFigure.prototype.onKeyDown = function (keyCode, ctrl){
+lore.ore.ui.graph.ResourceFigure.prototype.onKeyDown = function (keyCode, ctrl){
   //lore.debug.ore("ResourceFigure: onKeyDown " + keyCode,ctrl);
   // on delete or backspace
   if(keyCode==46 || keyCode==8){ 
