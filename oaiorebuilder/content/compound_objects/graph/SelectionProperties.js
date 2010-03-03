@@ -19,22 +19,22 @@
  */
 /** 
  * Updates the properties views when nodes or connections are selected
- * @class lore.ore.graph.SelectionProperties
+ * @class lore.ore.ui.graph.SelectionProperties
  */
-lore.ore.graph.SelectionProperties=function(/*:workflow*/ workflow)
+lore.ore.ui.graph.SelectionProperties=function(/*:workflow*/ workflow)
 {
    this.workflow = workflow; 
 }
 
-lore.ore.graph.SelectionProperties.prototype.type="lore.ore.graph.SelectionProperties";
+lore.ore.ui.graph.SelectionProperties.prototype.type="lore.ore.ui.graph.SelectionProperties";
 /**
  * Updates the proprties in the UI when the selection changes
  * @param {} figure
  */
-lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Figure*/figure){
+lore.ore.ui.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Figure*/figure){
 	if (figure != null) {
 		//lore.debug.ore("User selected figure in graph editor", figure);
-		lore.ore.graph.selectedFigure = figure;
+		lore.ore.ui.graph.selectedFigure = figure;
         lore.ore.ui.nodegrid.store.removeAll();
 		if (figure.metadataproperties) {
             for (p in figure.metadataproperties){
@@ -58,7 +58,7 @@ lore.ore.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Fi
             lore.ore.ui.nodegrid.expand();
 		}
 	} else {
-        delete lore.ore.graph.selectedFigure;
+        delete lore.ore.ui.graph.selectedFigure;
         lore.ore.ui.nodegrid.store.removeAll();
         lore.ore.ui.nodegrid.collapse();
 	}

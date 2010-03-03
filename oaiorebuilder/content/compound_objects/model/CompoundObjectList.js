@@ -72,7 +72,7 @@ lore.ore.model.CompoundObjectList = Ext.extend(Ext.util.Observable, {
         this.fireEvent('remove',uri);
     },
     /** Add a batch of compound objects to the list
-     * @param {Array} coSummaries An Array of {@link lore.ore.graph.CompoundObjectSummary} objects
+     * @param {Array} coSummaries An Array of {@link lore.ore.ui.graph.CompoundObjectSummary} objects
      */
     add: function(coSummaries){
         if (this.compoundObjects.length == 0){

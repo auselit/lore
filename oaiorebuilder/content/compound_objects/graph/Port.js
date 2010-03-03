@@ -19,22 +19,22 @@
  */
 /** 
  * Port that accepts connections from ContextmenuConnections 
- * @class lore.ore.graph.Port
+ * @class lore.ore.ui.graph.Port
  */
-lore.ore.graph.Port = function(uirep) {
+lore.ore.ui.graph.Port = function(uirep) {
     draw2d.Port.call(this,uirep);
     this.setCoronaWidth(35);
 };
-lore.ore.graph.Port.prototype = new draw2d.Port;
-lore.ore.graph.Port.prototype.type = "lore.ore.graph.Port";
+lore.ore.ui.graph.Port.prototype = new draw2d.Port;
+lore.ore.ui.graph.Port.prototype.type = "lore.ore.ui.graph.Port";
 /**
  * Create a connection between nodes if a port from another node is dropped on this port
  * @param {} port
  */
-lore.ore.graph.Port.prototype.onDrop = function(port) {
+lore.ore.ui.graph.Port.prototype.onDrop = function(port) {
 	if (this.parentNode.id != port.parentNode.id) {
 		var commConn = new draw2d.CommandConnect(this.parentNode.workflow, this, port);
-		commConn.setConnection(new lore.ore.graph.ContextmenuConnection());
+		commConn.setConnection(new lore.ore.ui.graph.ContextmenuConnection());
 		this.parentNode.workflow.getCommandStack().execute(commConn);
 	}
 };
