@@ -608,25 +608,48 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			}
 			else 
 				im = $('img[offsetWidth!=0]', doc);
-
-			im.each(function(){
-				// preload image scale factor
-				var scale = lore.anno.ui.updateImageData(this, doc);
-				if (scale.origHeight >= 32){
-					// attach image area select handle for image			
-					$(this).imgAreaSelect({
-						onSelectEnd: lore.anno.ui.handleEndImageSelection,
-						onSelectStart: function(){
-							var selObj = cw.getSelection();
-							selObj.removeAllRanges();
-						},
-						handles: 'corners',
-						imageHeight: scale.origHeight,
-						imageWidth: scale.origWidth
-					})
-                }
-			});
+			var frag = doc.createDocumentFragment();
 			
+			// add a handler that loads image selection capabilites to an image
+			// when the user mouses over an image for the first time. This is because
+			// trying to load the image selection library on page load causes browser 
+			// timeouts for pages with large amounts of image
+			
+			// TODO: further optimization on the imgareaselect library
+			im.each(function(){
+					
+
+				// minimum area check 
+				if ( parseInt(this.offsetWidth) + parseInt(this.offsetHeight) < 64) 
+					return;				
+				
+				$(this).mouseover(function(){
+					try {
+						// remove self, as it's once off use of handler
+						$(this).unbind('mouseover');
+						
+						// preload image scale factor
+						var scale = lore.anno.ui.updateImageData(this, doc);
+						
+						// attach image area select handle for image			
+						$(this).imgAreaSelect({
+							onSelectEnd: lore.anno.ui.handleEndImageSelection,
+							onSelectStart: function(){
+								var selObj = cw.getSelection();
+								selObj.removeAllRanges();
+							},
+							handles: 'corners',
+							imageHeight: scale.origHeight,
+							imageWidth: scale.origWidth,
+						})
+					} 
+					catch (e) {
+						lore.debug.anno("error initing image handler: " + e, e);
+					}
+				});
+				
+			});
+	 					
 			var e = lore.global.util.domCreate('span', doc);
 			e.id = 'lore_image_highlighting_inserted';
 			e.style.display = "none";
