@@ -28,19 +28,21 @@ var curtip;
                      .addClass( (conf.fixed) ? conf.fixedClass : '' )
                      .addClass( (conf.persistent) ? conf.persistentClass : '' )
                      .appendTo(win);
-     
+    
+	var closeIcon = null;
+	if ( conf.closeIcon){
+		var closeIcon = jQuery(doc.createElement("img")).css ({'float':'right'});
+		closeIcon.attr('src', conf.closeIcon);
+		closeIcon.appendTo(tooltip);
+	} 
 	 if (typeof(conf.content) == 'string') 
 	 	tooltip.html(conf.content);
 	 else {
 	 	tooltip.append(conf.content);
 	 }
 
-	var closeIcon = null;
-	if ( conf.closeIcon){
-		var closeIcon = jQuery(doc.createElement("img")).css({ position:'absolute' ,right:'0', top:'0'});
-		closeIcon.attr('src', conf.closeIcon);
-		closeIcon.appendTo(tooltip);
-	}
+	
+	
 	
       if(!conf.hidden) tooltip.show();
       else tooltip.hide();

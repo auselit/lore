@@ -28,7 +28,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 
 	form: function () {
 		return {
-				trackResetOnLoad: true,
+				
 			 	title: "Editor",
 			 	layout: 'border',
 				items: [{
@@ -432,9 +432,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	
 	initComponent: function(){
 	  	try {
-			Ext.apply ( this, this.form()
-			 );
-			
+			Ext.apply ( this, this.form());
 			lore.anno.ui.EditorPanel.superclass.initComponent.apply(this, arguments);
 		} catch(e){
 			lore.debug.anno("EditorPanel:initComponent() - " + e, e);

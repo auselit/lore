@@ -215,12 +215,14 @@
 			},
 			
 			refresh : function (n) {
-				var t = n.getOwnerTree();
-				var cols = t.columns;
-				for (var i =0; i < cols.length; i++ ){
-					this.columnNodes[i].style.width = cols[i].width - t.borderWidth - ( i == (cols.length-1)? t.scrollOffset: 0);
+				if (this.rendered) {
+					var t = n.getOwnerTree();
+					var cols = t.columns;
+					for (var i = 0; i < cols.length; i++) {
+						this.columnNodes[i].style.width = cols[i].width - t.borderWidth - (i == (cols.length - 1) ? t.scrollOffset : 0);
+					}
+					this.bodyNode.style.width = cols[0].width - t.borderWidth - (32 + n.getDepth() * 16);
 				}
-				this.bodyNode.style.width= cols[0].width - t.borderWidth -(32 + n.getDepth() * 16);
 			},
 			
 			renderElements : function(n, a, targetNode, bulkRender){
@@ -363,9 +365,10 @@
 		},
 				});
 				lore.anno.ui.AnnoColumnTree.superclass.initComponent.apply(this, arguments);
-				
+				this.addEvents("sortchange");
 				this.addTreeSorter('created', 'asc');
-				this.sorttypecombo.on("select", this.handleSortTypeChange);
+				this.sorttypecombo.on("select", this.handleSortTypeChange, this);
+				
 				
 			} catch(e){
 				lore.debug.anno("AnnoColumnTree:initComponent() - " + e, e);
@@ -373,19 +376,22 @@
 		},
 		
 		handleSortTypeChange : function (combo, rec, index) {
-			
+			lore.debug.anno("umm here?");
 			try {
-				this.ownerCt.ownerCt.treesorter = {
+				this.treesorter = {
 					sortField : rec.data.type,
 					direction  : rec.data.direction
 				}
 				
-				
-				//TODO: needs to be updated
-				lore.anno.ui.updateUIOnRefresh(lore.anno.annods);
+				lore.debug.anno("firstChild: " + this.getRootNode().firstChild,this.getRootNode().firstChild );
+				this.fireEvent("sortchange", this, this.getRootNode().firstChild);
 			} catch (e ) {
 				lore.debug.anno("Error occurred changing sort type: " + e,e);
 			}
+			
+		},
+		
+		refresh : function () {
 			
 		},
 		
@@ -412,7 +418,8 @@
 				}
 				
 			var sortFn = function(n1, n2){
-       		 	try {
+
+				try {
 					if (n1.attributes["leaf"] && !n2.attributes["leaf"]) {
 						return 1;
 					}
@@ -423,7 +430,6 @@
 					var v1 = sortType(n1).toUpperCase();
 					var v2 = sortType(n2).toUpperCase();
 					var dsc = ts.direction == 'desc';
-					var z = ts;
 					
 					if (v1 < v2) {
 						return dsc ? +1 : -1;
@@ -441,7 +447,7 @@
 			 };
 			 
 			var doSort = function(node){
-     		   ts = this.treesorter;
+			   ts = this.treesorter;
 			   node.sort(sortFn);
     		}
 			var compareNodes = function(n1, n2){
@@ -449,7 +455,6 @@
     		}
     
     		var updateSort  = function(tree, node){
-				
         		if(node.childrenRendered){
             		doSort.defer(1, this, [node]);
         		}
@@ -457,7 +462,8 @@
 			this.on("beforechildrenrendered", doSort, this);
    			this.on("append", updateSort, this);
     		this.on("insert", updateSort, this);
-    
+			this.on("sortchange", updateSort, this);
+    		
 	}
 		});
 		
@@ -490,7 +496,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 		Ext.apply(this, {});
 	},
 	
-		/**
+	/**
 	 * Notification function called when a load operation occurs in the store.
 	 * This is called when annotations are loaded in bulk from the server or when
 	 * an individual annotation was added by a user.  Adds one or more nodes to the
@@ -502,7 +508,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	handleLoad : function(store, records, options ) {
 		
 		try {
-				lore.debug.anno("handleLoad()", records);
+				lore.debug.anno("AnnoPageTreeNode:handleLoad() - " + records.length + " records.", records);
 				for (var i = 0; i < records.length; i++) {
 					var rec = records[i];
 				 	var anno = rec.data;
@@ -511,13 +517,13 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 						var n = new lore.anno.ui.AnnoColumnTreeNode({
 							anno: anno
 						})
-						lore.debug.anno("created annocolumntreenode: " + n, n);
+						//lore.debug.anno("created annocolumntreenode: " + n, n);
 						var parent = null;
 						if (  anno.isReply) 
 							parent = lore.anno.ui.findNode(anno.about, this);				
 						else 
 							parent = this;
-						lore.debug.anno("appending to " + parent, parent);
+						//lore.debug.anno("appending to " + parent, parent);
 						parent.appendChild(n);
 				
 					} 
@@ -583,13 +589,122 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 		}
 	},
 	
+	/**
+	 * Notification function called when a clear operation occurs in the store.
+	 * Clears the tree.
+	 * @param {Store} store The data store that performed the notification
+	 */
+	handleClear: function(store ){
+		this.eachChild(function(child) {
+			this.removeChild(child);
+		}, this);
+		
+		/*var tree = lore.anno.ui.treeroot.getOwnerTree();
+			var n = tree.getRootNode();
+			var old = lore.anno.ui.treeroot;
+			lore.anno.ui.treeroot =  new Ext.tree.TreeNode({text:'Current Page'});
+			n.replaceChild( lore.anno.ui.treeroot, old);*/
+	},
+	
+	refresh : function () {
+		this.handleClear();
+		this.handleUpdate(this.model, this.model.getRange());
+	}
+	
 });
 
 
  
 
 lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
+
+	constructor: function(config ){
+		  this.config = config || {};
+        /** 
+         * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
+         * @property 
+         * */
+        this.model = config.model;
+        this.initConfig(this.model);
+        
+		this.model.on("load", this.handleLoad, this);
+		this.model.on("remove", this.handleRemove, this);
+		this.model.on("update", this.handleUpdate, this);
+		
+        lore.anno.ui.AnnoModifiedPageTreeNode.superclass.constructor.call(this, this.config); 
+	},
 	
+	initConfig: function(model) {
+		Ext.apply(this, { postfix: this.config.postfix ? this.config.postfix: ''});
+	},
+	
+	handleLoad: function(store, records, options ) {
+		try {
+			// add
+			if (records.length == 1) {
+				lore.debug.anno("AnnoModifiedPageTreeNode:handleLoad() " + records.length + " records.", records);
+				var rec = records[0];
+				
+				var n = new lore.anno.ui.AnnoColumnTreeNode({
+					anno: rec.data,
+					postfix: this.postfix
+				})
+				this.appendChild(n);
+				//lore.debug.anno("created annocolumntreenode: " + n, n);
+				
+				n.ensureVisible();
+				n.select();
+			}
+		}catch (e) {
+			lore.debug.anno("handleLoad: " +e, e);
+		}
+	},
+	
+	handleRemove : function(store, rec, index) {
+			try {
+				var node = lore.anno.ui.findNode(rec.data.id + this.postfix, this);
+				if (node) {
+					node.remove();
+				} else {
+					lore.debug.anno("node not found to remove: " + rec.data.id, this);
+				}
+			} 
+			catch (e) {
+				lore.debug.ui("Error removing annotation from tree view: " + e, e);
+			}
+		},
+		
+		
+	handleUpdate : function(store, rec, operation){
+			
+			try {
+				var node = lore.anno.ui.findNode(rec.data.id + this.postfix, this);
+				
+				if (!node) {
+					return;
+				}
+				var info = ' ';
+				
+				//TODO: repplies resource url etc
+				if (rec.data.resource != lore.anno.ui.currentURL) {
+					info = "Unsaved annotation from " + rec.data.resource + " ";
+				}
+				
+				if (!lore.anno.isNewAnnotation(rec)) {
+					info = info + lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
+				}
+				
+				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data, this.model));
+				
+				if ( lore.anno.ui.page.curSelAnno == rec )
+					lore.anno.ui.showAnnotation(rec, true);
+				
+			} 
+			catch (e) {
+				lore.debug.ui("Error updating annotation tree view: " + e, e);
+			}
+		}
+			
 });
  
 				
@@ -614,7 +729,8 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
         //this.addEvents('detailschange');
         lore.anno.ui.AnnoColumnTreeNode.superclass.constructor.call(this, this.config); 
    },
-     /**
+   
+    /**
     * Set the intial config values for text, uri etc from the model object
     * @param {lore.ore.model.CompoundObjectSummary} coSummary Model object for this tree node
     */
@@ -624,12 +740,12 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 			var iCls = lore.anno.ui.getAnnoTypeIcon(anno);
 			
 			Ext.apply(this.config, {
-				id: anno.id,
+				id: anno.id + ( this.config.postfix ? this.config.postfix:''),
 				iconCls: iCls,
 				title: lore.anno.ui.getAnnoTitle(anno),
 				uiProvider: lore.anno.ui.ColumnTreeNodeUI,
 				qtip: lore.anno.ui.genAnnotationCaption(anno, 't by c, d'),
-				nodeType: anno.type
+				nodeType: anno.type				
 			});
 			
 			if (lore.anno.isNewAnnotation(anno)) {
