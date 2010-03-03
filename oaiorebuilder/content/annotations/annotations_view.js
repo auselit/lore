@@ -28,32 +28,6 @@
 
 	try {
 	
-		lore.anno.ui.PageManager = function (pagedata, model) {
-			
-			this.page = pagedata;
-			this.model = model;	
-			this.model.on('load', this.handleLoad, this);
-			this.model.on('remove', this.handleRemove, this);	
-		}
-		
-		lore.anno.ui.PageManager.prototype = {
-			tog : function () {
-				if (this.page.multiSelAnno.length > 0) {
-					// hide then reshow 
-					lore.anno.ui.toggleAllAnnotations();
-					lore.anno.ui.toggleAllAnnotations();
-				}
-			},
-			
-			handleLoad: function(store, records, options) {
-				this.tog();
-			},
-			
-			handleRemove: function(store, rec, ind) {
-				this.tog();
-			}
-		}
-				
 		lore.anno.ui.PageData = function(){
 			this.clear();
 		}
@@ -107,41 +81,14 @@
 		lore.anno.ui.initPage = function(model){
 			if (!lore.anno.ui.page) 
 				lore.anno.ui.page = new lore.anno.ui.PageData();
-			if (!lore.anno.ui.pageman)
-				lore.anno.ui.pageman = new lore.anno.ui.PageManager(lore.anno.ui.page, model);
+			if (!lore.anno.ui.pageui)
+				lore.anno.ui.pageui = new lore.anno.ui.PageView(lore.anno.ui.page, model);
 		}	
 		lore.anno.ui.initView = function ( model) {
-			lore.anno.ui.initGUIConfig({ annods: lore.anno.annods});
-			lore.anno.ui.initModelHandlers();
+			lore.anno.ui.initGUIConfig({ annods: lore.anno.annods, annodsunsaved: lore.anno.annodsunsaved});
 			lore.anno.ui.initPage(lore.anno.annods);
-			
-		
 		}
-    /**
-		 * Setup the event hooks that notify the view functions of store events
-		 */
-		lore.anno.ui.initModelHandlers = function(){
-			var annosourcestreeroot = Ext.getCmp("annosourcestree").getRootNode();
-			lore.anno.annods.on({
-				"clear": {
-					fn: lore.anno.ui.updateUIOnClear
-				}//,
-			// "datachanged": {fn: lore.anno.ui.updateUIOnRefresh},
-			});
-			
-			lore.anno.annodsunsaved.on( {
-			"load": {
-					fn: lore.anno.ui.updateUIUnsavedChanges
-				},
-			"remove": {
-					fn: lore.anno.ui.updateUIOnRemoveUnsavedChanges
-				},
-			"update": {
-					fn: lore.anno.ui.updateUIOnUpdateUnsavedChanges
-				}
-			});
-			
-		}
+    
 		
 	
 		/**
@@ -178,26 +125,6 @@
 					lore.anno.ui.page.curAnnoMarkers[i].hide();
 				}
 			}
-		}
-		
-		/**
-		 * Update GUI elements based off the record passed in
-		 * @param {Record} rec Ext Annotation record to base update off of
-		 */
-		lore.anno.ui.updateUIElements = function(rec){
-			// update the highlighted fields colour in the event the creator is changed
-			// the colour is identified by the creator's name
-			
-			if (rec) {
-				lore.anno.ui.hideMarker();
-				lore.anno.ui.highlightCurrentAnnotation(rec);
-			}
-			
-		/*	if (lore.anno.ui.page.multiSelAnno.length > 0) {
-				// hide then reshow 
-				lore.anno.ui.toggleAllAnnotations();
-				lore.anno.ui.toggleAllAnnotations();
-				*/
 		}
 		
 		/**
@@ -281,7 +208,7 @@
 					}
 
 					ctxtField.getEl().setStyle("background-color", lore.anno.ui.getCreatorColour(rec.data.creator));
-					lore.anno.ui.setVisibilityFormField('contextdisp', false);
+					lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,'contextdisp', false);
 					
 				}
 				else {
@@ -312,7 +239,7 @@
 															// context field will be set
 					}
 					vCtxtField.getEl().setStyle("background-color", lore.anno.ui.getCreatorColour(rec.data.creator));
-					lore.anno.ui.setVisibilityFormField('rcontextdisp', false);
+					lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,'rcontextdisp', false);
 				}
 				else {
 					var ctxtField = lore.anno.ui.form.findField('rcontextdisp');
@@ -361,9 +288,9 @@
 		 	}
 			
 			var isNormal = lore.anno.ui.getAnnotationMode() == lore.constants.ANNOMODE_NORMAL;
-			lore.anno.ui.setVisibilityFormField('importance', 	isNormal);
-			lore.anno.ui.setVisibilityFormField('altbody', 		isNormal);
-			lore.anno.ui.setVisibilityFormField('references', 	isNormal);
+			lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,'importance', 	isNormal);
+			lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,'altbody', 		isNormal);
+			lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,'references', 	isNormal);
 		
 				
 				if (!loadOnly) {
@@ -371,8 +298,6 @@
 					Ext.getCmp("treeview").doLayout();
 				}
 					lore.anno.ui.form.loadRecord(rec);
-					
-				
 				
 				var val = rec.data.resource;
 				if (rec.data.isReply) {
@@ -395,7 +320,6 @@
 						//Ext.getCmp("updctxtbtn").show();
 					}
 				}
-				
 			} 
 			catch (e) {
 				lore.debug.anno("Error display annotation: " + e, e);
@@ -407,9 +331,9 @@
 		 * @param {String} fieldName The field name to set the visibility of
 		 * @param {Boolean} hide (Optional)Specify whether to hide the field or not. Defaults to false
 		 */
-		lore.anno.ui.setVisibilityFormField = function(fieldName, hide){
+		lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
 			
-			var thefield = lore.anno.ui.form.findField(fieldName);
+			var thefield = form.findField(fieldName);
 			if (thefield) {
 				var cont = thefield.container.up('div.x-form-item');
 				
@@ -433,7 +357,7 @@
 		 */
 		lore.anno.ui.hideFormFields = function(fieldNameArr){
 			for (var i = 0; i < fieldNameArr.length; i++) {
-				lore.anno.ui.setVisibilityFormField(fieldNameArr[i], true);
+				lore.anno.ui.setVisibilityFormField(lore.anno.ui.form, fieldNameArr[i], true);
 			}
 		}
 		
@@ -443,7 +367,7 @@
 		 */
 		lore.anno.ui.showFormFields = function(fieldNameArr){
 			for (var i = 0; i < fieldNameArr.length; i++) {
-				lore.anno.ui.setVisibilityFormField(fieldNameArr[i], false);
+				lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,fieldNameArr[i], false);
 			}
 		}
 		
@@ -540,7 +464,7 @@
 			}
 			else {
 				unsavedRec = lore.global.util.findRecordById(lore.anno.annodsunsaved, rec.data.id);
-				if (!unsavedRec && ( lore.anno.isNewAnnotation(rec) || lore.anno.ui.form.isDirty())) {
+				if (!unsavedRec && ( lore.anno.isNewAnnotation(rec) || lore.anno.ui.isFormDirty())) {
 				
 					//var anno = lore.anno.addAnnotation(null, rec.data.resource, null);
 					var clone = {};
@@ -552,10 +476,7 @@
 					
 					lore.anno.annodsunsaved.loadData([clone], true);
 					unsavedRec = lore.global.util.findRecordById(lore.anno.annodsunsaved, rec.data.id);
-					lore.debug.anno('meh', {
-						c: clone,
-						u: unsavedRec
-					});
+				 
 				}
 			}
 			
@@ -583,10 +504,6 @@
 			return lore.anno.ui.genDescription(anno, true);
 			
 		}
-		
-				
-		
-		
 		
 		/**
 		 * Attach context menu events to a tree node
@@ -750,7 +667,7 @@
 			try {
 				
 				if (lore.anno.ui.page.curSelAnno &&
-					(lore.anno.ui.form.isDirty() && 
+					(lore.anno.ui.isFormDirty() && 
 					lore.anno.ui.form.findField('id').getValue() == lore.anno.ui.page.curSelAnno.data.id)) {
 						lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.page.curSelAnno, true);
 						//lore.anno.ui.form.updateRecord(lore.anno.ui.page.curSelAnno);
@@ -802,7 +719,7 @@
 				}
 				
 				// update existing annotation
-				if (!lore.anno.isNewAnnotation(anno) && !lore.anno.ui.form.isDirty() && !anno.dirty ) {
+				if (!lore.anno.isNewAnnotation(anno) && !lore.anno.ui.isFormDirty() && !anno.dirty ) {
 					lore.anno.ui.loreWarning('Annotation content was not modified, save will not occur.');
 					return;
 				}
@@ -822,12 +739,7 @@
 					if (result == "success") {
 						lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
 						lore.debug.anno(action + 'd ' + anno.data.title, resultMsg);
-						
-						// maybe need to replace this with firing event that when annotation 
-						// is saved or 'cleaned' that UI elements are updated i.e highlight fields
-						// are updated ( i.e the colour may change as it's based of creator name),
-						// the annotation summary window needs to be updated etc.
-						lore.anno.ui.updateUIElements(anno);
+						lore.anno.ui.hideAnnotation();
 					}
 					else {
 						lore.anno.ui.loreError('Unable to ' + action + ' annotation');
@@ -853,6 +765,7 @@
 		   	if ( lore.anno.ui.page.curSelAnnoStore == lore.anno.annodsunsaved) {
 				 lore.anno.annodsunsaved.remove(lore.anno.ui.page.curSelAnno);
 				 lore.anno.ui.setCurrentAnno(null, null);
+				 lore.anno.ui.hideAnnotation();
 				 return;
 			}
 		 
@@ -873,6 +786,8 @@
 		   		},
 		   		icon: Ext.Msg.QUESTION
 		   	});
+		   } else {
+		   		lore.debug.anno("Nothing selected to delete.");
 		   }
 	    }
 		
@@ -1178,7 +1093,7 @@
 					// update the currently selected annotation before the focus is taken off it
 					// for the newly created annotation
 					if (lore.anno.ui.page.curSelAnno &&
-						((lore.anno.ui.form.isDirty()||
+						((lore.anno.ui.isFormDirty()||
 							lore.anno.isNewAnnotation(lore.anno.ui.page.curSelAnno)) && 
 							lore.anno.ui.form.findField('id').getValue() == lore.anno.ui.page.curSelAnno.data.id)) {
 							
@@ -1205,28 +1120,6 @@
 			}
 		}
 	
-		/**
-		 * Notification function called when a clear operation occurs in the store.
-		 * Clears the tree.
-		 * @param {Store} store The data store that performed the notification
-		 */
-		lore.anno.ui.updateUIOnClear = function(store) {
-			var tree = lore.anno.ui.treeroot.getOwnerTree();
-			var n = tree.getRootNode();
-			var old = lore.anno.ui.treeroot;
-			lore.anno.ui.treeroot =  new Ext.tree.TreeNode({text:'Current Page'});
-			n.replaceChild( lore.anno.ui.treeroot, old);
-			
-			lore.anno.ui.annoEventSource.clear();
-		}
-		
-		lore.anno.ui.updateUIOnRefresh = function (store) {
-			lore.anno.ui.updateUIOnClear(store);
-			lore.anno.ui.updateUI(store, store.getRange());
-		}
-		
-		
-
 	lore.anno.ui.findNode = function (id, tree){
 		if( tree) {
 			return lore.global.util.findChildRecursively( tree, 'id', id);
@@ -1238,67 +1131,16 @@
 		return n;
 	}
   	
-		
-		lore.anno.ui.updateUIOnRemoveUnsavedChanges = function(store, rec, index) {
-			try {
-				var node = lore.anno.ui.findNode(rec.data.id + '-unsaved', lore.anno.ui.treeunsaved );
-				if (node) {
-					node.remove();
-				} else {
-					lore.debug.anno("node not found to remove: " + rec.data.id);
-				}
-			} 
-			catch (e) {
-				lore.debug.ui("Error removing annotation from tree view: " + e, e);
-			}
-		}
-		
-		
-		lore.anno.ui.updateUIOnUpdateUnsavedChanges = function(store, rec, operation){
-			
-			try {
-				var node = lore.anno.ui.findNode(rec.data.id + "-unsaved", lore.anno.ui.treeunsaved);
-				
-				if (!node) {
-					return;
-				}
-				var info = ' ';
-				
-				//TODO: repplies resource url etc
-				if (rec.data.resource != lore.anno.ui.currentURL) {
-					info = "Unsaved annotation from " + rec.data.resource + " ";
-				}
-				
-				if (!lore.anno.isNewAnnotation(rec)) {
-					info = info + lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
-				}
-				
-				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data, lore.anno.annodsunsaved));
-				
-				if ( lore.anno.ui.page.curSelAnno == rec )
-					lore.anno.ui.showAnnotation(rec, true);
-				
-			} 
-			catch (e) {
-				lore.debug.ui("Error updating annotation tree view: " + e, e);
-			}
-		}
-		
-		
-		
-		
-		/**
-		 * When an annotation is selected in the tree this function is called. The annotation
-		 * is loaded into the form. It is highlighted on the current content window's document and if
-		 * it's a variation annotation the splitter is shown
-		 * @param {Node} node The tree node that was selected
-		 * @param {Object} event Not Used
-		 */
-		lore.anno.ui.handleAnnotationSelection = function(node, event){
+	/**
+	 * When an annotation is selected in the tree this function is called. The annotation
+	 * is loaded into the form. It is highlighted on the current content window's document and if
+	 * it's a variation annotation the splitter is shown
+	 * @param {Node} node The tree node that was selected
+	 * @param {Object} event Not Used
+	 */
+	lore.anno.ui.handleAnnotationSelection = function(node, event){
 		
 			try {
-				// byproduct of this is that if unsaved version exists of this node, that is selected
-				// instead of the node that was selected in current page.
 				var unsavedNode = node.isAncestor(lore.anno.ui.treeunsaved);
 				//lore.debug.anno("unsavedNode? " + unsavedNode + "n: " + node.getPath(), node);
 				
@@ -1310,7 +1152,7 @@
 					return;
 				
 				if (lore.anno.ui.page.curSelAnno &&
-				(lore.anno.ui.form.isDirty() ||
+				(lore.anno.ui.isFormDirty() ||
 				lore.anno.isNewAnnotation(lore.anno.ui.page.curSelAnno))) {
 					lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.page.curSelAnno);
 				}

@@ -111,6 +111,7 @@ loreuieditor = function (store ) {
 	 	region: "south",
 	 	split: true,
 		height: 300,
+		trackResetOnLoad: true,
 		id: "annotationslistform"
 	}
 }
@@ -234,7 +235,7 @@ lore.anno.ui.initGUIConfig = function(store){
 lore.anno.ui.initExtComponents = function(store){
 	try {
 		
-		lore.anno.ui.abouttab = Ext.getCmp("about");
+		
 		lore.anno.ui.views = Ext.getCmp("curpage");
 		lore.anno.ui.views.contextmenu = new Ext.menu.Menu({
 				id : "anno-context-menu"
@@ -261,14 +262,39 @@ lore.anno.ui.initExtComponents = function(store){
 
 		lore.anno.ui.treerealroot = Ext.getCmp("annosourcestree").getRootNode(); 
 		//lore.anno.ui.treeroot =  new Ext.tree.TreeNode({text:'Current Page'});
-		lore.anno.ui.treeroot = new lore.anno.ui.AnnoPageTreeNode({text:'Current Page',
+		lore.anno.ui.treeroot = new lore.anno.ui.AnnoPageTreeNode({	text:'Current Page',
 																	model: store.annods });
+																	
 		lore.anno.ui.treeroot.on('append', lore.anno.ui.attachAnnoCtxMenuEvents);
 																	
-		lore.anno.ui.treeunsaved = new Ext.tree.TreeNode({text:'Unsaved Changes'});
+		lore.anno.ui.treeunsaved = new lore.anno.ui.AnnoModifiedPageTreeNode({	text:'Unsaved Changes',
+																				model: store.annodsunsaved,
+																				postfix: "-unsaved"
+																			});
+		lore.anno.ui.treeunsaved.on('append', function(tree, thus, childNode, index){
+			var rec = lore.global.util.findRecordById(lore.anno.annodsunsaved, lore.anno.ui.recIdForNode(childNode));
+
+			// update the currently selected annotation before the focus is taken off it
+			// for the newly created annotation
+			if (lore.anno.ui.page.curSelAnno &&
+			((lore.anno.ui.form.isDirty() ||
+			lore.anno.isNewAnnotation(lore.anno.ui.page.curSelAnno)) &&
+			lore.anno.ui.form.findField('id').getValue() == lore.anno.ui.page.curSelAnno.data.id)) {
+			
+				lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.page.curSelAnno);
+			}
+			
+			if (!lore.anno.ui.formpanel.isVisible()) {
+			
+				lore.anno.ui.formpanel.show();
+			}
+			
+			lore.anno.ui.showAnnotation(rec);
+			lore.anno.ui.setCurrentAnno(rec, lore.anno.annodsunsaved);
+		})
+		
 		
 		lore.anno.ui.treerealroot.appendChild([ lore.anno.ui.treeroot, lore.anno.ui.treeunsaved]);
-
 		lore.anno.ui.treeroot.expand();
 		
 		Ext.getCmp("annosourcestree").on("expandnode", function (node) {
@@ -279,8 +305,7 @@ lore.anno.ui.initExtComponents = function(store){
 		
 		Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleAnnotationSelection);
 		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditAnnotation);
-		//Ext.getCmp("sorttypecombo").on("select", lore.anno.ui.handleSortTypeChange);
-		
+				
 		lore.anno.ui.formpanel = Ext.getCmp("annotationslistform");
 		lore.anno.ui.form = lore.anno.ui.formpanel.getForm();
 		lore.anno.ui.formpanel.hide();
@@ -316,7 +341,8 @@ lore.anno.ui.initExtComponents = function(store){
 		
 		lore.anno.ui.setAnnotationFormUI(false, false );
 		
-		lore.anno.ui.abouttab.body.update("<iframe height='100%' width='100%' "
+		
+		Ext.getCmp("about").body.update("<iframe height='100%' width='100%' "
 			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");
 			
 	    Ext.QuickTips.interceptTitles = true;

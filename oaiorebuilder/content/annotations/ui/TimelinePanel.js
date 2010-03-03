@@ -88,9 +88,6 @@ if (typeof Timeline !== "undefined") {
 		};
 };
 
-
-
-
 lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 
 	initComponent: function(){
@@ -116,6 +113,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 			this.model.on('load', this.handleLoad, this);
 			this.model.on('remove', this.handleRemove, this);
 			this.model.on('update', this.handleUpdate, this);
+			this.model.on('clear', this.handleClear, this);
 			
 			
 		},
@@ -144,6 +142,11 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		
 		handleUpdate: function(store, rec, operation) {
 			this.updateAnnoInTimeline(rec.data);
+		},
+		
+		handleClear: function(store) {
+			//TODO: need to update event source to be local
+			lore.anno.ui.annoEventSource.clear();
 		},
 	
 		/**
