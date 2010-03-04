@@ -312,7 +312,7 @@
                 /** @property context
                  * From Annotea context
                  */
-				this.context = lore.global.util.safeGetFirstChildValue(node);
+				this.context = lore.global.util.normalizeXPointer(lore.global.util.safeGetFirstChildValue(node));
 				//TODO: change namespace
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
 				if (node && node.length > 0) {
@@ -568,8 +568,8 @@
 		lore.anno.annodsunsaved.each( function (rec) 
 		{
 			//TODO: fix for replies
-			if ( filterURL && rec.data.context!= filterURL )
-				return;
+			//if ( filterURL && rec.data.context!= filterURL )
+			//	return;
 			
 			if ( rec.dirty ) {
 				lore.anno.updateAnnotation(rec, currentURL, false, function (action,result,resultMsg) {
