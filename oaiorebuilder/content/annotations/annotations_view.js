@@ -638,14 +638,7 @@
 			}
 		}
 		
-		lore.anno.ui.handleEndImageSelection = function(img, sel) {
-			if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) 
-				return;
-
-				lore.anno.ui.setCurSelImage(img);
-			 
-		}
-		
+				
 		/**
 		 * Reset all changes made to annotation
 		 */

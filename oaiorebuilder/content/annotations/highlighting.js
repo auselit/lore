@@ -379,7 +379,16 @@
 		 * @param {Object} img The dom element for the image i.e <img>
 		 */
 		lore.anno.ui.setCurSelImage = function (img) {
+			var old = lore.anno.ui.page.curImage;
 			lore.anno.ui.page.curImage = $(img);
+			if ( old && old.context != lore.anno.ui.page.curImage.context ) {
+				var inst = old.imgAreaSelectInst();
+				if ( inst) {
+					inst.setOptions({show:false,hide:true});
+					inst.update();
+				}
+				
+			}
 		}
 		
 		/**
@@ -577,6 +586,16 @@
 		}
 
 
+lore.anno.ui.handleEndImageSelection = function(img, sel) {
+			if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) 
+				return;
+
+				lore.anno.ui.setCurSelImage(img);
+			 
+		}
+
+
+
 lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 
 
@@ -608,8 +627,7 @@ lore.anno.ui.enableImageHighlightingForPage = function(contentWindow){
 			}
 			else 
 				im = $('img[offsetWidth!=0]', doc);
-			var frag = doc.createDocumentFragment();
-			
+						
 			// add a handler that loads image selection capabilites to an image
 			// when the user mouses over an image for the first time. This is because
 			// trying to load the image selection library on page load causes browser 
