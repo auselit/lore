@@ -329,7 +329,7 @@ lore.ore.closeView = function(/*Ext.TabPanel*/tabpanel, /*Ext.panel*/panel) {
     return true;
 };
 lore.ore.ui.hideProps = function(p, animate){
-        p.body.setStyle('display','none');      
+        p.body.setStyle('display','none'); 
 };
 lore.ore.ui.showProps = function(p, animate){
         p.body.setStyle('display','block');
@@ -731,15 +731,16 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             if (nlsymb == "<br/>" && propval) {
                 try {
                     lore.debug.ore("serializing " + propname, properties);
-                    result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"\\\""));
+                    result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"\\\"")); 
                 } catch (e) {
                     lore.debug.ore("error in serialise_property",e);
                     lore.ore.ui.loreWarning(e.toString());
                 }
             } else {
-                result += propval;
+                result += propval.toString().replace(/&/g,"&amp;").replace(/"/g,"\\\"");
             }
             result += ltsymb + "/" + propname + ">" + nlsymb;
+            lore.debug.ore("serialize_property "+ result);
         }
         return result;
     };
@@ -843,6 +844,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
 	                        tagname = mprop.substring(0,midx);
 	                    }
 	                    //lore.debug.ore("2 serializing " + tagname, mpropval);
+                        // why not using serialise_property function here?
 	                    if (tagname == "rdf:type"){ // resource
 	                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
 	                            + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"\\\"")) 
