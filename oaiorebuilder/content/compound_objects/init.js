@@ -131,14 +131,15 @@ lore.ore.ui.initProperties = function() {
         // commit the change to the datastore
         lore.ore.ui.grid.store.commitChanges();
     });
+    var proptabs = Ext.getCmp("propertytabs");
     // Fix collapsing so that the grids are hidden properly
     lore.ore.ui.grid.on('beforecollapse', lore.ore.ui.hideProps);
     lore.ore.ui.nodegrid.on('beforecollapse',lore.ore.ui.hideProps);
-    
     lore.ore.ui.grid.on('beforeexpand', lore.ore.ui.showProps);
     lore.ore.ui.nodegrid.on('beforeexpand',lore.ore.ui.showProps);
-
-	Ext.getCmp("propertytabs").activate("sourcestree");
+    proptabs.on('beforecollapse', lore.ore.ui.hideProps);
+    proptabs.on('beforeexpand',lore.ore.ui.showProps);
+	proptabs.activate("sourcestree");
 }
     
 /**
@@ -169,17 +170,21 @@ lore.ore.ui.initUIComponents = function() {
   /** Ext specification of compound objects UI */
   var lore_gui_spec = {
     layout: "border",
-    items: [{region:"north", layout: "fit"},{
+    id: "co-outer-layout",
+    items: [{
         region: "center",
         layout: "fit",
         border: false,
+        id: "co-center-layout",
         items: [{
             layout: "border",
             border: false,
+            id: "co-center-contents",
             items: [{
                 region: "center",
                 border: false,
                 layout: "fit",
+                id: "loreviews-container",
                 items: [{
                     xtype: "tabpanel",
                     id: "loreviews",
@@ -320,11 +325,10 @@ lore.ore.ui.initUIComponents = function() {
             }]
         }]
     }, {
-        region: "west",       
-        width: 280,
-        
-        split: true,
-        collapseMode:'mini',
+	        region: "west",       
+	        width: 280,
+	        split: true,
+	        collapseMode:'mini',
             id:"propertytabs",
             xtype:"tabpanel",
             deferredRender: false,
@@ -393,6 +397,7 @@ lore.ore.ui.initUIComponents = function() {
                         items: [
                         {
                             xtype: "label",
+                            id: "find-co-label",
                             text: "Find Compound Objects",
                             style: "font-family: arial, tahoma, helvetica, sans-serif; font-size:11px;line-height:2em"
                         },
@@ -461,6 +466,7 @@ lore.ore.ui.initUIComponents = function() {
                         }),
                         sm: new Ext.grid.RowSelectionModel({singleSelect: true}),
                         title: 'Compound Object Properties',
+                        
                         tools: [
                             {
                                 id:'plus',
