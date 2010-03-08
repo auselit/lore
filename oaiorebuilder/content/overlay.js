@@ -61,7 +61,7 @@ try {
 					
 					if (updateURI == lore.global.ui.getCurrentURL(loreoverlay.instId)) {
 						if ( co && co.refreshPage) co.refreshPage();
-						if ( an && an.refreshPage) an.refreshPage();
+						if (an && an.refreshPage) {	an.refreshPage(); }
 						return;
 					}
 					if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId) && 
@@ -140,7 +140,7 @@ try {
 		onClose: function(event) {
 			try {
 				lore.debug.ui("onClose()");
-				if (loreoverlay.annoView().isDirty()) {
+				if (loreoverlay.annoView().hasModifiedAnnotations()) {
 					if (confirm("Click 'Ok' to save changes to modified annotations.")) {
 						loreoverlay.annoView().handleSaveAllAnnotationChanges();
 					}
@@ -335,7 +335,7 @@ try {
 		
 		/** Annotations Toolbar button handler: Trigger highlighting all annotation contexts in the page */
 		showAnnotations: function(){
-			loreoverlay.annoView().toggleAllAnnotations();
+			loreoverlay.annoView().handleToggleAllAnnotations();
 		},
         /** Compound Objects Toolbar button handler: Trigger saving the current compound object to the repository */
 		saveRDF: function(){

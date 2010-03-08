@@ -23,6 +23,18 @@
  * @include  "/oaiorebuilder/content/debug.js"
  * @include  "/oaiorebuilder/content/util.js"
   */
+ 
+ 
+ 	/**
+	 * Generate the tree node text
+	 * @param {Object} anno Annotation to generate the node text for
+	 */
+	
+lore.anno.ui.genTreeNodeText = function(anno){
+		
+	return lore.anno.ui.genDescription(anno, true);
+		
+}
 
 /*  Tree UI Class Definitions */
   
@@ -595,15 +607,12 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	 * @param {Store} store The data store that performed the notification
 	 */
 	handleClear: function(store ){
-		this.eachChild(function(child) {
-			this.removeChild(child);
-		}, this);
 		
-		/*var tree = lore.anno.ui.treeroot.getOwnerTree();
-			var n = tree.getRootNode();
-			var old = lore.anno.ui.treeroot;
-			lore.anno.ui.treeroot =  new Ext.tree.TreeNode({text:'Current Page'});
-			n.replaceChild( lore.anno.ui.treeroot, old);*/
+		//TODO: Ext 3.1 Migration use this.removeAll() instead
+		while ( this.firstChild ) {
+			this.firstChild.remove();	
+		}
+		
 	},
 	
 	refresh : function () {
@@ -690,7 +699,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 					info = "Unsaved annotation from " + rec.data.resource + " ";
 				}
 				
-				if (!lore.anno.isNewAnnotation(rec)) {
+				if (!rec.data.isNew()) {
 					info = info + lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
 				}
 				
@@ -748,7 +757,7 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 				nodeType: anno.type				
 			});
 			
-			if (lore.anno.isNewAnnotation(anno)) {
+			if (anno.isNew()) {
 				Ext.apply(this.config, {
 					text: anno.body || ''
 				});
