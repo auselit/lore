@@ -945,33 +945,7 @@ lore.ore.loadCompoundObjectContents = function (rdf,elem){
     }
     
 }
-/*lore.ore.addToHistory = function(remurl, title){
-  try {
-     var theuri = Components.classes["@mozilla.org/network/io-service;1"].
-         getService(Components.interfaces.nsIIOService).
-         newURI(remurl, null, null);
-     // Use Firefox annotation to mark it as a compound object
-     var mozannoService = Components.classes["@mozilla.org/browser/annotation-service;1"]
-              .getService(Components.interfaces.nsIAnnotationService);
-     mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
-        title, 0, mozannoService.EXPIRE_WITH_HISTORY);
-     // Add it to browser history
-     var visitDate = new Date();
-     var browserHistory = lore.ore.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
-     browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
-     lore.ore.coListManager.add(
-        [new lore.ore.model.CompoundObjectSummary(
-        {
-            'uri': remurl,
-            'title': title,
-            'accessed': visitDate
-        })],
-        'history'
-     );
-  } catch (e){
-      lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
-  }
-}*/
+
 /**
  * Load a compound object into the graphical view
  * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
