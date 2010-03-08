@@ -1,7 +1,7 @@
 lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 	
-	searchform: function(){
-		return {
+	initComponent: function(){
+      	  	var formConfig = {
 			xtype: "form",
 			keys: [{
 				key: [10, 13],
@@ -64,14 +64,14 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 					tooltip: 'Reset search fields'
 				}]
 			}]
-		};
-	},	
-	grid: function(){ return {
+		 
+	},
+	gridConfig = { 
 			xtype: "grid",
 			title: 'Search Results',
 			id: 'annosearchgrid',
 			region: 'center',
-			store: lore.anno.annosearchds,
+			store: this.model,
 			autoScroll: true,
 			viewConfig: {
 				forceFit: true
@@ -145,24 +145,18 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 		 }
 		 }]
 		 })*/
-		};},
-		
-	
-	initComponent: function(){
-      	  	try {
+		 };
+		 
+			try {
 				Ext.apply ( this, {
-						//	xtype:'panel',
-							//layout:'border',
 							title: "Search",
 							items:[	{
-										title: 		"Annotation Timeline",
-										id: 		"annotimeline",
 										region: 'north',
 										id: "search",
 										collapsible:true,
 										title: 'Search Options',
-										items: [this.searchform()]
-										}, this.grid() ]
+										items: [formConfig]
+										}, gridConfig ]
 							});
 				
 				lore.anno.ui.SearchPanel.superclass.initComponent.apply(this, arguments);
@@ -172,18 +166,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 				
 				this.sgrid = Ext.getCmp("annosearchgrid");
 				
-				this.sgrid.contextmenu = new Ext.menu.Menu({
-							id: this.sgrid.id + "-context-menu"
-						});
-						
-				this.sgrid.contextmenu.add({
-							text: "Add as node/s in compound object editor",
-							handler: lore.anno.ui.handleAddResultsToCO
-						});
 				
-				this.sgrid.on('contextmenu', function(e) {
-					this.sgrid.contextmenu.showAt(e.xy);
-		    	});
 		
 				Ext.getCmp("search").on('click', this.handleSearchAnnotations, this);
 				Ext.getCmp("resetSearch").on('click', function () {
@@ -195,6 +178,14 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 			}
 		},
 	
+		grid: function () {
+			return this.sgrid;
+		},
+		
+		form: function () {
+			return this.sform;
+		},
+		
 		/**
 		 * Search the annotation respository for the given filters on the search
 		 * forms and display results in grid
@@ -209,9 +200,8 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 							  'datemodbefore': 	lore.constants.DANNO_RESTRICT_BEFORE_MODIFIED};
 							  
 			try {
-				lore.debug.anno('argh: ' + this.sform, this.sform)
+
 				var vals = this.sform.getValues();
-				lore.debug.anno("vals: " + vals, vals);
 				var filters = [];
 				for (var e in vals) {
 					var v = vals[e];

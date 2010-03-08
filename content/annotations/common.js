@@ -55,21 +55,20 @@ lore.anno.ui.disableUIFeatures = function(opts) {
 }
 
 
-
-		/** Helper function to create a view displayed in a closeable tab */
-		lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*function*/ activationhandler){
-			var tab = Ext.getCmp(panelid);
-			if (!tab) {
-				tab = lore.anno.ui.views.add({
-					'title': paneltitle,
-					'id': panelid,
-					'autoScroll': true,
-					'closable': true
-				});
-				tab.on("activate", activationhandler);
-			}
-			tab.show();
-		}
+/** Helper function to create a view displayed in a closeable tab */
+lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*function*/ activationhandler){
+	var tab = Ext.getCmp(panelid);
+	if (!tab) {
+		tab = lore.anno.ui.views.add({
+			'title': paneltitle,
+			'id': panelid,
+			'autoScroll': true,
+			'closable': true
+		});
+		tab.on("activate", activationhandler);
+	}
+	tab.show();
+}
 		
 		/**
 		 * Output a message to notification window
@@ -283,3 +282,228 @@ lore.anno.ui.disableUIFeatures = function(opts) {
 			//TODO: should be at a finer granularity 
 			lore.anno.cachetimeout = millis;
 		}		
+		
+		
+		
+		/**
+		 * Show/hide a field on a form
+		 * @param {String} fieldName The field name to set the visibility of
+		 * @param {Boolean} hide (Optional)Specify whether to hide the field or not. Defaults to false
+		 */
+		lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
+			
+			var thefield = form.findField(fieldName);
+			if (thefield) {
+				var cont = thefield.container.up('div.x-form-item');
+				
+				cont.setDisplayed(false);
+				if (hide && cont.isVisible()) {
+					cont.slideOut();
+					thefield.hide();
+				}
+				else if (!hide && !cont.isVisible()) {
+						thefield.hide();
+						cont.slideIn();
+						thefield.show();
+						cont.setDisplayed(true);
+					}
+			}
+		}
+		
+		/**
+		 * Hide list of form fields
+		 * @param {Array} fieldNameArr List of fields to hide
+		 */
+		lore.anno.ui.hideFormFields = function(fieldNameArr){
+			for (var i = 0; i < fieldNameArr.length; i++) {
+				lore.anno.ui.setVisibilityFormField(lore.anno.ui.form, fieldNameArr[i], true);
+			}
+		}
+		
+		/**
+		 * Show list of form fields
+		 * @param {Array} fieldNameArr List of fields to show
+		 */
+		lore.anno.ui.showFormFields = function(fieldNameArr){
+			for (var i = 0; i < fieldNameArr.length; i++) {
+				lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,fieldNameArr[i], false);
+			}
+		}
+		
+		lore.anno.ui.isFormDirty = function(form ) {
+			 var dirtyList = [];
+			 var isDirty = false;
+			 form.items.each( function (item, index, length) {
+			 if ( item.isDirty()) {
+			 	isDirty = true;
+			 dirtyList.push(item.getName());
+			 }
+			 });
+			 
+			 lore.debug.anno("The dirty items are: " + dirtyList.join());
+			 return isDirty;
+		 }
+		
+		
+		/**
+	 * Generate a description for an annotation
+	 * @param {Object} annodata The annotation to generate the description for 
+	 * @param {Object} noimglink (Optional) If true, specifies that a link to a new window containing the 
+	 * annotation body will not be generated in the description
+	 * @return {String} A string containing the annotation description. The string may contain HTML.
+	 */	
+	lore.anno.ui.genDescription = function(annodata, noimglink){
+			var res = "";
+			if (!noimglink) {
+                res += "<a title='Show annotation body in separate window' xmlns=\"" +
+                lore.constants.NAMESPACES["xhtml"] +
+                "\" href=\"javascript:lore.global.util.launchWindow('" +
+                annodata.bodyURL +
+                "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
+            }
+			
+			var defText = annodata.bodyLoaded ? annodata.body : 'Loading content...';
+			var body = lore.global.util.externalizeLinks(defText);
+			res += body;
+			
+			
+			return res;
+		}
+		
+/**
+ * Launch field value in a new window
+ * @param {Field} field Form field to launch in a new window
+ */
+lore.anno.ui.launchFieldWindow = function(field){
+	lore.global.util.launchWindow(field.value, true, window);
+}
+
+lore.anno.ui.isHumanReadableTriple = function( triple) {
+			var valid = ["isRecordFor", "birthName", "alternateName", "usesPseudoAgent", "birthOf", "deathOf", "gender", "biography",
+			"influenceOnWork", "type"];
+			
+			//work record
+			valid = valid.concat( ["title", "form", "producedOutput" ]);
+			
+			//manifestation
+			valid = valid.concat( ['hasReprint']);
+			
+			if ( triple.source && triple.subject.type != 'bnode') {
+			 	var rel = triple.property.toString();
+				
+				for (var i = 0; i < valid.length; i++) {
+				
+					if ( rel.lastIndexOf("#" + valid[i]) != -1 || rel.lastIndexOf("/" + valid[i]) != -1)
+						return true;
+				}
+			} 
+			return false;
+		//	return true;
+		}
+		
+lore.anno.ui.tripleURIToString = function ( prop) {
+			prop = prop.toString();
+			if ( prop.indexOf('#')!=-1)
+				prop = prop.substring(prop.indexOf("#") + 1, prop.length - 1);
+			else if ( prop.lastIndexOf("/")!=-1) {
+				prop = prop.substring(prop.lastIndexOf("/")+1, prop.length -1);
+			}
+			return prop;
+		}
+		/*lore.anno.ui.tripleToString = function (triple, rdf, parent) {
+				rdf = rdf ||  lore.anno.ui.rdfa.rdf;
+				
+					if (triple.property.toString().indexOf("#type") == -1 ) {
+						var val = triple.object.value.toString();
+						
+						if (triple.object.type == 'uri') {
+							val = lore.anno.ui.tripleURIToString(triple.object.value);
+						}
+						var prop = lore.anno.ui.tripleURIToString(triple.property);
+						if ( val.length > 50)
+							val = val.substring(0,50) + "...";
+						
+						var sub = parent || triple.parentSubject.toString();
+						sub = lore.anno.ui.tripleURIToString(sub);
+						
+						return sub + "->" + prop + ": " + val;
+					}
+				return '';
+		}*/
+lore.anno.ui.setCurAnnoStyle = function(type, domObj){
+	
+	if (type == 0) {
+		domObj.style.textDecoration = "underline";
+	}
+	else if (type == 1) { 
+		domObj.style.borderStyle = 'solid';
+	}
+	return domObj;
+}
+
+		/**
+ * Update the image scale information if necessary
+ * @param {Object} img
+ * @param {Object} doc
+ */ 
+lore.anno.ui.updateImageData = function (img, doc) {
+	var _img = $(img);
+	var scale = _img.data("scale");
+					
+	if ( !scale || scale.imgWidth != _img.width() ||
+					scale.imgHeight != _img.height()) {
+						// either no scale information stored, or is out of date
+						scale = lore.global.util.getImageScaleFactor(_img.get(0), doc );
+						_img.data("scale", scale);
+					}
+	return scale;
+}
+
+/**
+ * Scale the image co-ordinates
+ * @param {Element} img DOM element for the image i.e <img>
+ * @param {Object} coords Object containing the co-ordinates and scale factor {x1,y1,x2,y2,sx,sy}
+ * @param {Object} doc The target document 
+ */
+lore.anno.ui.scaleImageCoords = function (img, coords, doc) {
+	var scale = lore.anno.ui.updateImageData(img, doc); 
+	// scale coords ( getting their unscale state if they are already scaled)
+	var sx = coords.sx || 1;
+	var sy = coords.sy || 1;
+	return {
+		x1: coords.x1 * sx / scale.x,
+		y1: coords.y1 * sy / scale.y,
+		x2: coords.x2 * sx / scale.x,
+		y2: coords.y2 * sy / scale.y,
+		sx: scale.x,
+		sy: scale.y
+	};
+}
+
+/**
+ * Calculate the image's absolute position on the page
+ * @param {Object} img DOM element for image i.e <img>
+ * @param {Object} doc The target document
+ */
+lore.anno.ui.calcImageOffsets = function(img, doc){
+	var _img = $(img);
+	var _parent = $('body', doc);
+	
+	// image page offset and parent scroll offset 
+	var imgOfs = {
+		left: Math.round(_img.offset().left),
+		top: Math.round(_img.offset().top)
+	};
+	var parOfs = $.inArray(_parent.css('position'), ['absolute', 'relative']) + 1 ? {
+		left: Math.round(_parent.offset().left) - _parent.scrollLeft(),
+		top: Math.round(_parent.offset().top) - _parent.scrollTop()
+	} : {
+		left: 0,
+		top: 0
+	};
+	
+	return {
+		left: (imgOfs.left - parOfs.left),
+		top: (imgOfs.top - parOfs.top)
+	};
+}

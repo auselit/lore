@@ -11,4 +11,5 @@ pref("extensions.lore.disable_annotations", false);
 pref("extensions.lore.disable_compoundobjects", false);
 pref("extensions.lore.disable_textmining", true);
 pref("extensions.lore.filelogging", false);
-pref("extensions.lore.annocache_timeout", 300);
+//pref("extensions.lore.annocache_timeout", 300);
+pref("extensions.lore.annocache_timeout", 1); // effectively disable for the moment

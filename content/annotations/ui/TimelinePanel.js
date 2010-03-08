@@ -18,75 +18,7 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**  Replaces default function for generating contents of timeline bubbles
-	 * @param {Object} elmt  dom node that the timeline bubble will be inserted into
-	 * @param {Object} theme See timeline documentation
-	 * @param {Object} labeller See timeline documentation
-	 */
-if (typeof Timeline !== "undefined") {
-		Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function(elmt, theme, labeller){
-			var doc = elmt.ownerDocument;
-			var title = this.getText();
-			var link = this.getLink();
-			var image = this.getImage();
-			
-			if (image != null) {
-				var img = doc.createElement("img");
-				img.src = image;
-				
-				theme.event.bubble.imageStyler(img);
-				elmt.appendChild(img);
-			}
-			
-			var divTitle = doc.createElement("div");
-			var textTitle = doc.createTextNode(title);
-			if (link != null) {
-				var a = doc.createElement("a");
-				a.href = link;
-				a.appendChild(textTitle);
-				divTitle.appendChild(a);
-			}
-			else {
-				divTitle.appendChild(textTitle);
-			}
-			theme.event.bubble.titleStyler(divTitle);
-			elmt.appendChild(divTitle);
-			
-			var divBody = doc.createElement("div");
-			this.fillDescription(divBody);
-			theme.event.bubble.bodyStyler(divBody);
-			elmt.appendChild(divBody);
-			
-			var divTime = doc.createElement("div");
-			this.fillTime(divTime, labeller);
-			divTime.style.fontSize = 'smaller';
-			divTime.style.color = '#aaa';
-			elmt.appendChild(divTime);
-			
-			var divOps = doc.createElement("div");
-			divOps.style.paddingTop = '5px';
-			//TODO: fix
-			var divOpsInner = "<a style='color:orange;font-size:smaller' href='#' " +
-			"onclick='try{lore.anno.ui.timeline.timeline.getBand(0).closeBubble();lore.anno.ui.handleEditAnnotation(\"" +
-			this._eventID +
-			"\")} catch(e){lore.debug.anno(\"e:\"+e,e);}'>EDIT</a> | " +
-			"<a style='color:orange;font-size:smaller' href='#' " +
-			"onclick='lore.anno.ui.timeline.timeline.getBand(0).closeBubble();lore.anno.ui.handleReplyToAnnotation(\"" +
-			this._eventID +
-			"\")'>REPLY</a>";
-			divOps.innerHTML = divOpsInner;
-			elmt.appendChild(divOps);
-			
-			var annoid = this._eventID;
-			var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', annoid);
-			if ( node) {
-				node.select();
-			} else {
-				lore.debug.anno("Could not select node for :" + annoid, annoid); 
-			}
-									
-		};
-};
+
 
 lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 
@@ -98,7 +30,6 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 				});
 				
 				lore.anno.ui.TimelinePanel.superclass.initComponent.apply(this, arguments);
-				//this.initTimeline();
 				if ( this.model )
 					 this.addModel(this.model);
 					
@@ -119,9 +50,9 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		},
 		
 		handleLoad : function(store, records, options ) {
-			
+			lore.debug.anno("first record: " + records[0], records[0]);
 			for ( var i =0; i < records.length; i++ ) {
-				if ( !lore.anno.isNewAnnotation(records[i]) &&
+				if ( !records[i].data.isNew() &&
 					this.initialized) {
 						this.addAnnoToTimeline(records[i].data,  lore.anno.ui.getAnnoTitle(records[i].data) );						
 					}
@@ -131,8 +62,8 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		
 		handleRemove: function(store, rec, ind ) {
 			
-			if (!lore.anno.isNewAnnotation(rec)) {
-					var evt = lore.anno.ui.annoEventSource.getEvent(rec.data.id);
+			if (!rec.data.isNew()) {
+					var evt = this.annoEventSource.getEvent(rec.data.id);
 					if (evt) {
 						evt._eventID = "flagdelete";
 						this.scheduleTimelineLayout();
@@ -145,8 +76,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		},
 		
 		handleClear: function(store) {
-			//TODO: need to update event source to be local
-			lore.anno.ui.annoEventSource.clear();
+			this.annoEventSource.clear();
 		},
 	
 		/**
@@ -156,11 +86,11 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 			var tl = this;
 			
 			if (typeof Timeline !== "undefined") {
-				lore.anno.ui.annoEventSource = new Timeline.DefaultEventSource();
+				this.annoEventSource = new Timeline.DefaultEventSource();
 		        var theme = Timeline.ClassicTheme.create();
 		        theme.event.bubble.width = 350;
 				var bandConfig = [Timeline.createBandInfo({
-					eventSource : lore.anno.ui.annoEventSource,
+					eventSource : this.annoEventSource,
                     theme: theme,
 					width : "90%",
 					intervalUnit : Timeline.DateTime.WEEK,
@@ -168,7 +98,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 					timeZone : 10,
                     layout: "original"
 				}), Timeline.createBandInfo({
-					eventSource : lore.anno.ui.annoEventSource,
+					eventSource : this.annoEventSource,
                     theme: theme,
                     //showEventText:  false,
 					width : "10%",
@@ -206,7 +136,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 				// and what the threshold should be then create a Hotzone so that these
 				// annotations are displayed more evenly
 				
-			if (lore.anno.ui.annoEventSource) {
+			if (this.annoEventSource) {
 			
 				var annoicon = "comment.png";
 				
@@ -231,10 +161,10 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 					
 					eventID: anno.id,
 					
-					description: lore.anno.ui.getTimelineDescription(anno)
+					description: this.getTimelineDescription(anno)
 				});
 				
-				lore.anno.ui.annoEventSource.add(evt);
+				this.annoEventSource.add(evt);
 				this.timeline.getBand(0).setCenterVisibleDate(evt.getStart());
 			}
 			
@@ -247,24 +177,28 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		scheduleTimelineLayout : function(){
 			// Timeline needs to be visible to do layout otherwise it goes blank
 			// check if timeline is active tab...
-			var tltab = this; //Ext.getCmp("annotimeline");
-			var activetab = lore.anno.ui.views.getActiveTab();
+			var tabbed = this.ownerCt.initialConfig.xtype == 'tabpanel';
 			
-			if (activetab == tltab) {
-				this.timeline.layout();
-			}
-			else {
-				//...if not, do layout on next activation.  Only schedule this once
-				if (!lore.anno.ui.TimelinePanel.once || lore.anno.ui.TimelinePanel.once == 0) {
-					lore.anno.ui.TimelinePanel.once = 1;
-					tltab.on("activate", function(){
-						lore.anno.ui.TimelinePanel.once = 0;
-						this.timeline.layout();
-					}, this, {
-						single: true
-					});
+			if ( tabbed ) {
+				var activetab = this.ownerCt.getActiveTab();
+				if (activetab == this ) {
+					this.timeline.layout();
 				}
-				
+				else {
+					//...if not, do layout on next activation.  Only schedule this once
+					if (!this.once || this.once == 0) {
+						this.once = 1;
+						this.on("activate", function(){
+							this.once = 0;
+							this.timeline.layout();
+						}, this, {
+							single: true
+						});
+					}
+					
+				}
+			} else {
+				this.timeline.layout();
 			}
 		},
 		
@@ -275,17 +209,21 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		 */
 		showAnnoInTimeline : function(annoid){
 			try {
-				//Ext.getCmp("annotimeline").on("activate",
-				this.on("activate",
-				function() {
-					var band = this.timeline.getBand(0);
-					band.closeBubble();
-					band.showBubbleForEvent(annoid);
-				}, this, {
-					single: true
-				});
-				
-				lore.anno.ui.views.activate("annotimeline");
+				if (this.ownerCt.initialConfig.xtype == 'tabpanel') {
+					this.on("activate", function(){
+						var band = this.timeline.getBand(0);
+						band.closeBubble();
+						band.showBubbleForEvent(annoid);
+					}, this, {
+						single: true
+					});
+					this.ownerCt.activate(this.id);
+				} else {
+						var band = this.timeline.getBand(0);
+						band.closeBubble();
+						band.showBubbleForEvent(annoid);
+
+				}
 				
 				
 			} catch (e ) {
@@ -298,20 +236,18 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		 * @param {Object} anno Annotation to update
 		 */
 		updateAnnoInTimeline : function(anno){
-			var evt = lore.anno.ui.annoEventSource.getEvent(anno.id);
+			var evt = this.annoEventSource.getEvent(anno.id);
 			if (evt) {
 				
 				evt._text = anno.title;
 				evt._caption = lore.anno.ui.genAnnotationCaption(anno, 't by c');
-				evt._description = lore.anno.ui.getTimelineDescription(anno);
+				evt._description = this.getTimelineDescription(anno);
 				this.scheduleTimelineLayout();
 				
 			}
-		}
-
-});
- 
-/* Timeline Functions */
+		},
+		
+		/* Timeline Functions */
 	
 		
 		/**
@@ -320,7 +256,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		 * @param {Object} anno The annotation to generate the description for
 		 * @return {String} A string containing a HTML formatted description of the annotation
 		 */		
-		lore.anno.ui.getTimelineDescription = function(anno){
+		 getTimelineDescription : function(anno){
 			return "<span style='font-size:small;color:#51666b;'>" 
 			// lore.global.util.splitTerm(anno.type).term +
 			//" by " +
@@ -333,5 +269,9 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 			
 			
 		} 
+
+});
+ 
+
 		
 Ext.reg("annotimelinepanel",lore.anno.ui.TimelinePanel)	;				

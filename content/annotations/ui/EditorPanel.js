@@ -440,4 +440,173 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	}
 });
 
+
+
+/**
+		 * Update the annotation xpath context
+		 * @param {Object} btn Not currently used
+		 * @param {Object} e Not currently used
+		 */
+		lore.anno.ui.handleUpdateAnnotationContext = function(){
+			try {
+				if (!lore.anno.ui.formpanel.isVisible())
+					 lore.anno.ui.showAnnotation(lore.anno.ui.page.curSelAnno);
+				var currentCtxt = lore.anno.ui.pageui.getCurrentSelection();
+				var theField = lore.anno.ui.form.findField('context');
+				theField.setValue(currentCtxt);
+				theField = lore.anno.ui.form.findField('originalcontext');
+				theField.setValue(currentCtxt);
+				theField = lore.anno.ui.form.findField('res');
+				theField.setValue(lore.anno.ui.currentURL);
+				if ( lore.anno.ui.page.curSelAnno)
+					lore.anno.ui.page.curSelAnno.data.resource = lore.anno.ui.currentURL;
+				theField = lore.anno.ui.form.findField('original');
+				theField.setValue(lore.anno.ui.currentURL);
+				theField = lore.anno.ui.form.findField('contextdisp');
+				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window).document) + '"');
+			} 
+			catch (ex) {
+				lore.debug.anno("Exception updating anno context", ex);
+			}
+		}
+		
+		
+		
+/**
+		 * Update the variation annotation xpath context
+		 * @param {Object} btn Not currently used
+		 * @param {Object} e Not currently used
+		 */
+		lore.anno.ui.handleUpdateAnnotationVariantContext = function(btn, e){
+			try {
+				var currentCtxt = lore.anno.ui.pageui.getCurrentSelection();
+				var theField = lore.anno.ui.form.findField('variantcontext');
+				theField.setValue(currentCtxt);
+				theField = lore.anno.ui.form.findField('variant');
+				theField.setValue(lore.anno.ui.currentURL);
+				theField = lore.anno.ui.form.findField('rcontextdisp');
+				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window).document) + '"');
+			} 
+			catch (ex) {
+				lore.debug.anno("Exception updating anno variant context", ex);
+			}
+		}
+
+/**
+		 * Update the form when the annotation type changes
+		 * @param {Combo} combo The Combo field that has changed
+		 */
+		lore.anno.ui.handleAnnotationTypeChange = function(combo){
+			var theVal = combo.getValue();
+			
+			if ( theVal == 'Variation'){
+				lore.anno.ui.setAnnotationFormUI(true, false);
+			} else if ( theVal == 'Semantic') {
+				lore.anno.ui.setAnnotationFormUI(false, true);
+			}
+			else if (theVal == 'Question' ||  theVal == 'Comment' || theVal == 'Explanation' ) {
+					lore.anno.ui.setAnnotationFormUI(false, false);
+			}
+		}
+		
+lore.anno.ui.handleAddMeta = function () {
+			try {
+					var defRec = new lore.anno.annousermetads.recordType({
+						type: 'Agent',
+						source: 'User',
+						prop: 'displayName',
+						value: ''
+					})
+					
+					lore.anno.annousermetads.add(defRec);
+				
+			} catch (e) {
+				lore.debug.anno(e,e );
+			}
+		}
+		
+lore.anno.ui.handleRemData = function () {
+			var rec = lore.anno.ui.metausergrid.getSelectionModel().getSelected();
+			if ( rec) {
+				lore.anno.annousermetads.remove(rec);
+			}
+		}
+		
+
+/**
+		 * Reset all changes made to annotation
+		 */
+		lore.anno.ui.handleCancelAnnotationEdit = function(){
+			// reset all annotation form items to empty
+			lore.anno.ui.form.items.each(function(item, index, len){
+				item.reset();
+			});
+			
+			if (lore.anno.ui.page.curSelAnno && lore.anno.ui.page.curSelAnno.data.isNew()) {
+				lore.anno.annods.remove(lore.anno.ui.page.curSelAnno);
+			}
+		}
+
+/**
+		 * Show hide fields depending on whether the current annotation is a variation
+		 * @param {Boolean} variation Specify whether the annotation is variation annotation or not
+		 */
+		lore.anno.ui.setAnnotationFormUI = function(variation, rdfa, annomode){
+		
+			var nonVariationFields = ['res'];
+			var variationFields = ['original', 'variant', 'rcontextdisp', 'variationagent', 'variationplace', 'variationdate'];
+			var rdfaFields = ['metares','metausergrid', 'metauserlbl','metapagelbl'];
+			
+			var scholarlyFields = ['importance', 'references', 'altbody'];
+			// annotation mode
+			
+			if (annomode != null) {
+			
+				if ( annomode == lore.constants.ANNOMODE_NORMAL) {
+					lore.anno.ui.hideFormFields(scholarlyFields);
+				}
+				else {
+					lore.anno.ui.showFormFields(scholarlyFields);
+				}
+			}
+			
+			// variation
+			if (variation != null) {
+				if (variation) {
+					lore.anno.ui.hideFormFields(nonVariationFields);
+					lore.anno.ui.showFormFields(variationFields);
+					var isReply = (lore.anno.ui.page.curSelAnno && lore.anno.ui.page.curSelAnno.data.isReply);
+					if (!isReply) {
+						//Ext.getCmp('updrctxtbtn').setVisible(true);
+					}
+				}
+				else {
+					//Ext.getCmp('updrctxtbtn').setVisible(false);
+					lore.anno.ui.hideFormFields(variationFields);
+					lore.anno.ui.showFormFields(nonVariationFields);
+				}
+			}
+			
+			// rdfa
+			if (rdfa != null) {
+				if (rdfa) {
+					lore.anno.ui.showFormFields(rdfaFields);
+				}
+				else {
+					lore.anno.ui.hideFormFields(rdfaFields);
+				}
+				
+				Ext.getCmp('chgmetactxbtn').setVisible(rdfa);
+				//TODO: temporary until this component properly implemented
+				//Ext.getCmp('metausergrid').setVisible(rdfa);
+				//Ext.getCmp('addmetabtn').setVisible(rdfa);
+				//Ext.getCmp('remmetabtn').setVisible(rdfa);
+				
+				Ext.getCmp('metausergrid').setVisible(false);
+				Ext.getCmp('addmetabtn').setVisible(false);
+				Ext.getCmp('remmetabtn').setVisible(false);
+				
+			}
+		}
+
 Ext.reg("annoeditorpanel", lore.anno.ui.EditorPanel);

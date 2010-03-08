@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
  * 
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
@@ -33,13 +33,13 @@
  */
 
 
+lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	/**
 	 * Intialize the 'model', the store which holds the working copies
 	 * of annotations for a given page.  
 	 * @param {String} theURL  (Currently not utilized)The URL for which to create the store
-	 */	
-	lore.anno.initModel = function ( theURL ) {
-		
+	 */
+	constructor: function ( theURL) {
 		var fields = [
 					{name: 'created'}, 
 					{name: 'creator'}, 
@@ -64,18 +64,20 @@
                     {name: 'variationdate'},
                     {name: 'tags'},
 					{name: 'meta'},
-					{name: 'scholarly'}
+					{name: 'scholarly'},
+					{name: 'isNew'},
+					{name: 'hasChildren'}
                         ];
 						
 		/** @property annods
          * @type Ext.data.JsonStore
          * The annotation store
 		 */								
-		lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
+		this.annods = lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								}), theURL);
-		lore.anno.annodsunsaved = new Ext.data.JsonStore({	fields: fields,
+		this.annodsunsaved =  lore.anno.annodsunsaved = new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								});
 								
@@ -84,7 +86,7 @@
          * @type Ext.data.JsonStore
          * The annotation search data store
 		 */
-		lore.anno.annosearchds = new Ext.data.JsonStore({
+		this.annosearchds = lore.anno.annosearchds = new Ext.data.JsonStore({
 									fields: fields,
 									data: {}
 								});
@@ -95,22 +97,26 @@
          * @type Ext.data.JsonStore
          * The annotation metadata data store
 		 */
-		lore.anno.annousermetads = new Ext.data.JsonStore( {
+		this.annousermetads = lore.anno.annousermetads = new Ext.data.JsonStore( {
 			fields: mfields,
 			data: {} 
 		})	
 		
 		// model event handlers						
-		 lore.anno.annods.on("load",  lore.anno.onDSLoad);
-		 lore.anno.annods.on("remove", lore.anno.onDSRemove);
-	}
+		 this.annods.on("load",  this.onDSLoad);
+		 this.annods.on("remove", this.onDSRemove);
+		
+		this.serializer = new lore.anno.RDFAnnotationSerializer();
+	}, 
+		
+	 
 	/**
      * Update annotations that are parents of replies by creating a map of children replies and count of local and overall replies {@link #annods} loads
      * @param {} store
      * @param {} records
      * @param {} options
 	 */
-	lore.anno.onDSLoad = function(store, records, options) {
+	onDSLoad : function(store, records, options) {
 		for( var i =0; i < records.length;i++) {
 			
 				// recursively update the parent/s of a reply, incrementing
@@ -138,14 +144,14 @@
 				records[i].data.replies = { count:0, localcount:0, map:{}};
 			incParentReplies(records[i]);
 		}
-	}
+	},
 	/**
      * Update parent of a reply when a reply has been removed{@link #annods}
      * @param {} store
      * @param {} record
      * @param {} index
 	 */
-	lore.anno.onDSRemove = function(store, record, index){
+	onDSRemove : function(store, record, index){
 			
 			var decParentReplies = function (rec, countonly) {
 				if ( !rec.data.isReply)
@@ -166,351 +172,11 @@
 				
 			};
 			decParentReplies(record);
-	}
+	},
 	
-/**
- * Class wrapper for an RDF annotation provides access to values modified from
- * dannotate.js
- * @class lore.anno.Annotation
- * @param {Node} rdf Root element of an RDF annotation returned by Danno
- * @param {boolean} bodyOps Optional parameter specifying RDF was loaded from file
- */
-	lore.anno.Annotation = function(rdf, bodyOp){
 	
-		var tmp;
-		var node;
-		var attr;
-		/** @property rdf
-         * The wrappered rdf
-		 */
-		this.rdf = rdf;
+	
 		
-		try {
-			attr = rdf.getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'about');
-			if (attr) {
-                /** @property id
-                 * Annotation URI (identifier)
-                 */
-				this.id = attr.nodeValue;
-			}
-			var isReply = false;
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'type');
-			
-			for (var i = 0; i < node.length; i++) {
-				attr = node[i].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-				if (attr) {
-					tmp = attr.nodeValue;
-				}
-				if (tmp.indexOf(lore.constants.NAMESPACES["annotype"]) == 0) {
-                    /** @property type
-                     * The annotation type
-                     */
-					this.type = tmp;
-				}
-				else 
-					if (tmp.indexOf(lore.constants.NAMESPACES["annoreply"]) == 0) {
-						this.type = tmp;
-					}
-					else 
-						if (tmp.indexOf(lore.constants.NAMESPACES["vanno"]) == 0) {
-							this.type = tmp;
-						}
-						else 
-							if (tmp.indexOf(lore.constants.NAMESPACES["thread"]) == 0) {
-								isReply = true;
-							}
-				
-			}
-            /** @property isReply
-             * @type boolean
-             * Indicates whether this is a reply type of Annotation
-             */
-			this.isReply = isReply;
-			
-			if (!this.isReply) {
-				// resource is a url	
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'annotates');
-				
-				attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-				if (attr) {
-                    /** @property resource
-                     * The URI of the resource annotated (from Annotea annotates)
-                     */
-					this.resource = attr.nodeValue;
-				}
-				this.about = null;
-			}
-			else {
-				
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'root');
-				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-					
-					if (attr) {
-						this.resource = attr.nodeValue;
-					}
-				}
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'inReplyTo');
-				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-					if (attr) {
-                        /** @property about
-                         *  If the annotation is a reply, about is the URI of the annotation to which is replies (from Annotea inReplyTo)
-                         */
-						this.about = attr.nodeValue;
-					}
-				}
-			}
-			
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'body');
-			
-			if (!bodyOp || bodyOp == 3) {
-				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-					if (attr) {
-                        /** @property bodyURL
-                         * The URI of the body resource
-                         */
-						this.bodyURL = attr.nodeValue;
-					}
-				}
-			} else if ( bodyOp == 1 ){
-				var node = node[0].getElementsByTagName('body');
-				if ( node[0]) {
-					lore.debug.anno("node " + node[0], node[0]);
-					var serializer = new XMLSerializer();
-					var bodyText = serializer.serializeToString(node[0]);
-                    /** @property body
-                     * The content of the body resource
-                     */
-					this.body = lore.global.util.sanitizeHTML(bodyText, window) || '';
-                    /** @property bodyLoaded
-                     * @type boolean
-                     * True if the {@link #body} property has been loaded from {@link #bodyURL}
-                     */
-					this.bodyLoaded = true;
-				}
-			}
-
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'created');
-            /** @property created
-             * From Annotea created (the date and time when the annotation was created)
-             */
-			this.created = lore.global.util.safeGetFirstChildValue(node);
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
-            /** @property modified
-             * From Annotea modified (the date and time when the annotation was last modified)
-             */
-			this.modified = lore.global.util.safeGetFirstChildValue(node);
-			
-			this.meta = { context: null, fields: []};
-			if (this.isReply) {
-				this.context = '';
-			}
-			else {
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'context');
-                /** @property context
-                 * From Annotea context
-                 */
-				this.context = lore.global.util.normalizeXPointer(lore.global.util.safeGetFirstChildValue(node));
-				//TODO: change namespace
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
-				if (node && node.length > 0) {
-					this.meta.context = lore.global.util.safeGetFirstChildValue(node);
-					lore.debug.anno(this.meta.context, this.meta.context);
-					this.meta.context = this.meta.context.split('\n');
-					lore.debug.anno(this.meta.context, this.meta.context);
-
-					
-				}
-				//TODO: enable and fix code, to read in semantic facts added
-				/*node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta');
-				if (node && node.length > 0) {
-					lore.debug.anno(node.childNodes, node.childNodes);
-					if (node.childNodes) {
-						for (var i = 0; i < node.childNodes.length; i++) {
-						
-							var n = node.childNodes[i];
-							lore.debug.anno(n, n);
-							var type = n.getAttribute("typeof");
-							lore.debug.anno(type, type);
-							if (n.childNodes) {
-								for (var j = 0; j < n.childNodes.length; j++) {
-									var m = n.childNodes[i];
-									lore.debug.anno(m, m);
-									var prop = m.nodeName;
-									var value = lore.global.util.safeGetFirstChildValue(m);
-									lore.debug.anno(prop + ": " + value, {
-										p: prop,
-										v: value
-									});
-									this.meta.fields.push({
-										type: type,
-										prop: prop,
-										value: value
-									});
-								}
-							}
-						}
-					}
-				}*/
-			}
-			
-						
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'creator');
-            /** @property creator
-             * dc:creator of the annotation
-             */
-			this.creator = lore.global.util.safeGetFirstChildValue(node, 'anon');
-			
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'title');
-            /** @property title
-             * dc:title of the annotation
-             */
-			this.title = lore.global.util.safeGetFirstChildValue(node);
-			
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'language');
-            /** @property lang
-             * dc:lang of the annotation
-             */
-			this.lang = lore.global.util.safeGetFirstChildValue(node);
-			
-			// body stores the contents of the html body tag as text
-			if (this.bodyURL && !this.body && ( !bodyOp || bodyOp != 3)) {
-				this.body = lore.anno.getBodyContent(this,window);
-				this.bodyLoaded = true;
-			}
-			// get tags
-			this.tags = "";
-			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'tag');
-			for (var j = 0; j < node.length; j++) {
-				var tagval = "";
-				attr = node[j].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-				if (attr) {
-					// a thesaurus tag
-					tagval = attr.nodeValue;
-				}
-				else {
-					// a freeform tag - make sure it's added to the list of tags
-					tagval = node[j].firstChild.nodeValue;
-					Ext.getCmp('tagselector').fireEvent('newitem', Ext.getCmp('tagselector'), tagval);
-				}
-				if (tagval) {
-					if (j > 0) 
-						this.tags += ",";
-                        /** @property tags
-                         * Tags attached to the annotation
-                         */
-					this.tags += tagval;
-				}
-			}
-			
-			// Additional fields for variation annotations only
-			if (this.type.match(lore.constants.NAMESPACES["vanno"])) {
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant');
-				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised');
-				}
-				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-					if (attr) {
-                        /** @property variant
-                         * For a VariationAnnotation, the URI of the variant resource
-                         */
-						this.variant = attr.nodeValue;
-					}
-				}
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original');
-				if (node[0]) {
-					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-					if (attr) {
-                        /** @property original
-                         * For a VariationAnnotation, the URI of the original resource
-                         */
-						this.original = attr.nodeValue;
-					}
-				}
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original-context');
-                /** @property originalcontext
-                 * For a VariationAnnotation, the context associated with the {@link #original} resource
-                 */
-				this.originalcontext = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant-context');
-				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised-context');
-				}
-                /** @property variantcontext
-                 * For a VariationAnnotation, the context associated with the {@link #variant} resource
-                 */
-				this.variantcontext = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-agent');
-				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-agent');
-				}
-				this.variationagent = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-place');
-				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-place');
-				}
-				this.variationplace = lore.global.util.safeGetFirstChildValue(node);
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-date');
-				if (node.length == 0) {
-					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-date');
-				}
-				this.variationdate = lore.global.util.safeGetFirstChildValue(node);
-			}
-			if (!this.original) {
-				this.original = this.resource;
-			}
-		} 
-		catch (ex) {
-			lore.debug.anno("Error parsing RDF" +
-			(this.id ? ' for ' + this.id : ''), ex);
-		}
-		this.toString = function(){
-			return "Annotation [" + this.id + "," +
-			(this.modified ? this.modified : this.created) +
-			"," +
-			lore.global.util.splitTerm(this.type).term +
-			"]";
-		}
-	}
-	
-	/**
-	 * Determine whether an annotation is new, and is not in the respository
-	 * @param {Object} anno An Annotation object or an Ext Record object 
-	 * @return {Boolean} 
-	 */
-	lore.anno.isNewAnnotation = function (anno) {
-		var data;
-		//Caller can supply the record object or the json object
-		if ( anno.data ) {
-			data = anno.data;
-		} else {
-			data = anno;
-		}
-		
-		return anno.id.indexOf("#new") == 0;
-	}
-	
-	/**
-	 * Determine whether an annotation has any replies
-	 * @param {Object} anno The annotation to test against
-	 * @return {Boolean} True if it has any replies/children
-	 */
-	lore.anno.hasChildren = function (anno) {
-		var a = anno.data || anno;
-		return a.replies && a.replies.count >0;
-	}
-	
-	/**
-	 * Generate an annotation id for a new annotation
-	 * @return {String} A UUID for an annotation
-	 */
-	lore.anno.newAnnotationId = function () {
-		return "#new" + Math.uuid();
-	}
-	
 	/**
 	 * Add an annotation to the local store. This does not add the annotation
 	 * to the remote repository
@@ -518,10 +184,9 @@
 	 * @param {Object} currentURL The URL for the page this annotation is on
 	 * @param {Object} parent (Optional) The parent of this annotation
 	 */
-	lore.anno.addAnnotation = function(currentContext, currentURL, parent){
-		
-		var anno = {
-			id : lore.anno.newAnnotationId(),
+	addAnnotation : function(currentContext, currentURL, parent){
+		var anno = new lore.anno.Annotation();
+		anno.load({
 			resource: (parent ? parent.data.resource: currentURL),
 			about: (parent ? parent.data.id: null),
 			original: currentURL,
@@ -540,16 +205,16 @@
 				fields: []
 			},
 			bodyLoaded: true
-		};
+		});
 		
-		lore.anno.annodsunsaved.loadData([anno], true); 
+		this.annodsunsaved.loadData([anno], true); 
 		//TODO: bodyLoaded? it's use
-		//var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
+		//var r = lore.global.util.findRecordById(this.annods, anno.id);
 		//if ( r)
 		//	r.data.bodyLoaded = true;
 		
 		return anno;
-	}
+	},
 	
 	/**
 	 * Create or update the annotations in the remote repository.
@@ -563,16 +228,16 @@
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	lore.anno.updateAnnotations = function (currentURL, filterURL, resultCallback) {
+	updateAnnotations : function (currentURL, filterURL, resultCallback) {
 		
-		lore.anno.annodsunsaved.each( function (rec) 
+		this.annodsunsaved.each( function (rec) 
 		{
 			//TODO: fix for replies
 			//if ( filterURL && rec.data.context!= filterURL )
 			//	return;
 			
 			if ( rec.dirty ) {
-				lore.anno.updateAnnotation(rec, currentURL, false, function (action,result,resultMsg) {
+				this.updateAnnotation(rec, currentURL, false, function (action,result,resultMsg) {
 					resultCallback(rec, action, result, resultMsg);
 				});
 				///TODO: check whether to change to use this
@@ -602,7 +267,7 @@
 			
 		});
 
-	}
+	},
 	
 	/**
 	 * Create or update the annotation in the remote repository 
@@ -615,21 +280,23 @@
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	lore.anno.updateAnnotation = function(anno, currentURL, refresh, resultCallback){
+	updateAnnotation : function(anno, currentURL, refresh, resultCallback){
 	
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading datasource
-		anno.commit(lore.anno.isNewAnnotation(anno));
+		anno.commit(anno.data.isNew());
 		
-		var annoRDF = lore.anno.createAnnotationRDF([anno.data]);
+		
+		var annoRDF = this.serializer.serialize([anno.data]);
 		
 		var xhr = new XMLHttpRequest();
-		if (lore.anno.isNewAnnotation(anno)) {
+		if (anno.data.isNew()) {
 			lore.debug.anno("creating new annotation")
 			// create new annotation
 			xhr.open("POST", lore.anno.annoURL, true);
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
+			var t = this;
 			xhr.onreadystatechange = function(){
 				try {
 				
@@ -638,7 +305,7 @@
 						var result = xhr.status == 201 ? 'success' : 'fail';
 						resultCallback('create', result, xhr.responseText ? xhr.responseText : xhr.statusText);
 						lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
-						lore.anno.updateAnnotationsSourceList(currentURL);
+						t.updateAnnotationsSourceList(currentURL);
 						
 					}
 				}
@@ -650,14 +317,15 @@
 			xhr.send(annoRDF);
 			lore.debug.anno("RDF of new annotation", annoRDF);
 			
-			//lore.anno.annods.remove(anno);
-			lore.anno.annodsunsaved.remove(anno);
+			//this.annods.remove(anno);
+			this.annodsunsaved.remove(anno);
 		}
 		else {
 			lore.debug.anno("updating existing annotation")
 			// Update the annotation on the server via HTTP PUT
 			xhr.open("PUT", anno.data.id, true);
 			xhr.setRequestHeader('Content-Type', "application/xml");
+			var t = this;
 			xhr.onreadystatechange = function(){
 				if (xhr.readyState == 4) {
 					if (resultCallback) {
@@ -665,17 +333,17 @@
 						resultCallback('update', result, xhr.statusText);
 						if (refresh) {
 							lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
-							lore.anno.updateAnnotationsSourceList(currentURL);
+							t.updateAnnotationsSourceList(currentURL);
 						}
 					}
 				}
 			};
 			xhr.send(annoRDF);
 			lore.debug.anno("RDF of updated annotation", annoRDF);
-			lore.anno.annodsunsaved.remove(anno);
+			this.annodsunsaved.remove(anno);
 		}
 
-	}
+	},
 	
 	/**
 	 * Delete an annotation on the local store and on the remote repository if it exists there
@@ -686,19 +354,19 @@
 	 * resultMsg: Result message 
 	 */
 	
-	lore.anno.deleteAnnotation = function(anno, resultCallback) {
+	deleteAnnotation : function(anno, resultCallback) {
 			// remove the annotation from the server
 			
-			if ( lore.anno.hasChildren(anno)) {
+			if ( anno.data.hasChildren()) {
 				if ( resultCallback)
 					resultCallback("fail", "Annotation not deleted. Delete replies first.");
 				return;
 			}
 			
-			var existsInBackend = !lore.anno.isNewAnnotation(anno);
+			var existsInBackend = !anno.data.isNew();
 			
-			lore.anno.annods.remove(anno);
-			lore.anno.annodsunsaved.remove(anno);
+			this.annods.remove(anno);
+			this.annodsunsaved.remove(anno);
 			
 			if (existsInBackend) {
 
@@ -708,7 +376,7 @@
 						lore.debug.anno("Deletion success: " + resp );
 						
 						//TODO: remove from the cache
-						//lore.global.store.remove(lore.anno.annods, );
+						//lore.global.store.remove(this.annods, );
 						if ( resultCallback) {
 							resultCallback('success', resp);
 						}
@@ -720,269 +388,13 @@
 							resultCallback('fail', resp);
 						}
 					},
-					method: "DELETE"
+					method: "DELETE",
+					scope:this
 				});
 			}
 
-	}
+	},
 	
-	/**
-	 * Generate the RDF for an array of annotations  
-	 * @param {Array} annos An array of records or Annotation objects 
-	 * @param {Object} storeDates (Optional) Specify whethere dates are to be stored in the RDF. Defaults to false
-	 * @return {String} The RDF that was generated
-	 */
-	lore.anno.createAnnotationRDF = function(annos, storeDates){
-		var rdfxml = "<?xml version=\"1.0\" ?>";
-		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '">';
-		
-		for (var i = 0; i < annos.length; i++) {
-			var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
-			var anno = {};
-			
-			for (var e in annoOrig) {
-				var val = annoOrig[e];
-				if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
-					anno[e] = val.replace(/&/g, '&amp;');
-				}
-				else 
-					anno[e] =val;
-				
-			}
-			
-			rdfxml += '<rdf:Description';
-			if (annoOrig.id && !lore.anno.isNewAnnotation(annoOrig)) {
-				rdfxml += ' rdf:about="' + anno.id + '"';
-			}
-			rdfxml += ">";
-			if (annoOrig.isReply) {
-				rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
-			}
-			else {
-				rdfxml += '<rdf:type rdf:resource="' + lore.constants.NAMESPACES["annotea"] +
-				'Annotation"/>';
-			}
-			if (annoOrig.type) {
-				rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
-			}
-			
-			
-			
-			
-			if (annoOrig.isReply) {
-				rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-				
-				var rootannonode = lore.global.util.findRecordById(lore.anno.annods, annoOrig.about);
-				if (rootannonode) {
-					while (rootannonode.data.isReply) {
-						rootannonode = lore.global.util.findRecordById(lore.anno.annods, rootannonode.data.about);
-					}
-					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id.replace(/&/g,'&amp;') + '"/>';
-				}
-				else {
-					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-				}
-				
-			}
-			else {
-				
-				if (annoOrig.variant) {
-					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-					'" rdf:resource="' +
-					anno.original +	'"/>';
-					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-					'" rdf:resource="' +
-					anno.variant +
-					'"/>';
-				}
-				else {
-					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-					'" rdf:resource="' +
-					anno.resource +
-					'"/>';
-				}
-				// also send variant as annotates for backwards compatability with older
-				// clients
-				
-			}
-			
-			if (annoOrig.lang) {
-				rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-				anno.lang +
-				'</language>';
-			}
-			if (annoOrig.title) {
-				rdfxml += '<title xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' + anno.title +
-				'</title>';
-			}
-			if (annoOrig.creator) {
-				rdfxml += '<creator xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-				lore.global.util.trim(anno.creator) +
-				'</creator>';
-			}
-			if (!annoOrig.created) {
-				anno.created = new Date();
-			}
-			if (storeDates) {
-				// TODO: format date strings
-				rdfxml += '<created xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
-						+ anno.created.toString() + '</created>';
-				anno.modified = new Date();
-				rdfxml += '<modified xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
-						+ anno.modified.toString() + '</modified>';
-			}
-			if (annoOrig.context) {
-				rdfxml += '<context xmlns="' + lore.constants.NAMESPACES["annotea"] + '">' +
-				//TODO: need to have url passed in as opposed to checking the window object directly
-				lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.context +
-				'</context>';
-			}
-			
-			if ( annoOrig.meta.context) {
-				// TODO: merge with the current context, as a multi-part xpointer or perhaps have another
-				// line in the context with the meta-context, depending on whether that breaks dannotate
-				rdfxml += '<meta-context xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-				for ( var i =0; i < anno.meta.context.length; i++ ) {
-					rdfxml += lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.meta.context[i] + "\n";
-				}
-				rdfxml += '</meta-context>';
-			}
-			if (annoOrig.type ==
-			lore.constants.NAMESPACES["vanno"] +
-			"VariationAnnotation") {
-				if (annoOrig.originalcontext) {
-					rdfxml += '<original-context xmlns="' +
-					lore.constants.NAMESPACES["vanno"] +
-					'">' +
-					anno.originalcontext +
-					'</original-context>';
-				}
-				if (annoOrig.variantcontext) {
-					rdfxml += '<variant-context xmlns="' +
-					lore.constants.NAMESPACES["vanno"] +
-					'">' +
-					anno.variantcontext +
-					'</variant-context>';
-				}
-				if (annoOrig.variationagent) {
-					rdfxml += '<variation-agent xmlns="' +
-					lore.constants.NAMESPACES["vanno"] +
-					'">' +
-					anno.variationagent +
-					'</variation-agent>';
-				}
-				if (annoOrig.variationplace) {
-					rdfxml += '<variation-place xmlns="' +
-					lore.constants.NAMESPACES["vanno"] +
-					'">' +
-					anno.variationplace +
-					'</variation-place>';
-				}
-				if (annoOrig.variationdate) {
-					rdfxml += '<variation-date xmlns="' +
-					lore.constants.NAMESPACES["vanno"] +
-					'">' +
-					anno.variationdate +
-					'</variation-date>';
-				}
-				if (annoOrig.original) {
-					rdfxml += '<original xmlns="' +
-					lore.constants.NAMESPACES["vanno"] +
-					'" rdf:resource="' +
-					anno.original +
-					'"/>';
-				}
-				if (annoOrig.variant) {
-					rdfxml += '<variant xmlns="' +
-					lore.constants.NAMESPACES["vanno"] +
-					'" rdf:resource="' +
-					anno.variant +
-					'"/>';
-				}
-			}
-			if (annoOrig.body) {
-				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
-				rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
-				'">' + lore.anno.getBodyRDF(anno.title, anno.body) + '</body>';
-			}
-			if (annoOrig.tags) {
-				var tagsarray = anno.tags.split(',');
-				lore.debug.anno("tags are", tagsarray);
-				for (var ti = 0; ti < tagsarray.length; ti++) {
-					var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
-					rdfxml += '<tag xmlns="' + lore.constants.NAMESPACES["vanno"] + '"';
-					if (thetag.indexOf("http://") == 0) {
-						rdfxml += ' resource="' + thetag + '"/>';
-					}
-					else {
-						rdfxml += '>' + thetag + '</tag>';
-					}
-				}
-			}
-			
-			if ( annoOrig.scholarly) {
-				if ( annoOrig.scholarly.references) {
-					rdfxml += '<references xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-					rdfxml += anno.scholarly.references;
-					rdfxml += '</references>'; 
-				}
-				
-				if ( annoOrig.scholarly.importance) {
-					rdfxml += '<importance xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-					rdfxml += anno.scholarly.importance;
-					rdfxml += '</importance>';
-				}
-				
-				if (annoOrig.scholarly.altbody) {
-					anno.scholarly.altbody = lore.global.util.sanitizeHTML(anno.scholarly.altbody, window);
-					rdfxml += '<altbody xmlns="' + lore.constants.NAMESPACES["vanno"] + 
-					'">' + lore.anno.getBodyRDF(anno.title, anno.scholarly.altbody) + '</altbody>';
-				}
-			}
-
-			//TODO: save user meta data information 
-			/*if (annoOrig.meta.fields.length > 0) {
-				rdfxml += '<meta xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-				
-				//var cw = lore.global.util.getContentWindow(window);
-				//var url = '&lt;' + ('http://www.austlit.edu.au' + cw.location.pathname +	cw.location.search + '#me').replace(/&/g, '&amp;') + '&gt;';
-						
-				Ext.each(anno.meta.fields, function (item, index, all) {
-					var prop = "&lt;" + this.prop + "&gt;";
-					var type = "&lt;" + this.type + "&gt;";
-					rdfxml += type + " " + prop + " " +  this.value + " .\n";
-				});
-				rdfxml += '</meta>';
-			}*/
-
-			rdfxml += '</rdf:Description>';
-		}
-		rdfxml += '</rdf:RDF>';
-		
-		return rdfxml;
-	}
-	
-	/**
-	 * Generate RDF for annotation body 
-	 * @param {String} title Annotation Title
-	 * @param {String} body Annotation Body
-	 */
-	lore.anno.getBodyRDF = function (title, body) {
-		return '<rdf:Description>' +
-				'<ContentType xmlns="' +
-				lore.constants.NAMESPACES["http"] +
-				'">text/html</ContentType>' +
-				'<Body xmlns="' +
-				lore.constants.NAMESPACES["http"] +
-				'" rdf:parseType="Literal">' +
-				'<html xmlns="http://www.w3.org/TR/REC-html40"><head><title>' +
-				(title ? title : 'Annotation') +
-				'</title></head>' +
-				'<body>' +
-				body +
-				'</body></html>' +
-				'</Body></rdf:Description>';
-	}
 	
 	/**
 	 * Creates an array of Annotations from a list of RDF nodes in ascending date
@@ -993,7 +405,7 @@
 	 * @param {Boolean} bodyOp (Optional) Specify whether the annotations came from a file. Defaults to false.
 	 * @return {Array} ordered array of Annotations
 	 */
-	lore.anno.orderByDate = function(nodeList, bodyOp){
+	orderByDate : function(nodeList, bodyOp){
 		var tmp = [];
 		for (var j = 0; j < nodeList.length; j++) {
 			try {
@@ -1006,7 +418,7 @@
 		return tmp.length == 1 ? tmp : tmp.sort(function(a, b){
 			return (a.created > b.created ? 1 : -1);
 		});
-	}
+	},
 	
 	
 	/**
@@ -1016,7 +428,7 @@
 	 * @param {window} The window object
 	 * @return {Object} Server response as text or XML document.
 	 */
-	lore.anno.getBodyContent = function(anno, window, callback){
+	 getBodyContent : function(anno, window, callback){
 		
 		var uri = anno.bodyURL;
 		var async = callback != null;
@@ -1115,7 +527,7 @@
 		}
 		
 		
-	}
+	},
 	
 	/**
 	 * Get annotation body value asynchronously. 
@@ -1124,7 +536,7 @@
 	 * @param {window} The window object
 	 * @return {Object} Server response as text or XML document.
 	 */
-	lore.anno.getBodyContentAsync = function(anno, window){
+	getBodyContentAsync : function(anno, window){
 	
 		var callback = function(anno, txt){
 			try {
@@ -1137,7 +549,7 @@
 			 	encodeURIComponent(anno.variant) != url)))
 					return;
 					
-				var r = lore.global.util.findRecordById(lore.anno.annods, anno.id);
+				var r = lore.global.util.findRecordById(this.annods, anno.id);
 				if (r) {
 					r.data.body = txt || '';
 					r.data.bodyLoaded = true;
@@ -1151,8 +563,8 @@
 			}
 		}
 		
-		lore.anno.getBodyContent(anno, window, callback);
-	}
+		this.getBodyContent(anno, window, callback);
+	},
 	
 	/**
 	 * Updates the annotations store with updated values for the
@@ -1163,15 +575,15 @@
 	 * result: Result as string ( 'success' or 'fail')
 	 * resultMsg: Result message as string 
 	 */
-	lore.anno.updateAnnotationsSourceList = function(theURL, callbackFunc){
+	updateAnnotationsSourceList : function(theURL, callbackFunc){
 	
 		// check cache
 		var annotations = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
 		
 		if (annotations) {
 			lore.debug.anno("Using cached annotation data...");
-			lore.anno.clearAnnotationStore();
-			lore.anno.annods.loadData(annotations, true);
+			this.clearAnnotationStore();
+			this.annods.loadData(annotations, true);
 			return; 
 		}
 						
@@ -1180,6 +592,7 @@
 			var queryURL = lore.anno.annoURL + lore.constants.ANNOTEA_ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
 			lore.debug.anno("Updating annotations with request URL: " + queryURL);
 			
+			var t = this;
 			Ext.Ajax.request({
 				url: queryURL,
 				method: "GET",
@@ -1188,7 +601,7 @@
 					try {
 						if (callbackFunc) 
 							callbackFunc('success', resp);
-						lore.anno.handleAnnotationsLoaded(resp);
+						t.handleAnnotationsLoaded(resp);
 					} catch (e ) {
 						lore.debug.anno(e,e);
 					}
@@ -1200,13 +613,14 @@
 					} catch (e ) {
 						lore.debug.anno(e,e);
 					}
-				}
+				},
+				scope:this
 			});
 		}
 		else {
 			lore.debug.anno("Annotation server URL not set!");
 		}
-	}
+	},
 	
 	/**
 	 * 
@@ -1219,7 +633,7 @@
 	 * resultMsg: Result message as string 
 	 */
 
-	lore.anno.searchAnnotations = function (url, filters, resultCallback) {
+	searchAnnotations : function (url, filters, resultCallback) {
 		
 		var queryURL = lore.anno.annoURL + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ALL_OBJECTS);
 		for (var i = 0; i < filters.length; i++) {
@@ -1236,8 +650,8 @@
 				try {
 					var annos = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 					
-					annos = lore.anno.orderByDate(annos, 2);
-					lore.anno.annosearchds.loadData(annos);
+					annos = this.orderByDate(annos, 2);
+					this.annosearchds.loadData(annos);
 						
 					if (resultCallback) {
 						resultCallback('success', resp);
@@ -1255,36 +669,23 @@
 				} catch (e ) {
 					lore.debug.anno(e,e);
 				}
-			}
+			},
+			scope:this
 		});
-	}
-	
-	/**
-	 * Retrieve data from the record for the given annotation unique identifier
-	 * @param {String} annoid
-	 * @return {Object} Annotation object or null
-	 */
-	lore.anno.getAnnoData = function(annoid, store){
-		var annoIndex = store.findBy(function(record, id){
-			return (annoid == record.json.id);
-		});
-		return store.getAt(annoIndex);
-	}
+	},
 	
 	/**
 	 * Clear the annotation store
 	 */
-	lore.anno.clearAnnotationStore = function() {
-		lore.anno.annods.each(function(rec) {
-					lore.anno.annods.remove(rec);
-			});
-	}
+	clearAnnotationStore : function() {
+		this.annods.removeAll();
+	},
 	
 	/**
 	 * Load annotation data into the current data store and cache the data
 	 * @param {Object} annotations
 	 */
-	lore.anno.loadAnnotation = function ( annotations) {
+	loadAnnotation : function ( annotations) {
 		if ( !annotations.length)
 			annotations = [annotations];
 			
@@ -1292,12 +693,12 @@
 		
 		// find a leaf node
 		while(a && a.isReply ) {
-			a = lore.global.util.findRecordById(lore.anno.annods, a.resource).data;
+			a = lore.global.util.findRecordById(this.annods, a.resource).data;
 		}
 		
 		if ( a.resource == lore.anno.ui.currentURL || ( (a.variant && a.variant == lore.anno.ui.currentURL) ||
 			(a.original && a.original == lore.anno.ui.currentURL) )) {
-			lore.anno.annods.loadData(annotations, true);
+			this.annods.loadData(annotations, true);
 			
 			var ds = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, lore.anno.ui.currentURL);
 			if ( !ds )
@@ -1309,7 +710,7 @@
 		} else {
 			//TODO:  they've switched pages, continue to load data for caching purposes
 		}
-	}
+	},
 	
 	/**
 	 * Handler function that's called when annotation information is successfully
@@ -1317,7 +718,7 @@
 	 * the replies for annotations from the server.
 	 * @param {Object} resp Response XML from the server
 	 */
-	lore.anno.handleAnnotationsLoaded = function(resp){
+	handleAnnotationsLoaded : function(resp){
 		var resultNodes = {};
 		var xmldoc = resp.responseXML;
 		
@@ -1330,10 +731,10 @@
 			nodes: resultNodes
 		});
 		
-		lore.anno.clearAnnotationStore();
+		this.clearAnnotationStore();
 				
 		if (resultNodes.length > 0) {
-			var annotations = lore.anno.orderByDate(resultNodes, 3);
+			var annotations = this.orderByDate(resultNodes, 3);
 			var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
 
 			// cater for tab change while annotations were downloaded from server
@@ -1344,7 +745,7 @@
 				
 			for (var i = 0; i < annotations.length; i++) {
 				try {
-					annotations[i].body = lore.anno.getBodyContent(annotations[i], window);
+					annotations[i].body = this.getBodyContent(annotations[i], window);
 					annotations[i].bodyLoaded = true;
 				} 
 				catch (e) {
@@ -1355,18 +756,18 @@
 			// TODO: should this be in loadAnnotation? and shouldn't be checking
 			// against the URL ?
 			// remove annotatino from datatstore that have been updated
-			var recs = lore.anno.annods.getRange();
+			var recs = this.annods.getRange();
 			
 			for ( var i =0; i < recs.length; i++) {
 				for (var j = 0; j < annotations.length; j++) {
 					if (recs[i].data.id == annotations[j].id) {
 						//lore.debug.anno("j: " + j + ", " + recs[i].data.id, recs[i]);
 						annotations[i] = recs[i].data;
-						lore.anno.annods.remove(recs[i]);
+						this.annods.remove(recs[i]);
 					}
 				}
 			}
-			lore.anno.loadAnnotation(annotations);
+			this.loadAnnotation(annotations);
 							
 			
 			// get annotation replies
@@ -1380,39 +781,40 @@
 					disableCaching: false, // without this the request was failing
 					method: "GET",
 					url: lore.anno.annoURL + lore.constants.ANNOTEA_REPLY_TREE + annoID,
-					success: lore.anno.handleAnnotationRepliesLoaded,
+					success: this.handleAnnotationRepliesLoaded,
 					failure: function(resp, opt){
 						lore.debug.anno("Unable to obtain replies for " + opt.url, resp);
-					}
+					},
+					scope:this
 				});
 			}
 		};
-	}
+	},
 	
 	/**
 	 * Handler function that is called when for each annotation that has replies.
 	 * The replies are loaded into the data store
 	 * @param {Object} resp Response XML from the server.
 	 */
-	lore.anno.handleAnnotationRepliesLoaded = function(resp){
+	handleAnnotationRepliesLoaded : function(resp){
 		try {
 			var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 			var isLeaf = (replyList.length == 0);
 			//TODO: bodyOp, use constants
 			if (!isLeaf) {
-				replies = lore.anno.orderByDate(replyList,3);
+				replies = this.orderByDate(replyList,3);
 				
 				//if ( replies[0].resource != lore.global.util.getContentWindow(window).location)
 				//	return;
 				for ( var i=0; i< replies.length; i++) {
-					replies[i].body = lore.anno.getBodyContent(replies[i], window);
+					replies[i].body = this.getBodyContent(replies[i], window);
 					replies[i].bodyLoaded = true;
 				}
 				
 				//TODO: same as the other TODO in handleAnnotationsLoaded RE: loadAnnotation and this
 				// segment of code
 				// don't add records that are already in the datastore
-				var recs = lore.anno.annods.getRange();
+				var recs = this.annods.getRange();
 				for ( var i =0; i < recs.length; i++) {
 					for (var j = 0; j < replies.length; j++) {
 						if (recs[i].data.id == replies[j].id) {
@@ -1422,12 +824,12 @@
 						}
 					}
 				}
-				lore.anno.loadAnnotation(replies);
+				this.loadAnnotation(replies);
 			}
 		} catch (e ) {
 			lore.debug.anno(e,e);
 		}
-	}
+	},
 	
 	/**
 	 * For all top level annotations on a page ( those that are not replies), that are not variation annotations
@@ -1437,19 +839,19 @@
 	 * @param {Boolean} serialize Specify whether the output will be serialized to a string. Defaults to a document fragment.
 	 * @return {Object} If serialize was supplied as true, then resulting XML will be returned as a string otherwise as a document fragment  
 	 */
-	lore.anno.transformRDF = function(stylesheetURL, params, serialize){
-		var annos = lore.anno.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
+	transformRDF : function(stylesheetURL, params, serialize){
+		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
 				
-		return lore.global.util.transformRDF(stylesheetURL, lore.anno.createAnnotationRDF(annos, true), 
+		return lore.global.util.transformRDF(stylesheetURL, this.serializer.serialize(annos, true), 
 											params, window, serialize) 
-	}
+	},
 	
 	/** Generate a Word document from the top-level, non-variation annotations on the page
 	 * @param domNode HTML node to serialize
 	 * @return {String} The annotated page returned as String containing WordML XML.
 	 */
-	lore.anno.createAnnoWord = function(domNode){
+	createAnnoWord : function(domNode){
 		/* TODO: needs finishing
 		 
 		 var serializer= new XMLSerializer();
@@ -1461,9 +863,9 @@
 		
 		//TODO: do as the comments say above, this code is for testing out the stylesheet transform
 		// logic, as it supplied a stream with RDF & HTML.
-		var annos = lore.anno.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
+		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
-		var theRDF = lore.anno.createAnnotationRDF(annos, true);
+		var theRDF = this.serializer.serialize(annos, true);
 
 		 //santize HTML
 		var html = serializer.serializeToString(domNode);
@@ -1471,26 +873,26 @@
 		html = theRDF + "\n" + html;
 		
 		//lore.global.util.writeFile(html, "c:\\", "test.txt", window);
-		//return lore.anno.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
+		//return this.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
 				
 		return lore.global.util.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", html, {}, window, true) */
-	}
+	},
 	
 	/**
 	 * Serialize the current annotations on the page into the given format. 
 	 * @param {String} format The format to serialize the annotations in. 'wordml' or 'rdf'.
 	 * @return {String} Returns the serialized annotations in the new format
 	 */
-	lore.anno.serialize = function ( format) {
+	serialize : function ( format) {
 		lore.debug.anno("serialize format: " + format);
 		if ( format == 'wordml') {
-			return lore.anno.createAnnoWord( lore.global.util.getContentWindow(window).document.body, true);
+			return this.createAnnoWord( lore.global.util.getContentWindow(window).document.body, true);
 		} else if ( format == 'rdf') {
-			return lore.anno.createAnnotationRDF(lore.anno.annods.getRange(), true);
+			return this.serializer.serialize(this.annods.getRange(), true);
 		} else {
 			return null;
 		}
-	}
+	},
 	
 	/**
 	 * Import annotations into the local store, from a string containing valid RDF. 
@@ -1501,7 +903,7 @@
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message
 	 */
-	lore.anno.importRDF = function( theRDF, theurl, callback){
+	importRDF : function( theRDF, theurl, callback){
 		
 		//TODO: should this be commented out? need to test out exporting and importing
 		// facility esp. importing via the danno tool.  Then this code be removed/commented out.
@@ -1543,7 +945,7 @@
 			
 			
 			anno.id = null;
-			var annoRDF = lore.anno.createAnnotationRDF([anno]);
+			var annoRDF = this.serializer.serialize([anno]);
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", lore.anno.annoURL, false); //synchronous
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
@@ -1560,7 +962,7 @@
 					processed[annoid] = newanno;
 					unprocessed[annoid] = null;
 					lore.debug.anno("processed " + anno.title +"(" + annoid + ")", newanno);
-					lore.anno.annods.loadData([newanno],true);
+					this.annods.loadData([newanno],true);
 					return newanno; 
 				} else {
 					lore.debug.anno("error processing response xml. invalid xml.", {
@@ -1577,13 +979,13 @@
 			return null;
 		};
 			
-		var annotations = lore.anno.orderByDate(resultNodes, 1);
+		var annotations = this.orderByDate(resultNodes, 1);
 		var unprocessed = {};
 		var processed = {};
 		for ( var i =0; i < annotations.length; i++ ) {
 			unprocessed[annotations[i].id] = annotations[i];
 		}
-		//lore.anno.annods.suspendEvents(false);
+		//this.annods.suspendEvents(false);
 		var success = true;
 		try {
 			for (var i = 0; i < annotations.length; i++) {
@@ -1597,11 +999,12 @@
 		} catch (e) {
 			lore.debug.anno("error occurred during annotations import process: " + e , e);
 		}
-		//lore.anno.annods.resumeEvents();
+		//this.annods.resumeEvents();
 		
 		if ( success) {
 			if (callback) callback('success', 'All annotations imported successfully');
 		}
 	}
+});
 	
 
