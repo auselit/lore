@@ -81,6 +81,6 @@
 #text-mining {
 	list-style-image: url(chrome://lore/skin/icons/page_white_magnify.png);
 }
-#show-prefs {
+#show-prefs, #show-prefs2 {
 	list-style-image: url(chrome://lore/skin/icons/cog.png);
 }
