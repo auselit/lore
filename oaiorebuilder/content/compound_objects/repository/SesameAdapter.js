@@ -129,7 +129,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	            if (xmlhttp2.readyState == 4) {
 	                if (xmlhttp2.status == 204) {
 	                    lore.debug.ore("sesame: RDF saved",xmlhttp2);
-	                    lore.ore.ui.loreInfo(remid + " saved to " + this.reposURL);
+	                    lore.ore.ui.loreInfo("Compound object " + remid + " saved");
                         callback(remid);
 	                } else {
 	                    lore.ore.ui.loreError('Unable to save to repository' + xmlhttp2.responseText);
