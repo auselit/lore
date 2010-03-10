@@ -119,7 +119,6 @@ lore.ore.ui.graph.ContextmenuConnection.prototype.getEndAngle=function()
     length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
   }
   var angle = -(180/Math.PI) *Math.asin((p1.y-p2.y)/length);
-  lore.debug.ore("line length " + length + " angle " + angle,[p1,p2]);
   
   if(angle<0)
   {
