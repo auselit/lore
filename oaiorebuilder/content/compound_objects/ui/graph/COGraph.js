@@ -31,6 +31,21 @@ lore.ore.ui.graph.COGraph = function(id){
         //this.layouter.setIterations(50);
         //this.layouter.setSprings(uwm.diagram.autolayout.Layouter.spring.LINEAR);
         //this.layouter.setVertexVertexRepulsion(uwm.diagram.autolayout.Layouter.vvRepulsion.INVERSE);
+        //this.setBackgroundImage("chrome://lore/skin/icons/emptyco.png",true);
+        
+        /* The mask element covers figures to allow mouse to move over figures during moves
+         * without interference from figure contents
+         **/
+	    this.mask = document.createElement("div");
+        this.mask.style.position="absolute";
+        this.mask.style.top = "0px";
+        this.mask.style.left = "0px";
+	    this.mask.style.backgroundColor="transparent";
+	    this.mask.style.width="100%";
+	    this.mask.style.height="100%";
+	    this.mask.style.display="none";
+        this.mask.style.zIndex="999";
+        this.html.appendChild(this.mask);
     } catch (ex){
         lore.debug.ore("error setting up layouter",ex);
     }
@@ -50,7 +65,12 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	        lore.debug.ore("failed to do layout",e);
 	    }
 	},
-
+    showMask : function (){
+        this.mask.style.display="block";  
+    },
+    hideMask : function (){
+        this.mask.style.display="none";
+    },
 	/**
 	 * Overrides the method from the superclass to change the appearance
 	 * @param {draw2d.Figure} figure The figure on which the resize handles are to be displayed
@@ -190,12 +210,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	},
 	/**
 	 * Allow Delete/backspace key to trigger node deletion (including on Mac)
-	 * @param {} keyCode
-	 * @param {} ctrl
+	 * @param {int} keyCode
+	 * @param {boolean} ctrl
 	 */
-	onKeyDown: function( /*:int*/ keyCode, /*:boolean*/ ctrl)
-	{
-	  //lore.debug.ore("Workflow onKeyDown " + keyCode,ctrl);
+	onKeyDown: function(keyCode, ctrl) {
 	  if((keyCode==46 || keyCode==8) && this.currentSelection!=null)
 	     this.commandStack.execute(this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
 	  else if(keyCode==90 && ctrl)
