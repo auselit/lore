@@ -93,7 +93,7 @@ debug = {
 	 */
 	tm : function (message, obj){
 	    if (debug.tm_pref){
-	        debug.fbTrace.sysout(debugFB_TM + message, obj);
+	        debug.fbTrace.sysout(debug.FB_TM + message, obj);
 	    } 
 		debug.mozConsole(debug.TM, message, obj);
     },
