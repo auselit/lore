@@ -110,7 +110,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	this.footer.style.left = this.cornerWidth + "px";
 	this.footer.style.top = "0px";
 	this.footer.style.height = (this.cornerHeight - 2) + "px";
-	this.footer.style.backgroundColor = "transparent";
+	this.footer.style.backgroundColor = "white";
 	this.footer.style.borderBottom = "1px solid #aeaeae";
 	this.footer.style.fontSize = "2px";
 	this.textarea = document.createElement("div");
@@ -396,13 +396,14 @@ lore.ore.ui.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 	}
 };
 /**
- * 
+ * Override onDragstart to bring node to front and hide preview while dragging.
+ * Also check if node should be toggled
  * @param {} x
  * @param {} y
  * @return {Boolean}
  */
 lore.ore.ui.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
-	var _4677 = draw2d.Node.prototype.onDragstart.call(this, x, y);
+	var superResult = draw2d.Node.prototype.onDragstart.call(this, x, y);
 	if (!this.header) {
 		return false;
 	}
@@ -411,18 +412,34 @@ lore.ore.ui.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
 		this.toggle();
 		return false;
 	}
-	// don't allow move by dragging within iframe
-	if (x < 0 || y < 0) {
+	// don't allow move by dragging within iframe or metadataarea
+	if (x < 0 || y < 0 || y >= (this.header.offsetHeight - 2)) {
 		return false;
 	}
+    this.iframearea.style.display="none";
+    this.oldZ = this.getZOrder();
+    this.setZOrder(10000);
+    this.workflow.showMask();
 	if (this.originalHeight == -1) {
 		if (this.canDrag && x < parseInt(this.header.style.width)
 				&& y < parseInt(this.header.style.height)) {
 			return true;
 		}
 	} else {
-		return _4677;
+		return superResult;
 	}
+};
+/**
+ * Override onDragend to reset ZOrder and redisplay preview
+ */
+lore.ore.ui.graph.ResourceFigure.prototype.onDragend = function(){
+   if (this.oldZ){
+        this.setZOrder(this.oldZ);
+        delete this.oldZ;
+   } 
+   this.iframearea.style.display = "block";
+   this.workflow.hideMask();
+   draw2d.Node.prototype.onDragend.call(this);
 };
 /**
  * 
@@ -446,6 +463,9 @@ lore.ore.ui.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
  */
 lore.ore.ui.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 	draw2d.Node.prototype.setWorkflow.call(this, wf);
+    if (this.getZOrder() == draw2d.Figure.ZOrderBaseIndex){
+        this.setZOrder(draw2d.Figure.ZOrderBaseIndex + wf.getDocument().getFigures().getSize());
+    }
 	if (wf && !this.inputPort) {
 		var orange = new draw2d.Color(255, 252, 182);
 		var grey = new draw2d.Color(174, 174, 174);
