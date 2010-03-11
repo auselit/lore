@@ -44,10 +44,21 @@ lore.ore.ui.graph.COGraph = function(id){
 	    this.mask.style.width="100%";
 	    this.mask.style.height="100%";
 	    this.mask.style.display="none";
-        this.mask.style.zIndex="999";
+        this.mask.style.zIndex="6000";
         this.html.appendChild(this.mask);
+        
+        /* Override resizeHandles to use handles that raise/lower figures when resizing */
+        this.resizeHandle1 = new lore.ore.ui.graph.ResizeHandle(this,1); // 1 = LEFT TOP
+		this.resizeHandle2 = new lore.ore.ui.graph.ResizeHandle(this,2); // 2 = CENTER_TOP
+		this.resizeHandle3 = new lore.ore.ui.graph.ResizeHandle(this,3); // 3 = RIGHT_TOP
+		this.resizeHandle4 = new lore.ore.ui.graph.ResizeHandle(this,4); // 4 = RIGHT_MIDDLE
+		this.resizeHandle5 = new lore.ore.ui.graph.ResizeHandle(this,5); // 5 = RIGHT_BOTTOM
+		this.resizeHandle6 = new lore.ore.ui.graph.ResizeHandle(this,6); // 6 = CENTER_BOTTOM
+		this.resizeHandle7 = new lore.ore.ui.graph.ResizeHandle(this,7); // 7 = LEFT_BOTTOM
+		this.resizeHandle8 = new lore.ore.ui.graph.ResizeHandle(this,8); // 8 = LEFT_MIDDLE
+        this.connectionLine.setColor(new draw2d.Color(174, 174, 174));
     } catch (ex){
-        lore.debug.ore("error setting up layouter",ex);
+        lore.debug.ore("error setting up COGraph",ex);
     }
 }
 Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
@@ -72,7 +83,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         this.mask.style.display="none";
     },
 	/**
-	 * Overrides the method from the superclass to change the appearance
+	 * Overrides the method from the superclass to change the colour of the handles
 	 * @param {draw2d.Figure} figure The figure on which the resize handles are to be displayed
 	 */
 	showResizeHandles: function(/*:draw2d.Figure*/ figure)
@@ -80,10 +91,6 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	  this.hideLineResizeHandles();
 	  this.hideResizeHandles();
 	
-	  // We must reset the alpha blending of the resizeHandles if the last selected object != figure
-	  // Reason: We would fadeIn the ResizeHandles at the new selected object but the fast toggle from oldSeleciton => newSelection
-	  //         doesn't reset the alpha to 0.0. So, we do it manually.
-	  //
 	  if(this.getEnableSmoothFigureHandling() && this.getCurrentSelection()!=figure)
 	  {
 	     this.resizeHandle1.setAlpha(0.01);

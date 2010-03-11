@@ -24,13 +24,66 @@
 lore.ore.ui.graph.Port = function(uirep) {
     draw2d.Port.call(this,uirep);
     this.setCoronaWidth(35);
-    var lemon = new draw2d.Color(255, 252, 182);
     var grey = new draw2d.Color(174, 174, 174);
-    this.setBackgroundColor(lemon);
+    this.fillColor = new draw2d.Color(255, 252, 182);
+    this.highlightFillColor = new draw2d.Color(170,204,246);
+    this.setBackgroundColor(this.fillColor);
     this.setColor(grey);
 };
 lore.ore.ui.graph.Port.prototype = new draw2d.Port;
 lore.ore.ui.graph.Port.prototype.type = "lore.ore.ui.graph.Port";
+
+/*lore.ore.ui.graph.Port.prototype.onDragLeave = function(){
+    draw2d.Port.prototype.onDragLeave.call(this);
+    this.parentNode.workflow.showMask();  
+}*/
+
+/** Override onDrag: don't show port and account for scroll offsets */
+lore.ore.ui.graph.Port.prototype.onDrag = function()
+{
+  this.x = this.draggable.getLeft();
+  this.y = this.draggable.getTop();
+  var pn = this.parentNode;
+  var wf = pn.workflow;
+  
+  if (!(this.isMoving)){
+    this.isMoving = true;
+    this.setAlpha(0.0);
+    wf.showMask(); 
+    wf.connectionLine.setAlpha(0.3);
+    this.yoffset = wf.getScrollTop();
+    this.xoffset = wf.getScrollLeft();
+  }
+  wf.showConnectionLine(
+    pn.x+this.x - (this.xoffset - wf.getScrollLeft()),
+    pn.y+this.y - (this.yoffset - wf.getScrollTop()),
+    pn.x+this.originX,
+    pn.y+this.originY);
+  this.fireMoveEvent();
+}
+
+lore.ore.ui.graph.Port.prototype.onDragend = function(){
+    this.setAlpha(1.0);
+    this.setPosition(this.originX, this.originY);
+    this.parentNode.workflow.hideConnectionLine();
+    this.parentNode.workflow.hideMask();
+    this.isMoving = false;
+    delete this.yoffset;
+    delete this.xoffset;
+}
+
+lore.ore.ui.graph.Port.prototype.onDragEnter = function(/*:draw2d.Port*/ port)
+{
+  this.parentNode.workflow.connectionLine.setAlpha(1.0);
+  this.showCorona(true);
+  this.setBackgroundColor(this.highlightFillColor);
+}
+lore.ore.ui.graph.Port.prototype.onDragLeave = function(/*:draw2d.Port*/ port)
+{
+  this.parentNode.workflow.connectionLine.setAlpha(0.3);
+  this.showCorona(false);
+  this.setBackgroundColor(this.fillColor);
+}
 /**
  * Create a connection between nodes if a port from another node is dropped on this port
  * @param {} port
