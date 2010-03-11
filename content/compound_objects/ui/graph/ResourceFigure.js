@@ -395,6 +395,22 @@ lore.ore.ui.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 		this.showContent();
 	}
 };
+/** Bring figure to front, masking all others - for moving, resizing etc */
+lore.ore.ui.graph.ResourceFigure.prototype.raise = function(){
+    this.iframearea.style.display="none";
+    this.oldZ = this.getZOrder();
+    this.setZOrder(10000);
+    this.workflow.showMask();
+};
+/** Restore figure and unmask all others */
+lore.ore.ui.graph.ResourceFigure.prototype.lower = function(){
+    if (this.oldZ){
+        this.setZOrder(this.oldZ);
+        delete this.oldZ;
+   } 
+   this.iframearea.style.display = "block";
+   this.workflow.hideMask();
+};
 /**
  * Override onDragstart to bring node to front and hide preview while dragging.
  * Also check if node should be toggled
@@ -416,10 +432,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
 	if (x < 0 || y < 0 || y >= (this.header.offsetHeight - 2)) {
 		return false;
 	}
-    this.iframearea.style.display="none";
-    this.oldZ = this.getZOrder();
-    this.setZOrder(10000);
-    this.workflow.showMask();
+    this.raise();
 	if (this.originalHeight == -1) {
 		if (this.canDrag && x < parseInt(this.header.style.width)
 				&& y < parseInt(this.header.style.height)) {
@@ -439,12 +452,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.getMinHeight = function(){
  * Override onDragend to reset ZOrder and redisplay preview
  */
 lore.ore.ui.graph.ResourceFigure.prototype.onDragend = function(){
-   if (this.oldZ){
-        this.setZOrder(this.oldZ);
-        delete this.oldZ;
-   } 
-   this.iframearea.style.display = "block";
-   this.workflow.hideMask();
+   this.lower();
    draw2d.Node.prototype.onDragend.call(this);
 };
 /**
