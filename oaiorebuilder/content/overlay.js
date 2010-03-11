@@ -61,14 +61,14 @@ try {
 					
 					if (updateURI == lore.global.ui.getCurrentURL(loreoverlay.instId)) {
 						if ( co && co.refreshPage) co.refreshPage();
-						if (an && an.refreshPage) {	an.refreshPage(); }
+						loreoverlay.fireEvent("location_refresh", []);
+						
 						return;
 					}
-					if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId) && 
-						 lore.global.ui.annotationView.loaded(loreoverlay.instId) ) {
+					if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId)) {
 						lore.global.ui.setCurrentURL(loreoverlay.instId, updateURI);
 						co.handleLocationChange(updateURI);
-						an.handleLocationChange(updateURI);
+						loreoverlay.fireEvent("location_changed", [updateURI]);
 						
 					}
 				} catch(e) {
@@ -124,10 +124,11 @@ try {
 				
 				this.initialized = true;
 				this.strings = document.getElementById("lore-strings");
+				this.addEvents(["annoprefs_changed", "location_changed", "location_refresh"]);
 				lore.global.ui.load(window, this.instId);
 			} 
 			catch (e) {
-				alert("Error on load: " + e.stack, e);
+				alert("Error on load: " + e + "\n" + e.stack);
 			}
 		},
 		
@@ -419,34 +420,75 @@ try {
 				var annoserver = this.prefs.getCharPref("annoserver");
 				var dccreator = this.prefs.getCharPref("dccreator");
 				
-				var disable_anno = this.prefs.getBoolPref("disable_annotations");
-				document.getElementById('annsep').hidden = disable_anno;
-				document.getElementById('annsep2').hidden = disable_anno;
-				document.getElementById('annsep3').hidden = disable_anno;
-				document.getElementById('add-annotation').hidden = disable_anno;
-				document.getElementById('show-annotations').hidden = disable_anno;
-				document.getElementById('edit-annotation').hidden = disable_anno;
-				document.getElementById('remove-annotation').hidden = disable_anno;
-				document.getElementById('reply-annotation').hidden = disable_anno;
-				document.getElementById('save-annotation').hidden = disable_anno;
-				document.getElementById('save-all-annotations').hidden = disable_anno;
-				document.getElementById('import-export-anno').hidden = disable_anno;
+				var disable = this.prefs.getBoolPref("disable_annotations");
+				document.getElementById('annsep').hidden = disable;
+				document.getElementById('annsep2').hidden = disable;
+				document.getElementById('annsep3').hidden = disable;
+				document.getElementById('add-annotation').hidden = disable;
+				document.getElementById('show-annotations').hidden = disable;
+				document.getElementById('edit-annotation').hidden = disable;
+				document.getElementById('remove-annotation').hidden = disable;
+				document.getElementById('reply-annotation').hidden = disable;
+				document.getElementById('save-annotation').hidden = disable;
+				document.getElementById('save-all-annotations').hidden = disable;
+				document.getElementById('import-export-anno').hidden = disable;
 				
-				//var annomode = this.prefs.getBoolPref("annotationmode");
+				var mode = this.prefs.getBoolPref("annotationmode");
 				var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
-								
-				loreoverlay.annoView().setdccreator(dccreator);
-				loreoverlay.annoView().setRepos(annoserver);
-				//loreoverlay.annoView().setAnnotationMode(annomode);
-				loreoverlay.annoView().disableUIFeatures({
-					'disable_annotations': disable_anno
-				});
-				loreoverlay.annoView().setCacheTimeout(timeout);
+				
+				this.fireEvent("annoprefs_changed",
+				[{
+					creator: dccreator,
+					url: annoserver,
+					cacheTimeout: timeout,
+					disable: disable,
+					mode: mode
+				}]);
 			}
 			else {
 				lore.debug.ui("preferences object not loaded, can't read in annotation preferences!");
 			}
 		},
+		
+		/*
+		 * Ext-like Event functions
+		 */
+		fireEvent: function (eventName, args) {
+			try {
+				
+				if (this.events) {
+					
+					var regListeners = this.events[eventName];
+					if (regListeners && regListeners.length > 0) {
+						for (var i = 0; i < regListeners.length; i++) {
+							regListeners[i].callback.apply(regListeners[i].scope ? regListeners[i].scope : this, args);
+						}
+					}
+				}
+			} catch (e ) {
+				alert(e + " " + e.stackTrace);
+			}
+		},
+		
+		addEvents: function (eventNames ) {
+			if ( !this.events)
+				this.events = {};
+			if (!eventNames.length)
+				eventNames = [eventNames];
+			for ( var i =0; i < eventNames.length; i++) {
+					this.events[eventNames[i]] = [];
+			}
+		},
+		
+		on : function ( eventName, callback, scope ) {
+			if ( this.events && this.events[eventName]) {
+				this.events[eventName] = this.events[eventName].concat({
+					callback: callback,
+					scope: scope
+				});
+			}
+		},
+		
 		/** Trigger the relationships ontology to be reloaded */
 		loadOntology: function(){
 			var prefservice = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
@@ -560,8 +602,8 @@ try {
 			
 			if (show) {
 				if (this.prefs) {
-					var disable_anno = this.prefs.getBoolPref("disable_annotations");
-					if (disable_anno)
+					var disable = this.prefs.getBoolPref("disable_annotations");
+					if (disable)
 						return; // don't make visible a disabled component					
 				}
 				
