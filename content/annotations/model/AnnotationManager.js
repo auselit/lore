@@ -287,7 +287,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		anno.commit(anno.data.isNew());
 		
 		
-		var annoRDF = this.serializer.serialize([anno.data]);
+		var annoRDF = this.serializer.serialize([anno.data], this.annods);
 		
 		var xhr = new XMLHttpRequest();
 		if (anno.data.isNew()) {
@@ -843,7 +843,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
 				
-		return lore.global.util.transformRDF(stylesheetURL, this.serializer.serialize(annos, true), 
+		return lore.global.util.transformRDF(stylesheetURL, this.serializer.serialize(annos, this.annods, true), 
 											params, window, serialize) 
 	},
 	
@@ -865,7 +865,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		// logic, as it supplied a stream with RDF & HTML.
 		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
-		var theRDF = this.serializer.serialize(annos, true);
+		var theRDF = this.serializer.serialize(annos, this.annods, true);
 
 		 //santize HTML
 		var html = serializer.serializeToString(domNode);
@@ -888,7 +888,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if ( format == 'wordml') {
 			return this.createAnnoWord( lore.global.util.getContentWindow(window).document.body, true);
 		} else if ( format == 'rdf') {
-			return this.serializer.serialize(this.annods.getRange(), true);
+			return this.serializer.serialize(this.annods.getRange(), this.annods, true);
 		} else {
 			return null;
 		}
@@ -945,7 +945,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			
 			
 			anno.id = null;
-			var annoRDF = this.serializer.serialize([anno]);
+			var annoRDF = this.serializer.serialize([anno], this.annods);
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", lore.anno.annoURL, false); //synchronous
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
@@ -985,7 +985,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		for ( var i =0; i < annotations.length; i++ ) {
 			unprocessed[annotations[i].id] = annotations[i];
 		}
-		//this.annods.suspendEvents(false);
+
 		var success = true;
 		try {
 			for (var i = 0; i < annotations.length; i++) {
@@ -999,8 +999,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		} catch (e) {
 			lore.debug.anno("error occurred during annotations import process: " + e , e);
 		}
-		//this.annods.resumeEvents();
-		
+
 		if ( success) {
 			if (callback) callback('success', 'All annotations imported successfully');
 		}

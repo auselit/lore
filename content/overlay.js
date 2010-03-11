@@ -314,7 +314,7 @@ try {
 		},
 		/** Annotations Toolbar button handler: Trigger editing an annoation */
 		editAnnotation: function () {
-			loreoverlay.annoView().handleEditAnnotation();
+			loreoverlay.annoView().handleEdit();
 		},
 		/** Annotations Toolbar button handler: Triger replying to an annotation */
 		replyToAnnotation: function () {

@@ -25,17 +25,17 @@
  */
 
 
-// set defaults for page
-var closeIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
-var objectIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFWSURBVBgZBcE/SFQBAAfg792dppJeEhjZn80MChpqdQ2iscmlscGi1nBPaGkviKKhONSpvSGHcCrBiDDjEhOC0I68sjvf+/V9RQCsLHRu7k0yvtN8MTMPICJieaLVS5IkafVeTkZEFLGy0JndO6vWNGVafPJVh2p8q/lqZl60DpIkaWcpa1nLYtpJkqR1EPVLz+pX4rj47FDbD2NKJ1U+6jTeTRdL/YuNrkLdhhuAZVP6ukqbh7V0TzmtadSEDZXKhhMG7ekZl24jGDLgtwEd6+jbdWAAEY0gKsPO+KPy01+jGgqlUjTK4ZroK/UVKoeOgJ5CpRyq5e2qjhF1laAS8c+Ymk1ZrVXXt2+9+fJBYUwDpZ4RR7Wtf9u9m2tF8Hwi9zJ3/tg5pW2FHVv7eZJHd75TBPD0QuYze7n4Zdv+ch7cfg8UAcDjq7mfwTycew1AEQAAAMB/0x+5JQ3zQMYAAAAASUVORK5CYII=";
-var relIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII=";
+// base64 encoded icons  
+var closeIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAQAAAAEABcxq3DAAACjklEQVQ4y2XTv2uddRTH8dfzPDf3Po9pjRfSVGKvlUApWEkdEkRxCI4pdAgdYjvrZBEyhFJwyT+QVdAiLqLQNg6Nix10ukoGsYU0Y/OrMdomJqm5ufc+9/k65IehnuWc4ZwPh88578j/I8ZrGRer1CJssNzgAVZQHG+ODosyWtTO89FIYmw48UYtkkZYDvbmOhZ/7rjziC8qLDePq5xCwtBorH6noniSCn93CZslYaMkPO0SFlPhdipcStQThk4fDpf208BoYq5eEbYSYYPwzH/5L8ITwkoi/FQRLiXmMNCFpCA+H/vsZsnYcJt2gXKZclnI831TskwSx4q84+WC3pL+h0H4M/gxxrkPYpffyWkFOmmqMjkpm55WVKuKalU2PS2dnJSkqSjwVs77scs4V0ojF4eC/q6CXWSjo166cUOUZXR3g+zqVaHR0Jyf17p7V6XgQqQ/jQyWqvT1Fcpt5Nit11VmZ3VfuSK7dm3foRDszs7ardePblgtdPXQF8eBKAj5gUBzbc3G1JT20hJRRBRpLy3ZmJrSXFuTHz7C/lwUb7O+STscCOjt1TMxoVSrHZ25VKvpmZigt9fhplu0d1iPd3jwkNUOOiiPjDgxPi5KEtszM7ZnZkRJ4sT4uPLIiBx7WGD1H35PsNnk7Nu824vni4viNNVaXLR6/brte/d09fd7fv++Z7duCe22BXzDV+t8F1XQZOBDvv2U4VfQyDJKJZ2dHZCcPCnkubjR8Ac+59fvGS/zOOngdTbn+G2DwVc5cyrPxa2W6ICsqNXSznPzhK+p/8Anp3m0dRymDA1qF/j4Pcbe5GyVtMBT9uZ5/Au3F/iywsohTEcCL+B8JmWwh1rANkt7+zivvojzv3rjBCvezErGAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA4LTEwLTE4VDE4OjQ1OjQ1KzA4OjAwKJpk+wAAACV0RVh0bW9kaWZ5LWRhdGUAMjAwOC0xMC0xOFQxODo0NTo0NSswODowMHcrEs8AAAAASUVORK5CYII=";
+var objectIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFWSURBVBgZBcE/SFQBAAfg792dppJeEhjZn80MChpqdQ2iscmlscGi1nBPaGkviKKhONSpvSGHcCrBiDDjEhOC0I68sjvf+/V9RQCsLHRu7k0yvtN8MTMPICJieaLVS5IkafVeTkZEFLGy0JndO6vWNGVafPJVh2p8q/lqZl60DpIkaWcpa1nLYtpJkqR1EPVLz+pX4rj47FDbD2NKJ1U+6jTeTRdL/YuNrkLdhhuAZVP6ukqbh7V0TzmtadSEDZXKhhMG7ekZl24jGDLgtwEd6+jbdWAAEY0gKsPO+KPy01+jGgqlUjTK4ZroK/UVKoeOgJ5CpRyq5e2qjhF1laAS8c+Ymk1ZrVXXt2+9+fJBYUwDpZ4RR7Wtf9u9m2tF8Hwi9zJ3/tg5pW2FHVv7eZJHd75TBPD0QuYze7n4Zdv+ch7cfg8UAcDjq7mfwTycew1AEQAAAMB/0x+5JQ3zQMYAAAAASUVORK5CYII=";
+var relIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII=";
 
 
-lore.anno.ui.PageView = function (pagedata, rdfaMan, model) {
+lore.anno.ui.PageView = function (config) {
 			
-			this.page = pagedata;
-			this.model = model;
-			this.rdfaMan = rdfaMan;	
+			this.page = config.page;
+			this.model = config.model;
+			this.rdfaMan = config.rdfaManager;	
 			this.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 			this.model.on('load', this.handleLoad, this);
 			this.model.on('remove', this.handleRemove, this);	
@@ -59,8 +59,8 @@ lore.anno.ui.PageView.prototype = {
 		this.hideCurrentAnnotation();
 		if (newRec) {
 			if ( lore.anno.ui.topView.variationContentWindowIsVisible() &&
-				 this.page.curSelAnno.data.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
-				 lore.anno.ui.showSplitter();	
+				 newRec.data.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
+				 this.updateSplitter(newRec, true);
 			} else {
 				this.highlightCurrentAnnotation(newRec);
 			}
@@ -218,7 +218,7 @@ lore.anno.ui.PageView.prototype = {
 		if (rec.data.context && rec.data.resource == lore.anno.ui.currentURL &&
 			rec.data.type!= lore.constants.NAMESPACES["vanno"] + "VariationAnnotation")  {
 				try {
-					markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context}));
+					markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
 				} 
 				catch (e) {
 					lore.debug.anno(e, e);
@@ -227,7 +227,7 @@ lore.anno.ui.PageView.prototype = {
 		
 			if (rec.data.original == lore.anno.ui.currentURL) {
 				try {
-					if ( rec.data.context) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context}));
+					if ( rec.data.context) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
 				} 
 				catch (e) {
 					lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -235,7 +235,7 @@ lore.anno.ui.PageView.prototype = {
 				var cw = lore.anno.ui.topView.getVariationContentWindow();
 				if (rec.data.variantcontext && lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.variant) {
 					try {
-						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, target:cw.document}));
+						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, target:cw.document, page: this.page }));
 					} 
 					catch (e) {
 						lore.debug.anno(e, e);
@@ -245,7 +245,7 @@ lore.anno.ui.PageView.prototype = {
 			}
 			if ( rec.data.variant == lore.anno.ui.currentURL) {
 				try {
-					if ( rec.data.variantcontext ) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext}));
+					if ( rec.data.variantcontext ) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, page: this.page }));
 				} 
 				catch (e) {
 					lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -253,7 +253,7 @@ lore.anno.ui.PageView.prototype = {
 				var cw = lore.anno.ui.topView.getVariationContentWindow();
 				if (rec.data.context && lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.original) {
 					try {
-						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, target:cw.document}));
+						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, target:cw.document, page: this.page }));
 					} 
 					catch (e) {
 						lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -268,7 +268,7 @@ lore.anno.ui.PageView.prototype = {
 			markers[i].tip(rec.data);
 		}
 		if ( rec.data.meta.context){
-			var m = new lore.anno.ui.Marker({xpointer:rec.data.meta.context});
+			var m = new lore.anno.ui.Marker({xpointer:rec.data.meta.context, page: this.page });
 			markers.push(m);
 			m.show(cc, function (type, node) {
 				node.style.backgroundColor = null;
@@ -512,7 +512,7 @@ lore.anno.ui.PageView.prototype = {
 		// a visual on the page later.
 	}, 
 
-	setVisibilityForPageTriples : function( show ) {
+	setVisibilityForPageTriples : function( show, callback) {
 		if (!show) {
 			var ms = this.page.metaSelections;
 			for (var i = 0; i < ms.length; i++) {
@@ -586,12 +586,13 @@ lore.anno.ui.PageView.prototype = {
 							ctx: t.page.curSelAnno.data.meta.context
 						});
 						
-						var theField = lore.anno.ui.form.findField('metares');
-						theField.setValue(lore.anno.ui.tripleURIToString(triple.object));
+						if ( callback)
+							callback(isObject, triple);
+						
 					} catch (e ) {
 						lore.debug.anno(e,e);
 					}
-					t.setVisibilityForPageTriples(false);
+					t.setVisibilityForPageTriples(false, callback);
 					});
 				else
 					s.click(function () {
@@ -606,10 +607,12 @@ lore.anno.ui.PageView.prototype = {
 							ctx: t.page.curSelAnno.data.meta.context
 						});
 						
-						var theField = lore.anno.ui.form.findField('metares');
+						if ( callback)
+							callback(isObject, triple);
+						var theField = lore.anno.ui.formpanel.form.findField('metares');
 						theField.setValue(lore.anno.ui.tripleURIToString(triple.property));
 					 
-						t.setVisibilityForPageTriples(false);
+						t.setVisibilityForPageTriples(false, callback);
 					
 					} catch (e) {
 						lore.debug.anno(e,e);
@@ -619,11 +622,72 @@ lore.anno.ui.PageView.prototype = {
 		}  
 	},
 	
-	toggleTripleMarkers: function () {
+	toggleTripleMarkers: function (callback) {
 		if (this.page.metaSelections.length == 0)
-			this.setVisibilityForPageTriples(true);
+			this.setVisibilityForPageTriples(true, callback);
 		else
-			this.setVisibilityForPageTriples(false);
+			this.setVisibilityForPageTriples(false, callback);
+	},
+	
+	/**
+	 * Update the variation splitter for the supplied annotation
+	 * @param {Record} rec The annotation to update in the splitter window. 
+	 * @param {Boolean} show Specifies whether the variation window is to be made visible
+	 */
+	 updateSplitter :  function (rec, show) {
+					
+		try {
+			
+			if (rec.data.variant) {
+				// show splitter
+				var ctx = null;
+				var title = '';
+				if (rec.data.original == lore.anno.ui.currentURL) {
+					ctx = rec.data.variant;
+					title = "Variation Resource";
+				}
+				else {
+					ctx = rec.data.original;
+					title = "Original Resource";
+				}
+				
+				var t = this;
+				lore.anno.ui.topView.updateVariationSplitter(ctx, title, show, function(){
+					// when page has loaded perform the following
+					try {
+						t.hideCurrentAnnotation();
+						var cw = lore.anno.ui.topView.getVariationContentWindow();
+						t.enableImageHighlighting(cw);
+						t.highlightCurrentAnnotation(rec);
+						
+						var n = 'rcontextdisp';
+						var ctx = rec.data.variantcontext;
+						if (rec.data.variant == lore.anno.ui.currentURL) {
+							n = 'contextdisp';
+							ctx = rec.data.context;
+						}
+						
+						var selText = '';
+						//TODO: This isn't related to the page view
+						try {
+							lore.debug.anno('updateVariationSplitter: ' + ctx);
+							selText = lore.global.util.getSelectionText(ctx, cw.document);
+						} 
+						catch (e) {
+							lore.debug.anno(e, e);
+						}
+						lore.anno.ui.formpanel.form.setValues([{
+							id: n,
+							value: '"' + selText + '"'
+						}]);
+					} catch(e){
+						lore.debug.anno("updateVariationSplitter-callback: " + e, e);
+					}
+				});
+			}
+		} catch (e ) {
+			lore.debug.anno(e, e);
+		}
 	}
 	
 }

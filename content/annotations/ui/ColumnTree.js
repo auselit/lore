@@ -25,16 +25,6 @@
   */
  
  
- 	/**
-	 * Generate the tree node text
-	 * @param {Object} anno Annotation to generate the node text for
-	 */
-	
-lore.anno.ui.genTreeNodeText = function(anno){
-		
-	return lore.anno.ui.genDescription(anno, true);
-		
-}
 
 /*  Tree UI Class Definitions */
   
@@ -317,7 +307,6 @@ lore.anno.ui.genTreeNodeText = function(anno){
 		
 		initComponent: function(){
       	  	try {
-				lore.debug.anno("the model for anno column tree is: " + this.model, this.model);
 				
 				var cmbname = this.id + "_sorttypecombo";
 				
@@ -337,7 +326,9 @@ lore.anno.ui.genTreeNodeText = function(anno){
 					valueField: 'type',
 					displayField: 'typename',
 					typeAhead: true,
-					emptyText: "Sort by...",
+					//emptyText: "Sort by...",
+					emptyText: 'A-Z',
+					width: 45,
 					triggerAction: 'all',
 					mode: 'local',
 					forceSelection: true,
@@ -358,25 +349,27 @@ lore.anno.ui.genTreeNodeText = function(anno){
 					}),
 					columns		: [{
 								'header': "Annotations",
-								'width': 280
+								'width': 260
 								}, {
 								'header': "Views",
 								'width': 80,
 								'links':true
 								}],
-			header: true,
-			dropConfig: {
-				appendOnly: true
-			},
-			bbar: { xtype: 'toolbar', //TODO: Turn this into a separate class
-				items: [ 
+								
+					header: true,
+					dropConfig: {
+						appendOnly: true
+					},
+					bbar: { xtype: 'toolbar', //TODO: Turn this into a separate class
+						items: [ 
+						
+							this.sorttypecombo
+						
+					]	
+				}});
 				
-					this.sorttypecombo
-				
-			]	
-		},
-				});
 				lore.anno.ui.AnnoColumnTree.superclass.initComponent.apply(this, arguments);
+				
 				this.addEvents("sortchange");
 				this.addTreeSorter('created', 'asc');
 				this.sorttypecombo.on("select", this.handleSortTypeChange, this);
@@ -387,15 +380,24 @@ lore.anno.ui.genTreeNodeText = function(anno){
 			}
 		},
 		
+		onRender: function () {
+			lore.anno.ui.AnnoColumnTree.superclass.onRender.apply(this, arguments);
+			/*if ( !this.sorttypecombo.rendered ){
+				lore.debug.anno('aaa',this.headers.dom.childNodes[0].firstChild.firstChild.nextSibling);
+				lore.debug.anno(this.headers.dom.childNodes[0],this.headers.dom.childNodes[0]);
+				this.sorttypecombo.addClass("anno-column-sort");
+				this.sorttypecombo.render(this.headers.dom.childNodes[0].firstChild.firstChild.nextSibling);
+				
+			}*/
+		},
+		
 		handleSortTypeChange : function (combo, rec, index) {
-			lore.debug.anno("umm here?");
 			try {
 				this.treesorter = {
 					sortField : rec.data.type,
 					direction  : rec.data.direction
 				}
 				
-				lore.debug.anno("firstChild: " + this.getRootNode().firstChild,this.getRootNode().firstChild );
 				this.fireEvent("sortchange", this, this.getRootNode().firstChild);
 			} catch (e ) {
 				lore.debug.anno("Error occurred changing sort type: " + e,e);
@@ -414,11 +416,12 @@ lore.anno.ui.genTreeNodeText = function(anno){
 				direction: direction
 			}
 			
+			var tree = this;
 			// taken from TreeSorter Ext, and modified so that
 			// direction can be dynamically changed
 			var sortType =  function(node){
 					try {
-						var r = lore.global.util.findRecordById(lore.anno.annods, lore.anno.ui.recIdForNode(node));
+						var r = lore.global.util.findRecordById(tree.model, lore.anno.ui.recIdForNode(node));
 						if (r) {
 							return r.data[ts.sortField] || r.data.created;
 						}
@@ -529,13 +532,13 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 						var n = new lore.anno.ui.AnnoColumnTreeNode({
 							anno: anno
 						})
-						//lore.debug.anno("created annocolumntreenode: " + n, n);
+						
 						var parent = null;
 						if (  anno.isReply) 
 							parent = lore.anno.ui.findNode(anno.about, this);				
 						else 
 							parent = this;
-						//lore.debug.anno("appending to " + parent, parent);
+						
 						parent.appendChild(n);
 				
 					} 
@@ -592,9 +595,6 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 			info = lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
 			node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data));
 
-			//TODO: this goes onto a editor handler which will update if rec updates.
-			if ( lore.anno.ui.page.curSelAnno == rec )
-				lore.anno.ui.showAnnotation(rec, true);
 		} 
 		catch (e) {
 			lore.debug.ui("Error updating annotation tree view: " + e, e);
@@ -703,10 +703,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 					info = info + lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
 				}
 				
-				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data, this.model));
-				
-				if ( lore.anno.ui.page.curSelAnno == rec )
-					lore.anno.ui.showAnnotation(rec, true);
+				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data));
 				
 			} 
 			catch (e) {
@@ -757,34 +754,17 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 				nodeType: anno.type				
 			});
 			
+			
 			if (anno.isNew()) {
 				Ext.apply(this.config, {
 					text: anno.body || ''
 				});
 			}
 			else {
-				var nodeLinks = [{
-					title: 'View annotation body in a new window',
-					iconCls: 'anno-icon-launchWindow',
-					jscript: "lore.global.util.launchWindow('" + anno.bodyURL + "',false, window);"
-				}, {
-					title: 'View annotation in the timeline',
-					iconCls: 'anno-icon-timeline',
-					jscript: "lore.anno.ui.timeline.showAnnoInTimeline('" + anno.id + "');"
-				}];
-				
-				if (lore.global.util.splitTerm(anno.type).term == 'VariationAnnotation') {
-					nodeLinks.push({
-						title: 'Show Variation Window',
-						iconCls: 'anno-icon-splitter',
-						jscript: "lore.anno.ui.showSplitter('" + anno.id + "');"
-					});
-				}
-				
 				Ext.apply(this.config, {
 					text: lore.anno.ui.genTreeNodeText(anno),
 					bheader: lore.anno.ui.genAnnotationCaption(anno, 'by c, d r'),
-					links: nodeLinks,
+					links: this.config.links,
 				});
 			}
 		} catch (e ) {

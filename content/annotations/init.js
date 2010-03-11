@@ -90,7 +90,7 @@ if (typeof Timeline !== "undefined") {
 			divOps.style.paddingTop = '5px';
 			//TODO: fix
 			var divOpsInner = "<a style='color:orange;font-size:smaller' href='#' " +
-			"onclick='try{lore.anno.ui.timeline.timeline.getBand(0).closeBubble();lore.anno.ui.handleEditAnnotation(\"" +
+			"onclick='try{lore.anno.ui.timeline.timeline.getBand(0).closeBubble();lore.anno.ui.handleEditTimeline(\"" +
 			this._eventID +
 			"\")} catch(e){lore.debug.anno(\"e:\"+e,e);}'>EDIT</a> | " +
 			"<a style='color:orange;font-size:smaller' href='#' " +
@@ -122,7 +122,7 @@ if (typeof Timeline !== "undefined") {
 			lore.anno.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
 			lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;
 			lore.anno.annoMan = new lore.anno.AnnotationManager(lore.anno.ui.currentURL);
-			lore.anno.ui.initView();
+			lore.anno.ui.initView(lore.anno.annoMan.annods);
 			
 			lore.anno.ui.lorevisible = lore.anno.ui.topView.annotationsVisible();
 			
@@ -142,7 +142,6 @@ if (typeof Timeline !== "undefined") {
 				lore.anno.ui.lorevisible) {
 				lore.debug.anno("anno init: updating sources");
 				lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
-				//lore.anno.ui.loadedURL = lore.anno.ui.currentURL; //TODO: this could be shared code
 			}
 
 			lore.debug.anno("Annotation init");
@@ -151,22 +150,32 @@ if (typeof Timeline !== "undefined") {
 		}
 	}
 	
-	lore.anno.ui.initPage = function(model){
-		if (!lore.anno.ui.page) 
-			lore.anno.ui.page = new lore.anno.ui.PageData();
-		if (!lore.anno.ui.rdfaMan)	
-			lore.anno.ui.rdfaMan = new lore.anno.ui.RDFaManager(lore.anno.ui.page);
-		if (!lore.anno.ui.pageui) 
-			lore.anno.ui.pageui = new lore.anno.ui.PageView(lore.anno.ui.page, lore.anno.ui.rdfaMan,  model);
+	lore.anno.ui.initView = function ( model) {
+		lore.anno.ui.initPage(model);
+		lore.anno.ui.initGUIConfig({ annods: lore.anno.annods, annodsunsaved: lore.anno.annodsunsaved,
+		annosearchds: lore.anno.annosearchds, annousermetads: lore.anno.annousermetads});
 		
 	}
 	
-	lore.anno.ui.initView = function ( model) {
-		lore.anno.ui.initPage(lore.anno.annods);
-		lore.anno.ui.initGUIConfig({ annods: lore.anno.annods, annodsunsaved: lore.anno.annodsunsaved,
-		annosearchds: lore.anno.annosearchds});
+	lore.anno.ui.initPage = function(model){
+		if (!lore.anno.ui.page) 
+			lore.anno.ui.page = new lore.anno.ui.PageData({
+				model: model
+			});
+		if (!lore.anno.ui.rdfaMan) 
+			lore.anno.ui.rdfaMan = new lore.anno.ui.RDFaManager({
+				page: lore.anno.ui.page
+			});
+		if (!lore.anno.ui.pageui) 
+			lore.anno.ui.pageui = new lore.anno.ui.PageView({
+				page: lore.anno.ui.page,
+				rdfaManager: lore.anno.ui.rdfaMan,
+				model: model
+			});
 		
 	}
+	
+	
 	
 	/**
 	 * Destroy any objects and undo any changes made to the current content window
@@ -202,7 +211,28 @@ loreuieditor = function (store ) {
 		height: 300,
 		trackResetOnLoad: true,
 		pageView: lore.anno.ui.pageui,
-		id: "annotationslistform"
+		rdfaManager: lore.anno.ui.rdfaMan,
+		model: store.annodsunsaved,
+		metaModel: store.annousermetads,
+		id: "annotationslistform",
+		annomode: lore.constants.ANNOMODE_NORMAL, 
+		buttonsConfig: [{
+			text: 'Hide Editor',
+			id: 'hideeditbtn',
+			tooltip: 'Hides the annotation editor from view'
+		},{
+			text: 'Save Annotation',
+			id: 'updannobtn',
+			tooltip: 'Save the annotation to the repository'
+		},{
+			text: 'Delete Annotation',
+			id: 'delannobtn',
+			tooltip: 'Delete the annotation - CANNOT BE UNDONE'
+		},  {
+			text: 'Reset',
+			id: 'resetannobtn',
+			tooltip: 'Reset - changes will be discarded'
+		}]
 	}
 }
 
@@ -306,7 +336,14 @@ lore.anno.ui.initGUIConfig = function(store){
 						border: false,
 						layout: "fit",
 						items: [ loreuiannonavtabs(store)]
-					}]
+					},
+					{
+                region: "south",
+                xtype: "statusbar",
+                id: "status",
+                defaultText: "",
+                autoClear: 6000
+            }]
 				}]
 			}]
 		};
@@ -347,7 +384,6 @@ lore.anno.ui.initGlobals = function (store) {
 		
 		
 		lore.anno.ui.formpanel = Ext.getCmp("annotationslistform");
-		lore.anno.ui.form = lore.anno.ui.formpanel.getForm();
 		lore.anno.ui.formpanel.hide();
 		
 		lore.anno.ui.timeline = Ext.getCmp("annotimeline");
@@ -399,14 +435,18 @@ lore.anno.ui.attachContextMenus = function (store) {
 		});
 }
 
+/**
+ * 
+ * @param {Object} store
+ */
 lore.anno.ui.attachHandlers = function (store) {
-	
-			
 		// Add default behaviour when a new annotation is added
 		lore.anno.ui.treeunsaved.on('append', lore.anno.ui.handleNewAnnotation);
+		lore.anno.ui.treeroot.on('append', lore.anno.ui.handleAttachNodeLinks);
+		
 		// Tree node is clicked/double clicked
 		Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleTreeNodeSelection);
-		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditAnnotation);
+		Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditTreeNode);
 		
 		// editor handlers
 		Ext.getCmp("resetannobtn")
@@ -415,24 +455,16 @@ lore.anno.ui.attachHandlers = function (store) {
 		Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
 		Ext.getCmp("delannobtn").on('click', lore.anno.ui.handleDeleteAnnotation);
 		
-		/*Ext.getCmp("updctxtbtn").on('click',
-				lore.anno.ui.handleUpdateAnnotationContext);
-		Ext.getCmp("updrctxtbtn").on('click',
-				lore.anno.ui.handleUpdateAnnotationVariantContext);*/
-		Ext.getCmp("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
-		Ext.getCmp("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
-		Ext.getCmp("typecombo").on('valid', lore.anno.ui.handleAnnotationTypeChange);
-		Ext.getCmp("addmetabtn").on('click', lore.anno.ui.handleAddMeta);
-		Ext.getCmp("remmetabtn").on('click', lore.anno.ui.handleRemMeta);
-		
-		//Ext.getCmp("addmetabtn").on('click', lore.anno.ui.handleAddMeta);
-		//Ext.getCmp("remmetabtn").on('click', lore.anno.ui.handleRemMeta);
-		
-
+		lore.anno.ui.formpanel.getComponent("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
+		lore.anno.ui.formpanel.getComponent("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 }
+
+
+
 /**
  * Initialize the Ext Components. Sets globals, visibility of fields
  * and initialize handlers
+ * @param {Object} store
  */
 lore.anno.ui.initExtComponents = function(store){
 	try {
@@ -441,14 +473,7 @@ lore.anno.ui.initExtComponents = function(store){
 		lore.anno.ui.attachContextMenus(store);
 		lore.anno.ui.attachHandlers(store);
 			
-		// Add hack to stop this field being flagged as dirty because
-		// originalValue is XML and the value field is converted to HTML
-			 
-		lore.anno.ui.form.findField("body").on("push", function(field, html) {
-			field.originalValue = field.getValue();
-		});
-			
-		lore.anno.ui.setAnnotationFormUI(false, false );
+		lore.anno.ui.formpanel.setAnnotationFormUI(false, false );
 		
 		Ext.getCmp("about").body.update("<iframe height='100%' width='100%' "
 			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");

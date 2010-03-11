@@ -1,7 +1,28 @@
+/*
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
     
    /** @constructor */
     constructor: function (config){
+		this.model = config.model;
 		this.clear();
 		this.addEvents("annochanged");
 	},
@@ -32,6 +53,10 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	},
 	
 	load : function(url, clear){
+		lore.debug.anno(this.model, {
+			t: this,
+			m: this.model
+		});
 		var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, url);
 		if (ds) {
 			this.multiSelAnno = ds.multiSelAnno;
@@ -44,7 +69,7 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 			this.metaSelections = ds.metaSelections;
 			
 			//TODO: should find unsaved version first?
-			var rec = lore.global.util.findRecordById(lore.anno.annods, curSelAnnoId);
+			var rec = lore.global.util.findRecordById(this.model, curSelAnnoId);
 			if (rec) {
 				this.curSelAnno = rec;
 			}
