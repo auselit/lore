@@ -429,6 +429,12 @@ lore.ore.ui.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
 		return superResult;
 	}
 };
+lore.ore.ui.graph.ResourceFigure.prototype.getMinWidth = function(){
+    return 80;
+};
+lore.ore.ui.graph.ResourceFigure.prototype.getMinHeight = function(){
+    return 50;
+};
 /**
  * Override onDragend to reset ZOrder and redisplay preview
  */
@@ -463,7 +469,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
  */
 lore.ore.ui.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 	draw2d.Node.prototype.setWorkflow.call(this, wf);
-    if (this.getZOrder() == draw2d.Figure.ZOrderBaseIndex){
+    if (this.getZOrder() == draw2d.Figure.ZOrderBaseIndex && wf){
         this.setZOrder(draw2d.Figure.ZOrderBaseIndex + wf.getDocument().getFigures().getSize());
     }
 	if (wf && !this.inputPort) {
