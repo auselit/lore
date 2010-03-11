@@ -50,7 +50,6 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		},
 		
 		handleLoad : function(store, records, options ) {
-			lore.debug.anno("first record: " + records[0], records[0]);
 			for ( var i =0; i < records.length; i++ ) {
 				if ( !records[i].data.isNew() &&
 					this.initialized) {

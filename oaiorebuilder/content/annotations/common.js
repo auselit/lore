@@ -76,40 +76,43 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 		 * @param {Object} iconCls CSS Class for notification icon
 		 */
 		lore.anno.ui.loreMsg = function(message, iconCls){
-			if (!lore.anno.ui.loreMsgStack) {
-				lore.anno.ui.loreMsgStack = [];
-			}
-			iconCls = iconCls || '';
-			message = '<div class="status-bubble-icon ' + iconCls + '"></div><div class="status-bubble-msg">' + message + "</div>";
-			
-			lore.anno.ui.loreMsgStack.push(message);
-			Ext.Msg.show({
-				msg: '',
-				modal: false,
-				closable: true,
-				width: window.innerWidth
-			});
-			Ext.Msg.updateText(lore.anno.ui.loreMsgStack.join('<br/>'));
-			var w = Ext.Msg.getDialog();
-			w.setPosition(0, window.innerHeight - w.getBox().height);
-			
-			window.setTimeout(function(){
-				try {
-					if (lore.anno.ui.loreMsgStack.length == 1) {
-						lore.anno.ui.loreMsgStack.pop();
-						Ext.Msg.hide();
-					}
-					else {
-						lore.anno.ui.loreMsgStack.splice(0, 1);
-						Ext.Msg.updateText(lore.anno.ui.loreMsgStack.join('<br/>'));
-						var w = Ext.Msg.getDialog();
-						w.setPosition(0, window.innerHeight - w.getBox().height);
-					}
-				} 
-				catch (e) {
-					lore.debug.ui(e, e);
+			try {
+				if (!lore.anno.ui.loreMsg.Stack) {
+					lore.anno.ui.loreMsg.stack = [];
 				}
-			}, 3000);
+				iconCls = iconCls || '';
+				//message = '<div class="status-bubble-icon ' + iconCls + '"></div><div class="status-bubble-msg">' + message + "</div>";
+				
+				 var statusopts = {
+		            'text': message,
+		            'iconCls': iconCls ,
+		            'clear': {
+		                'wait': 3000
+		            }
+    			};
+   			 	Ext.getCmp("status").setStatus(statusopts);	
+				 
+				lore.anno.ui.loreMsg.stack.push(message);
+				window.setTimeout(function(){
+					try {
+						if (lore.anno.ui.loreMsg.stack.length == 1) {
+							lore.anno.ui.loreMsg.stack.pop();
+						//	Ext.Msg.hide();
+						}
+						else {
+							lore.anno.ui.loreMsg.stack.splice(0, 1);
+						//	Ext.Msg.updateText(lore.anno.ui.loreMsg.stack.join('<br/>'));
+						//	var w = Ext.Msg.getDialog();
+						//	w.setPosition(0, window.innerHeight - w.getBox().height);
+						}
+					} 
+					catch (e) {
+						lore.debug.ui(e, e);
+					}
+				}, 3000);
+			} catch (e) {
+				lore.debug.anno(e,e);
+			}
 			
 		}
 		
@@ -275,7 +278,10 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 		
 		lore.anno.ui.setAnnotationMode = function(mode) {
 			lore.anno.ui.annomode = mode;
-			lore.anno.ui.setAnnotationFormUI(null, null, lore.anno.ui.getAnnotationMode());
+			lore.anno.ui.formpanel.setAnnotationMode(mode);
+			
+			//if( lore.anno.ui.formpanel.isVisible())
+//				lore.anno.ui.formpanel.setAnnotationFormUI(null, null, lore.anno.ui.getAnnotationMode());
 		}
 		
 		lore.anno.ui.setCacheTimeout = function ( millis) {
@@ -314,9 +320,9 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 		 * Hide list of form fields
 		 * @param {Array} fieldNameArr List of fields to hide
 		 */
-		lore.anno.ui.hideFormFields = function(fieldNameArr){
+		lore.anno.ui.hideFormFields = function(form, fieldNameArr){
 			for (var i = 0; i < fieldNameArr.length; i++) {
-				lore.anno.ui.setVisibilityFormField(lore.anno.ui.form, fieldNameArr[i], true);
+				lore.anno.ui.setVisibilityFormField(form, fieldNameArr[i], true);
 			}
 		}
 		
@@ -324,9 +330,9 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 		 * Show list of form fields
 		 * @param {Array} fieldNameArr List of fields to show
 		 */
-		lore.anno.ui.showFormFields = function(fieldNameArr){
+		lore.anno.ui.showFormFields = function(form, fieldNameArr){
 			for (var i = 0; i < fieldNameArr.length; i++) {
-				lore.anno.ui.setVisibilityFormField(lore.anno.ui.form,fieldNameArr[i], false);
+				lore.anno.ui.setVisibilityFormField(form,fieldNameArr[i], false);
 			}
 		}
 		
@@ -345,31 +351,46 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 		 }
 		
 		
-		/**
-	 * Generate a description for an annotation
-	 * @param {Object} annodata The annotation to generate the description for 
-	 * @param {Object} noimglink (Optional) If true, specifies that a link to a new window containing the 
-	 * annotation body will not be generated in the description
-	 * @return {String} A string containing the annotation description. The string may contain HTML.
-	 */	
-	lore.anno.ui.genDescription = function(annodata, noimglink){
-			var res = "";
-			if (!noimglink) {
-                res += "<a title='Show annotation body in separate window' xmlns=\"" +
-                lore.constants.NAMESPACES["xhtml"] +
-                "\" href=\"javascript:lore.global.util.launchWindow('" +
-                annodata.bodyURL +
-                "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
-            }
-			
-			var defText = annodata.bodyLoaded ? annodata.body : 'Loading content...';
-			var body = lore.global.util.externalizeLinks(defText);
-			res += body;
-			
-			
-			return res;
+/**
+ * Generate a description for an annotation
+ * @param {Object} annodata The annotation to generate the description for 
+ * @param {Object} noimglink (Optional) If true, specifies that a link to a new window containing the 
+ * annotation body will not be generated in the description
+ * @return {String} A string containing the annotation description. The string may contain HTML.
+ */	
+lore.anno.ui.genDescription = function(annodata, noimglink){
+	var res = "";
+	if (!noimglink) {
+        res += "<a title='Show annotation body in separate window' xmlns=\"" +
+        lore.constants.NAMESPACES["xhtml"] +
+        "\" href=\"javascript:lore.global.util.launchWindow('" +
+        annodata.bodyURL +
+        "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
+    }
+	
+	var defText = annodata.bodyLoaded ? annodata.body : 'Loading content...';
+	var body = lore.global.util.externalizeLinks(defText);
+	res += body;
+	
+	
+	return res;
+}
+
+lore.anno.ui.recIdForNode = function(node) {
+			return node.id.replace("-unsaved", "");
+			//return node.id;
 		}
 		
+/**
+ * Generate the tree node text
+ * @param {Object} anno Annotation to generate the node text for
+ */
+lore.anno.ui.genTreeNodeText = function(anno){
+		
+	return lore.anno.ui.genDescription(anno, true);
+		
+}
+
 /**
  * Launch field value in a new window
  * @param {Field} field Form field to launch in a new window
@@ -378,29 +399,37 @@ lore.anno.ui.launchFieldWindow = function(field){
 	lore.global.util.launchWindow(field.value, true, window);
 }
 
+/**
+ * 
+ * @param {Object} triple
+ */
 lore.anno.ui.isHumanReadableTriple = function( triple) {
-			var valid = ["isRecordFor", "birthName", "alternateName", "usesPseudoAgent", "birthOf", "deathOf", "gender", "biography",
-			"influenceOnWork", "type"];
-			
-			//work record
-			valid = valid.concat( ["title", "form", "producedOutput" ]);
-			
-			//manifestation
-			valid = valid.concat( ['hasReprint']);
-			
-			if ( triple.source && triple.subject.type != 'bnode') {
-			 	var rel = triple.property.toString();
-				
-				for (var i = 0; i < valid.length; i++) {
-				
-					if ( rel.lastIndexOf("#" + valid[i]) != -1 || rel.lastIndexOf("/" + valid[i]) != -1)
-						return true;
-				}
-			} 
-			return false;
-		//	return true;
-		}
+	var valid = ["isRecordFor", "birthName", "alternateName", "usesPseudoAgent", "birthOf", "deathOf", "gender", "biography",
+	"influenceOnWork", "type"];
+	
+	//work record
+	valid = valid.concat( ["title", "form", "producedOutput" ]);
+	
+	//manifestation
+	valid = valid.concat( ['hasReprint']);
+	
+	if ( triple.source && triple.subject.type != 'bnode') {
+	 	var rel = triple.property.toString();
 		
+		for (var i = 0; i < valid.length; i++) {
+		
+			if ( rel.lastIndexOf("#" + valid[i]) != -1 || rel.lastIndexOf("/" + valid[i]) != -1)
+				return true;
+		}
+	} 
+	return false;
+//	return true;
+}
+
+/**
+ * 
+ * @param {Object} prop
+ */
 lore.anno.ui.tripleURIToString = function ( prop) {
 			prop = prop.toString();
 			if ( prop.indexOf('#')!=-1)
@@ -410,26 +439,33 @@ lore.anno.ui.tripleURIToString = function ( prop) {
 			}
 			return prop;
 		}
-		/*lore.anno.ui.tripleToString = function (triple, rdf, parent) {
-				rdf = rdf ||  lore.anno.ui.rdfa.rdf;
+		
+/*lore.anno.ui.tripleToString = function (triple, rdf, parent) {
+		rdf = rdf ||  lore.anno.ui.rdfa.rdf;
+		
+			if (triple.property.toString().indexOf("#type") == -1 ) {
+				var val = triple.object.value.toString();
 				
-					if (triple.property.toString().indexOf("#type") == -1 ) {
-						var val = triple.object.value.toString();
-						
-						if (triple.object.type == 'uri') {
-							val = lore.anno.ui.tripleURIToString(triple.object.value);
-						}
-						var prop = lore.anno.ui.tripleURIToString(triple.property);
-						if ( val.length > 50)
-							val = val.substring(0,50) + "...";
-						
-						var sub = parent || triple.parentSubject.toString();
-						sub = lore.anno.ui.tripleURIToString(sub);
-						
-						return sub + "->" + prop + ": " + val;
-					}
-				return '';
-		}*/
+				if (triple.object.type == 'uri') {
+					val = lore.anno.ui.tripleURIToString(triple.object.value);
+				}
+				var prop = lore.anno.ui.tripleURIToString(triple.property);
+				if ( val.length > 50)
+					val = val.substring(0,50) + "...";
+				
+				var sub = parent || triple.parentSubject.toString();
+				sub = lore.anno.ui.tripleURIToString(sub);
+				
+				return sub + "->" + prop + ": " + val;
+			}
+		return '';
+}*/
+
+/**
+ * 
+ * @param {Object} type
+ * @param {Object} domObj
+ */
 lore.anno.ui.setCurAnnoStyle = function(type, domObj){
 	
 	if (type == 0) {
@@ -441,7 +477,7 @@ lore.anno.ui.setCurAnnoStyle = function(type, domObj){
 	return domObj;
 }
 
-		/**
+/**
  * Update the image scale information if necessary
  * @param {Object} img
  * @param {Object} doc

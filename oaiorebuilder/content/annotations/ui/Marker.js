@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * Class that abstracts a highlighted area of text or of an image based off an xpointer or semantic pointer. This
  * highlighted area can have tooltip based off of annotation data.
@@ -15,6 +35,7 @@
 		this.type = lore.global.util.isXPointerImageRange(this.xpointer) ? 1 : 0;
 		this.visible = false;
 		this.bw = args.borderWidth || 1;
+		this.page = args.page;
 	}
 	
 	lore.anno.ui.Marker.prototype = {
@@ -55,9 +76,9 @@
 								if (typeof(this.xpointer) != 'string' ) {
 									this.data = {};
 									lore.debug.anno('xpointers', this.xpointer);
-									if ( lore.anno.ui.rdfa) {
+									if ( this.page.rdfa) {
 										
-										this.data.range = lore.global.util.getSelectionForHash(this.xpointer[0], lore.anno.ui.rdfa.rdf.databank.triples());
+										this.data.range = lore.global.util.getSelectionForHash(this.xpointer[0], this.page.rdfa.rdf.databank.triples());
 										lore.debug.anno("Resolved from hashed triple string to range: " + this.data.range, this.data.range);
 									}
 									else {

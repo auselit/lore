@@ -1,3 +1,23 @@
+/*
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * Class wrapper for an RDF annotation provides access to values modified from
  * dannotate.js
@@ -216,6 +236,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			
 			// body stores the contents of the html body tag as text
 			if (this.bodyURL && !this.body && ( !bodyOp || bodyOp != 3)) {
+				//TODO: Change this
 				this.body = lore.anno.getBodyContent(this,window);
 				this.bodyLoaded = true;
 			}
@@ -347,7 +368,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 	 * @return {String} The RDF that was generated
 	 */
 
-	serialize : function ( annos, storeDates ) {
+	serialize : function ( annos, store, storeDates ) {
 		if (!annos.length )
 			annos = [annos];
 		
@@ -387,10 +408,10 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 			if (annoOrig.isReply) {
 				rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
 				
-				var rootannonode = lore.global.util.findRecordById(lore.anno.annods, annoOrig.about);
+				var rootannonode = lore.global.util.findRecordById(store, annoOrig.about);
 				if (rootannonode) {
 					while (rootannonode.data.isReply) {
-						rootannonode = lore.global.util.findRecordById(lore.anno.annods, rootannonode.data.about);
+						rootannonode = lore.global.util.findRecordById(store, rootannonode.data.about);
 					}
 					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id.replace(/&/g,'&amp;') + '"/>';
 				}
