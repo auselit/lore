@@ -32,27 +32,29 @@
 		
 		
 /**
- * Disable or enable the annotations view
- * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations
- */	
-lore.anno.ui.disableUIFeatures = function(opts) {
-    lore.debug.ui("LORE Annotations: disable ui features?", opts);
-    lore.anno.ui.disabled = opts;
-
-	// don't set visibility on start up 
-	if (!lore.anno.ui.disableUIFeatures.initialCall) {
-		lore.anno.ui.disableUIFeatures.initialCall = 1;
-	}
-	else {
-	
-		if (opts.disable_annotations) {
-			lore.anno.ui.topView.setAnnotationsVisibility(false);
+	 * Disable or enable the annotations view
+	 * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations
+	 */	
+ 	lore.anno.ui.disableUIFeatures = function(opts){
+		lore.debug.ui("LORE Annotations: disable ui features?", opts);
+		lore.anno.ui.disabled = opts;
+		
+		// don't set visibility on start up 
+		if (!lore.anno.ui.disableUIFeatures.initialCall) {
+			//TODO: this code may be incorrect now that the preference
+			// loading has changed and should onyl be called once
+			lore.anno.ui.disableUIFeatures.initialCall = 1;
 		}
 		else {
-			lore.anno.ui.topView.setAnnotationsVisibility(true);
+		
+			if (opts.disable) {
+				lore.anno.ui.topView.setAnnotationsVisibility(false);
+			}
+			else {
+				lore.anno.ui.topView.setAnnotationsVisibility(true);
+			}
 		}
 	}
-}
 
 
 /** Helper function to create a view displayed in a closeable tab */
@@ -252,44 +254,6 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 			
 			return icons[aType] || 'anno-icon';
 		}
-		
-			/**
-		 * Set the default creator for annotations
-		 * @param {String} creator The default creator of annotations
-		 */
-		lore.anno.ui.setdccreator = function(creator){
-			lore.defaultCreator = creator;
-		}
-		
-		/**
-		 * Set the annotation server URL
-		 * @param {String} annoserver The annotation server URL
-		 */
-		lore.anno.ui.setRepos = function(annoserver){
-			lore.anno.annoURL = annoserver; // annotation server
-		}
-		
-		lore.anno.ui.getAnnotationMode = function () {
-			if ( !lore.anno.ui.annomode)
-				return lore.constants.ANNOMODE_NORMAL;
-			
-			return lore.anno.ui.annomode ? lore.constants.ANNOMODE_SCHOLARLY: lore.constants.ANNOMODE_NORMAL;	
-		}
-		
-		lore.anno.ui.setAnnotationMode = function(mode) {
-			lore.anno.ui.annomode = mode;
-			lore.anno.ui.formpanel.setAnnotationMode(mode);
-			
-			//if( lore.anno.ui.formpanel.isVisible())
-//				lore.anno.ui.formpanel.setAnnotationFormUI(null, null, lore.anno.ui.getAnnotationMode());
-		}
-		
-		lore.anno.ui.setCacheTimeout = function ( millis) {
-			//TODO: should be at a finer granularity 
-			lore.anno.cachetimeout = millis;
-		}		
-		
-		
 		
 		/**
 		 * Show/hide a field on a form

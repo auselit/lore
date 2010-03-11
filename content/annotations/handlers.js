@@ -29,6 +29,14 @@
 	try {
 	
 		/**
+		 * 
+		 * @param {Object} args
+		 */
+		lore.anno.ui.handlePrefsChange = function (args ) {
+			lore.anno.ui.disableUIFeatures({disable: args.disable});
+		}
+		
+		/**
 		 * Show the annotations view. Update the annotations source list
 		 * to match this page
 		 */
@@ -795,14 +803,16 @@
 		try {
 			lore.anno.ui.pageui.enableImageHighlighting();
 			lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
-			lore.anno.annoMan.updateAnnotationsSourceList(contextURL, function(result, resultMsg){
-				if (result == 'fail') {
-					lore.anno.annods.each(function(rec){
-						lore.anno.annods.remove(rec);
-					});
-					lore.anno.ui.loreError("Failure loading annotations for page.");
+			lore.anno.annoMan.updateAnnotationsSourceList(contextURL, 
+				function(result, resultMsg){
+					if (result == 'fail') {
+						lore.anno.annods.each(function(rec){
+							lore.anno.annods.remove(rec);
+						});
+						lore.anno.ui.loreError("Failure loading annotations for page.");
+					}
 				}
-			});
+			);
 		} catch(e) {
 			lore.debug.anno(e,e);
 		}

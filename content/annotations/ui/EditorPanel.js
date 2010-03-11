@@ -408,6 +408,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.anno.ui.EditorPanel.superclass.initComponent.apply(this, arguments);
 			this.form = this.getForm();
 			this.metaUserGrid = Ext.getCmp("metausergrid");
+			this.annomode = lore.constants.ANNOMODE_NORMAL;
 			this.model.on('update', this.handleRecordUpdate, this);
 			Ext.getCmp("typecombo").on('valid', this.handleAnnotationTypeChange, this);
 			
@@ -423,6 +424,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		} catch(e){
 			lore.debug.anno("EditorPanel:initComponent() - " + e, e);
 		}
+	},
+	
+	setPreferences: function(prefObj ) {
+		this.prefs = prefObj;
+		this.annomode = this.prefs.mode;
+		this.prefs.on('prefs_changed', this.handlePrefsChanged, this);
 	},
 	
 	form: function () {
@@ -685,29 +692,32 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			}
 		},
 		
-		setAnnotationMode: function (annomode) {
-			this.annomode = annomode;
-			if ( this.isVisible())
-				this.setAnnotationFormUI(null,null, annomode);
+		handlePrefsChanged: function(args) {
+			lore.debug.anno('EditorPanel:handlePrefsChanged', args);
+			if (this.isVisible()) 
+					this.setAnnotationFormUI(null, null, args.annomode);
+
 			
+			this.annomode = args.mode;
 		},
+		
 		
 		/**
 		 * Show hide fields depending on whether the current annotation is a variation
 		 * @param {Boolean} variation Specify whether the annotation is variation annotation or not
 		 */
 		setAnnotationFormUI : function(variation, rdfa, annomode){
-		
+		try {
 			var nonVariationFields = ['res'];
 			var variationFields = ['original', 'variant', 'rcontextdisp', 'variationagent', 'variationplace', 'variationdate'];
-			var rdfaFields = ['metares','metausergrid', 'metauserlbl','metapagelbl'];
+			var rdfaFields = ['metares', 'metausergrid', 'metauserlbl', 'metapagelbl'];
 			
 			var scholarlyFields = ['importance', 'references', 'altbody'];
 			// annotation mode
 			
 			if (annomode != null) {
 			
-				if ( annomode == lore.constants.ANNOMODE_NORMAL) {
+				if (annomode == lore.constants.ANNOMODE_NORMAL) {
 					lore.anno.ui.hideFormFields(this.form, scholarlyFields);
 				}
 				else {
@@ -722,7 +732,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					lore.anno.ui.showFormFields(this.form, variationFields);
 					var isReply = (this.pageView.curSelAnno && this.pageView.curSelAnno.data.isReply);
 					if (!isReply) {
-						//Ext.getCmp('updrctxtbtn').setVisible(true);
+					//Ext.getCmp('updrctxtbtn').setVisible(true);
 					}
 				}
 				else {
@@ -752,6 +762,9 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				Ext.getCmp('remmetabtn').setVisible(false);
 				
 			}
+		} catch (e ) {
+			lore.debug.anno(e,e);
+		}
 		},
 		
 		/**

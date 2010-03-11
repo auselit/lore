@@ -39,7 +39,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * of annotations for a given page.  
 	 * @param {String} theURL  (Currently not utilized)The URL for which to create the store
 	 */
-	constructor: function ( theURL) {
+	constructor: function (config) {
 		var fields = [
 					{name: 'created'}, 
 					{name: 'creator'}, 
@@ -76,7 +76,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		this.annods = lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({	fields: fields,
 									data: {}
-								}), theURL);
+								}),  config.url);
 		this.annodsunsaved =  lore.anno.annodsunsaved = new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								});
@@ -107,6 +107,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		 this.annods.on("remove", this.onDSRemove);
 		
 		this.serializer = new lore.anno.RDFAnnotationSerializer();
+		this.prefs = config.prefs;
 	}, 
 		
 	 
@@ -192,7 +193,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			original: currentURL,
 			context: currentContext,
 			originalcontext: currentContext,
-			creator: lore.defaultCreator,
+			creator: this.prefs.creator,
 			created:  new Date().format('c'),
 			modified: new Date().format('c'),
 			body: "",
@@ -293,7 +294,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (anno.data.isNew()) {
 			lore.debug.anno("creating new annotation")
 			// create new annotation
-			xhr.open("POST", lore.anno.annoURL, true);
+			xhr.open("POST", this.prefs.url, true);
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
 			var t = this;
@@ -586,10 +587,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			this.annods.loadData(annotations, true);
 			return; 
 		}
-						
+		
+		lore.debug.anno('ths prefs object is ' + this.prefs, this.prefs);				
 		// Get annotations for theURL
-		if (lore.anno.annoURL) {
-			var queryURL = lore.anno.annoURL + lore.constants.ANNOTEA_ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
+		if (this.prefs.url) {
+			var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
 			lore.debug.anno("Updating annotations with request URL: " + queryURL);
 			
 			var t = this;
@@ -635,7 +637,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 	searchAnnotations : function (url, filters, resultCallback) {
 		
-		var queryURL = lore.anno.annoURL + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ALL_OBJECTS);
+		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ALL_OBJECTS);
 		for (var i = 0; i < filters.length; i++) {
 			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter).replace(/%5D/g,'%255d');
 		}
@@ -705,7 +707,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				ds = [];
 		
 			ds = ds.concat(annotations);
-			lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds, lore.anno.ui.currentURL, lore.anno.cachetimeout);
+			lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds, lore.anno.ui.currentURL, this.prefs.cachetimeout);
 					
 		} else {
 			//TODO:  they've switched pages, continue to load data for caching purposes
@@ -780,7 +782,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				Ext.Ajax.request({
 					disableCaching: false, // without this the request was failing
 					method: "GET",
-					url: lore.anno.annoURL + lore.constants.ANNOTEA_REPLY_TREE + annoID,
+					url: this.prefs.url + lore.constants.ANNOTEA_REPLY_TREE + annoID,
 					success: this.handleAnnotationRepliesLoaded,
 					failure: function(resp, opt){
 						lore.debug.anno("Unable to obtain replies for " + opt.url, resp);
@@ -947,7 +949,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			anno.id = null;
 			var annoRDF = this.serializer.serialize([anno], this.annods);
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", lore.anno.annoURL, false); //synchronous
+			xhr.open("POST", this.prefs.url, false); //synchronous
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
 			xhr.send(annoRDF);

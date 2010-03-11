@@ -112,17 +112,37 @@ if (typeof Timeline !== "undefined") {
 };
 
 
+	
+	
 	/**
 	 * Initialize the annotations model and view. Registering the view and loading
 	 * the annotations for the current page if the annotations view is visible
 	 */
 	lore.anno.ui.init = function(){
-		try {
-			
+		try 
+		{
 			lore.anno.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
+			
+			lore.anno.prefs = new lore.anno.Preferences({
+				prefsObj: lore.anno.ui.topView,
+				creator: 'Anonymous',
+				server: '',
+				cacheTimeout: '1',
+				disable: false
+			});
+			
+			lore.anno.prefs.on('prefs_changed', lore.anno.ui.handlePrefsChange);
+			lore.anno.prefs.load();
+			
 			lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;
-			lore.anno.annoMan = new lore.anno.AnnotationManager(lore.anno.ui.currentURL);
+			lore.anno.annoMan = new lore.anno.AnnotationManager({
+				url: lore.anno.ui.currentURL,
+				prefs: lore.anno.prefs
+			});
 			lore.anno.ui.initView(lore.anno.annoMan.annods);
+			
+			lore.anno.ui.topView.on('location_changed', lore.anno.ui.handleLocationChange, this);
+			lore.anno.ui.topView.on('location_refresh', lore.anno.ui.refreshPage, this);
 			
 			lore.anno.ui.lorevisible = lore.anno.ui.topView.annotationsVisible();
 			
@@ -130,11 +150,7 @@ if (typeof Timeline !== "undefined") {
 			
 			lore.global.ui.annotationView.registerView(lore.anno.ui, window.instanceId);
 			
-			try{
-				lore.anno.ui.topView.loadAnnotationPrefs();
-    		} catch (ex){
-        		lore.debug.anno("Error loading annotation preferences: " + ex, ex);
-    		}
+			
 			
 			lore.anno.ui.initialized = true;
 			if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != '' &&
@@ -154,7 +170,8 @@ if (typeof Timeline !== "undefined") {
 		lore.anno.ui.initPage(model);
 		lore.anno.ui.initGUIConfig({ annods: lore.anno.annods, annodsunsaved: lore.anno.annodsunsaved,
 		annosearchds: lore.anno.annosearchds, annousermetads: lore.anno.annousermetads});
-		
+
+				
 	}
 	
 	lore.anno.ui.initPage = function(model){
@@ -485,6 +502,7 @@ lore.anno.ui.initExtComponents = function(store){
         });
 		
 		lore.anno.ui.timeline.initTimeline();
+		lore.anno.ui.formpanel.setPreferences(lore.anno.prefs);
 		
 	} catch (e ) {
 		lore.debug.ui("Errors during initExtComponents: " + e, e);
