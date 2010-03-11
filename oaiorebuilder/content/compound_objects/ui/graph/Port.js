@@ -24,6 +24,10 @@
 lore.ore.ui.graph.Port = function(uirep) {
     draw2d.Port.call(this,uirep);
     this.setCoronaWidth(35);
+    var lemon = new draw2d.Color(255, 252, 182);
+    var grey = new draw2d.Color(174, 174, 174);
+    this.setBackgroundColor(lemon);
+    this.setColor(grey);
 };
 lore.ore.ui.graph.Port.prototype = new draw2d.Port;
 lore.ore.ui.graph.Port.prototype.type = "lore.ore.ui.graph.Port";

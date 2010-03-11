@@ -156,9 +156,9 @@ lore.ore.ui.graph.ResourceFigure.prototype.setDimension = function(w, h) {
 		this.bottom_right.style.top = (this.height - this.cornerHeight) + "px";
 		this.bottom_left.style.top = (this.height - this.cornerHeight) + "px";
 		this.textarea.style.width = (this.width - 2) + "px";
-		this.iframearea.style.width = (this.width - 3) + "px";
+		this.iframearea.style.width = (this.width - 2) + "px";
 		this.textarea.style.height = (this.height - this.cornerHeight * 2)+ "px";
-		this.iframearea.style.height = (this.height - this.cornerHeight * 2 - 20)+ "px";
+		this.iframearea.style.height = (this.height - this.cornerHeight * 2 - 21)+ "px";
 		this.header.style.width = (this.width - this.cornerWidth * 2) + "px";
 		this.footer.style.width = (this.width - this.cornerWidth * 2) + "px";
 		this.footer.style.top = (this.height - this.cornerHeight) + "px";
@@ -433,7 +433,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.getMinWidth = function(){
     return 80;
 };
 lore.ore.ui.graph.ResourceFigure.prototype.getMinHeight = function(){
-    return 50;
+    return 48;
 };
 /**
  * Override onDragend to reset ZOrder and redisplay preview
@@ -473,42 +473,29 @@ lore.ore.ui.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
         this.setZOrder(draw2d.Figure.ZOrderBaseIndex + wf.getDocument().getFigures().getSize());
     }
 	if (wf && !this.inputPort) {
-		var orange = new draw2d.Color(255, 252, 182);
-		var grey = new draw2d.Color(174, 174, 174);
 		this.inputPort = new lore.ore.ui.graph.Port();
 		this.inputPort.setWorkflow(wf);
 		this.inputPort.setName("input");
-		this.inputPort.setBackgroundColor(orange);
-		this.inputPort.setColor(grey);
 		this.addPort(this.inputPort, -5, this.height / 2);
 
 		this.inputPort2 = new lore.ore.ui.graph.Port();
 		this.inputPort2.setWorkflow(wf);
 		this.inputPort2.setName("input2");
-		this.inputPort2.setBackgroundColor(orange);
-		this.inputPort2.setColor(grey);
 		this.addPort(this.inputPort2, this.width / 2, -5);
 
 		this.outputPort = new lore.ore.ui.graph.Port();
 		this.outputPort.setWorkflow(wf);
 		this.outputPort.setName("output");
-		this.outputPort.setBackgroundColor(orange);
-		this.outputPort.setColor(grey);
 		this.addPort(this.outputPort, this.width + 5, this.height / 2);
 
 		this.outputPort2 = new lore.ore.ui.graph.Port();
 		this.outputPort2.setWorkflow(wf);
 		this.outputPort2.setName("output2");
-		this.outputPort2.setBackgroundColor(orange);
-		this.outputPort2.setColor(grey);
 		this.addPort(this.outputPort2, this.width / 2, this.height + 5);
 
 	}
 };
-/** Toggle whether URI display is open or closed */
-lore.ore.ui.graph.ResourceFigure.prototype.toggleURI = function(){
-    
-}
+
 /** Determine if figure needs to be resized (after toggling or URI hiding 
  * @private
  */
