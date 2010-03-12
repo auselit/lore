@@ -31,7 +31,7 @@ lore.ore.ui.graph.COGraph = function(id){
         //this.layouter.setIterations(50);
         //this.layouter.setSprings(uwm.diagram.autolayout.Layouter.spring.LINEAR);
         //this.layouter.setVertexVertexRepulsion(uwm.diagram.autolayout.Layouter.vvRepulsion.INVERSE);
-        //this.setBackgroundImage("chrome://lore/skin/icons/emptyco.png",true);
+        this.showEmptyMessage();
         
         /* The mask element covers figures to allow mouse to move over figures during moves
          * without interference from figure contents
@@ -41,6 +41,7 @@ lore.ore.ui.graph.COGraph = function(id){
         this.mask.style.top = "0px";
         this.mask.style.left = "0px";
 	    this.mask.style.backgroundColor="transparent";
+        this.mask.style.opacity="0.5";
 	    this.mask.style.width="100%";
 	    this.mask.style.height="100%";
 	    this.mask.style.display="none";
@@ -56,6 +57,8 @@ lore.ore.ui.graph.COGraph = function(id){
 		this.resizeHandle6 = new lore.ore.ui.graph.ResizeHandle(this,6); // 6 = CENTER_BOTTOM
 		this.resizeHandle7 = new lore.ore.ui.graph.ResizeHandle(this,7); // 7 = LEFT_BOTTOM
 		this.resizeHandle8 = new lore.ore.ui.graph.ResizeHandle(this,8); // 8 = LEFT_MIDDLE
+
+        // default colour for line that is displayed for creating connections
         this.connectionLine.setColor(new draw2d.Color(174, 174, 174));
     } catch (ex){
         lore.debug.ore("error setting up COGraph",ex);
@@ -76,11 +79,29 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	        lore.debug.ore("failed to do layout",e);
 	    }
 	},
+    showEmptyMessage : function(){
+        this.setBackgroundImage("chrome://lore/skin/icons/emptyco.png",false);
+    },
+    clearEmptyMessage : function(){
+        this.setBackgroundImage();  
+    },
     showMask : function (){
         this.mask.style.display="block";  
     },
     hideMask : function (){
         this.mask.style.display="none";
+    },
+    clear : function(){
+        draw2d.Workflow.prototype.clear.call(this);
+        this.showEmptyMessage();
+    },
+    setDocumentDirty: function(){
+      draw2d.Workflow.prototype.setDocumentDirty.call(this);
+      if (this.figures.getSize() == 0){
+        this.showEmptyMessage();
+      } else {
+        this.clearEmptyMessage();
+      }
     },
 	/**
 	 * Overrides the method from the superclass to change the colour of the handles
