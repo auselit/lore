@@ -197,7 +197,10 @@ lore.ore.ui.initUIComponents = function() {
                             title: "Graphical Editor",
                             xtype: "panel",
                             id: "drawingarea",
-                            autoScroll: true  
+                            autoScroll: true,
+                            bodyStyle: {
+                                backgroundColor: 'transparent'
+                            }
                         },
                         {
                             title: "Summary",
