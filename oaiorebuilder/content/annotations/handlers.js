@@ -144,11 +144,6 @@
 			
 			form.reset(); // clear dirty flag
 			
-			/*var r = lore.anno.ui.metausergrid.getStore().getRange();
-			for (var i =0; i < r.length; i++) {
-				var d = r[i].data;
-				rec.data.meta.fields.push ( {type: d.type, prop: d.prop, value: d.value}  );
-			}*/
 		}
 				
 		/**
@@ -671,7 +666,7 @@
 			if ( lore.anno.ui.page.curSelAnno) lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.page.curSelAnno);
 			var fobj = lore.global.util.writeFileWithSaveAs("Export Annotations (for current page) as", fileExtensions[format], 
 												function(){
-													return lore.anno.serialize(format);
+													return lore.anno.annoMan.serialize(format);
 												},window);
 			if ( fobj) lore.anno.ui.loreInfo("Annotations exported to " + fobj.fname);
 		} catch (e ) {

@@ -239,7 +239,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 				}
 				var t= this;
 				lore.anno.ui.loreInfo("Searching...");
-				lore.anno.searchAnnotations(vals['url']!='' ? vals['url']:null, filters, function(result, resp){
+				this.annoManager.searchAnnotations(vals['url']!='' ? vals['url']:null, filters, function(result, resp){
 	 				lore.debug.anno("result from search: " + result, resp);
 					lore.anno.ui.loreInfo("Search Finished");
 					t.sgrid.doLayout();

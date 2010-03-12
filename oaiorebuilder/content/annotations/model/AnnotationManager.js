@@ -406,11 +406,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Boolean} bodyOp (Optional) Specify whether the annotations came from a file. Defaults to false.
 	 * @return {Array} ordered array of Annotations
 	 */
-	orderByDate : function(nodeList, bodyOp){
+	orderByDate : function(nodeList, bodyEmbedded){
 		var tmp = [];
 		for (var j = 0; j < nodeList.length; j++) {
 			try {
-				tmp[j] = new lore.anno.Annotation(nodeList[j], bodyOp);
+				tmp[j] = new lore.anno.Annotation(nodeList[j], bodyEmbedded);
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception processing annotations", ex);
@@ -652,7 +652,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				try {
 					var annos = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 					
-					annos = this.orderByDate(annos, 2);
+					annos = this.orderByDate(annos);
 					this.annosearchds.loadData(annos);
 						
 					if (resultCallback) {
@@ -736,7 +736,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		this.clearAnnotationStore();
 				
 		if (resultNodes.length > 0) {
-			var annotations = this.orderByDate(resultNodes, 3);
+			var annotations = this.orderByDate(resultNodes );
 			var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
 
 			// cater for tab change while annotations were downloaded from server
@@ -804,7 +804,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			var isLeaf = (replyList.length == 0);
 			//TODO: bodyOp, use constants
 			if (!isLeaf) {
-				replies = this.orderByDate(replyList,3);
+				replies = this.orderByDate(replyList);
 				
 				//if ( replies[0].resource != lore.global.util.getContentWindow(window).location)
 				//	return;
@@ -896,115 +896,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		}
 	},
 	
-	/**
-	 * Import annotations into the local store, from a string containing valid RDF. 
-	 * @param {String} theRDF String containing valid RDF conformant to the Annotea spec 
-	 * @param {Object} theurl The url of the page this will be loaded into (not used currently)
-	 * @param {Function} callback A callback function that is used by the function to output success or failure
-	 * The callback should support the following parameters
-	 * result: Result as a string ('success' or 'fail') 
-	 * resultMsg: Result message
-	 */
+	// Intentionally left unimplemented
 	importRDF : function( theRDF, theurl, callback){
-		
-		//TODO: should this be commented out? need to test out exporting and importing
-		// facility esp. importing via the danno tool.  Then this code be removed/commented out.
-		var parser = new DOMParser();
-		var xmldoc = parser.parseFromString(theRDF, "text/xml");
-			
-		if (!xmldoc) {
-			return;
-		}
-		
-		var n = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"],"RDF")[0].childNodes;
-
-		var resultNodes = [];
-		for (var i = 0; i < n.length; i++) {
-			if (n[i].localName == 'Description' && n[i].namespaceURI == lore.constants.NAMESPACES["rdf"]) {
-				resultNodes.push(n[i]);
-			}
-		}
-			
-		if (resultNodes.length == 0) 
-			return;
-					
-			
-		var createAnno = function (anno) {
-			
-			if ( processed[anno.id] ) // shouldn't ever be true if there's no bugs
-				return processed[anno.id];
-				
-			if ( anno.isReply ) {
-				// create parents recursively, updating the about reference
-				// to the the new id assigned by the server
-				if (unprocessed[anno.about]) {
-					if (!createAnno(unprocessed[anno.about]))
-						return null;
-				}
-				anno.about = processed[anno.about].id;
-			}
-			var annoid = anno.id + '';
-			
-			
-			anno.id = null;
-			var annoRDF = this.serializer.serialize([anno], this.annods);
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST", this.prefs.url, false); //synchronous
-			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
-			xhr.setRequestHeader('Content-Length', annoRDF.length);
-			xhr.send(annoRDF);
-
-			var success = xhr.status == 201;
-			
-			if ( success) {
-				var xml = parser.parseFromString(xhr.responseText, "text/xml");
-				var n = resultNodes = xml.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
-				if (n && n.length == 1) {
-					var newanno = new lore.anno.Annotation(n[0]);
-					processed[annoid] = newanno;
-					unprocessed[annoid] = null;
-					lore.debug.anno("processed " + anno.title +"(" + annoid + ")", newanno);
-					this.annods.loadData([newanno],true);
-					return newanno; 
-				} else {
-					lore.debug.anno("error processing response xml. invalid xml.", {
-						n: n,
-						responseText: xhr.responseText
-					});
-				}
-				
-			} else {
-				var msg = "error returned from server: " + xhr.status +": " + xhr.statusText;
-				lore.debug.anno(msg, xhr.responseText);
-				if (callback) callback('fail', msg );
-			}
-			return null;
-		};
-			
-		var annotations = this.orderByDate(resultNodes, 1);
-		var unprocessed = {};
-		var processed = {};
-		for ( var i =0; i < annotations.length; i++ ) {
-			unprocessed[annotations[i].id] = annotations[i];
-		}
-
-		var success = true;
-		try {
-			for (var i = 0; i < annotations.length; i++) {
-				lore.debug.anno("processing anno " + annotations[i].title + "(" + annotations[i].id +")", annotations[i]);
-				if (!createAnno(annotations[i])) {
-					if (callback) callback('fail', "Annotation import failed for annotation, \"" + annotations[i].title +"\"");
-					success = false;
-					break;
-				}
-			}
-		} catch (e) {
-			lore.debug.anno("error occurred during annotations import process: " + e , e);
-		}
-
-		if ( success) {
-			if (callback) callback('success', 'All annotations imported successfully');
-		}
+		// The Danno annotation server provides importing facilities
+		// via a web form. Originally importing was done via client, and this is code
+		// is in SVN. 
 	}
 });
 	
