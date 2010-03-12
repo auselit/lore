@@ -312,7 +312,8 @@ loreuiannosearch = function (store ) {
 		xtype: 'annosearchpanel',
 		layout:'border',
 		id: 'searchpanel',
-		model: store.annosearchds
+		model: store.annosearchds,
+		annoManager: lore.anno.annoMan
 	}
 }
 

@@ -23,7 +23,7 @@
  * dannotate.js
  * @class lore.anno.Annotation
  * @param {Node} rdf Root element of an RDF annotation returned by Danno
- * @param {boolean} bodyOps Optional parameter specifying RDF was loaded from file
+ * @param {boolean} bodyEmbedded Optional parameter specifying RDF was loaded from file
  */
 lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 		
@@ -32,7 +32,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			this.id  = "#new" + Math.uuid();
 		},
 		
-		constructor: function(rdf, bodyOp){
+		constructor: function(rdf, bodyEmbedded){
 		
 		if (!rdf)
 			return; 
@@ -123,7 +123,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'body');
 			
-			if (!bodyOp || bodyOp == 3) {
+			if (!bodyEmbedded) {
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 					if (attr) {
@@ -133,7 +133,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 						this.bodyURL = attr.nodeValue;
 					}
 				}
-			} else if ( bodyOp == 1 ){
+			} else {
 				var node = node[0].getElementsByTagName('body');
 				if ( node[0]) {
 					lore.debug.anno("node " + node[0], node[0]);
@@ -234,12 +234,6 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
              */
 			this.lang = lore.global.util.safeGetFirstChildValue(node);
 			
-			// body stores the contents of the html body tag as text
-			if (this.bodyURL && !this.body && ( !bodyOp || bodyOp != 3)) {
-				//TODO: Change this
-				this.body = lore.anno.getBodyContent(this,window);
-				this.bodyLoaded = true;
-			}
 			// get tags
 			this.tags = "";
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'tag');

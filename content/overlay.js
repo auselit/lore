@@ -398,7 +398,7 @@ try {
 				document.getElementById('cosep').hidden = disable_co;
 				document.getElementById('add-node').hidden = disable_co;
 				document.getElementById('save-rdf').hidden = disable_co;
-				document.getElementById('load-rdf').hidden = disable_co;
+				// document.getElementById('load-rdf').hidden = disable_co;
 				document.getElementById('import-export').hidden = disable_co;
 				
 					loreoverlay.coView().setDcCreator(dccreator);
