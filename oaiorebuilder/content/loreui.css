@@ -262,6 +262,8 @@
 }
 #drawingarea {
 	position:relative;
+	height:"100%";
+	background-position: center !important;
 }
 #remrdfview, #remfoxmlview, #remtrigview {
  	color: #51666b;
