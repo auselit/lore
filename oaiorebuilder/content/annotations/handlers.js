@@ -775,15 +775,11 @@
 					//}
 				})
 				
-				if (lore.anno.ui.page.curSelAnno) {
-					if (!lore.anno.ui.page.curSelAnno.data.isNew()) {
-						lore.anno.ui.hideAnnotation();
-					}
+				if (lore.anno.ui.page.curSelAnno && !lore.anno.ui.page.curSelAnno.data.isNew()) {
+					lore.anno.ui.hideAnnotation();
 				}
 				
 				lore.anno.ui.page.load(contextURL, true);
-				 
-			lore.anno.ui.rdfa = null;	
 			} catch (e ) {
 				lore.debug.anno(e,e);
 			}

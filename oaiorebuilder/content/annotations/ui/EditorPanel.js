@@ -36,7 +36,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 			xtype: 'fieldset',
 		 			layout: 'form',
 		 			autoScroll: true,
-		 			id: 'annotationsform',
+		 			id: this.genID('annotationsform'),
 		 			labelWidth: 85,
 		 			
 						defaultType: 'textfield',
@@ -50,7 +50,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						
 						items: [{
 							xtype: "combo",
-							id: "typecombo",
+							id: this.genID("typecombo"),
 							fieldLabel: 'Type',
 							name: 'type',
 							hiddenName: 'type',
@@ -81,7 +81,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						},
 						{
 							xtype: "combo",
-							id: "importance",
+							id: this.genID("importance"),
 							fieldLabel: 'Importance',
 							name: 'importance',
 							hiddenName: 'importance',
@@ -150,7 +150,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						 {
 							fieldLabel: 'Original resource',
 							name: 'original',
-							id: 'originalfield',
+							id: this.genID('originalfield'),
 							readOnly: true,
 							style: {
 								background: 'none',
@@ -195,7 +195,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						{
 							fieldLabel: 'Variant resource',
 							name: 'variant',
-							id: 'variantfield',
+							id: this.genID('variantfield'),
 							readOnly: true,
 							style: {
 								background: 'none',
@@ -236,7 +236,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 									{
 									fieldLabel : 'Semantic selection',
 									name: 'metares',
-									id: 'metares',
+									id: this.genID('metares'),
 									readOnly: true,
 									hideParent: true,
 									style: {
@@ -250,7 +250,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 									xtype: "button",
 									text: 'Choose semantic selection',
 									fieldLabel: '',
-									id: 'chgmetactxbtn',
+									id: this.genID('chgmetactxbtn'),
 									tooltip: 'Select the item or relationship to annotate',
 									handler: this.handleChangeMetaSelection,
 									parent: this
@@ -263,7 +263,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 								{
 									xtype: "editorgrid",
 									
-									id: 'metausergrid',
+									id: this.genID('metausergrid'),
 									name: 'metausergrid',
 									store: this.metaModel,
 									//deferRowRender: false,
@@ -334,17 +334,17 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							xtype: "button",
 							text: 'Add',
 							fieldLabel: '',
-							id: 'addmetabtn',
+							id: this.genID('addmetabtn'),
 							tooltip: 'Add metadata about this page to the annotation',
 						},
 						{
 							xtype:"button",
 							text: 'Remove',
-							id: 'remmetabtn',
+							id: this.genID('remmetabtn'),
 							tooltip: 'Remove user created metadata about this page from the annotation',
 						},
 						{
-							id: 'tagselector',
+							id: this.genID('tagselector'),
 							xtype: 'superboxselect',
 							allowBlank: true,
 							msgTarget: 'under',
@@ -378,7 +378,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							xtype: 'htmleditor',
 							plugins: [new Ext.ux.form.HtmlEditor.Img()],
 							name: 'body',
-							id: 'body',
+							id: this.genID('body'),
 							enableFont: false,
 							enableColors: false,
 							enableSourceEdit: false,
@@ -407,18 +407,18 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			Ext.apply ( this, this.genForm());
 			lore.anno.ui.EditorPanel.superclass.initComponent.apply(this, arguments);
 			this.form = this.getForm();
-			this.metaUserGrid = Ext.getCmp("metausergrid");
+			this.metaUserGrid = this.getComponent("metausergrid");
 			this.annomode = lore.constants.ANNOMODE_NORMAL;
 			this.model.on('update', this.handleRecordUpdate, this);
-			Ext.getCmp("typecombo").on('valid', this.handleAnnotationTypeChange, this);
+			this.getComponent("typecombo").on('valid', this.handleAnnotationTypeChange, this);
 			
-			Ext.getCmp("addmetabtn").on('click', this.handleAddMeta, this);
-			Ext.getCmp("remmetabtn").on('click', this.handleRemMeta, this);
+			this.getComponent("addmetabtn").on('click', this.handleAddMeta, this);
+			this.getComponent("remmetabtn").on('click', this.handleRemMeta, this);
 			
 			// Add hack to stop this field being flagged as dirty because
 			// originalValue is XML and the value field is converted to HTML
 			 
-			Ext.getCmp("body").on("push", function(field, html) {
+			this.getComponent("body").on("push", function(field, html) {
 				field.originalValue = field.getValue();
 			});
 		} catch(e){
@@ -639,12 +639,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				this.form.setValues([{ id: 'res', value: val }]);
 						
 				if (rec.data.isReply) {
-						//Ext.getCmp("updctxtbtn").hide();
-						//Ext.getCmp("updrctxtbtn").hide();
-							
+					lore.anno.ui.hideFormFields(this.form, ['contextdisp']);
 				}
 				else {
-					//Ext.getCmp("updctxtbtn").show();
+					lore.anno.ui.showFormFields(this.form, ['contextdisp']);
 				}
 
 				this.form.loadRecord(rec);
@@ -732,11 +730,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					lore.anno.ui.showFormFields(this.form, variationFields);
 					var isReply = (this.pageView.curSelAnno && this.pageView.curSelAnno.data.isReply);
 					if (!isReply) {
-					//Ext.getCmp('updrctxtbtn').setVisible(true);
+					//this.getComponent('updrctxtbtn').setVisible(true);
 					}
 				}
 				else {
-					//Ext.getCmp('updrctxtbtn').setVisible(false);
+					//this.getComponent('updrctxtbtn').setVisible(false);
 					lore.anno.ui.hideFormFields(this.form, variationFields);
 					lore.anno.ui.showFormFields(this.form, nonVariationFields);
 				}
@@ -751,15 +749,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					lore.anno.ui.hideFormFields(this.form, rdfaFields);
 				}
 				
-				Ext.getCmp('chgmetactxbtn').setVisible(rdfa);
-				//TODO: temporary until this component properly implemented
-				//Ext.getCmp('metausergrid').setVisible(rdfa);
-				//Ext.getCmp('addmetabtn').setVisible(rdfa);
-				//Ext.getCmp('remmetabtn').setVisible(rdfa);
-				
-				Ext.getCmp('metausergrid').setVisible(false);
-				Ext.getCmp('addmetabtn').setVisible(false);
-				Ext.getCmp('remmetabtn').setVisible(false);
+				this.getComponent('chgmetactxbtn').setVisible(rdfa);
+				this.getComponent('metausergrid').setVisible(false);
+				this.getComponent('addmetabtn').setVisible(false);
+				this.getComponent('remmetabtn').setVisible(false);
 				
 			}
 		} catch (e ) {
@@ -801,7 +794,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * @param {Object} id
 		 */
 		getComponent: function ( id ) {
-			return Ext.getCmp( /* id */ id);
+			return Ext.getCmp( this.genID(id));
+		},
+		
+		genID: function (id) {
+			return this.id + "_" + id;
 		}
 		
 });

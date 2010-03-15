@@ -308,7 +308,7 @@
 		initComponent: function(){
       	  	try {
 				
-				var cmbname = this.id + "_sorttypecombo";
+				var cmbname = this.genID("sorttypecombo");
 				
 				this.sorttypecombo = new Ext.form.ComboBox({
 					xtype: "combo",
@@ -479,8 +479,15 @@
     		this.on("insert", updateSort, this);
 			this.on("sortchange", updateSort, this);
     		
-	}
-		});
+	},
+	
+	genID: function(id) {
+		return this.id + "_" + id;	
+	},
+	
+	getComponent: function (id ) {
+		return Ext.getCmp(this.genID(id));
+	}});
 		
 		
 	
@@ -695,6 +702,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 				var info = ' ';
 				
 				//TODO: repplies resource url etc
+				lore.debug.anno(rec.data.resource,rec);
 				if (rec.data.resource != lore.anno.ui.currentURL) {
 					info = "Unsaved annotation from " + rec.data.resource + " ";
 				}
@@ -770,6 +778,14 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 		} catch (e ) {
 			lore.debug.anno("AnnoColumnTreeNode:initConfig() " + e, e);
 		}
+  },
+  
+  genID: function(id ) {
+  	return	this.id + "_" + id;
+  },
+  
+  getComponent: function(id) {
+  	return Ext.getCmp(this.genID(id));
   }
 });
   

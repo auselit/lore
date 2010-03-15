@@ -26,7 +26,6 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
       	  	try {
 				Ext.apply ( this, {
 					title: 		"Annotation Timeline",
-					id: 		"annotimeline"	
 				});
 				
 				lore.anno.ui.TimelinePanel.superclass.initComponent.apply(this, arguments);
@@ -99,7 +98,6 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 				}), Timeline.createBandInfo({
 					eventSource : this.annoEventSource,
                     theme: theme,
-                    //showEventText:  false,
 					width : "10%",
 					intervalUnit : Timeline.DateTime.MONTH,
 					intervalPixels : 430,
@@ -175,7 +173,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		 */
 		scheduleTimelineLayout : function(){
 			// Timeline needs to be visible to do layout otherwise it goes blank
-			// check if timeline is active tab...
+			// check if timeline is active tab
 			var tabbed = this.ownerCt.initialConfig.xtype == 'tabpanel';
 			
 			if ( tabbed ) {

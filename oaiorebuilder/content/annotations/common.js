@@ -210,6 +210,7 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 					if (thetag.indexOf('http://') == 0) {
 						try {
 							var tagname = thetag;
+							//TODO: this needs to be seprated to model/view
 							Ext.getCmp('tagselector').store.findBy(function(rec){
 								if (rec.data.id == thetag) {
 									tagname = rec.data.name;
