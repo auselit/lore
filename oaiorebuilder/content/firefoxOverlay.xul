@@ -85,7 +85,8 @@
           <xul:toolbarbutton id="create-co" tooltiptext="&lore.createCOTip;" oncommand="loreoverlay.createCompoundObject();"/>
           <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
           <xul:toolbarbutton id="delete-rdf" oncommand="loreoverlay.deleteRDF();" tooltiptext="&lore.deleteRDFTip;"/>
-          
+          <xul:toolbarseparator id="tmsep"/> 
+          <xul:toolbarbutton id="text-mining" tooltiptext="&lore.textMiningTip;"  oncommand="loreoverlay.doTextMining();"/>
           <xul:toolbarbutton type="menu" id="import-export" tooltiptext="&lore.saveMoreTip;">
                 <xul:menupopup>
                     <xul:menuitem id="cosave-wordml" label="&lore.saveWordLabel;" tooltiptext="&lore.saveWordTip;" oncommand="loreoverlay.serializeREM('wordml')"/>
@@ -102,7 +103,7 @@
         </xul:toolbar>
       </xul:toolbox>
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
-      <xul:iframe tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
+      <xul:iframe context="clipmenu" tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
     
          
@@ -123,12 +124,6 @@
         oncommand="loreoverlay.addBGImageMenuItemCommand(event)"/>
         
   </xul:popup>
-  <!--xul:toolbarpalette id="BrowserToolbarPalette">
-    <xul:toolbarbutton id="lore-toolbar-button"
-      label="&loreToolbar.label;"
-      tooltiptext="&loreToolbar.tooltip;"
-      oncommand="loreoverlay.onToolbarButtonCommand()"/>
-  </xul:toolbarpalette-->
    <xul:menupopup id="menu_ToolsPopup">
     <xul:menuitem oncommand="loreoverlay.onToolbarMenuCommand()"
        autoCheck="false" type="checkbox" insertbefore="menu_preferences"
@@ -140,5 +135,13 @@
       <xul:image id="loreStatusIcon"/>
     </xul:statusbarpanel>
   </xul:statusbar>
-   
+
+  <xul:popupset> 
+        <xul:menupopup id="clipmenu" onpopupshown="loreoverlay.onMenuPopupExt(event)">
+            <xul:menuitem id="clip-copy" label="Copy" command="cmd_copy"/>
+            <xul:menuitem id="clip-cut" label="Cut" command="cmd_cut"/>
+            <xul:menuitem id="clip-paste" label="Paste" command="cmd_paste"/>
+        </xul:menupopup>
+  </xul:popupset>
+    
 </xul:overlay>

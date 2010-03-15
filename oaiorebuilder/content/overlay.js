@@ -193,26 +193,50 @@ try {
 			if (gContextMenu.onLink) 
 				loreoverlay.coView().addFigure(gContextMenu.linkURL);
 		},
+        /** Show a popup menu in the extension */
+        onMenuPopupExt: function(event){
+            try{
+                // var element = document.popupNode;
+                // TODO: only enable in property editor and summary view
+            } catch (e){
+                lore.debug.ui("clip popup",e);
+            }
+        },
         /** 
-         * Show a context menu in the browser on images, links and background images, for creating nodes in compound object editor 
+         * Show a context menu in the browser on images, links and background images, 
+         * for creating nodes in compound object editor and annnotations.
+         * Menu options are enabled even if lore is closed to allow adding nodes while browsing.
+         * Menu options are hidden for disabled components.
          * @param {] event
          * */
 		onMenuPopup: function(event){
 			try {
-				
-				var img = loreoverlay.annoView().getCurSelImage();
-				var imgSelArea = document.popupNode.getAttribute("_lore_imgareaselect");
-				
-				gContextMenu.showItem('addanno-lore', gContextMenu.isContentSelected
-				|| (  imgSelArea  && img));
-				gContextMenu.showItem('modannosel-lore', (gContextMenu.isContentSelected 
-				|| (  imgSelArea && img)) &&
-				(loreoverlay.annoView().getCurrentAnno() != null));
-				
-				gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
-				gContextMenu.showItem('addlink-lore', gContextMenu.onLink);
-				gContextMenu.showItem('addbgimg-lore', gContextMenu.hasBGImage);
-				gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
+				if (!this.prefs.getBoolPref("disable_annotations")){
+                    if (typeof loreoverlay.annoView().getCurSelImage == 'function'){
+					var img = loreoverlay.annoView().getCurSelImage();
+					var imgSelArea = document.popupNode.getAttribute("_lore_imgareaselect");
+					
+					gContextMenu.showItem('addanno-lore', gContextMenu.isContentSelected
+					|| (  imgSelArea  && img));
+					gContextMenu.showItem('modannosel-lore', (gContextMenu.isContentSelected 
+					|| (  imgSelArea && img)) &&
+					(loreoverlay.annoView().getCurrentAnno() != null));
+                    }
+                } else {
+                    gContextMenu.showItem('addanno-lore',false);
+                    gContextMenu.showItem('modannosel-lore',false);
+                }
+                if (!this.prefs.getBoolPref("disable_compoundobjects")){
+					gContextMenu.showItem('addimage-lore', gContextMenu.onImage);
+					gContextMenu.showItem('addlink-lore', gContextMenu.onLink);
+					gContextMenu.showItem('addbgimg-lore', gContextMenu.hasBGImage);
+					gContextMenu.showItem('oaioresep', gContextMenu.onImage || gContextMenu.onLink || gContextMenu.hasBGImage);
+                } else {
+                    gContextMenu.showItem('addimage-lore', false);
+                    gContextMenu.showItem('addlink-lore', false);
+                    gContextMenu.showItem('addbgimg-lore', false);
+                    gContextMenu.showItem('oaioresep', false);
+                }
 			} catch (e) {
 				lore.debug.ui(e);
 			}
@@ -289,6 +313,14 @@ try {
 				}
             } catch (e){
                 lore.debug.ui("Exception importing compound object from file",e);
+            }
+        },
+        doTextMining: function(){
+            lore.debug.ore("dotextmining");
+            try{
+            loreoverlay.coView().doTextMining();
+            } catch (e){
+                lore.debug.ore("failed",e);
             }
         },
         /** Annotations Toolbar button handler: Trigger adding an annotation */
