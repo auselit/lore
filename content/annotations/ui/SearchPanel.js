@@ -21,22 +21,23 @@
 lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
+			var t = this;
       	  	var formConfig = {
 			xtype: "form",
 			keys: [{
 				key: [10, 13],
 				fn: function(){
-					Ext.getCmp("search").fireEvent('click');
+					t.getComponent("search").fireEvent('click');
 				}
 			}],
-			id: "annosearchform",
+			id: this.genID( "annosearchform"),
 			trackResetOnLoad: true,
 			split: true,
 			items: [{
 				xtype: 'fieldset',
 				layout: 'form',
 				autoScroll: true,
-				id: 'searchfieldset',
+				id: this.genID( 'searchfieldset'),
 				labelWidth: 100,
 				defaultType: 'textfield',
 				labelAlign: 'right',
@@ -76,11 +77,11 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 				}],
 				buttons: [{
 					text: 'Search',
-					id: 'search',
+					id: this.genID( 'search'),
 					tooltip: 'Search the entire annotation repository'
 				}, {
 					text: 'Reset',
-					id: 'resetSearch',
+					id: this.genID( 'resetSearch'),
 					tooltip: 'Reset search fields'
 				}]
 			}]
@@ -89,7 +90,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 	gridConfig = { 
 			xtype: "grid",
 			title: 'Search Results',
-			id: 'annosearchgrid',
+			id: this.genID( 'annosearchgrid'),
 			region: 'center',
 			store: this.model,
 			autoScroll: true,
@@ -172,7 +173,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 							title: "Search",
 							items:[	{
 										region: 'north',
-										id: "search",
+										id: this.genID("search"),
 										collapsible:true,
 										title: 'Search Options',
 										items: [formConfig]
@@ -181,15 +182,15 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 				
 				lore.anno.ui.SearchPanel.superclass.initComponent.apply(this, arguments);
 			
-				this.sformpanel = Ext.getCmp("annosearchform");
+				this.sformpanel = this.getComponent("annosearchform");
 				this.sform = this.sformpanel.getForm();
 				
-				this.sgrid = Ext.getCmp("annosearchgrid");
+				this.sgrid = this.getComponent("annosearchgrid");
 				
 				
 		
-				Ext.getCmp("search").on('click', this.handleSearchAnnotations, this);
-				Ext.getCmp("resetSearch").on('click', function () {
+				this.getComponent("search").on('click', this.handleSearchAnnotations, this);
+				this.getComponent("resetSearch").on('click', function () {
 				this.sform.reset();
 				}, this);
 				
@@ -248,6 +249,14 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 				lore.debug.anno("error occurring performing search annotations: " +e, e);
 			}
 			
+		},
+		
+		genID: function ( id ) {
+			return this.id + "_" + id;
+		},
+		
+		getComponent: function ( id) {
+			return Ext.getCmp(this.genID(id));
 		}
 		
 			

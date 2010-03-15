@@ -187,6 +187,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	addAnnotation : function(currentContext, currentURL, parent){
 		var anno = new lore.anno.Annotation();
+		
 		anno.load({
 			resource: (parent ? parent.data.resource: currentURL),
 			about: (parent ? parent.data.id: null),
@@ -207,7 +208,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			},
 			bodyLoaded: true
 		});
-		
+			
 		this.annodsunsaved.loadData([anno], true); 
 		//TODO: bodyLoaded? it's use
 		//var r = lore.global.util.findRecordById(this.annods, anno.id);
