@@ -622,10 +622,16 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
 	var oThis = this;
 
 	var thisfig = this;
+    menu.appendMenuItem(new draw2d.MenuItem("Copy URI to clipboard", null,
+        function (){
+            lore.global.util.copyToClip(thisfig.url);
+        }
+    ));
     menu.appendMenuItem(new draw2d.MenuItem("Show in Summary View", null,
         function (){
             // TODO jump to resource in summary view
-        }));
+        }
+    ));
 	if (!this.metadataproperties["dc:format_0"].match("rdf")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
 				"Open resource in separate window", null, function() {
