@@ -28,9 +28,6 @@ lore.ore.ui.graph.COGraph = function(id){
     try{
 	    this.layouter = new lore.ore.ui.graph.autolayout.Layouter(this);
 	    this.layouter.setPreferredEdgeLength(180);
-        //this.layouter.setIterations(50);
-        //this.layouter.setSprings(uwm.diagram.autolayout.Layouter.spring.LINEAR);
-        //this.layouter.setVertexVertexRepulsion(uwm.diagram.autolayout.Layouter.vvRepulsion.INVERSE);
         this.showEmptyMessage();
         
         /* The mask element covers figures to allow mouse to move over figures during moves
@@ -41,9 +38,6 @@ lore.ore.ui.graph.COGraph = function(id){
         this.mask.style.top = "0px";
         this.mask.style.left = "0px";
 	    this.mask.style.backgroundColor="transparent";
-        this.mask.style.opacity="0.5";
-	    this.mask.style.width="100%";
-	    this.mask.style.height="100%";
 	    this.mask.style.display="none";
         this.mask.style.zIndex="6000";
         this.html.appendChild(this.mask);
@@ -79,17 +73,47 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	        lore.debug.ore("failed to do layout",e);
 	    }
 	},
+    /**
+     * Show a message indicating the compound object is empty
+     * @private
+     */
     showEmptyMessage : function(){
         this.setBackgroundImage("chrome://lore/skin/icons/emptyco.png",false);
     },
+    /** 
+     * Remove the message indicating the compound object is empty
+     * @private
+     */
     clearEmptyMessage : function(){
         this.setBackgroundImage();  
     },
+    /**
+     * Show the mask to prevent other figures previews interfering with mouse 
+     * during move, resize and connection operations
+     */
     showMask : function (){
+        // ensure mask is the correct size before enabling it (mask area may need to grow
+        // if figures have been added, resized or moved)
+        this.resizeMask();
         this.mask.style.display="block";  
     },
+    /** 
+     * Hide the mask
+     */
     hideMask : function (){
         this.mask.style.display="none";
+    },
+    /** 
+     * Resizes the drawingarea and mask
+     * @private */
+    resizeMask : function (){
+        this.html.style.width = this.html.style.height = "100%";
+        var newx = this.scrollArea.scrollWidth;
+        var newy = this.scrollArea.scrollHeight;
+        this.html.style.height = newy + "px";
+        this.mask.style.height = newy + "px";
+        this.html.style.width = newx + "px";
+        this.mask.style.width = newx + "px";
     },
     clear : function(){
         draw2d.Workflow.prototype.clear.call(this);
