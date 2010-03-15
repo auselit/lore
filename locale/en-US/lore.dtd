@@ -1,8 +1,8 @@
 <!ENTITY lore.label "LORE">
 <!ENTITY lore.annoLabel "LORE Annotations">
-<!ENTITY loreContextLink.label "Add linked resource to ORE object">
-<!ENTITY loreContextImage.label "Add image to ORE object">
-<!ENTITY loreContextBGImage.label "Add background image to ORE object">
+<!ENTITY loreContextLink.label "Add linked resource to LORE compound object">
+<!ENTITY loreContextImage.label "Add image to LORE compound object">
+<!ENTITY loreContextBGImage.label "Add background image to LORE compound object">
 <!ENTITY loreContextAddAnno.label "Create annotation with selection">
 <!ENTITY loreContextModAnnoSel.label "Update annotation selection">
 <!ENTITY loreToolbar.label "LORE">
