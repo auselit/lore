@@ -51,6 +51,10 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
     	} catch (ex){
         	lore.debug.anno("Error loading annotation preferences: " + ex, ex);
     	}
+	},
+	
+	destructor: function () {
+		this.prefsObj.un('annoprefs_changed', this.setPrefs, this);
 	}
 	
 });

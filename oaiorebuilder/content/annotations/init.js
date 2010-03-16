@@ -141,8 +141,8 @@ if (typeof Timeline !== "undefined") {
 			});
 			lore.anno.ui.initView(lore.anno.annoMan.annods);
 			
-			lore.anno.ui.topView.on('location_changed', lore.anno.ui.handleLocationChange, this);
-			lore.anno.ui.topView.on('location_refresh', lore.anno.ui.refreshPage, this);
+			lore.anno.ui.topView.on('location_changed', lore.anno.ui.handleLocationChange);
+			lore.anno.ui.topView.on('location_refresh', lore.anno.ui.refreshPage);
 			
 			lore.anno.ui.lorevisible = lore.anno.ui.topView.annotationsVisible();
 			
@@ -199,6 +199,10 @@ if (typeof Timeline !== "undefined") {
 	 */
 	lore.anno.ui.uninit = function () {
 		lore.anno.ui.pageui.hideCurrentAnnotation();
+		lore.anno.ui.topView.un('location_changed', lore.anno.ui.handleLocationChange);
+		lore.anno.ui.topView.un('location_refresh', lore.anno.ui.refreshPage);
+		lore.anno.prefs.destructor();
+		
 	}
 	
 /**

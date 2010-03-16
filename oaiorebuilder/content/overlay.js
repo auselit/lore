@@ -493,7 +493,8 @@ try {
 					var regListeners = this.events[eventName];
 					if (regListeners && regListeners.length > 0) {
 						for (var i = 0; i < regListeners.length; i++) {
-							regListeners[i].callback.apply(regListeners[i].scope ? regListeners[i].scope : this, args);
+							if ( regListeners[i].callback)
+								regListeners[i].callback.apply(regListeners[i].scope ? regListeners[i].scope : this, args);
 						}
 					}
 				}
@@ -518,6 +519,19 @@ try {
 					callback: callback,
 					scope: scope
 				});
+			}
+		},
+		
+		un : function (eventName, callback, scope) {
+			var evt = this.events[eventName];
+			if ( evt ) {
+				for ( var i=0; i< evt.length; i++) {
+					if (evt[i].callback == callback && evt[i].scope == scope){
+						lore.debug.ui("un(): successful");
+						evt.splice(i,1);
+						break;
+					}
+				}
 			}
 		},
 		
