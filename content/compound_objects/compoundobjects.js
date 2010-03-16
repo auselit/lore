@@ -208,8 +208,12 @@ lore.ore.search = function (searchuri, searchpred, searchval){
  */
 lore.ore.compoundObjectDirty = function (){
     // TODO: #56 implement this method - compare lore.ore.loadedRDF with state of model
-    // If it was a new compound object and the graphical view is either not defined or has no resources, don't consider it to be dirty
-    if (lore.global.util.isEmptyObject(lore.ore.loadedRDF) && (!lore.ore.ui.graph.coGraph || (lore.ore.ui.graph.coGraph && lore.ore.ui.graph.coGraph.getDocument().getFigures().getSize() == 0))){
+    // If it was a new compound object and the graphical view is either not defined 
+    // or has no resources, don't consider it to be dirty
+    if (lore.global.util.isEmptyObject(lore.ore.loadedRDF) 
+        && (!lore.ore.ui.graph.coGraph || 
+            (lore.ore.ui.graph.coGraph 
+                && lore.ore.ui.graph.coGraph.getDocument().getFigures().getSize() == 0))){
         return false;
     } else {
         return true;
@@ -559,43 +563,6 @@ lore.ore.updateRDFHTML = function() {
     Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
 };
 
-/*lore.ore.displayHistory = function (){
-    try{
-    var query = lore.ore.historyService.getNewQuery();
-    query.annotation = "lore/compoundObject";
-    var options = lore.ore.historyService.getNewQueryOptions();
-    options.sortingMode = options.SORT_BY_DATE_ASCENDING;
-    options.includeHidden = true;
-    options.maxResults = 20;
-    var result = lore.ore.historyService.executeQuery(query, options);
-    result.root.containerOpen = true;
-    var count = result.root.childCount;
-    for (var i = 0; i < count; i++) {
-        var theobj = {};
-        var node = result.root.getChild(i);
-        var title = node.title;
-        var uri = node.uri;
-        //var visited = node.accessCount;
-        var lastVisitedTimeInMicrosecs = node.time;
-        var thedate = new Date();
-        thedate.setTime(lastVisitedTimeInMicrosecs / 1000);
-        lore.ore.coListManager.add(
-                [new lore.ore.model.CompoundObjectSummary(
-                {
-                    'uri': uri,
-                    'title': title,
-                    'accessed': thedate
-                })],
-                'history'
-        );
-    }
-    result.root.containerOpen = false;
-  } catch (e) {
-    lore.debug.ore("error displaying history",e);
-  }
-}*/
-
-
 /** Render the current compound object as Fedora Object XML in the FOXML view */
 lore.ore.updateFOXML = function (){
     Ext.getCmp("remfoxmlview").body.update(Ext.util.Format.htmlEncode(lore.ore.createFOXML()));
@@ -829,7 +796,6 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     for (var i = 0; i < allfigures.length; i++) {
         var fig = allfigures[i];
         if (fig instanceof lore.ore.ui.graph.ResourceFigure){
-	        lore.debug.ore("fig " + i,fig);
 	        var figurl = lore.global.util.escapeHTML(lore.global.util.preEncode(fig.url.toString()));
 	        rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
 	                + fullclosetag;
@@ -1284,8 +1250,10 @@ lore.ore.afterSaveCompoundObject = function(remid){
             'creator': lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid),
             'created': lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid)
     };
-    lore.ore.coListManager.add([new lore.ore.model.CompoundObjectSummary(coopts)]
-    );
+    // If the current URL is in the compound object, show in related compound objects
+    if (lore.ore.ui.graph.lookup[lore.ore.ui.currentURL]){
+       lore.ore.coListManager.add([new lore.ore.model.CompoundObjectSummary(coopts)]);
+    }
     lore.ore.historyManager.addToHistory(remid, title);  
 }
 /** Remove a compound object from the UI */
@@ -1297,6 +1265,7 @@ lore.ore.afterDeleteCompoundObject = function(deletedrem){
 	        lore.ore.createCompoundObject(); 
 	    }
         lore.ore.coListManager.remove(deletedrem);
+        lore.ore.historyManager.deleteFromHistory(deletedrem);
 	    lore.ore.ui.loreInfo("Compound object deleted");
     } catch (ex){
         lore.debug.ore("Error after deleting compound object",ex);
