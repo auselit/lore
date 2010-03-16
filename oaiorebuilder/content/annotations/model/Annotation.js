@@ -366,6 +366,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 		if (!annos.length )
 			annos = [annos];
 		
+		
 		var rdfxml = "<?xml version=\"1.0\" ?>";
 		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '">';
 		
@@ -383,6 +384,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				
 			}
 			
+		
 			rdfxml += '<rdf:Description';
 			if (annoOrig.id && !annoOrig.isNew() ) {
 				rdfxml += ' rdf:about="' + anno.id + '"';
@@ -530,7 +532,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 					'"/>';
 				}
 			}
-			if (annoOrig.body) {
+			if (annoOrig.body != null) {
 				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
 				rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
 				'">' + this.getBodyRDF(anno.title, anno.body) + '</body>';
