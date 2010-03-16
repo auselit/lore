@@ -20,7 +20,7 @@ try {
 		
 	if (!lore.global.ui || !lore.global.store || !lore.debug ) {
 		// sanity check
-		alert("Not all js modules loaded.");
+		alert("loreoverlay: Not all js modules loaded.");
 	}
 	
 	
@@ -72,7 +72,7 @@ try {
 						
 					}
 				} catch(e) {
-					alert(e + " " +  e.stack);
+					alert("loreoverlay.onLocationChange: " + e + " " +  e.stack);
 				}
 			},
             /** 
@@ -128,7 +128,7 @@ try {
 				lore.global.ui.load(window, this.instId);
 			} 
 			catch (e) {
-				alert("Error on load: " + e + "\n" + e.stack);
+				alert("loreoverlay.onLoad: " + e + "\n" + e.stack);
 			}
 		},
 		
@@ -147,7 +147,7 @@ try {
 					}
 				}
 			} catch(e) {
-				alert(e);
+				alert("loreoverlay.onClose: " + e);
 			}
 		},
 		
@@ -289,7 +289,7 @@ try {
 	               this.setCompoundObjectsVisibility(true); 
 	            }
 			} catch (e ) {
-				alert(e + " " +  e.stack);
+				alert("loreoverlay.toggleBar: " + e + " " +  e.stack);
 			}
 		},
 		/** Compound Objects Toolbar button handler: Triggers loading compound object RDF from a URL **/
@@ -328,7 +328,7 @@ try {
 			try {
 				loreoverlay.annoView().handleAddAnnotation();
 			}catch (e ) {
-				alert("addAnnotation: " + e) ;
+				alert("loreoverlay.addAnnotation: " + e) ;
 			}
 		},
 		updateAnnotationSel: function (type) {
@@ -342,7 +342,7 @@ try {
 			try {
 				loreoverlay.annoView().handleDeleteAnnotation();
 			} catch (e) {
-				alert(e + " " +  e.stack);
+				alert("loreoverlay.removeAnnotation: " + e + " " +  e.stack);
 			}
 		},
 		/** Annotations Toolbar button handler: Trigger editing an annoation */
@@ -498,7 +498,7 @@ try {
 					}
 				}
 			} catch (e ) {
-				alert(e + " " + e.stackTrace);
+				alert("loreoverlay.fireEvent: " + e + " " + e.stackTrace);
 			}
 		},
 		
@@ -714,6 +714,6 @@ try {
 	}, false);
 	
 } catch (e ) {
-	alert(e + " " + e.lineNumber);
+	alert("loreoverlay: " + e + " " + e.lineNumber);
 
 }
