@@ -51,18 +51,31 @@ lore.ore.model.HistoryManager.prototype = {
 		     var visitDate = new Date();
 		     var browserHistory = this.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
 		     browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
-		     this.listManager.add(
-		        [new lore.ore.model.CompoundObjectSummary(
-		        {
-		            'uri': remurl,
-		            'title': title,
-		            'accessed': visitDate
-		        })],
-		        'history'
-		     );
-		  } catch (e){
-		      lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
-		  }
+             this.listManager.add(
+	            [new lore.ore.model.CompoundObjectSummary(
+	            {
+	                'uri': remurl,
+	                'title': title,
+	                'accessed': visitDate
+	            })],
+	            'history'
+	         );
+          } catch (e){
+              lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
+          }
+	     
+		  
+      },
+      /**
+       * Remove records of page visit from history
+       * @param {} remurl
+       */
+      deleteFromHistory: function(remurl){
+        var theuri = Components.classes["@mozilla.org/network/io-service;1"].
+                 getService(Components.interfaces.nsIIOService).
+                 newURI(remurl, null, null);
+        var browserHistory = this.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
+        browserHistory.removePage(theuri);
       },
       /**
        * Load compound objects from the browse history into the compound objects history list
