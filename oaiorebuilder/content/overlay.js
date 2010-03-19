@@ -191,7 +191,7 @@ try {
          **/
 		onMenuItemCommand: function(event){
 			if (gContextMenu.onLink) 
-				loreoverlay.coView().addFigure(gContextMenu.linkURL);
+				loreoverlay.coView().addFigure(gContextMenu.linkURL, {"dc:title_0":gContextMenu.linkText()});
 		},
         /** Show a popup menu in the extension */
         onMenuPopupExt: function(event){
