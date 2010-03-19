@@ -619,12 +619,17 @@ lore.ore.ui.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
  */
 lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
 	var menu = new draw2d.Menu();
-	var oThis = this;
-
+    var w = this.workflow;
 	var thisfig = this;
+    if(thisfig.isSelectable()) {
+        w.showResizeHandles(thisfig);
+        w.setCurrentSelection(thisfig);
+    }
+    
     menu.appendMenuItem(new draw2d.MenuItem("Copy URI to clipboard", null,
         function (){
             lore.global.util.copyToClip(thisfig.url);
+            lore.ore.ui.loreInfo("URI copied to clipboard: " + thisfig.url);
         }
     ));
     menu.appendMenuItem(new draw2d.MenuItem("Show in Summary View", null,
