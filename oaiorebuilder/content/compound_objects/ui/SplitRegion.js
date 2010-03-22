@@ -1,9 +1,9 @@
-/** Override collapse behaviour in split region to improve UI responsiveness **/
+
 (function(){
 var oldcollapse = Ext.layout.BorderLayout.SplitRegion.prototype.onCollapseClick;
 var oldexpand = Ext.layout.BorderLayout.SplitRegion.prototype.onExpandClick;
 var oldsplitmove = Ext.layout.BorderLayout.SplitRegion.prototype.onSplitMove;
-// overrides to prevent memory leak (can be removed after we upgrade to Ext 3.2)
+/** Override Region to prevent memory leak (can be removed after we upgrade to Ext 3.2) */
 Ext.override(Ext.layout.BorderLayout.Region, {
     destroy: function () {
         Ext.destroy(
@@ -12,6 +12,27 @@ Ext.override(Ext.layout.BorderLayout.Region, {
         );
     }
 });
+/** Override Viewport to allow manual resize (for generating image) */
+Ext.override(Ext.Viewport, {
+    initComponent : function() {
+        Ext.Viewport.superclass.initComponent.call(this);
+        document.getElementsByTagName('html')[0].className += ' x-viewport';
+        this.el = Ext.getBody();
+        this.el.setHeight = Ext.emptyFn;
+        this.el.setWidth = Ext.emptyFn;
+        this.el.dom.scroll = 'no';
+        this.allowDomMove = false;
+        Ext.EventManager.onWindowResize(this.fireResize, this);
+        this.renderTo = this.el;
+    },
+    syncSize : function(){
+        delete this.lastSize;
+        this.el.dom.style.height="100%";
+        this.el.dom.style.width="auto";
+        return this;
+    }
+});
+/** Override collapse behaviour in split region to improve UI responsiveness */
 Ext.override(Ext.layout.BorderLayout.SplitRegion, {
     destroy: function () {
         Ext.destroy(
@@ -48,3 +69,4 @@ Ext.override(Ext.layout.BorderLayout.SplitRegion, {
     }
 })
 })();
+
