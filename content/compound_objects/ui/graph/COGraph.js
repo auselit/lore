@@ -51,9 +51,9 @@ lore.ore.ui.graph.COGraph = function(id){
 		this.resizeHandle6 = new lore.ore.ui.graph.ResizeHandle(this,6); // 6 = CENTER_BOTTOM
 		this.resizeHandle7 = new lore.ore.ui.graph.ResizeHandle(this,7); // 7 = LEFT_BOTTOM
 		this.resizeHandle8 = new lore.ore.ui.graph.ResizeHandle(this,8); // 8 = LEFT_MIDDLE
-
         // default colour for line that is displayed for creating connections
         this.connectionLine.setColor(new draw2d.Color(174, 174, 174));
+        this.previewCanvas = document.createElement("canvas");
     } catch (ex){
         lore.debug.ore("error setting up COGraph",ex);
     }
@@ -86,6 +86,14 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      */
     clearEmptyMessage : function(){
         this.setBackgroundImage();  
+    },
+    /** Override because html element height is incorrect on initial load */
+    getHeight : function(){
+        return this.scrollArea.scrollHeight;
+    },
+    /** Override because html element width is incorrect on initial load */
+    getWidth : function (){
+        return this.scrollArea.scrollWidth;
     },
     /**
      * Show the mask to prevent other figures previews interfering with mouse 
@@ -279,11 +287,48 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	     this.commandStack.redo();
 	
 	},
+    /** 
+     * Render the contents as an image. Renders the current window into a canvas (resizing so that
+     * the entire drawing area is visible), and then uses the toDataURL method on the canvas to
+     * produce a PNG image
+     * @return Data URL to the image  **/
+    getAsImage : function(){
+     try {
+        var imageW = this.getWidth();
+        var imageH = this.getHeight();
+        var canvas = this.previewCanvas;
+        var context = canvas.getContext("2d");
+        var offsetX = this.getAbsoluteX() + 1;
+        var offsetY = this.getAbsoluteY() + 1;
+        // resize the viewport so that entire drawing area is shown in image
+        var vp = lore.ore.ui.main_window;
+        var vpsize = vp.getSize();
+        vp.setSize(imageW + offsetX + 50, imageH + offsetY + 50);
+        canvas.setAttribute("width", imageW + "px");
+        canvas.setAttribute("height", imageH + "px");
+        context.clearRect(0,0, imageW, imageH);
+        
+        // Draw the window, cropping to display just the drawing area
+        context.drawWindow(window, offsetX, offsetY, imageW, imageH, "rgb(255,255,255)");
+        var imgData = canvas.toDataURL();
+        
+        // restore viewport original size
+        vp.setSize(vpsize);
+        vp.syncSize();
+
+        //lore.global.util.launchTab(imgData);
+        return imgData;
+     } catch (e){
+        lore.debug.ore("getAsImage: ",e);
+     }
+        
+    },
     /** Construct the context menu displayed for the graph
      * @return {draw2d.Menu} The contextmenu
      */
 	getContextMenu: function(){
 		var menu=new draw2d.Menu();
+        var oThis = this;
 	    menu.appendMenuItem(new draw2d.MenuItem("Add current URL",
 	        "chrome://lore/skin/icons/add.png",
 	        function(x,y){
@@ -296,6 +341,12 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 		       lore.ore.doLayout();  
 	        })
 	    );
+        menu.appendMenuItem(new draw2d.MenuItem("Save diagram as image (PNG)",
+            "chrome://lore/skin/icons/image.png",
+            function(x,y){
+               lore.global.util.writeURIWithSaveAs("diagram", "png", window, oThis.getAsImage());
+            })
+        );
 	    menu.appendMenuItem(new draw2d.MenuItem("New Compound Object",
 	        "chrome://lore/skin/icons/database_add.png",
 	        function(x,y){
