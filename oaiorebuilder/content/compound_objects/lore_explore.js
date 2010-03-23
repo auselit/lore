@@ -173,9 +173,19 @@ lore.ore.explore.init = function() {
         var node = Graph.Util.getClosestNodeToOrigin(lore.ore.explore.rg.graph, "pos");
         this.clickedNode = node;
         var existhistory = Ext.get('history').dom.innerHTML;
-        // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
         var action = "lore.global.util.launchTab(\"" + node.id + "\", window);";
-        var nodelink = "<a title='Show in browser' href='#' onclick='" + action + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'></a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" + node.id + "');\">" + node.name + "</a>";
+        var icon = "chrome://lore/skin/icons/page_go.png";
+        var tooltip = "Show in browser";
+        // stylesheet sets type to circle for compound objects
+        if (node.data["$type"] == "circle"){
+            action = "lore.ore.readRDF(\"" + node.id + "\");";
+            icon = "chrome://lore/skin/oaioreicon-sm.png";
+            tooltip = "Load in LORE";
+        }
+        var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
+            + "'><img style='border:none' src='" + icon 
+            + "'></a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
+            + node.id + "');\">" + node.name + "</a>";
         Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
         this.requestGraph();
     }
