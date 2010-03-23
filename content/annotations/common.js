@@ -311,7 +311,7 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 			 }
 			 });
 			 
-			 lore.debug.anno("The dirty items are: " + dirtyList.join());
+			 //lore.debug.anno("The dirty items are: " + dirtyList.join());
 			 return isDirty;
 		 }
 		

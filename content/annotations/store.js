@@ -34,6 +34,7 @@ Components.utils.import("resource://lore/debug.js");
 	 datastores : {},
 	 uid: "",
 	 METADATA : "METADATA",
+	 caching: true,
 	 
 	 /**
 	  * Set the context for the current cache
@@ -44,6 +45,10 @@ Components.utils.import("resource://lore/debug.js");
 	 setCacheContext : function (uid) {
 	 	store.uid = uid;
 		store.datastores = store.uidcache[uid];
+	 },
+	 
+	 setCaching: function(caching) {
+	 	this.caching = caching;
 	 },
 	 
 	 /**
@@ -71,7 +76,7 @@ Components.utils.import("resource://lore/debug.js");
 		if ( !meta || meta.timeout[dsName] == 0)
 			return;
 			
-	 	if ( (new Date().getTime() - meta.timestamp[dsName]) > meta.timeout[dsName]) {
+	 	if ( !this.caching || ((new Date().getTime() - meta.timestamp[dsName]) > meta.timeout[dsName])) {
 			s[dsName] = null;
 		} 
 	 },

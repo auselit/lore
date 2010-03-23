@@ -69,15 +69,18 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							selectOnFocus: true
 						}, {
 							fieldLabel: 'Title',
-							name: 'title'
+							name: 'title',
+							id: this.genID("title")
 							
 						}, {
 							fieldLabel: 'Creator',
-							name: 'creator'
+							name: 'creator',
+							id: this.genID("creator")
 							
 						}, {
 							fieldLabel: 'References',
-							name: 'references'
+							name: 'references',
+							id: this.genID("references")
 						},
 						{
 							xtype: "combo",
@@ -100,17 +103,19 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						{
 							fieldLabel: 'Variation Agent',
 							name: 'variationagent',
+							id: this.genID("variationagent"),
 							
 							hideParent: true
 						}, {
 							fieldLabel: 'Variation Place',
 							name: 'variationplace',
+							id: this.genID("variationplace"),
 							
 							hideParent: true
 						}, {
 							fieldLabel: 'Variation Date',
 							name: 'variationdate',
-							
+							id: this.genID("varitiondate"),
 							hideParent: true
 						}, {
 							fieldLabel: 'ID',
@@ -125,6 +130,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						}, {
 							fieldLabel: 'Annotates',
 							name: 'res',
+							id: this.genID("res"),
 							readOnly: true,
 							hideParent: true,
 							style: {
@@ -174,6 +180,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
                             
 							fieldLabel: 'Selection',
 							name: 'contextdisp',
+							id: this.genID("contextdisp"),
 							readOnly: true,
 							style: {
 								background: 'none',
@@ -220,6 +227,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							fieldLabel: 'Variant Selection',
 							name: 'rcontextdisp',
 							readOnly: true,
+							id: this.genID("rcontextdisp"),
 							style: {
 								background: 'none',
                                 'border-top': 'none',
@@ -691,7 +699,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		},
 		
 		handlePrefsChanged: function(args) {
-			lore.debug.anno('EditorPanel:handlePrefsChanged', args);
+			//lore.debug.anno('EditorPanel:handlePrefsChanged', args);
 			if (this.isVisible()) 
 					this.setAnnotationFormUI(null, null, args.annomode);
 
