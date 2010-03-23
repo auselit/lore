@@ -178,7 +178,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 		    var queryURL = this.reposURL
 		            + "?queryLn=sparql&query=" 
 		            + thequery;
-            lore.debug.ore("sparql query is",thequery);
+            //lore.debug.ore("sparql query is",thequery);
 		    var json;
             var xsltproc = new XSLTProcessor();
 	        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
@@ -201,9 +201,9 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        var rdfDoc = xhr.responseXML;
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
 	        var serializer = new XMLSerializer();
-	        lore.debug.ore("response is",serializer.serializeToString(rdfDoc));
+	        //lore.debug.ore("response is",serializer.serializeToString(rdfDoc));
 	        eval ("json = " + serializer.serializeToString(thefrag));
-	        lore.debug.ore("got json",json);
+	        //lore.debug.ore("got json",json);
             return json;
 	    } catch (ex){
 	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);
