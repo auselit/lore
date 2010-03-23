@@ -13,6 +13,7 @@
 	<xsl:strip-space elements="*"/>
 	<xsl:param name="subj" select="'http://austlit.edu.au/'"/>
 	<xsl:param name="title"/>
+	<xsl:param name="isCompoundObject" select="'n'"/>
 	<xsl:output method="text"/>
 	<!--  [{"id":"node0","name":remid,"data":{'$dim': 6,'$color': 'orange', '$type': 'circle'},"adjacencies":
 	[{"nodeTo":"node1","data":{"weight":3}},{"nodeTo":"node2","data":{"weight":3}},
@@ -43,7 +44,13 @@
       <xsl:value-of select="$subj"/>
       </xsl:otherwise>
       </xsl:choose>
-      <xsl:text>", "data": {"$dim": 6, "$color": "red", "$type": "square"}, "adjacencies": [</xsl:text>
+      
+      <xsl:text>", "data": {"$dim": 6, "$color": "red", "$type": "</xsl:text>
+      <xsl:choose>
+      	<xsl:when test="$isCompoundObject = 'y'">circle</xsl:when>
+      	<xsl:otherwise>square</xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>"}, "adjacencies": [</xsl:text>
       <xsl:for-each select="sparql:result">
       <xsl:text>{"nodeTo":"</xsl:text>
       <xsl:value-of select="sparql:binding[@name='something']/sparql:uri"/>
@@ -66,7 +73,7 @@
       	<xsl:variable name="theuri" select="sparql:binding[@name='something']/sparql:uri"/>
       	<xsl:text>{"id" : "</xsl:text><xsl:value-of select="$theuri"/>
       	<xsl:text>", "data": {</xsl:text>
-      	<xsl:if test="key('results-key',$theuri)/sparql:binding[@name='somerel']/sparql:uri = 'http://www.openarchives.org/ore/terms/ResourceMap'">
+      	<xsl:if test="key('results-key',$theuri)/sparql:binding[@name='sometype']/sparql:uri = 'http://www.openarchives.org/ore/terms/ResourceMap'">
       		"$dim": 6, "$color": "orange", "$type": "circle"
       	</xsl:if>
       	<xsl:text>}, "adjacencies": [], "name": "</xsl:text>
