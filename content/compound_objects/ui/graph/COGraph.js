@@ -344,7 +344,12 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         menu.appendMenuItem(new draw2d.MenuItem("Save diagram as image (PNG)",
             "chrome://lore/skin/icons/image.png",
             function(x,y){
-               lore.global.util.writeURIWithSaveAs("diagram", "png", window, oThis.getAsImage());
+                var imgData = oThis.getAsImage();
+                if (imgData){
+                    lore.global.util.writeURIWithSaveAs("diagram", "png", window, imgData);
+                } else {
+                    lore.ore.ui.loreError("Unable to generate diagram image");
+                }
             })
         );
 	    menu.appendMenuItem(new draw2d.MenuItem("New Compound Object",
