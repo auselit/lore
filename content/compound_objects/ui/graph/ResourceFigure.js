@@ -632,28 +632,38 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
             lore.ore.ui.loreInfo("URI copied to clipboard: " + thisfig.url);
         }
     ));
-    menu.appendMenuItem(new draw2d.MenuItem("Show in Summary View", null,
-        function (){
-            // TODO jump to resource in summary view
-        }
-    ));
+    
 	if (!this.metadataproperties["dc:format_0"].match("rdf")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
 				"Open resource in separate window", null, function() {
 					lore.global.util.launchWindow(thisfig.url, true, window);
 				}));
 	}
+    menu.appendMenuItem(new draw2d.MenuItem("Show in Narrative view", null,
+        function (){
+            // TODO jump to resource in summary view
+        }
+    ));
 	if (Ext.getCmp("remexploreview")) {
-		menu.appendMenuItem(new draw2d.MenuItem("Show in explore view", null,
+		menu.appendMenuItem(new draw2d.MenuItem("Show in Explore view", null,
 				function() {
 					Ext.getCmp("loreviews").activate("remexploreview");
+                    
+                    var rdftype = thisfig.metadataproperties["rdf:type_0"];
+                    var isCO = (rdftype && rdftype.match("ResourceMap"));
+                    var title = thisfig.metadataproperties["dc:title_0"];
+                    if (!title) title = thisfig.url;
 					if (thisfig.url) {
 						lore.ore.exploreLoaded = thisfig.url;
-						lore.ore.explore.showInExploreView(thisfig.url,
-								thisfig.metadataproperties["dc:title_0"]);
+						lore.ore.explore.showInExploreView(thisfig.url, title, isCO);
 					}
 				}));
 	}
+    menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", null,
+        function (){
+            // TODO jump to resource in summary view
+        }
+    ));
 	return menu;
 };
 

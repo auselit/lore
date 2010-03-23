@@ -36,52 +36,9 @@ Ext.namespace("lore.ore.explore");
  * @param {String} title Used as a label for the compound object
  * @param {function} f Function to apply
  */
-lore.ore.explore.loadRem = function(id, title, f){
-   // make json from sparql query
-
-   var eid = id.replace(/&amp;/g,'&').replace(/&amp;/g,'&');
-   lore.debug.ore("load sparql for",eid);
-   var eid2 = escape(eid);
-   try {
-    var thequery = "PREFIX dc:<http://purl.org/dc/elements/1.1/> PREFIX ore:<http://www.openarchives.org/ore/terms/> PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns%23>"
-    + "SELECT DISTINCT ?something ?somerel ?sometitle WHERE {"
-    + "{?aggre ore:aggregates <" + eid2 + "> . ?something ore:describes ?aggre ."
-    + " ?something a ?somerel . OPTIONAL {?something dc:title ?sometitle .}}"
-    +  "UNION { ?something ?somerel <" + eid2 + "> . FILTER isURI(?something) ."
-    + "FILTER (?somerel != ore:aggregates) . FILTER (?somerel != rdf:type) . OPTIONAL {?something dc:title ?sometitle.} }"
-    + "UNION {<"+ eid2 + "> ?somerel ?something . FILTER isURI(?something). FILTER (?somerel != rdf:type) . FILTER (?somerel != ore:describes) . OPTIONAL {?something dc:title ?sometitle.}}"
-    + "UNION {<" + eid2 + "> ore:describes ?aggre .?aggre ?somerel ?something . FILTER (?somerel != rdf:type) .OPTIONAL {?something dc:title ?sometitle . }}}";
-    // should remid be escaped?
-    // TODO: use repos adapter
-    var queryURL = "http://austlit.edu.au/openrdf-sesame/repositories/lore"
-            + "?queryLn=sparql&query=" 
-            + thequery;
-    var json;
-
-        var xsltproc = new XSLTProcessor();
-        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
-        var xhr = new XMLHttpRequest();
-        xhr.overrideMimeType('text/xml');
-        xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl', false);
-        xhr.send(null);
-        var stylesheetDoc = xhr.responseXML;
-        xsltproc.importStylesheet(stylesheetDoc);
-        xsltproc.setParameter(null,'subj',eid);
-        if (title){
-            xsltproc.setParameter(null,'title',title);
-        }
-        // get the xml
-        xhr.open("GET",queryURL, false);
-        xhr.send(null);
-        var rdfDoc = xhr.responseXML;
-        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
-        var serializer = new XMLSerializer();
-        lore.debug.ore("response is",serializer.serializeToString(rdfDoc));
-        eval ("json = " + serializer.serializeToString(thefrag));
-        lore.debug.ore("got json",json);
-    } catch (ex){
-        lore.debug.ore("problem doing sparql transform",ex);
-    } 
+lore.ore.explore.loadRem = function(id, title, isCompoundObject, f){
+  // get json from sparql query
+  var json = lore.ore.reposAdapter.getExploreData(id,title,isCompoundObject);
   if (json){
         f(json);
    }
@@ -138,7 +95,7 @@ lore.ore.explore.init = function() {
        } 
     },*/  
     requestGraph: function() {
-        lore.ore.explore.loadRem(this.clickedNode.id, this.clickedNode.name, function(json) {
+        lore.ore.explore.loadRem(this.clickedNode.id, this.clickedNode.name, (this.clickedNode.data["$type"]=='circle'), function(json) {
             lore.ore.explore.rg.op.sum(json, {
                 'type': 'fade:con',
                 duration: 1500,
@@ -196,16 +153,25 @@ lore.ore.explore.init = function() {
  * @param {URI} id The URI of the compound object
  * @param {String} title Label to display for the compound object
  */
-lore.ore.explore.showInExploreView = function (id, title){
+lore.ore.explore.showInExploreView = function (id, title, isCompoundObject){
     lore.ore.explore.init();
-    lore.ore.explore.loadRem(id, title, function(json){
+    lore.debug.ore("showInExploreView " + id + " " + title + " " + isCompoundObject);
+    lore.ore.explore.loadRem(id, title, isCompoundObject, function(json){
         lore.ore.explore.rg.loadJSON(json);
         lore.ore.explore.rg.refresh();
         var existhistory = Ext.get('history').dom.innerHTML;
         // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
         var action = "lore.global.util.launchTab(\"" + id + "\", window);";
-        var nodelink = "<a title='Show in browser' href='#' onclick='" + action 
-        + "'><img style='border:none' src='chrome://lore/skin/icons/page_go.png'>" 
+        var icon = "chrome://lore/skin/icons/page_go.png";
+        var tooltip = "Show in browser";
+        // stylesheet sets type to circle for compound objects
+        if (isCompoundObject){
+            action = "lore.ore.readRDF(\"" + id + "\");";
+            icon = "chrome://lore/skin/oaioreicon-sm.png";
+            tooltip = "Load in LORE";
+        }
+        var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
+        + "'><img style='border:none' src='" + icon +"'>" 
         + "</a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
         + id + "');\">" + title + "</a>";
         Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));

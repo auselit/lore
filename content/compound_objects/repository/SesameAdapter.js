@@ -162,7 +162,53 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	    } catch (e){
 	        lore.debug.ore("sesame: error deleting compound object",e);
 	    }        
-	}
+	},
+    getExploreData : function(uri,title,isCompoundObject){
+        var eid = uri.replace(/&amp;/g,'&').replace(/&amp;/g,'&');
+        var eid2 = escape(eid);
+        try {
+		    var thequery = "PREFIX dc:<http://purl.org/dc/elements/1.1/> PREFIX ore:<http://www.openarchives.org/ore/terms/> PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns%23>"
+		    + "SELECT DISTINCT ?something ?somerel ?sometitle ?sometype WHERE {"
+		    + "{?aggre ore:aggregates <" + eid2 + "> . ?something ore:describes ?aggre ."
+		    + " ?something a ?sometype . OPTIONAL {?something dc:title ?sometitle .}}"
+		    +  "UNION { ?something ?somerel <" + eid2 + "> . FILTER isURI(?something) ."
+		    + "FILTER (?somerel != ore:aggregates) . FILTER (?somerel != rdf:type) . OPTIONAL {?something dc:title ?sometitle.} }"
+		    + "UNION {<"+ eid2 + "> ?somerel ?something . FILTER isURI(?something). FILTER (?somerel != rdf:type) . FILTER (?somerel != ore:describes) . OPTIONAL {?something dc:title ?sometitle.}}"
+		    + "UNION {<" + eid2 + "> ore:describes ?aggre .?aggre ?somerel ?something . FILTER (?somerel != rdf:type) .OPTIONAL {?something dc:title ?sometitle . } . OPTIONAL {?something a ?sometype}}}";
+		    var queryURL = this.reposURL
+		            + "?queryLn=sparql&query=" 
+		            + thequery;
+            lore.debug.ore("sparql query is",thequery);
+		    var json;
+            var xsltproc = new XSLTProcessor();
+	        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
+	        var xhr = new XMLHttpRequest();
+	        xhr.overrideMimeType('text/xml');
+	        xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl', false);
+	        xhr.send(null);
+	        var stylesheetDoc = xhr.responseXML;
+	        xsltproc.importStylesheet(stylesheetDoc);
+	        xsltproc.setParameter(null,'subj',eid);
+	        if (title){
+	            xsltproc.setParameter(null,'title',title);
+	        }
+            if (isCompoundObject){
+                xsltproc.setParameter(null,'isCompoundObject','y');
+            }
+	        // get the xml
+	        xhr.open("GET",queryURL, false);
+	        xhr.send(null);
+	        var rdfDoc = xhr.responseXML;
+	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
+	        var serializer = new XMLSerializer();
+	        lore.debug.ore("response is",serializer.serializeToString(rdfDoc));
+	        eval ("json = " + serializer.serializeToString(thefrag));
+	        lore.debug.ore("got json",json);
+            return json;
+	    } catch (ex){
+	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);
+	    } 
+    }
 });
 
 
