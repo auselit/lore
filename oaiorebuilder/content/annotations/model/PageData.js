@@ -82,6 +82,7 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	 * @param {Record} rec Record Currently selected annotation
 	 */
 	setCurrentAnno : function(rec, store){
+		lore.debug.anno("setCurrentAnno(): ", {r:rec, s:store});
 		var old = this.curSelAnno;
 		this.curSelAnno = rec;
 		this.curSelAnnoStore = store;

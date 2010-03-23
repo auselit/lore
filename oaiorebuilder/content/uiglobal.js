@@ -68,12 +68,34 @@
 			debug.ui ("error loading ui on reset: " + e3,e3);
 		}
 	}
-	/**
-     * @param {} win
-     * @param {} instId
-     * @param {} reload
-	 */
-	ui.load = function (win, instId, reload) {
+	
+	ui.resetAnnotations = function ( win, instId ) {
+		 try {    
+			ui.annotationView.unregisterView();
+        } catch (e2) {
+            debug.ui("error unregistering annoview: " + e2,e2);
+        }
+        try {
+			ui.loadAnnotations(win, instId, true);
+		} catch (e3) {
+			debug.ui ("error loading ui on reset: " + e3,e3);
+		}
+	}
+	
+	ui.resetCompoundObjects = function ( win, instId ) {
+		try {
+			ui.compoundObjectView.unregisterView();
+        } catch (e1) {
+            debug.ui ("error unregistering coview: " + e1,e1);
+        }
+        try {
+			ui.loadCompoundObjects(win, instId, true);
+		} catch (e3) {
+			debug.ui ("error loading ui on reset: " + e3,e3);
+		}
+	}
+	
+	ui.loadAnnotations  = function ( win, instId, reload ) {
 		var iframe1 = win.document.getElementById("annographiframe");
 		
 		iframe1.addEventListener("load", function onLoadTrigger(event){
@@ -87,10 +109,12 @@
 		else {
 			iframe1.setAttribute("src", "chrome://lore/content/annotations/loreui_anno.html");
 		}
-        
+	}
+	
+	ui.loadCompoundObjects = function ( win, instId, reload ) {
 		var iframe2 = win.document.getElementById("graphiframe");
 		iframe2.addEventListener("load", function onLoadTrigger(event){
-            iframe2.removeEventListener("load", onLoadTrigger, true);
+        	iframe2.removeEventListener("load", onLoadTrigger, true);
             iframe2.contentWindow.instanceId = instId;
             iframe2.contentWindow.lore.ore.ui.init();
 		}, true);
@@ -100,6 +124,18 @@
 	    else {
 		    iframe2.setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
 	    }
+	}
+	/**
+     * @param {} win
+     * @param {} instId
+     * @param {} reload
+	 */
+	ui.load = function (win, instId, reload) {
+		
+		
+		ui.loadAnnotations(win, instId, reload );
+        ui.loadCompoundObjects(win, instId, reload);
+		
         
 	}
 	

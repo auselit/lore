@@ -170,13 +170,15 @@
 						text: "Show in Timeline",
 						handler: function(evt){
 							lore.anno.ui.timeline.showAnnoInTimeline(node.id);
-						}
+						},
+						id:'timelineshow_' + node.id
 					});
 					node.contextmenu.add({
 						text: "Reply to annotation",
 						handler: function(evt){
 							lore.anno.ui.handleReplyToAnnotation(node.id);
-						}
+						},
+						id: 'reply_' + node.id
 					});
 				}
 				
@@ -184,8 +186,9 @@
 				 node.contextmenu.add({
 				 text: "Edit annotation",
 				 handler: function(evt){
-				 	lore.anno.ui.handleEditAnnotation(lore.anno.ui.recIdForNode(node));
-				 }
+				 	lore.anno.ui.handleEditTreeNode(node);
+				 },
+				 id: 'edit_' + node.id
 				 });
 	 
 	 			if (!isNew) {
@@ -309,7 +312,7 @@
 					lore.anno.ui.updateAnnoFromRecord(lore.anno.ui.page.curSelAnno, true);
 				}
 
-				lore.anno.annoMan.updateAnnotations(lore.anno.ui.currentURL, uri, function(anno, action, result, resultMsg){
+				lore.anno.annoMan.updateAnnotations(lore.anno.ui.currentURL, uri, function(action, result, resultMsg, anno){
 					try {
 						if (result == "success") {
 							lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
@@ -496,6 +499,7 @@
 				var store = unsavedNode ? lore.anno.annodsunsaved : lore.anno.annods;
 				
 				var rec = lore.global.util.findRecordById(store, lore.anno.ui.recIdForNode(node));
+				
 				
 				if ( rec == lore.anno.ui.page.curSelAnno )
 					return;

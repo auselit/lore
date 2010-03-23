@@ -77,7 +77,7 @@ lore.anno.ui.PageView.prototype = {
 	
 	handleUpdate: function(store, rec, operation){
 		try {
-			lore.debug.anno("PageView:handleUpdate()", store);
+			//lore.debug.anno("PageView:handleUpdate()", store);
 			this.hideCurrentAnnotation();
 			this.highlightCurrentAnnotation(rec);
 		} 

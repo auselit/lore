@@ -248,6 +248,7 @@ loreuieditor = function (store ) {
 		},{
 			text: 'Delete Annotation',
 			id: 'delannobtn',
+			name: 'delannobtn',
 			tooltip: 'Delete the annotation - CANNOT BE UNDONE'
 		},  {
 			text: 'Reset',

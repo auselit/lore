@@ -232,18 +232,23 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	updateAnnotations : function (currentURL, filterURL, resultCallback) {
 		
+		var modified = []
 		this.annodsunsaved.each( function (rec) 
 		{
 			//TODO: fix for replies
 			//if ( filterURL && rec.data.context!= filterURL )
 			//	return;
 			
-			if ( rec.dirty ) {
-				this.updateAnnotation(rec, currentURL, false, function (action,result,resultMsg) {
+			if ( rec.dirty || rec.data.isNew() ) {
+				modified.push(rec);
+			}
+		}, this);
+		
+		/*this.updateAnnotation(rec, currentURL, false, function (action,result,resultMsg) {
 					resultCallback(rec, action, result, resultMsg);
 				});
 				///TODO: check whether to change to use this
-				/*
+				
 				 * function (action, result, resultMsg) {
 					var successes = []
 				var failures = [];
@@ -264,12 +269,85 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					});
 				}
 				 */
+		
+		var resultCounter = 0;
+		var t = this;
+		var result = function (request, action, anno) {
+		try {
+			resultCounter++;
+			
+			var result = 'success';
+			if( action == 'create' && request.status != 201 )
+				result = 'fail';
+			if ( action == 'update' && request.status != 200 )
+				result == 'fail';
+			resultCallback(action, result, request.statusText, anno);
+				
+			if (resultCounter == modified.length) {
+				lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+				t.updateAnnotationsSourceList(currentURL);
 			}
+		} catch (e ) {
+			lore.debug.anno(e,e);
+		}
+		}
 			
-			
-		});
-
+		
+		for ( var i =0; i < modified.length; i++ ) {
+			this.sendUpdateRequest(modified[i], currentURL, result);
+		}
 	},
+	 
+	//TODO: make private function (i.e declare inside constructor...and save to a variable?
+	sendUpdateRequest : function(anno, currentURL, resultCallback){
+		// don't send out update notification if it's a new annotation as we'll
+		// be reloading datasource
+		anno.commit(anno.data.isNew());
+		
+		var annoRDF = this.serializer.serialize([anno.data], this.annods);
+		
+		var xhr = new XMLHttpRequest();
+		if (anno.data.isNew()) {
+			lore.debug.anno("creating new annotation")
+			// create new annotation
+			xhr.open("POST", this.prefs.url, true);
+			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
+			xhr.setRequestHeader('Content-Length', annoRDF.length);
+			xhr.onreadystatechange = function(){
+				try {
+				
+				if (xhr.readyState == 4) {
+					if (resultCallback) {
+						resultCallback(xhr, 'create', anno);
+					}
+				}
+				
+			} catch(e ) {
+				lore.debug.anno("error: " + e);
+			}
+			};
+			xhr.send(annoRDF);
+			lore.debug.anno("RDF of new annotation", annoRDF);
+		}
+		else {
+			lore.debug.anno("updating existing annotation")
+			// Update the annotation on the server via HTTP PUT
+			xhr.open("PUT", anno.data.id, true);
+			xhr.setRequestHeader('Content-Type', "application/xml");
+			xhr.onreadystatechange = function(){
+				if (xhr.readyState == 4) {
+					if (resultCallback) {
+						resultCallback(xhr, 'update', anno); 
+					}
+				}
+			};
+			xhr.send(annoRDF);
+			lore.debug.anno("RDF of updated annotation", annoRDF);
+			
+		}
+		this.annodsunsaved.remove(anno);
+	},
+		
 	
 	/**
 	 * Create or update the annotation in the remote repository 
@@ -283,67 +361,25 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * resultMsg: Result message 
 	 */
 	updateAnnotation : function(anno, currentURL, refresh, resultCallback){
-	
-		// don't send out update notification if it's a new annotation as we'll
-		// be reloading datasource
-		anno.commit(anno.data.isNew());
-		
-		
-		var annoRDF = this.serializer.serialize([anno.data], this.annods);
-		
-		var xhr = new XMLHttpRequest();
-		if (anno.data.isNew()) {
-			lore.debug.anno("creating new annotation")
-			// create new annotation
-			xhr.open("POST", this.prefs.url, true);
-			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
-			xhr.setRequestHeader('Content-Length', annoRDF.length);
-			var t = this;
-			xhr.onreadystatechange = function(){
-				try {
-				
-				if (xhr.readyState == 4) {
-					if (resultCallback) {
-						var result = xhr.status == 201 ? 'success' : 'fail';
-						resultCallback('create', result, xhr.responseText ? xhr.responseText : xhr.statusText);
-						lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
-						t.updateAnnotationsSourceList(currentURL);
-						
-					}
-				}
-				
-			} catch(e ) {
-				lore.debug.anno("error: " + e);
+		var t = this;
+		var result = function(request, action ) {
+			if (action == 'create') {
+				var result = request.status == 201 ? 'success' : 'fail';
+				resultCallback('create', result, request.responseText ? request.responseText : request.statusText);
+				lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+				t.updateAnnotationsSourceList(currentURL);
 			}
-			};
-			xhr.send(annoRDF);
-			lore.debug.anno("RDF of new annotation", annoRDF);
-			
-			//this.annods.remove(anno);
-			this.annodsunsaved.remove(anno);
-		}
-		else {
-			lore.debug.anno("updating existing annotation")
-			// Update the annotation on the server via HTTP PUT
-			xhr.open("PUT", anno.data.id, true);
-			xhr.setRequestHeader('Content-Type', "application/xml");
-			var t = this;
-			xhr.onreadystatechange = function(){
-				if (xhr.readyState == 4) {
-					if (resultCallback) {
-						var result = xhr.status == 200 ? 'success' : 'fail';
-						resultCallback('update', result, xhr.statusText);
-						if (refresh) {
-							lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
-							t.updateAnnotationsSourceList(currentURL);
-						}
-					}
+			else {
+				var result = request.status == 200 ? 'success' : 'fail';
+				resultCallback('update', result, request.statusText);
+				if (refresh) {
+					lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+					t.updateAnnotationsSourceList(currentURL);
 				}
-			};
-			xhr.send(annoRDF);
-			lore.debug.anno("RDF of updated annotation", annoRDF);
-			this.annodsunsaved.remove(anno);
+			}
 		}
+						
+		this.sendUpdateRequest(anno, currentURL, result);
 
 	},
 	
@@ -433,63 +469,70 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 getBodyContent : function(anno, window, callback){
 		
 		var uri = anno.bodyURL;
+		if ( !uri)
+			return;
+		
 		var async = callback != null;
 		var req = null;
 		
 		var handleResponse = function(){
-			
-			if (req.status != 200) {
-				var hst = (uri.length < 65) ? uri : uri.substring(0, 64) + '...';
-				throw new Error('Synchronous AJAX request status error.\n  URI: ' + hst +
-				'\n  Status: ' +
-				req.status);
-			}
-			
-			var rtype = req.getResponseHeader('Content-Type');
-			if (rtype == null) {
-				var txt = req.responseText;
-				var doc = null;
-				if (txt && (txt.indexOf(':RDF') > 0)) {
-					doc = req.responseXML;
-					if ((doc == null) && (typeof DOMParser != 'undefined')) {
-						var parser = new DOMParser();
-						doc = parser.parseFromString(txt, 'application/xml');
-					}
+			try {
+				if (req.status != 200) {
+					var hst = (uri.length < 65) ? uri : uri.substring(0, 64) + '...';
+					throw new Error('Synchronous AJAX request status error.\n  URI: ' + hst +
+					'\n  Status: ' +
+					req.status);
 				}
 				
-				if (doc != null) {
-					return doc;
-				}
-				else 
-					if (txt != null) {
-						return txt;
+				var rtype = req.getResponseHeader('Content-Type');
+				if (rtype == null) {
+					var txt = req.responseText;
+					var doc = null;
+					if (txt && (txt.indexOf(':RDF') > 0)) {
+						doc = req.responseXML;
+						if ((doc == null) && (typeof DOMParser != 'undefined')) {
+							var parser = new DOMParser();
+							doc = parser.parseFromString(txt, 'application/xml');
+						}
 					}
-			}
-			if (rtype.indexOf(';') > 0) {
-				// strip any charset encoding etc
-				rtype = rtype.substring(0, rtype.indexOf(';'));
-			}
-			var serializer = new XMLSerializer();
-			var bodyContent = "";
-			var result = "";
-			var bodyText = "";
-			if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') {
-				bodyContent = req.responseXML.getElementsByTagName('body');
-				if (bodyContent[0]) {
-					bodyText = serializer.serializeToString(bodyContent[0]);
+					
+					if (doc != null) {
+						return doc;
+					}
+					else 
+						if (txt != null) {
+							return txt;
+						}
+				}
+				if (rtype.indexOf(';') > 0) {
+					// strip any charset encoding etc
+					rtype = rtype.substring(0, rtype.indexOf(';'));
+				}
+				var serializer = new XMLSerializer();
+				var bodyContent = "";
+				var result = "";
+				var bodyText = "";
+				if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') {
+					bodyContent = req.responseXML.getElementsByTagName('body');
+					if (bodyContent[0]) {
+						bodyText = serializer.serializeToString(bodyContent[0]);
+					}
+					else {
+						bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
+					}
 				}
 				else {
 					bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
 				}
+				
+				if (bodyText) {
+					return lore.global.util.sanitizeHTML(bodyText, window);
+				}
+				lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
+				return "";
+			} catch (e ) {
+				lore.debug.anno("handleResponse: " + e, e);
 			}
-			else {
-				bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
-			}
-			
-			if (bodyText) {
-				return lore.global.util.sanitizeHTML(bodyText, window);
-			}
-			lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
 			return "";
 		}
 		
@@ -582,14 +625,13 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		// check cache
 		var annotations = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
 		
-		if (annotations) {
+	/*	if (annotations) {
 			lore.debug.anno("Using cached annotation data...");
 			this.clearAnnotationStore();
 			this.annods.loadData(annotations, true);
 			return; 
-		}
+		}*/
 		
-		lore.debug.anno('ths prefs object is ' + this.prefs, this.prefs);				
 		// Get annotations for theURL
 		if (this.prefs.url) {
 			var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
@@ -897,12 +939,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		}
 	},
 	
-	// Intentionally left unimplemented
-	importRDF : function( theRDF, theurl, callback){
-		// The Danno annotation server provides importing facilities
-		// via a web form. Originally importing was done via client, and this is code
-		// is in SVN. 
-	}
 });
 	
 

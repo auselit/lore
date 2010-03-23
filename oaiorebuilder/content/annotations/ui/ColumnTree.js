@@ -530,7 +530,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	handleLoad : function(store, records, options ) {
 		
 		try {
-				lore.debug.anno("AnnoPageTreeNode:handleLoad() - " + records.length + " records.", records);
+			//	lore.debug.anno("AnnoPageTreeNode:handleLoad() - " + records.length + " records.", records);
 				for (var i = 0; i < records.length; i++) {
 					var rec = records[i];
 				 	var anno = rec.data;
@@ -614,7 +614,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	 * @param {Store} store The data store that performed the notification
 	 */
 	handleClear: function(store ){
-		
+		//lore.debug.anno("handleClear()");
 		//TODO: Ext 3.1 Migration use this.removeAll() instead
 		while ( this.firstChild ) {
 			this.firstChild.remove();	
@@ -646,6 +646,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 		this.model.on("load", this.handleLoad, this);
 		this.model.on("remove", this.handleRemove, this);
 		this.model.on("update", this.handleUpdate, this);
+		this.model.on("clear", this.handleClear, this);
 		
         lore.anno.ui.AnnoModifiedPageTreeNode.superclass.constructor.call(this, this.config); 
 	},
@@ -658,7 +659,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 		try {
 			// add
 			if (records.length == 1) {
-				lore.debug.anno("AnnoModifiedPageTreeNode:handleLoad() " + records.length + " records.", records);
+				//lore.debug.anno("AnnoModifiedPageTreeNode:handleLoad() " + records.length + " records.", records);
 				var rec = records[0];
 				
 				var n = new lore.anno.ui.AnnoColumnTreeNode({
@@ -717,7 +718,22 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 			catch (e) {
 				lore.debug.ui("Error updating annotation tree view: " + e, e);
 			}
+		},
+		
+	/**
+	 * Notification function called when a clear operation occurs in the store.
+	 * Clears the tree.
+	 * @param {Store} store The data store that performed the notification
+	 */
+	handleClear: function(store){
+		//lore.debug.anno("handleClear()");
+		//TODO: Ext 3.1 Migration use this.removeAll() instead
+		while (this.firstChild) {
+			this.firstChild.remove();
 		}
+	}
+		
+	
 			
 });
  

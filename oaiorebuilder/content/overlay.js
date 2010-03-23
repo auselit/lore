@@ -17,7 +17,6 @@ try {
 	// lore.global.util
 	Components.utils.import("resource://lore/util.js", lore.global);
 	
-		
 	if (!lore.global.ui || !lore.global.store || !lore.debug ) {
 		// sanity check
 		alert("loreoverlay: Not all js modules loaded.");
@@ -398,6 +397,11 @@ try {
 		resetGraph: function(){
 			lore.global.ui.reset(window, this.instId);
 		},
+		
+		resetAnnos: function () {
+			lore.global.ui.resetAnnotations(window, this.instId);
+		},
+		
         /** Display the about window */
 		openAbout: function(){
 			window.open("chrome://lore/content/about.xul", "", "chrome,centerscreen,modal");
@@ -527,7 +531,6 @@ try {
 			if ( evt ) {
 				for ( var i=0; i< evt.length; i++) {
 					if (evt[i].callback == callback && evt[i].scope == scope){
-						lore.debug.ui("un(): successful");
 						evt.splice(i,1);
 						break;
 					}
