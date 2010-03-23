@@ -455,7 +455,9 @@ lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*
     tab.show();
 };
 
-
+lore.ore.showCompoundObjectNarrative = function(panel){
+    
+}
 // TODO: either use XSLT or listen to model rather than updating entire view each time
 /** Displays a summary of the resource URIs aggregated by the compound object 
  * @parm {Ext.Panel} summarypanel The panel to show the summary in */
@@ -487,7 +489,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
     }
     newsummary += "</table>";
     var newsummarydetail = "<div style='padding-top:1em'>";
-    newsummary += "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
+    var tocsummary = "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
     var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
     allfigures.sort(lore.ore.ui.graph.figSortingFunction);
     for (var i = 0; i < allfigures.length; i++) {
@@ -495,18 +497,18 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
         if (fig instanceof lore.ore.ui.graph.ResourceFigure){
 	        var figurl = lore.global.util.escapeHTML(fig.url);
 	        var title = fig.getProperty("dc:title_0") || "Untitled Resource";
-	        newsummary += "<li>";
+	        tocsummary += "<li>";
             var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
             if (isCompObject){
-                newsummary += "<img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'>";
+                tocsummary += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
             }
-            newsummary += title + ": &lt;"
+            tocsummary += title + ": &lt;"
 	        + (!isCompObject?"<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" 
 	        + figurl + "</a>" : figurl) + "&gt;<a href='#res" + i + "'> (details)</a></li>";
             newsummarydetail += "<div style='border-top: 1px solid rgb(220, 224, 225); width: 100%; margin-top: 0.5em;'> </div>";
             newsummarydetail += "<p id='res"+ i + "'>";
             if (isCompObject){
-                newsummarydetail += "<img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'>";
+                newsummarydetail += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
             }
             newsummarydetail += "<b>" + title + "</b><br>&lt;" + (!isCompObject? "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" + figurl + "</a>" : figurl) + "&gt;</p><p>";
             
@@ -532,9 +534,9 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
             newsummarydetail += "</p>";        
         }
     }
-    newsummary += "</ul></div>";
+    tocsummary += "</ul></div>";
     newsummarydetail += "</div>";
-    summarypanel.body.update(newsummary + newsummarydetail);
+    summarypanel.body.update(newsummary + newsummarydetail + tocsummary);
     
     lore.ore.ui.loreInfo("Displaying a summary of compound object contents");
 };
@@ -578,7 +580,7 @@ lore.ore.showSlideshow = function (){
     try{
     var params = {
     "width": carouselel.getWidth(),
-    "height": (carouselel.getHeight() - 29)}; // minus 29 to account for slide nav bar
+    "height": (carouselel.getHeight() - 35)}; // minus 29 to account for slide nav bar
     sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/slideshow_view.xsl",params,true);
     //sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/TrailDetail.xsl",params,true);
     lore.debug.ore("slideshow html is",sscontents);
@@ -608,9 +610,11 @@ lore.ore.resizeSlideshow = function (comp,adjWidth, adjHeight, rawWidth, rawHeig
 lore.ore.showExploreUI = function(){
     try{
     if (lore.ore.exploreLoaded !== lore.ore.currentREM) {
+        if (lore.ore.loadedRDF){
+        }
         lore.debug.ore("show in explore view", lore.ore.currentREM);
         lore.ore.exploreLoaded = lore.ore.currentREM;
-        lore.ore.explore.showInExploreView(lore.ore.currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid));
+        lore.ore.explore.showInExploreView(lore.ore.currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
     } else {
         lore.debug.ore("refresh explore view");
         lore.ore.explore.rg.refresh();
