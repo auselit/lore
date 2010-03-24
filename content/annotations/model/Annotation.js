@@ -136,7 +136,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			} else {
 				var node = node[0].getElementsByTagName('body');
 				if ( node[0]) {
-					lore.debug.anno("node " + node[0], node[0]);
+					 
 					var serializer = new XMLSerializer();
 					var bodyText = serializer.serializeToString(node[0]);
                     /** @property body
@@ -172,17 +172,17 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                  * From Annotea context
                  */
 				this.context = lore.global.util.normalizeXPointer(lore.global.util.safeGetFirstChildValue(node));
-				//TODO: change namespace
+				
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
 				if (node && node.length > 0) {
 					this.meta.context = lore.global.util.safeGetFirstChildValue(node);
-					lore.debug.anno(this.meta.context, this.meta.context);
+					
 					this.meta.context = this.meta.context.split('\n');
-					lore.debug.anno(this.meta.context, this.meta.context);
+					
 
 					
 				}
-				//TODO: enable and fix code, to read in semantic facts added
+				//TODO: #194 - Enable code to read in semantic facts added, once changes to backend and UI have been done
 				/*node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta');
 				if (node && node.length > 0) {
 					lore.debug.anno(node.childNodes, node.childNodes);
@@ -456,7 +456,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				anno.created = new Date();
 			}
 			if (storeDates) {
-				// TODO: format date strings
+				// TODO: #48 - store as dates not strings
 				rdfxml += '<created xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
 						+ anno.created.toString() + '</created>';
 				anno.modified = new Date();
@@ -465,14 +465,11 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 			}
 			if (annoOrig.context) {
 				rdfxml += '<context xmlns="' + lore.constants.NAMESPACES["annotea"] + '">' +
-				//TODO: need to have url passed in as opposed to checking the window object directly
 				lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.context +
 				'</context>';
 			}
 			
 			if ( annoOrig.meta.context) {
-				// TODO: merge with the current context, as a multi-part xpointer or perhaps have another
-				// line in the context with the meta-context, depending on whether that breaks dannotate
 				rdfxml += '<meta-context xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
 				for ( var i =0; i < anno.meta.context.length; i++ ) {
 					rdfxml += lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.meta.context[i] + "\n";
@@ -539,7 +536,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 			}
 			if (annoOrig.tags) {
 				var tagsarray = anno.tags.split(',');
-				lore.debug.anno("tags are", tagsarray);
+				
 				for (var ti = 0; ti < tagsarray.length; ti++) {
 					var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
 					rdfxml += '<tag xmlns="' + lore.constants.NAMESPACES["vanno"] + '"';
@@ -572,7 +569,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				}
 			}
 
-			//TODO: save user meta data information 
+			//TODO: #194 Enable save user meta data information, once changes to backend, and UI have been done 
 			/*if (annoOrig.meta.fields.length > 0) {
 				rdfxml += '<meta xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
 				

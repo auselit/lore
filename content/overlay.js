@@ -146,7 +146,7 @@ try {
 					}
 				}
 			} catch(e) {
-				alert("loreoverlay.onClose: " + e);
+				lore.debug.ui("loreoverlay.onClose: " + e);
 			}
 		},
 		
@@ -288,7 +288,7 @@ try {
 	               this.setCompoundObjectsVisibility(true); 
 	            }
 			} catch (e ) {
-				alert("loreoverlay.toggleBar: " + e + " " +  e.stack);
+				lore.debug.ui("loreoverlay.toggleBar: " + e + " " +  e.stack);
 			}
 		},
 		/** Compound Objects Toolbar button handler: Triggers loading compound object RDF from a URL **/
@@ -327,21 +327,25 @@ try {
 			try {
 				loreoverlay.annoView().handleAddAnnotation();
 			}catch (e ) {
-				alert("loreoverlay.addAnnotation: " + e) ;
+				lore.debug.ui("loreoverlay.addAnnotation: " + e) ;
 			}
 		},
 		updateAnnotationSel: function (type) {
-			if (type == "variation")
-				loreoverlay.annoView().handleUpdateVariationAnnotationContext();
-			else
-				loreoverlay.annoView().handleUpdateAnnotationContext();
+			try {
+				if (type == "variation") 
+					loreoverlay.annoView().handleUpdateVariationAnnotationContext();
+				else 
+					loreoverlay.annoView().handleUpdateAnnotationContext();
+			}catch (e ) {
+				lore.debug.ui("updateAnnotationSel: " + e, e);
+			}
 		},
 		/** Annotations Toolbar button handler: Trigger removing an annotation */
 		removeAnnotation: function() {
 			try {
 				loreoverlay.annoView().handleDeleteAnnotation();
 			} catch (e) {
-				alert("loreoverlay.removeAnnotation: " + e + " " +  e.stack);
+				lore.debug.ui("loreoverlay.removeAnnotation: " + e + " " +  e.stack);
 			}
 		},
 		/** Annotations Toolbar button handler: Trigger editing an annoation */
@@ -503,7 +507,7 @@ try {
 					}
 				}
 			} catch (e ) {
-				alert("loreoverlay.fireEvent: " + e + " " + e.stackTrace);
+				lore.debug.ui("loreoverlay.fireEvent: " + e + " " + e.stackTrace);
 			}
 		},
 		
@@ -620,13 +624,17 @@ try {
          * Hide the variation splitter
 		 */
 		hideVariationSplitter: function(){
-			var splitter = document.getElementById("oobAnnoVarContentSplitter");
-			if (splitter.getAttribute("collapsed") == "false") {
-				document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "true");
-				document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "true");
-				document.getElementById("oobAnnoVarContentLabel").setAttribute("value", "");
-				document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
-				loreoverlay.annoView().hideMarker(document.getElementById("oobAnnoVarContent").contentWindow);
+			try {
+				var splitter = document.getElementById("oobAnnoVarContentSplitter");
+				if (splitter.getAttribute("collapsed") == "false") {
+					loreoverlay.annoView().hideVariationSplitter();
+					document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "true");
+					document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "true");
+					document.getElementById("oobAnnoVarContentLabel").setAttribute("value", "");
+					document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
+				}
+			} catch(e) {
+				lore.debug.anno("hideVariationSplitter(): " +e, e);
 			}
 		},
 		/**

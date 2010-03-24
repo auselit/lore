@@ -53,10 +53,7 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	},
 	
 	load : function(url, clear){
-		lore.debug.anno(this.model, {
-			t: this,
-			m: this.model
-		});
+		
 		var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, url);
 		if (ds) {
 			this.multiSelAnno = ds.multiSelAnno;
@@ -68,8 +65,8 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 			this.rdfa = ds.rdfa;
 			this.metaSelections = ds.metaSelections;
 			
-			//TODO: should find unsaved version first?
 			var rec = lore.global.util.findRecordById(this.model, curSelAnnoId);
+
 			if (rec) {
 				this.curSelAnno = rec;
 			}
@@ -82,7 +79,6 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	 * @param {Record} rec Record Currently selected annotation
 	 */
 	setCurrentAnno : function(rec, store){
-	//	lore.debug.anno("setCurrentAnno(): ", {r:rec, s:store});
 		var old = this.curSelAnno;
 		this.curSelAnno = rec;
 		this.curSelAnnoStore = store;

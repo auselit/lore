@@ -51,7 +51,6 @@
 						
 						if ( this.type == 1) {
 							if (!this.data) {
-								lore.debug.anno("lore.anno.ui.Marker: " + this.xpointer);
 								this.data = lore.global.util.parseImageRangeXPointer(this.xpointer, this.target);
 							} 
 							
@@ -75,7 +74,6 @@
 							if (!this.data || !this.data.nodes) {
 								if (typeof(this.xpointer) != 'string' ) {
 									this.data = {};
-									lore.debug.anno('xpointers', this.xpointer);
 									if ( this.page.rdfa) {
 										
 										this.data.range = lore.global.util.getSelectionForHash(this.xpointer[0], this.page.rdfa.rdf.databank.triples());

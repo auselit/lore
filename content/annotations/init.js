@@ -88,13 +88,13 @@ if (typeof Timeline !== "undefined") {
 			
 			var divOps = doc.createElement("div");
 			divOps.style.paddingTop = '5px';
-			//TODO: fix
+			
 			var divOpsInner = "<a style='color:orange;font-size:smaller' href='#' " +
-			"onclick='try{lore.anno.ui.timeline.timeline.getBand(0).closeBubble();lore.anno.ui.handleEditTimeline(\"" +
+			"onclick='try{lore.anno.ui.handleEditTimeline(\"" +
 			this._eventID +
 			"\")} catch(e){lore.debug.anno(\"e:\"+e,e);}'>EDIT</a> | " +
 			"<a style='color:orange;font-size:smaller' href='#' " +
-			"onclick='lore.anno.ui.timeline.timeline.getBand(0).closeBubble();lore.anno.ui.handleReplyToAnnotation(\"" +
+			"onclick='lore.anno.ui.handleReplyToAnnotation(\"" +
 			this._eventID +
 			"\")'>REPLY</a>";
 			divOps.innerHTML = divOpsInner;
@@ -464,7 +464,6 @@ lore.anno.ui.attachContextMenus = function (store) {
  */
 lore.anno.ui.attachHandlers = function (store) {
 		// Add default behaviour when a new annotation is added
-		lore.anno.ui.treeunsaved.on('append', lore.anno.ui.handleNewAnnotation);
 		lore.anno.ui.treeroot.on('append', lore.anno.ui.handleAttachNodeLinks);
 		
 		// Tree node is clicked/double clicked

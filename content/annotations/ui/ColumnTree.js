@@ -360,7 +360,7 @@
 					dropConfig: {
 						appendOnly: true
 					},
-					bbar: { xtype: 'toolbar', //TODO: Turn this into a separate class
+					bbar: { xtype: 'toolbar', 
 						items: [ 
 						
 							this.sorttypecombo
@@ -378,17 +378,6 @@
 			} catch(e){
 				lore.debug.anno("AnnoColumnTree:initComponent() - " + e, e);
 			}
-		},
-		
-		onRender: function () {
-			lore.anno.ui.AnnoColumnTree.superclass.onRender.apply(this, arguments);
-			/*if ( !this.sorttypecombo.rendered ){
-				lore.debug.anno('aaa',this.headers.dom.childNodes[0].firstChild.firstChild.nextSibling);
-				lore.debug.anno(this.headers.dom.childNodes[0],this.headers.dom.childNodes[0]);
-				this.sorttypecombo.addClass("anno-column-sort");
-				this.sorttypecombo.render(this.headers.dom.childNodes[0].firstChild.firstChild.nextSibling);
-				
-			}*/
 		},
 		
 		handleSortTypeChange : function (combo, rec, index) {
@@ -421,7 +410,7 @@
 			// direction can be dynamically changed
 			var sortType =  function(node){
 					try {
-						var r = lore.global.util.findRecordById(tree.model, lore.anno.ui.recIdForNode(node));
+						var r = lore.global.util.findRecordById(tree.model, lore.anno.ui.nodeIdToRecId(node));
 						if (r) {
 							return r.data[ts.sortField] || r.data.created;
 						}
@@ -530,7 +519,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	handleLoad : function(store, records, options ) {
 		
 		try {
-			//	lore.debug.anno("AnnoPageTreeNode:handleLoad() - " + records.length + " records.", records);
+			
 				for (var i = 0; i < records.length; i++) {
 					var rec = records[i];
 				 	var anno = rec.data;
@@ -614,8 +603,8 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	 * @param {Store} store The data store that performed the notification
 	 */
 	handleClear: function(store ){
-		//lore.debug.anno("handleClear()");
-		//TODO: Ext 3.1 Migration use this.removeAll() instead
+		
+		//TODO: #159 - Ext 3.1 Migration use this.removeAll() instead
 		while ( this.firstChild ) {
 			this.firstChild.remove();	
 		}
@@ -667,10 +656,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 					postfix: this.postfix
 				})
 				this.appendChild(n);
-				//lore.debug.anno("created annocolumntreenode: " + n, n);
 				
-				n.ensureVisible();
-				n.select();
 			}
 		}catch (e) {
 			lore.debug.anno("handleLoad: " +e, e);
@@ -702,8 +688,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 				}
 				var info = ' ';
 				
-				//TODO: repplies resource url etc
-				lore.debug.anno(rec.data.resource,rec);
+			 
 				if (rec.data.resource != lore.anno.ui.currentURL) {
 					info = "Unsaved annotation from " + rec.data.resource + " ";
 				}
@@ -726,8 +711,8 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 	 * @param {Store} store The data store that performed the notification
 	 */
 	handleClear: function(store){
-		//lore.debug.anno("handleClear()");
-		//TODO: Ext 3.1 Migration use this.removeAll() instead
+		
+		//TODO: #159 - Ext 3.1 Migration use this.removeAll() instead
 		while (this.firstChild) {
 			this.firstChild.remove();
 		}
@@ -753,10 +738,6 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
          * */
       
         this.initConfig();
-        // listen for model property changes
-		//TODO: move handeUpdateUI on handlers to here... yay!
-        //this.model.on("propertiesChanged", this.handleModelPropertiesChanged, this);
-        //this.addEvents('detailschange');
         lore.anno.ui.AnnoColumnTreeNode.superclass.constructor.call(this, this.config); 
    },
    

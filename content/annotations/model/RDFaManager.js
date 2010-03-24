@@ -37,25 +37,25 @@ lore.anno.ui.RDFaManager = Ext.extend(Ext.util.Observable, {
 	gleanRDFa : function (doc) {	
 		try {
 			var myrdf = $('body', doc).rdfa();
-			lore.debug.anno("rdfa for the page...", myrdf.databank.triples());
+			
 			this.page.rdfa = {
 				triples: myrdf.databank.triples(),
 				rdf: myrdf
 			};
 			
-	 		lore.debug.anno('glean rdfa: ' + this.page.rdfa, this.page.rdfa);		
+	 		lore.debug.anno('gleanRDFa: ' + this.page.rdfa, this.page.rdfa);		
 		}catch (e) {
 			lore.debug.anno("Error gleaning potential rdfa from page: " +e , e);
 		}
 	},
 	
-	isRDFaEnabled : function (doc) {
+	// current not used
+	/*isRDFaEnabled : function (doc) {
 		var enabled = false;
 		if (doc.doctype) {
-			lore.debug.anno ("Document: " +  doc.doctype.name + doc.doctype.publicId + doc.doctype.systemId );
 			enabled = doc.doctype.publicId == "-//W3C//DTD HTML4+RDFa 1.0//EN" || doc.doctype.publicId == "-//W3C//DTD XHTML+RDFa 1.0//EN";
 	    }
 		return enabled;
-	}
+	}*/
 });
 
