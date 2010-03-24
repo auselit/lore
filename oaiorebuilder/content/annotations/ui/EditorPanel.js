@@ -418,8 +418,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			this.metaUserGrid = this.getComponent("metausergrid");
 			this.annomode = lore.constants.ANNOMODE_NORMAL;
 			this.model.on('update', this.handleRecordUpdate, this);
+			this.pageView.page.on('annochanged', this.handleAnnoChanged, this);
 			this.getComponent("typecombo").on('valid', this.handleAnnotationTypeChange, this);
-			
 			this.getComponent("addmetabtn").on('click', this.handleAddMeta, this);
 			this.getComponent("remmetabtn").on('click', this.handleRemMeta, this);
 			
@@ -455,8 +455,13 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 */
 		handleUpdateAnnotationContext : function(scope){
 			try {
+				
 				var panel = this.parent || scope; // either scope of field or scope supplied
 				var curSelAnno = panel.pageView.page.curSelAnno;
+				if (!panel.isVisible())
+					panel.show(panel.pageView.page.curSelAnno);
+					
+				
 				var currentCtxt = panel.pageView.getCurrentSelection();
 				var theField = panel.form.findField('context');
 				theField.setValue(currentCtxt);
@@ -485,7 +490,9 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			try {
 				var panel = this.parent || scope; // 'this' is field object
 				var curSelAnno = panel.pageView.page.curSelAnno;
-				
+				if (!panel.isVisible())
+					panel.show(panel.pageView.page.curSelAnno);
+					
 				var currentCtxt = panel.pageView.getCurrentSelection();
 				var theField = panel.form.findField('variantcontext');
 				theField.setValue(currentCtxt);
@@ -542,10 +549,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							id: 'contextdisp',
 							value: '"' + selText + '"'
 						}]);
-					} //else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
-					//	this.pageView.updateSplitter(rec, false); // when content is loaded in splitter
-															// context field will be set
-					//}
+					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+						this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this); // when content is loaded in splitter
+																										 // context field will be set
+					}
 
 					ctxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 					lore.anno.ui.setVisibilityFormField(this.form,'contextdisp', false);
@@ -576,11 +583,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							id: 'rcontextdisp',
 							value: '"' + selText + '"'
 						}]);
-					}// else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
-						//TODO: this ends up being called twice because of the previous IF statement
-					//	this.pageView.updateSplitter(rec, false); // when content is loaded in splitter
+					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+						this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this); // when content is loaded in splitter
 															// context field will be set
-					//}
+					}
 					vCtxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 					lore.anno.ui.setVisibilityFormField(this.form,'rcontextdisp', false);
 				}
@@ -593,10 +599,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					ctxtField.getEl().setStyle("background-color", "inherit");
 				}
 				
-				//TODO: should check if type is semantic type as well
+				
 				this.form.setValues([{ id: 'metares', value: ''}]);
 				var rdfa = this.pageView.page.rdfa;
-				if ( rdfa.triples) {
+				if ( rdfa.triples && lore.global.util.splitTerm(anno.type).term == 'Semantic') {
 				
 					var theField =  this.form.findField('metares');
 					
@@ -673,7 +679,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			var selText = '';
 				
 			try {
-				lore.debug.anno('updateVariationSplitter: ' + ctx);
 				selText = lore.global.util.getSelectionText(ctx, cw.document);
 			} 
 			catch (e) {
@@ -707,6 +712,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					this.load(rec);
 		},
 		
+		handleAnnoChanged: function(oldRec, newRec) {
+			if (newRec)
+				this.load(newRec);
+		},	
+		
 		/**
 		 * Update the form when the annotation type changes
 		 * @param {Combo} combo The Combo field that has changed
@@ -725,7 +735,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		},
 		
 		handlePrefsChanged: function(args) {
-			//lore.debug.anno('EditorPanel:handlePrefsChanged', args);
 			if (this.isVisible()) 
 					this.setAnnotationFormUI(null, null, args.annomode);
 

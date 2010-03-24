@@ -185,7 +185,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} currentURL The URL for the page this annotation is on
 	 * @param {Object} parent (Optional) The parent of this annotation
 	 */
-	addAnnotation : function(currentContext, currentURL, parent){
+	addAnnotation : function(currentContext, currentURL, callback, parent){
 		var anno = new lore.anno.Annotation();
 		
 		anno.load({
@@ -208,21 +208,17 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			},
 			bodyLoaded: true
 		});
+		
+		if ( callback)	callback(anno);
 			
 		this.annodsunsaved.loadData([anno], true); 
-		//TODO: bodyLoaded? it's use
-		//var r = lore.global.util.findRecordById(this.annods, anno.id);
-		//if ( r)
-		//	r.data.bodyLoaded = true;
-		
-		return anno;
+		return lore.global.util.findRecordById(this.annodsunsaved, anno.id);
 	},
 	
 	/**
 	 * Create or update the annotations in the remote repository.
 	 * These actions are performed for all annotations that are flagged as 'dirty'. 
 	 * @param {String} currentURL The URL of the page where the annotations are situated
-	 * @param {String} filterURL Only update annotations if their resource URL matches the URL given
 	 * @param {Function} resultCallback A callback function that is used by the function to output success or failure
 	 * The callback should support the following parameters
 	 * rec: The record that was updated
@@ -230,45 +226,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	updateAnnotations : function (currentURL, filterURL, resultCallback) {
+	updateAnnotations : function (currentURL, resultCallback) {
 		
 		var modified = []
 		this.annodsunsaved.each( function (rec) 
-		{
-			//TODO: fix for replies
-			//if ( filterURL && rec.data.context!= filterURL )
-			//	return;
-			
+		{ 
 			if ( rec.dirty || rec.data.isNew() ) {
 				modified.push(rec);
 			}
 		}, this);
-		
-		/*this.updateAnnotation(rec, currentURL, false, function (action,result,resultMsg) {
-					resultCallback(rec, action, result, resultMsg);
-				});
-				///TODO: check whether to change to use this
-				
-				 * function (action, result, resultMsg) {
-					var successes = []
-				var failures = [];
-					if (result == "success") {
-					successes.push({
-						rec: anno,
-						action: action,
-						result: result,
-						resultMsg: resultMsg
-					});
-				}
-				else {
-					failures.push({
-						rec: anno,
-						action: action,
-						result: result,
-						resultMsg: resultMsg
-					});
-				}
-				 */
 		
 		var resultCounter = 0;
 		var t = this;
@@ -298,7 +264,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		}
 	},
 	 
-	//TODO: make private function (i.e declare inside constructor...and save to a variable?
 	sendUpdateRequest : function(anno, currentURL, resultCallback){
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading datasource
@@ -413,8 +378,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					success: function(resp){
 						lore.debug.anno("Deletion success: " + resp );
 						
-						//TODO: remove from the cache
-						//lore.global.store.remove(this.annods, );
+						//TODO: #196 - Remove from the cache
+						//lore.global.store.remove(this.annods,...;
 						if ( resultCallback) {
 							resultCallback('success', resp);
 						}
@@ -622,10 +587,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	updateAnnotationsSourceList : function(theURL, callbackFunc){
 	
+	/* TODO: #196 -
 		// check cache
 		var annotations = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
 		
-	/*	if (annotations) {
+	   if (annotations) {
 			lore.debug.anno("Using cached annotation data...");
 			this.clearAnnotationStore();
 			this.annods.loadData(annotations, true);
@@ -727,10 +693,29 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	},
 	
 	/**
-	 * Load annotation data into the current data store and cache the data
-	 * @param {Object} annotations
+	 * Load annotation data into the current data store  
+	 * @param {Array} annotations
 	 */
 	loadAnnotation : function ( annotations) {
+		if ( !annotations.length)
+			annotations = [annotations];
+			
+		var a = annotations[0];
+		
+		// find a leaf node
+		while(a && a.isReply ) {
+			a = lore.global.util.findRecordById(this.annods, a.resource).data;
+		}
+
+		// check that they haven't switched tabs since data was loaded from server, if not load into datastore		
+		if ( a.resource == lore.anno.ui.currentURL || ( (a.variant && a.variant == lore.anno.ui.currentURL) ||
+			(a.original && a.original == lore.anno.ui.currentURL) )) {
+			this.annods.loadData(annotations, true);
+			 
+		}
+	},
+	/*TODO: #196 - Reimplementation of Caching
+	    loadAnnotation : function ( annotations) {
 		if ( !annotations.length)
 			annotations = [annotations];
 			
@@ -753,9 +738,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds, lore.anno.ui.currentURL, this.prefs.cachetimeout);
 					
 		} else {
-			//TODO:  they've switched pages, continue to load data for caching purposes
+			//TODO: #196 -  they've switched pages, continue to load data for caching purposes
 		}
-	},
+	},*/
 	
 	/**
 	 * Handler function that's called when annotation information is successfully
@@ -798,20 +783,20 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
 			}
 			
-			// TODO: should this be in loadAnnotation? and shouldn't be checking
-			// against the URL ?
+			/* TODO: #196  
+			 
 			// remove annotatino from datatstore that have been updated
 			var recs = this.annods.getRange();
 			
 			for ( var i =0; i < recs.length; i++) {
 				for (var j = 0; j < annotations.length; j++) {
 					if (recs[i].data.id == annotations[j].id) {
-						//lore.debug.anno("j: " + j + ", " + recs[i].data.id, recs[i]);
 						annotations[i] = recs[i].data;
 						this.annods.remove(recs[i]);
 					}
 				}
-			}
+			}*/
+			
 			this.loadAnnotation(annotations);
 							
 			
@@ -845,19 +830,16 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		try {
 			var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 			var isLeaf = (replyList.length == 0);
-			//TODO: bodyOp, use constants
+
 			if (!isLeaf) {
 				replies = this.orderByDate(replyList);
 				
-				//if ( replies[0].resource != lore.global.util.getContentWindow(window).location)
-				//	return;
 				for ( var i=0; i< replies.length; i++) {
 					replies[i].body = this.getBodyContent(replies[i], window);
 					replies[i].bodyLoaded = true;
 				}
 				
-				//TODO: same as the other TODO in handleAnnotationsLoaded RE: loadAnnotation and this
-				// segment of code
+				/*TODO: #196  
 				// don't add records that are already in the datastore
 				var recs = this.annods.getRange();
 				for ( var i =0; i < recs.length; i++) {
@@ -868,7 +850,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 							
 						}
 					}
-				}
+				}*/
 				this.loadAnnotation(replies);
 			}
 		} catch (e ) {
@@ -897,17 +879,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @return {String} The annotated page returned as String containing WordML XML.
 	 */
 	createAnnoWord : function(domNode){
-		/* TODO: needs finishing
+		/* TODO: #117 - Further implementation required
 		 
-		 var serializer= new XMLSerializer();
-		
-		// attach a span in the location of the highlight for each annotation
-		// santize
-		// go through and search replace, adding the rdf
-		// stylesheet transform
-		
-		//TODO: do as the comments say above, this code is for testing out the stylesheet transform
-		// logic, as it supplied a stream with RDF & HTML.
+		var serializer= new XMLSerializer();
 		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
 		var theRDF = this.serializer.serialize(annos, this.annods, true);
@@ -917,6 +891,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		html = lore.global.util.sanitizeHTML(html, window);
 		html = theRDF + "\n" + html;
 		
+		// For testing...
 		//lore.global.util.writeFile(html, "c:\\", "test.txt", window);
 		//return this.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
 				

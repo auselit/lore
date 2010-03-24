@@ -77,7 +77,6 @@ lore.anno.ui.PageView.prototype = {
 	
 	handleUpdate: function(store, rec, operation){
 		try {
-			//lore.debug.anno("PageView:handleUpdate()", store);
 			this.removeHighlightForCurrentAnnotation();
 			this.highlightCurrentAnnotation(rec);
 		} 
@@ -356,7 +355,7 @@ lore.anno.ui.PageView.prototype = {
 			}
 			else {
 				// unhighlight
-				lore.debug.anno("Unhighlighting all annotations", this.page.multiSelAnno);
+				lore.debug.anno("Un-highlighting all annotations", this.page.multiSelAnno);
 				for (var i = 0; i < this.page.multiSelAnno.length; i++) {
 					try {
 						var m = this.page.multiSelAnno[i];
@@ -374,7 +373,6 @@ lore.anno.ui.PageView.prototype = {
 		},
 		
 		
-	//TODO: Kind of more like controller code
 	enableImageHighlighting : function(contentWindow){
 
 		var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
@@ -413,8 +411,7 @@ lore.anno.ui.PageView.prototype = {
 			// when the user mouses over an image for the first time. This is because
 			// trying to load the image selection library on page load causes browser 
 			// timeouts for pages with large amounts of image
-			
-			// TODO: further optimization on the imgareaselect library
+	 
 			im.each(function(){
 					
 
@@ -495,7 +492,7 @@ lore.anno.ui.PageView.prototype = {
 					lore.debug.anno("error occurred during window resize handler: " + e, e);
 				}
 			}
-			//TODO: need the remove event handlers on page unload
+			//TODO: #193 - need the remove event handlers on page unload
 			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
 			lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
 			if (imgOnly) 
@@ -609,7 +606,7 @@ lore.anno.ui.PageView.prototype = {
 					try {
 						var triple = t.page.rdfa.triples[this.getAttribute("rdfIndex")];
 						
-						//TODO: This needs to be changed to store object not triple
+						//TODO: #194 - This needs to be changed to store object not triple
 						if (triple) 
 							t.page.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(triple);
 							

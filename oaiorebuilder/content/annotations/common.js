@@ -208,8 +208,7 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 					if (thetag.indexOf('http://') == 0) {
 						try {
 							var tagname = thetag;
-							//TODO: this needs to be seprated to model/view
-							Ext.getCmp('tagselector').store.findBy(function(rec){
+							lore.anno.ui.formpanel.getComponent('tagselector').store.findBy(function(rec){
 								if (rec.data.id == thetag) {
 									tagname = rec.data.name;
 								}
@@ -339,10 +338,9 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
 	return res;
 }
 
-lore.anno.ui.recIdForNode = function(node) {
+lore.anno.ui.nodeIdToRecId = function(node) {
 			return node.id.replace("-unsaved", "");
-			//return node.id;
-		}
+}
 		
 /**
  * Generate the tree node text

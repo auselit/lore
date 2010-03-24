@@ -129,7 +129,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		 */
 		
 		addAnnoToTimeline : function(anno, title){
-				// TODO: need to determine what clumps of annotations are close to each other
+				// TODO: #192 - need to determine what clumps of annotations are close to each other
 				// and what the threshold should be then create a Hotzone so that these
 				// annotations are displayed more evenly
 				
