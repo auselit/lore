@@ -36,6 +36,7 @@ lore.anno.ui.PageView = function (config) {
 			this.page = config.page;
 			this.model = config.model;
 			this.rdfaMan = config.rdfaManager;	
+			this.visible = config.visible || true;
 			this.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
 			this.model.on('load', this.handleLoad, this);
 			this.model.on('remove', this.handleRemove, this);	
@@ -56,11 +57,10 @@ lore.anno.ui.PageView.prototype = {
 	},
 	
 	handleAnnoChanged: function (oldRec, newRec ) {
-		this.hideCurrentAnnotation();
+		this.removeHighlightForCurrentAnnotation();
 		if (newRec) {
-			if ( lore.anno.ui.topView.variationContentWindowIsVisible() &&
-				 newRec.data.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
-				 this.updateSplitter(newRec, true);
+			if ( newRec.data.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation" ) {	
+				 this.updateSplitter(newRec, lore.anno.ui.topView.variationContentWindowIsVisible(), lore.anno.ui.formpanel.updateSplitterContextField, lore.anno.ui.formpanel);
 			} else {
 				this.highlightCurrentAnnotation(newRec);
 			}
@@ -78,7 +78,7 @@ lore.anno.ui.PageView.prototype = {
 	handleUpdate: function(store, rec, operation){
 		try {
 			//lore.debug.anno("PageView:handleUpdate()", store);
-			this.hideCurrentAnnotation();
+			this.removeHighlightForCurrentAnnotation();
 			this.highlightCurrentAnnotation(rec);
 		} 
 		catch (e) {
@@ -86,13 +86,39 @@ lore.anno.ui.PageView.prototype = {
 		}
 	},
 	
+	setContentsVisible: function(visible) {
+		this.visible = visible;
+		try {
+		
+			if (visible && this.page.curAnnoMarkers.length > 0 && this.page.curSelAnno) {
+				var cc = this.getCreatorColour(this.page.curSelAnno.data.creator);
+				
+				for (var i = 0; i < lore.anno.ui.page.curAnnoMarkers.length; i++) {
+					this.page.curAnnoMarkers[i].show(cc, lore.anno.ui.setCurAnnoStyle, true);
+				}
+			}
+			else if ( !visible ){
+				if (this.page.multiSelAnno.length > 0) {
+					this.toggleAllAnnotations();
+				}
+
+				this.removeHighlightForCurrentAnnotation(lore.anno.ui.topView.getVariationContentWindow());
+				if (this.page.curAnnoMarkers.length > 0) {
+					for (var i = 0; i < this.page.curAnnoMarkers.length; i++) {
+						this.page.curAnnoMarkers[i].hide();
+					}
+				}
+			}
+		} catch (e) {
+			lore.debug.anno("setContentsVisible(): " + e, e);
+		}
+	},
 	
 	/**
 	 * Hide the currently selected annotation markers
 	 * @param {Object} cw Content window that this applies to (Optional)
 	 */
-	//TODO: Change name to mirror the show component or vice-versa
-	hideCurrentAnnotation: function(cw){
+	removeHighlightForCurrentAnnotation: function(cw){
 	
 		try {
 			if (this.page.curAnnoMarkers) {
@@ -180,7 +206,7 @@ lore.anno.ui.PageView.prototype = {
 		if (this.page.curImage && lore.global.util.trim(selxp) == '') {
 			var sel = this.page.curImage.imgAreaSelectInst().getSelection()
 			if (sel.x1 != sel.x2 && sel.y1 != sel.y2) {
-				return lore.global.util.getXPathForImageSelection(this.page.curImage.get(0), this.curImage.get(0).ownerDocument, sel, true);
+				return lore.global.util.getXPathForImageSelection(this.page.curImage.get(0), this.page.curImage.get(0).ownerDocument, sel, true);
 			}
 		}
 		
@@ -440,8 +466,14 @@ lore.anno.ui.PageView.prototype = {
 					var d = this.document || this.ownerDocument;
 					for (var i = 0; i < markers.length; i++) {
 						var m = markers[i];
-						if (m.type == 1 && (m.target == d)) {
-							m.update();
+						try {
+							if (m.type == 1 && (m.target == d)) {
+								m.update();
+							}
+						} catch (e ) {
+							//#146 On the failure one of marker, this would break the resizing of
+							// all other markers
+							lore.debug.anno('refreshImageMarkers: ' + e, {err:e, marker:m});
 						}
 					}
 					
@@ -634,7 +666,7 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Record} rec The annotation to update in the splitter window. 
 	 * @param {Boolean} show Specifies whether the variation window is to be made visible
 	 */
-	 updateSplitter :  function (rec, show) {
+	 updateSplitter :  function (rec, show, callback, callbackScope) {
 					
 		try {
 			
@@ -655,31 +687,12 @@ lore.anno.ui.PageView.prototype = {
 				lore.anno.ui.topView.updateVariationSplitter(ctx, title, show, function(){
 					// when page has loaded perform the following
 					try {
-						t.hideCurrentAnnotation();
+						t.removeHighlightForCurrentAnnotation();
 						var cw = lore.anno.ui.topView.getVariationContentWindow();
 						t.enableImageHighlighting(cw);
 						t.highlightCurrentAnnotation(rec);
+						if (callback) callback.apply(callbackScope || this, [cw, rec]);
 						
-						var n = 'rcontextdisp';
-						var ctx = rec.data.variantcontext;
-						if (rec.data.variant == lore.anno.ui.currentURL) {
-							n = 'contextdisp';
-							ctx = rec.data.context;
-						}
-						
-						var selText = '';
-						//TODO: This isn't related to the page view
-						try {
-							lore.debug.anno('updateVariationSplitter: ' + ctx);
-							selText = lore.global.util.getSelectionText(ctx, cw.document);
-						} 
-						catch (e) {
-							lore.debug.anno(e, e);
-						}
-						lore.anno.ui.formpanel.form.setValues([{
-							id: n,
-							value: '"' + selText + '"'
-						}]);
 					} catch(e){
 						lore.debug.anno("updateVariationSplitter-callback: " + e, e);
 					}

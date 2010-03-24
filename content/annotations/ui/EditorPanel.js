@@ -453,9 +453,9 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * @param {Object} btn Not currently used
 		 * @param {Object} e Not currently used
 		 */
-		handleUpdateAnnotationContext : function(){
+		handleUpdateAnnotationContext : function(scope){
 			try {
-				var panel = this.parent; // 'this' is field object
+				var panel = this.parent || scope; // either scope of field or scope supplied
 				var curSelAnno = panel.pageView.page.curSelAnno;
 				var currentCtxt = panel.pageView.getCurrentSelection();
 				var theField = panel.form.findField('context');
@@ -481,9 +481,9 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * @param {Object} btn Not currently used
 		 * @param {Object} e Not currently used
 		 */
-		handleUpdateAnnotationVariantContext : function(){
+		handleUpdateAnnotationVariantContext : function(scope){
 			try {
-				var panel = this.parent; // 'this' is field object
+				var panel = this.parent || scope; // 'this' is field object
 				var curSelAnno = panel.pageView.page.curSelAnno;
 				
 				var currentCtxt = panel.pageView.getCurrentSelection();
@@ -542,10 +542,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							id: 'contextdisp',
 							value: '"' + selText + '"'
 						}]);
-					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
-						this.pageView.updateSplitter(rec, false); // when content is loaded in splitter
+					} //else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+					//	this.pageView.updateSplitter(rec, false); // when content is loaded in splitter
 															// context field will be set
-					}
+					//}
 
 					ctxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 					lore.anno.ui.setVisibilityFormField(this.form,'contextdisp', false);
@@ -576,11 +576,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							id: 'rcontextdisp',
 							value: '"' + selText + '"'
 						}]);
-					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+					}// else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
 						//TODO: this ends up being called twice because of the previous IF statement
-						this.pageView.updateSplitter(rec, false); // when content is loaded in splitter
+					//	this.pageView.updateSplitter(rec, false); // when content is loaded in splitter
 															// context field will be set
-					}
+					//}
 					vCtxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 					lore.anno.ui.setVisibilityFormField(this.form,'rcontextdisp', false);
 				}
@@ -659,6 +659,32 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				lore.debug.anno("Error display annotation: " + e, e);
 			}
 		},
+		
+		updateSplitterContextField: function (cw, rec){
+				 	
+			var fieldId = 'rcontextdisp';
+			var ctx = rec.data.variantcontext;
+			
+			if (rec.data.variant == lore.anno.ui.currentURL) {
+				fieldId = 'contextdisp';
+				ctx = rec.data.context;
+			}
+				
+			var selText = '';
+				
+			try {
+				lore.debug.anno('updateVariationSplitter: ' + ctx);
+				selText = lore.global.util.getSelectionText(ctx, cw.document);
+			} 
+			catch (e) {
+				lore.debug.anno(e, e);
+			}
+			this.form.setValues([{
+				id: fieldId,
+				value: '"' + selText + '"'
+			}]);
+		},
+		
 		/**
 		 * Show the annotation editor. 
 		 * @param {Record} rec  The record containing the annotation to show in the editor
