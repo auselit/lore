@@ -47,14 +47,8 @@
 			lore.anno.ui.currentURL != '' &&
 			(!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
 				lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
-			//lore.anno.ui.loadedURL = lore.anno.ui.currentURL; 
 			}
-			if ( lore.anno.ui.page.curAnnoMarkers.length > 0 && lore.anno.ui.page.curSelAnno) {
-				var cc = lore.anno.ui.pageui.getCreatorColour(lore.anno.ui.page.curSelAnno.data.creator);
-				for (var i = 0; i < lore.anno.ui.page.curAnnoMarkers.length; i++) {
-					lore.anno.ui.page.curAnnoMarkers[i].show(cc, lore.anno.ui.setCurAnnoStyle,true);
-				}
-			}
+			lore.anno.ui.pageui.setContentsVisible(true);
 		}
 		
 		/**
@@ -62,14 +56,11 @@
 		 */
 		lore.anno.ui.hide = function(){
 			lore.anno.ui.lorevisible = false;
-			if ( lore.anno.ui.page.multiSelAnno.length > 0) {
-				lore.anno.ui.pageui.toggleAllAnnotations();
-			}
-			if ( lore.anno.ui.page.curAnnoMarkers.length > 0) {
-				for (var i = 0; i < lore.anno.ui.page.curAnnoMarkers.length; i++) {
-					lore.anno.ui.page.curAnnoMarkers[i].hide();
-				}
-			}
+			lore.anno.ui.pageui.setContentsVisible(false);
+		}
+		
+		lore.anno.ui.hideVariationSplitter = function () {
+			lore.anno.ui.pageui.removeHighlightForCurrentAnnotation(lore.anno.ui.topView.getVariationContentWindow());
 		}
 		
 		lore.anno.ui.hasModifiedAnnotations = function () {
@@ -90,7 +81,7 @@
 		/**
 		 * Hide the annotation editor
 		 */
-		lore.anno.ui.hideAnnotation = function() {
+		lore.anno.ui.hideAnnotationEditor = function() {
 			if ( lore.anno.ui.formpanel.isVisible() ) {
 				lore.anno.ui.formpanel.hide();
 				Ext.getCmp("treeview").doLayout();
@@ -369,7 +360,7 @@
 					if (result == "success") {
 						lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
 						lore.debug.anno(action + 'd ' + anno.data.title, resultMsg);
-						lore.anno.ui.hideAnnotation();
+						lore.anno.ui.hideAnnotationEditor();
 					}
 					else {
 						lore.anno.ui.loreError('Unable to ' + action + ' annotation');
@@ -465,7 +456,8 @@
 		} else if ( typeof(rec) == 'string') {
 			rec = lore.global.util.findRecordById(lore.anno.annods, rec);
 		}
-		lore.anno.ui.pageui.updateSplitter(rec, true);
+		var editor = lore.anno.ui.formpanel;
+		lore.anno.ui.pageui.updateSplitter(rec, true, editor.updateSplitterContextField, editor);
 	}
 		
 		
@@ -642,13 +634,13 @@
 
 
 	lore.anno.ui.handleUpdateAnnotationContext = function () {
-		lore.anno.ui.formpanel.updateAnnotationContext();
+		lore.anno.ui.formpanel.handleUpdateAnnotationContext(lore.anno.ui.formpanel);
 		lore.anno.ui.show();
 		Ext.getCmp("treeview").doLayout();
 	}
 		
 	lore.anno.ui.handleUpdateVariationAnnotationContext = function () {
-		lore.anno.ui.formpanel.handleUpdateVariationAnnotationContext();
+		lore.anno.ui.formpanel.handleUpdateVariationAnnotationContext(lore.anno.ui.formpanel);
 		lore.anno.ui.show();
 		Ext.getCmp("treeview").doLayout();
 	}
@@ -780,7 +772,7 @@
 				})
 				
 				if (lore.anno.ui.page.curSelAnno && !lore.anno.ui.page.curSelAnno.data.isNew()) {
-					lore.anno.ui.hideAnnotation();
+					lore.anno.ui.hideAnnotationEditor();
 				}
 				
 				lore.anno.ui.page.load(contextURL, true);

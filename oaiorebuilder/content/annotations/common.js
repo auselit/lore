@@ -26,8 +26,8 @@
  * @include  "/oaiorebuilder/content/constants.js"
  */
 	/*
-		 * General functions
-		 */
+	 * General functions
+	 */
 		
 		
 		
@@ -41,8 +41,6 @@
 		
 		// don't set visibility on start up 
 		if (!lore.anno.ui.disableUIFeatures.initialCall) {
-			//TODO: this code may be incorrect now that the preference
-			// loading has changed and should onyl be called once
 			lore.anno.ui.disableUIFeatures.initialCall = 1;
 		}
 		else {

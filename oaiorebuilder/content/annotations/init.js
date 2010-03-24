@@ -198,7 +198,7 @@ if (typeof Timeline !== "undefined") {
 	 * Destroy any objects and undo any changes made to the current content window
 	 */
 	lore.anno.ui.uninit = function () {
-		lore.anno.ui.pageui.hideCurrentAnnotation();
+		lore.anno.ui.pageui.removeHighlightForCurrentAnnotation();
 		lore.anno.ui.topView.un('location_changed', lore.anno.ui.handleLocationChange);
 		lore.anno.ui.topView.un('location_refresh', lore.anno.ui.refreshPage);
 		lore.anno.prefs.destructor();
@@ -474,7 +474,7 @@ lore.anno.ui.attachHandlers = function (store) {
 		// editor handlers
 		Ext.getCmp("resetannobtn")
 				.on('click', function () { lore.anno.ui.rejectChanges()});
-		Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.hideAnnotation);
+		Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.hideAnnotationEditor);
 		Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
 		Ext.getCmp("delannobtn").on('click', lore.anno.ui.handleDeleteAnnotation);
 		

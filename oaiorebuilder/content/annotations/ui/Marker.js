@@ -118,9 +118,7 @@
 								var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords, this.target);
 								var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
 								
-								//if (this.target && this.target.defaultView.innerWidth > 0) {
 									var _n = $(this.data.nodes[0]);
-								//	lore.debug.anno('z:' + this.xpointer, this.xpointer);
 									_n.css({
 										position: 'absolute',
 										left: c.x1 + o.left + this.bw,
@@ -130,7 +128,6 @@
 									}).width(c.x2 - c.x1 - this.bw * 2).height(c.y2 - c.y1 - this.bw * 2);
 									if (this.styleCallback) 
 										this.styleCallback(this.type, this.data.nodes[0]);
-							//	}
 							}
 						}catch (e ) {
 							lore.debug.anno(e,e);
