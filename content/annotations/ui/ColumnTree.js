@@ -28,282 +28,319 @@
 
 /*  Tree UI Class Definitions */
   
-		/**
-		 * ColumnTree 
-		 * Extends a regular Ext Tree Panel adding columns and segregated
-		 * header, body and footer text fields for each tree node
-		 * @class lore.anno.ui.ColumnTree
-		 * @extends Ext.tree.TreePanel
-		 * @xtype columntreepanel
-		 */
-		lore.anno.ui.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
-		    lines : false,
-		    borderWidth : Ext.isBorderBox ? 0 : 2, // the combined left/right border for each cell
-		    cls : 'x-column-tree',
-			expandBefore: true,
-			scrollOffset: 19,
-			
-			initComponent: function(){
-				try {
-					Ext.apply(this, {
-						root: new Ext.tree.TreeNode({
-							'draggable': false
-						}),
-						header: true,
-					 	rootVisible: false,
-	 					columns: this.columns ? this.columns:[ {'header': "Default",
-						'width': 280
-						}]
-					});
-					lore.anno.ui.ColumnTree.superclass.initComponent.apply(this, arguments);
-				} catch(e){
-					lore.debug.anno("ColumnTree:initComponent() - " + e, e);
-				}
-			},
-			
-		    onRender : function(){
-			
-		        lore.anno.ui.ColumnTree.superclass.onRender.apply(this, arguments);
-					
-				this.headers = this.header.createChild({cls:'x-tree-headers'});
-				
-		        var cols = this.columns, c;
-				var totalWidth = 0;
-		        
-		        
-				//// prevent floats from wrapping when clipped
-		        for(var i = 0, len = cols.length; i < len; i++){
-		             c = cols[i];
-		             totalWidth += c.width;
-					 
-		             this.headers.createChild({
-		                 cls:'x-tree-hd ' + (c.cls?c.cls+'-hd':''),
-		                 cn: {
-		                     cls:'x-tree-hd-text',
-		                     html: c.header
-		                 },
-		                 style:'width:'+(c.width-this.borderWidth) +'px;'
-		             });
-					 
-		        }
-		        this.headers.createChild({cls:'x-clear'});
-				
-				
-				this.headers.setWidth(totalWidth+ this.borderWidth);
-		        this.innerCt.setWidth(totalWidth);
-				this.headers.totalWidth = totalWidth;
-		    },
-			
-			onResize : function(cmp, bWidth, bHeight, width, height) {
-				var newwidth = this.getWidth();
-				lore.anno.ui.ColumnTree.superclass.onResize.apply(this, arguments);
-
-				var cols = this.columns;
-				var index = this.expandBefore ? 0: cols.length-1;
-				var c = cols[index];
-				var totalWidth = this.headers.totalWidth ;
-				c.width = c.width + ( newwidth - totalWidth);
-				this.headers.dom.childNodes[index].style.width = c.width;
-				this.headers.totalWidth = totalWidth = newwidth;
-			
-					this.headers.setWidth(totalWidth + this.borderWidth);
-					this.innerCt.setWidth(totalWidth);
-					
-				try {		
-						var f = function (node) {
-							if (node.isExpanded()) {
-								var n = node.childNodes;
-								for (var i = 0; i < n.length; i++) {
-									if ( n[i].ui.refresh)
-										n[i].ui.refresh(n[i]);
-									f(n[i]);
-								}
-							}
-						}
-						 
-						f(this.getRootNode());
-						
-						
-					
-				} catch(e){
-					lore.debug.anno(e,e);
-				}
-				
-			}
-		});
-
-		/**
-		 * Construct a column tree node
-		 * @constructor
-		 * @param {Object} attributes
-		 */
-		lore.anno.ui.ColumnTreeNode = function(attributes){
-		
-			this.title = attributes.title || '';
-			this.bheader = attributes.bheader || '';
-			this.bfooter = attributes.bfooter || '';
-			this.links = attributes.links || [];
-			this.nodeType = attributes.nodeType;
-			
-			lore.anno.ui.ColumnTreeNode.superclass.constructor.call(this, attributes);
+/**
+ * ColumnTree 
+ * Extends a regular Ext Tree Panel adding columns and segregated
+ * header, body and footer text fields for each tree node
+ * @class lore.anno.ui.ColumnTree
+ * @extends Ext.tree.TreePanel
+ * @xtype columntreepanel
+ */
+lore.anno.ui.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
+    lines : false,
+    borderWidth : Ext.isBorderBox ? 0 : 2, // the combined left/right border for each cell
+    cls : 'x-column-tree',
+	expandBefore: true,
+	scrollOffset: 19,
+	
+	initComponent: function(){
+		try {
+			Ext.apply(this, {
+				root: new Ext.tree.TreeNode({
+					'draggable': false
+				}),
+				header: true,
+			 	rootVisible: false,
+					columns: this.columns ? this.columns:[ {'header': "Default",
+				'width': 280
+				}]
+			});
+			lore.anno.ui.ColumnTree.superclass.initComponent.apply(this, arguments);
+		} catch(e){
+			lore.debug.anno("ColumnTree:initComponent() - " + e, e);
 		}
-    
-		/**
-		 * ColumnTreeNode extends regular treenode and provides
-		 * separate fields for title, header, body, and footer information per node
-		 * @class lore.anno.ui.ColumnTreeNode
-		 * @extends Ext.tree.TreeNode
-		 */
-		Ext.extend(lore.anno.ui.ColumnTreeNode, Ext.tree.TreeNode, {
+	},
+	/**
+	 * When the the tree panel is rendered turn the header component a set of
+	 * divs for columns 
+	 */
+    onRender : function(){
+	
+        lore.anno.ui.ColumnTree.superclass.onRender.apply(this, arguments);
 			
-			setText: function(_title,bh,bf,_text) {
-				var oldText = this.text;
-				var oldTitle = this.title;
-				var oldBh = this.bheader;
-				var oldBf = this.bfooter;
-		        this.title = _title;
-				this.text = _text;
-				this.bheader = bh;
-				this.bfooter = bf;
-				this.attributes.title = _title;
-				this.attributes.bheader = bh;
-				this.attributes.bfooter = bf;
-				this.attributes.text = _text;
-        		
-				if(this.rendered){ // event without subscribing
-            		this.ui.onTextChange(this, { title:_title,
-												 bheader:bh,
-												 bfooter:bf,
-												 text:_text,
-												 oldTitle: oldTitle,
-												 oldBHeader: bh,
-												 oldBFooter: bf,
-												 oldText: oldText });
-												 
-												 
-        		}
-        		this.fireEvent('textchange', this,  { title:_title,
-												 bheader:bh,
-												 bfooter:bf,
-												 text:_text,
-												 oldTitle: oldTitle,
-												 oldBHeader: bh,
-												 oldBFooter: bf,
-												 oldText: oldText });
-			}
-			
+		this.headers = this.header.createChild({cls:'x-tree-headers'});
+		
+        var cols = this.columns, c;
+		var totalWidth = 0;
+        
+        
+		// generate the column headers
+		//// prevent floats from wrapping when clipped
+        for(var i = 0, len = cols.length; i < len; i++){
+             c = cols[i];
+             totalWidth += c.width;
+			 
+             this.headers.createChild({
+                 cls:'x-tree-hd ' + (c.cls?c.cls+'-hd':''),
+                 cn: {
+                     cls:'x-tree-hd-text',
+                     html: c.header
+                 },
+                 style:'width:'+(c.width-this.borderWidth) +'px;'
+             });
+			 
+        }
+		// set the widths 
+        this.headers.createChild({cls:'x-clear'});
+		this.headers.setWidth(totalWidth+ this.borderWidth);
+        this.innerCt.setWidth(totalWidth);
+		this.headers.totalWidth = totalWidth;
+    },
+	/**
+	 * Refresh the tree node ui objects when the tree is resized
+	 * @param {Object} cmp
+	 * @param {Object} bWidth
+	 * @param {Object} bHeight
+	 * @param {Object} width
+	 * @param {Object} height
+	 */
+	onResize : function(cmp, bWidth, bHeight, width, height) {
+		var newwidth = this.getWidth();
+		lore.anno.ui.ColumnTree.superclass.onResize.apply(this, arguments);
 
-		});
+		var cols = this.columns;
+		var index = this.expandBefore ? 0: cols.length-1;
+		var c = cols[index];
 		
+		// recalculate column widths
+		var totalWidth = this.headers.totalWidth ;
+		c.width = c.width + ( newwidth - totalWidth);
+		this.headers.dom.childNodes[index].style.width = c.width;
+		this.headers.totalWidth = totalWidth = newwidth;
+	
+		this.headers.setWidth(totalWidth + this.borderWidth);
+		this.innerCt.setWidth(totalWidth);
 		
-		/**
-		 * Extends regular TreeNodeUI by supporting columns and more text fields
-		 * per node
-		 * @class lore.anno.ui.ColumnTreeNodeUI
-		 * @extends Ext.tree.TreeNodeUI
-		 */
-		lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
-			// private
-			
-			focus : Ext.emptyFn,
-			onTextChange : function( txtfield) {
-				 if(this.rendered){
-           			 this.textNode.innerHTML = txtfield.text;
-					 
-					 this.titleNode.innerHTML = txtfield.title;
-					 if ( txtfield.bheader) this.bHeaderNode.innerHTML = txtfield.bheader;
-					 if ( txtfield.bfooter) this.bFooterNode.innerHTML = txtfield.bfooter;
-       			 }
-			},
-			
-			refresh : function (n) {
-				if (this.rendered) {
-					var t = n.getOwnerTree();
-					var cols = t.columns;
-					for (var i = 0; i < cols.length; i++) {
-						this.columnNodes[i].style.width = cols[i].width - t.borderWidth - (i == (cols.length - 1) ? t.scrollOffset : 0);
+		// refresh all the nodes that are expanded
+		// could optimize this by checking whether the node is actually
+		// visible to the user 
+		try {		
+				var f = function (node) {
+					if (node.isExpanded()) {
+						var n = node.childNodes;
+						for (var i = 0; i < n.length; i++) {
+							if ( n[i].ui.refresh)
+								n[i].ui.refresh(n[i]);
+							f(n[i]);
+						}
 					}
-					this.bodyNode.style.width = cols[0].width - t.borderWidth - (32 + n.getDepth() * 16);
 				}
-			},
+				 
+				f(this.getRootNode());
+				
+				
 			
-			renderElements : function(n, a, targetNode, bulkRender){
-				// add some indent caching, this helps performance when rendering a large tree
-				this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
-				
-				var t = n.getOwnerTree();
-				var cols = t.columns;
-				var bw = t.borderWidth;
-				var c = cols[0];
-				
-				
-				var cb = typeof a.checked == 'boolean';
-				
-				var href = a.href ? a.href : Ext.isGecko ? "" : "#";
-				var linksBuf = "";
-				for (var i = 0; i < n.links.length; i++) {
-						linksBuf += "<a title=\"" + n.links[i].title + "\" href=\"#\" onclick=\"" + n.links[i].jscript + "\"><img  src='" + this.emptyIcon + "' class='x-tree-node-icon x-tree-node-inline-icon anno-view " + n.links[i].iconCls + "' /></a><span class='left-spacer4' />";
-				}
-				
-				// Hack to bypass the default tree node model's interception of child node clicks.
-				var txt = n.text.replace(/<A /g,'<A onclick="window.open(this.href);" ');
-				
-				var buf = ['<li class="x-tree-node"><div ext:tree-node-id="', n.id, 
-				'" class="x-tree-node-el x-tree-node-leaf ', a.cls, '" >',
-				 '<div class="x-tree-col" style="width:', c.width-bw,'px;">',
-				 '<span style="padding-left:', (n.getDepth()-1)*16,'" class="x-tree-node-indent"></span>', 
-				 '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />', 
-				 '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon', (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), 
-				 '" />', 
-				 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div class="x-tree-col-div-general">',  n.title, '</div>','<div class="x-tree-node-bheader x-tree-col-div-general">', (n.bheader ?  n.bheader:''),'</div>',
-				'<div class="x-tree-col-text x-tree-col-div-general">',txt, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter x-tree-col-div-general">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
-				
-				 for(var i = 1, len = cols.length; i < len; i++){
-             		c = cols[i];
+		} catch(e){
+			lore.debug.anno(e,e);
+		}
+		
+	}
+});
 
-            		 buf.push('<div class="x-tree-col ',(c.cls?c.cls:''),'" style="width:',c.width-bw- t.scrollOffset,'px;">',
-                       // '<div class="x-tree-col-text">','blah'(c.renderer ? c.renderer(a[c.dataIndex], n, a) : a[c.dataIndex]),"</div>",
-					    ( (n.columns && n.columns[i]) ? '<div class="x-tree-col-text">' + n.columns.text + '</div>':''), 
-					    (c.links ? '<div class="x-tree-col-text">' + linksBuf + "</div>":''),"</div>");
-         		}
-				  buf.push(
-            	'<div class="x-clear"></div></div>',
-            	'<ul class="x-tree-node-ct" style="display:none;"></ul>',
-            	"</li>");
-			
-				var nel;
-				 if(bulkRender !== true && n.nextSibling && n.nextSibling.ui.getEl()){
-           			 this.wrap = Ext.DomHelper.insertHtml("beforeBegin",
-                                n.nextSibling.ui.getEl(), buf.join(''));
-        		}else{
-          			  this.wrap = Ext.DomHelper.insertHtml("beforeEnd", targetNode, buf.join(""));
-       			 }
-				
-				this.elNode = this.wrap.childNodes[0];
-				this.ctNode = this.wrap.childNodes[1];
-				this.columnNodes = this.elNode.childNodes;
-				var cs = this.elNode.firstChild.childNodes;
-				this.indentNode = cs[0];
-				this.ecNode = cs[1];
-				this.iconNode = cs[2];
-				this.bodyNode = cs[3];
-				this.titleNode = cs[3].firstChild;
-				this.bHeaderNode = this.titleNode.nextSibling;
-				this.anchor = this.textNode = this.bHeaderNode.nextSibling;
-				this.bFooterNode = this.textNode.nextSibling;
-				
+/**
+ * Construct a column tree node
+ * @constructor
+ * @param {Object} attributes
+ */
+lore.anno.ui.ColumnTreeNode = function(attributes){
+
+	this.title = attributes.title || '';
+	this.bheader = attributes.bheader || '';
+	this.bfooter = attributes.bfooter || '';
+	this.links = attributes.links || [];
+	this.nodeType = attributes.nodeType;
+	
+	lore.anno.ui.ColumnTreeNode.superclass.constructor.call(this, attributes);
+}
+    
+/**
+ * ColumnTreeNode extends regular treenode and provides
+ * separate fields for title, header, body, and footer information per node
+ * @class lore.anno.ui.ColumnTreeNode
+ * @extends Ext.tree.TreeNode
+ */
+Ext.extend(lore.anno.ui.ColumnTreeNode, Ext.tree.TreeNode, {
+	
+	/**
+	 * Set the text fields for the tree node
+	 * @param {String} _title The title field
+	 * @param {String} bh header before body
+	 * @param {String} bf footer after body
+	 * @param {String} _text body text
+	 */
+	setText: function(_title,bh,bf,_text) {
+		var oldText = this.text;
+		var oldTitle = this.title;
+		var oldBh = this.bheader;
+		var oldBf = this.bfooter;
+        this.title = _title;
+		this.text = _text;
+		this.bheader = bh;
+		this.bfooter = bf;
+		this.attributes.title = _title;
+		this.attributes.bheader = bh;
+		this.attributes.bfooter = bf;
+		this.attributes.text = _text;
+		
+		if(this.rendered){ // event without subscribing
+    		this.ui.onTextChange(this, { title:_title,
+										 bheader:bh,
+										 bfooter:bf,
+										 text:_text,
+										 oldTitle: oldTitle,
+										 oldBHeader: bh,
+										 oldBFooter: bf,
+										 oldText: oldText });
+										 
+										 
+		}
+		this.fireEvent('textchange', this,  { title:_title,
+										 bheader:bh,
+										 bfooter:bf,
+										 text:_text,
+										 oldTitle: oldTitle,
+										 oldBHeader: bh,
+										 oldBFooter: bf,
+										 oldText: oldText });
+	}
+	
+
+});
+		
+		
+/**
+ * Extends regular TreeNodeUI by supporting columns and more text fields
+ * per node
+ * @class lore.anno.ui.ColumnTreeNodeUI
+ * @extends Ext.tree.TreeNodeUI
+ */
+lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
+	// private
+	
+	focus : Ext.emptyFn,
+	
+	/**
+	 * When text on the nodel changes update the HTML 
+	 * @param {Object} txtfield
+	 */
+	onTextChange : function( txtfield) {
+		 if(this.rendered){
+   			 this.textNode.innerHTML = txtfield.text;
+			 
+			 this.titleNode.innerHTML = txtfield.title;
+			 if ( txtfield.bheader) this.bHeaderNode.innerHTML = txtfield.bheader;
+			 if ( txtfield.bfooter) this.bFooterNode.innerHTML = txtfield.bfooter;
+			 }
+	},
+	
+	/**
+	 * Refresh the node, by recalculating column divs
+	 * @param {Object} n
+	 */
+	refresh : function (n) {
+		if (this.rendered) {
+			var t = n.getOwnerTree();
+			var cols = t.columns;
+			for (var i = 0; i < cols.length; i++) {
+				this.columnNodes[i].style.width = cols[i].width - t.borderWidth - (i == (cols.length - 1) ? t.scrollOffset : 0);
 			}
-		});
+			this.bodyNode.style.width = cols[0].width - t.borderWidth - (32 + n.getDepth() * 16);
+		}
+	},
+	/**
+	 * Generate the HTML for the tree ndoe
+	 * @param {TreeNode} n The tree Node
+	 * @param {String} a link for the tree node
+	 * @param {Object} targetNode target node
+	 * @param {Object} bulkRender
+	 */
+	renderElements : function(n, a, targetNode, bulkRender){
+		// add some indent caching, this helps performance when rendering a large tree
+		this.indentMarkup = n.parentNode ? n.parentNode.ui.getChildIndent() : '';
+		
+		var t = n.getOwnerTree();
+		var cols = t.columns;
+		var bw = t.borderWidth;
+		var c = cols[0];
+		
+		
+		var cb = typeof a.checked == 'boolean';
+		
+		var href = a.href ? a.href : Ext.isGecko ? "" : "#";
+		var linksBuf = "";
+		for (var i = 0; i < n.links.length; i++) {
+				linksBuf += "<a title=\"" + n.links[i].title + "\" href=\"#\" onclick=\"" + n.links[i].jscript + "\"><img  src='" + this.emptyIcon + "' class='x-tree-node-icon x-tree-node-inline-icon anno-view " + n.links[i].iconCls + "' /></a><span class='left-spacer4' />";
+		}
+		
+		// Hack to bypass the default tree node model's interception of child node clicks.
+		var txt = n.text.replace(/<A /g,'<A onclick="window.open(this.href);" ');
+		
+		var buf = ['<li class="x-tree-node"><div ext:tree-node-id="', n.id, 
+		'" class="x-tree-node-el x-tree-node-leaf ', a.cls, '" >',
+		 '<div class="x-tree-col" style="width:', c.width-bw,'px;">',
+		 '<span style="padding-left:', (n.getDepth()-1)*16,'" class="x-tree-node-indent"></span>', 
+		 '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />', 
+		 '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon', (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), 
+		 '" />', 
+		 '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'"><div class="x-tree-col-div-general">',  n.title, '</div>','<div class="x-tree-node-bheader x-tree-col-div-general">', (n.bheader ?  n.bheader:''),'</div>',
+		'<div class="x-tree-col-text x-tree-col-div-general">',txt, '</div>', (n.bfooter ? '<div class="x-tree-node-bfooter x-tree-col-div-general">' + n.bfooter + '</div>': '<span></span>'), '</div></div>'];
+		
+		 for(var i = 1, len = cols.length; i < len; i++){
+     		c = cols[i];
+
+    		 buf.push('<div class="x-tree-col ',(c.cls?c.cls:''),'" style="width:',c.width-bw- t.scrollOffset,'px;">',
+               // '<div class="x-tree-col-text">','blah'(c.renderer ? c.renderer(a[c.dataIndex], n, a) : a[c.dataIndex]),"</div>",
+			    ( (n.columns && n.columns[i]) ? '<div class="x-tree-col-text">' + n.columns.text + '</div>':''), 
+			    (c.links ? '<div class="x-tree-col-text">' + linksBuf + "</div>":''),"</div>");
+ 		}
+		  buf.push(
+    	'<div class="x-clear"></div></div>',
+    	'<ul class="x-tree-node-ct" style="display:none;"></ul>',
+    	"</li>");
+	
+		var nel;
+		 if(bulkRender !== true && n.nextSibling && n.nextSibling.ui.getEl()){
+   			 this.wrap = Ext.DomHelper.insertHtml("beforeBegin",
+                        n.nextSibling.ui.getEl(), buf.join(''));
+		}else{
+  			  this.wrap = Ext.DomHelper.insertHtml("beforeEnd", targetNode, buf.join(""));
+			 }
+		
+		this.elNode = this.wrap.childNodes[0];
+		this.ctNode = this.wrap.childNodes[1];
+		this.columnNodes = this.elNode.childNodes;
+		var cs = this.elNode.firstChild.childNodes;
+		this.indentNode = cs[0];
+		this.ecNode = cs[1];
+		this.iconNode = cs[2];
+		this.bodyNode = cs[3];
+		this.titleNode = cs[3].firstChild;
+		this.bHeaderNode = this.titleNode.nextSibling;
+		this.anchor = this.textNode = this.bHeaderNode.nextSibling;
+		this.bFooterNode = this.textNode.nextSibling;
+		
+	}
+});
 		
 
 
 /**
-		 * ColumnTreeNode extends regular treenode and provides
-		 * separate fields for title, header, body, and footer information per node
-		 * @class lore.anno.ui.ColumnTreeNode
-		 * @extends Ext.tree.TreeNode
-		 */
-		lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
+ * Extends ColumnTree by providing default values for ColumnTree nodes
+ * add sorting capabilites
+ * @class lore.anno.ui.AnnoColumnTree
+ * @extends lore.anno.ui.ColumnTree
+ */
+lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
 		
 		initComponent: function(){
       	  	try {
@@ -337,7 +374,7 @@
 					
 					
 				Ext.apply(this, {
-					animate    	: true,
+					animate    	: false,
 		          	autoScroll	: true,
 					rootVisible: false,
 					containerScroll: true,
@@ -379,7 +416,13 @@
 				lore.debug.anno("AnnoColumnTree:initComponent() - " + e, e);
 			}
 		},
-		
+		/**
+		 * Handler for sorting combo, set sorting field and direction
+		 * based off the combo selection
+		 * @param {Object} combo
+		 * @param {Object} rec
+		 * @param {Object} index
+		 */
 		handleSortTypeChange : function (combo, rec, index) {
 			try {
 				this.treesorter = {
@@ -397,8 +440,13 @@
 		refresh : function () {
 			
 		},
-		
-   addTreeSorter: function(field, direction){
+	
+	/**
+	 * Add sorting event handlers
+	 * @param {Object} field Field to sort on
+	 * @param {String} direction The direction, 'asc' or 'desc'
+	 */	
+   	addTreeSorter: function(field, direction){
 			
 		  var ts = this.treesorter = {
 				sortField: field,
@@ -406,21 +454,22 @@
 			}
 			
 			var tree = this;
-			// taken from TreeSorter Ext, and modified so that
+			
+			// taken from TreeSorter in Ext, and modified so that
 			// direction can be dynamically changed
 			var sortType =  function(node){
-					try {
-						var r = lore.global.util.findRecordById(tree.model, lore.anno.ui.nodeIdToRecId(node));
-						if (r) {
-							return r.data[ts.sortField] || r.data.created;
-						}
-					} 
-					catch (e) {
-						lore.debug.anno(e, e);
+				try {
+					var r = lore.global.util.findRecordById(tree.model, lore.anno.ui.nodeIdToRecId(node));
+					if (r) {
+						return r.data[ts.sortField] || r.data.created;
 					}
-					return "";
+				} catch (e) {
+					lore.debug.anno(e, e);
 				}
-				
+				return "";
+			}
+			
+			// compare two nodes and return positive depending on node1's value compared to node2's
 			var sortFn = function(n1, n2){
 
 				try {
@@ -450,13 +499,16 @@
 				}
 			 };
 			 
+			// perform sort on node
 			var doSort = function(node){
 			   ts = this.treesorter;
 			   node.sort(sortFn);
     		}
-			var compareNodes = function(n1, n2){
-        		return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
-    		}
+			
+			// compare node text
+			//var compareNodes = function(n1, n2){
+        	//	return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
+    		//}
     
     		var updateSort  = function(tree, node){
         		if(node.childrenRendered){
@@ -469,11 +521,18 @@
 			this.on("sortchange", updateSort, this);
     		
 	},
-	
+	/**
+	 * Generated ID for a sub-component of this component
+	 * @param id Id of sub-component
+	 */
 	genID: function(id) {
 		return this.id + "_" + id;	
 	},
 	
+	/**
+	 * Retrieve a sub-componetn within this componet
+	 * @param id Id of sub-component
+	 */
 	getComponent: function (id ) {
 		return Ext.getCmp(this.genID(id));
 	}});
@@ -776,11 +835,18 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 			lore.debug.anno("AnnoColumnTreeNode:initConfig() " + e, e);
 		}
   },
-  
+  /**
+	* Generated ID for a sub-component of this component
+	* @param id Id of sub-component
+	*/
   genID: function(id ) {
   	return	this.id + "_" + id;
   },
   
+  /**
+   * Retrieve sub-component of this component
+   * @param {Object} id Id of sub-component
+   */
   getComponent: function(id) {
   	return Ext.getCmp(this.genID(id));
   }
@@ -790,7 +856,7 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 				 
 				
 				
-		
+// register the components with Ext 
 Ext.reg('columntreepanel', lore.anno.ui.ColumnTree);
 Ext.reg('annocolumntreepanel', lore.anno.ui.AnnoColumnTree);
 Ext.reg('annopagetreenode', lore.anno.ui.AnnoPageTreeNode);

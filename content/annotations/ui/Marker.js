@@ -21,7 +21,7 @@
 /**
  * Class that abstracts a highlighted area of text or of an image based off an xpointer or semantic pointer. This
  * highlighted area can have tooltip based off of annotation data.
- * @class
+ * @class lore.anno.ui.Marker
  * @param {Object} args Valid arguments are 
  * {
  * 	xpointer: The xpointer pointing to the image region or area of text to be highlighted
@@ -29,210 +29,228 @@
  *  target: The target document the xpointer applies to. Defaults to the current content window (tab).
  */
 	
-	lore.anno.ui.Marker = function(args){
-	
-		this.xpointer = lore.global.util.normalizeXPointer(args.xpointer);
-		this.target = args.target || lore.global.util.getContentWindow(window).document;
-		this.type = lore.global.util.isXPointerImageRange(this.xpointer) ? 1 : 0;
-		this.visible = false;
-		this.bw = args.borderWidth || 1;
-		this.page = args.page;
-	}
-	
-	lore.anno.ui.Marker.prototype = {
-		/**
-					 * Highlight the marker and 
-					 * @param {Colour} colour Colour of the highlighting border
-					 * @param {Function} styleCallback Callback function to override how the highlighting is performed
-					 * @param {Boolean} scroll Specify whether to scroll to the highlighted DOM element defaults to false
-					 */
-					show : function (colour, styleCallback, scroll) {
-						this.colour = colour;
-						this.styleCallback = styleCallback;
-						
-						if ( this.type == 1) {
-							if (!this.data) {
-								this.data = lore.global.util.parseImageRangeXPointer(this.xpointer, this.target);
-							} 
-							
-							var doc = this.target;
-							var _div = $(lore.global.util.domCreate('span', doc));
-							var _parent = $('body',doc)
-							_parent.append(_div);
-							this.data.nodes = [_div.get(0)];
-							this.update(); 
-							
-							if ( scroll )
-								lore.global.util.scrollToElement(this.data.nodes[0], this.target.defaultView);
-							
-						} else {
-							var type = this.type;
-							var stylin = function(domNode){
-									domNode.style.backgroundColor = colour || "yellow";
-									if ( styleCallback) styleCallback(type, domNode);
-								}
-								
-							if (!this.data || !this.data.nodes) {
-								if (typeof(this.xpointer) != 'string' ) {
-									this.data = {};
-									if ( this.page.rdfa) {
-										
-										this.data.range = lore.global.util.getSelectionForHash(this.xpointer[0], this.page.rdfa.rdf.databank.triples());
-										lore.debug.anno("Resolved from hashed triple string to range: " + this.data.range, this.data.range);
-									}
-									else {
-										this.data.range = lore.global.util.getSelectionForXPath(this.xpointer[1], this.target);
-									}
-								}
-								else {
-									this.data = {
-										range: lore.global.util.getSelectionForXPath(this.xpointer, this.target)
-									};
-								}
-								
-								this.data.nodes = lore.global.util.highlightRange(this.data.range, this.target, scroll, stylin);
-							} else {
-								for (var i=0; i < this.data.nodes.length; i++ ) {
-									stylin(this.data.nodes[i]);
-								}
-							}
-						}	
-						
-						this.visible = true;		
-					},
+lore.anno.ui.Marker = function(args){
 
-					/**
-					 * Updates the position and size of the marker based off any changes made
-					 * to the window size and parameters passed in.
-					 * @param {Object} colour The colour the border should be changed to
-					 * @param {Object} styleCallback The callback function that overrides how the highlighting is displayed
-					 */
-					update : function(colour, styleCallback){
-						try {
-							if (this.data.nodes && this.type == 1) {
-							
-								this.colour = colour || this.colour;
-								this.styleCallback = styleCallback || this.styleCallback;
-								
-								var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords, this.target);
-								var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
-								
-									var _n = $(this.data.nodes[0]);
-									_n.css({
-										position: 'absolute',
-										left: c.x1 + o.left + this.bw,
-										top: c.y1 + o.top + this.bw,
-										border: this.bw + 'px solid ' + this.colour,
-										zIndex: _n.parent().css('zIndex')
-									}).width(c.x2 - c.x1 - this.bw * 2).height(c.y2 - c.y1 - this.bw * 2);
-									if (this.styleCallback) 
-										this.styleCallback(this.type, this.data.nodes[0]);
-							}
-						}catch (e ) {
-							lore.debug.anno(e,e);
-						}
-					},
-							
-					/**
-					 * Hide the highlighted area of text or image and remove the marker
-					 * DOM entry from the document.
-					 */			
-					hide : function(){
-						try {
-							if (this.data && (this.data.image || this.data.nodes)) {
-								var w = lore.global.util.getContentWindow(window);
-								if (this.type == 0) {
-									for (var i = 0; i < this.data.nodes.length; i++) {
-										var n = this.data.nodes[i];
-										if (n) {
-											n.style.display = 'none'; // in the event removal fails, the marker
-																// will at least be hidden
-											lore.global.util.removeNodePreserveChildren(n, w);
-										}
-									}
-									this.data = null;
-								}
-								else {
-									this.data.nodes[0].style.display = 'none';
-									lore.global.util.removeNodePreserveChildren(this.data.nodes[0], w);
-								}
-							}
-							this.visible = false;
-						}catch (e){
-							lore.debug.anno(e,e);
-						}
-					},
-					
-				/**
-				 * Generated a pop up for the given annotation and place the HTML into the
-				 * supplied dom container
-				 * @param {Object} annodata	The annotation to create the tip for
-				 * @param {Object} domContainer An object or an array containing the dom container/s
-				 * to insert the pop up HTML into
-				 */
-		 		tip : function(annodata){
-				try {
-					var doc = this.target || lore.global.util.getContentWindow(window).document;
-					var cw = doc.defaultView;
-					var uid = annodata.id;
-					var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
-					" by " +
-					annodata.creator +
-					"<br />";
-					desc += "<div style='max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
-					desc += lore.anno.ui.genDescription(annodata, true);
-					desc += '</div>';
-					//desc += lore.anno.ui.genDescription(annodata, true);
-					var d = lore.global.util.longDate(annodata.created, Date);
-					desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
-					var descDom = doc.createElement("span");
-					descDom.setAttribute("style", "font-family:sans-serif");
-					descDom.setAttribute("display", "none");
-					
-					// innerHTML does not work for pages that are image/... content type, so parse html
-					// by temporarily adding to local document head. html has been sanitized.
-					var	h =	document.getElementsByTagName("head")[0];
-					h.appendChild(descDom); 
-					descDom.innerHTML = desc;
-					h.removeChild(descDom);
-					descDom.removeAttribute("display");
+	this.xpointer = lore.global.util.normalizeXPointer(args.xpointer);
+	this.target = args.target || lore.global.util.getContentWindow(window).document;
+	this.type = lore.global.util.isXPointerImageRange(this.xpointer) ? 1 : 0;
+	this.visible = false;
+	this.bw = args.borderWidth || 1;
+	this.page = args.page;
+}
+	
+lore.anno.ui.Marker.prototype = {
+	/**
+	* Highlight the marker  
+	* @param {Colour} colour Colour of the highlighting border
+	* @param {Function} styleCallback Callback function to override how the highlighting is performed
+	* @param {Boolean} scroll Specify whether to scroll to the highlighted DOM element defaults to false
+	*/
+	show : function (colour, styleCallback, scroll) {
+		this.colour = colour;
+		this.styleCallback = styleCallback;
+		
+		if ( this.type == 1) {
+			// image marker
+			if (!this.data) {
+				this.data = lore.global.util.parseImageRangeXPointer(this.xpointer, this.target);
+			} 
+			
+			var doc = this.target;
+			// add span to doc body
+			var _div = $(lore.global.util.domCreate('span', doc));
+			var _parent = $('body',doc)
+			_parent.append(_div);
+			this.data.nodes = [_div.get(0)];
+			this.update(); 
+			
+			if ( scroll )
+				lore.global.util.scrollToElement(this.data.nodes[0], this.target.defaultView);
+			
+		} else {
+			// text marker
+			var type = this.type;
+			var stylin = function(domNode){
+					domNode.style.backgroundColor = colour || "yellow";
+					if ( styleCallback) styleCallback(type, domNode);
+				}
+				
+			if (!this.data || !this.data.nodes) {
+				// retrieve data
+				
+				// if not string, then RDFa data
+				if (typeof(this.xpointer) != 'string' ) {
+					this.data = {};
+					 
+					if ( this.page.rdfa) {
+						// resolve hash
+						this.data.range = lore.global.util.getSelectionForHash(this.xpointer[0], this.page.rdfa.rdf.databank.triples());
+						lore.debug.anno("Resolved from hashed triple string to range: " + this.data.range, this.data.range);
+					}
+					else {
+						// if no rdfa for page use regular xpointer as backup
+						this.data.range = lore.global.util.getSelectionForXPath(this.xpointer[1], this.target);
+					}
+				}
+				else {
+					// get range from xpath
+					this.data = {
+						range: lore.global.util.getSelectionForXPath(this.xpointer, this.target)
+					};
+				}
+				// highlight marker
+				this.data.nodes = lore.global.util.highlightRange(this.data.range, this.target, scroll, stylin);
+			} else {
+				// apply style callback to dom node
+				for (var i=0; i < this.data.nodes.length; i++ ) {
+					stylin(this.data.nodes[i]);
+				}
+			}
+		}	
+		
+		this.visible = true;		
+	},
 
-				$(this.data.nodes[0], doc).simpletip({
-					content: descDom,
-					focus: true,
-					boundryCheck: false,
-					position: 'cursor',
-					showEffect: 'custom',
-					onetip: true,
-					closeIcon: closeIcon,
-					showCustom: function(){
-						try {
-								Ext.apply(this.context.style, 
-								{
-									position : 'absolute',
-									opacity  : "1",
-									backgroundColor : "#fcfcfc",
-									fontSize : "9pt",
-									fontWeight : "normal",
-									color : "#51666b",
-									border : '1.5px solid darkgrey',
-									zIndex : "3",
-									fontFamily : 'sans-serif',
-									maxWidth : cw.innerWidth * 0.75,
-									maxHeight : cw.innerHeight * 0.75
-									//overflow : 'auto'
-								});
-								
-							jQuery(this).animate({
-								width: 'auto',
-								display: 'block'
-							}, 400);
-						} 
-						catch (e) {
-							lore.debug.anno("error showing tip: " + e, e);
+	/**
+	 * Updates the position and size of the marker based off any changes made
+	 * to the window size and parameters passed in.
+	 * @param {Object} colour The colour the border should be changed to
+	 * @param {Object} styleCallback The callback function that overrides how the highlighting is displayed
+	 */
+	update : function(colour, styleCallback){
+		try {
+			if (this.data.nodes && this.type == 1) {
+				// image annotation
+				this.colour = colour || this.colour;
+				this.styleCallback = styleCallback || this.styleCallback;
+				// update scaling and offsets
+				var c = lore.anno.ui.scaleImageCoords(this.data.image, this.data.coords, this.target);
+				var o = lore.anno.ui.calcImageOffsets(this.data.image, this.target);
+				
+				// update CSS 
+					var _n = $(this.data.nodes[0]);
+					_n.css({
+						position: 'absolute',
+						left: c.x1 + o.left + this.bw,
+						top: c.y1 + o.top + this.bw,
+						border: this.bw + 'px solid ' + this.colour,
+						zIndex: _n.parent().css('zIndex')
+					}).width(c.x2 - c.x1 - this.bw * 2).height(c.y2 - c.y1 - this.bw * 2);
+					if (this.styleCallback) 
+						this.styleCallback(this.type, this.data.nodes[0]);
+			}
+		}catch (e ) {
+			lore.debug.anno(e,e);
+		}
+	},
+			
+	/**
+	 * Hide the highlighted area of text or image and remove the marker
+	 * DOM entry from the document.
+	 */			
+	hide : function(){
+		try {
+			if (this.data && (this.data.image || this.data.nodes)) {
+				// for each of the dom nodes, set display to none
+				// and then to remove from DOM.
+				var w = lore.global.util.getContentWindow(window);
+				if (this.type == 0) {
+					for (var i = 0; i < this.data.nodes.length; i++) {
+						var n = this.data.nodes[i];
+						if (n) {
+							n.style.display = 'none'; // in the event removal fails, the marker
+													  // will at least be hidden
+							lore.global.util.removeNodePreserveChildren(n, w);
 						}
 					}
-				});
+					this.data = null;
+				}
+				else {
+					// set display none and then try to remove from DOM
+					this.data.nodes[0].style.display = 'none';
+					lore.global.util.removeNodePreserveChildren(this.data.nodes[0], w);
+				}
+			}
+			this.visible = false;
+		}catch (e){
+			lore.debug.anno(e,e);
+		}
+	},
+					
+	/**
+	 * Generated a pop up for the given annotation and place the HTML into the
+	 * supplied dom container
+	 * @param {Object} annodata	The annotation to create the tip for
+	 * @param {Object} domContainer An object or an array containing the dom container/s
+	 * to insert the pop up HTML into
+	 */
+ 	tip : function(annodata){
+		try {
+			var doc = this.target || lore.global.util.getContentWindow(window).document;
+			var cw = doc.defaultView;
+			var uid = annodata.id;
+			
+			// generate the tooltip contents
+			var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
+			" by " +
+			annodata.creator +
+			"<br />";
+			desc += "<div style='max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
+			desc += lore.anno.ui.genDescription(annodata, true);
+			desc += '</div>';
+			//desc += lore.anno.ui.genDescription(annodata, true);
+			var d = lore.global.util.longDate(annodata.created, Date);
+			desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
+			var descDom = doc.createElement("span");
+			descDom.setAttribute("style", "font-family:sans-serif");
+			descDom.setAttribute("display", "none");
+			
+			// innerHTML does not work for pages that are image/... content type, so parse html
+			// by temporarily adding to local document head. html has been sanitized.
+			var	h =	document.getElementsByTagName("head")[0];
+			h.appendChild(descDom); 
+			descDom.innerHTML = desc;
+			h.removeChild(descDom);
+			descDom.removeAttribute("display");
+
+			$(this.data.nodes[0], doc).simpletip({
+			content: descDom,
+			focus: true,
+			boundryCheck: false,
+			position: 'cursor',
+			showEffect: 'custom',
+			onetip: true,		// custom config which specifies only one tip can show at a time
+			closeIcon: closeIcon, // close button
+			showCustom: function(){
+				try {
+						// set custom CSS display options for the
+						// DOM node represeting the tooltip
+						Ext.apply(this.context.style, 
+						{
+							position : 'absolute',
+							opacity  : "1",
+							backgroundColor : "#fcfcfc",
+							fontSize : "9pt",
+							fontWeight : "normal",
+							color : "#51666b",
+							border : '1.5px solid darkgrey',
+							zIndex : "3",
+							fontFamily : 'sans-serif',
+							maxWidth : cw.innerWidth * 0.75,
+							maxHeight : cw.innerHeight * 0.75
+							//overflow : 'auto'
+						});
+						
+					jQuery(this).animate({
+						width: 'auto',
+						display: 'block'
+					}, 400);
+				} 
+				catch (e) {
+					lore.debug.anno("error showing tip: " + e, e);
+				}
+			}
+			});
 		}
 		catch (ex) {
 			lore.debug.anno("Tip creation failure: " + ex, ex);

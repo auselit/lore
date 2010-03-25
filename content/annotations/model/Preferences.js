@@ -19,14 +19,17 @@
  */
 
 /**
- * Class wrapper for an RDF annotation provides access to values modified from
- * dannotate.js
+ * Object containing LORE preferences
  * @class lore.anno.Preferences
- * @param {Node} rdf Root element of an RDF annotation returned by Danno
- * @param {boolean} bodyOps Optional parameter specifying RDF was loaded from file
+ * @extends Ext.util.Observable
  */
 lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
 
+	/**
+	 * Attachs event to the parent object to listen for when prefernces changes
+	 * for annotations.
+	 * @param {Object} config Can contain the prefsObj which points to object that generates 'annoprefs_changed' events
+	 */
 	constructor: function (config) {
 		this.prefsObj = config.prefObj;
 		this.addEvents('prefs_changed');
@@ -34,6 +37,10 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
 		this.prefsObj.on('annoprefs_changed', this.setPrefs, this);
 	},
 	
+	/**
+	 * Set the preferences. Fires 'prefs_changed' event
+	 * @param {Object} args
+	 */
 	setPrefs: function (args) {
 		try {
 			lore.debug.anno("lore.anno.Preferences:setPrefs", args);
@@ -45,6 +52,9 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
 		}	
 	},
 	
+	/**
+	 * Load preferences from the parent preferences object
+	 */
 	load: function () {
 		try{
 			this.prefsObj.loadAnnotationPrefs();
@@ -53,6 +63,9 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
     	}
 	},
 	
+	/**
+	 * Destructor to be called when view is shutting down. 
+	 */
 	destructor: function () {
 		this.prefsObj.un('annoprefs_changed', this.setPrefs, this);
 	}

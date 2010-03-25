@@ -30,7 +30,18 @@ var closeIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf
 var objectIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAFWSURBVBgZBcE/SFQBAAfg792dppJeEhjZn80MChpqdQ2iscmlscGi1nBPaGkviKKhONSpvSGHcCrBiDDjEhOC0I68sjvf+/V9RQCsLHRu7k0yvtN8MTMPICJieaLVS5IkafVeTkZEFLGy0JndO6vWNGVafPJVh2p8q/lqZl60DpIkaWcpa1nLYtpJkqR1EPVLz+pX4rj47FDbD2NKJ1U+6jTeTRdL/YuNrkLdhhuAZVP6ukqbh7V0TzmtadSEDZXKhhMG7ekZl24jGDLgtwEd6+jbdWAAEY0gKsPO+KPy01+jGgqlUjTK4ZroK/UVKoeOgJ5CpRyq5e2qjhF1laAS8c+Ymk1ZrVXXt2+9+fJBYUwDpZ4RR7Wtf9u9m2tF8Hwi9zJ3/tg5pW2FHVv7eZJHd75TBPD0QuYze7n4Zdv+ch7cfg8UAcDjq7mfwTycew1AEQAAAMB/0x+5JQ3zQMYAAAAASUVORK5CYII=";
 var relIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII=";
 
-
+/**
+ * Class which abstracts the visual operations performed on the content window and the
+ * window splitter used for variation annotations
+ * @class lore.anno.ui.PageView
+ * @param {Object} config The configuration the page view
+ * config can contain: {
+ * 		page: The PageData object to listen to events on
+ * 		model: The Ext data store to listen to events on
+ * 		rdfaMan: Reference to the RDFaManager
+ * 		visible: Whether the PageView contents are visible
+ * }
+ */
 lore.anno.ui.PageView = function (config) {
 			
 			this.page = config.page;
@@ -47,7 +58,9 @@ lore.anno.ui.PageView = function (config) {
 		
 lore.anno.ui.PageView.prototype = {
 
-
+	/**
+	 * Refresh all the annotations on the page
+	 */
 	tog: function(){
 		if (this.page.multiSelAnno.length > 0) {
 			// hide then reshow 
@@ -56,6 +69,11 @@ lore.anno.ui.PageView.prototype = {
 		}
 	},
 	
+	/**
+	 * When currently selected annotation changes, highlight the annotation
+	 * @param {Object} oldRec
+	 * @param {Object} newRec
+	 */
 	handleAnnoChanged: function (oldRec, newRec ) {
 		this.removeHighlightForCurrentAnnotation();
 		if (newRec) {
@@ -67,14 +85,34 @@ lore.anno.ui.PageView.prototype = {
 		}
 	},
 	
+	/**
+	 * Refresh annotations currently highlighted when new annotaiotns
+	 * are loaded
+	 * @param {Object} store
+	 * @param {Object} records
+	 * @param {Object} options
+	 */
 	handleLoad: function(store, records, options){
 		this.tog();
 	},
-	
+	/**
+	 * 
+	 * Refresh annotations currently highlighted when annotation are removed
+	 * @param {Object} store
+	 * @param {Object} rec
+	 * @param {Object} ind
+	 */
 	handleRemove: function(store, rec, ind){
 		this.tog();
 	},
 	
+	/**
+	 * When a annotation record is updated, refresh the currently selected
+	 * highlighting
+	 * @param {Object} store
+	 * @param {Object} rec
+	 * @param {Object} operation
+	 */
 	handleUpdate: function(store, rec, operation){
 		try {
 			this.removeHighlightForCurrentAnnotation();
@@ -85,10 +123,14 @@ lore.anno.ui.PageView.prototype = {
 		}
 	},
 	
+	/**
+	 * Hide or Show the page view
+	 * @param {Boolean} visible
+	 */
 	setContentsVisible: function(visible) {
 		this.visible = visible;
 		try {
-		
+			// if markers exist for the page view and it's being made visible, show them
 			if (visible && this.page.curAnnoMarkers.length > 0 && this.page.curSelAnno) {
 				var cc = this.getCreatorColour(this.page.curSelAnno.data.creator);
 				
@@ -97,6 +139,7 @@ lore.anno.ui.PageView.prototype = {
 				}
 			}
 			else if ( !visible ){
+				// if markers exist for the page view and it's being made visible, show them
 				if (this.page.multiSelAnno.length > 0) {
 					this.toggleAllAnnotations();
 				}
@@ -123,7 +166,7 @@ lore.anno.ui.PageView.prototype = {
 			if (this.page.curAnnoMarkers) {
 				for (var i = 0; i < this.page.curAnnoMarkers.length; i++) {
 					var m = this.page.curAnnoMarkers[i];
-					if (cw) {
+					if (cw) { // remove markers only for the specified content window
 						if (m.target.defaultView == cw) {
 							m.hide();
 							delete m;
@@ -132,6 +175,7 @@ lore.anno.ui.PageView.prototype = {
 						}
 					}
 					else {
+						// remove marker
 						m.hide();
 						delete m;
 					}
@@ -230,11 +274,11 @@ lore.anno.ui.PageView.prototype = {
 	},
 	
 	/**
-		 * Highlight an annotation.
-		 * @param {Record} rec The record of the annotation to highlight
-		 * @param {Function} annoStyle a callback which is called once the dom node is created for the selection.
-		 * The dom node is passed in as a parameter to the callback.
-		 */	
+	 * Highlight an annotation.
+	 * @param {Record} rec The record of the annotation to highlight
+	 * @param {Function} annoStyle a callback which is called once the dom node is created for the selection.
+	 * The dom node is passed in as a parameter to the callback.
+	 */	
 	highlightAnnotation : function(rec, annoStyle) {
 		
 		var markers = [];
@@ -287,12 +331,15 @@ lore.anno.ui.PageView.prototype = {
 			}
 		}
 		
+		// get colour of highlight and show marker, and generate tooltip
 		var cc = this.getCreatorColour(rec.data.creator);
 		for ( var i=0; i < markers.length;i++) {
 			markers[i].show(cc, annoStyle, true);
 			markers[i].tip(rec.data);
 		}
+		
 		if ( rec.data.meta.context){
+			// if semantic context, create marker, show and tooltip-erize
 			var m = new lore.anno.ui.Marker({xpointer:rec.data.meta.context, page: this.page });
 			markers.push(m);
 			m.show(cc, function (type, node) {
@@ -372,7 +419,11 @@ lore.anno.ui.PageView.prototype = {
 			}
 		},
 		
-		
+	/**
+	 * Scan the DOM for a content window and find images that are loaded.  Attach event handlers
+	 * to them to enable highlighting
+	 * @param {Window} contentWindow The content window the enablement applies to
+	 */
 	enableImageHighlighting : function(contentWindow){
 
 		var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
@@ -396,6 +447,7 @@ lore.anno.ui.PageView.prototype = {
 				lore.anno.ui.loreWarning("Image selection disabled for page. Not a valid HTML page.");
 				return;
 			}
+			//CSS used by selection library
 			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
 			
 			var im;
@@ -409,8 +461,8 @@ lore.anno.ui.PageView.prototype = {
 						
 			// add a handler that loads image selection capabilites to an image
 			// when the user mouses over an image for the first time. This is because
-			// trying to load the image selection library on page load causes browser 
-			// timeouts for pages with large amounts of image
+			// trying to load the image selection library for each image on page load 
+			// causes browser timeouts for pages with large amounts of image
 	 
 			im.each(function(){
 					
@@ -468,7 +520,7 @@ lore.anno.ui.PageView.prototype = {
 								m.update();
 							}
 						} catch (e ) {
-							//#146 On the failure one of marker, this would break the resizing of
+							//#146 On the failure of one marker this would break the resizing of
 							// all other markers
 							lore.debug.anno('refreshImageMarkers: ' + e, {err:e, marker:m});
 						}
@@ -492,7 +544,7 @@ lore.anno.ui.PageView.prototype = {
 					lore.debug.anno("error occurred during window resize handler: " + e, e);
 				}
 			}
-			//TODO: #193 - need the remove event handlers on page unload
+			//TODO: #193 - need to remove event handlers on page unload
 			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
 			lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
 			if (imgOnly) 
@@ -536,13 +588,22 @@ lore.anno.ui.PageView.prototype = {
 	}
 },
 
+	/**
+	 * Handler for when RDFa loaded for page. Currently not used
+	 */
 	handleRDFaLoaded : function () {
 		// currently no behaviour, but may want to add
 		// a visual on the page later.
 	}, 
 
+	/**
+	 * Show the RDFa triples on the page
+	 * @param {Boolean} show Visibility boolean
+	 * @param {Object} callback Function called when triple is selected
+	 */
 	setVisibilityForPageTriples : function( show, callback) {
 		if (!show) {
+			// remove any existing span represting triples fropm the page 
 			var ms = this.page.metaSelections;
 			for (var i = 0; i < ms.length; i++) {
 				try {
@@ -558,18 +619,24 @@ lore.anno.ui.PageView.prototype = {
 		} else if (this.page.rdfa.triples.length > 0) {
 				
 			for ( var i =0 ;i < this.page.rdfa.triples.length; i++ ) {
+				// for each triple determine whether it's human readable
 				var z = this.page.rdfa.triples[i];
 				if ( !lore.anno.ui.isHumanReadableTriple(z))
 					continue;
-					
+
+									
 				var isObject = z.property.toString().indexOf("#type") != -1;
 				//var val = z.object.toString();
 				//val = val.substring(val.lastIndexOf("#")+1, val.lastIndexOf(">"));
 				var val = lore.anno.ui.tripleURIToString(z.object);
 				lore.debug.anno(val, z);
+				
+				//TODO: #194 - This logic should be based on store with valid Objects
 				if ( isObject &&  val !='Agent' && val !='Work'
 				 && val != 'manifestation' && val != 'expression')
 				 	continue;
+					
+				// create a span around the location of the triple that's embedded in the HTML
 				var cw = lore.global.util.getContentWindow(window);
 				var doc = cw.document;
 				var r = doc.createRange();
@@ -586,6 +653,7 @@ lore.anno.ui.PageView.prototype = {
 				span.insertBefore(marker, z.source);
 				var s = $(marker);
 		 	
+				//tooltip
 				marker.title = isObject ? val : lore.anno.ui.tripleURIToString(z.property);
 				
 				s.hover(function () {
@@ -601,7 +669,9 @@ lore.anno.ui.PageView.prototype = {
 				
 				var t = this;
 				
-				if ( isObject)
+				// when triple is selected, set the meta context to it's value and call callback
+				// and hide triples for the page
+				if ( isObject) 
 					s.click(function () {
 					try {
 						var triple = t.page.rdfa.triples[this.getAttribute("rdfIndex")];
@@ -651,6 +721,10 @@ lore.anno.ui.PageView.prototype = {
 		}  
 	},
 	
+	/**
+	 * Turn on/off triple markers for the triples on the pages
+	 * @param {Object} callback Function called when triple is selected
+	 */
 	toggleTripleMarkers: function (callback) {
 		if (this.page.metaSelections.length == 0)
 			this.setVisibilityForPageTriples(true, callback);
@@ -662,6 +736,8 @@ lore.anno.ui.PageView.prototype = {
 	 * Update the variation splitter for the supplied annotation
 	 * @param {Record} rec The annotation to update in the splitter window. 
 	 * @param {Boolean} show Specifies whether the variation window is to be made visible
+	 * @param {Function} callback Function called when variation window is laoded
+	 * @param {Function} callbackScope The scope to run the callback in
 	 */
 	 updateSplitter :  function (rec, show, callback, callbackScope) {
 					

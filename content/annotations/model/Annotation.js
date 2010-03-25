@@ -19,19 +19,31 @@
  */
 
 /**
- * Class wrapper for an RDF annotation provides access to values modified from
- * dannotate.js
+ * Class wrapper for an RDF annotation provides access to values
  * @class lore.anno.Annotation
+ * @extends Ext.util.Observable
  * @param {Node} rdf Root element of an RDF annotation returned by Danno
  * @param {boolean} bodyEmbedded Optional parameter specifying RDF was loaded from file
  */
 lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
+	// adapated from Danno Client code dannotate.js
 		
+		/**
+		 * Load annotation configuration items and generate id for annotation
+		 * @param {Object} config
+		 */
 		load: function (config ) {
 			Ext.apply(this, config);
 			this.id  = "#new" + Math.uuid();
 		},
 		
+		/**
+		 * If rdf property supplied read in RDF and convert to name value pairs as properties
+		 * of class
+		 * @constructor
+		 * @param {String} rdf The RDF
+		 * @param {Boolean} bodyEmbedded Whether the body value is embedded in the RDF or simply a URL to the body 
+		 */
 		constructor: function(rdf, bodyEmbedded){
 		
 		if (!rdf)
@@ -350,6 +362,10 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 	
 });
 
+/**
+ * Class that serializes Annotation object/s as RDF
+ * @class lore.anno.RDFAnnotationSerialize
+ */
 lore.anno.RDFAnnotationSerializer  = function () {
 	
 }

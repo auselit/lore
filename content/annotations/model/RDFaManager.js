@@ -18,14 +18,29 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+/**
+ * Object which manages retrieving RDFa from a page
+ * @param {Object} config
+ * @class lore.anno.ui.RDFaManager
+ * @extends Ext.util.Observable
+ */
 lore.anno.ui.RDFaManager = Ext.extend(Ext.util.Observable, {
 	
+	/**
+	 * @constructor
+	 * @param {Object} config
+	 * page: The current page
+	 */
 	constructor:function (config) {
 		this.page = config.page;
 		this.addEvents('rdfaloaded');
 	},
 
+	/**
+	 * Load the RDFa for the page
+	 * Fires 'rdfaloaded' event.
+	 * @param {Object} contentWindow
+	 */
 	load: function (contentWindow ){
 		// add check for store, and get cached RDFA
 		if (!this.page.rdfa.triples) {
@@ -34,6 +49,11 @@ lore.anno.ui.RDFaManager = Ext.extend(Ext.util.Observable, {
 		}
 	},
 	
+	/**
+	 * Retrieve RDFa from a page and
+	 * store it in the PageData object
+	 * @param {Object} doc
+	 */
 	gleanRDFa : function (doc) {	
 		try {
 			var myrdf = $('body', doc).rdfa();

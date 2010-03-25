@@ -21,7 +21,9 @@
 
 
 /**
- * @class
+ * Object that provides a timeline of the annotations
+ * @class lore.anno.ui.TimelinePanel
+ * @extends Ext.Panel
  */
 lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 
@@ -44,6 +46,10 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 			}
 		},
 		
+		/**
+		 * Attach event handlers to the model supplied
+		 * @param {Store} model Datastore to attach events to
+		 */
 		addModel: function (model ) {
 			this.model = model;
 			this.model.on('load', this.handleLoad, this);
@@ -54,6 +60,12 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 			
 		},
 		
+		/**
+		 * When annotations are loaded, add them to the timeline
+		 * @param {Store} store	Datastore
+		 * @param {Array} records	The records that were added
+		 * @param {Object} options	Load options
+		 */
 		handleLoad : function(store, records, options ) {
 			for ( var i =0; i < records.length; i++ ) {
 				if ( !records[i].data.isNew() &&
@@ -64,6 +76,13 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 			this.scheduleTimelineLayout();
 		},
 		
+		/**
+		 * When an annotation is removed from the store, flag the item in the
+		 * timeline as deleted
+		 * @param {Store} store the datastore
+		 * @param {rec} rec the record that was removed
+		 * @param {ind} ind the index in the store of the record
+		 */
 		handleRemove: function(store, rec, ind ) {
 			
 			if (!rec.data.isNew()) {
@@ -75,10 +94,20 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 				}
 		},
 		
+		/**
+		 * When an annotation record is updated, update the annotation in the timeline
+		* @param {Store} store the datastore
+		 * @param {rec} rec the record that was updated
+		 * @param {Object} operation
+		 */
 		handleUpdate: function(store, rec, operation) {
 			this.updateAnnoInTimeline(rec.data);
 		},
 		
+		/**
+		 * When store is cleared, remove all annotations from timeline.
+		 * @param {Store} store the store
+		 */
 		handleClear: function(store) {
 			this.annoEventSource.clear();
 		},
@@ -116,7 +145,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 				this.timeline = Timeline.create(this.getEl().dom, bandConfig, Timeline.HORIZONTAL);
 				var t = this;
 				tl.on("resize", function() {
-					t.scheduleTimelineLayout();
+					t.scheduleTimelineLayout(); // recalc display
 				});
 				
 		        this.timeline.getBand(0).getEventPainter().setFilterMatcher(function(evt){
@@ -128,10 +157,10 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
   	  }
 	},
 	
-	/**
+		/**
 		 * Add an annotation to the timeline
-		 * @param {Object} anno The annotation to add to the timeline
-		 * @param {Object} title The title to give 
+		 * @param {Annotation} anno The annotation to add to the timeline
+		 * @param {String} title The title to give 
 		 */
 		
 		addAnnoToTimeline : function(anno, title){
@@ -250,9 +279,6 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 			}
 		},
 		
-		/* Timeline Functions */
-	
-		
 		/**
 		 * Generate a description for the annotation suitable for display
 		 * in the timeline bubble.
@@ -276,5 +302,5 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 });
  
 
-		
+// register component with Ext
 Ext.reg("annotimelinepanel",lore.anno.ui.TimelinePanel)	;				
