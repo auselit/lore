@@ -24,7 +24,8 @@
 Components.utils.import("resource://lore/debug.js");	
 	
  /** 
-  * Annotations store
+  * Store object.  Used for storing/caching objects.
+  * Basically a Map that contains Maps.
   * @class lore.store
   * @singleton
   */
@@ -71,6 +72,11 @@ Components.utils.import("resource://lore/debug.js");
 		}
 	 },
 	 
+	 /**
+	  * Invalidate caching if validity timeout has been reached
+	  * @param {Object} s Datastores map
+	  * @param {String} dsName Datstore name
+	  */
 	 invalidate: function(s, dsName) {
 	 	var meta = s[this.METADATA];
 		if ( !meta || meta.timeout[dsName] == 0)
