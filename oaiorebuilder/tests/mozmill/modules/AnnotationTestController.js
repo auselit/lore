@@ -57,7 +57,7 @@ AnnotationTestController = {
 	 * Delete all annotations currently in the data store.
 	 */
 	deleteAllInStore: function(){
-		var annods = _anno.lore.anno.annods;
+		var annods = _anno.lore.anno.annoMan.annods;
 		var annos = annods.getRange();
 		
 		var thus = this;
@@ -579,7 +579,7 @@ AnnotationTestController = {
 					});
 					
 					//if (targetNode.id == id) {  ID is changed, newer version of danno returns the id in a header...
-					var anno = _loreController.anno.lore.global.util.findRecordById(_loreController.anno.lore.anno.annods, targetNode.id).data
+					var anno = _loreController.anno.lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods, targetNode.id).data
 
 					
 						//TODO: need more sophisticated way of matching anntation 
@@ -604,9 +604,9 @@ AnnotationTestController = {
 			
 			var id = _loreController.anno.lore.anno.ui.nodeIdToRecId(nodes[0]);
 			lore.debug.anno('node id: ' + id);
-			var anno = lore.global.util.findRecordById(_loreController.anno.lore.anno.annods,  id);
+			var anno = lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods,  id);
 			if ( anno == null)
-				anno = lore.global.util.findRecordById(_loreController.anno.lore.anno.annodsunsaved,  id);
+				anno = lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annodsunsaved,  id);
 			
 			pre = anno.data.isNew() ? preNew: preExisting;	
 		} else {
@@ -635,7 +635,7 @@ AnnotationTestController = {
 		var recurseNodes = function(parent){
 			for (var i = 0; i < parent.childNodes.length; i++) {
 				var n = parent.childNodes[i];
-				var rec = lore.global.util.findRecordById(_loreController.anno.lore.anno.annods, n.id);
+				var rec = lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods, n.id);
 				_annoController.testNodeMap[rec.data.title] = n;
 				if (n.childNodes && n.childNodes.length > 0) 
 					recurseNodes(n);
