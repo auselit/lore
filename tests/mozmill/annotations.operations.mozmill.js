@@ -30,15 +30,15 @@ Components.utils.import("resource://loretest/mozmill/modules/LoreController.js")
 Components.utils.import("resource://loretest/mozmill/modules/AnnotationTestController.js");
 
 	
-	
+	//TODO: #185 - This file needs to be separated into separate files for each group of operation as the
+	// tests run for too long, and if there's failures it takes a long time to go through fixing...also script timeout events occur
 	var setupModule = function ( module ) {
 		try {
 			controller = mozmill.getBrowserController();
 			loreController = LoreController.init(controller, elementslib);
 			annoController = AnnotationTestController.init(controller, loreController, elementslib);
-			//lore.global.store.setCaching(false);
-			loreController.openLore();
 			
+			loreController.openLore();
 			loreController.pushPopTestPreferences(true);
 			
 			// Set up testing data
@@ -48,6 +48,7 @@ Components.utils.import("resource://loretest/mozmill/modules/AnnotationTestContr
 				loreController.anno.lore.debug.anno(": " + result + ", " + msg);
 			});
 			controller.sleep(2000);
+			// setup up anno node name map
 			annoController.initTestNodeMap();
 		} catch(e){
 			controller.window.alert(e);
