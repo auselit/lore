@@ -61,13 +61,13 @@ Components.utils.import("resource://loretest/mozmill/modules/AnnotationTestContr
 	}
 	
 	var setupTest = function(test){
-		loreController.anno.lore.anno.annodsunsaved.removeAll();
+		loreController.anno.lore.anno.annoMan.annodsunsaved.removeAll();
 		loreController.anno.lore.anno.ui.page.setCurrentAnno();
 	}
 	
 	var teardownTest = function(test){
 		annoController.hideEditorClick();
-		loreController.anno.lore.anno.annodsunsaved.removeAll();
+		loreController.anno.lore.anno.annoMan.annodsunsaved.removeAll();
 		loreController.anno.lore.anno.ui.page.setCurrentAnno();
 	}
 	
