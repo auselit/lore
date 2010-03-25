@@ -1001,6 +1001,7 @@ util = {
         iframe.setAttribute("collapsed", true);
         iframe.style.visibility = "visible";
         iframe.setAttribute("src", "about:config");
+        iframe.setAttribute("transparent", true);
         return iframe;
     },
     /**
