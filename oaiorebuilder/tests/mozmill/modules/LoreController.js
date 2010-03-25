@@ -24,21 +24,30 @@ Components.utils.import("resource://mozmill/modules/jum.js", jumlib);
 
 var EXPORTED_SYMBOLS = ['LoreController'];
 
-	
+/**
+ * Convience singleton class that provides some helper functions
+ * @singleton 
+ * @class LoreController
+ * @param {Object} controller
+ * @param {Object} elementslib
+ */
 LoreController = {
 	
 		init: function (controller, elementslib){
 	
-		this.overlay=  controller.window.loreoverlay;
-		this.anno=  controller.window.document.getElementById('annographiframe').contentWindow;
-		this.annoDoc= controller.window.document.getElementById('annographiframe').contentWindow.document;
-		this.co= controller.window.document.getElementById('graphiframe').contentWindow;
-		this.coDoc= controller.window.document.getElementById('graphiframe').contentWindow.document;
-		this.win= controller.window;
-		this.controller = controller;
-		this.elementslib = elementslib;
+			// store controller and elementlib as they're not avaiable in the module
+			// as globals
+			// the rest are shortcuts
+			this.overlay=  controller.window.loreoverlay;
+			this.anno=  controller.window.document.getElementById('annographiframe').contentWindow;
+			this.annoDoc= controller.window.document.getElementById('annographiframe').contentWindow.document;
+			this.co= controller.window.document.getElementById('graphiframe').contentWindow;
+			this.coDoc= controller.window.document.getElementById('graphiframe').contentWindow.document;
+			this.win= controller.window;
+			this.controller = controller;
+			this.elementslib = elementslib;
 				
-		//TODO: Would be better to load from JSON file.
+		//TODO: #185 - Would be better to load from JSON file.
 		this.testPreferences = {
 			annoserver: "http://maenad-auselit.cloud.itee.uq.edu.au/danno/annotea",
 			dccreator: "Test User",
@@ -50,10 +59,31 @@ LoreController = {
 		return this;
 	},
 		
+		/**
+		 * Wait for event to occur
+		 * @param {Object} pre 		Function to call before entering wait loop
+		 * @param {Object} observee Object to listen to for event
+		 * @param {Object} event	The event to listen for
+		 * @param {Object} timeout	How long to wait for event to occur before failing
+		 * @param {Object} interval	How often to check for event occurance
+		 * @param {Object} msg		The assertion message
+		 * @param {Object} fail		Is this supposed to intentionally fail?
+		 */
 		waitForEvent: function(pre, observee, event, timeout, interval, msg, fail){
 			this.recurringWaitForEvent(pre, observee, event, function () { return true}, timeout, interval, msg, fail);
 		},
-			
+		
+		/* 
+		 * Wait for event to occur and for condition to be come true
+		 * @param {Object} pre 		Function to call before entering wait loop
+		 * @param {Object} observee Object to listen to for event
+		 * @param {Object} event	The event to listen for
+		 * @param {Object} condition The function called when event occurs to determine whether success or fail and keep listening
+		 * @param {Object} timeout	How long to wait for event to occur before failing
+		 * @param {Object} interval	How often to check for event occurance
+		 * @param {Object} msg		The assertion message
+		 * @param {Object} fail		Is this supposed to intentionally fail?
+		 */	
 		recurringWaitForEvent: function(pre, observee, event, condition, timeout, interval, msg, fail){
 			//this.anno.lore.debug.anno('waitForTreeNodeInsert - start ', arguments);
 			var eventOccurred = false,
@@ -62,9 +92,11 @@ LoreController = {
 			if (!interval) 
 				interval = 100;
 			
+			// call when event occurs
 			var eventHandler = function(){
 				try {
 					eventOccurred = true;
+					// if event hasn't been successful so far check for condition
 					if (!eventSuccessful) {
 						if (condition.apply(this, arguments)) 
 							eventSuccessful = true;
@@ -74,13 +106,13 @@ LoreController = {
 					controller.window.alert(e);
 				}
 			};
-			
+			// attach event handler
 			observee.on(event, eventHandler, this);
 			var millis = 0;
-			if (pre) 
+			if (pre)	// callback before going into  wait 
 				pre();
 			
-			//this.anno.lore.debug.anno('polling');
+			
 			while (!eventSuccessful && (millis < timeout)) {
 				millis += interval;
 				this.controller.sleep(interval);
@@ -95,15 +127,35 @@ LoreController = {
 				jumlib.assertFalse(eventSuccessful, msg || event + " unsuccessful.");
 			
 		},
-		
+		/**
+		 * Wait for 'append' event on a treenode
+		 * @param {Object} pre
+		 * @param {Object} parent
+		 * @param {Object} timeout
+		 * @param {Object} interval
+		 * @param {Object} fail
+		 */
 		waitForTreeNodeInsert: function(pre, parent, timeout, interval, fail){
 			this.waitForEvent(pre, parent, 'append', timeout, interval, 'Node inserted', fail);
 		},
 		
+		/**
+		 * Wait for 'remove' event on a treenode
+		 * @param {Object} pre
+		 * @param {Object} parent
+		 * @param {Object} timeout
+		 * @param {Object} interval
+		 * @param {Object} fail
+		 */
 		waitForTreeNodeRemoval: function(pre, parent, timeout, interval, fail) {
 			this.waitForEvent(pre, parent, 'remove', timeout, interval, 'Node removed', fail);
 		},
 		
+		/**
+		 * Assert a list of values
+		 * @param {Object} window
+		 * @param {Object} values
+		 */
 		assertValues: function(window, values){
 			for (var name in values) {
 				//this.anno.lore.debug.anno('checking ' + name + ' to be value: ' + values[name]);
@@ -111,7 +163,11 @@ LoreController = {
 			}
 		},
 		
-		//TODO: Replace with firefox test profile run via command line
+		//TODO: #185 -Replace with firefox test profile run via command line
+		/**
+		 * Save existing preferences and load testing preferences or vice-versa
+		 * @param {Object} push
+		 */
 		pushPopTestPreferences: function(push){
 			var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
 			prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
@@ -141,6 +197,10 @@ LoreController = {
 			
 		},
 		
+		/**
+		 * Attempt to Open LORE and assert that it occurred
+		 * @param {Object} annotations
+		 */
 		openLore : function (annotations){
 			var isVisibleFunc = annotations ? this.overlay.annotationsVisible:this.overlay.compoundObjectsVisible;
    			if (!isVisibleFunc()) {

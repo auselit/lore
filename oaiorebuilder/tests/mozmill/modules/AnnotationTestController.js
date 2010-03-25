@@ -31,10 +31,23 @@ var EXPORTED_SYMBOLS = ['AnnotationTestController'];
 
  
 
-
+/**
+ * 
+ * @param {Object} controller
+ * @param {Object} loreController
+ * @param {Object} elementslib
+ */
 AnnotationTestController = {
 	
+	/**
+	 * 
+	 * @param {Object} controller
+	 * @param {Object} loreController
+	 * @param {Object} elementslib
+	 */
 	init: function(controller, loreController, elementslib){
+		// use globals, as the scope of the this operator may unforseeably change, and since this
+		// is meant to be a singleton, then no problems
 		_overlay = this.overlay=  controller.window.loreoverlay;
 		_anno = this.anno =  controller.window.document.getElementById('annographiframe').contentWindow;
 		_annoDoc = this.annoDoc= controller.window.document.getElementById('annographiframe').contentWindow.document;
@@ -48,13 +61,20 @@ AnnotationTestController = {
 		return this;
 	},
 
-		
+	/**
+	 * For 'annochanged' event to occur
+	 * @param {Object} pre
+	 * @param {Object} page
+	 * @param {Object} timeout
+	 * @param {Object} interval
+	 * @param {Object} fail
+	 */
 	waitForCurrentAnnoSelection: function(pre, page, timeout, interval, fail){
 		_loreController.waitForEvent(pre, page, 'annochanged', timeout, interval, 'Annotation Selection Changed', fail);
 	},
 		
 	/**
-	 * Delete all annotations currently in the data store.
+	 * Delete all annotations currently in the data store. Used for clean up
 	 */
 	deleteAllInStore: function(){
 		var annods = _anno.lore.anno.annoMan.annods;
@@ -237,7 +257,11 @@ AnnotationTestController = {
 			_controller.window.alert(e);
 		}
 	},
-		
+	
+	/**
+	 * Assert that the values for specfici fields in the editor match those supplied as a parameter.
+	 * @param {Object} data
+	 */
 	assertEditorValues : function (data) {
 		 
 		// editor panel should appear
@@ -247,7 +271,7 @@ AnnotationTestController = {
 		var bodyCmp = _anno.lore.anno.ui.formpanel.getComponent("body");
 		var val = lore.global.util.trim(bodyCmp.getValue());
 		
-		//TODO: Context and Tags field
+		//TODO: #185 - Context and Tags field
 		_loreController.assertValues(_annoDoc, {
 			"annotationslistform_typecombo": data.type,
 			"annotationslistform_title": data.title,
@@ -272,6 +296,10 @@ AnnotationTestController = {
 		jumlib.assertTrue(val.indexOf(data.body) != -1, "Body is somewhat equal to expected. expected be in body: " + data.body + " actual body: " + val);
 	},
 	
+	/**
+	 * Given a dom node, select it's contents for the current content window
+	 * @param {Object} node
+	 */
 	setTextSelection: function(node ) {
 		var window = lore.global.util.getContentWindow(_controller.window);
 		var document = window.document;
@@ -285,7 +313,14 @@ AnnotationTestController = {
 		sel.addRange(range);
 	},
 	
+	/**
+	 * Add one or more annotations
+	 * @param {Object} amount
+	 * @param {Object} selection
+	 * @param {Object} altFunc
+	 */
 	addAnnotation : function (amount, selection, altFunc) {
+		// how add operation is fired
 		altFunc = altFunc || _annoController.addClick;
 		// tree node should be inserted
 		var treeunsaved = _anno.lore.anno.ui.treeunsaved;
@@ -293,16 +328,18 @@ AnnotationTestController = {
 		
 		for (var i = 0; i < amount; i++) {
 			
+			// wait for tree node to be inserted
 			var oldLength = treeunsaved.childNodes.length;
 			var oldLastChild = treeunsaved.lastChild;
 			_loreController.waitForTreeNodeInsert( altFunc, treeunsaved, 5000, 100);
 			var newLength = treeunsaved.childNodes.length;
 			var newLastChild = treeunsaved.lastChild;
+			// check number of nodes
 			jumlib.assertTrue(oldLength + 1 == newLength, "Node count increased by 1. old: " + oldLength + " new: " + newLength);
 			jumlib.assertTrue(oldLastChild != newLastChild, "Node was appended to end of list");;
 			nodes.push(newLastChild);
 			
-			// node supplied
+			// editor values
 			_annoController.assertEditorValues({ type: "Comment",
 								title: "New Annotation",
 								body: "",  
@@ -314,22 +351,38 @@ AnnotationTestController = {
 		return nodes;
 	},
 	
+	/**
+	 * Delete an annotation
+	 * @param {Object} node
+	 * @param {Object} altFunc
+	 * @param {Object} noclick
+	 */
 	deleteAnnotation : function (node, altFunc, noclick){
 		var t = this;
+		
+		// wait for selection if noclick not supplied
 		if (!noclick) {
 			_annoController.waitForCurrentAnnoSelection(function(){
 				t.treeNodeClick(node);
 			}, _loreController.anno.lore.anno.ui.page, 5000, 100);
 		}
+		
+		// call operation that triggers deletion
 		altFunc ? altFunc(): _annoController.deleteClick();
-		_controller.sleep(100); // wait for messagebox pop-up
+		_controller.sleep(100); // wait for messagebox pop-up 'Yes/No delete this annotation...'
 		var parent = node.parentNode || _loreController.anno.lore.anno.ui.treeroot;
+		
 		var oldLength = _annoController.childNodesCount(parent); 
 		_loreController.waitForTreeNodeRemoval(_annoController.clickYesDeleteDialog, parent, 5000,100);
 		var newLength =  _annoController.childNodesCount(parent);  
 		jumlib.assertTrue(oldLength - 1 == newLength, "Node has been deleted. old: " + oldLength + " new: " + newLength);
 	},
 	
+	/**
+	 * Recurse through node and find all of it's children and return number
+	 * @return {Integer} total number of children
+	 * @param {Object} root
+	 */
 	childNodesCount : function (root) {
 		var count = 0;
 		for ( var i =0; i < root.childNodes.length; i++ ) {
@@ -340,7 +393,34 @@ AnnotationTestController = {
 		return count + root.childNodes.length;
 	},
 	
-	// use globals for these functions as the 'this' scope may vary  
+	/**
+	 * Helper function to retrieve the domnode from an array of button usually supplied by getter
+	 * in Ext for dialogs and forms. Can be used to determine the element for use with elementlib.Elem(_domnode_)
+	 * @param {Object} btns
+	 * @param {Object} targetText
+	 */
+	domNodeFromButtonArray : function(btns, targetText) {
+			for (var i=0; i < btns.length; i++) {
+				if (btns[i].getText() == targetText) {
+					// get the dom element, and fire the event off via DOM
+					return btns[i].btnEl.dom;
+				}
+			}
+		return null;		 
+	},
+	
+	/**
+	 * Replace the existing value of a field by SELECT+A ( select all) and typing which results
+	 * in an overwrite
+	 */
+	replaceElemValue :  function(elem, value){
+		_controller.keypress(elem,"a", {ctrlKey:true, altKey:false,shiftKey:false, metaKey:false});
+		_controller.type(elem, 	value);
+		
+	},
+	
+	// Recreated UI Operations that trigger the operations under test
+	   
 	hideEditorClick: function () {
 		_controller.click(new _elementslib.ID(_controller.window.frames[3].document, "ext-gen101"));
 	},
@@ -370,16 +450,10 @@ AnnotationTestController = {
 		_controller.waitThenClick(new _elementslib.ID(_controller.window.document, "edit_" + node.id));
 	},
 	
-	domNodeFromButtonArray : function(btns, targetText) {
-			for (var i=0; i < btns.length; i++) {
-				if (btns[i].getText() == targetText) {
-					// get the dom element, and fire the event off via DOM
-					return btns[i].btnEl.dom;
-				}
-			}
-		return null;		 
-	},
-	
+	/**
+	 * When dialog pop ups on delete asking for confirmation this finds the dom node for the 'yes' button
+	 * and fires a click event on it
+	 */
 	clickYesDeleteDialog : function () {
 		if (!_annoController.clickYesDeleteDialog.dom ) {
 			_annoController.clickYesDeleteDialog.dom = _annoController.domNodeFromButtonArray(_loreController.anno.Ext.MessageBox.getDialog().buttons, "Yes");
@@ -387,12 +461,6 @@ AnnotationTestController = {
 		_controller.click(new _elementslib.Elem(_annoController.clickYesDeleteDialog.dom));
 	},
 	
-	replaceElemValue :  function(elem, value){
-		_controller.keypress(elem,"a", {ctrlKey:true, altKey:false,shiftKey:false, metaKey:false});
-		_controller.type(elem, 	value);
-		
-	},
-
 	saveClick: function() {
 		_controller.click(new _elementslib.ID(_controller.window.document, 'save-annotation'));
 	},
@@ -405,7 +473,7 @@ AnnotationTestController = {
 		_controller.click(new _elementslib.ID(_controller.window.document, 'show-annotations'));
 	},
 	
-	//TODO: work around for buttons required
+	//TODO:#185- Ext IDs shouldn't be used need a work around, perhaps solution can utilize domNodeFromButtonArray()
 
 	hideEditorClick:function() {
 		_controller.click(new _elementslib.ID(_controller.window.frames[3].document, "ext-gen101"));
@@ -434,10 +502,17 @@ AnnotationTestController = {
 		_controller.click(new _elementslib.ID(_controller.window.document, "remove-annotation"));
 	},
 	
- 	replyToAnnotation : function (amount, node, expected, altFunc ) {
+ 	/**
+ 	 * Reply to an annotation
+ 	 * @param {Object} amount
+ 	 * @param {Object} node
+ 	 * @param {Object} expected
+ 	 * @param {Object} altFunc
+ 	 */
+	replyToAnnotation : function (amount, node, expected, altFunc ) {
 		 
 			// tree node should be inserted
-			
+			// operation to fire reply 
 			altFunc = altFunc || _annoController.replyClick;
 			
 			for (var i = 0; i < amount; i++) {
@@ -456,8 +531,14 @@ AnnotationTestController = {
 			} 
 	},
 	
+	/**
+	 * Delete an annotation in the 'unsaved changes' tree.
+	 * @param {Object} amount
+	 * @param {Object} altFunc
+	 */
 	deleteUnsaved : function (amount, altFunc ) {
 		var treeunsaved = _loreController.anno.lore.anno.ui.treeunsaved;
+		// add X number of annotations
 		_annoController.addAnnotation(amount);
 		
 		var clickLastAdded = function () {
@@ -466,6 +547,7 @@ AnnotationTestController = {
 		
 		var oldLength = treeunsaved.childNodes.length;
 		_loreController.waitForTreeNodeRemoval(_annoController.deleteClick, treeunsaved, 5000,100);
+		// remove X number of annotations from unsaved
 		for ( var i =0; i < (amount-1); i++ ) {
 			_annoController.waitForCurrentAnnoSelection(_annoController.clickLastAdded, _loreController.anno.lore.anno.ui.page,5000,100);
 			_loreController.waitForTreeNodeRemoval(altFunc || _annoController.deleteClick, treeunsaved, 5000,100);	
@@ -475,6 +557,13 @@ AnnotationTestController = {
 		jumlib.assertTrue(oldLength - amount == newLength, "Nodes have been deleted. old: " + oldLength + " new: " + newLength);
 	},
 	
+	/**
+	 * Edit annotation asserting values in editor panel before and after changes applied
+	 * @param {Object} node
+	 * @param {Object} expected
+	 * @param {Object} changes
+	 * @param {Object} altFunc
+	 */
 	editAnnotation : function (node, expected, changes, altFunc ) {
 		_annoController.waitForCurrentAnnoSelection(function (){_annoController.treeNodeClick(node);},
 													_loreController.anno.lore.anno.ui.page, 5000, 100);
@@ -510,6 +599,7 @@ AnnotationTestController = {
 		jumlib.assertNotNull(altNode, "Alternative node to click exists");
 		var treeunsaved = _loreController.anno.lore.anno.ui.treeunsaved;
 		var oldLength = treeunsaved.childNodes.length;
+		
 		if (altNode) {
 			
 			_loreController.waitForTreeNodeInsert( function (){
@@ -539,6 +629,9 @@ AnnotationTestController = {
 		
 	},
 
+	/**
+ 	 * Save one or more annotations
+ 	*/
 	saveAnnotation : function(nodes, expected, altFunc) {
 		altFunc = altFunc || _annoController.saveClick; 
 		
@@ -546,7 +639,7 @@ AnnotationTestController = {
 			altFunc();
 			// give time for the annotation bodies to load, was getting weird race conditions
 			// with deletions before the content was loaded
-			//TODO: func that waits for annotations to load ( atm could just be a sleep operator)
+			//TODO: #185 - Maybe more sophisticated wait for annotations to load 
 			_controller.sleep(2000);
 		};
 		
@@ -570,8 +663,10 @@ AnnotationTestController = {
 		
 	
 		var foundNodes = [];
-		var id = null; //node.id.replace('-unsaved','');
+		var id = null;  
 		
+		// find all annotation that are re-inserted into tree and ensure that the ones
+		// we've updated have been found
 		var condition = function(tree, parent, targetNode){
 				try {
 					lore.debug.anno('condition() called. targetNode: ' + targetNode, {
@@ -582,7 +677,7 @@ AnnotationTestController = {
 					var anno = _loreController.anno.lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods, targetNode.id).data
 
 					
-						//TODO: need more sophisticated way of matching anntation 
+					//TODO: #185 - Need more sophisticated way of matching anntation 
 					for (var i = 0; i < expected.length; i++) {
 						lore.debug.anno('anno titile:' + anno.title + ' expected title: ' + expected[i].title);
 						if (anno && anno.title == expected[i].title) {
@@ -614,11 +709,12 @@ AnnotationTestController = {
 		}
 			
 		_loreController.recurringWaitForEvent(pre, _loreController.anno.lore.anno.ui.treeroot, 'append', condition, 5000, 100, "Wait treenode/s which matches the saved treenode id/s to be inserted after save.");
+		// reinitialize node name/refernece map
 		_annoController.initTestNodeMap();
 		jumlib.assertTrue(foundNodes.length == nodes.length);
 		
 		for (var i = 0; i < foundNodes.length; i++) {
-		
+			// for each saved node, assert changes have been applied on the server
 			_annoController.waitForCurrentAnnoSelection(function(){
 				_annoController.treeNodeClick(foundNodes[i]);
 			}, _loreController.anno.lore.anno.ui.page, 5000, 100);
@@ -629,6 +725,9 @@ AnnotationTestController = {
 		
 	},
 	
+	/**
+	 * Recurse through nodes and generate a map of annotation titles and their node object reference
+	 */
 	initTestNodeMap : function(){
 		_annoController.testNodeMap = {};
 		
