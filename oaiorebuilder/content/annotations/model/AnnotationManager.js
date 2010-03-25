@@ -73,11 +73,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
          * @type Ext.data.JsonStore
          * The annotation store
 		 */								
-		this.annods = lore.anno.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
+		this.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								}),  config.url);
-		this.annodsunsaved =  lore.anno.annodsunsaved = new Ext.data.JsonStore({	fields: fields,
+		this.annodsunsaved =  new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								});
 								
@@ -86,7 +86,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
          * @type Ext.data.JsonStore
          * The annotation search data store
 		 */
-		this.annosearchds = lore.anno.annosearchds = new Ext.data.JsonStore({
+		this.annosearchds =  new Ext.data.JsonStore({
 									fields: fields,
 									data: {}
 								});
@@ -97,7 +97,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
          * @type Ext.data.JsonStore
          * The annotation metadata data store
 		 */
-		this.annousermetads = lore.anno.annousermetads = new Ext.data.JsonStore( {
+		this.annousermetads =  new Ext.data.JsonStore( {
 			fields: mfields,
 			data: {} 
 		})	

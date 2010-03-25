@@ -18,8 +18,14 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @class
+ */
 lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
-	
+
+	/**
+	 * @constructor
+	 */	
 	initComponent: function(){
 			var t = this;
       	  	var formConfig = {

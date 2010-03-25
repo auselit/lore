@@ -20,8 +20,14 @@
 
 
 
+/**
+ * @class
+ */
 lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 
+	/**
+	 * @constructor
+	 */
 	initComponent: function(){
       	  	try {
 				Ext.apply ( this, {
