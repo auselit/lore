@@ -19,11 +19,14 @@
  */
 
 /**
- * @class
+ * Object that encapsulates a search screen for annotations
+ * @class lore.anno.ui.SearchPanel
+ * @extends Ext.Panel
  */
 lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 
 	/**
+	 * Load configuration options and generate search GUI
 	 * @constructor
 	 */	
 	initComponent: function(){
@@ -232,12 +235,14 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 				var filters = [];
 				for (var e in vals) {
 					var v = vals[e];
-					
+					// for each of the fields, determine whether they have a value
+					// supplied and add them as a search filter if they do have a value
 					if (v && e != 'url') {
 						v = this.sform.findField(e).getValue()
 						if (e.indexOf('date') == 0) {
 							v = v.format("c");
 						}
+						
 						filters.push({
 							attribute: searchParams[e],
 							filter: v
@@ -246,7 +251,10 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 				}
 				var t= this;
 				lore.anno.ui.loreInfo("Searching...");
+				// perform search
 				this.annoManager.searchAnnotations(vals['url']!='' ? vals['url']:null, filters, function(result, resp){
+					// data store will be updated and grid will auto update, all have to do
+					// recalc layout
 	 				lore.debug.anno("result from search: " + result, resp);
 					lore.anno.ui.loreInfo("Search Finished");
 					t.sgrid.doLayout();
@@ -257,10 +265,17 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 			
 		},
 		
+		/**
+		* Generated ID for a sub-component of this component
+		* @param id Id of sub-component
+		*/
 		genID: function ( id ) {
 			return this.id + "_" + id;
 		},
-		
+			 /**
+   * Retrieve sub-component of this component
+   * @param {Object} id Id of sub-component
+   */
 		getComponent: function ( id) {
 			return Ext.getCmp(this.genID(id));
 		}

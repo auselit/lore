@@ -19,7 +19,15 @@
  */
 
 /*
- * @include  "/oaiorebuilder/content/annotations/annotations.js"
+ * @include  "/oaiorebuilder/content/annotations/model/AnnotationManager.js"
+ * @include  "/oaiorebuilder/content/annotations/model/PageData.js"
+ * @include  "/oaiorebuilder/content/annotations/ui/PageView.js"
+ * @include  "/oaiorebuilder/content/annotations/ui/Marker.js"
+ * @include  "/oaiorebuilder/content/annotations/ui/EditorPanel.js"
+ * @include  "/oaiorebuilder/content/annotations/ui/ColumnTree.js"
+ * @include  "/oaiorebuilder/content/annotations/ui/SearchPanel.js"
+ * @include  "/oaiorebuilder/content/annotations/ui/TimelinePanel.js"
+ * @include  "/oaiorebuilder/content/annotations/model/Preferences.js"
  * @include  "/oaiorebuilder/content/debug.js"
  * @include  "/oaiorebuilder/content/util.js"
  * @include  "/oaiorebuilder/content/uiglobal.js"
@@ -447,7 +455,30 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 	}
 	lore.anno.ui.loadedURL = contextURL;
 }
+
+/**
+ * When the page is refreshed, clear page data, re-enable highlighting
+ * and clear the currently selected annotation 
+ */
+lore.anno.ui.handleContentPageRefresh = function () {
+	lore.debug.anno("page refreshed");
 	
+	try {
+		if (lore.anno.ui.page) 
+			lore.anno.ui.page.clear();
+		else 
+			lore.anno.ui.initPage(lore.anno.annoMan.annods);
+		
+		lore.anno.ui.pageui.enableImageHighlighting();
+		lore.anno.ui.page.setCurrentAnno();
+		Ext.getCmp("annosourcestree").getSelectionModel().clearSelections();
+	} catch(e ){
+		lore.debug.anno("refreshPage(): " + e, e);
+	}
+	 
+	
+}
+
 	
 /*
  * topView Toolbar Handlers
@@ -577,13 +608,17 @@ lore.anno.ui.handleDeleteAnnotation2 = function(){
 	
 /**
  * Save all annotation changes
- */		
+ * @param {Object} uri Not currently used
+ */
+ 
 lore.anno.ui.handleSaveAllAnnotationChanges = function(uri ){
 	try {
 		
+		// update existing annotation if needed before saving occurs
 		lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno, true);
+		
 		if( lore.anno.ui.page.curSelAnno.data.isNew()) 
-			lore.anno.ui.page.setCurrentAnno();		// if new, this will be saved and removed from unsaved tree
+			lore.anno.ui.page.setCurrentAnno();		// if new, this will be saved and removed from unsaved tree, so set current anno to blank
 			
 		lore.anno.annoMan.updateAnnotations(lore.anno.ui.currentURL, function(action, result, resultMsg, anno){
 			try {
@@ -631,7 +666,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 		lore.anno.ui.updateAnnoFromForm(anno, true);
 		
 		
-		// if the record isn't found on the current page tree and it's variation annotation
+		// if the record isn't found on the current page tree and it's a variation annotation
 		// then need update to tree as it should appear once the save is complete 
 		var refresh = anno.data.type == (lore.constants.NAMESPACES["vanno"] + "VariationAnnotation")
 		&& 	(lore.anno.ui.findNode(anno.data.id, lore.anno.ui.treeroot) == null);
@@ -660,8 +695,8 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 	
 	
 /**
- * 
- * @param {Object} evt
+ * Add the annotations for the selected search result rows to the compound object editor
+ * @param {Object} evt Not Used
  */	
 lore.anno.ui.handleAddResultsToCO = function(evt){
 	try {
@@ -677,7 +712,7 @@ lore.anno.ui.handleAddResultsToCO = function(evt){
 }
 	
 /**
- * 
+ * Toggle on and off the annotation highlighting for all annotations
  */
 lore.anno.ui.handleToggleAllAnnotations = function () {
 	lore.anno.ui.pageui.toggleAllAnnotations();
@@ -694,7 +729,7 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 	lore.anno.ui.views.activate('treeview');
 	try {
 		var rec;
-		if (!arg) { //toolbar
+		if (!arg) { // request comes from toolbar
 			rec = lore.anno.ui.page.curSelAnno;
 			if (!rec)
 				return;
@@ -726,7 +761,7 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 /**
 * When the edit link from the timeline popup is clicked, load the supplied annotation into the form editor and show it.
 *
-* @param {Object} id The id of the annotation to load in the form editor
+* @param {String} id The id of the annotation to load in the form editor
 */
 lore.anno.ui.handleEditTimeline = function ( id ) {
 	try{
@@ -808,32 +843,3 @@ lore.anno.ui.handleSerialize = function (format ) {
 	}
 }
 
-/**
- * 
- * @param {Object} uri
- */
-lore.anno.ui.handleClose = function(uri) {
-	lore.anno.ui.handleSaveAllAnnotationChanges(uri);
-}
-
-/**
- * 
- */
-lore.anno.ui.handleContentPageRefresh = function () {
-	lore.debug.anno("page refreshed");
-	
-	try {
-		if (lore.anno.ui.page) 
-			lore.anno.ui.page.clear();
-		else 
-			lore.anno.ui.initPage(lore.anno.annoMan.annods);
-		
-		lore.anno.ui.pageui.enableImageHighlighting();
-		lore.anno.ui.page.setCurrentAnno();
-		Ext.getCmp("annosourcestree").getSelectionModel().clearSelections();
-	} catch(e ){
-		lore.debug.anno("refreshPage(): " + e, e);
-	}
-	 
-	
-}

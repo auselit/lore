@@ -19,7 +19,8 @@
  */
 
 /*
- * @include  "/oaiorebuilder/content/annotations/annotations.js"
+ * @include  "/oaiorebuilder/content/annotations/model/Annotation.js"
+ * @include  "/oaiorebuilder/content/annotations/ui/EditorPanel.js"
  * @include  "/oaiorebuilder/content/debug.js"
  * @include  "/oaiorebuilder/content/util.js"
  * @include  "/oaiorebuilder/content/uiglobal.js"
@@ -144,8 +145,14 @@ lore.anno.ui.loreWarning = function(message){
 /**
  * Generate annotation caption for the given annotation using the formatting
  * string
- * @param {Object} anno The annotation to retrieve the information from
- * @param {String} formatStr Formatting string. The following
+ * @param {Annotation} anno The annotation to retrieve the information from
+ * @param {String} formatStr Formatting string. The follow characters are interpreted as:
+ * t: The annotation Type
+ * c: The annotation Creator
+ * d: The annotation Creation Date short date
+ * D: the annotation Creation Date long date
+ * r: The number of replies for this annotation
+ * The \ character escapes these characters.
  */
 lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
 	var buf = '';
@@ -236,7 +243,12 @@ lore.anno.ui.getAnnoTitle = function(anno){
 	}
 	return title;
 }
-		
+
+/**
+ * Retrieve the icon for the annotation depending on it's type
+ * @param {Annotation} anno
+ * @return {String} css class for icon
+ */
 lore.anno.ui.getAnnoTypeIcon = function(anno){
 	var aType = lore.global.util.splitTerm(anno.type).term;
 	var icons = {
@@ -251,6 +263,7 @@ lore.anno.ui.getAnnoTypeIcon = function(anno){
 		
 /**
  * Show/hide a field on a form
+ * @param {Form} form The form
  * @param {String} fieldName The field name to set the visibility of
  * @param {Boolean} hide (Optional)Specify whether to hide the field or not. Defaults to false
  */
@@ -276,6 +289,7 @@ lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
 		
 /**
  * Hide list of form fields
+ * @param {Form} form The form
  * @param {Array} fieldNameArr List of fields to hide
  */
 lore.anno.ui.hideFormFields = function(form, fieldNameArr){
@@ -286,6 +300,7 @@ lore.anno.ui.hideFormFields = function(form, fieldNameArr){
 
 /**
  * Show list of form fields
+ * @param {Form} form The form
  * @param {Array} fieldNameArr List of fields to show
  */
 lore.anno.ui.showFormFields = function(form, fieldNameArr){
@@ -294,6 +309,13 @@ lore.anno.ui.showFormFields = function(form, fieldNameArr){
 	}
 }
 
+/**
+ * Determine whether any field has been modified on the form
+ * This is provided by Ext also, but this function contains
+ * debug info
+ * @param {Object} form
+ * @return {Boolean}
+ */
 lore.anno.ui.isFormDirty = function(form ) {
 	 var dirtyList = [];
 	 var isDirty = false;
@@ -335,21 +357,19 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
 }
 
 /**
- * 
- * @param {Object} node
+ * Convert a tree node id to it's corresponding record id
+ * @param {TreeNode} node
  */
 lore.anno.ui.nodeIdToRecId = function(node) {
-			return node.id.replace("-unsaved", "");
+	return node.id.replace("-unsaved", "");
 }
 		
 /**
  * Generate the tree node text
- * @param {Object} anno Annotation to generate the node text for
+ * @param {Annotation} anno Annotation to generate the node text for
  */
 lore.anno.ui.genTreeNodeText = function(anno){
-		
 	return lore.anno.ui.genDescription(anno, true);
-		
 }
 
 /**
@@ -361,8 +381,10 @@ lore.anno.ui.launchFieldWindow = function(field){
 }
 
 /**
- * 
+ * Detemerine whether the triple object supplied is a relationship
+ * understandable by a user
  * @param {Object} triple
+ * @return {Boolean} 
  */
 lore.anno.ui.isHumanReadableTriple = function( triple) {
 	var valid = ["isRecordFor", "birthName", "alternateName", "usesPseudoAgent", "birthOf", "deathOf", "gender", "biography",
@@ -374,6 +396,7 @@ lore.anno.ui.isHumanReadableTriple = function( triple) {
 	//manifestation
 	valid = valid.concat( ['hasReprint']);
 	
+	// don't process if it's a blank nodes
 	if ( triple.source && triple.subject.type != 'bnode') {
 	 	var rel = triple.property.toString();
 		
@@ -384,12 +407,12 @@ lore.anno.ui.isHumanReadableTriple = function( triple) {
 		}
 	} 
 	return false;
-//	return true;
 }
 
 /**
- * 
+ * Retrieve the term from the URI 
  * @param {Object} prop
+ * @return {String}
  */
 lore.anno.ui.tripleURIToString = function ( prop) {
 			prop = prop.toString();
@@ -425,9 +448,10 @@ lore.anno.ui.tripleURIToString = function ( prop) {
 }*/
 
 /**
- * 
- * @param {Object} type
- * @param {Object} domObj
+ * Callback for setting the default DOM styles for an annotation
+ * span
+ * @param {Integer} type Annotation Type, either 0: Text 1: Image
+ * @param {Object} domObj The object the style applies to
  */
 lore.anno.ui.setCurAnnoStyle = function(type, domObj){
 	
@@ -442,8 +466,9 @@ lore.anno.ui.setCurAnnoStyle = function(type, domObj){
 
 /**
  * Update the image scale information if necessary
- * @param {Object} img
- * @param {Object} doc
+ * @param {Object} img The DOM node for the image
+ * @param {Object} doc The target document that the node belongs to
+ * @return {Object} scale data
  */ 
 lore.anno.ui.updateImageData = function (img, doc) {
 	var _img = $(img);
@@ -463,6 +488,7 @@ lore.anno.ui.updateImageData = function (img, doc) {
  * @param {Element} img DOM element for the image i.e <img>
  * @param {Object} coords Object containing the co-ordinates and scale factor {x1,y1,x2,y2,sx,sy}
  * @param {Object} doc The target document 
+ * @return {Object} Scaled co-ordinates and the scale factor
  */
 lore.anno.ui.scaleImageCoords = function (img, coords, doc) {
 	var scale = lore.anno.ui.updateImageData(img, doc); 
@@ -483,6 +509,7 @@ lore.anno.ui.scaleImageCoords = function (img, coords, doc) {
  * Calculate the image's absolute position on the page
  * @param {Object} img DOM element for image i.e <img>
  * @param {Object} doc The target document
+ * @return {Object} left and top absolute co-ordinates
  */
 lore.anno.ui.calcImageOffsets = function(img, doc){
 	var _img = $(img);

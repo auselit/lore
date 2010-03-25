@@ -27,11 +27,12 @@
  */
 
 /** 
- * Annotations
+ * AnnotationManager
+ * Contains operations that are performed on annotations and the data stores
+ * for the annotations.
  * @singleton
- * @class lore.anno
+ * @class lore.anno.AnnotationManager
  */
-
 
 lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	/**
@@ -182,7 +183,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Add an annotation to the local store. This does not add the annotation
 	 * to the remote repository
 	 * @param {String} currentContext Page context of the annotation. XPath string currently supported.
-	 * @param {Object} currentURL The URL for the page this annotation is on
+	 * @param {String} currentURL The URL for the page this annotation is on
+	 * @param {Function} callback Function called once the annotation is created but hasn't yet been added to datastore
 	 * @param {Object} parent (Optional) The parent of this annotation
 	 */
 	addAnnotation : function(currentContext, currentURL, callback, parent){
@@ -239,23 +241,24 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var resultCounter = 0;
 		var t = this;
 		var result = function (request, action, anno) {
-		try {
-			resultCounter++;
-			
-			var result = 'success';
-			if( action == 'create' && request.status != 201 )
-				result = 'fail';
-			if ( action == 'update' && request.status != 200 )
-				result == 'fail';
-			resultCallback(action, result, request.statusText, anno);
+			try {
+				resultCounter++;
 				
-			if (resultCounter == modified.length) {
-				lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
-				t.updateAnnotationsSourceList(currentURL);
+				var result = 'success';
+				if( action == 'create' && request.status != 201 )
+					result = 'fail';
+				if ( action == 'update' && request.status != 200 )
+					result == 'fail';
+				resultCallback(action, result, request.statusText, anno);
+					
+				if (resultCounter == modified.length) {
+					// once all annotations have been updated, refresh  
+					lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+					t.updateAnnotationsSourceList(currentURL);
+				}
+			} catch (e ) {
+				lore.debug.anno(e,e);
 			}
-		} catch (e ) {
-			lore.debug.anno(e,e);
-		}
 		}
 			
 		
@@ -263,7 +266,12 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			this.sendUpdateRequest(modified[i], currentURL, result);
 		}
 	},
-	 
+	/**
+	 * Send an annotation update to server
+	 * @param {Object} anno The annotation
+	 * @param {Object} currentURL Not used 
+	 * @param {Object} resultCallback Callback when update finishes
+	 */
 	sendUpdateRequest : function(anno, currentURL, resultCallback){
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading datasource
@@ -634,7 +642,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	},
 	
 	/**
-	 * 
+	 * Search for annoations given the search parameters and update data searching data store
 	 * @param {String} url Specific URL to filter on. Can be NULL if all URLs should be searched.
 	 * @param {Object} filters An array of objects. The objects should have an 'attribute' and 'filter' attribute, where
 	 * 'attribute' is the name of the search parameter and 'filter' is the value to search on. 

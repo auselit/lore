@@ -18,15 +18,31 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Object which holds the current page data.  Data can be loaded
+ * and stored for a URL and is cached for later use.
+ * @class lore.anno.ui.PageData
+ * @extends Ext.util.Observable
+ * @param {Object} config
+ * model: The datastore 
+ */
 lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
     
-   /** @constructor */
+   /** 
+    * Setup annochanged event
+    * @constructor 
+    * @param {Object} config
+    */
     constructor: function (config){
 		this.model = config.model;
 		this.clear();
 		this.addEvents("annochanged");
 	},
 		
+	/**
+	 * Store the page data for the current URL in the cache.
+	 * @param {Object} url The URL
+	 */
 	store : function(url){
 		var update_ds = {
 			multiSelAnno: this.multiSelAnno.slice(),
@@ -42,6 +58,9 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 		lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, url);
 	},
 	
+	/**
+	 * Clear the current page data values
+	 */
 	clear : function () {
 		this.multiSelAnno = new Array();
 		this.colourForOwner = {};
@@ -52,6 +71,11 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 		this.metaSelections = [];
 	},
 	
+	/**
+	 * Load the current page data from the cache if it exists
+	 * @param {Object} url  The URL
+	 * @param {Object} clear If the data doesn't exist in the cache clear the values instead
+	 */
 	load : function(url, clear){
 		
 		var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, url);
@@ -75,7 +99,8 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	},
 	
 	/**
-	 * Store the annotation that is currently selected in the view
+	 * Store the annotation that is currently selected in the view.
+	 * Fires the 'annochanged' event
 	 * @param {Record} rec Record Currently selected annotation
 	 */
 	setCurrentAnno : function(rec, store){
@@ -85,6 +110,9 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 		this.fireEvent("annochanged", old, this.curSelAnno );
 	},
 	
+	/**
+	 * Retrieve the currently selected anno
+	 */
 	getCurrentAnno : function(){
 		return this.curSelAnno;
 	}
