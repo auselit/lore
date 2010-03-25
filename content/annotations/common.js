@@ -25,34 +25,31 @@
  * @include  "/oaiorebuilder/content/uiglobal.js"
  * @include  "/oaiorebuilder/content/constants.js"
  */
-	/*
-	 * General functions
-	 */
-		
+	 
 		
 		
 /**
-	 * Disable or enable the annotations view
-	 * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations
-	 */	
- 	lore.anno.ui.disableUIFeatures = function(opts){
-		lore.debug.ui("LORE Annotations: disable ui features?", opts);
-		lore.anno.ui.disabled = opts;
-		
-		// don't set visibility on start up 
-		if (!lore.anno.ui.disableUIFeatures.initialCall) {
-			lore.anno.ui.disableUIFeatures.initialCall = 1;
+ * Disable or enable the annotations view
+ * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations
+ */	
+lore.anno.ui.disableUIFeatures = function(opts){
+	lore.debug.ui("LORE Annotations: disable ui features?", opts);
+	lore.anno.ui.disabled = opts;
+	
+	// don't set visibility on start up 
+	if (!lore.anno.ui.disableUIFeatures.initialCall) {
+		lore.anno.ui.disableUIFeatures.initialCall = 1;
+	}
+	else {
+	
+		if (opts.disable) {
+			lore.anno.ui.topView.setAnnotationsVisibility(false);
 		}
 		else {
-		
-			if (opts.disable) {
-				lore.anno.ui.topView.setAnnotationsVisibility(false);
-			}
-			else {
-				lore.anno.ui.topView.setAnnotationsVisibility(true);
-			}
+			lore.anno.ui.topView.setAnnotationsVisibility(true);
 		}
 	}
+}
 
 
 /** Helper function to create a view displayed in a closeable tab */
@@ -70,247 +67,246 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 	tab.show();
 }
 		
-		/**
-		 * Output a message to notification window
-		 * @param {String} message Notification message
-		 * @param {Object} iconCls CSS Class for notification icon
-		 */
-		lore.anno.ui.loreMsg = function(message, iconCls){
+/**
+ * Output a message to notification window
+ * @param {String} message Notification message
+ * @param {Object} iconCls CSS Class for notification icon
+ */
+lore.anno.ui.loreMsg = function(message, iconCls){
+	try {
+		if (!lore.anno.ui.loreMsg.Stack) {
+			lore.anno.ui.loreMsg.stack = [];
+		}
+		iconCls = iconCls || '';
+		//message = '<div class="status-bubble-icon ' + iconCls + '"></div><div class="status-bubble-msg">' + message + "</div>";
+		
+		 var statusopts = {
+            'text': message,
+            'iconCls': iconCls ,
+            'clear': {
+                'wait': 3000
+            }
+		};
+		 	Ext.getCmp("status").setStatus(statusopts);	
+		 
+		lore.anno.ui.loreMsg.stack.push(message);
+		window.setTimeout(function(){
 			try {
-				if (!lore.anno.ui.loreMsg.Stack) {
-					lore.anno.ui.loreMsg.stack = [];
+				if (lore.anno.ui.loreMsg.stack.length == 1) {
+					lore.anno.ui.loreMsg.stack.pop();
+				//	Ext.Msg.hide();
 				}
-				iconCls = iconCls || '';
-				//message = '<div class="status-bubble-icon ' + iconCls + '"></div><div class="status-bubble-msg">' + message + "</div>";
-				
-				 var statusopts = {
-		            'text': message,
-		            'iconCls': iconCls ,
-		            'clear': {
-		                'wait': 3000
-		            }
-    			};
-   			 	Ext.getCmp("status").setStatus(statusopts);	
-				 
-				lore.anno.ui.loreMsg.stack.push(message);
-				window.setTimeout(function(){
-					try {
-						if (lore.anno.ui.loreMsg.stack.length == 1) {
-							lore.anno.ui.loreMsg.stack.pop();
-						//	Ext.Msg.hide();
-						}
-						else {
-							lore.anno.ui.loreMsg.stack.splice(0, 1);
-						//	Ext.Msg.updateText(lore.anno.ui.loreMsg.stack.join('<br/>'));
-						//	var w = Ext.Msg.getDialog();
-						//	w.setPosition(0, window.innerHeight - w.getBox().height);
-						}
-					} 
-					catch (e) {
-						lore.debug.ui(e, e);
-					}
-				}, 3000);
-			} catch (e) {
-				lore.debug.anno(e,e);
-			}
-			
-		}
-		
-		/**
-		 * Output a notification to notification window
-		 * @param {String} message Notification message
-		 */
-		lore.anno.ui.loreInfo = function(message){
-			lore.anno.ui.loreMsg(message, 'info-icon');
-			lore.global.ui.loreInfo(message);
-		}
-		
-		/**
-		 * Output a error message to notification window
-		 * @param {String} message Erro message
-		 */
-		lore.anno.ui.loreError = function(message){
-			lore.anno.ui.loreMsg(message, 'error-icon');
-			lore.global.ui.loreError(message);
-			
-		}
-		
-		/**
-		 * Output a warning to notification window
-		 * @param {String} message Warning message
-		 */
-		lore.anno.ui.loreWarning = function(message){
-			lore.anno.ui.loreMsg(message, 'warning-icon');
-			lore.global.ui.loreWarning(message);
-		}
-		
-		
-			/**
-		 * Generate annotation caption for the given annotation using the formatting
-		 * string
-		 * @param {Object} anno The annotation to retrieve the information from
-		 * @param {String} formatStr Formatting string. The following
-		 */
-		lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
-			var buf = '';
-			
-			
-			for (var i = 0; i < formatStr.length; i++) {
-				switch (formatStr[i]) {
-					case 't':
-						buf += lore.global.util.splitTerm(anno.type).term;
-						break;
-					case 'c':
-						buf += anno.creator
-						break;
-					case 'd':
-						buf += lore.global.util.shortDate(anno.created, Date);
-						break;
-					case 'D':
-						buf += lore.global.util.longDate(anno.created, Date);
-						break;
-					case 'r':
-						var replies = "";
-						if (anno.replies) {
-							var n = anno.replies.count;
-							if (n > 0) {
-								replies = " (" + n + (n == 1 ? " reply" : " replies") + ")";
-							}
-						}
-						buf += replies;
-						break;
-					case '\\':
-						if (i < formatStr.length - 1) {
-							i++;
-							buf += formatStr[i];
-						}
-						break;
-					default:
-						buf += formatStr[i];
+				else {
+					lore.anno.ui.loreMsg.stack.splice(0, 1);
+				//	Ext.Msg.updateText(lore.anno.ui.loreMsg.stack.join('<br/>'));
+				//	var w = Ext.Msg.getDialog();
+				//	w.setPosition(0, window.innerHeight - w.getBox().height);
 				}
+			} 
+			catch (e) {
+				lore.debug.ui(e, e);
 			}
-			
-			return buf;
-		}
+		}, 3000);
+	} catch (e) {
+		lore.debug.anno(e,e);
+	}
+}
 		
-		/**
-		 * Generate HTML formatted tag list
-		 * @param {Object} annodata The annotation to retrieve the tag information from
-		 * @return {String} HTML formatted tag list
-		 */
-		lore.anno.ui.genTagList = function(annodata){
-			var bodyText = "";
-			if (annodata.tags) {
-				bodyText += '<span style="font-size:smaller;color:#51666b">Tags: ';
-				var tagarray = annodata.tags.split(',');
-				for (var ti = 0; ti < tagarray.length; ti++) {
-					var thetag = tagarray[ti];
-					if (thetag.indexOf('http://') == 0) {
-						try {
-							var tagname = thetag;
-							lore.anno.ui.formpanel.getComponent('tagselector').store.findBy(function(rec){
-								if (rec.data.id == thetag) {
-									tagname = rec.data.name;
-								}
-							});
-							bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
-						} 
-						catch (e) {
-							lore.debug.anno("unable to find tag name for " + thetag, e);
-						}
-					}
-					else {
-						bodyText += thetag + ", ";
+/**
+ * Output a notification to notification window
+ * @param {String} message Notification message
+ */
+lore.anno.ui.loreInfo = function(message){
+	lore.anno.ui.loreMsg(message, 'info-icon');
+	lore.global.ui.loreInfo(message);
+}
+
+/**
+ * Output a error message to notification window
+ * @param {String} message Erro message
+ */
+lore.anno.ui.loreError = function(message){
+	lore.anno.ui.loreMsg(message, 'error-icon');
+	lore.global.ui.loreError(message);
+	
+}
+
+/**
+ * Output a warning to notification window
+ * @param {String} message Warning message
+ */
+lore.anno.ui.loreWarning = function(message){
+	lore.anno.ui.loreMsg(message, 'warning-icon');
+	lore.global.ui.loreWarning(message);
+}
+		
+		
+/**
+ * Generate annotation caption for the given annotation using the formatting
+ * string
+ * @param {Object} anno The annotation to retrieve the information from
+ * @param {String} formatStr Formatting string. The following
+ */
+lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
+	var buf = '';
+	
+	
+	for (var i = 0; i < formatStr.length; i++) {
+		switch (formatStr[i]) {
+			case 't':
+				buf += lore.global.util.splitTerm(anno.type).term;
+				break;
+			case 'c':
+				buf += anno.creator
+				break;
+			case 'd':
+				buf += lore.global.util.shortDate(anno.created, Date);
+				break;
+			case 'D':
+				buf += lore.global.util.longDate(anno.created, Date);
+				break;
+			case 'r':
+				var replies = "";
+				if (anno.replies) {
+					var n = anno.replies.count;
+					if (n > 0) {
+						replies = " (" + n + (n == 1 ? " reply" : " replies") + ")";
 					}
 				}
-				bodyText += "</span>";
-			}
-			return bodyText;
-		}
-		
-		/**
-		 * Retrieve the annotation title
-		 * @param {Object} anno The annotation
-		 * @return {String} The annotation titile. The default value is 'Untitled'
-		 */
-		lore.anno.ui.getAnnoTitle = function(anno){
-			var title = anno.title;
-			if (!title || title == '') {
-				title = "Untitled";
-			}
-			return title;
-		}
-		
-		lore.anno.ui.getAnnoTypeIcon = function(anno){
-			var aType = lore.global.util.splitTerm(anno.type).term;
-			var icons = {
-				'Comment': 'anno-icon',
-				'Explanation': 'anno-icon-explanation',
-				'VariationAnnotation': 'anno-icon-variation',
-				'Question': 'anno-icon-question'
-			};
-			
-			return icons[aType] || 'anno-icon';
-		}
-		
-		/**
-		 * Show/hide a field on a form
-		 * @param {String} fieldName The field name to set the visibility of
-		 * @param {Boolean} hide (Optional)Specify whether to hide the field or not. Defaults to false
-		 */
-		lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
-			
-			var thefield = form.findField(fieldName);
-			if (thefield) {
-				var cont = thefield.container.up('div.x-form-item');
-				
-				cont.setDisplayed(false);
-				if (hide && cont.isVisible()) {
-					cont.slideOut();
-					thefield.hide();
+				buf += replies;
+				break;
+			case '\\':
+				if (i < formatStr.length - 1) {
+					i++;
+					buf += formatStr[i];
 				}
-				else if (!hide && !cont.isVisible()) {
-						thefield.hide();
-						cont.slideIn();
-						thefield.show();
-						cont.setDisplayed(true);
-					}
+				break;
+			default:
+				buf += formatStr[i];
+		}
+	}
+	
+	return buf;
+}
+		
+/**
+ * Generate HTML formatted tag list
+ * @param {Object} annodata The annotation to retrieve the tag information from
+ * @return {String} HTML formatted tag list
+ */
+lore.anno.ui.genTagList = function(annodata){
+	var bodyText = "";
+	if (annodata.tags) {
+		bodyText += '<span style="font-size:smaller;color:#51666b">Tags: ';
+		var tagarray = annodata.tags.split(',');
+		for (var ti = 0; ti < tagarray.length; ti++) {
+			var thetag = tagarray[ti];
+			if (thetag.indexOf('http://') == 0) {
+				try {
+					var tagname = thetag;
+					lore.anno.ui.formpanel.getComponent('tagselector').store.findBy(function(rec){
+						if (rec.data.id == thetag) {
+							tagname = rec.data.name;
+						}
+					});
+					bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
+				} 
+				catch (e) {
+					lore.debug.anno("unable to find tag name for " + thetag, e);
+				}
+			}
+			else {
+				bodyText += thetag + ", ";
 			}
 		}
+		bodyText += "</span>";
+	}
+	return bodyText;
+}
 		
-		/**
-		 * Hide list of form fields
-		 * @param {Array} fieldNameArr List of fields to hide
-		 */
-		lore.anno.ui.hideFormFields = function(form, fieldNameArr){
-			for (var i = 0; i < fieldNameArr.length; i++) {
-				lore.anno.ui.setVisibilityFormField(form, fieldNameArr[i], true);
-			}
+/**
+ * Retrieve the annotation title
+ * @param {Object} anno The annotation
+ * @return {String} The annotation titile. The default value is 'Untitled'
+ */
+lore.anno.ui.getAnnoTitle = function(anno){
+	var title = anno.title;
+	if (!title || title == '') {
+		title = "Untitled";
+	}
+	return title;
+}
+		
+lore.anno.ui.getAnnoTypeIcon = function(anno){
+	var aType = lore.global.util.splitTerm(anno.type).term;
+	var icons = {
+		'Comment': 'anno-icon',
+		'Explanation': 'anno-icon-explanation',
+		'VariationAnnotation': 'anno-icon-variation',
+		'Question': 'anno-icon-question'
+	};
+	
+	return icons[aType] || 'anno-icon';
+}
+		
+/**
+ * Show/hide a field on a form
+ * @param {String} fieldName The field name to set the visibility of
+ * @param {Boolean} hide (Optional)Specify whether to hide the field or not. Defaults to false
+ */
+lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
+	
+	var thefield = form.findField(fieldName);
+	if (thefield) {
+		var cont = thefield.container.up('div.x-form-item');
+		
+		cont.setDisplayed(false);
+		if (hide && cont.isVisible()) {
+			cont.slideOut();
+			thefield.hide();
 		}
-		
-		/**
-		 * Show list of form fields
-		 * @param {Array} fieldNameArr List of fields to show
-		 */
-		lore.anno.ui.showFormFields = function(form, fieldNameArr){
-			for (var i = 0; i < fieldNameArr.length; i++) {
-				lore.anno.ui.setVisibilityFormField(form,fieldNameArr[i], false);
+		else if (!hide && !cont.isVisible()) {
+				thefield.hide();
+				cont.slideIn();
+				thefield.show();
+				cont.setDisplayed(true);
 			}
-		}
+	}
+}
 		
-		lore.anno.ui.isFormDirty = function(form ) {
-			 var dirtyList = [];
-			 var isDirty = false;
-			 form.items.each( function (item, index, length) {
-			 if ( item.isDirty()) {
-			 	isDirty = true;
-			 dirtyList.push(item.getName());
-			 }
-			 });
-			 
-			 //lore.debug.anno("The dirty items are: " + dirtyList.join());
-			 return isDirty;
-		 }
+/**
+ * Hide list of form fields
+ * @param {Array} fieldNameArr List of fields to hide
+ */
+lore.anno.ui.hideFormFields = function(form, fieldNameArr){
+	for (var i = 0; i < fieldNameArr.length; i++) {
+		lore.anno.ui.setVisibilityFormField(form, fieldNameArr[i], true);
+	}
+}
+
+/**
+ * Show list of form fields
+ * @param {Array} fieldNameArr List of fields to show
+ */
+lore.anno.ui.showFormFields = function(form, fieldNameArr){
+	for (var i = 0; i < fieldNameArr.length; i++) {
+		lore.anno.ui.setVisibilityFormField(form,fieldNameArr[i], false);
+	}
+}
+
+lore.anno.ui.isFormDirty = function(form ) {
+	 var dirtyList = [];
+	 var isDirty = false;
+	 form.items.each( function (item, index, length) {
+	 if ( item.isDirty()) {
+	 	isDirty = true;
+	 dirtyList.push(item.getName());
+	 }
+	 });
+	 
+	 //lore.debug.anno("The dirty items are: " + dirtyList.join());
+	 return isDirty;
+ }
 		
 		
 /**
@@ -338,6 +334,10 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
 	return res;
 }
 
+/**
+ * 
+ * @param {Object} node
+ */
 lore.anno.ui.nodeIdToRecId = function(node) {
 			return node.id.replace("-unsaved", "");
 }
@@ -401,7 +401,9 @@ lore.anno.ui.tripleURIToString = function ( prop) {
 			return prop;
 		}
 		
-/*lore.anno.ui.tripleToString = function (triple, rdf, parent) {
+/*
+ * Not currently used 
+ lore.anno.ui.tripleToString = function (triple, rdf, parent) {
 		rdf = rdf ||  lore.anno.ui.rdfa.rdf;
 		
 			if (triple.property.toString().indexOf("#type") == -1 ) {

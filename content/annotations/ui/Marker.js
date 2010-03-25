@@ -21,6 +21,7 @@
 /**
  * Class that abstracts a highlighted area of text or of an image based off an xpointer or semantic pointer. This
  * highlighted area can have tooltip based off of annotation data.
+ * @class
  * @param {Object} args Valid arguments are 
  * {
  * 	xpointer: The xpointer pointing to the image region or area of text to be highlighted
