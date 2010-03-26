@@ -386,7 +386,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					success: function(resp){
 						lore.debug.anno("Deletion success: " + resp );
 						
-						//TODO: #196 - Remove from the cache
+						//TODO: #199 - Remove from the cache
 						//lore.global.store.remove(this.annods,...;
 						if ( resultCallback) {
 							resultCallback('success', resp);
@@ -595,7 +595,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	updateAnnotationsSourceList : function(theURL, callbackFunc){
 	
-	/* TODO: #196 -
+	/* TODO: #199 -
 		// check cache
 		var annotations = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
 		
@@ -722,7 +722,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			 
 		}
 	},
-	/*TODO: #196 - Reimplementation of Caching
+	/*TODO: #199 - Reimplementation of Caching
 	    loadAnnotation : function ( annotations) {
 		if ( !annotations.length)
 			annotations = [annotations];
@@ -746,7 +746,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds, lore.anno.ui.currentURL, this.prefs.cachetimeout);
 					
 		} else {
-			//TODO: #196 -  they've switched pages, continue to load data for caching purposes
+			//TODO: #199 -  they've switched pages, continue to load data for caching purposes
 		}
 	},*/
 	
@@ -791,7 +791,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
 			}
 			
-			/* TODO: #196  
+			/* TODO: #199  
 			 
 			// remove annotatino from datatstore that have been updated
 			var recs = this.annods.getRange();
@@ -847,7 +847,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					replies[i].bodyLoaded = true;
 				}
 				
-				/*TODO: #196  
+				/*TODO: #199  
 				// don't add records that are already in the datastore
 				var recs = this.annods.getRange();
 				for ( var i =0; i < recs.length; i++) {
