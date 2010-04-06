@@ -1,5 +1,6 @@
 <!ENTITY lore.label "LORE">
-<!ENTITY lore.annoLabel "LORE Annotations">
+<!ENTITY lore.annoLabel "Annotations">
+<!ENTITY lore.coLabel "Compound Objects">
 <!ENTITY loreContextLink.label "Add linked resource to LORE compound object">
 <!ENTITY loreContextImage.label "Add image to LORE compound object">
 <!ENTITY loreContextBGImage.label "Add background image to LORE compound object">
