@@ -29,9 +29,9 @@
 <!ENTITY lore.resetGraphLabel "Reset Graph">
 <!ENTITY lore.resetGraphTip "Reset UI">
 <!ENTITY lore.saveRDFLabel "Save RDF">
-<!ENTITY lore.saveRDFTip "Save the compound object to the repository">
+<!ENTITY lore.saveRDFTip "Save the compound object shown in the editor to the repository">
 <!ENTITY lore.deleteRDFLabel "Delete RDF">
-<!ENTITY lore.deleteRDFTip "Delete the compound object from the repository">
+<!ENTITY lore.deleteRDFTip "Delete the compound object shown in the editor from the repository">
 <!ENTITY lore.addAnnotationLabel "Add annotation">
 <!ENTITY lore.addAnnotationTip "Add annotation on the current page">
 <!ENTITY lore.editAnnotationLabel "Edit annotation">
