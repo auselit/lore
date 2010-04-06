@@ -337,14 +337,13 @@ lore.ore.ui.initUIComponents = function() {
 								}]
 							}, {
 								title : "Advanced",
-								xtype : "form",
+                                autoHeight: true,
+                                autoWidth : true,
+                                xtype: "form",
 								id : "advsearchform",
 								border : false,
-								buttons : [{
-											text : 'Search',
-											id : 'advsearchbtn',
-											tooltip : 'Run the search'
-										}],
+                                bodyStyle: "padding: 0 10px 4px 4px",
+								labelWidth: 55,
 								keys : [{
 									key : [10, 13],
 									fn : function() {
@@ -359,11 +358,13 @@ lore.ore.ui.initUIComponents = function() {
 									style : "font-family: arial, tahoma, helvetica, sans-serif; font-size:11px;line-height:2em"
 								}, {
 									xtype : "textfield",
+                                    anchor: "100%",
 									fieldLabel : "containing",
 									id : "searchuri",
 									emptyText : "any resource"
 								}, {
 									xtype : "combo",
+                                    anchor: "100%",
 									fieldLabel : "having",
 									id : "searchpred",
 									mode : 'local',
@@ -377,10 +378,18 @@ lore.ore.ui.initUIComponents = function() {
 											})
 								}, {
 									xtype : "textfield",
+                                    anchor: "100%",
 									fieldLabel : "matching",
 									id : "searchval",
 									emptyText : ""
-								}]
+								},
+                                {
+                                    xtype: 'button',
+                                    text : 'Search',
+                                    id : 'advsearchbtn',
+                                    tooltip : 'Run the search'
+                                }
+                                ]
 							}]
 						}, {
 							anchor : "100%",
@@ -781,7 +790,6 @@ lore.ore.ui.init = function() {
 		/** Indicates whether the compound objects UI has been initialized */
 		lore.ore.ui.initialized = true;
 		lore.debug.ui("LORE Compound Object init complete", lore);
-        
 	} catch (e) {
 		lore.debug.ui("Exception in Compound Object init", e);
 	}
