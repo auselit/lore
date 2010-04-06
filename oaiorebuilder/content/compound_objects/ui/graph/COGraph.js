@@ -51,6 +51,8 @@ lore.ore.ui.graph.COGraph = function(id){
 		this.resizeHandle6 = new lore.ore.ui.graph.ResizeHandle(this,6); // 6 = CENTER_BOTTOM
 		this.resizeHandle7 = new lore.ore.ui.graph.ResizeHandle(this,7); // 7 = LEFT_BOTTOM
 		this.resizeHandle8 = new lore.ore.ui.graph.ResizeHandle(this,8); // 8 = LEFT_MIDDLE
+        this.resizeHandleStart = new lore.ore.ui.graph.LineStartResizeHandle(this); 
+        this.resizeHandleEnd = new lore.ore.ui.graph.LineEndResizeHandle(this); 
         // default colour for line that is displayed for creating connections
         this.connectionLine.setColor(new draw2d.Color(174, 174, 174));
         this.previewCanvas = document.createElement("canvas");
