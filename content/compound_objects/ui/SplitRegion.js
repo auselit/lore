@@ -3,15 +3,6 @@
 var oldcollapse = Ext.layout.BorderLayout.SplitRegion.prototype.onCollapseClick;
 var oldexpand = Ext.layout.BorderLayout.SplitRegion.prototype.onExpandClick;
 var oldsplitmove = Ext.layout.BorderLayout.SplitRegion.prototype.onSplitMove;
-/** Override Region to prevent memory leak (can be removed after we upgrade to Ext 3.2) */
-Ext.override(Ext.layout.BorderLayout.Region, {
-    destroy: function () {
-        Ext.destroy(
-            this.miniCollapsedEl, 
-            this.collapsedEl
-        );
-    }
-});
 /** Override Viewport to allow manual resize (for generating image) */
 Ext.override(Ext.Viewport, {
     initComponent : function() {
@@ -34,14 +25,6 @@ Ext.override(Ext.Viewport, {
 });
 /** Override collapse behaviour in split region to improve UI responsiveness */
 Ext.override(Ext.layout.BorderLayout.SplitRegion, {
-    destroy: function () {
-        Ext.destroy(
-            this.miniSplitEl, 
-            this.split, 
-            this.splitEl
-        );
-        Ext.layout.BorderLayout.SplitRegion.superclass.destroy.call(this);
-    },
     onCollapseClick: function(e){
 
         var activetab = Ext.getCmp("loreviews").getActiveTab();
