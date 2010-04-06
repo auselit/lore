@@ -35,3 +35,61 @@ lore.ore.ui.graph.ResizeHandle = Ext.extend(draw2d.ResizeHandle, {
         return draw2d.ResizeHandle.prototype.onDragstart.call(this, x, y);
     }
 });
+/** 
+ * Handle offsets and enabling mask to avoid interference from node previews during connection moving 
+ * @class lore.ore.ui.graph.LineStartResizeHandle
+ * @extends draw2d.LineStartResizeHandle
+ * */
+lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandle, {
+   type :  "lore.ore.ui.graph.LineResizeHandle",
+   onDrag : function (){  
+	    var wf = this.workflow;
+	    var line = wf.currentSelection;
+	    if (!line.isMoving){
+	        line.isMoving = true;
+	        wf.showMask(); 
+	        this.yoffset = wf.getScrollTop();
+	        this.xoffset = wf.getScrollLeft();
+	    }
+	    this.x = this.draggable.getLeft() - (this.xoffset - wf.getScrollLeft());
+	    this.y = this.draggable.getTop() - (this.yoffset - wf.getScrollTop());
+	    line.setStartPoint(this.x,this.y);
+        // setPosition forces position of this resize handle to update and fires move event
+	    this.setPosition(this.x,this.y);
+   },
+   onDragend : function (){
+        this.workflow.hideMask();
+        draw2d.LineStartResizeHandle.prototype.onDragend.call(this);
+        delete this.yoffset;
+        delete this.xoffset;
+    }
+});
+/** 
+ * Handle offsets and enabling mask to avoid interference from node previews during connection moving 
+ * @class lore.ore.ui.graph.LineEndResizeHandle
+ * @extends draw2d.LineEndResizeHandle
+ * */
+lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
+   type :  "lore.ore.ui.graph.LineResizeHandle",
+   onDrag : function (){  
+        var wf = this.workflow;
+        var line = wf.currentSelection;
+        if (!line.isMoving){
+            line.isMoving = true;
+            wf.showMask(); 
+            this.yoffset = wf.getScrollTop();
+            this.xoffset = wf.getScrollLeft();
+        }
+        this.x = this.draggable.getLeft() - (this.xoffset - wf.getScrollLeft());
+        this.y = this.draggable.getTop() - (this.yoffset - wf.getScrollTop());
+        line.setEndPoint(this.x,this.y);
+        // setPosition forces position of this resize handle to update and fires move event
+        this.setPosition(this.x,this.y);
+   },
+   onDragend : function (){
+        this.workflow.hideMask();
+        draw2d.LineEndResizeHandle.prototype.onDragend.call(this);
+        delete this.yoffset;
+        delete this.xoffset;
+    }
+});
