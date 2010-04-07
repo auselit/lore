@@ -29,7 +29,7 @@ lore.ore.ui.CompoundObjectTree = Ext.extend(Ext.tree.TreePanel, {
     fitToFrame      : true,
     rootVisible     : false,
     containerScroll : true,
-    border          : false,
+    border          : true,
     enableDrag      : true,
     enableDrop      : false,
     ddGroup         : "TreeDD",
