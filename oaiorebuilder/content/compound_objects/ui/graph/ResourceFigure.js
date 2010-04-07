@@ -304,7 +304,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.createPreview = function(theurl) {
 	iframe.name = theurl + "-data";
 	iframe.id = theurl + "-data";
 	iframe.style.zIndex = "-9001";
-	iframe.scrolling = "yes";
 	this.iframearea.appendChild(iframe);
 };
 /**
