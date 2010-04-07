@@ -121,8 +121,8 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         // allowing scroll area to shrink to content
         this.html.style.width = "100%";
         this.html.style.height = "100%";
-        var newx = this.scrollArea.scrollWidth;
-        var newy = this.scrollArea.scrollHeight;
+        var newx = this.scrollArea.scrollWidth - 1;
+        var newy = this.scrollArea.scrollHeight - 1;
         this.html.style.height = newy + "px";
         this.mask.style.height = newy + "px";
         this.html.style.width = newx + "px";
@@ -130,8 +130,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     },
     clear : function(){
         draw2d.Workflow.prototype.clear.call(this);
-        this.html.style.height = "100%";
-        this.html.style.width = "100%";
+        this.resizeMask();
         this.showEmptyMessage();
     },
     setDocumentDirty: function(){
