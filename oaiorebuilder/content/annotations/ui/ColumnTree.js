@@ -648,7 +648,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 
 			var info = ' ';
 			info = lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
-			node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data));
+			node.setText(rec.data.title, info,' ', lore.anno.ui.genTreeNodeText(rec.data));
 
 		} 
 		catch (e) {
@@ -662,12 +662,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	 * @param {Store} store The data store that performed the notification
 	 */
 	handleClear: function(store ){
-		
-		//TODO: #159 - Ext 3.1 Migration use this.removeAll() instead
-		while ( this.firstChild ) {
-			this.firstChild.remove();	
-		}
-		
+		this.removeAll();
 	},
 	
 	refresh : function () {
@@ -756,7 +751,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 					info = info + lore.anno.ui.genAnnotationCaption(rec.data, 'by c, d r')
 				}
 				
-				node.setText(rec.data.title, info,'', lore.anno.ui.genTreeNodeText(rec.data));
+				node.setText(rec.data.title, info,' ', lore.anno.ui.genTreeNodeText(rec.data));
 				
 			} 
 			catch (e) {
@@ -770,15 +765,8 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 	 * @param {Store} store The data store that performed the notification
 	 */
 	handleClear: function(store){
-		
-		//TODO: #159 - Ext 3.1 Migration use this.removeAll() instead
-		while (this.firstChild) {
-			this.firstChild.remove();
-		}
+		this.removeAll();
 	}
-		
-	
-			
 });
  
 				
