@@ -206,7 +206,6 @@ lore.ore.ui.initUIComponents = function() {
 							title : "Graphical Editor",
 							xtype : "panel",
 							id : "drawingarea",
-							autoScroll : true,
 							bodyStyle : {
 								backgroundColor : 'transparent'
 							}
@@ -302,26 +301,38 @@ lore.ore.ui.initUIComponents = function() {
 						xtype : "cotree",
 						title : "Browse",
 						id : "sourcestree"
+                        
 					}, {
 						xtype : "panel",
-						layout : "anchor",
+						layout : "border",
 						title : "Search",
 						id : "searchpanel",
+                        autoScroll: false,
 						items : [{
 							xtype : "tabpanel",
-							anchor : "100%",
+                            region: "north",
+                            animCollapse : false,
+                            collapseMode : 'mini',
+                            autoHide: true,
+                            split:true,
+                            minHeight: 0,
 							id : "searchforms",
 							items : [{
 								xtype : "panel",
 								layout : "hbox",
 								title : "Keyword",
 								id : "kwsearchform",
+                                padding: 3,
+                                layoutConfig: { 
+                                    pack: 'start',
+                                    align: 'stretchmax'
+                                },
 								border : false,
 								autoHeight : true,
-								padding : 5,
 								items : [{
 									xtype : "textfield",
 									id : "kwsearchval",
+                                    flex: 1,
 									listeners : {
 										specialkey : function(field, el) {
 											if (el.getKey() == Ext.EventObject.ENTER)
@@ -331,6 +342,8 @@ lore.ore.ui.initUIComponents = function() {
 									}
 								}, {
 									xtype : "button",
+                                    flex: 0,
+                                    margins: '0 10 0 0',
 									text : 'Search',
 									id : 'kwsearchbtn',
 									tooltip : 'Run the search'
@@ -338,7 +351,7 @@ lore.ore.ui.initUIComponents = function() {
 							}, {
 								title : "Advanced",
                                 autoHeight: true,
-                                autoWidth : true,
+                                autoWidth: true,
                                 xtype: "form",
 								id : "advsearchform",
 								border : false,
@@ -392,9 +405,9 @@ lore.ore.ui.initUIComponents = function() {
                                 ]
 							}]
 						}, {
-							anchor : "100%",
+                            region: "center",
+                            minHeight: 0,
 							xtype : "cotree",
-							title : "Search Results",
 							id : "searchtree"
 						}]
 					}, {
@@ -621,12 +634,14 @@ lore.ore.ui.initUIComponents = function() {
 		lore.ore.ui.resreltreeroot.on("beforeclick", lore.ore.updateResDetails);
 		// load resource details handler
 		lore.ore.ui.resselectcombo.on("select", lore.ore.loadResourceDetails);
-
 	}
 	// set up search handlers
 	Ext.getCmp("advsearchbtn").on('click', lore.ore.advancedSearch);
 	Ext.getCmp("kwsearchbtn").on('click', lore.ore.keywordSearch);
-	Ext.getCmp("searchforms").activate("kwsearchform");
+    Ext.getCmp("advsearchform").on('activate',function(){Ext.getCmp("searchforms").setSize({height: 150});Ext.getCmp("searchpanel").doLayout();});
+    Ext.getCmp("kwsearchform").on('activate',function(){Ext.getCmp("searchforms").setSize({height: 60});Ext.getCmp("searchpanel").doLayout();});
+    Ext.getCmp("searchforms").activate("kwsearchform");
+    Ext.getCmp("searchforms").setSize({height: 30}); // for some reason this isn't happening
 	// populate search combo with dublin core fields
 	try {
 		var searchproplist = [];
