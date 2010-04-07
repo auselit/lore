@@ -22,9 +22,9 @@
         
         <!--  Ext scripts -->
         <script type="text/javascript" src="../lib/jquery-1.3.2.min.js"></script>
-        <script type="text/javascript" src="../lib/ext/adapter/jquery/ext-jquery-adapter.js"></script>
+        <script type="text/javascript" src="../lib/ext3.2/adapter/jquery/ext-jquery-adapter.js"></script>
         
-        <script type="text/javascript" src="../lib/ext/ext-all.js"></script>
+        <script type="text/javascript" src="../lib/ext3.2/ext-all.js"></script>
         
 		<script type="text/javascript" src="../lib/jquery.rdfquery.rdfa.min-1.0.js"></script>
 		<script type="text/javascript" src="../lib/jquery.simpletip-1.3.1.js"></script> 
@@ -52,15 +52,19 @@
 				global: {}
 			}
 				// imports the lore namespace and it's sub components
-				Components.utils.import("resource://lore/constants.js", lore);
-				// lore.debug
-				Components.utils.import("resource://lore/util.js", lore.global);
-				// lore.debug
-				Components.utils.import("resource://lore/debug.js", lore);
+				
+
+			    /* Import modules into the lore namespace.
+			     * Use eval for the import statements because the YUI compressor does not allow 
+			     * us to call the import function directly as import is a reserved word in JavaScript.
+			     */
+			    eval('Components.utils.import("resource://lore/constants.js", lore)');
+			    eval('Components.utils.import("resource://lore/util.js", lore.global)');
+			    eval('Components.utils.import("resource://lore/debug.js", lore)');
 				// Load and cache global ui functions
-				Components.utils.import("resource://lore/uiglobal.js", lore.global);
+			    eval('Components.utils.import("resource://lore/uiglobal.js", lore.global)');
 				// lore.store
-				Components.utils.import("resource://lore/annotations/store.js", lore.global);
+				eval('Components.utils.import("resource://lore/annotations/store.js", lore.global)');
 			} catch (e) {
 				alert(e + " " + e.stack);
 			}
