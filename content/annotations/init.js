@@ -565,6 +565,7 @@ lore.anno.ui.attachContextMenus = function () {
 	
 	// Add handler to add Context Menu for Tree Nodes when they're appended
 	lore.anno.ui.treeroot.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
+	lore.anno.ui.treeunsaved.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
 	
 	// serach grid context menu
 	var grid = lore.anno.ui.search.grid();
@@ -596,7 +597,7 @@ lore.anno.ui.attachHandlers = function () {
 	// editor handlers
 	Ext.getCmp("resetannobtn")
 			.on('click', function () { lore.anno.ui.page.curSelAnno.reject();});
-	Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.hideAnnotationEditor);
+	Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.handleHideAnnotationEditor);
 	Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
 	Ext.getCmp("delannobtn").on('click', lore.anno.ui.handleDeleteAnnotation);
 	

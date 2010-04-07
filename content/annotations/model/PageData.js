@@ -52,7 +52,7 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 			curAnnoMarkers: this.curAnnoMarkers.slice(),
 			curImage: this.curImage,
 			rdfa: lore.global.util.clone(this.rdfa),
-			metaSelections: this.metaSelections.slice(),
+			metaSelections: this.metaSelections.slice()
 		};
 		
 		lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, url);

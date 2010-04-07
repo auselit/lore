@@ -922,6 +922,17 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		}
 	},
 	
+	findRecById : function (id) {
+		return this.findStoredRecById(id) || this.findUnsavedRecById(id);
+	},
+	
+	findUnsavedRecById : function (id) {
+		return lore.global.util.findRecordById(this.annodsunsaved, id);
+	},
+	
+	findStoredRecById : function (id) {
+		return lore.global.util.findRecordById(this.annods, id);
+	}
 });
 	
 

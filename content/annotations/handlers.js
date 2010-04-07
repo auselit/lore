@@ -236,17 +236,18 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 	 
 	childNode.on('contextmenu', function(node, ev){
 	 	node.select();
+	 	var rec = lore.anno.annoMan.findRecById(lore.anno.ui.nodeIdToRecId(node));
+	 	lore.anno.ui.page.setCurrentAnno(rec, rec.store);
 	 });
 	 
 	 
 	childNode.on('contextmenu', function(node, e){
 		
 		if (!node.contextmenu) {
-		 node.contextmenu = new Ext.menu.Menu({
-		 id: node.id + "-context-menu" });
+			node.contextmenu = new Ext.menu.Menu({id: node.id + "-context-menu" });
 	 
-		 var isNew = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node)).data.isNew();
-	 
+		var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
+		var isNew = (rec === null || rec.data.isNew());
 		if (!isNew) {
 			// only saved annotations should be in timeline or able to be replied to
 			node.contextmenu.add({
@@ -265,22 +266,21 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 			});
 		}
 		
-						 
 		node.contextmenu.add({
-		text: "Edit annotation",
-		handler: function(evt){
-			lore.anno.ui.handleEditTreeNode(node);
-		},
-		id: 'edit_' + node.id
+			text: "Edit annotation",
+			handler: function(evt){
+				lore.anno.ui.handleEditTreeNode(node);
+			},
+			id: 'edit_' + node.id
 		});
 		
-		/*node.contextmenu.add({
-		text: "Delete annotation",
-		handler: function(evt){
-			lore.anno.ui.handleDeleteAnnotation(node);
-		},
-		id: 'del_' + node.id
-		});*/
+		node.contextmenu.add({
+			text: "Delete annotation",
+			handler: function(evt){
+				lore.anno.ui.handleDeleteAnnotation(node);
+			},
+			id: 'del_' + node.id
+		});
 
 		if (!isNew) {
 			// only saved annotations should be able to be added as a compound object
@@ -403,32 +403,39 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 			lore.anno.ui.page.store(oldurl);
 			lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
 			
-			// TODO: #195 tag any unsaved annotations 
+			// tag any unsaved annotations
 			lore.anno.annoMan.annodsunsaved.each(function(rec){
 				try {
-					if (rec.data.resource != lore.anno.ui.currentURL) {
-						var n = lore.anno.ui.findNode(rec.data.id + "-unsaved", lore.anno.treeunsaved);
-						if (n) 
-							n.setText(rec.data.title, "Unsaved annotation from " + rec.data.resource, '', lore.anno.ui.genTreeNodeText(rec.data));
-						else {
-							lore.debug.anno("modified/new annotation not found in unsaved window. This is incorrect. " + rec.data.id);
-						}
+					var node = lore.anno.ui.findNode(rec.data.id + "-unsaved", lore.anno.ui.treeunsaved);
+					if (!node) {
+						lore.debug.anno("modified/new annotation not found in unsaved tree. This is incorrect. " + rec.data.id, rec.data);
+						return;
 					}
+					
+					var label = ' ';
+					if (rec.data.resource != lore.anno.ui.currentURL) {
+						label = "Unsaved annotation from " + rec.data.resource;
+					}
+					node.setText(rec.data.title, label, null, lore.anno.ui.genTreeNodeText(rec.data));
 				} catch (e) {
 					lore.debug.anno(e,e);
 				}
 			})
 			
-			if (lore.anno.ui.page.curSelAnno && !lore.anno.ui.page.curSelAnno.data.isNew()) {
-				lore.anno.ui.hideAnnotationEditor();
+			function changeUnsavedNodeLabelByURL(node) {
+				
 			}
+			
+			// loaded a new page, no active annotation
+			lore.anno.ui.page.setCurrentAnno();
+			
 			// load new URL's page info 
 			lore.anno.ui.page.load(contextURL, true);
 		} catch (e ) {
 			lore.debug.anno(e,e);
 		}
 		
-	}else {
+	} else {
 		if (lore.anno.ui.page)
 			lore.anno.ui.page.clear();
 		else 
@@ -610,7 +617,6 @@ lore.anno.ui.handleDeleteAnnotation2 = function(){
  * Save all annotation changes
  * @param {Object} uri Not currently used
  */
- 
 lore.anno.ui.handleSaveAllAnnotationChanges = function(uri ){
 	try {
 		
@@ -843,3 +849,10 @@ lore.anno.ui.handleSerialize = function (format ) {
 	}
 }
 
+/**
+ * When the 'Hide Editor' button is clicked, update the annotation from the form, then hide the editor.
+ */
+lore.anno.ui.handleHideAnnotationEditor = function () {
+	lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
+	lore.anno.ui.hideAnnotationEditor();
+}
