@@ -356,14 +356,10 @@ lore.anno.ui.initGUIConfig = function(){
 			layout: "border",
 			items: [{
 				region: "center",
-				layout: "border",
-				items: [{
-					region: "center",
-					xtype: "annocolumntreepanel",
-					id: "annosourcestree",
-					model: lore.anno.annoMan.annods,
-					animate: false
-					}]
+				xtype: "annocolumntreepanel",
+				id: "annosourcestree",
+				model: lore.anno.annoMan.annods,
+				animate: false
 			}, 
 				loreuieditor()]
 			};
@@ -415,47 +411,30 @@ lore.anno.ui.initGUIConfig = function(){
 		}
 	}
 
-	/**
-	 * Helper function that constructs the main tabs for the Annotations:
-	 * 'Browse', 'Search' and 'Using Annotations'
-	 * @private
-	 */
-	var loreuiannonavtabs = function () {
-		return {
-					xtype: "tabpanel",
-					title: "Navigation",
-					id: "navigationtabs",
-					deferredRender: false,
-					activeTab: "curpage",
-					items: [loreuiannobrowse(), loreuiannosearch(), loreuiannoabout() ]
-				};
-	}
 	
 	try {
 		lore.anno.ui.gui_spec = {
-			layout: "border",
-			items: [{
-				region: "center",
-				layout: "fit",
-				border: false,
-				items: [{
-					layout: "border",
+					layout: "anchor",
 					border: false,
 					items: [{
-						region: "center",
-						border: false,
-						layout: "fit",
-						items: [ loreuiannonavtabs()]
+                        anchor: "100% -25",
+						xtype: "tabpanel",
+	                    title: "Navigation",
+	                    id: "navigationtabs",
+	                    deferredRender: false,
+	                    activeTab: "curpage",
+	                    items: [loreuiannobrowse(), loreuiannosearch(), loreuiannoabout() ]
 					},
 					{
-                region: "south",
-                xtype: "statusbar",
-                id: "status",
-                defaultText: "",
-                autoClear: 6000
-            }]
-				}]
-			}]
+                        anchor: "100%",
+		                height: 25,
+		                xtype: "statusbar",
+		                id: "status",
+		                defaultText: "",
+		                autoClear: 6000
+		            }]
+				
+			
 		};
 		
 		lore.anno.ui.main_window = new Ext.Viewport(lore.anno.ui.gui_spec);
