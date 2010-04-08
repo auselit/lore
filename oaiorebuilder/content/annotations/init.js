@@ -302,8 +302,6 @@ lore.anno.ui.initGUIConfig = function(){
 		return {
 				title: "Using Annotations",
 				id: "about",
-				autoWidth: true,
-				autoScroll: true,
 				iconCls: "welcome-icon"};
 	}
 
@@ -484,7 +482,7 @@ lore.anno.ui.initExtComponents = function(){
 			
 		lore.anno.ui.formpanel.setAnnotationFormUI(false, false );
 		
-		Ext.getCmp("about").body.update("<iframe height='100%' width='100%' "
+		Ext.getCmp("about").body.update("<iframe style='border:none;' height='100%' width='100%' "
 			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");
 	
 		// tooltips		
