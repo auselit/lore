@@ -33,6 +33,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 		var t = this;
 		var formConfig = {
 			xtype: "form",
+            bodyStyle: "padding: 3px",
 			keys: [{
 						key: [10, 13],
 						fn: function() {
@@ -43,13 +44,15 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 			region : 'north',
 			trackResetOnLoad : true,
 			autoScroll : true,
-			labelWidth : 100,
+			labelWidth : 80,
 			defaultType : 'textfield',
 			labelAlign : 'right',
 			buttonAlign : 'right',
+            split: true,
+            collapseMode: 'mini',
 			defaults : {
 				hideMode : 'display',
-				anchor : '-30'
+				anchor : '100%'
 			},
 	
 			items : [{
