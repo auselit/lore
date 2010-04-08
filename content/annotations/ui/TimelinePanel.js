@@ -31,11 +31,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 	 * @constructor
 	 */
 	initComponent: function(){
-      	  	try {
-				Ext.apply ( this, {
-					title: 		"Annotation Timeline",
-				});
-				
+      	  	try {				
 				lore.anno.ui.TimelinePanel.superclass.initComponent.apply(this, arguments);
 				if ( this.model )
 					 this.addModel(this.model);

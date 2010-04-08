@@ -350,7 +350,7 @@ lore.anno.ui.initGUIConfig = function(){
 	  */
 	var loreuiannotreeandeditor = function () {
 		return {
-			title: "Annotation List",
+			title: "Browse",
 			xtype: "panel",
 			id: "treeview",
 			layout: "border",
@@ -373,27 +373,11 @@ lore.anno.ui.initGUIConfig = function(){
 	var loreuiannotimeline = function ()
 	{
 		return {
-			title: "Annotation Timeline",
+			title: "Timeline",
 			xtype: "annotimelinepanel",
 			id: "annotimeline",
 			model: lore.anno.annoMan.annods
 		}
-	}
-
-	/**
-	 * Helper function that constructs the 'Browse' tab
-	 * which includes the 'Annotation List', 'Annotation Timeline' tabs
-	 * @private
-	 */
-	var loreuiannobrowse = function () {
-		return {
-				xtype: "tabpanel",
-				title: "Browse",
-				id: "curpage",
-				deferredRender: false,
-				activeTab: "treeview",
-				items: [loreuiannotreeandeditor(), loreuiannotimeline()]
-			};
 	}
 
 	/**
@@ -422,8 +406,8 @@ lore.anno.ui.initGUIConfig = function(){
 	                    title: "Navigation",
 	                    id: "navigationtabs",
 	                    deferredRender: false,
-	                    activeTab: "curpage",
-	                    items: [loreuiannobrowse(), loreuiannosearch(), loreuiannoabout() ]
+	                    activeTab: "treeview",
+	                    items: [loreuiannotreeandeditor(), loreuiannosearch(), loreuiannotimeline(), loreuiannoabout() ]
 					},
 					{
                         anchor: "100%",
@@ -484,7 +468,7 @@ lore.anno.ui.initExtComponents = function(){
  */
 lore.anno.ui.initUIGlobals = function () {
 
-	lore.anno.ui.views = Ext.getCmp("curpage");
+	lore.anno.ui.views = Ext.getCmp("treeview");
 	
 	// set up the root tree node, and the two main child nodes 'Current Page' and 'Unsaved Changes'
 	lore.anno.ui.treerealroot = Ext.getCmp("annosourcestree").getRootNode(); 
