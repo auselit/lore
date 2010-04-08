@@ -150,7 +150,7 @@ try {
 			}
 		},
 		
-          /** 
+        /** 
          * Observe if preferences have changed 
          * @param {} subject
          * @param {} topic
@@ -475,6 +475,7 @@ try {
 				
 				var mode = this.prefs.getBoolPref("annotationmode");
 				var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
+				
 				
 				this.fireEvent("annoprefs_changed",
 				[{
