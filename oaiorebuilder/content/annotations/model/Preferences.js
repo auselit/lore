@@ -43,7 +43,7 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
 	 */
 	setPrefs: function (args) {
 		try {
-			lore.debug.anno("lore.anno.Preferences:setPrefs", args);
+			lore.debug.anno("lore.anno.Preferences:setPrefs(args)", [args, this]);
 			Ext.apply(this, args);
 			this.mode = args.mode ? lore.constants.ANNOMODE_SCHOLARLY: lore.constants.ANNOMODE_NORMAL;
 			this.fireEvent('prefs_changed', this);

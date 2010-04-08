@@ -346,7 +346,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 											header: "value",
 											dataIndex: 'value',
 											editor: new Ext.form.TextField({ allowBlank:false})
-										}, 
+										} 
 									]
 									})
 								},
@@ -355,13 +355,13 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							text: 'Add',
 							fieldLabel: '',
 							id: this.genID('addmetabtn'),
-							tooltip: 'Add metadata about this page to the annotation',
+							tooltip: 'Add metadata about this page to the annotation'
 						},
 						{
 							xtype:"button",
 							text: 'Remove',
 							id: this.genID('remmetabtn'),
-							tooltip: 'Remove user created metadata about this page from the annotation',
+							tooltip: 'Remove user created metadata about this page from the annotation'
 						},
 						{
 							id: this.genID('tagselector'),
@@ -800,7 +800,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		handlePrefsChanged: function(args) {
 			// update scholarly fields 
 			if (this.isVisible()) 
-					this.setAnnotationFormUI(null, null, args.annomode);
+					this.setAnnotationFormUI(null, null, args.mode);
 
 			
 			this.annomode = args.mode;
