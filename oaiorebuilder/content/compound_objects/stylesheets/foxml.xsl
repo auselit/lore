@@ -13,7 +13,9 @@
 
 	<xsl:output method="xml" indent="yes"/>
 	<xsl:strip-space elements="*"/>
+	
 	<xsl:param name="coid" select="'demo:1234'"/>
+	<!-- TODO: deal with nested compound objects -->
 	
 	<xsl:template match="/">
 		<foxml:digitalObject VERSION="1.1" PID="{$coid}"
@@ -62,30 +64,59 @@
 	      		LABEL="Dublin Core Record for this object">
 		      	<foxml:xmlContent>
 			       	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-				        <xsl:for-each select="*">
+			       		<!-- only dublin core properties for the compound object go here - others go in rels-ext -->
+				        <xsl:for-each select="*[namespace-uri(.)='http://purl.org/dc/elements/1.1/']">
 				        	<xsl:copy-of select="."/>
 				        </xsl:for-each>  
 			        </oai_dc:dc>
 		      	</foxml:xmlContent>
 	    	</foxml:datastreamVersion>
 	  	</foxml:datastream>
-  
+	  	
+   <!-- non-DC properties for CO go in RELS-EXT -->
+	 <foxml:datastream ID="RELS-EXT" CONTROL_GROUP="X">
+	    <foxml:datastreamVersion FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0"
+	                             ID="RELS-EXT.0" MIMETYPE="application/rdf+xml"
+	                             LABEL="RDF Statements about this object">
+	      <foxml:xmlContent>
+	        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	        	<rdf:Description rdf:about="info:fedora/{$coid}">
+	        		<xsl:for-each select="*[not(namespace-uri(.)='http://purl.org/dc/elements/1.1/' or namespace-uri(.)='http://www.openarchives.org/ore/terms/')]">
+	        			<!-- TODO: don't copy date datatypes -->
+	        			<xsl:copy-of select="."/>
+	        		</xsl:for-each>
+	        	</rdf:Description>
+	        </rdf:RDF>
+	      </foxml:xmlContent>
+	    </foxml:datastreamVersion>
+	 </foxml:datastream>
+ 
   <foxml:datastream ID="RELS-INT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
 		<foxml:datastreamVersion ID="RELS-INT.0" MIMETYPE="text/xml" LABEL="Fedora Internal Object Relationship Metadata">
 			<foxml:xmlContent>
 				<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 				xmlns:ore="http://www.openarchives.org/ore/terms/">
-					<rdf:Description rdf:about="info:fedora/{$coid}">
-						<rdf:type rdf:resource="http://www.openarchives.org/ore/terms/Aggregation"/>
-						<xsl:for-each select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
-							<ore:aggregates rdf:resource="info:fedora/{$coid}/OBJ.{position()}"/>
+
+				    <!-- properties for aggregated resources -->
+					<xsl:for-each select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
+						<xsl:variable name="resURI" select="@rdf:resource"/>
+						<rdf:Description rdf:about="info:fedora/{$coid}/OBJ.{position()}">
+						<xsl:for-each select="//rdf:Description[@rdf:about=$resURI]">
+							<!-- TODO: rels-int for rels between resources in the aggregation -->
+							<!-- check for rdf:resource attr - change to refer using fedora id -->
+							<xsl:copy-of select="child::*"/>
 						</xsl:for-each>
-					</rdf:Description>
+						</rdf:Description>
+					</xsl:for-each>	
+					
 				</rdf:RDF>
 			</foxml:xmlContent>
 		</foxml:datastreamVersion>
 	</foxml:datastream>
 	</xsl:template>
+
+	
+	
 	
 	<xsl:template match="rdf:Description">
 	</xsl:template>
