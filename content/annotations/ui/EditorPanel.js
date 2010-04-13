@@ -50,209 +50,213 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 			autoScroll: true,
 		 			id: this.genID('annotationsform'),
 		 			labelWidth: 85,
-		 			
-						defaultType: 'textfield',
-						labelAlign: 'right',
-						buttonAlign: 'right',
-						style: 'border:none; margin-left:10px;margin-top:10px;',
-						defaults: {
-							hideMode: 'display',
-							anchor: '-30'
-						},
+					defaultType: 'textfield',
+					labelAlign: 'right',
+					buttonAlign: 'right',
+					style: 'border:none; margin-left:10px;margin-top:10px;',
+					defaults: {
+						hideMode: 'display',
+						anchor: '-30'
+					},
 						
-						items: [{
-							xtype: "combo",
-							id: this.genID("typecombo"),
-							fieldLabel: 'Type',
-							name: 'type',
-							hiddenName: 'type',
-							store: new Ext.data.SimpleStore({
-								fields: ['typename', 'qtype'],
-								data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ], 
-								['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"],
-								['Semantic',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#SemanticAnnotation" ]]
-							}),
-							valueField: 'qtype',
-							displayField: 'typename',
-							typeAhead: true,
-							triggerAction: 'all',
-							forceSelection: true,
-							mode: 'local',
-							selectOnFocus: true
-						}, {
-							fieldLabel: 'Title',
-							name: 'title',
-							id: this.genID("title")
-							
-						}, {
-							fieldLabel: 'Creator',
-							name: 'creator',
-							id: this.genID("creator")
-							
-						}, {
-							fieldLabel: 'References',
-							name: 'references',
-							id: this.genID("references")
-						},
-						{
-							xtype: "combo",
-							id: this.genID("importance"),
-							fieldLabel: 'Importance',
-							name: 'importance',
-							hiddenName: 'importance',
-							store: new Ext.data.SimpleStore({
-								fields: ['impname', 'qimpname'],
-								data: [['Very Important', "VeryImportant"], ['Important', "Important"],['Trivial','Trivial' ]]
-							}),
-							valueField: 'qimpname',
-							displayField: 'impname',
-							typeAhead: true,
-							triggerAction: 'all',
-							forceSelection: true,
-							mode: 'local',
-							selectOnFocus: true
-						},
-						{
-							fieldLabel: 'Variation Agent',
-							name: 'variationagent',
-							id: this.genID("variationagent"),
-							
-							hideParent: true
-						}, {
-							fieldLabel: 'Variation Place',
-							name: 'variationplace',
-							id: this.genID("variationplace"),
-							
-							hideParent: true
-						}, {
-							fieldLabel: 'Variation Date',
-							name: 'variationdate',
-							id: this.genID("varitiondate"),
-							hideParent: true
-						}, {
-							fieldLabel: 'ID',
-							name: 'id',
-							hidden: true,
-							hideLabel: true,
-							style: {
-								padding: 0,
-								margin: 0,
-								display: 'none'
-							}
-						}, {
-							fieldLabel: 'Annotates',
-							name: 'res',
-							id: this.genID("res"),
-							readOnly: true,
-							hideParent: true,
-							style: {
-								background: 'none',
-								border: 'none',
-								'font-size': '90%'
-							}
-							//labelStyle: 'font-size:90%;'
+					items: [{
+						xtype: "combo",
+						id: this.genID("typecombo"),
+						fieldLabel: 'Type',
+						name: 'type',
+						hiddenName: 'type',
+						store: new Ext.data.SimpleStore({
+							fields: ['typename', 'qtype'],
+							data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ], 
+							['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"],
+							['Semantic',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#SemanticAnnotation" ]]
+						}),
+						valueField: 'qtype',
+						displayField: 'typename',
+						typeAhead: true,
+						triggerAction: 'all',
+						forceSelection: true,
+						mode: 'local',
+						selectOnFocus: true
+					}, {
+						fieldLabel: 'Title',
+						name: 'title',
+						id: this.genID("title")
 						
-						}, {
-							fieldLabel: 'Context',
-							name: 'context',
-							readOnly: true,
-							hidden: true,
-							hideLabel: true,
-							style: {
-								background: 'none',
-								border: 'none',
-								padding: 0,
-								margin: 0
-							}
-						},  
-						 {
-							fieldLabel: 'Original resource',
-							name: 'original',
-							id: this.genID('originalfield'),
-							readOnly: true,
-							style: {
-								background: 'none',
-								border: 'none',
-								'font-size': '90%'
-							},
-							labelStyle: 'font-size:90%'
-						}, {
-							fieldLabel: 'Original Context Xpointer',
-							name: 'originalcontext',
-							readOnly: true,
-							style: {
-								background: 'none',
-								border: 'none',
-								padding: 0,
-								margin: 0
-							},
-							hidden: true,
-							hideLabel: true
-						}, {
-                            
-							fieldLabel: 'Selection',
-							name: 'contextdisp',
-							id: this.genID("contextdisp"),
-							readOnly: true,
-							style: {
-								background: 'none',
-								'border-top': 'none',
-                                'border-bottom': 'none',
-                                'border-left': 'none',
-								'font-size': '90%'
-                               
-                           
-							},
-							//labelStyle: 'font-size:90%;'
-                             xtype: "trigger",
-                            'triggerClass': 'x-form-set-trigger',
-                            'onTriggerClick': this.handleUpdateAnnotationContext,
-							parent: this
-                            
-                        
-						},
-						{
-							fieldLabel: 'Variant resource',
-							name: 'variant',
-							id: this.genID('variantfield'),
-							readOnly: true,
-							style: {
-								background: 'none',
-								border: 'none',
-								'font-size': '90%'
-							}
-                            
-							//labelStyle: 'font-size:90%'
-						}, {
-							fieldLabel: 'Variant Context Xpointer',
-							name: 'variantcontext',
-							readOnly: true,
-							style: {
-								background: 'none',
-								border: 'none',
-								padding: 0,
-								margin: 0
-							},
-							hidden: true,
-							hideLabel: true
-						}, {
-							fieldLabel: 'Variant Selection',
-							name: 'rcontextdisp',
-							readOnly: true,
-							id: this.genID("rcontextdisp"),
-							style: {
-								background: 'none',
-                                'border-top': 'none',
-                                'border-bottom': 'none',
-                                'border-left': 'none',
-								'font-size': '90%'
-							},
-                            xtype: "trigger",
-                            'triggerClass': 'x-form-set-trigger',
-                            'onTriggerClick': this.handleUpdateAnnotationVariantContext,
-							parent: this
+					}, {
+						fieldLabel: 'Creator',
+						name: 'creator',
+						id: this.genID("creator")
 						
-						}, 
+					}, {
+						fieldLabel: 'References',
+						name: 'references',
+						id: this.genID("references")
+					},
+					{
+						xtype: "combo",
+						id: this.genID("importance"),
+						fieldLabel: 'Importance',
+						name: 'importance',
+						hiddenName: 'importance',
+						store: new Ext.data.SimpleStore({
+							fields: ['impname', 'qimpname'],
+							data: [['Very Important', "VeryImportant"], ['Important', "Important"],['Trivial','Trivial' ]]
+						}),
+						valueField: 'qimpname',
+						displayField: 'impname',
+						typeAhead: true,
+						triggerAction: 'all',
+						forceSelection: true,
+						mode: 'local',
+						selectOnFocus: true
+					},
+					{
+						fieldLabel: 'Variation Agent',
+						name: 'variationagent',
+						id: this.genID("variationagent"),
+						
+						hideParent: true
+					}, {
+						fieldLabel: 'Variation Place',
+						name: 'variationplace',
+						id: this.genID("variationplace"),
+						
+						hideParent: true
+					}, {
+						fieldLabel: 'Variation Date',
+						name: 'variationdate',
+						id: this.genID("varitiondate"),
+						hideParent: true
+					}, {
+						fieldLabel: 'ID',
+						name: 'id',
+						hidden: true,
+						hideLabel: true,
+						style: {
+							padding: 0,
+							margin: 0,
+							display: 'none'
+						}
+					}, {
+						fieldLabel: 'Annotates',
+						name: 'res',
+						id: this.genID("res"),
+						readOnly: true,
+						hideParent: true,
+						style: {
+							background: 'none',
+							border: 'none',
+							'font-size': '90%'
+						}
+						//labelStyle: 'font-size:90%;'
+					
+					}, {
+						fieldLabel: 'Context',
+						name: 'context',
+						readOnly: true,
+						hidden: true,
+						hideLabel: true,
+						style: {
+							background: 'none',
+							border: 'none',
+							padding: 0,
+							margin: 0
+						}
+					},  
+					 {
+						fieldLabel: 'Original resource',
+						name: 'original',
+						id: this.genID('originalfield'),
+						readOnly: true,
+						style: {
+							background: 'none',
+							border: 'none',
+							'font-size': '90%'
+						},
+						labelStyle: 'font-size:90%'
+					}, {
+						fieldLabel: 'Original Context Xpointer',
+						name: 'originalcontext',
+						readOnly: true,
+						style: {
+							background: 'none',
+							border: 'none',
+							padding: 0,
+							margin: 0
+						},
+						hidden: true,
+						hideLabel: true
+					}, {
+						xtype: 'compositefield',
+						fieldLabel: 'Selection',
+						name: 'contextdisp',
+						id: this.genID("contextdisp"),
+						style: {
+							background: 'none',
+							'border-top': 'none',
+                            'border-bottom': 'none',
+                            'border-left': 'none',
+                            'border-right': 'none',
+							'font-size': '90%'
+						},
+						items: [
+							{
+								xtype: 'textfield',
+								name: 'contextdisptxt',
+								readOnly: true,
+								flex: 1
+							}, {
+								xtype: 'button',
+								text: 'Set',
+								onClick: this.handleUpdateAnnotationContext
+							}
+						]
+					}, {
+						fieldLabel: 'Variant resource',
+						name: 'variant',
+						id: this.genID('variantfield'),
+						readOnly: true,
+						style: {
+							background: 'none',
+							border: 'none',
+							'font-size': '90%'
+						}
+					}, {
+						fieldLabel: 'Variant Context Xpointer',
+						name: 'variantcontext',
+						readOnly: true,
+						style: {
+							background: 'none',
+							border: 'none',
+							padding: 0,
+							margin: 0
+						},
+						hidden: true,
+						hideLabel: true
+					}, {
+						xtype: 'compositefield',
+						fieldLabel: 'Selection',
+						name: 'rcontextdisp',
+						id: this.genID("rcontextdisp"),
+						style: {
+							background: 'none',
+							'border': 'none',
+							'font-size': '90%'
+						},
+						items: [
+							{
+								xtype: 'textfield',
+								name: 'rcontextdisptxt',
+								readOnly: true,
+								flex: 1
+							}, {
+								xtype: 'button',
+								text: 'Set',
+								onClick: this.handleUpdateAnnotationVariantContext
+							}
+						]
+					},
 									{
 									fieldLabel : 'Semantic selection',
 									name: 'metares',
@@ -481,11 +485,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	 * @param {Object} e Not currently used
 	 */
 	handleUpdateAnnotationContext : function(scope){
+		lore.debug.anno("EditorPanel.js handleUpdateAnnotationContext()", [this, scope]);
 		try {
 			
 			// either scope of field or scope supplied, the callee's scope
 			// can vary
-			var panel = this.parent || scope; 
+			var panel = this.findParentByType('annoeditorpanel') || scope;
 			var curSelAnno = panel.pageView.page.curSelAnno;
 
 			if (!panel.isVisible())
@@ -503,8 +508,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				curSelAnno.data.resource = lore.anno.ui.currentURL;
 			theField = panel.form.findField('original');
 			theField.setValue(lore.anno.ui.currentURL);
-			theField = panel.form.findField('contextdisp');
+			theField = panel.form.findField('contextdisptxt');
 			theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window).document) + '"');
+		
+			// TODO: update the pageview to highlight the new selection
+			// Should be in pageview code, that gets called from here
 		} 
 		catch (ex) {
 			lore.debug.anno("Exception updating anno context", ex);
@@ -520,7 +528,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			try {
 				// either scope of field or scope supplied, the callee's scope
 				// can vary
-				var panel = this.parent || scope;  
+				var panel = this.findParentByType('annoeditorpanel') || scope;  
 				var curSelAnno = panel.pageView.page.curSelAnno;
 				if (!panel.isVisible())
 					panel.show(panel.pageView.page.curSelAnno);
@@ -531,7 +539,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				theField.setValue(currentCtxt);
 				theField = panel.form.findField('variant');
 				theField.setValue(lore.anno.ui.currentURL);
-				theField = panel.form.findField('rcontextdisp');
+				theField = panel.form.findField('rcontextdisptxt');
 				theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window).document) + '"');
 			} 
 			catch (ex) {
@@ -570,7 +578,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				// display contents of context
 				if (rec.data.context) {
 					
-					var ctxtField = this.form.findField('contextdisp');
+					var ctxtField = this.form.findField('contextdisptxt');
 					if (rec.data.original == lore.anno.ui.currentURL) {
 						var selText = '';
 						try {
@@ -581,7 +589,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						}
 						
 						this.form.setValues([{
-							id: 'contextdisp',
+							id: 'contextdisptxt',
 							value: '"' + selText + '"'
 						}]);
 					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
@@ -595,9 +603,9 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				}
 				else {
 					// otherwise display empty
-					var ctxtField = this.form.findField('contextdisp');
+					var ctxtField = this.form.findField('contextdisptxt');
 					this.form.setValues([{
-						id: 'contextdisp',
+						id: 'contextdisptxt',
 						value: ""
 					}]);
 					ctxtField.getEl().setStyle("background-color", "inherit");
@@ -606,7 +614,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				
 				// display contents of variant context 
 				if (rec.data.variantcontext) {
-					var vCtxtField = this.form.findField('rcontextdisp');
+					var vCtxtField = this.form.findField('rcontextdisptxt');
 					if (rec.data.variant == lore.anno.ui.currentURL) {
 						var selText = '';
 						try {
@@ -617,7 +625,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						catch (e) {
 						}
 						this.form.setValues([{
-							id: 'rcontextdisp',
+							id: 'rcontextdisptxt',
 							value: '"' + selText + '"'
 						}]);
 					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
@@ -629,9 +637,9 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				}
 				else {
 					// otherwise empty
-					var ctxtField = this.form.findField('rcontextdisp');
+					var ctxtField = this.form.findField('rcontextdisptxt');
 					this.form.setValues([{
-						id: 'rcontextdisp',
+						id: 'rcontextdisptxt',
 						value: ""
 					}]);
 					ctxtField.getEl().setStyle("background-color", "inherit");
@@ -721,11 +729,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			// depending on whether it's for the original or
 			// variant context for the variation annotation
 			
-			var fieldId = 'rcontextdisp';
+			var fieldId = 'rcontextdisptxt';
 			var ctx = rec.data.variantcontext;
 			
 			if (rec.data.variant == lore.anno.ui.currentURL) {
-				fieldId = 'contextdisp';
+				fieldId = 'contextdisptxt';
 				ctx = rec.data.context;
 			}
 				
