@@ -233,11 +233,12 @@ lore.anno.ui.handlePrefsChange = function (args ) {
  */
 
 lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, index){
-	 
+	childNode.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
+	
 	childNode.on('contextmenu', function(node, ev){
 	 	node.select();
 	 	var rec = lore.anno.annoMan.findRecById(lore.anno.ui.nodeIdToRecId(node));
-	 	lore.anno.ui.page.setCurrentAnno(rec, rec.store);
+	 	lore.anno.ui.page.setCurrentAnno(rec);
 	 });
 	 
 	 
@@ -370,7 +371,7 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
 		}
 	
 		// set current anno and fire anno change event
-		lore.anno.ui.page.setCurrentAnno(rec, store);
+		lore.anno.ui.page.setCurrentAnno(rec);
 		 
 		lore.anno.ui.formpanel.hide();
 		Ext.getCmp("treeview").doLayout();				
@@ -540,7 +541,7 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 		
 		var newRec = lore.anno.annoMan.addAnnotation(currentContext,  lore.anno.ui.currentURL, addSelectNodeHandler, rec);
 		
-		lore.anno.ui.page.setCurrentAnno(newRec, lore.anno.annoMan.annodsunsaved);
+		lore.anno.ui.page.setCurrentAnno(newRec);
 		lore.anno.ui.formpanel.show(newRec);
 		Ext.getCmp("treeview").doLayout();
 
@@ -691,7 +692,6 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 			}
 		});
 		lore.anno.ui.page.setCurrentAnno();
-		
 	} 
 	catch (e) {
 		lore.debug.anno("Error updating saving annotation: " + e, e);
@@ -731,8 +731,6 @@ lore.anno.ui.handleToggleAllAnnotations = function () {
  * to the currently selected annotation
  */
 lore.anno.ui.handleReplyToAnnotation = function(arg){
-	
-	lore.anno.ui.views.activate('treeview');
 	try {
 		var rec;
 		if (!arg) { // request comes from toolbar
@@ -744,7 +742,7 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 			// user has come from an info bubble pop-up in timeline
 			lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
 			rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, arg);
-			if ( rec) lore.anno.ui.page.setCurrentAnno(rec, lore.anno.annoMan.annods);//lore.anno.ui.page.curSelAnno = rec;
+			if ( rec) lore.anno.ui.page.setCurrentAnno(rec);//lore.anno.ui.page.curSelAnno = rec;
 		}
 			
 		if (!rec) {
@@ -773,7 +771,7 @@ lore.anno.ui.handleEditTimeline = function ( id ) {
 	try{
 		// the user has come here from an info bubble pop-up.
 		lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
-		lore.anno.ui.views.activate('treeview');
+		lore.anno.ui.gui_spec.activate('treeview');
 		var rec =  lore.global.util.findRecordById(lore.anno.annoMan.annods, id);
 		lore.anno.ui.selectAndShowNode(rec);
 	} catch (e) {
@@ -815,7 +813,7 @@ lore.anno.ui.handleEditTreeNode = function (node) {
 			if (!rec) 
 				rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
 			else 
-				lore.anno.ui.page.setCurrentAnno(rec, lore.anno.annoMan.annodsunsaved); // set current anno to the unsaved copy
+				lore.anno.ui.page.setCurrentAnno(rec); // set current anno to the unsaved copy
 		}
 		lore.anno.ui.selectAndShowNode(rec);
 	}catch (e ) {
