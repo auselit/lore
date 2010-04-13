@@ -556,6 +556,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	getBodyContentAsync : function(anno, window){
 	
+		var self = this;
 		var callback = function(anno, txt){
 			try {
 				var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
@@ -567,7 +568,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			 	encodeURIComponent(anno.variant) != url)))
 					return;
 					
-				var r = lore.global.util.findRecordById(this.annods, anno.id);
+				var r = lore.global.util.findRecordById(self.annods, anno.id);
 				if (r) {
 					r.data.body = txt || '';
 					r.data.bodyLoaded = true;
@@ -783,8 +784,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				
 			for (var i = 0; i < annotations.length; i++) {
 				try {
-					annotations[i].body = this.getBodyContent(annotations[i], window);
-					annotations[i].bodyLoaded = true;
+					this.getBodyContentAsync(annotations[i], window);
 				} 
 				catch (e) {
 					lore.debug.anno('error loading body content: ' + e, e);
@@ -843,8 +843,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				replies = this.orderByDate(replyList);
 				
 				for ( var i=0; i< replies.length; i++) {
-					replies[i].body = this.getBodyContent(replies[i], window);
-					replies[i].bodyLoaded = true;
+					this.getBodyContentAsync(replies[i], window);
 				}
 				
 				/*TODO: #199  
