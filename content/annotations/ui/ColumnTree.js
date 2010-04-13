@@ -632,12 +632,12 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	},
 
 	/**
-		 * Notification function called when an update operation occurs in the store
-		 * Update the values of a node in tree
-		 * @param {Object} store The datastore that perofmred the notification
-		 * @param {Object} rec The record of the annotation that has changed
-		 * @param {Object} operation The update operation that occurred to the record
-		 */			
+	 * Notification function called when an update operation occurs in the store
+	 * Update the values of a node in tree
+	 * @param {Object} store The datastore that perofmred the notification
+	 * @param {Object} rec The record of the annotation that has changed
+	 * @param {Object} operation The update operation that occurred to the record
+	 */			
 	handleUpdate: function(store, rec, operation) {
 		try {
 			var node = lore.anno.ui.findNode(rec.data.id, this);
