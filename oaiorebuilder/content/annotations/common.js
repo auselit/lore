@@ -275,18 +275,18 @@ lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
 		
 		cont.setDisplayed(false);
 		if (hide && cont.isVisible()) {
-			cont.slideOut();
+//			cont.slideOut();
 			thefield.hide();
 		}
 		else if (!hide && !cont.isVisible()) {
-				thefield.hide();
-				cont.slideIn();
+//				thefield.hide();
+//				cont.slideIn();
 				thefield.show();
 				cont.setDisplayed(true);
 			}
 	}
 }
-		
+
 /**
  * Hide list of form fields
  * @param {Form} form The form
