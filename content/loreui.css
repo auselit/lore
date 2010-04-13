@@ -471,7 +471,8 @@
     background-image:url(chrome://lore/skin/icons/ellipsis-trigger-grey.gif);
     border-bottom-color:#b5b8c8;
 }
-.x-form-field-wrap .x-form-set-trigger{
-    background-image:url(chrome://lore/skin/icons/set-trigger-grey.gif);
-    border-bottom-color:#b5b8c8;
+
+/* the background image was blank anyway, and made it hard to highlight a field with a colour */
+.x-form-text, textarea.x-form-field{
+    background-image: none;
 }
