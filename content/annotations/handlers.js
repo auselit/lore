@@ -206,7 +206,7 @@ lore.anno.ui.updateAnnoFromForm = function(rec, updatereal){
 	
 	if (unsavedRec) {
 		form.updateRecord(unsavedRec); // update from form
-		lore.debug.anno("Annotation record updated.");
+		return unsavedRec;
 	}
 	form.reset(); // clear dirty flag
 }
