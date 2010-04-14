@@ -304,6 +304,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.createPreview = function(theurl) {
 	iframe.name = theurl + "-data";
 	iframe.id = theurl + "-data";
 	iframe.style.zIndex = "-9001";
+    this.iframe = iframe;
 	this.iframearea.appendChild(iframe);
 };
 /**
@@ -631,18 +632,24 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
             lore.ore.ui.loreInfo("URI copied to clipboard: " + thisfig.url);
         }
     ));
-    
+    if (this.iframe){
+    menu.appendMenuItem(new draw2d.MenuItem("Reset preview", null,
+        function (){
+            thisfig.iframe.contentWindow.location.href=thisfig.url;
+        }
+    ));
+    }
 	if (!this.metadataproperties["dc:format_0"].match("rdf")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
 				"Open resource in separate window", null, function() {
 					lore.global.util.launchWindow(thisfig.url, true, window);
 				}));
 	}
-    menu.appendMenuItem(new draw2d.MenuItem("Show in Narrative view", null,
+   /* menu.appendMenuItem(new draw2d.MenuItem("Show in Narrative view", null,
         function (){
             // TODO jump to resource in summary view
         }
-    ));
+    ));*/
 	if (Ext.getCmp("remexploreview")) {
 		menu.appendMenuItem(new draw2d.MenuItem("Show in Explore view", null,
 				function() {
@@ -658,11 +665,11 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
 					}
 				}));
 	}
-    menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", null,
+  /*  menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", null,
         function (){
             // TODO jump to resource in summary view
         }
-    ));
+    ));*/
 	return menu;
 };
 
