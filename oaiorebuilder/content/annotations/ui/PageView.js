@@ -116,7 +116,6 @@ lore.anno.ui.PageView.prototype = {
 	handleUpdate: function(store, rec, operation){
 		try {
 			this.removeHighlightForCurrentAnnotation();
-			this.highlightCurrentAnnotation(rec);
 		} 
 		catch (e) {
 			lore.debug.anno("PageView:handleUpdate() - " + e, e);
@@ -261,6 +260,7 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Record} rec The record of the annotation to highlight
 	 */
 	highlightCurrentAnnotation: function(rec){
+		this.removeHighlightForCurrentAnnotation();
 		if (this.page.curImage) {
 			var inst = this.page.curImage.imgAreaSelectInst();
 			inst.setOptions({
@@ -280,7 +280,6 @@ lore.anno.ui.PageView.prototype = {
 	 * The dom node is passed in as a parameter to the callback.
 	 */	
 	highlightAnnotation : function(rec, annoStyle) {
-		
 		var markers = [];
 		
 		// regular non variant case for highlighting

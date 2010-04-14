@@ -511,8 +511,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			theField = panel.form.findField('contextdisptxt');
 			theField.setValue('"' + lore.global.util.getSelectionText(currentCtxt, lore.global.util.getContentWindow(window).document) + '"');
 		
+			
+			
 			// TODO: update the pageview to highlight the new selection
 			// Should be in pageview code, that gets called from here
+			var editedRec = lore.anno.ui.updateAnnoFromForm(curSelAnno);
+			panel.pageView.highlightCurrentAnnotation(editedRec);
 		} 
 		catch (ex) {
 			lore.debug.anno("Exception updating anno context", ex);
