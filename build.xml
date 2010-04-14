@@ -34,6 +34,7 @@
 	</target>
 	
 	<target name="dist-nojar" >
+		<mkdir dir="${dist.dir}" />
 		<zip destfile="${dist.dir}/${app.name}.xpi">
 			<zipfileset file="${src.dir}/chrome.manifest" fullpath="chrome.manifest"/>
 			<fileset dir="${src.dir}">
