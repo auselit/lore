@@ -49,7 +49,7 @@
        <caption label="&repos.label;"/>
        <label control="text_rdfrepos">&rdfrepos.label;</label><textbox id="text_rdfrepos" preference="rdfrepos_pref"/>
        <label>&rdfrepostype.label;</label>
-       <radiogroup preference="type_pref">
+       <radiogroup preference="type_pref" disabled="true">
            <radio id="sesame_radio" label="&sesame.label;" value="sesame"/>
            <radio id="fedora_radio" label="&fedora.label;" value="fedora"/>
       </radiogroup>
