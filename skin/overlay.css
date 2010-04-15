@@ -84,3 +84,6 @@
 #show-prefs, #show-prefs2 {
 	list-style-image: url(chrome://lore/skin/icons/cog.png);
 }
+.text-link {
+	margin-left: 5px;
+}
