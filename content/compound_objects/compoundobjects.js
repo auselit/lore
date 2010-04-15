@@ -130,14 +130,26 @@ lore.ore.ui.loreWarning = function(/*String*/message){
 };
 
 lore.ore.setPrefs = function(prefs){
-  lore.debug.ore("setPrefs",prefs);
-  lore.ore.setDcCreator(prefs.creator);
-  lore.ore.setrelonturl(prefs.relonturl);
-  lore.ore.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
-  lore.ore.setTextMiningKey(prefs.tmkey);     
-  lore.ore.disableUIFeatures({
-    'disable_compoundobjects': prefs.disable
-  });                 
+  try{ 
+	  lore.debug.ore("lore.ore.setPrefs",prefs);
+	  lore.ore.setDcCreator(prefs.creator);
+	  lore.ore.setrelonturl(prefs.relonturl);
+	  lore.ore.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
+  } catch (e){
+    lore.debug.ore("Unable to set repos prefs",e);
+  }
+  try{
+    lore.ore.setTextMiningKey(prefs.tmkey);
+  } catch (e){
+    lore.debug.ore("Unable to set text mining pref",e);
+  }
+  try {
+    lore.ore.disableUIFeatures({
+        'disable_compoundobjects': prefs.disable
+    });  
+  } catch (e){
+    lore.debug.ore("Unable to disable CO UI",e);
+  }
 };
 /**
  * Set the DC Creator for the resource map
@@ -180,12 +192,11 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
     if (rdfrepostype == 'sesame'){
         /** Adapter used to access the repository */
         lore.ore.reposAdapter = new lore.ore.SesameAdapter(rdfrepos);
-    } else {
+    } else if (rdfrepostype == 'fedora'){
+        lore.ore.reposAdapter = new lore.ore.FedoraAdapter(rdfrepos);
+    }else {
         lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
     }
-    //lore.ore.reposURL = rdfrepos;
-    // The type of the compound object repository eg sesame, fedora 
-    //lore.ore.reposType = rdfrepostype;
     /** The access URL of the annotation server */
     lore.ore.annoServer = annoserver;
 };
@@ -295,6 +306,7 @@ lore.ore.createCompoundObject = function (){
 		            if (btn === 'yes') {
                         // TODO: #56 check that the save completed successfully before calling newCO
                         var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
+                        // TODO: this should be handled by repository adapter
                         var therdf = lore.ore.createRDF(false);
                         lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
                             lore.ore.afterSaveCompoundObject(remid);
@@ -488,7 +500,7 @@ lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*
 };
 
 lore.ore.showCompoundObjectNarrative = function(p){
-
+ 
 }
 
 // TODO: either use XSLT or listen to model rather than updating entire view each time
@@ -732,16 +744,16 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         var result = "";
         if (propval && propval != '') {
             result = ltsymb + propname + ">";
+            // TODO: REFACTOR
             if (nlsymb == "<br/>" && propval) {
                 try {
-                    lore.debug.ore("serializing " + propname, properties);
-                    result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"\\\"")); 
+                    result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;")); 
                 } catch (e) {
-                    lore.debug.ore("error in serialise_property",e);
                     lore.ore.ui.loreWarning(e.toString());
                 }
             } else {
-                result += propval.toString().replace(/&/g,"&amp;").replace(/"/g,"\\\"");
+                result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"));
+                
             }
             result += ltsymb + "/" + propname + ">" + nlsymb;
             lore.debug.ore("serialize_property "+ result);
@@ -822,7 +834,6 @@ lore.ore.createRDF = function(/*boolean*/escape) {
        }
     });
     rdfxml += ltsymb + rdfdescclose + nlsymb;
-
     // create RDF for aggregation
     rdfxml += ltsymb + rdfdescabout + describes + closetag + ltsymb
             + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
@@ -850,11 +861,11 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                         // why not using serialise_property function here?
 	                    if (tagname == "rdf:type"){ // resource
 	                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
-	                            + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"\\\"")) 
+	                            + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;")) 
 	                            +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
 	                    } else { // properties that have literal values
 	                    resourcerdf += ltsymb + rdfdescabout + figurl + closetag
-	                            + ltsymb + tagname + ">" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"\\\"")) + ltsymb + "/"
+	                            + ltsymb + tagname + ">" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;")) + ltsymb + "/"
 	                            + tagname + ">" + nlsymb + ltsymb + rdfdescclose + nlsymb;
 	                    }
 	                }
