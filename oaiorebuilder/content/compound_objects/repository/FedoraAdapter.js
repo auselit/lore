@@ -17,21 +17,67 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+// New Fedora adapter that uses the REST API : currently incomplete
 lore.ore.FedoraAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
-/*getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
+getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
     
-},*/
-/*loadCompoundObject : function(remid){
-    
-},*/
-saveCompoundObject : function (remid,therdf){
-    lore.ore.ui.loreError("Saving to Fedora not yet implemented");
-    var soaptempl = "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
-    + "<soap:Body> "
-            // + "<GetInfoByZIP xmlns=\"http://www.webserviceX.NET\"> <USZip>string</USZip> </GetInfoByZIP>"
-    + "</soap:Body></soap:Envelope>";
-}
-/*deleteCompoundObject : function(remid){
+},
+loadCompoundObject : function(remid, callback){
+    var fedoraid = 'demo:' + lore.global.util.splitTerm(remid).term;
+    Ext.Ajax.request({
+                url: this.reposURL + "/objects/" + fedoraid + "/export",
+                method: "GET",
+                disableCaching: false,
+                success: function(){
+                    // TODO: callback expects RDF: convert from FOXML to RDF/XML
+                    var rdf = "";
+                    callback(rdf);
+                },
+                failure: function(resp, opt){
+                    lore.debug.ore("Unable to load compound object " + opt.url, resp);
+                }
+            }); 
+},
+saveCompoundObject : function (coid,thexml,callback){
+    // /objects/ [{pid}| new] ? [label] [format] [encoding] [namespace] [ownerId] [logMessage] [ignoreMime]
 
-}*/
+    // creates a new compound object
+    // TODO: allow modification of existing
+    // FIXME:
+    var foxml = lore.ore.createFOXML();
+    var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.currentREM).term;
+    lore.debug.ore("saving foxml to fedora",foxml);
+    try {                  
+           var xmlhttp2 = new XMLHttpRequest();
+           xmlhttp2.open("POST",
+               this.reposURL + "/objects/" + remid + "?format=info:fedora/fedora-system:FOXML-1.1", true);
+           xmlhttp2.onreadystatechange = function() {
+                if (xmlhttp2.readyState == 4) {
+                    if (xmlhttp2.status == 201) {
+                        lore.debug.ore("fedora: Compound object saved",xmlhttp2);
+                        lore.ore.ui.loreInfo("Compound object " + remid + " saved");
+                        callback(remid);
+                    } else {
+                        lore.ore.ui.loreError('Unable to save to repository' + xmlhttp2.responseText);
+                        Ext.Msg.show({
+                            title : 'Problem saving RDF',
+                            buttons : Ext.MessageBox.OKCANCEL,
+                            msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+                        });
+                        lore.debug.ore("Unable to save to repository",xmlhttp2);
+                    }
+                }
+            };
+            xmlhttp2.setRequestHeader("Content-Type", "text/xml");
+            xmlhttp2.send(foxml); 
+        } catch (e) {
+            xmlhttp = false;
+        }
+}/*,
+deleteCompoundObject : function(remid,callback){
+
+}
+TODO: getExploreData 
+*/
 });
