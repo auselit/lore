@@ -82,8 +82,13 @@
 	        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	        	<rdf:Description rdf:about="info:fedora/{$coid}">
 	        		<xsl:for-each select="*[not(namespace-uri(.)='http://purl.org/dc/elements/1.1/' or namespace-uri(.)='http://www.openarchives.org/ore/terms/')]">
-	        			<!-- TODO: don't copy date datatypes -->
-	        			<xsl:copy-of select="."/>
+	        		
+	        			<xsl:copy>
+	        				<!-- don't copy date rdf:datatype attribute because Fedora does not support all types -->
+	        				<!-- TODO: convert rdf:datatype to one of  W3C XML Schema data types: int, long, float, double, or dateTime -->
+	        				<xsl:copy-of select="@*[generate-id() != generate-id(../@rdf:datatype)]"/>
+	        				<xsl:value-of select="."/>
+	        			</xsl:copy>
 	        		</xsl:for-each>
 	        	</rdf:Description>
 	        </rdf:RDF>
@@ -96,7 +101,6 @@
 			<foxml:xmlContent>
 				<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 				xmlns:ore="http://www.openarchives.org/ore/terms/">
-
 				    <!-- properties for aggregated resources -->
 					<xsl:for-each select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
 						<xsl:variable name="resURI" select="@rdf:resource"/>
@@ -108,7 +112,6 @@
 						</xsl:for-each>
 						</rdf:Description>
 					</xsl:for-each>	
-					
 				</rdf:RDF>
 			</foxml:xmlContent>
 		</foxml:datastreamVersion>
