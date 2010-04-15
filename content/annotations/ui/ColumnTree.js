@@ -349,9 +349,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
 				
 				this.sorttypecombo = new Ext.form.ComboBox({
 					xtype: "combo",
-					id: cmbname ,
-					name: cmbname,
-					hiddenName: cmbname,
+					editable: false,
 					store: new Ext.data.SimpleStore({
 						fields: ['type', 'typename', 'direction'],
 						data: [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
@@ -360,17 +358,14 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
 							   ['modified','Modified Date(Ascending)', 'asc' ],['modified','Modified Date(Descending)', 'desc' ],
 							   ['type', 'Type(Ascending)', 'asc'],['type', 'Type(Descending)','desc']]
 					}),
-					valueField: 'type',
+					valueField: 'typename',
 					displayField: 'typename',
-					typeAhead: true,
 					//emptyText: "Sort by...",
 					emptyText: 'A-Z',
-					width: 45,
 					triggerAction: 'all',
 					mode: 'local',
-					forceSelection: true,
-					selectOnFocus: true
-					});
+					forceSelection: true
+				});
 					
 					
 				Ext.apply(this, {
@@ -397,13 +392,11 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
 					dropConfig: {
 						appendOnly: true
 					},
-					bbar: { xtype: 'toolbar', 
-						items: [ 
-						
-							this.sorttypecombo
-						
-					]	
-				}});
+					bbar: {
+						xtype: 'toolbar', 
+						items: [ this.sorttypecombo	]
+					}
+				});
 				
 				lore.anno.ui.AnnoColumnTree.superclass.initComponent.apply(this, arguments);
 				
