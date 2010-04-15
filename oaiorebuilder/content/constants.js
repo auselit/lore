@@ -212,9 +212,6 @@ constants = {
     
     textm : {
     // Calais web service (text mining)
-       /** Key to access Calais web service for text mining
-        * @const */
-       OPENCALAIS_KEY   : "ab3yxw3ab4b2fyexwg44amns",
        /** String to display to attribute Calais web service
         * @const */
        POWEREDBY_CALAIS : "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/Calais_icon.jpg'> Powered by Calais</a>"

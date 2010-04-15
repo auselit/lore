@@ -128,6 +128,46 @@ lore.ore.ui.loreWarning = function(/*String*/message){
     lore.ore.ui.status.setStatus(statusopts);
     lore.global.ui.loreWarning(message);
 };
+
+lore.ore.setPrefs = function(prefs){
+  lore.debug.ore("setPrefs",prefs);
+  lore.ore.setDcCreator(prefs.creator);
+  lore.ore.setrelonturl(prefs.relonturl);
+  lore.ore.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
+  lore.ore.setTextMiningKey(prefs.tmkey);     
+  lore.ore.disableUIFeatures({
+    'disable_compoundobjects': prefs.disable
+  });                 
+};
+/**
+ * Set the DC Creator for the resource map
+ * @param {String} creator
+ */	
+lore.ore.setDcCreator = function(creator){
+    /** The name of the default creator used for dc:creator for annotations and compound objects */
+    lore.defaultCreator = creator;
+};
+/**
+ * Set the Text mining key
+ * @param {String} tmkey
+ */
+lore.ore.setTextMiningKey = function (tmkey){
+    lore.ore.textm.tmkey = tmkey;
+}
+/**
+ * Set the global variable storing the relationship ontology
+ * 
+ * @param {}
+ *            relonturl The new locator for the ontology
+ */
+lore.ore.setrelonturl = function(relonturl) {
+    lore.ore.onturl = relonturl;
+    try{
+        lore.ore.loadRelationshipsFromOntology();
+    } catch (ex){
+        lore.debug.ore("exception in setrelonturl", ex);
+    }
+};
 /**
  * Set the global variables for the repository access URLs
  *
@@ -143,19 +183,11 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
     } else {
         lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
     }
-	//lore.ore.reposURL = rdfrepos;
+    //lore.ore.reposURL = rdfrepos;
     // The type of the compound object repository eg sesame, fedora 
-	//lore.ore.reposType = rdfrepostype;
+    //lore.ore.reposType = rdfrepostype;
     /** The access URL of the annotation server */
     lore.ore.annoServer = annoserver;
-};
-/**
- * Set the DC Creator for the resource map
- * @param {String} creator
- */	
-lore.ore.setDcCreator = function(creator){
-    /** The name of the default creator used for dc:creator for annotations and compound objects */
-    lore.defaultCreator = creator;
 };
 /** Handle click of search button in search panel */
 lore.ore.keywordSearch = function(){
@@ -455,9 +487,10 @@ lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*
     tab.show();
 };
 
-lore.ore.showCompoundObjectNarrative = function(panel){
-    
+lore.ore.showCompoundObjectNarrative = function(p){
+
 }
+
 // TODO: either use XSLT or listen to model rather than updating entire view each time
 /** Displays a summary of the resource URIs aggregated by the compound object 
  * @parm {Ext.Panel} summarypanel The panel to show the summary in */
@@ -1073,6 +1106,11 @@ lore.ore.loadCompoundObject = function (rdf) {
             }
         );
 
+        // FIXME: #210 Temporary workaround to set drawing area size on load
+        // problem still exists if a node is added that extends the boundaries
+        lore.ore.ui.graph.coGraph.showMask();
+        lore.ore.ui.graph.coGraph.hideMask();
+        
         lore.ore.ui.loreInfo("Loading compound object");
         lore.ore.currentREM = remurl;
         lore.ore.populateResourceDetailsCombo();
@@ -1299,20 +1337,7 @@ lore.ore.saveRDFToRepository = function(callback) {
         }
     });
 };
-/**
- * Set the global variable storing the relationship ontology
- * 
- * @param {}
- *            relonturl The new locator for the ontology
- */
-lore.ore.setrelonturl = function(relonturl) {
-    lore.ore.onturl = relonturl;
-    try{
-        lore.ore.loadRelationshipsFromOntology();
-    } catch (ex){
-        lore.debug.ore("exception in setrelonturl", ex);
-    }
-};
+
 
 lore.ore.handleLocationChange = function (contextURL) {
 	lore.ore.ui.currentURL = lore.global.util.preEncode(contextURL);

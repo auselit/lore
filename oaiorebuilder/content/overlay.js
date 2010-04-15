@@ -123,7 +123,7 @@ try {
 				
 				this.initialized = true;
 				this.strings = document.getElementById("lore-strings");
-				this.addEvents(["annoprefs_changed", "location_changed", "location_refresh"]);
+				this.addEvents(["annoprefs_changed", "coprefs_changed", "location_changed", "location_refresh"]);
 				lore.global.ui.load(window, this.instId);
 			} 
 			catch (e) {
@@ -432,7 +432,7 @@ try {
 				var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
 				var annoserver = this.prefs.getCharPref("annoserver");
 				var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
-				
+				var tmkey = this.prefs.getCharPref("tmkey");
 				// hide or show XUL toolbar buttons depending on prefs
 				
 				document.getElementById('cosep').hidden = disable_co;
@@ -440,16 +440,17 @@ try {
 				document.getElementById('save-rdf').hidden = disable_co;
 				// document.getElementById('load-rdf').hidden = disable_co;
 				document.getElementById('import-export').hidden = disable_co;
-				
-					loreoverlay.coView().setDcCreator(dccreator);
-				loreoverlay.coView().setrelonturl(relonturl);
-				loreoverlay.coView().setRepos(rdfrepos, rdfrepostype, annoserver);
-               
-				// hide or show related Ext UI depending on prefs
-				loreoverlay.coView().disableUIFeatures({
-					'disable_compoundobjects': disable_co
-				});
-				
+
+                this.fireEvent("coprefs_changed",
+                [{
+                    creator: dccreator,
+                    relonturl: relonturl,
+                    rdfrepos: rdfrepos,
+                    rdfrepostype: rdfrepostype,
+                    annoserver: annoserver,
+                    disable: disable_co,
+                    tmkey: tmkey
+                }]);
 			} 
 		},
 		

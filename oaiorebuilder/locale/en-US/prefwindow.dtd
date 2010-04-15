@@ -1,8 +1,12 @@
 <!ENTITY ui.label "User Interface">
 <!ENTITY anno.label "Annotations">
-<!ENTITY co.label "Compound Object authoring">
+<!ENTITY co.label "Compound Objects">
 <!ENTITY general.label "General">
-<!ENTITY expert.label "Expert">
+<!ENTITY repos.label "Repository">
+<!ENTITY co.label "Compound Objects">
+<!ENTITY tm.label "Text Mining">
+<!ENTITY tmkey.label "Text mining API key:">
+<!ENTITY tmkey.message "Please visit the OpenCalais site to request an access key for the text mining service:">
 <!ENTITY annotation_mode.label "Scholarly View" >
 <!ENTITY prefwindow.title "LORE preferences">
 <!ENTITY relonturl.label "Relationship Ontology URL:">

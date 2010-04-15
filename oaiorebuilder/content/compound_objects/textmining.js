@@ -36,8 +36,8 @@ lore.ore.textm.processRDFa = function(tmtab) {
     tmtab.body.update("Found the following from RDFa:<br>");
     var myrdf = contentElem.rdfa();
     var triples = myrdf.databank.triples();
-    lore.debug.tm("triples object", triples);
-    lore.debug.tm("json dump", Ext.util.JSON.encode(jQuery.rdf.dump(triples)));
+    lore.debug.ore("triples object", triples);
+    lore.debug.ore("json dump", Ext.util.JSON.encode(jQuery.rdf.dump(triples)));
     for (var t = 0; t < triples.length; t++){
         var triple = triples[t];
         var triplestr = lore.global.util.escapeHTML(triple.toString());
@@ -111,57 +111,66 @@ lore.ore.textm.processRDFa = function(tmtab) {
  * Triggered when the user selects the Calais button from the toolbar: sends a
  * request to retrieve metadata using Calais web service
  */
-lore.ore.textm.requestTextMiningMetadata = function(tmtab) {
-    lore.debug.tm("requested text mining");
-    
+lore.ore.doTextMining = function() {
+    lore.ore.ui.loreInfo("Please wait while semantic entities are identified");
+    try{
     // TODO: do this async
     //lore.ore.textm.processRDFa(tmtab);
     
-    // TODO: #59 call semantic text mining services such as Open Calais
-    /*var ocParams = '<c:params xmlns:c="http://s.opencalais.com/1/pred/">'
-            + '<c:processingDirectives c:contentType="text/txt" c:outputFormat="application/json"></c:processingDirectives>'
+    var ocParams = '<c:params xmlns:c="http://s.opencalais.com/1/pred/">'
+            + '<c:processingDirectives c:contentType="text/html" c:outputFormat="rdf/xml"></c:processingDirectives>'
             + '<c:userDirectives c:allowDistribution="true" c:allowSearch="true"/><c:externalMetadata />'
             + '</c:params>';
 
-    // set contentStr to current main window contents
-    // TODO: do this better in terms of preserving whitespace and ignoring
-    // script and hidden elems
-
-    // alert(contentStr);
+    // set contentStr to current selection
+    var selection = lore.global.util.getContentWindow(window).getSelection();
+    if (!selection || !selection.toString()){
+        lore.ore.ui.loreWarning("Please highlight text to be analysed from the current page prior to selecting the text mining button");
+    }
+    var contentStr = selection.toString();
+    
     // truncate - web service can only handle 100,000 chars
     if (contentStr.length > 99999) {
+        lore.ore.ui.loreInfo("Selection too long, identifying entities from the first 100,000 characters only");
         contentStr = str.substring(0, 99999);
     }
 
+    contentStr = contentStr.replace(/"/g,"\\\"");
+    
     Ext.Ajax.request({
-        url : 'http://api.opencalais.com/enlighten/calais.asmx/Enlighten',
-        success : lore.textm.handleOpenCalaisMetadata,
+        url : "http://api.opencalais.com/enlighten/rest/",
+        success : lore.ore.textm.handleOpenCalaisMetadata,
         failure : function(resp) {
             lore.debug.tm("Unable to obtain OpenCalais metadata", resp);
             lore.ore.ui.loreWarning("Unable to obtain OpenCalais metadata");
         },
         params : {
-            licenseID : lore.textm.OPENCALAIS_KEY,
+            licenseID : lore.ore.textm.tmkey,
             content : contentStr, // Ext.Ajax does urlencoding 
             paramsXML : ocParams
         }
-    });*/
-   
-    //Ext.getCmp("textmining").body.update(myresult);
+    });
+    } catch (e){
+        lore.debug.tm("error in doTextMining",e);
+    }
 }
-/*lore.ore.textm.handleOpenCalaisMetadata = function(resp) {
-    // get the contents of the string element
-    // using string replace because the result using the dom was being truncated
-    var res = resp.responseText.replace(
-            '<?xml version="1.0" encoding="utf-8"?>', '').replace(
-            '<string xmlns="http://clearforest.com/">', '').replace(
-            '</string>', '');
-    // load into an object
-    var jsonObj;
+lore.ore.textm.handleOpenCalaisMetadata = function(resp) {
+    try{
+    var res = resp.responseXML;
+    var databank = jQuery.rdf.databank();
+    databank.load(res);
+    lore.debug.tm("Text mining RDF result",databank);
+    var rdfxml = databank.dump({format:'application/rdf+xml',serialize:true});
+    lore.debug.tm("Text mining RDF/XML",rdfxml);
+    } catch (e){
+        lore.debug.tm("error in text mining RDF",e);
+    }
+    /* Errors look like this:
+     <Error Method="ProcessText" CalaisSessionID="(Session ID here)" CalaisVersion="(Version Number here)">
+        <Exception> (Error Message Here) [SID= (Session ID here)]</Exception>
+      </Error>
+     */
+    /*
     Ext.getCmp("textmining").body.update(res + lore.ore.textm.POWEREDBY_CALAIS);
-    var nativeJSON = Components.classes["@mozilla.org/dom/json;1"]
-                 .createInstance(Components.interfaces.nsIJSON);
-
-    var jsonObj = nativeJSON.decode(res);
-
-}*/
+    */
+}

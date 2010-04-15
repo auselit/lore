@@ -2,6 +2,7 @@ pref("extensions.lore.relonturl", "chrome://lore/content/ontologies/austlitoaior
 pref("extensions.lore.dccreator","Anonymous");
 pref("extensions.lore.rdfrepos", "http://austlit.edu.au/openrdf-sesame/repositories/lore");
 pref("extensions.lore.rdfrepostype", "sesame");
+pref("extensions.lore.tmkey","");
 pref("extensions.lore.annoserver", "http://maenad-auselit.cloud.itee.uq.edu.au/danno/annotea");
 pref("extensions.lore.annotationmode", false);
 pref("extensions.lore.DBG_LORE_UI", false);
@@ -12,5 +13,4 @@ pref("extensions.lore.disable_annotations", false);
 pref("extensions.lore.disable_compoundobjects", false);
 pref("extensions.lore.disable_textmining", true);
 pref("extensions.lore.filelogging", false);
-//pref("extensions.lore.annocache_timeout", 300);
 pref("extensions.lore.annocache_timeout", 1); // effectively disable for the moment
