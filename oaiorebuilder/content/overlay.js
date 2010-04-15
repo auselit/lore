@@ -441,7 +441,7 @@ try {
 				// document.getElementById('load-rdf').hidden = disable_co;
 				document.getElementById('import-export').hidden = disable_co;
 
-                this.fireEvent("coprefs_changed",
+                /*this.fireEvent("coprefs_changed",
                 [{
                     creator: dccreator,
                     relonturl: relonturl,
@@ -450,7 +450,16 @@ try {
                     annoserver: annoserver,
                     disable: disable_co,
                     tmkey: tmkey
-                }]);
+                }]);*/
+                loreoverlay.coView().setPrefs({
+                    creator: dccreator,
+                    relonturl: relonturl,
+                    rdfrepos: rdfrepos,
+                    rdfrepostype: rdfrepostype,
+                    annoserver: annoserver,
+                    disable: disable_co,
+                    tmkey: tmkey
+                });
 			} 
 		},
 		
