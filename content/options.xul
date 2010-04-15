@@ -42,7 +42,7 @@
      <preferences>
       <preference id="relonturl_pref" name="extensions.lore.relonturl" type="unichar" />
       <preference id="rdfrepos_pref" name="extensions.lore.rdfrepos" type="unichar"/>
-      <preference id="typepref" name="extensions.lore.rdfrepostype" type="string"/>
+      <preference id="type_pref" name="extensions.lore.rdfrepostype" type="string"/>
      </preferences>
     <label control="text_relonturl">&relonturl.label;</label><textbox id="text_relonturl" preference="relonturl_pref"/>
     <groupbox>
