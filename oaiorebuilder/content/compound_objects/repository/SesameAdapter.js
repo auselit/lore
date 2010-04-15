@@ -28,7 +28,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	       var escapedURL = "";
 	       var altURL = "";
 	       if (matchuri){
-	           escapedURL = encodeURIComponent(matchuri);
+	           escapedURL = encodeURIComponent(matchuri.replace(/}/g,'%257D').replace(/{/g,'%257B'));
 	           // browse matches both www and non-www version of URL
 		       if (!matchuri.match("http://www.")){
 		            altURL = escape(matchuri.replace("http://","http://www."));
