@@ -131,12 +131,33 @@
      * @param {} reload
 	 */
 	ui.load = function (win, instId, reload) {
-		
-		
 		ui.loadAnnotations(win, instId, reload );
         ui.loadCompoundObjects(win, instId, reload);
-		
-        
+	}
+	
+	/**
+	 * Called just before the browser window is closed
+	 */
+	ui.onClose = function (window, instId) {
+		var annoView = ui.annotationView.get(instId);
+		if (annoView.hasModifiedAnnotations()) {
+			if (window.confirm("Click 'Ok' to save changes to modified annotations.")) {
+				annoView.handleSaveAllAnnotationChanges();
+			}
+		}
+	}
+	
+	/**
+	 * Called as the window is unloading, just before it disappears
+	 */
+	ui.onUnLoad = function(window, instId) {
+		try {
+			ui.annotationView.unregisterView(instId);
+			ui.compoundObjectView.unregisterView(instId);
+			ui.topWindowView.unregisterView(instId);
+		} catch (e) {
+			debug.ui('ui.onUnLoad(window, instId)', e);
+		}
 	}
 	
 	/**
@@ -205,8 +226,8 @@
 				this.events[instId] = null;
 			};
 			
-			this.unregisterView = function(view){
-				if (!view) {
+			this.unregisterView = function(instId){
+				if (!instId) {
 					for (x in this.views) {
 						if (this.views[x].uninit) {
 							this.views[x].uninit();
@@ -215,7 +236,16 @@
 					this.views = {};
 				}
 				else {
-				//TODO:		
+					//TODO: done? 14/04/10
+					try {
+						if (this.views[instId].uninit) {
+								this.views[instId].uninit();
+						}
+					} catch (e) {
+						debug.ui('unregisterView(' + instId + ')', e);
+					}
+					delete this.views[instId];
+					delete this.events[instId];		
 				}
 			};
 			

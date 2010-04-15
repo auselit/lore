@@ -271,12 +271,13 @@ lore.anno.ui.initPage = function(model){
 		lore.anno.ui.rdfaMan = new lore.anno.ui.RDFaManager({
 			page: lore.anno.ui.page
 		});
-	if (!lore.anno.ui.pageui) 
+	if (!lore.anno.ui.pageui) {
 		lore.anno.ui.pageui = new lore.anno.ui.PageView({
 			page: lore.anno.ui.page,
 			rdfaManager: lore.anno.ui.rdfaMan,
 			model: model
 		});
+	}
 }
 	
 /**
@@ -287,6 +288,9 @@ lore.anno.ui.uninit = function () {
 	lore.anno.ui.topView.un('location_changed', lore.anno.ui.handleLocationChange);
 	lore.anno.ui.topView.un('location_refresh', lore.anno.ui.handleContentPageRefresh);
 	lore.anno.prefs.destructor();
+	if (lore.anno.ui.pageui.removeResizeListeners) {
+		lore.anno.ui.pageui.removeResizeListeners();
+	}
 }
 	
 /**

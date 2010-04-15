@@ -543,12 +543,15 @@ lore.anno.ui.PageView.prototype = {
 					lore.debug.anno("error occurred during window resize handler: " + e, e);
 				}
 			}
-			//TODO: #193 - need to remove event handlers on page unload
 			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
 			lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
 			if (imgOnly) 
 				im.click(refreshImageMarkers);
 			
+			self.removeResizeListeners = function() {
+				lore.global.util.getContentWindow(window).removeEventListener("resize", refreshImageMarkers, false);
+				lore.anno.ui.topView.getVariationContentWindow().removeEventListener("resize", refreshImageMarkers, false);
+			}
 			
 		} 
 		catch (e) {

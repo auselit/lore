@@ -139,12 +139,7 @@ try {
 		 */
 		onClose: function(event) {
 			try {
-				lore.debug.ui("onClose()");
-				if (loreoverlay.annoView().hasModifiedAnnotations()) {
-					if (confirm("Click 'Ok' to save changes to modified annotations.")) {
-						loreoverlay.annoView().handleSaveAllAnnotationChanges();
-					}
-				}
+				lore.global.ui.onClose(this, loreoverlay.instId);
 			} catch(e) {
 				lore.debug.ui("loreoverlay.onClose: " + e);
 			}
@@ -171,11 +166,16 @@ try {
 			}
 			
 		},
-        /** Tear down code to remove progress listener */
-		uninit: function(){
+        /**
+         * Tear down code to remove progress listener and perform ui unloading
+         * Handles window.onunload event 
+         */
+		unLoad: function(){
 			if ( lore.global.ui.annotationView.loaded(this.instId) || lore.global.ui.compoundObjectView.loaded(this.instId)) {
 				gBrowser.removeProgressListener(this.oreLocationListener);
 			}
+			
+			lore.global.ui.onUnLoad(this, loreoverlay.instId);
 		},
         /** 
          * Toggle LORE visibility when the status bar icon is clicked 
@@ -735,8 +735,10 @@ try {
 	window.addEventListener("load", function(e){
 		loreoverlay.onLoad(e);
 	}, false);
-	window.addEventListener("unload", function(){
-		loreoverlay.uninit()
+	
+	window.addEventListener("unload", function overlayonunload(){
+		window.removeEventListener("unload", overlayonunload, false);
+		loreoverlay.unLoad()
 	}, false);
 	
 } catch (e ) {
