@@ -2,16 +2,18 @@
 LORE makes use of the following libraries:
 
 Silk icons : Creative Commons Attribution 2.5 license : http://www.famfamfam.com/lab/icons/silk/
-Ext JS 3.0.0 : GPL 3.0 : http://extjs.com/
+Ext JS 3.2: GPL 3.0 : http://extjs.com/
 
 Draw2d: http://draw2d.org/
-(mootools, moocanvas and wz_jsgraphics are used by draw2d)
+(wz_jsgraphics is used by draw2d)
 
-parser.js: http://www.jibbering.com/rdf-parser/
-uuid :
-wz_tooltip : hover tooltips
 jit: http://thejit.org/
-rdfquery (replacing parser.js): http://code.google.com/p/rdfquery/
+
+rdfquery: http://code.google.com/p/rdfquery/
+
+Simile Timeline: http://www.simile-widgets.org/timeline/
+
+jquery, jquery imgareaselect and simpletip
 
 From DIAS-B project:
 Modified version of nsXPointerServer : MPL 1.1/GPL 2.0/LGPL 2.1 
@@ -36,6 +38,6 @@ The contents of that text file should be the location of the oaiorebuilder proje
 C:\Workspace\oaiorebuilder
 
 If you want to see LORE debug output, you'll need Firebug and Chromebug installed in your development profile.
-I'm currently using Firebug 1.4X.5 and Chromebug 1.5.0a6
+I'm currently using Firebug 1.6X.0a9 and Chromebug 1.6.0a9
 The X in Firebug is important - it has tracing enabled. You can get it from here:
-http://getfirebug.com/releases/firebug/1.4X/
+http://getfirebug.com/releases/firebug/
