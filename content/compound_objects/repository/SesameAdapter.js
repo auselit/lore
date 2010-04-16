@@ -121,6 +121,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        }); 
 	},
 	saveCompoundObject : function (remid,therdf,callback){
+        // TODO: first check that the compound object hasn't changed on the server
 	    try {                  
 	       var xmlhttp2 = new XMLHttpRequest();
 	       xmlhttp2.open("PUT",
@@ -148,6 +149,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	    }
 	},
 	deleteCompoundObject : function(remid, callback){
+        // TODO: first check that it hasn't been changed on the server
 	    lore.debug.ore("deleting from sesame repository " + remid);
 	    try {
 	        var xmlhttp = new XMLHttpRequest();
