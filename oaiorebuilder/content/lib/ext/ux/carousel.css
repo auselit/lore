@@ -67,42 +67,44 @@
 .ux-carousel-nav-prev,
 .ux-carousel-nav-next,
 .ux-carousel-nav-play {
-    height: 24px;
+	opacity: 0.7;
+    height: 24px !important;
     display: block;
     float: right;
     margin: 5px 0;
-    background-position: 0 24px;
+    background-repeat: repeat !important;
+    background-position: 0 24px !important;
 }
 
-.ux-carousel-nav .ux-carousel-nav-prev {
-    background-image: url('prev.png');
-    width: 31px;    
+.ux-carousel-nav-prev {
+    background-image: url('prev.png') !important;
+    width: 31px !important;    
 }
 
-.ux-carousel-nav .ux-carousel-nav-next {
-    background-image: url('next.png');
+.ux-carousel-nav-next {
+    background-image: url('next.png') !important;
     margin-right: 2px;
-    width: 30px;
+    width: 30px !important;
 }
 
 .ux-carousel-nav-play {
-    background-image: url('play_pause.png');
-    width: 24px;
+    background-image: url('play_pause.png') !important;
+    width: 24px !important;
 }
 
 .ux-carousel-nav-play:hover {
-    background-position: 0 0; 
+    background-position: 0 0 !important; 
 }
-.ux-carousel-nav-play.ux-carousel-playing {
-    background-position: 24px 24px;
+.ux-carousel-playing .ux-carousel-nav-play {
+    background-position: 24px 24px !important;
 }
-.ux-carousel-nav-play.ux-carousel-playing:hover {
-    background-position: 24px 0;
+.ux-carousel-playing .ux-carousel-nav-play:hover {
+    background-position: 24px 0 !important;
 }
 
 .ux-carousel-nav-prev:hover,
 .ux-carousel-nav-next:hover {
-    background-position: 0 48px;
+    background-position: 0 48px !important;
 }
 
 .ux-carousel-nav-prev.ux-carousel-nav-disabled,
