@@ -202,24 +202,27 @@ lore.ore.ui.initUIComponents = function() {
 				plugins : lore.ore.ui.vismode,
 				deferredRender : false,
 				autoScroll : true,
-				items : [{
+				items : [{ 
 							title : "Graphical Editor",
-							xtype : "panel",
 							id : "drawingarea",
 							bodyStyle : {
 								backgroundColor : 'transparent'
-							}
+							}              
 						}, {
 							title : "Resources",
 							xtype : "panel",
 							id : "remlistview",
 							autoScroll : true
 
-						}, {
-							title : "Narrative View",
-							xtype : "panel",
-							id : "remnarrativeview",
+						}, { layout:'fit',
+                            id : "remnarrativeview",
+                            //title : "Narrative View",
+                            title: "Slideshow",
+                            items: [{
+							id: 'newss',
+							xtype : "slidepanel",
 							autoScroll : true
+                            }]
 						},
 						/*
 						 * { title: "Resource Details", xtype: "panel",
@@ -256,12 +259,12 @@ lore.ore.ui.initUIComponents = function() {
 						 * and restore last saved value', handler:
 						 * lore.ore.ui.restorePropValue } ], items: [ { xtype:
 						 * "textarea", id: "detaileditor", anchor: "100% 100%" }] } ] } ,
-						 */{
+						 *//*{
 							title : "Slideshow",
 							id : "remslideview",
 							autoScroll : false,
 							html : "<div id='trailcarousel'></div>"
-						}, {
+						},*/ {
 							title : "Explore",
 							id : "remexploreview",
 							forceLayout : true,
@@ -272,7 +275,7 @@ lore.ore.ui.initUIComponents = function() {
 							autoWidth : true,
 							autoScroll : true,
 							iconCls : "welcome-icon",
-							html : "<iframe height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
+							html : "<iframe style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
 
 						}]
 			}]
@@ -607,7 +610,7 @@ lore.ore.ui.initUIComponents = function() {
 	lore.ore.ui.searchtreeroot = new lore.ore.ui.CompoundObjectGroupNode({
 				id : "searchtree",
 				text : "Search Results"
-			});
+	});
 	Ext.getCmp("searchtree").getRootNode().appendChild(lore.ore.ui.searchtreeroot);
 	lore.ore.ui.searchtreeroot.addModel(lore.ore.coListManager.getList("search"));
 
@@ -634,7 +637,9 @@ lore.ore.ui.initUIComponents = function() {
 		lore.ore.ui.resreltreeroot.on("beforeclick", lore.ore.updateResDetails);
 		// load resource details handler
 		lore.ore.ui.resselectcombo.on("select", lore.ore.loadResourceDetails);
+        
 	}
+    
 	// set up search handlers
 	Ext.getCmp("advsearchbtn").on('click', lore.ore.advancedSearch);
 	Ext.getCmp("kwsearchbtn").on('click', lore.ore.keywordSearch);
@@ -715,7 +720,7 @@ lore.ore.ui.initUIComponents = function() {
 	if (smiltab) {
 		smiltab.on("activate", lore.ore.showSMIL);
 	}
-	var slidetab = Ext.getCmp("remslideview");
+	/*var slidetab = Ext.getCmp("remslideview");
 	try {
 		lore.ore.ui.carousel = new Ext.ux.Carousel("trailcarousel", {
 					itemSelector : "div.item",
@@ -729,7 +734,9 @@ lore.ore.ui.initUIComponents = function() {
 
 	slidetab.on("activate", lore.ore.showSlideshow);
 	slidetab.on("resize", lore.ore.resizeSlideshow);
-
+    */
+    Ext.getCmp("remnarrativeview").on("activate",lore.ore.showCompoundObjectNarrative);
+    
 	var exploretab = Ext.getCmp("remexploreview");
 	var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
 			+ "<script type='text/javascript' src='chrome://lore/content/compound_objects/lore_explore.js'></script>"
@@ -778,6 +785,7 @@ lore.ore.ui.init = function() {
 				.getItemLocation(lore.constants.EXTENSION_ID);
 
 		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
+        //lore.ore.ui.topView.on('coprefs_changed', lore.ore.setPrefs);
 		/** The url shown in the current browser tab */
 		lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 		/** Indicates whether the Compound Object UI is visible */
