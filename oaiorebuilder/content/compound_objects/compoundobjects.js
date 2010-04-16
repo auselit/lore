@@ -500,7 +500,132 @@ lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*
 };
 
 lore.ore.showCompoundObjectNarrative = function(p){
- 
+ var panel = p.getComponent('newss');
+    // TODO: panel should listen to model changes and update automatically - this is a hack
+    lore.debug.ore("generating slideshow");
+    var prophtml = "", previewhtml;
+    try{
+    // clear panel
+    panel.removeAll();
+    var items = [];
+    // Compound Object title slide
+    var ctitle = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Compound Object";
+    prophtml += "<div style='padding:2em'><div style='color:#cc0000;font-weight:bold;font-size:120%;padding-top:2em;padding-bottom:0.5em'>" + ctitle + "</div>";
+    prophtml += '<table style="width:100%;font-size:80%;color:#465458;border-top:1px solid #cc0000;padding-top:0.5em;line-height:1.3em">';
+    
+    var ccreator = lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid);
+    var ccreated = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
+    var cmodified = lore.ore.getPropertyValue("dcterms:modified",lore.ore.ui.grid);
+    prophtml += '<tr style="vertical-align:top">'
+        + '<td colspan="2">Created by ' + ccreator + ' on  ' + ccreated;
+    if (cmodified) {
+        prophtml += ', last updated on ' + cmodified;
+    }
+    prophtml += "</td></tr>";
+    var desc = lore.ore.getPropertyValue("dc:description",lore.ore.ui.grid);
+    if (desc) {
+        prophtml += "<tr valign='top'>" +
+                "<td><b>Description:</b></td><td width='80%'>"
+                + desc + "</td></tr>";
+    }
+    var abst = lore.ore.getPropertyValue("dcterms:abstract",lore.ore.ui.grid);
+    if (abst) {
+        prophtml += "<tr valign='top'><td><b>Abstract:</b></td>" +
+            "<td width='80%'>"
+            + abst + "</td></tr>";
+    }
+    var rights = lore.ore.getPropertyValue("dc:rights",lore.ore.ui.grid);
+    if (rights) {
+        prophtml += "<tr valign='top'><td><b>Rights:</b></td>" +
+            "<td width='80%'>"
+            + rights + "</td></tr>";
+    }
+    // TODO: add other properties
+    prophtml += "</table></div>";
+
+    items.push({id: lore.ore.currentREM, autoScroll: true, html: prophtml});
+
+    // Slide for each resource
+    var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
+    allfigures.sort(lore.ore.ui.graph.figSortingFunction);
+    for (var i = 0; i < allfigures.length; i++) {
+        var fig = allfigures[i];
+        prophtml = "<div style='padding:2px'>";
+        previewhtml = "";
+        var isExternalResource = false;
+        if (fig && fig instanceof lore.ore.ui.graph.ResourceFigure){
+            var figurl = lore.global.util.escapeHTML(fig.url);
+            var title = fig.getProperty("dc:title_0") || "Untitled Resource";
+            var rdftype = fig.getProperty("rdf:type_0") || "";
+            var figformat = fig.getProperty("dc:format_0");
+            var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
+            // Properties header (title with icon/link)
+            prophtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
+            if (isCompObject){
+                prophtml +=  "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'>" + title + "</a>";
+            }
+            else {
+                prophtml += "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'><img src='../../skin/icons/page_go.png' title='Open in a new tab'/></a>&nbsp;"  + title;
+            }
+            prophtml += "</div>";
+            
+            // preview (eg image, iframe)
+            if (isCompObject){
+                previewhtml += "<p style='color:#51666b;margin-top:3em'>" 
+                        + "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'>Nested Compound Object:<br>"
+                        + "<img src='../../skin/icons/action_go.gif'/> Load in LORE</p>"; 
+            } else if (figformat.match("image")){
+                previewhtml += "<img class='sspreview' src='" + figurl + "' alt='image preview' style='max-height:100%;text-align:center'/>";
+            } else if (figurl.match('austlit.edu.au') && (figurl.match('ShowWork') || figurl.match('ShowAgent'))){
+                previewhtml += '<object class="sspreview" data="' + figurl + '&amp;printPreview=y"  height="100%" width="100%"></object>';
+            } else if (rdftype.match('http://www.w3.org/2000/10/annotation') || rdftype.match('http://www.w3.org/2001/12/replyType')){
+                previewhtml += '<object class="sspreview" data="' + figurl + '?danno_useStylesheet="  height="100%" width="100%"></object>';
+            }
+            else {
+                /*//previewhtml += //"<iframe src='" + figurl + "' height='100%' width='100%'>";
+                ;*/
+                // FIXME: EVIL! this should be a secure iframe! Enabled temporarily for user feedback
+                //previewhtml += "<object class='sspreview' data='" + figurl + "' height='100%' width='100%'></object>";
+                previewhtml += '<div style="color:#51666b;margin-top:3em;">Non-AustLit Resource (click to view in browser): '
+                    + '<a title="Open in new tab" onclick="lore.global.util.launchTab(\"' + figurl + '\");return false;" href="' + figurl + '">'
+                + figurl + '</a></div>'
+                isExternalResource = true;
+            }
+            
+            
+            for (p in fig.metadataproperties){
+                var pname = p;
+                var pidx = p.indexOf("_");
+                if (pidx != -1){
+                    pname = p.substring(0,pidx);
+                }
+                if (pname != 'resource' && pname != 'dc:format' && pname != 'rdf:type' && pname != 'dc:title'){
+                    prophtml += //"<a href='#' onclick='lore.ore.editResDetail(\"" + fig.url + "\",\"" +  p + "\");'><img title='Edit in Resource Details view' src='chrome://lore/skin/icons/pencil.png'></a>&nbsp;" +
+                            "<span style='color:#51666b;font-size:90%'><b>" + pname + "</b>: " + fig.metadataproperties[p] + "<br></span>";
+                }
+            }
+
+            if (!isCompObject){
+                prophtml += "<p style='font-size:60%;padding-top:1em'>Source: <a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>"  + figurl + "</a></p>";
+            }
+            prophtml += "</div>";
+            
+            var previewSize = (isExternalResource? "25" : "75");
+            
+            var pspec = {border: false, id: figurl, layout: 'anchor', 
+                items: [{anchor: '100% ' + previewSize + "%", autoScroll: true, html: previewhtml},
+                {anchor: '100% ' + (100 - previewSize) + '%', autoScroll: true, html: prophtml}]};
+            items.push(pspec);
+
+        }
+    }
+    }
+    catch (e) {
+        lore.debug.ore("problem",e);
+    }
+    lore.debug.ore("adding items",items);
+    panel.add(items);
+    panel.setActiveItem(0);
 }
 
 // TODO: either use XSLT or listen to model rather than updating entire view each time
