@@ -742,7 +742,8 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 			// user has come from an info bubble pop-up in timeline
 			lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
 			rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, arg);
-			if ( rec) lore.anno.ui.page.setCurrentAnno(rec);//lore.anno.ui.page.curSelAnno = rec;
+			if (rec) 
+				lore.anno.ui.page.setCurrentAnno(rec);
 		}
 			
 		if (!rec) {
@@ -750,10 +751,12 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 			return;
 		}
 		
-		if ( rec.data.isNew() ) {
+		if (rec.data.isNew()) {
 			lore.anno.ui.loreError("Save the annotation first before replying to it.");
 			return;
 		}
+		
+		lore.anno.ui.tabpanel.activate('treeview');
 		lore.anno.ui.handleAddAnnotation(rec);
 	} 
 	catch (e) {
@@ -768,10 +771,10 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 * @param {String} id The id of the annotation to load in the form editor
 */
 lore.anno.ui.handleEditTimeline = function ( id ) {
-	try{
+	try {
 		// the user has come here from an info bubble pop-up.
 		lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
-		lore.anno.ui.gui_spec.activate('treeview');
+		lore.anno.ui.tabpanel.activate('treeview');
 		var rec =  lore.global.util.findRecordById(lore.anno.annoMan.annods, id);
 		lore.anno.ui.selectAndShowNode(rec);
 	} catch (e) {

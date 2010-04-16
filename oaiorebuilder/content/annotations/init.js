@@ -401,10 +401,8 @@ lore.anno.ui.initGUIConfig = function(){
 
 	
 	try {
-		lore.anno.ui.gui_spec = {
-					layout: "anchor",
-					border: false,
-					items: [{
+		
+		lore.anno.ui.tabpanel = new Ext.TabPanel({
                         anchor: "100% -25",
 						xtype: "tabpanel",
 	                    title: "Navigation",
@@ -412,7 +410,12 @@ lore.anno.ui.initGUIConfig = function(){
 	                    deferredRender: false,
 	                    activeTab: "treeview",
 	                    items: [loreuiannotreeandeditor(), loreuiannosearch(), loreuiannotimeline(), loreuiannoabout() ]
-					},
+					});
+		
+		lore.anno.ui.gui_spec = {
+					layout: "anchor",
+					border: false,
+					items: [lore.anno.ui.tabpanel,
 					{
                         anchor: "100%",
 		                height: 25,
