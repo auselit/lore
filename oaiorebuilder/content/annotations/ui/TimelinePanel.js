@@ -131,7 +131,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
                     theme: theme,
 					width : "10%",
 					intervalUnit : Timeline.DateTime.MONTH,
-					intervalPixels : 430,
+					intervalPixels : 200,
 					timeZone : 10,
                     layout: "overview"
 				})];
