@@ -207,6 +207,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							{
 								xtype: 'textfield',
 								name: 'contextdisptxt',
+								id: this.genID("contextdisptxt"),
 								readOnly: true,
 								flex: 1
 							}, {
@@ -251,6 +252,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							{
 								xtype: 'textfield',
 								name: 'rcontextdisptxt',
+								id: this.genID("rcontextdisptxt"),
 								readOnly: true,
 								flex: 1
 							}, {
@@ -846,6 +848,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				}
 				else {
 					lore.anno.ui.showFormFields(this.form, scholarlyFields);
+					// TODO: only necessary until Ext 3.2.1
+					this.doLayout();
 				}
 			}
 			
@@ -864,6 +868,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					lore.anno.ui.hideFormFields(this.form, variationFields);
 					lore.anno.ui.showFormFields(this.form, nonVariationFields);
 				}
+				// TODO: only necessary until Ext 3.2.1
+				this.doLayout();
 			}
 			
 			// rdfa

@@ -276,7 +276,7 @@ AnnotationTestController = {
 			"annotationslistform_typecombo": data.type,
 			"annotationslistform_title": data.title,
 			"annotationslistform_creator": data.creator ,
-			"annotationslistform_contextdisp": ((data.selection == null || data.selection == '') ? '' : '"' + data.selection + '"')
+			"annotationslistform_contextdisptxt": ((data.selection == null || data.selection == '') ? '' : '"' + data.selection + '"')
 		});
 		
 	 
