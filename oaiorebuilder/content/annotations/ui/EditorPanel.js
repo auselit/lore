@@ -51,9 +51,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 			id: this.genID('annotationsform'),
 		 			labelWidth: 85,
 					defaultType: 'textfield',
-					labelAlign: 'right',
 					buttonAlign: 'right',
 					style: 'border:none; margin-left:10px;margin-top:10px;',
+					layoutConfig: {
+						trackLabels: true,
+						labelAlign: 'right'
+					},
 					defaults: {
 						hideMode: 'display',
 						anchor: '-30'
@@ -710,10 +713,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				
 				// hide context field if it is a reply
 				if (rec.data.isReply) {
-					lore.anno.ui.hideFormFields(this.form, ['contextdisp']);
+					this.form.findField('contextdisp').hide();
 				}
 				else {
-					lore.anno.ui.showFormFields(this.form, ['contextdisp']);
+					// TODO: doLayout() can be removed with Ext 3.2.1, just needed for combo fields now
+					this.form.findField('contextdisp').show();
+					this.doLayout();
 				}
 	
 				this.form.loadRecord(rec);
