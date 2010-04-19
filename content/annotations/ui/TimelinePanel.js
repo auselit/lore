@@ -136,6 +136,9 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
                     layout: "overview"
 				})];
         		
+        		// Scrollbars are not useful for this component
+				this.getEl().setStyle("overflow", "hidden");
+				
 				bandConfig[1].syncWith = 0;
 				bandConfig[1].highlight = true;
 				this.timeline = Timeline.create(this.getEl().dom, bandConfig, Timeline.HORIZONTAL);
