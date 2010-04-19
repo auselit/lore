@@ -1,0 +1,1996 @@
+﻿/********************************************************
+BASIC ELEMENT - Revised
+
+Syntax		# - >  ID = <name> 
+			. = >  cssclass = <name>
+			  = >  style or global
+*******************************************************/
+
+a {
+	color: #006699;
+	background-color: transparent;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #9E0000;
+	background-color: transparent;
+}
+
+
+a:active {
+	color: #9E0000;
+	background-color: transparent;
+}
+
+
+body
+{
+	font-size: 72%;
+	margin-top: 0; 
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 0;
+    height:100%;
+	font-family: Verdana, Arial, sans-serif;
+	background-color:#fff;
+	
+}
+
+	body form
+	{
+		/* controls gridview a: base font*/
+	}
+	
+	body table
+	{
+ 		/*border: 0px dashed #cc0000; /* border for debug */
+	}
+	
+	body table td
+		{
+ 			/*border: 1px dotted #000000;*/
+ 			
+		}
+
+.itemDetail td
+{
+	/*vertical-align: top;*/
+	/*border: 1px dotted #000000;*/
+}
+
+.table-list
+{}
+
+span
+{
+	border: 0px dotted #000000;
+}
+
+span.hidden
+{display: none;
+}
+
+span.error
+{
+	display: inline;
+	color: black;
+	background-color:Teal;  
+}
+  
+
+/*********************************************************
+Footer
+**********************************************************/
+.div-line 
+{
+	width: 100%;
+	border-bottom: solid 1px white;
+	height:10px;
+	margin-bottom: 10px;
+}
+.div-footer
+{
+	font-size:x-small; 
+	color: Gray;
+	background-color:#cee3f7;
+	padding-top:10px;
+	padding-left:55px;
+	height:20px;
+}
+
+.footer-table
+{
+ padding:0px; 
+}
+
+.footer-table td 
+{
+ vertical-align: middle;
+ height: 30px;
+}
+
+/*********************************************************/
+
+textarea 
+{
+    font-family: Verdana, Arial, sans-serif;
+    font-size:100%;  
+}
+
+input 
+{
+    font-family: Verdana, Arial, sans-serif;
+    font-size:100%;  
+}
+
+input.button 
+{
+	border: solid 1px #CCCCCC;
+	background-color: #999999;
+	color: #FFFFFF;
+	font-weight: bold;
+	width: 100px;
+}
+
+label
+{
+	margin:3px;
+	width:100%;
+	font-family: Verdana, Arial, sans-serif;
+}
+
+
+div
+{
+	font-family: Verdana, Arial, sans-serif;
+}
+
+radio {
+	border: 1px none #000000;
+	background-color: transparent;
+	vertical-align: middle;
+}
+
+checkbox {
+	border: 1px none #000000;
+	background-color: transparent;
+	vertical-align: middle;
+}
+/*
+a
+{
+	font-family: Verdana, Arial, sans-serif;color:#22559e; 
+    text-decoration:none; font-weight:normal; 
+}
+
+a:hover 
+{
+	font-family: Verdana, Arial, sans-serif;color:#22559e; 
+    text-decoration:underline; font-weight:normal;
+}
+
+
+/*===========================
+  Body Header Classes - Revised
+==============================*/
+/*
+#ctl00_menubar1_SiteMapPath1 
+{
+	float: left;
+	margin-left: 10px;
+}
+
+#ctl00_menubar1_pnlMenuBar 
+{
+	display: none;
+}
+*/
+#text-size-print {
+/*	
+	margin-right:  -4px; */
+	position: relative;		 /*fix for background-image bug with negative margins in IE6 */	
+	width: 66px;
+	height: 24px;
+	background-image: url(../images/layout/text-size-print-bg.gif);
+	background-repeat: no-repeat;
+	margin-bottom: 5px;
+	margin-right: 5px;
+	padding-right: 10px;
+	float: right;
+}
+
+
+#text-size-print img {
+	margin: 5px 2px 0 2px;	
+}
+
+
+#text-size-print img#bigger-text {
+	margin-left: 7px;
+}
+
+#text-size-print img#print {
+	margin-left: 3px;
+}
+
+.headerLogo
+{	
+	background-image:url('../websiteImages/mohp_banner.jpg');
+    /* margin-left: 15px; 90 */
+    height:125px;
+	background-repeat:no-repeat;
+}
+.mainTable 
+{
+ width: 970px;
+}
+
+h1 {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-weight: normal;
+	font-size: 210%;
+/*	font-size: 17pt; */
+	margin-top: 0;
+	padding-top: 0;
+	margin-bottom: 0.5em;
+	line-height: 1;
+	margin-left: 0px;
+	text-align: left;
+}
+
+/* -- Not required - to delete. SM-210607-12:18
+.sHeaderLogo
+{
+    background-image:url('../images/lam3/me_logo.jpg');
+    width:100%;
+	background-repeat:no-repeat;
+}
+*/
+.headerLoginBar
+{
+	background-color:#787c82;
+}
+
+.headerLoginBar td /*Text for login*/
+{
+	color:White;
+}
+
+
+/*===========================
+  Stack Classes - Revised
+==============================*/
+
+#divStack
+{
+	z-index:9999; 
+	position: absolute; 
+	left:180px; 
+	visibility: hidden; 
+	width:0px; 
+	height: 0px;
+}
+
+.topBar
+{
+	position:absolute;
+	border: 0px solid #B4C0C1;
+	padding: 2px;
+	width: 20px;
+	height:70px;
+	visibility: hidden;
+	z-index: 100;
+}
+
+/***********************************************************************************
+Pager Style - Revised
+************************************************************************************/
+.pagerSelected
+{
+	border-width:1px;
+	border-color:#ffffff;
+	border-style:solid;
+	width:4px;
+}
+
+.pagerSelected td
+{
+	border-color:#cccccc;
+}
+
+/***********************************************************************************
+  Administrator Menu - Revised
+************************************************************************************/
+
+.MenubarHeader
+{   text-align: left;
+	vertical-align: middle;
+    
+    /*color:#5a6d7b;*/
+    color:#000000;
+    padding-left: 12px;
+    padding-top: 4px;
+    height:23px;		
+    background-image: url(../images/background/menuheadBlue.gif);
+    background-repeat: no-repeat;
+}
+
+.MenubarContent
+{
+    padding: 4px;
+    width: 220px;
+    overflow: hidden;
+}
+
+.MenubarContentItem
+{
+	margin-bottom: 4px;
+	display: list-item;
+	list-style-type: disc;	
+	list-style-image: url(../images/icon/listicon.gif);
+	margin-left: 20px;
+}
+/***********************************************************************************
+  Calendar - Revised
+************************************************************************************/
+
+.textboxDate 
+{
+    width : 35px; 
+    height: 15px;
+    border-width:1px;
+    border-style:solid;
+    border-color:#CCCCCC;
+}
+
+input.buttonSet 
+{
+	border: solid 1px #CCCCCC;
+	background-color: #999999;
+	color: #FFFFFF;
+	font-weight: bold;
+	width: 40px;
+	height: 19px;
+}
+
+select.calendar
+{
+	width:79px;
+}
+
+.SearchVwSeperator
+{
+	background-color :White;
+	height :1px;
+	text-align :left ;
+	padding :2px 2px 2px 2px;
+}
+
+.SearchVwText
+{
+	text-align:left;
+}
+
+/***********************************************************************************
+  Footer - Revised
+************************************************************************************/
+
+.footer
+{
+	text-align: left;
+	padding-top: 1.8em;		
+	padding: 3px;
+	margin-left: 3px;
+	font-size: 99%;
+	color:#555555;
+	
+}
+
+
+
+/***********************************************************************************
+  buttonBar - Revised
+************************************************************************************/
+.buttonBar{
+
+	background-image:url('../images/lam3/buttonbar.jpg');
+    width:100%;
+    height:22px;
+    color:#000000;
+	}
+	
+	.buttonBar td
+	{
+		font-weight:bold;
+		white-space:nowrap;
+	}
+
+.subButtonBar{ /*right side options*/
+
+	background-image:url('../images/lam3/buttonbar.jpg');
+    height:22px;
+    color:#000000;
+	padding-left:11px;
+	
+	}
+	
+	.subTblBorder{
+	
+	border-left: solid 1px #999999;
+	border-right: solid 1px #999999;
+	border-bottom: solid 1px #999999; 
+	width:250px;
+ 
+	}
+
+/*===========================
+  OK Button - Revised
+==============================*/
+.buttonOk
+{
+	border: solid 1px #CCCCCC;
+	background-color: #999999;
+	color: #FFFFFF;
+	font-weight: bold;
+	width: 100px;
+	/*background-image:url('../images/button/ok.gif');*/
+}
+
+/*===========================
+  Tab Style - Revised
+==============================*/
+.tabStyle
+{
+	background-image:url('../images/lam3/tabBack.gif');
+    height:15px;
+    color:#000000;
+    width: 820px;
+    padding-top: 4px;
+    padding-bottom: 2px;
+    padding-left: 0px;
+    border: solid 1px #CCCCCC;
+    font-size: 95%;
+}
+
+.tabTdStyle
+{
+    color:#000000;
+    padding-left:10px;
+    padding-right:8px;
+    text-align:center ;
+    vertical-align:middle ;
+    float: left;
+    border-left: solid 1px #CCCCCC;
+    
+    
+}
+
+/*===========================
+  Validatebutton  Style - Revised
+==============================*/
+.validateTD
+{
+	background-image:url('../images/button/valButton150px.gif');
+	background-repeat:no-repeat;
+	text-align:center;
+	height:22px;
+	width:150px;
+	color:#000000;
+}
+#topNavigationPane div a
+{
+	padding-left: 3px;
+}
+#ctl00_ContentPlaceHolder1_pnlNavigatorPhoto a 
+{
+	padding-left: 3px;
+}	
+.validateTD a:link
+{
+	color:#000000;
+}
+
+
+/*===========================
+  Grid view
+==============================*/
+
+.gv-list
+{
+	padding:5px
+}
+
+.gv-header 
+{
+	background-color:#bddff7;
+	font-weight:bold;
+	vertical-align:middle;
+	
+}
+.gv-header a:link
+{
+	font-weight:bold;	
+}
+
+.gv-reportHeader
+{ 
+	border-bottom:2px black solid;
+	background: #DDDDDD;
+}
+
+.gv-headgeneric 
+{
+	background-color:#bddff7;
+	font-weight:bold;
+	vertical-align:middle;
+	height:20px;
+}
+  
+.grid-table 
+{
+	border-bottom:solid 1px ThreeDShadow;
+	border-top:solid 0px ThreeDShadow;
+	width:100%;
+	font-size: 105%;
+}
+
+
+.pager-seperator td
+{
+	border: solid 0px white;
+}
+.pager-seperator td table td
+{
+	border: 0px;
+}
+
+.no-show 
+{
+	display: none;
+}
+/*==============================
+  TS drop down lists
+================================*/
+
+select
+{
+	font-family: Verdana, Arial, sans-serif;
+	width : 200px; 
+	font-size:95%;
+}
+
+select .selectYN
+{
+	width : 50px; 
+	font-size:95%;
+}
+
+/****************************************************************************
+TS menubar css
+*****************************************************************************/
+
+
+.menubar-table
+{
+	background-image: url(../images/lam3/nav_menu1.jpg);
+	/*background-color: #399958;*/
+	height: 24px;
+	white-space:nowrap;
+	background-repeat:no-repeat;
+ }
+
+.menubar-tableText
+{
+	vertical-align: middle;
+	padding-left:5px;
+	padding-right:7px;
+	white-space:nowrap;
+	
+}
+.breadStart
+{
+	font-family: Verdana;
+	font-size: 0.9em;
+	
+	color: #507CD1;
+	float: left;
+}
+
+/***************************************************************************
+Page control css
+*****************************************************************************/
+
+.linkSolid a:active
+{ 
+	font-weight:bold;
+}
+
+.linkSolid a:hover
+{ 
+	font-weight:bold;
+}
+
+.linkSolid a:visited
+{ 
+	font-weight:bold;
+}
+
+.linkSolid a:link
+{ 
+	font-weight:bold;
+}
+
+.linkSolid
+{
+	font-weight:bold;
+	border-bottom:2px #E9E9E9 solid;
+}
+
+/**************************************
+ Report Filters Z-index - behind calendar
+***************************************/
+.behind
+{
+  Z-INDEX:0001;
+ }
+
+/********************************************************************************************/
+
+li {
+  position: relative;
+}
+
+ul {
+  position: relative;
+}
+
+ol {
+  position: relative;
+}
+
+legend
+{
+	font-weight: bold;
+	color: #666666;
+	padding-left: 4px;
+	padding-right: 4px;
+	margin-bottom: 7px;
+}
+
+fieldset
+{
+	margin: 0px;
+	padding: 0px;
+	border: none;
+}
+
+img 
+{
+	border: 0px;
+}
+
+pre 
+{
+	width: 300px;
+}
+
+
+/***********************************************************************************
+CLASS & ID REFERENCE CSS
+************************************************************************************/
+    
+.cursorHand
+{cursor: hand;
+}
+.cursorHand span
+{cursor: hand;
+}
+
+.albumImgWidth
+{width:500px;}
+
+.albumImgHeight
+{height:500px;}
+    
+.termOut
+{border-width:2px;
+ border-color:White;
+ background-color:White;}
+
+.termOver
+{border-width:2px;
+ border-color:#B4C0C1;
+ background-color:#DEF4F7;}
+
+
+/*==============================
+	Generic Display pageControl
+================================*/
+
+/*=== Readonly textbox  ---*/
+
+.txtRead
+{
+	border-width: 0px;
+	border-color: White;
+	border-style: hidden; 
+	overflow: hidden;
+	table-layout: fixed;
+	display: inline;
+	/*overflow: visible;*/
+}
+
+.txtReadOnly
+{
+    border-width:0px;
+    border-color:White;
+    border-style:hidden;
+   /* padding-top:3px;
+    padding-bottom:3px;*/
+    overflow: hidden;
+}
+
+.txtEdit
+{
+	overflow: visible;
+	/*overflow:-moz-scrollbars-vertical;*/
+	/*border: solid 1pt #94B5A0;*/
+	border: solid 1px #CCCCCC;
+	padding-left:3px;
+	/*padding-top:2px;*/
+}
+
+
+/*=== Readonly textbox Bold Font ---*/
+.txtReadBold
+{
+	font-weight:bold;
+    border-width:0px;
+    border-color:White;
+    border-style:hidden;
+    /*padding-top:3px;
+    padding-bottom:3px;*/
+    overflow: hidden;
+}
+
+.txtReadOnlyBold
+{
+	font-weight:bold;
+    border-width:0px;
+    border-color:White;
+    border-style:hidden;
+   /* padding-top:3px;
+    padding-bottom:3px;*/
+    overflow: hidden;
+}
+
+.txtEditBold
+{
+	font-weight:bold;
+	overflow: visible;
+	/*overflow:-moz-scrollbars-vertical;*/
+	border: solid 1pt #94B5A0;
+	padding-left:3px;
+	/*padding-top:2px;*/
+}
+
+
+ 
+/******* display label as label =====*/
+
+.tdAlignTop
+{
+	 vertical-align: top; /*padding-top:4px;*/
+}
+
+.lblShow
+{
+	font-weight:bold;
+}
+
+.lblLabel
+{  
+	width:100%; 
+	margin:3px;
+}
+
+/****** label as text control =======*/    
+	
+.lnkList
+{
+	margin:4px; 
+	width:120%; 
+}
+
+.txtSearch
+{ 
+    width: 150px;
+    height:14px;
+    border-color:#888888;
+    border-left:1px;
+    border-top:1px;
+    border-bottom:1px;
+    border-right:1px;
+    border-style:solid;
+    border-right-color:#d6d6ce;
+    padding-left:3px;
+    padding-top:3px;
+}
+
+.txtSearchTable
+{
+	border: 1px solid #000000
+}
+
+.txtSearchTable td
+{
+	width: 20px
+}
+
+
+.textbox 
+{
+    width : 200px; 
+    height:16px;
+    padding-left:5px; 
+    padding-top:3px; 
+    border:solid 1px #CCCCCC;
+    margin-top: 2px;
+    margin-bottom: 4px; 
+}
+
+/*  Text box remove drop shadow  #D2C3A6  */
+.tx    {border: solid 1pt #94B5A0;height:16px;padding-left:3px;}
+.txs   {border: solid 1pt #94B5A0;}
+.txsb  {font-weight:bold} 
+.txsbb {border-bottom: solid 1pt #94B5A0;}
+
+.txts	{border: solid 1pt #94B5A0;height:30px;}
+
+/**********************************************************************************
+	TAB	Panel Style
+***********************************************************************************/
+/*
+.pnlTAB
+{
+	height:20px;
+	padding-left:21px;
+	border-left: solid 1px #999999;
+	border-right: solid 1px #999999;
+	
+}
+*/
+
+.pnlAdvSearchTAB
+{
+	height:20px;
+	padding-left:21px;
+}
+
+/**********************************************************************************
+link Button css (collection module)
+***********************************************************************************/
+	
+.collapseButton
+{
+	border-color:#cccccc; 
+	border-width:1px; 
+	border-style:solid;
+	padding-bottom:4px; 
+	padding-left:1px;
+	padding-right:1px;
+	margin:2px;
+ }
+		 
+/**********************************************************************************************
+	PopUp Message Box CSS
+***********************************************************************************************/
+
+.popupTitle
+{
+	height:15px;
+	font-weight:bold;
+	padding-left: 5px;
+	color:white;
+	background-color:#63B2DE;
+}
+
+.popupMessage
+{
+	
+	padding-left: 5px;
+	padding-top:0px;
+	padding-bottom:0px;
+	background-color: #eff3f7;
+	border-right: black 0px inset;
+	border-top: black 0px inset;
+	border-left: black 0px inset;
+	border-bottom: black 0px inset;
+}
+
+
+/*=================================
+	TS	Css Development 
+	Testing AJAX DB Link - Not Atlas
+===================================*/
+
+  
+/* Dotted Border */
+.dottedborderon
+{
+	background-color : transparent;
+	border: 1px dotted #d0d0d0;
+	color: #000000;
+}
+
+.dottedborderoff
+{
+	background-color : transparent;
+	border-color: #f0f0f0 #909090 #909090 #f0f0f0;
+	color: #000000;
+	padding:1px;
+}
+
+.membercard h3
+{
+}
+
+.eventlist label
+{font-weight: bold;
+ padding-right: 4px;
+}
+
+
+/**********************************************
+* Main navigation used by the masterpage
+**********************************************/
+
+/* Navigation strips */
+#headerbar
+{
+	font-weight: bold;
+	margin-right: 30px;
+	margin-left: 30px;
+	height: 35px;
+}
+ 
+
+/************************************************************************
+* Formatting common to most pages
+************************************************************************/
+
+.dashedline
+{border-bottom: 1px dashed #B5B5B5;
+padding-top: 2px;
+margin-bottom: 10px;
+clear:right;
+font-size:0px;
+}
+
+.solidline
+{border-top:1px #E9E9E9 solid;
+}
+
+.solidlineB
+{border-bottom:1px #E9E9E9 solid;
+}
+
+.solidlineTB
+{
+border-top:1px #E9E9E9 solid;
+border-bottom:1px #E9E9E9 solid;
+}
+
+.solidlineTBL
+{
+border-top:1px #E9E9E9 solid;
+border-bottom:1px #E9E9E9 solid;
+border-left:1px #E9E9E9 solid;
+}
+ 
+
+
+/********************************
+* Image functionality
+*********************************/
+
+.photo
+{background: #FEFFC8 url(images/background_thumbnail.jpg) repeat-x center;
+border: solid 1px #E8DCA3;
+padding: 5px;    
+}
+
+.picture
+{background: #FEFFC8 url(images/background_thumbnail.jpg) repeat-x center;
+border: solid 1px #E8DCA3;
+padding: 5px;
+margin: 5px;  
+}
+
+
+/****************************************
+* List type pages
+*****************************************/
+
+/* represents each item in a vertical list */
+.listitem
+{margin:0px 0px 0px 0px;
+width:444px;
+}
+
+/* surrounds the buttons for list items */
+.editbuttons
+{padding-top: 6px;
+}
+
+/* floats the thumbnail off to the right */
+.thumbnail
+{float: right;
+margin: 0 0 0 5px;
+}
+
+/*used to clear the float for the thumbnail */
+.clearlist
+{clear:right;
+margin:0;
+padding:0;
+height: 0px;
+line-height:0px;
+}
+
+/* Used by the page number control */
+.PageNumbers
+{display:inline;
+}
+
+.PageNumbers span
+{padding-left: 3px;
+}
+
+.membercard
+{background-color: #FEFEB1;
+border: 1px solid #E8DCA3;
+padding: 10px;
+margin-bottom: 10px;
+width: 198px;
+}
+
+.clearcard
+{clear:left;
+height:0;
+margin:0;
+padding:0;
+}
+
+.membercard p
+{margin: 5px;
+}
+
+
+/*******************************************
+* Rollover buttons
+********************************************/
+
+.buttonsmall-ovr
+{
+	background: url(images/button/button_small.gif) repeat-x;
+	border: none;
+	color: #FFFFFF;
+	height: 22px;
+	font-weight: normal;
+	font-size: .87em; 
+	padding-bottom: 9px;
+	padding-left: 3px;
+	padding-right: 3px;
+	cursor: pointer;
+	font-family: Verdana, Arial, sans-serif;
+}
+
+.buttonsmall
+{
+	background: url(images/button/button_small.gif) repeat-x;
+	border: none;
+	color: #FFFFFF;
+	height: 22px;
+	font-weight: normal;
+	font-size: .87em; 
+	padding-bottom: 9px;
+	padding-left: 3px;
+	padding-right: 3px;
+	cursor: pointer;
+	font-family: Verdana, Arial, sans-serif;
+}
+
+.buttonsmall-ovr
+{
+	text-decoration: underline;
+	background: url(images/button/button_small-ovr.gif) repeat-x;
+}
+
+/*****************************************
+* Page specific 
+******************************************/
+
+/* even dowload button */
+.downloadevent img
+{margin-right: 5px;
+vertical-align: middle;
+border: none;
+}
+
+/* Header on view details type pages */
+.itemdetails
+{font-size: 1.3em;
+}
+
+
+
+/**********************************************
+* Photo selection controls
+***********************************************/
+
+#popupbody
+{
+    font-family: Verdana, Arial, sans-serif;
+    margin: 0px;
+    background: #FED36B;
+    font-size: .87em; 
+}
+
+#popupinner
+{
+    border: 1px solid #DBDB79;
+    margin: 5px;
+    background: #FEFFAB;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#popupbody h2
+{
+    font-weight: bold;
+    margin: 0px;
+    padding: 1px 0px 5px 5px;
+    display: block;
+}
+
+
+UL.ItemList
+{margin: 0px;
+padding: 0px;
+}
+
+UL.ItemList LI
+{margin-bottom: 3px;
+list-style-type: circle;	
+margin-left: 16px;
+color: #698d73;
+}
+
+
+/*=========================================*/
+
+.unselected
+{width: 80px;
+height: 100px;
+text-align: center;
+padding: 2px 2px 2px 2px;
+}
+
+.selected
+{width: 80px;
+height: 100px;
+text-align: center;
+padding: 2px 2px 2px 2px;
+}
+
+.unselected
+{background-color: transparent;
+border: solid 1px #FEFFAB;
+}
+
+.selected
+{background: #FED36B;
+ border: solid 1px #DBDB79;
+}
+
+.scrollablelist
+{overflow: auto;
+height: 230px;
+width: 460px;
+border: solid 1px #DBDB79;
+}
+
+.scrollablelist2
+{overflow: auto;
+height: 230px;
+width: 210px;
+border: solid 1px #DBDB79;
+}
+
+ .selectablephoto
+{background: #FEFFC8 url(images/background_thumbnail.jpg) repeat-x center;
+border: 1px solid #E8DCA3;
+padding: 2px;
+}
+
+.contextbuttons
+{margin: 5px 3px 5px 3px;
+}
+
+/************************************************************************
+ Forms
+************************************************************************/
+
+/* label column */
+.formlabel
+{width:120px; 
+vertical-align: top;
+}
+
+/* value column */
+.formvalue
+{vertical-align: top;
+}
+
+.thumbnail
+{
+float:left;
+width: 150px;
+height: 100px;
+margin: 2px 2px 2px 2px;
+}
+
+td.provider {
+   height: 80px;
+   text-align: right;
+}
+
+.itemlist-image {
+ padding-right: 3px;
+ padding-left: 3px;
+ float: left;
+ padding-bottom: 2px;
+ margin-top: 1px;
+ padding-top: 3px;
+overflow:hidden; 
+position:relative;
+}
+
+.search-unit {
+  border: solid 1px #CCCCCC;
+  padding-bottom:2px;
+  padding-left:2px;
+  padding-right:2px;
+  padding-top:2px;
+  text-decoration: none;
+  float:left;  
+}
+
+/*
+Defining the curved borders for the tab heading in green
+*/
+
+.bl {background: #CEDDD6; width: 140px;margin-top: 15px;float: left; border-bottom: solid 1px #CEDDD6;}
+.br {background: #CEDDD6;}
+.tl {background: url(../images/tlg_c.gif) 0 0 no-repeat; width: 140px;}
+.tr 
+{
+	background: url(../images/trg_c.gif) 100% 0 no-repeat; 
+	font-family: inherit;
+	font-weight:bold;
+	color: black;
+	text-align: left;
+	padding-left: 7px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.bl_g {background: #DDDDDD; width: 120px;margin-top: 15px;float: left; border-left: solid 1px #ffffff; border-bottom: solid 1px white;}
+.br_g {background: #DDDDDD;}
+.tl_g {background: url(../images/tlg_c_g.gif) 0 0 no-repeat; width: 120px;}
+.tr_g 
+{
+	background: url(../images/trg_c_g.gif) 100% 0 no-repeat; 
+	font-family: inherit;
+	font-weight:normal;
+	color:gray;
+	text-align: left;
+	padding-left: 7px;
+	padding-top: 5px;
+	padding-bottom: 5px;	
+}
+.clear {font-size: 1px; height: 1px}
+
+.search-head 
+{
+	background-color: #006633;
+	font-family: inherit;
+	font-weight:bold;
+ color: White;
+ margin-top: 20px;
+ text-align: left;
+ width: 220px;
+ padding: 3px;
+	float: left;
+	padding-left: 23px;
+}
+
+.search-unitOut 
+{
+padding-top:5px;
+padding-right: 5px;
+padding-left : 5px;
+float: left;
+padding-bottom: 5px;
+margin: 2px;
+width: 110px;
+height:110px;
+overflow:hidden; 
+margin-bottom:2px;
+}
+
+.search-pop {
+  border: solid 1px #CCCCCC;
+  padding-bottom:2px;
+  padding-left:4px;
+  padding-right:4px;
+  padding-top:4px;
+  text-decoration: none;
+  overflow: hidden;
+  float:left;
+  
+}
+.search-pop-text {
+  margin:2px;
+  text-decoration: none;
+  overflow: hidden;
+  width:140px;
+}
+
+.list-img {
+  float: left;
+  width: 18px;
+  height: 18px;	
+  
+}
+.list-txt {
+  height: 20px; 
+  float: left;
+    
+  padding-left: 3px;
+  padding-top: 2px;
+}
+
+/***************************
+ * GLOBAL
+ ***************************/
+
+.dashedline
+{
+	vertical-align: middle;
+    border-bottom: 1px dashed #B5B5B5;
+    padding-top: 10px;
+    margin-bottom: 10px;
+    clear:right;
+}
+
+td.lt-blue {
+  background-color: #E6E6E6;
+}
+
+.lt-blue {
+  background-color: #E6E6E6;
+}
+
+.filter {
+ clear: left; 
+position: relative;
+  
+}
+
+
+/***************************
+ * MAIN AREA
+ ***************************/
+ 
+.item 
+{
+	float: left;
+	margin-top: 1px;
+	width:100%;
+}
+
+.item-image
+{
+	margin-top:10px;
+	margin-left:5px;
+}
+
+
+/*--------------------------
+ * TITLE
+ *--------------------------*/
+
+.title-img 
+{
+	border-top: solid 1px #FFFFFF;
+	border-left: solid 1px #FFFFFF;
+	border-bottom: solid 1px #FFFFFF;
+	float: left;
+}
+
+.title-txt 
+{
+	font-weight: bold;
+	border: solid 1px #FFFFFF;
+	padding-top: 3px;
+	padding-bottom: 2px;
+	padding-left: 8px;
+	padding-right: 8px;
+	float: left;
+}
+
+.title 
+{
+	font-weight : bold;
+	padding-top:0px;
+	padding-right:2px;
+	vertical-align:top;
+	float: left;
+	height: 24px;
+	overflow:hidden;
+	width:100%;
+}
+
+/*--------------------------
+ * PREVIEW + DETAILS
+ *--------------------------*/
+
+.preview 
+{
+	width: 320px;
+	height: 320px;
+	background-color: #FFFFFF;
+	text-align: center;
+	padding-top: 5px; 
+	padding-bottom: 4px; 
+	padding-left:4px;
+	padding-right:4px;
+	float: left;	
+	position: absolute;
+	left: 10;
+}
+
+ 
+.search-mini-res .thumb-small 
+{
+	background-color: #FFFFFF; 
+	padding: 0px; 
+	margin: 4px;  
+	width: 50px; 
+	height: 37px; 
+	max-width: 50px; 
+	max-height: 37px; 
+	text-align: center;       
+	float: left;
+}
+
+.details 
+{
+	min-height: 320px;  	
+	background-color: #CCCCCC;
+	margin-right: 0px;
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-left: 10px;
+	padding-bottom: 8px;
+	margin-left: 330px;
+}
+ 
+.details-header 
+{
+	border: solid 1px #FFFFFF;
+	color: #333333;
+	height: 20px;
+	font-weight: bold;
+}
+
+.details-header-img 
+{
+	float: left;
+	width: 18px;
+	height: 18px;	
+}
+
+.details-header-txt 
+{
+	height: 18px; 
+	float: left;
+	border-left: solid 1px #FFFFFF;
+	padding-left: 3px;
+	padding-top: 2px;
+}
+
+.details-body 
+{
+	border-left: solid 1px #FFFFFF;
+	border-right: solid 1px #FFFFFF;
+	border-bottom: solid 1px #FFFFFF;
+	color: #333333;
+	padding: 10px;
+}
+
+/*.blocker 
+{
+	width: 130px;
+}*/
+
+/***************************************************************
+ * Used to control div formats
+
+	.div-top
+	.div-main
+		.div-header
+			.div-subheader 
+			.div-warn 
+			.div-header .div-info
+		.div-body 
+			.div-body .infoHeader
+			.div-body .infoDetails
+			
+ ***************************************************************/ 
+  
+.div-main /*required*/
+{
+	margin-top: 0px;
+    margin-right: 8px;
+    margin-left: 3px;
+    margin-bottom: 8px;
+}
+.div-mainFloat /*required*/
+{
+	margin-top: 2px;
+    margin-right: 8px;
+    margin-left: 8px;
+    margin-bottom: 8px;
+    position:relative;
+	padding: 2px;
+	visibility: visible;
+	z-index: 100;
+}
+
+.div-header  /*required*/
+{
+	border-left: solid 1px #999999;
+	border-right: solid 1px #999999;
+}
+
+.div-body /*required*/
+{
+	margin: 0px 25px 0px 0px;
+	
+	border-left: solid 1px #999999;
+	border-right: solid 1px #999999;
+	border-bottom: solid 1px #999999;
+	width: 95%;
+}
+
+.div-center 
+{
+	width: 855px;
+	/*margin-left: 29px;*/
+}
+.div-header-sub 
+{
+	color:#22559e;
+	background-color:#eff9ff;
+	border-left: solid 1px #999999;
+	border-right: solid 1px #999999;
+	height: 17px;
+	padding-left: 5px;
+	padding-top: 2px;
+}
+
+.div-header-warn 
+{
+	color:#22559e;
+	font-weight:bold;
+	background-color:#fff367;
+	border: solid 1px #999999;
+	height: 20px;
+	padding-left: 5px;
+	padding-top: 2px;
+}
+
+.div-header .div-header-img 
+{
+	float: left;
+	width: 18px;
+	height: 18px;	
+}
+
+
+
+ /**********  this will be replaced with .div  **************/
+ 
+.info {
+	margin-top: 5px;
+	margin-right: 0px;
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-left: 10px;
+	padding-bottom: 8px;
+}
+
+.div-body-top 
+{
+	border-left: solid 1px;
+	border-right: solid 1px;
+	border-bottom: solid 1px;
+	color: #333333;
+	border-top: solid 1px;
+ }
+
+/*************************************************************************************
+ * SMALL THUMBNAILS
+**************************************************************************************/
+.thumb 
+{
+	background-color: #FFFFFF;
+	padding-top: 6px;
+	height: 106px;
+}
+
+.thumb-small 
+{
+	background-color: #FFFFFF; 
+	width: 56px; 
+	height: 56px; 
+	padding-top: 3px; 
+	text-align: center;
+	margin-right: 4px;
+	float: left;
+}
+
+.ritem {
+  float: left;
+}
+ 
+.message {
+	font-weight: bold;
+	padding-top: 3px;
+	padding-bottom: 2px;
+	padding-left: 8px;
+	padding-right: 8px;
+	float: left;
+	color: #FA0A0B;
+}
+
+span.date {
+	margin: 0px;
+	padding: 0px;
+}
+
+.date select {
+	width: 60px;
+}
+
+td.lt-blue 
+{
+	background-color: #ffffff;
+}
+
+.details
+{
+	background-color: #ffffff;
+}
+
+.title-txt 
+{
+	border: solid 1px #999999;
+}
+ 
+.details-header 
+{
+	border: solid 1px #999999;
+}
+
+.details-header-txt 
+{
+	border-left: solid 1px #999999;
+}
+
+/*================================
+	Panel classes
+=================================*/
+
+.navigation-half {
+	border-top: solid 1px #FFFFFF;
+	border-bottom: solid 1px #FFFFFF;
+	border-left: solid 1px #FFFFFF;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	float: right;
+	text-decoration: none;
+	height: 18px;
+}
+
+.navigation-full {
+	border-top: solid 1px #FFFFFF;
+	border-bottom: solid 1px #FFFFFF;
+	border-left: solid 1px #FFFFFF;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	float: right;
+	text-decoration: none;
+	height: 18px;
+}
+
+.navigation-full {
+	border-right: solid 1px #FFFFFF;
+	margin-right: 10px;
+}
+
+.body-lnk 
+{
+	height: 18px;
+	vertical-align: top;
+	line-height: 20px;
+}
+
+/********************************************************************************************
+  CSS Class for album slideshow
+********************************************************************************************/
+.albumContainer
+{
+	background-color:black; 
+	vertical-align: middle; 
+	color:white; 
+	height: 600px;
+}
+
+.albumTable
+{
+	background-color:black;
+	color:white;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.albumControl
+{ 
+	background-image: url(../images/bar/barMetalBlack.gif);
+}
+
+
+.albumTitle
+{
+	 float:left;
+	 height:23px;
+	 width:600px; 
+}
+
+.albumImg
+{
+	cursor: pointer;
+	cursor: hand;
+}
+
+
+/********************************************************************************************
+css classes for controls
+ ********************************************************************************************/
+
+#listUnitItem
+{
+	margin-bottom: 0px;
+	display: list-item;
+	list-style-type: square;	
+	margin-left: 6px;
+}
+
+#listUnit
+{
+	font-family: Verdana, Arial, sans-serif;
+	color: #000000;
+	padding: 1px;
+	padding-bottom: 5px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #E3E8EB;
+	background-color: #ffffff;
+	width: 174px;
+	overflow: hidden;
+	height:auto
+}
+
+#listUnitHeader
+{
+	background-image: url(images/background/listUnitHeader.gif);
+	background-repeat:repeat-x;
+	color: #666666;
+	font-weight: bold;
+	font-family: Verdana, Arial, sans-serif;
+	padding: 5px;
+	margin: 0px;
+	margin-top: 0px;
+	vertical-align:middle;
+}
+
+.results-block {
+	border: 1px solid #AAA;
+	padding: 10px;
+	width: 93%;
+	margin-top: 15px;
+	display: none;
+}
+
+.results-block h2 {
+	margin: -10px -10px 10px -10px;
+	padding: 5px 10px;
+	/*background-image: url(../images/layout/resources-box-header-bg.gif);*/
+	background-image: url(../images/lam3/tabBack.gif);
+	background-repeat: repeat-x;
+	background-position: top;
+	color: #000;
+	background-color: #dee0e2;
+	font-weight: bold;
+	font-size: 100%;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	border-bottom: 1px solid #AAA;	
+	text-align: left;
+}
+
+
+.result-footer 
+{
+	text-align: right;
+}
+
+.search-result 
+{
+	width: 140px;
+	height:200px;	
+	background-color: #eeeeee;
+	text-align: Center;
+	margin-bottom: 10px; 
+	margin-right: 10px; 
+	padding-right: 0px;
+	padding-left: 0px;
+	padding-bottom: 2px;
+	float: left;
+	overflow: hidden;
+	border: solid 1px #cccccc;
+	padding:3px 3px 3px 3px;
+}
+
+/*ACMS Search CSS Start*/
+
+.Caption
+{
+    font-weight: bold;
+    font-size: 95%;
+    color: black;
+    height: 23px;
+}
+.TextBox
+{
+    border-right: #a9a9a9 1px solid;
+    border-top: #a9a9a9 1px solid;
+    font-size: 95%;
+    border-left: #a9a9a9 1px solid;
+    color: black;
+    border-bottom: #a9a9a9 1px solid;
+}
+.Highlight
+{
+    background-color: #ffff99;
+    font-weight: bold;
+    font-size: 95%;
+}
+.SearchDialogue
+{
+    border-right: #CEDDD6 1px solid;
+    border-top: #CEDDD6 1px solid;
+    border-left: #CEDDD6 1px solid;
+    border-bottom: #CEDDD6 1px solid;
+    background-color: #CEDDD6;
+    clear: left;
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    width: 98%;
+    
+}
+.SearchResult
+{
+    position: relative;
+    top: 75px;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;
+    border-bottom-style: none;
+}
+.SearchInformation
+{
+    position: relative;
+    top: 75px;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;
+    border-bottom-style: none;
+}
+.SearchResultItem
+{
+    vertical-align: top;
+    text-align: left;
+    font-size: 95%;
+}
+.SearchCaption
+{
+    font-weight: bold;
+    font-size: 95%;
+    vertical-align: top;
+    text-align: left;
+    width: 125px;
+}
+.SearchResultText
+{
+    font-size: 95%;
+    vertical-align: top;
+    text-align: left;
+}
+.Tab
+{
+    background-position: right center;
+    background-image: url(../Images/Tab.jpg);
+    background-repeat: no-repeat;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 95%;
+    color: black;
+    width: 120px;
+    height: 21px;
+    border-right: #d3d3d3 1px solid;
+    border-top: #d3d3d3 1px solid;
+    border-left: #d3d3d3 1px solid;
+    border-bottom: #d3d3d3 1px solid;
+}
+.MySearchDialogue
+{
+    position: absolute;
+    top: 100px;
+}
+
+#gov-logo 
+{
+	/*top: 95px;*/
+	position: relative;
+	float: right;
+
+}
+
+#gov-logo .text {
+	margin-right: 1em;
+	
+}
+
+#ctl00_Header a.homepage-link
+{
+	float: left;
+	display: block;
+	height: 125px;
+	width: 200px;
+}
+
+
+/*ACMS Search CSS End*/
