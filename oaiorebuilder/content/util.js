@@ -1074,7 +1074,7 @@ util = {
      * @param {Object} html
      */
     externalizeLinks : function(html){
-        return html.replace(/<A /g,'<A target="_blank" '); 
+        return html.replace(/<A /gi,'<A target="_blank" '); 
     },
     /**
      * @name lore.util.externalizeDomLinks
