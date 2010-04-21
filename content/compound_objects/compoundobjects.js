@@ -390,8 +390,8 @@ lore.ore.ui.dragDrop = function(aEvent){
             var sntitle = sn.textContent;
             var figopts = {
                 url: sn.href,
-                x: aEvent.layerX,
-                y: aEvent.layerY
+                x: Math.max(0,aEvent.layerX),
+                y: Math.max(0,aEvent.layerY)
             }
             if (sntitle){
                 figopts.props = {"dc:title_0": sntitle};
