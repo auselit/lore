@@ -126,7 +126,7 @@ lore.anno.ui.showSplitter = function (rec) {
 	if (!rec) {
 		rec = lore.anno.ui.page.curSelAnno;
 	} else if ( typeof(rec) == 'string') {
-		rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, rec);
+		rec = lore.anno.annoMan.findStoredRecById(rec);
 	}
 	var editor = lore.anno.ui.formpanel;
 	lore.anno.ui.pageui.updateSplitter(rec, true, editor.updateSplitterContextField, editor);
@@ -234,13 +234,6 @@ lore.anno.ui.handlePrefsChange = function (args ) {
 
 lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, index){
 	childNode.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
-	
-	childNode.on('contextmenu', function(node, ev){
-	 	node.select();
-	 	var rec = lore.anno.annoMan.findRecById(lore.anno.ui.nodeIdToRecId(node));
-	 	lore.anno.ui.page.setCurrentAnno(rec);
-	 });
-	 
 	 
 	childNode.on('contextmenu', function(node, e){
 		
@@ -371,9 +364,10 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
 		}
 	
 		// set current anno and fire anno change event
+		lore.anno.ui.formpanel.hide();
+		
 		lore.anno.ui.page.setCurrentAnno(rec);
 		 
-		lore.anno.ui.formpanel.hide();
 		Ext.getCmp("treeview").doLayout();				
 	} 
 	catch (e) {
@@ -554,18 +548,35 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 /**
  * Delete the currently selected annotation, requesting confirmation from user
  */
-lore.anno.ui.handleDeleteAnnotation = function (){
-   if (lore.anno.ui.page.curSelAnno ){
-   	if ( lore.anno.ui.page.curSelAnnoStore == lore.anno.annoMan.annodsunsaved) {
-		 lore.anno.annoMan.annodsunsaved.remove(lore.anno.ui.page.curSelAnno);
-		 lore.anno.ui.page.setCurrentAnno();
-		 lore.anno.ui.hideAnnotationEditor();
-		 return;
+lore.anno.ui.handleDeleteAnnotation = function (node) {
+	var rec, unsaved;
+	
+	// find rec, and work out if a saved or unsaved anno
+	if (node && node.isAncestor) { // request comes from clicking on tree
+		if (node.isAncestor(lore.anno.ui.treeunsaved)) {
+			rec = lore.anno.annoMan.findUnsavedRecById(lore.anno.ui.nodeIdToRecId(node));
+		} else {
+			rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
+		}
+	} else { // request comes from toolbar or editor delete button
+		if (!lore.anno.ui.page.curSelAnno ){
+			lore.debug.anno("Nothing selected to delete.");
+			return;
+		}
+		rec = lore.anno.ui.page.curSelAnno;
 	}
- 
+	
+	// don't need to prompt, just delete, since it's an unsaved annotation
+	if (rec.store == lore.anno.annoMan.annodsunsaved) {
+		lore.anno.annoMan.annodsunsaved.remove(rec);
+		lore.anno.ui.page.setCurrentAnno();
+		lore.anno.ui.hideAnnotationEditor();
+		return;
+	}
+	
  	// show confirmation pop-up
-   	var msg = 'Are you sure you want to delete this annotation forever?';
-   	if ( lore.anno.ui.page.curSelAnno.data.hasChildren() ) {
+   	var msg = 'Are you sure you want to delete the "' + rec.data.title + '" annotation forever?';
+   	if ( rec.data.hasChildren() ) {
    		//msg = "Are you sure you want to delete this annotation and its REPLIES forever?";
 		lore.anno.ui.loreError("Delete the replies for this annotation first.");
 		return;
@@ -577,23 +588,20 @@ lore.anno.ui.handleDeleteAnnotation = function (){
    		buttons: Ext.MessageBox.YESNO,
    		fn: function(btn){
    			if (btn == 'yes') 
-   				lore.anno.ui.handleDeleteAnnotation2();
+   				lore.anno.ui.handleDeleteAnnotation2(rec);
    		},
    		icon: Ext.Msg.QUESTION
    	});
-   } else {
-   		lore.debug.anno("Nothing selected to delete.");
-   }
 }
 
 /**
  * Delete currently selected annotation
  */
-lore.anno.ui.handleDeleteAnnotation2 = function(){
+lore.anno.ui.handleDeleteAnnotation2 = function(rec){
 	try {
-		lore.debug.anno("deleting " + lore.anno.ui.page.curSelAnno);
+		lore.debug.anno("deleting " + rec);
 		
-		lore.anno.annoMan.deleteAnnotation(lore.anno.ui.page.curSelAnno, function(result, resultMsg){
+		lore.anno.annoMan.deleteAnnotation(rec, function(result, resultMsg){
 			if (result == 'success') {
 				lore.debug.anno('Annotation deleted', resultMsg);
 				lore.anno.ui.loreInfo('Annotation deleted');
@@ -604,8 +612,11 @@ lore.anno.ui.handleDeleteAnnotation2 = function(){
 			}
 		});
 		
-		lore.anno.ui.page.setCurrentAnno();
-		lore.anno.ui.hideAnnotationEditor();
+		
+		if (rec === lore.anno.ui.page.curSelAnno) {
+			lore.anno.ui.page.setCurrentAnno();
+			lore.anno.ui.hideAnnotationEditor();
+		}
 	} 
 	catch (ex) {
 		lore.debug.anno("Exception when deleting annotation", ex);
@@ -741,7 +752,7 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 		else if (typeof(arg) == 'string') {   
 			// user has come from an info bubble pop-up in timeline
 			lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
-			rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, arg);
+			rec = lore.anno.annoMan.findStoredRecById(arg);
 			if (rec) 
 				lore.anno.ui.page.setCurrentAnno(rec);
 		}
