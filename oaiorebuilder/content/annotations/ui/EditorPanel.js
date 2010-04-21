@@ -261,174 +261,166 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 								onClick: this.handleUpdateAnnotationVariantContext
 							}
 						]
-					},
-									{
-									fieldLabel : 'Semantic selection',
-									name: 'metares',
-									id: this.genID('metares'),
-									readOnly: true,
-									hideParent: true,
-									style: {
-										background: 'none',
-										border: 'none',
-										'font-size':'90%'
-									}
-									//labelStyle: 'font-size:90%;'
-								},
-								{
-									xtype: "button",
-									text: 'Choose semantic selection',
-									fieldLabel: '',
-									id: this.genID('chgmetactxbtn'),
-									tooltip: 'Select the item or relationship to annotate',
-									handler: this.handleChangeMetaSelection,
-									parent: this
-								},
-								/*{
-									fieldLabel : 'Metadata',
-									name: '',
-									id: '',
-								},*/
-								{
-									xtype: "editorgrid",
-									
-									id: this.genID('metausergrid'),
-									name: 'metausergrid',
-									store: this.metaModel,
-									//deferRowRender: false,
-									height: 100,
-									viewConfig: {
-									forceFit: true
-								},
-									//forceFit: true,
-							
-							 		colModel: new Ext.grid.ColumnModel( {
-									// grid columns
-									defaults: {
-										sortable: true
-									},
-									columns: [
-										{
-											id: 'type', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
-											header: 'Type',
-											dataIndex: 'type',
-											width:50,
-											editor: {
-												xtype: 'combo',
-												store: new Ext.data.ArrayStore( {
-													id: '',
-													fields: ['type', 'displayType'],
-													data: [
-													['http://austlit.edu.au/owl/austlit.owl#Agent', 'Agent'], 
-													['http://austlit.edu.au/owl/austlit.owl#Work','Work'],
-													['http://austlit.edu.au/owl/austlit.owl#Manifestation','Manifestation']]
-												}),
-												mode: 'local', 
-												valueField: 'type',
-												displayField: 'displayType',
-												triggerAction: 'all'
-											},
-											renderer: function (value) {
-												return value.indexOf("#")!=-1 ? value.substring(value.indexOf("#")+1):value; 
-											}
-										}, 
-										{
-											header: "Property",
-											dataIndex: 'prop',
-											editor:{
-												xtype: 'combo',
-												store: new Ext.data.ArrayStore( {
-													id: '',
-													fields: ['prop', 'property'],
-													data: [['displayName','displayName'], ['influencedWork','influencedWork'],
-													['hasReprint','hasReprint'],
-													['alternateTitle', 'alternateTitle'],
-													 ['biography','biography']]
-												}),
-												mode: 'local', 
-												valueField: 'prop',
-												displayField: 'property',
-												triggerAction: 'all'
-											}
-										}, 
-										{
-											header: "value",
-											dataIndex: 'value',
-											editor: new Ext.form.TextField({ allowBlank:false})
-										} 
-									]
-									})
-								},
-						{
-							xtype: "button",
-							text: 'Add',
-							fieldLabel: '',
-							id: this.genID('addmetabtn'),
-							tooltip: 'Add metadata about this page to the annotation'
-						},
-						{
-							xtype:"button",
-							text: 'Remove',
-							id: this.genID('remmetabtn'),
-							tooltip: 'Remove user created metadata about this page from the annotation'
-						},
-						{
-							id: this.genID('tagselector'),
-							xtype: 'superboxselect',
-							allowBlank: true,
-							msgTarget: 'under',
-							allowAddNewData: true,
-							fieldLabel: 'Tags',
-							emptyText: 'Type or select tags',
-							resizable: true,
-							name: 'tags',
-                            pageSize: 10,
-							store: new Ext.ux.data.PagingArrayStore ({
-								fields: ['id', 'name'],
-								data: lore.anno.thesaurus,
-                                lastOptions: {params: {start:0,limit:10}}
-							}),
-							mode: 'local',
-							displayField: 'name',
-							valueField: 'id',
-							extraItemCls: 'x-tag',
-							listeners: {
-								newitem: function(bs, v){
-									v = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
-									var newObj = {
-										id: v,
-										name: v
-									};
-									bs.addItem(newObj);
-								}
-							}
-						}, {
-							fieldLabel: 'Body',
-							xtype: 'htmleditor',
-							plugins: [new Ext.ux.form.HtmlEditor.Img()],
-							name: 'body',
-							id: this.genID('body'),
-							enableFont: false,
-							enableColors: false,
-							enableSourceEdit: false,
-							anchor: '-30 100%'
-						},
-						{
-							fieldLabel: 'Alt Body',
-							xtype: 'htmleditor',
-							plugins: [new Ext.ux.form.HtmlEditor.Img()],
-							name: 'altbody',
-							enableFont: false,
-							enableColors: false,
-							enableSourceEdit: false,
-							anchor: '-30 100%'
+					}, {
+						fieldLabel : 'Semantic selection',
+						name: 'metares',
+						id: this.genID('metares'),
+						readOnly: true,
+						hideParent: true,
+						style: {
+							background: 'none',
+							border: 'none',
+							'font-size':'90%'
 						}
+						//labelStyle: 'font-size:90%;'
+					}, {
+						xtype: "button",
+						text: 'Choose semantic selection',
+						fieldLabel: '',
+						id: this.genID('chgmetactxbtn'),
+						tooltip: 'Select the item or relationship to annotate',
+						handler: this.handleChangeMetaSelection,
+						parent: this
+					},
+					/*{
+						fieldLabel : 'Metadata',
+						name: '',
+						id: '',
+					},*/
+					{
+						xtype: "editorgrid",
 						
-						],
-						buttons: this.buttonsConfig ? this.buttonsConfig : []
-					}]
-					
-				};
+						id: this.genID('metausergrid'),
+						name: 'metausergrid',
+						store: this.metaModel,
+						//deferRowRender: false,
+						height: 100,
+						viewConfig: {
+							forceFit: true
+						},
+						//forceFit: true,
+				
+				 		colModel: new Ext.grid.ColumnModel( {
+						// grid columns
+						defaults: {
+							sortable: true
+						},
+						columns: [
+							{
+								id: 'type', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
+								header: 'Type',
+								dataIndex: 'type',
+								width:50,
+								editor: {
+									xtype: 'combo',
+									store: new Ext.data.ArrayStore( {
+										id: '',
+										fields: ['type', 'displayType'],
+										data: [
+										['http://austlit.edu.au/owl/austlit.owl#Agent', 'Agent'], 
+										['http://austlit.edu.au/owl/austlit.owl#Work','Work'],
+										['http://austlit.edu.au/owl/austlit.owl#Manifestation','Manifestation']]
+									}),
+									mode: 'local', 
+									valueField: 'type',
+									displayField: 'displayType',
+									triggerAction: 'all'
+								},
+								renderer: function (value) {
+									return value.indexOf("#")!=-1 ? value.substring(value.indexOf("#")+1):value; 
+								}
+							}, 
+							{
+								header: "Property",
+								dataIndex: 'prop',
+								editor:{
+									xtype: 'combo',
+									store: new Ext.data.ArrayStore( {
+										id: '',
+										fields: ['prop', 'property'],
+										data: [['displayName','displayName'], ['influencedWork','influencedWork'],
+										['hasReprint','hasReprint'],
+										['alternateTitle', 'alternateTitle'],
+										 ['biography','biography']]
+									}),
+									mode: 'local', 
+									valueField: 'prop',
+									displayField: 'property',
+									triggerAction: 'all'
+								}
+							}, 
+							{
+								header: "value",
+								dataIndex: 'value',
+								editor: new Ext.form.TextField({ allowBlank:false})
+							} 
+						]
+						})
+					}, {
+						xtype: "button",
+						text: 'Add',
+						fieldLabel: '',
+						id: this.genID('addmetabtn'),
+						tooltip: 'Add metadata about this page to the annotation'
+					}, {
+						xtype:"button",
+						text: 'Remove',
+						id: this.genID('remmetabtn'),
+						tooltip: 'Remove user created metadata about this page from the annotation'
+					}, {
+						id: this.genID('tagselector'),
+						xtype: 'superboxselect',
+						allowBlank: true,
+						msgTarget: 'under',
+						allowAddNewData: true,
+						fieldLabel: 'Tags',
+						emptyText: 'Type or select tags',
+						resizable: true,
+						name: 'tags',
+                        pageSize: 10,
+						store: new Ext.ux.data.PagingArrayStore ({
+							fields: ['id', 'name'],
+							data: lore.anno.thesaurus,
+                            lastOptions: {params: {start:0,limit:10}}
+						}),
+						mode: 'local',
+						displayField: 'name',
+						valueField: 'id',
+						extraItemCls: 'x-tag',
+						listeners: {
+							newitem: function(bs, v){
+								v = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
+								var newObj = {
+									id: v,
+									name: v
+								};
+								bs.addItem(newObj);
+							}
+						}
+					}, {
+						fieldLabel: 'Body',
+						xtype: 'htmleditor',
+						plugins: [new Ext.ux.form.HtmlEditor.Img()],
+						name: 'body',
+						id: this.genID('body'),
+						enableFont: false,
+						enableColors: false,
+						enableSourceEdit: false,
+						anchor: '-30 100%'
+					}, {
+						fieldLabel: 'Alt Body',
+						xtype: 'htmleditor',
+						plugins: [new Ext.ux.form.HtmlEditor.Img()],
+						name: 'altbody',
+						enableFont: false,
+						enableColors: false,
+						enableSourceEdit: false,
+						anchor: '-30 100%'
+					}],
+					buttons: this.buttonsConfig ? this.buttonsConfig : []
+				}]
+				
+			};
 	},
 	
 	/**
