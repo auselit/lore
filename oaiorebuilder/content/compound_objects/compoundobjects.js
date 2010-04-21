@@ -188,6 +188,7 @@ lore.ore.setrelonturl = function(relonturl) {
  * @param {}annoserver The annotation server access URL
  */
 lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*String*/annoserver){
+    lore.debug.ore("lore.ore.setRepos " + rdfrepos + " " + rdfrepostype + " " + annoserver);
     // Access the repository 
     if (rdfrepostype == 'sesame'){
         /** Adapter used to access the repository */
@@ -280,7 +281,8 @@ lore.ore.createCompoundObject = function (){
     var newCO = function (){
         var dateString = lore.ore.getToday();
         // TODO: fix properties - use date string for now
-        lore.ore.currentREM = lore.ore.generateID();
+        // TODO: should not assign an id until it has been saved
+        lore.ore.currentREM = lore.ore.reposAdapter.generateID();
         lore.ore.ui.grid.store.loadData(
         [
             {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
@@ -376,6 +378,83 @@ lore.ore.closeView = function(/*Ext.TabPanel*/tabpanel, /*Ext.panel*/panel) {
     }
     return true;
 };
+lore.ore.ui.dragDrop = function(aEvent){
+    var dragService = Components.classes["@mozilla.org/widget/dragservice;1"].getService(Components.interfaces.nsIDragService);
+    var dragSession = dragService.getCurrentSession();
+    
+    // If sourceNode is not null, then the drop was from inside the application
+    // add to compound object if it is a link or image
+    var sn = dragSession.sourceNode;
+    if (sn){
+        if (sn instanceof HTMLAnchorElement){
+            var sntitle = sn.textContent;
+            var figopts = {
+                url: sn.href,
+                x: aEvent.layerX,
+                y: aEvent.layerY
+            }
+            if (sntitle){
+                figopts.props = {"dc:title_0": sntitle};
+            }
+            lore.ore.ui.graph.addFigureWithOpts(figopts);
+        } else if (sn instanceof HTMLImageElement){
+            lore.ore.ui.graph.addFigure(sn.src);
+        }
+        return;
+    }
+    // Drag source is from outside application (i.e. a file)
+    // TODO: allow RDF/XML files to be dropped to open (perhaps also shortcuts)
+    /*
+    var _ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
+    var uris = new Array();
+    var trans = Components.classes["@mozilla.org/widget/transferable;1"].createInstance(Components.interfaces.nsITransferable);
+    trans.addDataFlavor("text/x-moz-url");
+    trans.addDataFlavor("application/x-moz-file");
+
+    for (var i=0; i<dragSession.numDropItems; i++) {
+      var uri = null;
+
+      dragSession.getData(trans, i);
+      var flavor = {}, data = {}, length = {};
+      trans.getAnyTransferData(flavor, data, length);
+      lore.debug.ore("data from drop",data);
+      if (data) {
+        try {
+          var str = data.value.QueryInterface(Components.interfaces.nsISupportsString);
+        }
+        catch(ex) {
+        }
+
+        if (str) {
+          uri = _ios.newURI(str.data.split("\n")[0], null, null);
+        }
+        else {
+          var file = data.value.QueryInterface(Components.interfaces.nsIFile);
+          if (file)
+            uri = _ios.newFileURI(file);
+        }
+      }
+
+      if (uri)
+        uris.push(uri);
+    }
+
+    // Use the array of file URIs
+    lore.debug.ore("array of file uris",uris);
+    */
+};
+lore.ore.ui.dragOver = function(aEvent){
+    var dragService = Components.classes["@mozilla.org/widget/dragservice;1"].getService(Components.interfaces.nsIDragService);
+    var dragSession = dragService.getCurrentSession();
+
+    var supported = dragSession.isDataFlavorSupported("text/x-moz-url");
+    if (!supported)
+      supported = dragSession.isDataFlavorSupported("application/x-moz-file");
+
+    if (supported)
+      dragSession.canDrop = true;
+};
+
 lore.ore.ui.hideProps = function(p, animate){
         p.body.setStyle('display','none'); 
 };
@@ -1041,11 +1120,6 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     } catch (ex){
         lore.debug.ore("exception in createRDF",ex);
     }
-};
-
-lore.ore.generateID = function(){
-    // TODO: #125 should use a persistent identifier service to request an identifier
-    return "http://austlit.edu.au/rem/" + draw2d.UUID.create();
 };
 
 lore.ore.loadCompoundObjectContents = function (rdf,elem){
