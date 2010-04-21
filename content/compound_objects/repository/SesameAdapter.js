@@ -109,9 +109,11 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	},
 	loadCompoundObject : function(remid, callback){
 	     Ext.Ajax.request({
-	            // could use repository context (but would need to set accept headers to specify xml
-	            //url: this.reposURL + "/statements?context=<" + remid + ">",
-	            url: remid,
+	            url: this.reposURL + "/statements?context=<" + remid + ">",
+	            //url: remid,
+                headers: {
+                    Accept: 'application/rdf+xml'
+                },
 	            method: "GET",
 	            disableCaching: false,
 	            success: callback,
@@ -134,6 +136,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
                         callback(remid);
 	                } else {
 	                    lore.ore.ui.loreError('Unable to save to repository' + xmlhttp2.responseText);
+                        lore.debug.ore("Unable to save to repository",xmlhttp2);
 	                    Ext.Msg.show({
 	                        title : 'Problem saving RDF',
 	                        buttons : Ext.MessageBox.OKCANCEL,
