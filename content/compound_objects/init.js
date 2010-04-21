@@ -101,7 +101,9 @@ lore.ore.ui.loadPreferences = function() {
  */
 lore.ore.ui.initProperties = function() {
 	var dateString = lore.ore.getToday();
-	lore.ore.currentREM = lore.ore.generateID();
+    if (lore.ore.reposAdapter){
+	   lore.ore.currentREM = lore.ore.reposAdapter.generateID();
+    }
 	lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
 	lore.ore.ui.nodegrid.store.on("remove", lore.ore.handleNodePropertyRemove);
 
@@ -785,6 +787,10 @@ lore.ore.ui.init = function() {
 				.getItemLocation(lore.constants.EXTENSION_ID);
 
 		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
+        //lore.debug.ore("topView",lore.ore.ui.topView);
+        window.addEventListener("dragover", lore.ore.ui.dragOver, true);
+        window.addEventListener("dragdrop", lore.ore.ui.dragDrop, true);
+        
         //lore.ore.ui.topView.on('coprefs_changed', lore.ore.setPrefs);
 		/** The url shown in the current browser tab */
 		lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
