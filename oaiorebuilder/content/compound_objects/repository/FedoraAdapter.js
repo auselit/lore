@@ -20,13 +20,17 @@
  
 // New Fedora adapter that uses the REST API : currently incomplete
 lore.ore.FedoraAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
+    constructor: function(config){
+      this.idPrefix = "demo:";
+      lore.ore.FedoraAdapter.superclass.constructor.call(this, config); 
+    },
 getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
     
 },
 loadCompoundObject : function(remid, callback){
-    var fedoraid = 'demo:' + lore.global.util.splitTerm(remid).term;
+    //var fedoraid = 'demo:' + lore.global.util.splitTerm(remid).term;
     Ext.Ajax.request({
-                url: this.reposURL + "/objects/" + fedoraid + "/export",
+                url: this.reposURL + "/objects/" + remid + "/export",
                 method: "GET",
                 disableCaching: false,
                 success: function(){
@@ -46,7 +50,7 @@ saveCompoundObject : function (coid,thexml,callback){
     // TODO: allow modification of existing
     // FIXME:
     var foxml = lore.ore.createFOXML();
-    var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.currentREM).term;
+    //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.currentREM).term;
     lore.debug.ore("saving foxml to fedora",foxml);
     try {                  
            var xmlhttp2 = new XMLHttpRequest();
@@ -60,12 +64,13 @@ saveCompoundObject : function (coid,thexml,callback){
                         callback(remid);
                     } else {
                         lore.ore.ui.loreError('Unable to save to repository' + xmlhttp2.responseText);
+                        lore.debug.ore("Unable to save to repository",xmlhttp2);
                         Ext.Msg.show({
                             title : 'Problem saving RDF',
                             buttons : Ext.MessageBox.OKCANCEL,
                             msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
                         });
-                        lore.debug.ore("Unable to save to repository",xmlhttp2);
+                        
                     }
                 }
             };

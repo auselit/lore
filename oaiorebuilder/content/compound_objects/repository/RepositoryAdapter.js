@@ -24,6 +24,8 @@
  */
 lore.ore.RepositoryAdapter = function (reposURL){
     this.reposURL = reposURL;
+    // prefix for identifiers is base URI (ie reposURL after http:// until next slash) plus 'rem/'
+    this.idPrefix = reposURL.substring(0, reposURL.indexOf('/',7) + 1) + "rem/";
 }
 lore.ore.RepositoryAdapter.prototype = {
     setReposURL : function(reposURL){
@@ -64,5 +66,10 @@ lore.ore.RepositoryAdapter.prototype = {
      **/
     deleteCompoundObject : function(remid){
         throw "Method not implemented";
+    },
+    generateID: function(){
+        // TODO: #125 should use a persistent identifier service to request an identifier
+        // TODO: check that this id hasn't been used before
+        return this.idPrefix + draw2d.UUID.create();
     }
 }
