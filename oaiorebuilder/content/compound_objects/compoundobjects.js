@@ -653,7 +653,7 @@ lore.ore.showCompoundObjectNarrative = function(p){
                 previewhtml += "<p style='color:#51666b;margin-top:3em'>" 
                         + "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'>Nested Compound Object:<br>"
                         + "<img src='../../skin/icons/action_go.gif'/> Load in LORE</p>"; 
-            } else if (figformat.match("image")){
+            } else if (figformat && figformat.match("image")){
                 previewhtml += "<img class='sspreview' src='" + figurl + "' alt='image preview' style='max-height:100%;text-align:center'/>";
             } else if (figurl.match('austlit.edu.au') && (figurl.match('ShowWork') || figurl.match('ShowAgent'))){
                 previewhtml += '<object class="sspreview" data="' + figurl + '&amp;printPreview=y"  height="100%" width="100%"></object>';
