@@ -122,7 +122,7 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
      **/
     attachRemActions: function (node){
         // TODO: should this go in TreeNode?
-        node.on('dblclick', function(node) {
+        node.on('click', function(node) {
             lore.ore.readRDF(node.attributes.uri);
         });
         node.on('contextmenu', function(node, e) {
