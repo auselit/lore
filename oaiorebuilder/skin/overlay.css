@@ -57,7 +57,7 @@
 }
 
 #reply-annotation {
-	list-style-image: url(chrome://lore/skin/icons/arrow_rotate_clockwise.png);
+	list-style-image: url(chrome://lore/skin/icons/comments_add.png);
 }
 #save-annotation {
 	list-style-image: url(chrome://lore/skin/icons/disk.png);
