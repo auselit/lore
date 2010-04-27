@@ -1403,6 +1403,7 @@ lore.ore.loadRDF = function() {
  * Assumes that onturl has been set in init from preferences
  */
 lore.ore.loadRelationshipsFromOntology = function() {
+    try{
     lore.ore.ontrelationships = {};
     lore.ore.resource_metadata_props = ["rdf:type", "ore:isAggregatedBy"];
     if (lore.ore.onturl) {
@@ -1428,7 +1429,10 @@ lore.ore.loadRelationshipsFromOntology = function() {
             } 
         };
         xhr.send(null);
-     }     
+     } 
+    } catch (e){
+        lore.debug.ore("lore.ore.loadRelationshipsFromOntology:",e);
+    }
 };
 /** Looks up property value from a grid by name
  * 
@@ -1642,14 +1646,12 @@ lore.ore.ui.graph.addFigureWithOpts = function(opts){
     }
     if (theURL && !lore.ore.ui.graph.lookup[theURL]) {
         fig = new lore.ore.ui.graph.ResourceFigure(opts.props);
-        if (opts.w && opts.h){
-            fig.setDimension(opts.w, opts.h);    
-        } else {
-            fig.setDimension(220, 170);
-        }
         if (opts.oh) {
            fig.originalHeight = opts.oh;
         }
+        if (opts.w && opts.h){
+            fig.setDimension(opts.w, opts.h);    
+        } 
         if (opts.sx && opts.sy) {
             fig.scrollx = parseInt(opts.sx);
             fig.scrolly = parseInt(opts.sy);

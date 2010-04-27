@@ -38,7 +38,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
     }
     this.url = this.metadataproperties["resource_0"];
 	draw2d.Node.call(this);
-	this.setDimension(250, 150);
+	this.setDimension(220, 170);
     var title = this.metadataproperties["dc:title_0"];
     this.setTitle((title? title : 'Resource'));
 };
@@ -94,7 +94,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	this.top_left.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left";
 	this.bottom_left.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left";
 	this.bottom_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom right";
-	this.createPlusMinusIcon();
 	this.header.style.position = "absolute";
 	this.header.style.left = this.cornerWidth + "px";
 	this.header.style.top = "0px";
@@ -143,12 +142,20 @@ lore.ore.ui.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	item.appendChild(this.bottom_right);
 	return item;
 };
+lore.ore.ui.graph.ResourceFigure.prototype.isCollapsed = function(){
+    return this.originalHeight != -1;
+};
 /**
  * Set the dimensions of the figure
  * @param {number} w Width in pixels
  * @param {number} h Height in pixels
  */
 lore.ore.ui.graph.ResourceFigure.prototype.setDimension = function(w, h) {
+    // override height if node is collapsed
+    if (this.isCollapsed()){
+        h = this.metadataarea.offsetHeight
+                + this.header.offsetHeight + this.footer.offsetHeight - 4;
+    }
 	draw2d.Node.prototype.setDimension.call(this, w, h);
 	if (this.top_left) {
 		this.top_right.style.left = (this.width - this.cornerWidth) + "px";
@@ -245,9 +252,13 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
             if (domObj) {
                 this.iframearea.removeChild(domObj);
             }
-            if (this.originalHeight == -1) {
+            if (!this.isCollapsed()) {
                 this.createPreview(displayUrl);
             }
+            this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='" + this.id + "-icon'>"
+            + this.uriexpander
+            + "<a title='" + theurl +"' onclick='lore.global.util.launchTab(\"" + displayUrl
+            + "\",window);' href='#'>" + theurl + "</a></li></ul>";
         } else {
             this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>XML document (no preview available)</p>";
         }
@@ -280,7 +291,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
 				this.iframearea.removeChild(domObj);
 			}
 
-			if (this.originalHeight == -1) {
+			if (!this.isCollapsed()) {
 				this.createPreview(displayUrl);
 			}
 		} catch (e) {
@@ -434,7 +445,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.onDragstart = function(x, y) {
 		return false;
 	}
     this.raise();
-	if (this.originalHeight == -1) {
+	if (!this.isCollapsed()) {
 		if (this.canDrag && x < parseInt(this.header.style.width)
 				&& y < parseInt(this.header.style.height)) {
 			return true;
@@ -519,24 +530,21 @@ lore.ore.ui.graph.ResourceFigure.prototype.recalcDimensions = function (){
  * Toggle whether the figure is open or closed
  */
 lore.ore.ui.graph.ResourceFigure.prototype.toggle = function() {
-	if (this.originalHeight == -1) {
+	if (!this.isCollapsed()) {
 		this.originalHeight = this.height;
 		this.iframearea.style.display = "none";
-		var newHeight = this.metadataarea.offsetHeight
-				+ this.header.offsetHeight + this.footer.offsetHeight - 4;
-		this.setDimension(this.width, newHeight);
-		// this.setResizeable(false);
+        // don't need to provide height: will be calculated automatically
+		this.setDimension(this.width); 
 	} else {
-		this.setDimension(this.width, this.originalHeight);
+        var oldHeight = this.originalHeight;
+        this.originalHeight = -1;
+		this.setDimension(this.width, oldHeight);
 		if (!this.iframearea.firstChild
 				&& !this.metadataproperties["dc:format_0"].match("pdf")) {
 			this.createPreview(this.url);
 		}
 		this.iframearea.style.display = "block";
-		this.originalHeight = -1;
-		// this.setResizeable(true);
 	}
-	this.createPlusMinusIcon();
 };
 /**
  * 
@@ -609,7 +617,8 @@ lore.ore.ui.graph.ResourceFigure.prototype.getProperty = function(pid){
  * @private
  */
 lore.ore.ui.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
-	if (this.originalHeight == -1) {
+    lore.debug.ore("resource figure createPlusMinus " + this.originalHeight,this);
+	if (!this.isCollapsed()) {
 		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
 	} else {
 		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right";
