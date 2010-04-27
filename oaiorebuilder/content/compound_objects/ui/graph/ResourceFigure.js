@@ -220,7 +220,8 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
 			var identifierURI = lore.ore.getOREIdentifier(theurl);
 			this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='" + identifierURI +"' class='mimeicon oreicon'>"
                 + this.uriexpander
-				+ identifierURI + "</li></ul>";
+                + "<a onclick='lore.ore.readRDF(\"" + theurl + "\");' href='#'>"
+				+ identifierURI + "</a></li></ul>";
         } else {
             this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>RDF document (no preview available)</p>";
         }
