@@ -107,7 +107,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        lore.ore.ui.loreWarning("Unable to retrieve compound objects");
 	    }
 	},
-	loadCompoundObject : function(remid, callback){
+	loadCompoundObject : function(remid, callback, failcallback){
 	     Ext.Ajax.request({
 	            url: this.reposURL + "/statements?context=<" + remid + ">",
 	            //url: remid,
@@ -117,9 +117,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	            method: "GET",
 	            disableCaching: false,
 	            success: callback,
-	            failure: function(resp, opt){
-	                lore.debug.ore("Unable to load compound object " + opt.url, resp);
-	            }
+	            failure: failcallback
 	        }); 
 	},
 	saveCompoundObject : function (remid,therdf,callback){

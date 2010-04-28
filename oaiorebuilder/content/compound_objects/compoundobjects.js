@@ -277,7 +277,7 @@ lore.ore.getToday = function(){
    return yearString + "-" + monthString + "-" + dayString;
 }
 /** Initialize a new compound object in the editor, prompting first whether to save the current compound object */
-lore.ore.createCompoundObject = function (){
+lore.ore.createCompoundObject = function (dontRaise){
     var newCO = function (){
         var dateString = lore.ore.getToday();
         // TODO: fix properties - use date string for now
@@ -294,7 +294,9 @@ lore.ore.createCompoundObject = function (){
         );
         lore.ore.ui.initGraphicalView();
         lore.ore.populateResourceDetailsCombo();
-        Ext.getCmp("propertytabs").activate("properties");
+        if (!dontRaise) {
+            Ext.getCmp("propertytabs").activate("properties");
+        }
     };
     try{
         // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
@@ -1158,7 +1160,12 @@ lore.ore.loadCompoundObjectContents = function (rdf,elem){
     }
     
 }
-
+lore.ore.loadCompoundObjectFail = function (resp,opt){
+    lore.debug.ore("Unable to load compound object " + opt.url, resp);
+    lore.ore.ui.loreError("Unable to load compound object");
+    lore.ore.createCompoundObject(true);
+    Ext.Msg.hide();
+};
 /**
  * Load a compound object into the graphical view
  * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
@@ -1322,6 +1329,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         lore.ore.ui.graph.coGraph.hideMask();
         
         lore.ore.ui.loreInfo("Loading compound object");
+        Ext.Msg.hide();
         lore.ore.currentREM = remurl;
         lore.ore.populateResourceDetailsCombo();
        if (showInHistory){
@@ -1352,8 +1360,16 @@ lore.ore.readRDF = function(rdfURL){
     }else {
         lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
     }*/
+    Ext.MessageBox.show({
+           msg: 'Loading compound object',
+           width:250,
+           defaultTextHeight: 0,
+           closable: false,
+           cls: 'co-load-msg'
+       });
+
     if (lore.ore.reposAdapter){
-        lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.loadCompoundObject);
+        lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.loadCompoundObject, lore.ore.loadCompoundObjectFail);
     }
 };
 
