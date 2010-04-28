@@ -427,7 +427,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						id: this.genID('body'),
 						enableFont: false,
 						enableColors: false,
-						enableSourceEdit: true,
+						enableSourceEdit: false,
 						anchor: '-30 100%'
 					}, {
 						fieldLabel: 'Alt Body',
