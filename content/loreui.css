@@ -476,3 +476,9 @@
 .x-form-text, textarea.x-form-field{
     background-image: none;
 }
+.co-load-msg .ext-mb-fix-cursor {
+	display: none !important
+}
+.co-load-msg .x-window-header {
+	height:0;
+}
