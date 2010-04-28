@@ -24,6 +24,28 @@
  * @include  "/oaiorebuilder/content/util.js"
  */
 
+
+/*
+ * A contentEditable in firefox defaults to applying formatting as css.
+ * 
+ * This causes troubles when annotations are saved and reloaded, since
+ * the css is stripped out for security reasons.
+ * 
+ * The Ext HtmlEditor control is supposed to change this 'styleWithCSS'
+ * setting, but for some reason it wasn't sticking. This override applies
+ * the setting before each command is executed on the contentEditable.
+ * 
+ * Trac ticket #249
+ */
+Ext.override(Ext.form.HtmlEditor, {
+    execCmd : function(cmd, value){
+        var doc = this.getDoc();
+        doc.execCommand('styleWithCSS', false, false);
+        doc.execCommand(cmd, false, value === undefined ? null : value);
+        this.syncValue();
+    }
+});
+
 /**
  * EditorPanel 
  * Extends a regular Ext Form Panel adding a host of components
@@ -405,7 +427,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						id: this.genID('body'),
 						enableFont: false,
 						enableColors: false,
-						enableSourceEdit: false,
+						enableSourceEdit: true,
 						anchor: '-30 100%'
 					}, {
 						fieldLabel: 'Alt Body',
@@ -715,6 +737,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					this.doLayout();
 				}
 	
+				this.rec = rec;
 				this.form.loadRecord(rec);
 			} 
 			catch (e) {
@@ -926,6 +949,13 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
    */
 		genID: function (id) {
 			return this.id + "_" + id;
+		},
+		
+		getRec: function() {
+			return this.rec;
+		},
+		setRec: function(theRec) {
+			this.rec = theRec;
 		}
 		
 });
