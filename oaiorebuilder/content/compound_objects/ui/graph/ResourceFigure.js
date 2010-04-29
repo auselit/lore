@@ -33,13 +33,13 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
     if(!this.metadataproperties["resource_0"]){
         this.metadataproperties["resource_0"] = "";
     }
-    if (!this.metadataproperties["dc:title_0"]){
+    if (!(this.metadataproperties["dc:title_0"] ||this.metadataproperties["dcterms:title_0"])){
         this.metadataproperties["dc:title_0"] = "";
     }
     this.url = this.metadataproperties["resource_0"];
 	draw2d.Node.call(this);
 	this.setDimension(220, 170);
-    var title = this.metadataproperties["dc:title_0"];
+    var title = this.metadataproperties["dc:title_0"] || this.metadataproperties["dcterms:title_0"];
     this.setTitle((title? title : 'Resource'));
 };
 
@@ -583,7 +583,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
   this.metadataproperties[pid] = pval;
   if (pid == "resource_0" && pval != oldval){
     this.setContent(pval);
-  } else if (pid == "dc:title_0" && pval != oldval){
+  } else if ((pid == "dc:title_0" || pid == "dcterms:title_0") && pval != oldval){
     if (pval && pval != ""){
         this.setTitle(pval);
     } else {
@@ -597,10 +597,14 @@ lore.ore.ui.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
  */
 lore.ore.ui.graph.ResourceFigure.prototype.unsetProperty = function(pid){
     delete this.metadataproperties[pid];
-    if (pid == "dc:title_0"){
+    if (pid == "dc:title_0" || pid == "dcterms:title_0"){
         // TODO: #2 (refactor) : store properties as arrays instead (this will leave gaps if there are lots of values for this property)
- 
-            this.setTitle("Resource");
+            var existingTitle = this.metadataproperties["dc:title_0"] || this.metadataproperties["dcterms:title_0"];
+            if (existingTitle) {
+                this.setTitle(existingTitle);
+            } else {
+                this.setTitle("Resource");
+            }
     }
     
 }
@@ -667,7 +671,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
                     
                     var rdftype = thisfig.metadataproperties["rdf:type_0"];
                     var isCO = (rdftype && rdftype.match("ResourceMap"));
-                    var title = thisfig.metadataproperties["dc:title_0"];
+                    var title = thisfig.metadataproperties["dc:title_0"] || thisfig.metadataproperties["dcterms:title_0"];
                     if (!title) title = thisfig.url;
 					if (thisfig.url) {
 						lore.ore.exploreLoaded = thisfig.url;
