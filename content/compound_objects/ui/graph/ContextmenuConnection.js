@@ -104,33 +104,37 @@ lore.ore.ui.graph.ContextmenuConnection.prototype.getContextMenu=function() {
     }
 };
 /** Override to make decorator look better on very short lines */
-lore.ore.ui.graph.ContextmenuConnection.prototype.getEndAngle=function()
-{
-  var p1 = this.lineSegments.get(this.lineSegments.getSize()-1).end;
-  var p2 = this.lineSegments.get(this.lineSegments.getSize()-1).start;
-  if(this.router instanceof draw2d.BezierConnectionRouter)
-  {
-   p2 = this.lineSegments.get(this.lineSegments.getSize()-5).end;
-  }
-  var length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
-  // adjustment for short lines
-  if (length < 8){
-    p2 = this.lineSegments.get(this.lineSegments.getSize()-20).end;
-    length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
-  }
-  var angle = -(180/Math.PI) *Math.asin((p1.y-p2.y)/length);
-  
-  if(angle<0)
-  {
-     if(p2.x<p1.x)
-       angle = Math.abs(angle) + 180;
-     else
-       angle = 360- Math.abs(angle);
-  }
-  else
-  {
-     if(p2.x<p1.x)
-       angle = 180-angle;
-  }
+lore.ore.ui.graph.ContextmenuConnection.prototype.getEndAngle=function() {
+    var angle = 180;
+    try {
+	  var p1 = this.lineSegments.get(this.lineSegments.getSize()-1).end;
+	  var p2 = this.lineSegments.get(this.lineSegments.getSize()-1).start;
+	  if(this.router instanceof draw2d.BezierConnectionRouter)
+	  {
+	   p2 = this.lineSegments.get(this.lineSegments.getSize()-5).end;
+	  }
+	  var length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
+	  // adjustment for short lines
+	  if (length < 8){
+	    p2 = this.lineSegments.get(this.lineSegments.getSize()-20).end;
+	    length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
+	  }
+	  angle = -(180/Math.PI) *Math.asin((p1.y-p2.y)/length);
+	  
+	  if(angle<0)
+	  {
+	     if(p2.x<p1.x)
+	       angle = Math.abs(angle) + 180;
+	     else
+	       angle = 360- Math.abs(angle);
+	  }
+	  else
+	  {
+	     if(p2.x<p1.x)
+	       angle = 180-angle;
+	  }
+    } catch (e){
+	    lore.debug.ore("ContextMenuConnection.getEndAngle: error", e);
+	}
   return angle;
 }
