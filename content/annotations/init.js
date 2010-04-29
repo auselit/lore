@@ -328,6 +328,10 @@ lore.anno.ui.initGUIConfig = function(){
 			id: "annotationslistform",
 			annomode: lore.constants.ANNOMODE_NORMAL, 
 			buttonsConfig: [{
+				text: 'Cancel',
+				id: 'canceleditbtn',
+				tooltip: 'Cancel Editing this Annotation - Discards any changes'
+			},{
 				text: 'Hide Editor',
 				id: 'hideeditbtn',
 				tooltip: 'Hides the annotation editor from view'
@@ -335,15 +339,6 @@ lore.anno.ui.initGUIConfig = function(){
 				text: 'Save Annotation',
 				id: 'updannobtn',
 				tooltip: 'Save the annotation to the repository'
-			},{
-				text: 'Delete Annotation',
-				id: 'delannobtn',
-				name: 'delannobtn',
-				tooltip: 'Delete the annotation - CANNOT BE UNDONE'
-			},  {
-				text: 'Reset',
-				id: 'resetannobtn',
-				tooltip: 'Reset - changes will be discarded'
 			}]
 		}
 	}
@@ -533,7 +528,6 @@ lore.anno.ui.attachContextMenus = function () {
 	
 	// Add handler to add Context Menu for Tree Nodes when they're appended
 	lore.anno.ui.treeroot.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
-	lore.anno.ui.treeunsaved.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
 	
 	// serach grid context menu
 	var grid = lore.anno.ui.search.grid();
@@ -563,11 +557,10 @@ lore.anno.ui.attachHandlers = function () {
 	Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditTreeNode);
 	
 	// editor handlers
-	Ext.getCmp("resetannobtn")
-			.on('click', function () { lore.anno.ui.page.curSelAnno.reject();});
 	Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.handleHideAnnotationEditor);
 	Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
-	Ext.getCmp("delannobtn").on('click', lore.anno.ui.handleDeleteAnnotation);
+	Ext.getCmp("canceleditbtn").on('click', lore.anno.ui.handleCancelEditing);
+	
 	
 	lore.anno.ui.formpanel.getComponent("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 	lore.anno.ui.formpanel.getComponent("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);

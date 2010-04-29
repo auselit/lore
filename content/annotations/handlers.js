@@ -72,7 +72,7 @@ lore.anno.ui.hideVariationSplitter = function () {
  * Detemerine whether any annotations are modified 
  */
 lore.anno.ui.hasModifiedAnnotations = function () {
-	lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
+	lore.anno.ui.updateAnnoFromForm();
 	return lore.anno.annoMan.annodsunsaved.getCount() > 0;
 }
 /**
@@ -170,44 +170,30 @@ lore.anno.ui.hideAnnotationEditor = function() {
  * @param {Record} rec The annotation to update
  * @param {Boolean} updatereal Update the record, not a copy of the record
  */
-lore.anno.ui.updateAnnoFromForm = function(rec, updatereal){
+lore.anno.ui.updateAnnoFromForm = function(updatereal){
 	var form = lore.anno.ui.formpanel.form;
-	if ( rec == null)
-		return;
-		
-	var unsavedRec;
-	
-	// update the the real record not the copy of the record in the unsaved data store
-	// default to unsaved record if it's the only copy that exists ( i.e if it's a New Annotation)
-	if (updatereal) {
-		
-		unsavedRec =  lore.global.util.findRecordById(lore.anno.annoMan.annods, rec.data.id);
-		if ( !unsavedRec)
-			unsavedRec =  lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, rec.data.id);
-		
-	}
-	else {
-		
-		// find the copy of the record in the unsaved data store
-		unsavedRec = lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, rec.data.id);
-		
-		// if it doesn't exist in the unsaved data store and the record is modidifed or new
-		if (!unsavedRec && ( rec.data.isNew() || lore.anno.ui.isFormDirty(form))) {
-			// shallow clone
 
-			var clone = {};
-			for (var e in rec.data) {
-				clone[e] = rec.data[e];
-			}
-			lore.anno.annoMan.annodsunsaved.loadData([clone], true);
-			unsavedRec = lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, rec.data.id);
+
+	var unsavedRec = lore.anno.ui.formpanel.getRec();
+	
+	if (!unsavedRec) {
+		return;
+	}
+	
+	if (!updatereal && form.isDirty()) {
+		if (unsavedRec.store === lore.anno.annoMan.annods) {
+			lore.debug.anno("ERROR: Should never be trying to update Stored Recs!");
 		}
 	}
 	
-	if (unsavedRec) {
-		form.updateRecord(unsavedRec); // update from form
-		return unsavedRec;
+	if (updatereal) {
+		unsavedRec = lore.anno.annoMan.findStoredRecById(unsavedRec.data.id);
 	}
+	
+	if (unsavedRec)
+		form.updateRecord(unsavedRec); // update from form
+	return unsavedRec;
+	
 	form.reset(); // clear dirty flag
 }
 				
@@ -356,7 +342,7 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
 		if ( rec == lore.anno.ui.page.curSelAnno )
 			return;
 		
-		lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
+		lore.anno.ui.updateAnnoFromForm();
 		
 		if (rec == null) { // if they select root element, if it's shown 
 			lore.anno.ui.page.setCurrentAnno();
@@ -364,7 +350,6 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
 		}
 	
 		// set current anno and fire anno change event
-		lore.anno.ui.formpanel.hide();
 		
 		lore.anno.ui.page.setCurrentAnno(rec);
 		 
@@ -396,7 +381,7 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 		try{
 			// store current page data, save current annotation data
 			lore.anno.ui.page.store(oldurl);
-			lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
+			lore.anno.ui.updateAnnoFromForm();
 			
 			// tag any unsaved annotations
 			lore.anno.annoMan.annodsunsaved.each(function(rec){
@@ -513,7 +498,7 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 		
 		// update the currently selected annotation before the focus is taken off it
 		// for the newly created annotation
-		lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
+		lore.anno.ui.updateAnnoFromForm();
 
 		// once the node for this new annotation is added, select it.
 		var addSelectNodeHandler = function (anno) {
@@ -633,7 +618,7 @@ lore.anno.ui.handleSaveAllAnnotationChanges = function(uri ){
 	try {
 		
 		// update existing annotation if needed before saving occurs
-		lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno, true);
+		lore.anno.ui.updateAnnoFromForm(true);
 		
 		if( lore.anno.ui.page.curSelAnno.data.isNew()) 
 			lore.anno.ui.page.setCurrentAnno();		// if new, this will be saved and removed from unsaved tree, so set current anno to blank
@@ -667,10 +652,12 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 
 	try {
 	
-		var anno = lore.anno.ui.page.curSelAnno;
+		lore.anno.ui.updateAnnoFromForm();
+		
+		var anno = lore.anno.ui.formpanel.getRec();
 		
 		if (!anno) {
-			lore.anno.ui.loreError('No annotation selected to save!');
+			lore.anno.ui.loreError('No annotation selected to save! - SHOULD BE IMPOSSIBLE');
 			return;
 		}
 		
@@ -681,7 +668,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 		}
 		
 		// update anno with properties from form
-		lore.anno.ui.updateAnnoFromForm(anno, true);
+		lore.anno.ui.updateAnnoFromForm(true);
 		
 		
 		// if the record isn't found on the current page tree and it's a variation annotation
@@ -824,14 +811,31 @@ lore.anno.ui.handleEditTreeNode = function (node) {
 		else {
 			// check if there's an unsaved copy and use that instead for editing
 			rec = lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, lore.anno.ui.nodeIdToRecId(node));
-			if (!rec) 
-				rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
-			else 
+			if (!rec) { 
+				rec = copyToUnsavedStore(node);
+	
+				lore.anno.ui.formpanel.setRec(rec);
+			} else {
 				lore.anno.ui.page.setCurrentAnno(rec); // set current anno to the unsaved copy
+			}
 		}
 		lore.anno.ui.selectAndShowNode(rec);
 	}catch (e ) {
 		lore.debug.anno(e,e);
+	}
+	
+	function copyToUnsavedStore(node) {
+		var origRec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
+
+		// shallow clone
+		var clone = {};
+		for (var e in origRec.data) {
+			clone[e] = origRec.data[e];
+		}
+		lore.anno.annoMan.annodsunsaved.loadData([clone], true);
+		var unsavedRec = lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, origRec.data.id);
+	
+		return unsavedRec;
 	}
 }
 	
@@ -849,7 +853,7 @@ lore.anno.ui.handleSerialize = function (format ) {
 		format = "rdf";
 	}
 	try {
-		lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
+		lore.anno.ui.updateAnnoFromForm();
 		var fobj = lore.global.util.writeFileWithSaveAs("Export Annotations (for current page) as", fileExtensions[format], 
 											function(){
 												return lore.anno.annoMan.serialize(format);
@@ -865,6 +869,14 @@ lore.anno.ui.handleSerialize = function (format ) {
  * When the 'Hide Editor' button is clicked, update the annotation from the form, then hide the editor.
  */
 lore.anno.ui.handleHideAnnotationEditor = function () {
-	lore.anno.ui.updateAnnoFromForm(lore.anno.ui.page.curSelAnno);
+	lore.anno.ui.updateAnnoFromForm();
 	lore.anno.ui.hideAnnotationEditor();
+}
+
+lore.anno.ui.handleCancelEditing = function() {
+	var rec = lore.anno.ui.formpanel.getRec();
+	lore.anno.annoMan.annodsunsaved.remove(rec);
+	lore.anno.ui.page.setCurrentAnno();
+	lore.anno.ui.hideAnnotationEditor();
+	return;
 }

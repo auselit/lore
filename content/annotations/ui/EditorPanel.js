@@ -456,7 +456,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			this.metaUserGrid = this.getComponent("metausergrid");
 			this.annomode = lore.constants.ANNOMODE_NORMAL; // whether mode is scholarly or normal
 			this.model.on('update', this.handleRecordUpdate, this); // when annotation record is updated, update editor
-			this.pageView.page.on('annochanged', this.handleAnnoChanged, this);
 			this.getComponent("typecombo").on('valid', this.handleAnnotationTypeChange, this);
 			this.getComponent("addmetabtn").on('click', this.handleAddMeta, this);
 			this.getComponent("remmetabtn").on('click', this.handleRemMeta, this);
@@ -798,17 +797,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			if ( this.pageView.page.curSelAnno == rec )
 				this.load(rec);
 		},
-		
-		/**
-		 * When the currently selected annotation changes update
-		 * the editor
-		 * @param {Object} oldRec Not used
-		 * @param {Object} newRec The new record
-		 */
-		handleAnnoChanged: function(oldRec, newRec) {
-			if (newRec)
-				this.load(newRec);
-		},	
 		
 		/**
 		 * Update the form when the annotation type changes
