@@ -93,5 +93,7 @@ lore.ore.ui.graph.Port.prototype.onDrop = function(port) {
 		var commConn = new draw2d.CommandConnect(this.parentNode.workflow, this, port);
 		commConn.setConnection(new lore.ore.ui.graph.ContextmenuConnection());
 		this.parentNode.workflow.getCommandStack().execute(commConn);
-	}
+	} else {
+        lore.ore.ui.loreWarning("LORE does not currently support relating a resource to itself");
+    }
 };
