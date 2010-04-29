@@ -479,7 +479,6 @@ try {
 				document.getElementById('edit-annotation').hidden = disable;
 				document.getElementById('remove-annotation').hidden = disable;
 				document.getElementById('reply-annotation').hidden = disable;
-				document.getElementById('save-annotation').hidden = disable;
 				document.getElementById('save-all-annotations').hidden = disable;
 				document.getElementById('import-export-anno').hidden = disable;
 				
