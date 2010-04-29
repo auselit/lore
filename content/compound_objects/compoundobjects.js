@@ -912,25 +912,31 @@ lore.ore.serializeREM = function(format) {
         // otherwise users think they have saved the compound object but they've just saved a parse error message
         return rdf;
     }
-    var rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
-        var databank = jQuery.rdf.databank();
-        for (ns in lore.constants.NAMESPACES){
-            databank.prefix(ns,lore.constants.NAMESPACES[ns]);
-        }
-        databank.load(rdfDoc);
-    if (format == 'trig') {
-       var result = "<" + lore.ore.currentREM + ">\n{\n";
-       var triples = databank.triples();
-       for (var t = 0; t < triples.length; t++){
-        var triple = triples[t];
-        result += triple.toString() + "\n"; 
-       }
-       result += "}\n";
-       return result;
-    } else if (format == 'json'){
-        return Ext.util.JSON.encode(databank.dump({format: 'application/json'}));
-    } else {
-        return databank.dump({format:'application/rdf+xml',serialize:true}); 
+    try {
+	    var rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
+	        var databank = jQuery.rdf.databank();
+	        for (ns in lore.constants.NAMESPACES){
+	            databank.prefix(ns,lore.constants.NAMESPACES[ns]);
+	        }
+	        databank.load(rdfDoc);
+	    if (format == 'trig') {
+	       var result = "<" + lore.ore.currentREM + ">\n{\n";
+	       var triples = databank.triples();
+	       for (var t = 0; t < triples.length; t++){
+	        var triple = triples[t];
+	        result += triple.toString() + "\n"; 
+	       }
+	       result += "}\n";
+	       return result;
+	    } else if (format == 'json'){
+	        return Ext.util.JSON.encode(databank.dump({format: 'application/json'}));
+	    } else {
+	        return databank.dump({format:'application/rdf+xml',serialize:true}); 
+	    }
+      
+    } catch (e) {
+        lore.debug.ore("Error serializing RDF",e);
+        return rdf;
     }
 };
 /**
@@ -949,19 +955,17 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     var serialise_property = function(propname, propval, ltsymb, nlsymb) {
         var result = "";
         if (propval && propval != '') {
-            result = ltsymb + propname + ">";
-            // TODO: REFACTOR
-            if (nlsymb == "<br/>" && propval) {
-                try {
-                    result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;")); 
-                } catch (e) {
-                    lore.ore.ui.loreWarning(e.toString());
-                }
+            if (propval.match("http:") || propval.match("mailto:")){
+                // this is a resource
+                result = ltsymb + propname + " resource='" + 
+                lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"));
+                + "'/>" + nlsymb;
             } else {
-                result += lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"));
-                
+                // literal
+                result = ltsymb + propname + ">"
+                + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
+                + ltsymb + "/" + propname + ">" + nlsymb;
             }
-            result += ltsymb + "/" + propname + ">" + nlsymb;
             lore.debug.ore("serialize_property "+ result);
         }
         return result;
@@ -979,7 +983,11 @@ lore.ore.createRDF = function(/*boolean*/escape) {
        lore.ore.ui.grid.store.getAt(proprecidx).set("value", modifiedDate);
        lore.ore.ui.grid.store.commitChanges();
     }
-    var describes = "#aggregation";
+    // TODO: Load original aggregation properties if any
+    // LORE does not support editing these, but should preserve them
+    
+    var describedaggre = "#aggregation";
+
     var rdfabout = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
 
     // RDF fragments
@@ -1005,10 +1013,11 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     }
     rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb + ltsymb
             + rdfdescabout + rdfabout + closetag + ltsymb
-            + "ore:describes rdf:resource=\"" + describes + fullclosetag
+            + "ore:describes rdf:resource=\"" + describedaggre + fullclosetag
             + ltsymb + 'rdf:type rdf:resource="' + lore.constants.RESOURCE_MAP
-            + '" />' + nlsymb + ltsymb + 'dcterms:modified rdf:datatype="'
-            + lore.constants.NAMESPACES["xsd"] + 'date">'
+            + '" />' + nlsymb + ltsymb + 'dcterms:modified>'//rdf:datatype="'
+            //+ lore.constants.NAMESPACES["xsd"] + 'date">' +
+            
             + modifiedDate.getFullYear() + "-" + monthString
             + "-" + dayString + ltsymb + "/dcterms:modified>"
             + nlsymb;
@@ -1022,14 +1031,14 @@ lore.ore.createRDF = function(/*boolean*/escape) {
 	    if (dayString.length < 2){
 	        dayString = "0" + dayString;
 	    }
-        rdfxml += ltsymb + 'dcterms:created rdf:datatype="'
-                + lore.constants.NAMESPACES["xsd"] + 'date">'
+        rdfxml += ltsymb + 'dcterms:created>'//rdf:datatype="'
+                //+ lore.constants.NAMESPACES["xsd"] + 'date">'
                 + created.getFullYear() + "-" + monthString + "-"
                 + dayString + ltsymb + "/dcterms:created>" + nlsymb;
     } 
     else if (created) {
-        rdfxml += ltsymb + 'dcterms:created rdf:datatype="'
-                + lore.constants.NAMESPACES["xsd"] + 'date">'
+        rdfxml += ltsymb + 'dcterms:created>'// rdf:datatype="'
+                //+ lore.constants.NAMESPACES["xsd"] + 'date">'
                 + created + ltsymb + "/dcterms:created>" + nlsymb;
     }
     // serialize compound object properties
@@ -1041,7 +1050,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     });
     rdfxml += ltsymb + rdfdescclose + nlsymb;
     // create RDF for aggregation
-    rdfxml += ltsymb + rdfdescabout + describes + closetag + ltsymb
+    rdfxml += ltsymb + rdfdescabout + describedaggre + closetag + ltsymb
             + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
             + fullclosetag;
     var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
@@ -1065,7 +1074,8 @@ lore.ore.createRDF = function(/*boolean*/escape) {
 	                    }
 	                    //lore.debug.ore("2 serializing " + tagname, mpropval);
                         // why not using serialise_property function here?
-	                    if (tagname == "rdf:type"){ // resource
+	                    //if (tagname == "rdf:type"){ // resource
+                        if (mpropval.match("http:") || mpropval.match("mailto:")){
 	                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
 	                            + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;")) 
 	                            +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
@@ -1123,15 +1133,21 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         lore.debug.ore("exception in createRDF",ex);
     }
 };
-
-lore.ore.loadCompoundObjectContents = function (rdf,elem){
-    var nsprefix = function(ns) {
+lore.ore.nsprefix = function(ns) {
+        var nssize = 0;
         for (var prefix in lore.constants.NAMESPACES) {
             if (lore.constants.NAMESPACES[prefix] == ns) {
                 return prefix + ":";
             }
+            nssize++;
         }
-    };
+        // Prefix was not found: create a new one: ensure it has a unique ns prefix
+        var nprefix = "ns" + nssize;
+        lore.constants.NAMESPACES[nprefix] = ns;
+        return nprefix + ":";
+};
+lore.ore.loadCompoundObjectContents = function (rdf,elem){
+    
     try{
 	    var rdfDoc = rdf.responseXML;
 	    var databank = jQuery.rdf.databank();
@@ -1171,14 +1187,6 @@ lore.ore.loadCompoundObjectFail = function (resp,opt){
  * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
  */
 lore.ore.loadCompoundObject = function (rdf) {
-    var nsprefix = function(ns) {
-        for (var prefix in lore.constants.NAMESPACES) {
-            if (lore.constants.NAMESPACES[prefix] == ns) {
-                return prefix + ":";
-            }
-        }
-    };
-
     var showInHistory = false;
     try {
         // reset the graphical view
@@ -1220,7 +1228,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             .each(function(){
                 var propurl = this.property.value.toString();
                 var propsplit = lore.global.util.splitTerm(propurl);
-                var propname = nsprefix(propsplit.ns);
+                var propname = lore.ore.nsprefix(propsplit.ns);
                 if (propname){
                     propname = propname + propsplit.term;
                 } else {
@@ -1298,6 +1306,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                 }
                 if (srcfig) {
                     var relresult = lore.global.util.splitTerm(this.pred.value.toString());
+
                     var obj = this.obj.value.toString();
                     var tgtfig = lore.ore.ui.graph.lookupFigure(obj);
                     if (!tgtfig) {
@@ -1305,15 +1314,29 @@ lore.ore.loadCompoundObject = function (rdf) {
                             .lookupFigure(lore.global.util.unescapeHTML(obj.replace(
                                         '%3C', '<').replace('%3F', '>')));
                     }
-                    if (tgtfig) { // this is a connection
+                    if (tgtfig && (srcfig != tgtfig)) { // this is a connection
+                        try {
                         var c = new lore.ore.ui.graph.ContextmenuConnection();
-                        c.setSource(srcfig.getPort("output"));
-                        c.setTarget(tgtfig.getPort("input"));
-                        c.setRelationshipType(relresult.ns, relresult.term);
-                        lore.ore.ui.graph.coGraph.addFigure(c);
+                        //lore.debug.ore("processing connection: " + subject + " " + this.pred.value.toString() + " " + obj,[relresult,srcfig, tgtfig,c]);
+                        var srcPort = srcfig.getPort("output");
+                        var tgtPort = tgtfig.getPort("input");
+                        if (srcPort && tgtPort){
+                            c.setSource(srcPort);
+                            c.setTarget(tgtPort);
+                            c.setRelationshipType(relresult.ns, relresult.term);
+                            lore.ore.ui.graph.coGraph.addFigure(c);
+                        }
+                        else {
+                            throw "source or target port not defined";
+                        }
+                        } catch (e) {
+                            lore.debug.ore("problem creating connection",e);
+                            delete c;
+                        }
+                        
                     } else  { 
                         // not a node relationship, show in the property grid 
-                        srcfig.appendProperty(nsprefix(relresult.ns) + relresult.term, obj);
+                        srcfig.appendProperty(lore.ore.nsprefix(relresult.ns) + relresult.term, obj);
                         if (relresult.term == "title") {
                             // TODO this should not be necessary - send props to addFigureWithOpts
                             srcfig.setTitle(obj);
@@ -1550,10 +1573,11 @@ lore.ore.saveRDFToRepository = function(callback) {
     // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
     // update rdfquery to reflect most recent save
     var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
+    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Untitled";
     Ext.Msg.show({
         title : 'Save RDF',
         buttons : Ext.MessageBox.OKCANCEL,
-        msg : 'Save this compound object as ' + remid + "?",
+        msg : 'Are you sure you wish to save compound object: ' + title + "<br/>to repository as " + remid + "?",
         fn : function(btn, theurl) {
             if (btn == 'ok') {
                 var therdf = lore.ore.createRDF(false);
