@@ -87,6 +87,13 @@ lore.anno.ui.getCurSelImage = function () {
 lore.anno.ui.getCurrentAnno = function () {
 	return lore.anno.ui.page.curSelAnno;
 }
+
+/**
+ * Get the currently edited annotation
+ */
+lore.anno.ui.getCurrentEditedAnno = function() {
+	return lore.anno.ui.formpanel.getRec();
+}
 		
 /**
  * Find a node with the given id 
@@ -109,12 +116,17 @@ lore.anno.ui.findNode = function (id, tree){
  */
 lore.anno.ui.selectAndShowNode = function (rec) {
 		var node = lore.anno.ui.findNode(rec.data.id);
+		
+		lore.anno.ui.page.setCurrentAnno(rec);
+		lore.anno.ui.formpanel.setRec(rec);
 		if (node) {
 			lore.anno.ui.formpanel.show(rec);
-			Ext.getCmp("treeview").doLayout();
 			node.ensureVisible();
 			node.select();
 		}
+		// Necessary due to a bug in Ext related to drawing text fields
+		// Should be fixed in Ext 3.2.1
+		Ext.getCmp("treeview").doLayout();
 }
 
 /**
@@ -161,6 +173,7 @@ lore.anno.ui.hideAnnotationEditor = function() {
 		lore.anno.ui.formpanel.hide();
 		Ext.getCmp("treeview").doLayout();
 	}
+	lore.anno.ui.formpanel.setRec(null);
 }
 
 /**
@@ -770,10 +783,13 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 */
 lore.anno.ui.handleEditTimeline = function ( id ) {
 	try {
+		lore.anno.ui.updateAnnoFromForm();
 		// the user has come here from an info bubble pop-up.
 		lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
 		lore.anno.ui.tabpanel.activate('treeview');
 		var rec =  lore.global.util.findRecordById(lore.anno.annoMan.annods, id);
+		
+		rec = lore.anno.annoMan.editRec(rec);
 		lore.anno.ui.selectAndShowNode(rec);
 	} catch (e) {
 		lore.debug.anno(e,e);
@@ -787,10 +803,12 @@ lore.anno.ui.handleEditTimeline = function ( id ) {
 
 lore.anno.ui.handleEdit = function ( ) {
 	try {
+		lore.anno.ui.updateAnnoFromForm();
 		var rec = lore.anno.ui.page.curSelAnno
 		if (!rec) 
 			return;
 
+		rec = lore.anno.annoMan.editRec(rec);
 		lore.anno.ui.selectAndShowNode(rec);
 	} catch (e) {
 		lore.debug.anno(e,e);
@@ -806,36 +824,16 @@ lore.anno.ui.handleEditTreeNode = function (node) {
 		var rec;
 		
 		if (node.isAncestor(lore.anno.ui.treeunsaved)) {
-			rec = lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, lore.anno.ui.nodeIdToRecId(node));
+			rec = lore.anno.annoMan.findUnsavedRecById(lore.anno.ui.nodeIdToRecId(node));
+		} else {
+			rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
 		}
-		else {
-			// check if there's an unsaved copy and use that instead for editing
-			rec = lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, lore.anno.ui.nodeIdToRecId(node));
-			if (!rec) { 
-				rec = copyToUnsavedStore(node);
-	
-				lore.anno.ui.formpanel.setRec(rec);
-			} else {
-				lore.anno.ui.page.setCurrentAnno(rec); // set current anno to the unsaved copy
-			}
-		}
+		rec = lore.anno.annoMan.editRec(rec);
+		
+		
 		lore.anno.ui.selectAndShowNode(rec);
-	}catch (e ) {
+	} catch (e) {
 		lore.debug.anno(e,e);
-	}
-	
-	function copyToUnsavedStore(node) {
-		var origRec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
-
-		// shallow clone
-		var clone = {};
-		for (var e in origRec.data) {
-			clone[e] = origRec.data[e];
-		}
-		lore.anno.annoMan.annodsunsaved.loadData([clone], true);
-		var unsavedRec = lore.global.util.findRecordById(lore.anno.annoMan.annodsunsaved, origRec.data.id);
-	
-		return unsavedRec;
 	}
 }
 	

@@ -263,16 +263,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			
 		
 		for ( var i =0; i < modified.length; i++ ) {
-			this.sendUpdateRequest(modified[i], currentURL, result);
+			this.sendUpdateRequest(modified[i], result);
 		}
 	},
 	/**
 	 * Send an annotation update to server
 	 * @param {Object} anno The annotation
-	 * @param {Object} currentURL Not used 
 	 * @param {Object} resultCallback Callback when update finishes
 	 */
-	sendUpdateRequest : function(anno, currentURL, resultCallback){
+	sendUpdateRequest : function(anno, resultCallback){
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading datasource
 		anno.commit(anno.data.isNew());
@@ -283,7 +282,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (anno.data.isNew()) {
 			lore.debug.anno("creating new annotation")
 			// create new annotation
-			xhr.open("POST", this.prefs.url, true);
+			xhr.open("POST", this.prefs.url);
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
 			xhr.onreadystatechange = function(){
@@ -305,7 +304,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		else {
 			lore.debug.anno("updating existing annotation")
 			// Update the annotation on the server via HTTP PUT
-			xhr.open("PUT", anno.data.id, true);
+			xhr.open("PUT", anno.data.id);
 			xhr.setRequestHeader('Content-Type', "application/xml");
 			xhr.onreadystatechange = function(){
 				if (xhr.readyState == 4) {
@@ -352,7 +351,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			}
 		}
 						
-		this.sendUpdateRequest(anno, currentURL, result);
+		this.sendUpdateRequest(anno, result);
 
 	},
 	
@@ -920,6 +919,45 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return null;
 		}
 	},
+	
+	/**
+	 * Start editing a record.
+	 * 
+	 * Always edit in the 'unsaved' store, either get the appropriate record from there
+	 * or copy into it and use the copy.
+	 */
+	editRec : function(rec) {
+		if (rec.store === this.annodsunsaved) {
+			return rec;
+		}
+		
+		// if in unedited store, move to editing store, then return
+		if (rec.store === this.annods) {
+			var unsaved = this.findUnsavedRecById(rec.data.id);
+			if (!unsaved) {
+				var clone = shallowClone(rec);
+				this.annodsunsaved.loadData([clone], true);
+				
+				unsaved = lore.global.util.findRecordById(this.annodsunsaved, rec.data.id);
+			}
+			return unsaved;
+		} else {
+			lore.debug.anno("ERROR: The rec wasn't in either store!", rec);
+		}
+		
+		function shallowClone(obj) {
+			var clone = {};
+			for (var e in obj.data) {
+				clone[e] = obj.data[e];
+			}
+			return clone;
+		}
+	},
+	
+	
+	
+	
+	
 	
 	findRecById : function (id) {
 		return this.findStoredRecById(id) || this.findUnsavedRecById(id);

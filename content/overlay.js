@@ -212,14 +212,12 @@ try {
 			try {
 				if (!this.prefs.getBoolPref("disable_annotations")){
                     if (typeof loreoverlay.annoView().getCurSelImage == 'function'){
-					var img = loreoverlay.annoView().getCurSelImage();
-					var imgSelArea = document.popupNode.getAttribute("_lore_imgareaselect");
-					
-					gContextMenu.showItem('addanno-lore', gContextMenu.isContentSelected
-					|| (  imgSelArea  && img));
-					gContextMenu.showItem('modannosel-lore', (gContextMenu.isContentSelected 
-					|| (  imgSelArea && img)) &&
-					(loreoverlay.annoView().getCurrentAnno() != null));
+						var img = loreoverlay.annoView().getCurSelImage();
+						var imgSelArea = document.popupNode.getAttribute("_lore_imgareaselect");
+						
+						gContextMenu.showItem('addanno-lore', gContextMenu.isContentSelected || (  imgSelArea  && img));
+						gContextMenu.showItem('modannosel-lore', (gContextMenu.isContentSelected || (  imgSelArea && img)) &&
+							(loreoverlay.annoView().getCurrentEditedAnno() != null));
                     }
                 } else {
                     gContextMenu.showItem('addanno-lore',false);
