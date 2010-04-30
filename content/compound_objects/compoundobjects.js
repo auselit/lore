@@ -907,11 +907,11 @@ lore.ore.serializeREM = function(format) {
     }
     // TODO: remove the first line once compound object is stored as rdfquery store
     var rdf = lore.ore.createRDF(false);
-    if (format == 'rdf'){
+    /*if (format == 'rdf'){
         // until we use a triplestore all of the time, don't bother parsing XML which may contain errors
         // otherwise users think they have saved the compound object but they've just saved a parse error message
         return rdf;
-    }
+    }*/
     try {
 	    var rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
 	        var databank = jQuery.rdf.databank();
@@ -958,7 +958,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             if (propval.match("http:") || propval.match("mailto:")){
                 // this is a resource
                 result = ltsymb + propname + " resource='" + 
-                lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"));
+                lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
                 + "'/>" + nlsymb;
             } else {
                 // literal
@@ -983,12 +983,18 @@ lore.ore.createRDF = function(/*boolean*/escape) {
        lore.ore.ui.grid.store.getAt(proprecidx).set("value", modifiedDate);
        lore.ore.ui.grid.store.commitChanges();
     }
-    // TODO: Load original aggregation properties if any
-    // LORE does not support editing these, but should preserve them
-    
-    var describedaggre = "#aggregation";
-
     var rdfabout = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
+    
+    // Load existing aggregation id if any from original RDF
+    var describedaggre = "#aggregation";
+    var existingAggre = !lore.global.util.isEmptyObject(lore.ore.loadedRDF);
+    if (existingAggre) {
+        var remQuery = lore.ore.loadedRDF.where('?aggre rdf:type ore:Aggregation')
+            .where('<'+ rdfabout +'> ore:describes ?aggre');
+        describedaggre = remQuery.get(0).aggre.value.toString();
+    }
+
+
 
     // RDF fragments
     var rdfdescabout = "rdf:Description rdf:about=\"";
@@ -1011,15 +1017,14 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     if (dayString.length < 2){
         dayString = "0" + dayString;
     }
+    var modifiedString = modifiedDate.getFullYear() + "-" + monthString + "-" + dayString;
     rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb + ltsymb
             + rdfdescabout + rdfabout + closetag + ltsymb
             + "ore:describes rdf:resource=\"" + describedaggre + fullclosetag
             + ltsymb + 'rdf:type rdf:resource="' + lore.constants.RESOURCE_MAP
             + '" />' + nlsymb + ltsymb + 'dcterms:modified>'//rdf:datatype="'
             //+ lore.constants.NAMESPACES["xsd"] + 'date">' +
-            
-            + modifiedDate.getFullYear() + "-" + monthString
-            + "-" + dayString + ltsymb + "/dcterms:modified>"
+            + modifiedString + ltsymb + "/dcterms:modified>"
             + nlsymb;
     var created = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
     if (created && created instanceof Date) {
@@ -1053,6 +1058,43 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     rdfxml += ltsymb + rdfdescabout + describedaggre + closetag + ltsymb
             + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
             + fullclosetag;
+    rdfxml += ltsymb + 'dcterms:modified>' + modifiedString + ltsymb + "/dcterms:modified>" + nlsymb;
+    // Load original aggregation properties if any
+    // LORE does not support editing these, but should preserve them
+    // TODO: REFACTOR!! this code appears several times : properties should be serialised from model
+    if (existingAggre){
+        var aggreprops = lore.ore.loadedRDF.where('<' + describedaggre + '> ?pred ?obj')
+            .filter(function(){
+                // filter out ore:aggregates, type and modified
+                if (this.pred.value.toString() === lore.constants.NAMESPACES["ore"] + "aggregates" ||
+                    this.pred.value.toString() === lore.constants.NAMESPACES["rdf"] + "type" ||
+                    this.pred.value.toString() === lore.constants.NAMESPACES["dcterms"] + "modified") {
+                        return false;
+                }
+                else {
+                    return true;
+                }
+            })
+            .each(function(){  
+                
+                var presult = lore.global.util.splitTerm(this.pred.value.toString());
+                var propval = this.obj.value.toString();
+                var propname = presult.term;
+                var propnsdec = ' xmlns="' + presult.ns + '"';
+                lore.debug.ore("matched aggregation prop",this);
+                if (this.obj.type == 'uri'){
+                    rdfxml += ltsymb + propname + propnsdec + " resource='" + 
+                    lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
+                    + "'/>" + nlsymb;
+                } else {
+                    rdfxml += ltsymb + propname + propnsdec + ">"
+                    + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
+                    + ltsymb + "/" + propname + ">" + nlsymb;
+                }
+            });
+            //lore.debug.ore("aggreprops are",aggreprops.dump({format:'application/rdf+xml',serialize:true}));
+        
+    }
     var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
     allfigures.sort(lore.ore.ui.graph.figSortingFunction);
     var resourcerdf = "";
@@ -1211,7 +1253,8 @@ lore.ore.loadCompoundObject = function (rdf) {
         // Display the properties for the compound object
 	    var remQuery = lore.ore.loadedRDF.where('?aggre rdf:type ore:Aggregation')
             .where('?rem ore:describes ?aggre');
-        var aggreurl, remurl, res = remQuery.get(0);
+        var aggreurl, remurl;
+        var res = remQuery.get(0);
         
         if (res){
 	       remurl = res.rem.value.toString();
