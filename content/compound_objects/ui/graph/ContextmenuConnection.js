@@ -29,7 +29,7 @@ lore.ore.ui.graph.ContextmenuConnection=function(){
 	this.labelColor = new draw2d.Color(51,51,51); // dark grey
     this.label = new draw2d.Label();
     this.label.setColor(this.labelColor);
-    this.addFigure(this.label, new draw2d.ManhattanMidpointLocator(this));
+    this.addFigure(this.label, new lore.ore.ui.graph.LabelLocator(this));
 	this.setRouter(new draw2d.BezierConnectionRouter());
     this.setRelationshipType("http://purl.org/dc/elements/1.1/","relation",false);
 	this.sourcePort=null;
