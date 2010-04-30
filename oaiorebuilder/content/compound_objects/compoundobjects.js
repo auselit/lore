@@ -1600,6 +1600,7 @@ lore.ore.afterDeleteCompoundObject = function(deletedrem){
 	    if (lore.ore.currentREM == deletedrem){
 	        lore.ore.loadedRDF = {};
 	        lore.ore.currentREM = "";
+            lore.ore.ui.graph.coGraph.clear();
 	        lore.ore.createCompoundObject(); 
 	    }
         lore.ore.coListManager.remove(deletedrem);
