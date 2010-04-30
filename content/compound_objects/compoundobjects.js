@@ -1620,7 +1620,7 @@ lore.ore.saveRDFToRepository = function(callback) {
     Ext.Msg.show({
         title : 'Save RDF',
         buttons : Ext.MessageBox.OKCANCEL,
-        msg : 'Are you sure you wish to save compound object: ' + title + "<br/>to repository as " + remid + "?",
+        msg : 'Are you sure you wish to save compound object:<br/><br/>' + title + "<br/><br/>to repository as " + remid + "?",
         fn : function(btn, theurl) {
             if (btn == 'ok') {
                 var therdf = lore.ore.createRDF(false);
