@@ -667,7 +667,7 @@ lore.ore.showCompoundObjectNarrative = function(p){
                 ;*/
                 // FIXME: EVIL! this should be a secure iframe! Enabled temporarily for user feedback
                 //previewhtml += "<object class='sspreview' data='" + figurl + "' height='100%' width='100%'></object>";
-                previewhtml += '<div style="color:#51666b;margin-top:3em;">Non-AustLit Resource (click to view in browser): '
+                previewhtml += '<div style="color:#51666b;margin-top:3px;">Non-AustLit Resource (click to view in browser): '
                     + '<a title="Open in new tab" onclick="lore.global.util.launchTab(\"' + figurl + '\");return false;" href="' + figurl + '">'
                 + figurl + '</a></div>'
                 isExternalResource = true;
@@ -685,7 +685,30 @@ lore.ore.showCompoundObjectNarrative = function(p){
                             "<span style='color:#51666b;font-size:90%'><b>" + pname + "</b>: " + fig.metadataproperties[p] + "<br></span>";
                 }
             }
-
+            prophtml += "<p style='padding-top:0.5em'>";
+            var ports = fig.getPorts();
+            for (var p = 0; p < ports.getSize(); p++){
+                var outgoingconnections = ports.get(p).getConnections();
+                for (var j = 0; j < outgoingconnections.getSize(); j++) {
+                    var theconnector = outgoingconnections.get(j);
+                    var relpred = theconnector.edgetype;
+                    var relobj = "";
+            
+                    if (figurl == lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url)){
+                       relobj = theconnector.targetPort.parentNode.url;
+                       prophtml += "<span style='color:#51666b;font-size:90%'>This resource <b>" 
+                       + relpred + "</b> <a href='#' onclick='lore.global.util.launchTab(\"" + relobj + "\");'>"
+                       + relobj + "</a><br/></span>";
+                    } else {
+                       relobj = theconnector.sourcePort.parentNode.url;
+                       prophtml += "<span style='color:#51666b;font-size:90%'><a href='#' onclick='lore.global.util.launchTab(\"" + relobj + "\");'>"
+                       + relobj + "</a> <b>" 
+                       + relpred + "</b> this resource<br/></span>";
+                    }
+                    
+                }
+            } 
+            prophtml += "</p>";
             if (!isCompObject){
                 prophtml += "<p style='font-size:60%;padding-top:1em'>Source: <a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>"  + figurl + "</a></p>";
             }
