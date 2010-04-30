@@ -621,7 +621,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.getProperty = function(pid){
  * @private
  */
 lore.ore.ui.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
-    lore.debug.ore("resource figure createPlusMinus " + this.originalHeight,this);
 	if (!this.isCollapsed()) {
 		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
 	} else {
