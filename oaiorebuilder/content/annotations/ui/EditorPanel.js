@@ -509,10 +509,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			// either scope of field or scope supplied, the callee's scope
 			// can vary
 			var panel = this.findParentByType('annoeditorpanel') || scope;
-			var curSelAnno = panel.pageView.page.curSelAnno;
-
-			if (!panel.isVisible())
-				panel.show(panel.pageView.page.curSelAnno);
 			
 			// get text selection, and update the appropriate fields
 			var currentCtxt = panel.pageView.getCurrentSelection();
@@ -522,8 +518,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			theField.setValue(currentCtxt);
 			theField = panel.form.findField('res');
 			theField.setValue(lore.anno.ui.currentURL);
-			if ( curSelAnno)
-				curSelAnno.data.resource = lore.anno.ui.currentURL;
 			theField = panel.form.findField('original');
 			theField.setValue(lore.anno.ui.currentURL);
 			theField = panel.form.findField('contextdisptxt');
@@ -533,7 +527,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			
 			// TODO: update the pageview to highlight the new selection
 			// Should be in pageview code, that gets called from here
-			var editedRec = lore.anno.ui.updateAnnoFromForm(curSelAnno);
+			var editedRec = lore.anno.ui.updateAnnoFromForm();
 			panel.pageView.highlightCurrentAnnotation(editedRec);
 		} 
 		catch (ex) {
