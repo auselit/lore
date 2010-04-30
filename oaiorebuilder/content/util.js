@@ -174,7 +174,7 @@ util = {
         theElement = theElement.offsetParent;
       }
                                       
-     theWindow.scrollTo(selectedPosX,selectedPosY);
+     theWindow.scrollTo(selectedPosX - 75,selectedPosY - 75);
     },
     
     /**
