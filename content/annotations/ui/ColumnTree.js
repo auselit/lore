@@ -286,7 +286,7 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 		var txt = n.text.replace(/<A /g,'<A onclick="window.open(this.href);" ');
 		
 		var buf = ['<li class="x-tree-node"><div ext:tree-node-id="', n.id, 
-		'" class="x-tree-node-el x-tree-node-leaf ', a.cls, '" >',
+		'" class="x-tree-node-el x-tree-node-leaf x-unselectable ', a.cls,'" unselectable="on">',
 		 '<div class="x-tree-col" style="width:', c.width-bw,'px;">',
 		 '<span style="padding-left:', (n.getDepth()-1)*16,'" class="x-tree-node-indent"></span>', 
 		 '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow" />', 
