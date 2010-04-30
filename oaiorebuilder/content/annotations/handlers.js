@@ -235,71 +235,77 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 	childNode.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
 	 
 	childNode.on('contextmenu', function(node, e){
+		node.select();
+		lore.anno.ui.page.setCurrentAnno();
 		
 		if (!node.contextmenu) {
 			node.contextmenu = new Ext.menu.Menu({id: node.id + "-context-menu" });
 	 
-		var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
-		var isNew = (rec === null || rec.data.isNew());
-		if (!isNew) {
-			// only saved annotations should be in timeline or able to be replied to
-			node.contextmenu.add({
-				text: "Show in Timeline",
-				handler: function(evt){
-					lore.anno.ui.timeline.showAnnoInTimeline(node.id);
-				},
-				id:'timelineshow_' + node.id
-			});
-			node.contextmenu.add({
-				text: "Reply to annotation",
-				handler: function(evt){
-					lore.anno.ui.handleReplyToAnnotation(node.id);
-				},
-				id: 'reply_' + node.id
-			});
-		}
-		
-		node.contextmenu.add({
-			text: "Edit annotation",
-			handler: function(evt){
-				lore.anno.ui.handleEditTreeNode(node);
-			},
-			id: 'edit_' + node.id
-		});
-		
-		node.contextmenu.add({
-			text: "Delete annotation",
-			handler: function(evt){
-				lore.anno.ui.handleDeleteAnnotation(node);
-			},
-			id: 'del_' + node.id
-		});
-
-		if (!isNew) {
-			// only saved annotations should be able to be added as a compound object
-			node.contextmenu.add({
-				text: "Add as node in compound object editor",
-				handler: function(evt){
-					try {
-			            var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
-						lore.global.ui.compoundObjectView.get(window.instanceId).addFigure(lore.anno.ui.nodeIdToRecId(node),
-			                {"rdf:type_0":rec.data.type});
-					} catch (e ){
-						lore.debug.anno("Error adding node to compound editor:" + e, e);
-					}
-				}
-			});
-		
-			if (node.nodeType == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
+			var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
+			var isNew = (rec === null || rec.data.isNew());
+			if (!isNew) {
+				// only saved annotations should be in timeline or able to be replied to
 				node.contextmenu.add({
-					text: "Show Variation Window",
+					text: "Show in Timeline",
 					handler: function(evt){
-						lore.anno.ui.showSplitter(lore.anno.ui.nodeIdToRecId(node));
-					}
+						lore.anno.ui.timeline.showAnnoInTimeline(node.id);
+					},
+					id:'timelineshow_' + node.id
+				});
+				node.contextmenu.add({
+					text: "Reply to annotation",
+					handler: function(evt){
+						lore.anno.ui.handleReplyToAnnotation(node.id);
+					},
+					id: 'reply_' + node.id
 				});
 			}
+			
+			node.contextmenu.add({
+				text: "Edit annotation",
+				handler: function(evt){
+					lore.anno.ui.handleEditTreeNode(node);
+				},
+				id: 'edit_' + node.id
+			});
+			
+			node.contextmenu.add({
+				text: "Delete annotation",
+				handler: function(evt){
+					lore.anno.ui.handleDeleteAnnotation(node);
+				},
+				id: 'del_' + node.id
+			});
+	
+			if (!isNew) {
+				// only saved annotations should be able to be added as a compound object
+				node.contextmenu.add({
+					text: "Add as node in compound object editor",
+					handler: function(evt){
+						try {
+				            var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
+							lore.global.ui.compoundObjectView.get(window.instanceId).addFigure(lore.anno.ui.nodeIdToRecId(node),
+				                {"rdf:type_0":rec.data.type});
+						} catch (e ){
+							lore.debug.anno("Error adding node to compound editor:" + e, e);
+						}
+					}
+				});
+			
+				if (node.nodeType == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
+					node.contextmenu.add({
+						text: "Show Variation Window",
+						handler: function(evt){
+							lore.anno.ui.showSplitter(lore.anno.ui.nodeIdToRecId(node));
+						}
+					});
+				}
+			}
 		}
-	 }
+		
+		node.contextmenu.on('hide', function unselectNode() {
+			node.getOwnerTree().getSelectionModel().clearSelections();
+		});
 		node.contextmenu.showAt(e.xy);
 	});
 }
@@ -413,11 +419,7 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 				} catch (e) {
 					lore.debug.anno(e,e);
 				}
-			})
-			
-			function changeUnsavedNodeLabelByURL(node) {
-				
-			}
+			});
 			
 			// loaded a new page, no active annotation
 			lore.anno.ui.page.setCurrentAnno();
