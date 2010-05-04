@@ -70,9 +70,11 @@ Ext.ux.tree.MultilineTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
                 buf += [
                         '<span class="x-tree-node-indent">', this.indentMarkup, "</span>",
                         (!n.nextSibling && n.hasChildNodes()) ? '<span style="margin-left: 16px;"></span>' : '',
-                        n.nextSibling ? '<img src="' + this.emptyIcon + '" class="x-tree-ec-icon x-tree-elbow-line" />' : '',
+                        // TODO: this should be fixed - only display line if there is a next sibling but we don't know if there is when nodes are being added
+                        //n.nextSibling ? 
+                        '<img src="' + this.emptyIcon + '" class="x-tree-ec-icon x-tree-elbow-line" />',// : '',
                         (n.hasChildNodes()) ? '<img src="' + this.emptyIcon + '" class="x-tree-ec-icon x-tree-elbow-line-multiline-expanded" style="margin-right: 2px;"/>' : '<span style="margin-left: 16px;"></span>',
-                        (n.isLast() && !n.isExpandable()) ? '<span style="margin-left: 16px;"></span>' : '',
+                        //(n.isLast() && !n.isExpandable()) ? '<span style="margin-left: 16px;"></span>' : '',
                         '<span class="x-tree-multiline-node-details">' + n.attributes.details[x] + '</span>'].join('');
 
             }
