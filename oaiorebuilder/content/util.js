@@ -1096,6 +1096,22 @@ util = {
     normalize : function(str) {
         return str.replace(/^\s*|\s(?=\s)|\s*$/g, "");
     },
+    setHighContrast: function(win, activate) {
+	     var link;
+	     for (var i = 0; (link = win.document.getElementsByTagName("link")[i]); i++)
+	     {
+           var t = link.getAttribute("title");
+	       if (link.getAttribute("rel").indexOf("style") != -1 && t)
+	       {
+              var disabled = !(t == 'highContrast' || t == 'highContrastL');
+              if (!activate){
+                 disabled = !link.disabled;
+              }
+              link.disabled = disabled;
+              debug.ore("setHighContrast disabled=" + disabled,link);
+	       }
+	     }
+	},
 	/**
      * Transform RDF to a presentation format using an XSLT stylesheet
      * @param {} stylesheetURL
