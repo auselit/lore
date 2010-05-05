@@ -361,7 +361,7 @@ lore.ore.ui.initUIComponents = function() {
 								id : "advsearchform",
 								border : false,
                                 bodyStyle: "padding: 0 10px 4px 4px",
-								labelWidth: 55,
+								labelWidth: 65,
 								keys : [{
 									key : [10, 13],
 									fn : function() {
@@ -379,7 +379,7 @@ lore.ore.ui.initUIComponents = function() {
                                     anchor: "100%",
 									fieldLabel : "containing",
 									id : "searchuri",
-									emptyText : "any resource"
+									emptyText : "any resource URI"
 								}, {
 									xtype : "combo",
                                     anchor: "100%",
@@ -610,12 +610,15 @@ lore.ore.ui.initUIComponents = function() {
 
 	/** Tree used to display search results */
 	lore.ore.ui.searchtreeroot = new lore.ore.ui.CompoundObjectGroupNode({
-				id : "searchtree",
+				id : "searchtreeR",
+                qtip: "Search results",
 				text : "Search Results"
 	});
 	Ext.getCmp("searchtree").getRootNode().appendChild(lore.ore.ui.searchtreeroot);
 	lore.ore.ui.searchtreeroot.addModel(lore.ore.coListManager.getList("search"));
-
+    lore.debug.ore("searchtree",Ext.getCmp("searchtree"));
+    lore.debug.ore("sourcestree", Ext.getCmp("sourcestree"));
+    
 	/** Tree used to display properties in resource details editor */
 	lore.ore.ui.resproptreeroot = new Ext.tree.TreeNode({
 				id : "resproptree",
@@ -645,7 +648,7 @@ lore.ore.ui.initUIComponents = function() {
 	// set up search handlers
 	Ext.getCmp("advsearchbtn").on('click', lore.ore.advancedSearch);
 	Ext.getCmp("kwsearchbtn").on('click', lore.ore.keywordSearch);
-    Ext.getCmp("advsearchform").on('activate',function(){Ext.getCmp("searchforms").setSize({height: 150});Ext.getCmp("searchpanel").doLayout();});
+    Ext.getCmp("advsearchform").on('activate',function(){Ext.getCmp("searchforms").setSize({height: 165});Ext.getCmp("searchpanel").doLayout();});
     Ext.getCmp("kwsearchform").on('activate',function(){Ext.getCmp("searchforms").setSize({height: 60});Ext.getCmp("searchpanel").doLayout();});
     Ext.getCmp("searchforms").activate("kwsearchform");
     Ext.getCmp("searchforms").setSize({height: 30}); // for some reason this isn't happening
@@ -742,8 +745,8 @@ lore.ore.ui.initUIComponents = function() {
 	var exploretab = Ext.getCmp("remexploreview");
 	var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
 			+ "<script type='text/javascript' src='chrome://lore/content/compound_objects/lore_explore.js'></script>"
-			+ "<a id='explorereset' style='z-index:999;position:absolute;bottom:10px;left:10px;font-size:x-small;color:#51666b' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM,\"Current Compound Object\",true);'>RESET VISUALISATION</a>"
-			+ "<div style='vertical-align:middle;height:1.5em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;background-color:white;' id='history'></div>"
+			+ "<a id='exploreReset' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM,\"Current Compound Object\",true);'>RESET VISUALISATION</a>"
+			+ "<div id='exploreHistory'></div>"
 			+ "<div id='infovis'></div>";
 	exploretab.body.update(contents, true);
 	exploretab.on("activate", lore.ore.showExploreUI);
