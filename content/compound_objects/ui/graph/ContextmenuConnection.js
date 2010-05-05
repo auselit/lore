@@ -36,12 +36,13 @@ lore.ore.ui.graph.ContextmenuConnection=function(){
     this.targetPort=null;
 	this.lineSegments=[];
 	this.setColor(this.lineColor);
-	this.setLineWidth(1);
+	this.setLineWidth(1.5);
     var tgtArrow = new lore.ore.ui.graph.ArrowConnectionDecorator();
     tgtArrow.setColor(this.lineColor);
     this.setTargetDecorator(tgtArrow); 
 	this.setSourceAnchor(new draw2d.ChopboxConnectionAnchor());
 	this.setTargetAnchor(new draw2d.ChopboxConnectionAnchor());
+    this.label.html.className="ctxtConn";
 };
 
 lore.ore.ui.graph.ContextmenuConnection.prototype=new draw2d.Connection;
