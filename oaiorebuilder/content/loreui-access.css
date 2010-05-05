@@ -1,0 +1,61 @@
+.x-tree-multiline-node-details {color:#FFFFF6;}
+.x-tab-panel-body {background-color: #1f2730;}
+.orelink {
+	font-style:italic; 
+	color: #fffff6; 
+	padding:10px;	
+}
+#remsmilview * a, #remlistview * a, #textmining * a {
+	color: orange !important;
+}
+.node {
+	font-size:90%;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color:#fffff6;
+	font-weight:normal;
+	cursor:pointer;
+	padding:2px;
+}
+#exploreReset {
+	font-size: 90%; 
+	color: #fffff6;
+}
+#exploreHistory {
+	font-size:90%;
+	color:#fffff6;
+	background-color:#1f2730;
+}
+
+.ctxtConn {
+	color: #fffff6 !important;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size:100% !important;
+}
+
+/* Annotations */
+
+.timeline-bubble, .timeline-event-bubble-title, .timeline-event-bubble-body, .timeline-band, .x-tree-node-bheader {
+color: #fffff6;
+background-color: #1f2730;
+font: 100%;
+}
+.timeline-link {
+	font-size:100%;
+}
+
+.anno-caption, .x-tree-col-text, .x-tree-col-div-general, .x-tree-hd-text, .timeline-date-label {
+	color: #fffff6;
+	background: transparent;
+}
+.timeline-ether-bg {
+	background-color: #1f2730 !important;
+}
+.timeline-ether-highlight {
+	background-color: #617089 !important;
+}
+.x-tree-node a, .anno-search {
+	color: orange !important;
+}
+
+
+	
