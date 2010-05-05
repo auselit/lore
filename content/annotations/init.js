@@ -164,24 +164,23 @@ if (typeof Timeline !== "undefined") {
 			
 			var divTime = doc.createElement("div");
 			this.fillTime(divTime, labeller);
-			divTime.style.fontSize = 'smaller';
-			divTime.style.color = '#aaa';
+            divTime.className = 'anno-caption';
 			elmt.appendChild(divTime);
 			
 			var divOps = doc.createElement("div");
 			divOps.style.paddingTop = '5px';
 			
-			var divOpsInner = "<a style='color:orange;font-size:smaller' href='#' " +
+			var divOpsInner = "<a class='timeline-link' href='#' " +
 			"onclick='try{lore.anno.ui.handleEditTimeline(\"" +
 			this._eventID +
 			"\")} catch(e){lore.debug.anno(\"e:\"+e,e);}'>EDIT</a> | " +
-			"<a style='color:orange;font-size:smaller' href='#' " +
+			"<a class='timeline-link' href='#' " +
 			"onclick='lore.anno.ui.handleReplyToAnnotation(\"" +
 			this._eventID +
 			"\")'>REPLY</a>";
 			divOps.innerHTML = divOpsInner;
 			elmt.appendChild(divOps);
-			
+			elmt.className = 'timeline-bubble';
 			var annoid = this._eventID;
 			var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', annoid);
 			if ( node) {
@@ -241,7 +240,6 @@ lore.anno.ui.init = function(){
 			lore.debug.anno("anno init: updating sources");
 			lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
 		}
-
 		lore.debug.anno("Annotation init");
 	} catch (e ) {
 		lore.debug.ui("Except in anno init ! " + e, e);
