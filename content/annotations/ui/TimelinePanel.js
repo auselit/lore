@@ -285,7 +285,7 @@ lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
 		 * @return {String} A string containing a HTML formatted description of the annotation
 		 */		
 		 getTimelineDescription : function(anno){
-			return "<span style='font-size:small;color:#51666b;'>" 
+			return "<span class='anno-caption'>" 
 			// lore.global.util.splitTerm(anno.type).term +
 			//" by " +
 			//anno.creator +
