@@ -204,7 +204,7 @@ lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
 lore.anno.ui.genTagList = function(annodata){
 	var bodyText = "";
 	if (annodata.tags) {
-		bodyText += '<span style="font-size:smaller;color:#51666b">Tags: ';
+		bodyText += '<span class="anno-caption">Tags: ';
 		var tagarray = annodata.tags.split(',');
 		for (var ti = 0; ti < tagarray.length; ti++) {
 			var thetag = tagarray[ti];
