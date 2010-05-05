@@ -361,7 +361,7 @@ lore.ore.ui.initUIComponents = function() {
 								id : "advsearchform",
 								border : false,
                                 bodyStyle: "padding: 0 10px 4px 4px",
-								labelWidth: 65,
+								labelWidth: 75,
 								keys : [{
 									key : [10, 13],
 									fn : function() {
