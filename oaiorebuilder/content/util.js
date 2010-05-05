@@ -1103,7 +1103,7 @@ util = {
            var t = link.getAttribute("title");
 	       if (link.getAttribute("rel").indexOf("style") != -1 && t)
 	       {
-              var disabled = !(t == 'highContrast' || t == 'highContrastL');
+              var disabled = !(t == 'highContrastExt' || t == 'highContrast');
               if (!activate){
                  disabled = !link.disabled;
               }
