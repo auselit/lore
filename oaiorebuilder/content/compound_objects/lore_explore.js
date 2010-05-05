@@ -50,7 +50,7 @@ lore.ore.explore.init = function() {
   
   if (lore.ore.explore.canvas){
     // clear history
-    Ext.get('history').update("");
+    Ext.get('exploreHistory').update("");
     // clear the labels and canvas
     for(var id in lore.ore.explore.rg.fx.labels){
            lore.ore.explore.rg.fx.disposeLabel(id);
@@ -129,7 +129,7 @@ lore.ore.explore.init = function() {
     onAfterCompute: function() {
         var node = Graph.Util.getClosestNodeToOrigin(lore.ore.explore.rg.graph, "pos");
         this.clickedNode = node;
-        var existhistory = Ext.get('history').dom.innerHTML;
+        var existhistory = Ext.get('exploreHistory').dom.innerHTML;
         var action = "lore.global.util.launchTab(\"" + node.id + "\", window);";
         var icon = "chrome://lore/skin/icons/page_go.png";
         var tooltip = "Show in browser";
@@ -141,9 +141,9 @@ lore.ore.explore.init = function() {
         }
         var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
             + "'><img style='border:none' src='" + icon 
-            + "'></a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
+            + "'></a>&nbsp;<a href='#' onclick=\"lore.ore.explore.rg.onClick('" 
             + node.id + "');\">" + node.name + "</a>";
-        Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
+        Ext.get('exploreHistory').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
         this.requestGraph();
     }
   });
@@ -159,7 +159,7 @@ lore.ore.explore.showInExploreView = function (id, title, isCompoundObject){
     lore.ore.explore.loadRem(id, title, isCompoundObject, function(json){
         lore.ore.explore.rg.loadJSON(json);
         lore.ore.explore.rg.refresh();
-        var existhistory = Ext.get('history').dom.innerHTML;
+        var existhistory = Ext.get('exploreHistory').dom.innerHTML;
         // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
         var action = "lore.global.util.launchTab(\"" + id + "\", window);";
         var icon = "chrome://lore/skin/icons/page_go.png";
@@ -172,8 +172,8 @@ lore.ore.explore.showInExploreView = function (id, title, isCompoundObject){
         }
         var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
         + "'><img style='border:none' src='" + icon +"'>" 
-        + "</a>&nbsp;<a style='color:#51666b' href='#' onclick=\"lore.ore.explore.rg.onClick('" 
+        + "</a>&nbsp;<a href='#' onclick=\"lore.ore.explore.rg.onClick('" 
         + id + "');\">" + title + "</a>";
-        Ext.get('history').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
+        Ext.get('exploreHistory').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
     });  
 }
