@@ -1,5 +1,13 @@
-.x-tree-multiline-node-details {color:#FFFFF6;}
-.x-tab-panel-body {background-color: #1f2730;}
+* {
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #fffff6;
+}
+.x-tree-multiline-node-details {
+	color:#FFFFF6;
+}
+.x-tab-panel-body {
+	background-color: #1f2730;
+}
 .orelink {
 	font-style:italic; 
 	color: #fffff6; 
@@ -10,7 +18,6 @@
 }
 .node {
 	font-size:90%;
-	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
 	color:#fffff6;
 	font-weight:normal;
 	cursor:pointer;
@@ -26,18 +33,26 @@
 	background-color:#1f2730;
 }
 
-.ctxtConn {
+.ctxtConn div {
+	background-color: #fffff6 !important;
+}
+.ctxtConn div.ctxtConnLabel {
 	color: #fffff6 !important;
-	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	background-color: transparent !important;
 	font-size:100% !important;
 }
-
+.slideshowTitle {
+	color: #fffff6;
+}
+.slideshowProps {
+	border-color: #fffff6;
+}
 /* Annotations */
 
 .timeline-bubble, .timeline-event-bubble-title, .timeline-event-bubble-body, .timeline-band, .x-tree-node-bheader {
-color: #fffff6;
-background-color: #1f2730;
-font: 100%;
+	color: #fffff6;
+	background-color: #1f2730;
+	font: 100%;
 }
 .timeline-link {
 	font-size:100%;
