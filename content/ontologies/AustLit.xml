@@ -1284,7 +1284,6 @@
 
     <owl:ObjectProperty rdf:about="#relatedTo">
         <rdfs:label rdf:datatype="&xsd;string">GA</rdfs:label>
-        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
         <owl:versionInfo rdf:datatype="&xsd;string"
             >TODO: Domain and range must be equal, ie agent to agent, work to work</owl:versionInfo>
         <rdfs:range>
@@ -2497,7 +2496,6 @@
     <owl:DatatypeProperty rdf:about="#subsection">
         <rdfs:label rdf:datatype="&xsd;string"
             >AwardDetails.subsection</rdfs:label>
-        <rdfs:comment rdf:datatype="&xsd;string"></rdfs:comment>
         <rdfs:domain rdf:resource="#AwardDetails"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
