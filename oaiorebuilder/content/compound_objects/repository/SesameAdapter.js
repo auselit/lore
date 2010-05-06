@@ -50,7 +50,9 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 			    }
 			    var filter = "";
 			    if (matchval && matchval != ""){
-			        filter = "FILTER regex(str(?v), \"" + matchval + "\", \"i\")";
+                    var fobj = this.makeFilter(matchval);
+                    filter = fobj.filter;
+                    matchval = fobj.matchval;
 			    } 
 		        queryURL = this.reposURL
 		        + "?queryLn=sparql&query=" 
@@ -211,6 +213,25 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	    } catch (ex){
 	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);
 	    } 
+    },
+    makeFilter : function(matchval){
+        // implicit and, use quotes for phrase search
+        var fExpr = "";
+        var mlen = matchval.length;
+        var newmatchval = matchval;
+        if (matchval.charAt(0) == '"' && matchval.charAt(mlen - 1) == '"'){
+            newmatchval = matchval.substring(1,(mlen - 1));
+            fExpr = "FILTER regex(str(?v), \"" + newmatchval + "\", \"i\")";
+        } else if (matchval.match(" ")){
+            var msplit = matchval.split(" ");
+            newmatchval = msplit[0];
+            for (var i = 0; i < msplit.length; i++){
+               fExpr += "FILTER regex(str(?v), \"" + msplit[i] + "\", \"i\"). ";  
+            }
+        } else {
+            fExpr = "FILTER regex(str(?v), \"" + matchval + "\", \"i\")";
+        }
+        return {filter: fExpr, matchval: newmatchval};
     }
 });
 
