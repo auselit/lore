@@ -46,6 +46,9 @@
 				<include name="defaults/**" />
 				<exclude name="**/.*" />
 				<exclude name="**/.svn/**" />
+				<exclude name="content/lib/ext3.2/ext-all-debug.js" />
+				<exclude name="content/lib/ext3.2/adapter/jquery/ext-jquery-adapter-debug.js" />
+				<exclude name="**/*.psd" />
 			</fileset>
 		</zip>
 	</target>
