@@ -135,6 +135,7 @@ lore.ore.setPrefs = function(prefs){
 	  lore.ore.setDcCreator(prefs.creator);
 	  lore.ore.setrelonturl(prefs.relonturl);
 	  lore.ore.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
+      lore.global.util.setHighContrast(window, prefs.high_contrast);
   } catch (e){
     lore.debug.ore("Unable to set repos prefs",e);
   }
@@ -457,15 +458,15 @@ lore.ore.ui.dragOver = function(aEvent){
       dragSession.canDrop = true;
 };
 
-lore.ore.ui.hideProps = function(p, animate){
+lore.ore.ui.hideProps = function(p, animate) {
         p.body.setStyle('display','none'); 
 };
-lore.ore.ui.showProps = function(p, animate){
+lore.ore.ui.showProps = function(p, animate) {
         p.body.setStyle('display','block');
 };
 
 /** Handler for plus tool button on property grids */
-lore.ore.ui.addProperty = function (ev, toolEl, panel){
+lore.ore.ui.addProperty = function (ev, toolEl, panel) {
     var makeAddMenu  = function(panel){
 	    panel.propMenu = new Ext.menu.Menu({
 	        id: panel.id + "-add-metadata"
@@ -476,7 +477,7 @@ lore.ore.ui.addProperty = function (ev, toolEl, panel){
             panel.propMenu.add({
                 id: panel.id + "-add-" + propname,
                 text: propname,
-                handler: function (){
+                handler: function () {
                     try{
                         var panel = Ext.getCmp(this.parentMenu.panelref);
                         var pstore = panel.getStore();
@@ -496,11 +497,11 @@ lore.ore.ui.addProperty = function (ev, toolEl, panel){
             });
 	    }
 	};
-    if (!panel.propMenu){
+    if (!panel.propMenu) {
         makeAddMenu(panel);
     }
     if (panel.id == "remgrid" || lore.ore.ui.graph.selectedFigure instanceof lore.ore.ui.graph.ResourceFigure){
-        if (panel.collapsed){
+        if (panel.collapsed) {
             panel.expand(false);
         }
         panel.propMenu.showAt(ev.xy);
@@ -509,14 +510,14 @@ lore.ore.ui.addProperty = function (ev, toolEl, panel){
     }
 };
 /** Handler for minus tool button on property grids */
-lore.ore.ui.removeProperty = function (ev, toolEl, panel){ 
-    try{
+lore.ore.ui.removeProperty = function (ev, toolEl, panel) { 
+    try {
     lore.debug.ore("remove Property was triggered",ev);
     var sel = panel.getSelectionModel().getSelected();
     // don't allow delete when panel is collapsed (user can't see what is selected)
-    if (panel.collapsed){
+    if (panel.collapsed) {
         lore.ore.ui.loreInfo("Please expand the properties panel and select the property to remove");
-    } else if (sel){
+    } else if (sel) {
         // TODO: #2 (refactor): should allow first to be deleted as long as another exists
         // should also probably renumber
              if (sel.id.match("_0")){ // first instance of property: check if it's mandatory
@@ -535,12 +536,12 @@ lore.ore.ui.removeProperty = function (ev, toolEl, panel){
      } else {
         lore.ore.ui.loreInfo("Please click on the property to remove prior to selecting the remove button");
      }
-    } catch (ex){
+    } catch (ex) {
         lore.debug.ore("error removing property ",ex);
     }
 };
 /** Handler for help tool button on property grids */
-lore.ore.ui.helpProperty = function (ev,toolEl, panel){
+lore.ore.ui.helpProperty = function (ev,toolEl, panel) {
     var sel = panel.getSelectionModel().getSelected();
     if (panel.collapsed){
         lore.ore.ui.loreInfo("Please expand the properties panel and select a property");
@@ -591,8 +592,8 @@ lore.ore.showCompoundObjectNarrative = function(p){
     var items = [];
     // Compound Object title slide
     var ctitle = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Compound Object";
-    prophtml += "<div style='padding:2em'><div style='color:#cc0000;font-weight:bold;font-size:120%;padding-top:2em;padding-bottom:0.5em'>" + ctitle + "</div>";
-    prophtml += '<table style="width:100%;font-size:80%;color:#465458;border-top:1px solid #cc0000;padding-top:0.5em;line-height:1.3em">';
+    prophtml += "<div style='padding:2em'><div class='slideshowTitle'>" + ctitle + "</div>";
+    prophtml += '<table class="slideshowProps">';
     
     var ccreator = lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid);
     var ccreated = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
@@ -738,7 +739,7 @@ lore.ore.showCompoundObjectNarrative = function(p){
 lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
 
     var newsummary = 
-            "<table style='width:100%;font-size:smaller;border:none'>"
+            "<table style='width:100%;border:none'>"
             + "<tr valign='top'><td width='20%'>" 
             + "<b>Compound object:</b></td><td>"
             + "<div style='float:right;padding-right:5px'>" 
@@ -751,6 +752,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
         newsummary += "<tr valign='top'><td width='20%'><b>Title:</b></td><td>"
                 + title + "</td></tr>";
     }
+   
     var desc = lore.ore.getPropertyValue("dc:description",lore.ore.ui.grid);
     if (desc) {
         newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='80%'>"
@@ -762,7 +764,9 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
             + abst + "</td></tr>";
     }
     newsummary += "</table>";
-    var newsummarydetail = "<div style='padding-top:1em'>";
+     var newsummarydetail = "<a href='#' onclick='lore.global.util.setHighContrast(window,true);'>high contrast</a> ";
+     newsummarydetail += "<a href='#' onclick='lore.global.util.setHighContrast(window,false);'>normal contrast</a> ";
+    newsummarydetail += "<div style='padding-top:1em'>";
     var tocsummary = "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
     var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
     allfigures.sort(lore.ore.ui.graph.figSortingFunction);
@@ -1512,25 +1516,34 @@ lore.ore.loadRelationshipsFromOntology = function() {
     lore.ore.ontrelationships = {};
     lore.ore.resource_metadata_props = ["rdf:type", "ore:isAggregatedBy"];
     if (lore.ore.onturl) {
+        lore.debug.ore("getting ontology : " + lore.ore.onturl);
         var xhr = new XMLHttpRequest();
-        //xhr.overrideMimeType('text/xml');
+        xhr.overrideMimeType('text/xml');
         xhr.open("GET", lore.ore.onturl, true);
         xhr.onreadystatechange= function(){
             if (xhr.readyState == 4) {
+                try{
                 var db = jQuery.rdf.databank();
                 for (ns in lore.constants.NAMESPACES){
                     db.prefix(ns,lore.constants.NAMESPACES[ns]);
                 }
                 db.load(xhr.responseXML);
-                lore.ore.relOntology = jQuery.rdf({databank: db});
                 lore.debug.ore("loading relationships from " + lore.ore.onturl,lore.ore.relOntology);      
+                lore.ore.relOntology = jQuery.rdf({databank: db});
                 lore.ore.relOntology.where('?prop rdf:type <'+lore.constants.OWL_OBJPROP+'>')
                 .each(function (){
+                    try{
                     var relresult = lore.global.util.splitTerm(this.prop.value.toString());
                     lore.ore.ontrelationships[relresult.term] = relresult.ns;
+                    } catch (e){
+                        lore.debug.ore("problem loading rels",e);
+                    }
                 });
                 // TODO: #13 load datatype properties for prop grids
                 // update properties UI eg combo box in search, menu for selecting rel type
+                } catch (e){
+                    lore.debug.ore("problem loading rels",e);
+                }
             } 
         };
         xhr.send(null);
@@ -2135,4 +2148,3 @@ lore.ore.loadResourceDetails = function(combo,record,index){
         lore.ore.updateResDetails(lore.ore.ui.resproptreeroot.firstChild,null);
     }
 };
-
