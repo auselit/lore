@@ -1103,12 +1103,13 @@ util = {
            var t = link.getAttribute("title");
 	       if (link.getAttribute("rel").indexOf("style") != -1 && t)
 	       {
-              var disabled = !(t == 'highContrastExt' || t == 'highContrast');
-              if (!activate){
-                 disabled = !link.disabled;
+              var isHC = (t == 'highContrastExt' || t == 'highContrast');
+              if (isHC && activate) {
+                 link.disabled = false;
+              } else if (isHC && !activate) {
+                 link.disabled = true;
               }
-              link.disabled = disabled;
-              debug.ore("setHighContrast disabled=" + disabled,link);
+              debug.ore("setHighContrast " + activate,link);
 	       }
 	     }
 	},
