@@ -27,3 +27,5 @@
 <!ENTITY disable_co.label "Disable compound object features">
 <!ENTITY debug.label "Debugging" >
 <!ENTITY filelogging.label "Enable logging to file" >
+<!ENTITY accessibility.label "Accessibility">
+<!ENTITY highcontrast.label "Enable high contrast" >
