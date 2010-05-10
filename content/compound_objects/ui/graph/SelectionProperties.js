@@ -20,20 +20,19 @@
 /** 
  * Updates the properties views when nodes or connections are selected
  * @class lore.ore.ui.graph.SelectionProperties
+ * @param {lore.ore.ui.graph.COGraph} cograph The compound object graph
  */
-lore.ore.ui.graph.SelectionProperties=function(/*:workflow*/ workflow)
-{
-   this.workflow = workflow; 
+lore.ore.ui.graph.SelectionProperties=function(cograph) {
+   this.workflow = cograph; 
 }
 
 lore.ore.ui.graph.SelectionProperties.prototype.type="lore.ore.ui.graph.SelectionProperties";
 /**
  * Updates the proprties in the UI when the selection changes
- * @param {} figure
+ * @param {draw2d.Figure} figure ResourceFigure or ContextmenuConnection that was selected
  */
-lore.ore.ui.graph.SelectionProperties.prototype.onSelectionChanged = function(/*:Figure*/figure){
+lore.ore.ui.graph.SelectionProperties.prototype.onSelectionChanged = function(figure) {
 	if (figure != null) {
-		//lore.debug.ore("User selected figure in graph editor", figure);
 		lore.ore.ui.graph.selectedFigure = figure;
         lore.ore.ui.nodegrid.store.removeAll();
 		if (figure.metadataproperties) {
@@ -49,7 +48,7 @@ lore.ore.ui.graph.SelectionProperties.prototype.onSelectionChanged = function(/*
             Ext.getCmp("propertytabs").activate("properties");
             lore.ore.ui.nodegrid.expand();
 		}
-		else if (figure.edgetype){
+		else if (figure.edgetype) {
             lore.ore.ui.nodegrid.store.loadData([
                 {name:'relationship',id:'relationship',value:figure.edgetype},
                 {name: 'namespace', id: 'namespace', value:figure.edgens}
@@ -62,4 +61,4 @@ lore.ore.ui.graph.SelectionProperties.prototype.onSelectionChanged = function(/*
         lore.ore.ui.nodegrid.store.removeAll();
         lore.ore.ui.nodegrid.collapse();
 	}
-}
+};

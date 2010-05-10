@@ -18,34 +18,36 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /** 
- * Centers labels on connections
+ * Locates labels on connections
  * @class lore.ore.ui.graph.LabelLocator
+ * @param {lore.ore.ui.graph.ContextmenuConnection} connection
  */
-lore.ore.ui.graph.LabelLocator=function(/*:draw2d.Connection*/ connection)
-{
-  draw2d.ConnectionLocator.call(this,connection);
+lore.ore.ui.graph.LabelLocator = function(connection) {
+    draw2d.ConnectionLocator.call(this,connection);
 }
 Ext.extend(lore.ore.ui.graph.LabelLocator, draw2d.ConnectionLocator, {
     type : "lore.ore.ui.graph.LabelLocator",
-    relocate : function (label){
-           var conn = this.getConnection();
-		   var p = new draw2d.Point();
-		   var points = conn.getPoints();
-		   var index = Math.floor((points.getSize() -2) / 2);
-		   var p1 = points.get(index);
-		   var p2 = points.get(index + 1);
-		
-		   p.x = (p2.x - p1.x) / 2 + p1.x +5;
-		   p.y = (p2.y - p1.y) / 2 + p1.y +5;
-		   var offsetx = label.getWidth();
-           if (offsetx != 0){
-            offsetx = offsetx / 2;
-           }
-           var offsety = label.getHeight();
-           if (offsety != 0){
-            offsety = offsety/2;
-           }
-		   label.setPosition(p.x - offsetx,p.y - offsety);
-
+    /**
+     * Relocate a label to be centered on a connection
+     * @param {draw2d.Label} label
+     */
+    relocate : function (label) {
+       var conn = this.getConnection();
+	   var p = new draw2d.Point();
+	   var points = conn.getPoints();
+	   var index = Math.floor((points.getSize() - 2) / 2);
+	   var p1 = points.get(index);
+	   var p2 = points.get(index + 1);
+	   p.x = (p2.x - p1.x) / 2 + p1.x + 5;
+	   p.y = (p2.y - p1.y) / 2 + p1.y + 5;
+	   var offsetX = label.getWidth();
+       if (offsetX != 0) {
+          offsetX = offsetX / 2;
+       }
+       var offsetY = label.getHeight();
+       if (offsetY != 0) {
+          offsetY = offsetY / 2;
+       }
+	   label.setPosition(p.x - offsetX, p.y - offsetY);
     }
 });

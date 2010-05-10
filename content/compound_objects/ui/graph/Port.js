@@ -71,7 +71,11 @@ lore.ore.ui.graph.Port.prototype.onDragend = function(){
     delete this.yoffset;
     delete this.xoffset;
 }
-
+lore.ore.ui.graph.Port.prototype.createHTMLElement = function(){
+    var item = draw2d.Port.prototype.createHTMLElement.call(this);
+    item.className = "port";
+    return item;
+}
 lore.ore.ui.graph.Port.prototype.onDragEnter = function(/*:draw2d.Port*/ port)
 {
   this.parentNode.workflow.connectionLine.setAlpha(1.0);

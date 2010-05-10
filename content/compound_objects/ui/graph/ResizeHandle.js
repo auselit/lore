@@ -29,7 +29,7 @@ lore.ore.ui.graph.ResizeHandle = Ext.extend(draw2d.ResizeHandle, {
         figure.lower();
         draw2d.ResizeHandle.prototype.onDragend.call(this);
     },
-    onDragstart: function (x,y){
+    onDragstart: function (x, y) {
         var figure = this.workflow.currentSelection;
         figure.raise();
         return draw2d.ResizeHandle.prototype.onDragstart.call(this, x, y);
@@ -42,10 +42,10 @@ lore.ore.ui.graph.ResizeHandle = Ext.extend(draw2d.ResizeHandle, {
  * */
 lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandle, {
    type :  "lore.ore.ui.graph.LineResizeHandle",
-   onDrag : function (){  
+   onDrag : function () {  
 	    var wf = this.workflow;
 	    var line = wf.currentSelection;
-	    if (!line.isMoving){
+	    if (!line.isMoving) {
 	        line.isMoving = true;
 	        wf.showMask(); 
 	        this.yoffset = wf.getScrollTop();
@@ -57,7 +57,7 @@ lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandl
         // setPosition forces position of this resize handle to update and fires move event
 	    this.setPosition(this.x,this.y);
    },
-   onDragend : function (){
+   onDragend : function () {
         this.workflow.hideMask();
         draw2d.LineStartResizeHandle.prototype.onDragend.call(this);
         delete this.yoffset;
@@ -74,7 +74,7 @@ lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
    onDrag : function (){  
         var wf = this.workflow;
         var line = wf.currentSelection;
-        if (!line.isMoving){
+        if (!line.isMoving) {
             line.isMoving = true;
             wf.showMask(); 
             this.yoffset = wf.getScrollTop();
@@ -86,7 +86,7 @@ lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
         // setPosition forces position of this resize handle to update and fires move event
         this.setPosition(this.x,this.y);
    },
-   onDragend : function (){
+   onDragend : function () {
         this.workflow.hideMask();
         draw2d.LineEndResizeHandle.prototype.onDragend.call(this);
         delete this.yoffset;

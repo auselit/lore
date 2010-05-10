@@ -101,7 +101,7 @@ lore.ore.ui.loadPreferences = function() {
  */
 lore.ore.ui.initProperties = function() {
 	var dateString = lore.ore.getToday();
-    if (lore.ore.reposAdapter){
+    if (lore.ore.reposAdapter) {
 	   lore.ore.currentREM = lore.ore.reposAdapter.generateID();
     }
 	lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
@@ -468,7 +468,7 @@ lore.ore.ui.initUIComponents = function() {
 							sm : new Ext.grid.RowSelectionModel({
 										singleSelect : true
 									}),
-							title : 'Compound Object Properties',
+							title : 'Compound Object',
 
 							tools : [{
 										id : 'plus',
@@ -541,7 +541,7 @@ lore.ore.ui.initUIComponents = function() {
 							sm : new Ext.grid.RowSelectionModel({
 										singleSelect : true
 									}),
-							title : "Resource/Relationship Properties",
+							title : "Resource/Relationship",
 							id : "nodegrid",
 							autoHeight : true,
 							anchor : "100%",

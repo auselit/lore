@@ -91,42 +91,27 @@ lore.ore.ui.graph.ResourceFigure.prototype.createHTMLElement = function() {
 	this.bottom_right.style.top = "0px";
 	this.bottom_right.style.fontSize = "2px";
 	this.header = document.createElement("div");
-	this.top_left.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left";
-	this.bottom_left.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left";
-	this.bottom_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom right";
+	this.top_left.className="co-tl";
+    this.bottom_left.className="co-bl";
+    this.bottom_right.className="co-br";
 	this.header.style.position = "absolute";
 	this.header.style.left = this.cornerWidth + "px";
 	this.header.style.top = "0px";
 	this.header.style.height = (this.cornerHeight) + "px";
-	this.header.style.backgroundColor = "#e5e5e5";
-	this.header.style.color = "#333333";
-	this.header.style.borderTop = "1px solid #aeaeae";
-	this.header.style.fontSize = "10px";
-	this.header.style.textAlign = "center";
-	this.header.style.fontFamily = "tahoma, arial, helvetica";
+    this.header.className="co-header";
 	this.footer = document.createElement("div");
 	this.footer.style.position = "absolute";
 	this.footer.style.left = this.cornerWidth + "px";
 	this.footer.style.top = "0px";
 	this.footer.style.height = (this.cornerHeight - 2) + "px";
-	this.footer.style.backgroundColor = "white";
-	this.footer.style.borderBottom = "1px solid #aeaeae";
-	this.footer.style.fontSize = "2px";
+    this.footer.className="co-footer";
 	this.textarea = document.createElement("div");
 	this.textarea.style.position = "absolute";
 	this.textarea.style.left = "0px";
-	this.textarea.style.top = this.cornerHeight + "px";
-	this.textarea.style.backgroundColor = "white";
-	this.textarea.style.borderTop = "1px solid #aeaeae";
-	this.textarea.style.borderLeft = "1px solid #aeaeae";
-	this.textarea.style.borderRight = "1px solid #aeaeae";
-	this.textarea.style.overflow = "hidden";
-	this.textarea.style.fontSize = "9pt";
+    this.textarea.style.top = this.cornerHeight + "px";
+    this.textarea.className="co-preview";
 	this.metadataarea = document.createElement("div");
-	this.metadataarea.style.paddingLeft = "3px";
-	this.metadataarea.style.color = "#333333";
-	this.metadataarea.style.borderBottom = "1px solid #aeaeae";
-    this.metadataarea.style.overflow = "hidden";
+    this.metadataarea.className = "co-uri";
     this.uriexpander = "<img class=\"hideuri\" style=\"margin-left:-7px\" onclick=\"if(this.className){this.className = '';this.parentNode.parentNode.className='';} else {this.className = 'hideuri';this.parentNode.parentNode.className='hideuribox';}\" src=\"../../skin/icons/bullet_arrow_down.png\">";
 	this.iframearea = document.createElement("div");
 	this.iframearea.style.border = "none";
@@ -230,7 +215,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
                 + "<a onclick='lore.ore.readRDF(\"" + theurl + "\");' href='#'>"
 				+ identifierURI + "</a></li></ul>";
         } else {
-            this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>RDF document (no preview available)</p>";
+            this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>RDF document (no preview available)</p>";
         }
     
 	} else if (mimetype && mimetype.match("application/xml")){
@@ -260,14 +245,14 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
             + "<a title='" + theurl +"' onclick='lore.global.util.launchTab(\"" + displayUrl
             + "\",window);' href='#'>" + theurl + "</a></li></ul>";
         } else {
-            this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>XML document (no preview available)</p>";
+            this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>XML document (no preview available)</p>";
         }
         } catch (ex){
             lore.debug.ore("problem displaying annotation",ex);
         }
     } else if (mimetype && mimetype.match("pdf")) {
         // Don't display PDFs in preview
-        this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;color:#51666b'>PDF document (no preview available)</p>";
+        this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>PDF document (no preview available)</p>";
     }
     else if (mimetype && (mimetype.match("x-shockwave-flash") || mimetype.match("video"))){
         // use object tag to preview videos as plugins are disabled in secure iframe
@@ -622,9 +607,11 @@ lore.ore.ui.graph.ResourceFigure.prototype.getProperty = function(pid){
  */
 lore.ore.ui.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
 	if (!this.isCollapsed()) {
-		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
+		//this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
+        this.top_right.className="co-tr-minus";
 	} else {
-		this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right";
+		//this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right";
+        this.top_right.className="co-tr-plus";
 	}
 };
 /** Generate a context menu for the figure

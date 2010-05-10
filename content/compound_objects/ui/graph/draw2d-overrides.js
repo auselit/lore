@@ -6,13 +6,11 @@
  * Fix problem in draw2d menu: not displaying icons
  * 
  **/
-draw2d.Menu.prototype.createList=function()
-{
+draw2d.Menu.prototype.createList=function() {
   this.dirty=false;
   this.html.innerHTML="";
   var oThis = this;
-  for(var i=0;i<this.menuItems.getSize();i++)
-  {
+  for(var i=0;i<this.menuItems.getSize();i++) {
       var item = this.menuItems.get(i);
 
       var li = document.createElement("a");
@@ -31,10 +29,8 @@ draw2d.Menu.prototype.createList=function()
       this.html.appendChild(li);
 
       li.menuItem = item;
-      if (li.addEventListener) 
-      {
-         li.addEventListener("click",  function(event)
-         {
+      if (li.addEventListener) {
+         li.addEventListener("click",  function(event) {
             var oEvent = arguments[0] || window.event;
             oEvent.cancelBubble = true; 
             oEvent.returnValue = false;
@@ -48,11 +44,8 @@ draw2d.Menu.prototype.createList=function()
          li.addEventListener("mousedown",  function(event){event.cancelBubble = true; event.returnValue = false;}, false);
          li.addEventListener("mouseover", function(event){this.style.backgroundColor="silver";},false);
          li.addEventListener("mouseout", function(event){this.style.backgroundColor="transparent";},false);
-      } 
-      else if (li.attachEvent) 
-      {
-         li.attachEvent("onclick",  function(event)
-         {
+      } else if (li.attachEvent) {
+         li.attachEvent("onclick",  function(event) {
             var oEvent = arguments[0] || window.event;
             oEvent.cancelBubble = true; 
             oEvent.returnValue = false;
