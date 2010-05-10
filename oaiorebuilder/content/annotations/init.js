@@ -211,7 +211,8 @@ lore.anno.ui.init = function(){
 			creator: 'Anonymous',
 			server: '',
 			cacheTimeout: '1',
-			disable: false
+			disable: false,
+            high_contrast: false
 		});
 		
 		lore.anno.prefs.on('prefs_changed', lore.anno.ui.handlePrefsChange);
