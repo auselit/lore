@@ -1,8 +1,7 @@
 if (typeof(FBL) != "undefined"){
 FBL.ns(function() { with (FBL) { 
 /**
- * Functions used for debug to Firebug tracing console
- * @class Firebug.LoreTracingModel
+ * @class Firebug.LoreTracingModel  Prints debug information to Firebug tracing console
  * @extends Firebug.Module
  */
 Firebug.LoreTracingModel = extend(Firebug.Module, 
