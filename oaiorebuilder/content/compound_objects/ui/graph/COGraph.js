@@ -23,9 +23,9 @@
  * @extends draw2d.Workflow
  * @param {} id
  */
-lore.ore.ui.graph.COGraph = function(id){
+lore.ore.ui.graph.COGraph = function(id) {
     draw2d.Workflow.call(this, id);
-    try{
+    try {
 	    this.layouter = new lore.ore.ui.graph.autolayout.Layouter(this);
 	    this.layouter.setPreferredEdgeLength(180);
         this.showEmptyMessage();
@@ -66,7 +66,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     /** 
      * Trigger automatic layout of figures
      */
-	doLayout : function(){
+	doLayout : function() {
 	    try {
 	        //if (this.getDocument().getLines().getSize() > 0){
 	            this.layouter.doLayout();
@@ -79,29 +79,29 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      * Show a message indicating the compound object is empty
      * @private
      */
-    showEmptyMessage : function(){
+    showEmptyMessage : function() {
         this.setBackgroundImage("chrome://lore/skin/icons/emptyco.png",false);
     },
     /** 
      * Remove the message indicating the compound object is empty
      * @private
      */
-    clearEmptyMessage : function(){
+    clearEmptyMessage : function() {
         this.setBackgroundImage();  
     },
-    /** Override because html element height is incorrect on initial load */
-    getHeight : function(){
+    /** Override getHeight because html element height is incorrect on initial load */
+    getHeight : function() {
         return this.scrollArea.scrollHeight;
     },
-    /** Override because html element width is incorrect on initial load */
-    getWidth : function (){
+    /** Override getWidth because html element width is incorrect on initial load */
+    getWidth : function () {
         return this.scrollArea.scrollWidth;
     },
     /**
      * Show the mask to prevent other figures previews interfering with mouse 
      * during move, resize and connection operations
      */
-    showMask : function (){
+    showMask : function () {
         // ensure mask is the correct size before enabling it (mask area may need to grow
         // if figures have been added, resized or moved)
         this.resizeMask();
@@ -110,13 +110,13 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     /** 
      * Hide the mask
      */
-    hideMask : function (){
+    hideMask : function () {
         this.mask.style.display="none";
     },
     /** 
      * Resizes the drawingarea and mask
      * @private */
-    resizeMask : function (){
+    resizeMask : function () {
         // set drawingarea back to 100% before getting scroll values - 
         // allowing scroll area to shrink to content
         this.html.style.width = "100%";
@@ -128,14 +128,20 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         this.html.style.width = newx + "px";
         this.mask.style.width = newx + "px";
     },
-    clear : function(){
+    /** 
+     * Remove all figures and reset mask and empty message
+     */
+    clear : function() {
         draw2d.Workflow.prototype.clear.call(this);
         this.resizeMask();
         this.showEmptyMessage();
     },
-    setDocumentDirty: function(){
+    /**
+     * Override to hide/show empty message when figures are added or removed
+     */
+    setDocumentDirty: function() {
       draw2d.Workflow.prototype.setDocumentDirty.call(this);
-      if (this.figures.getSize() == 0){
+      if (this.figures.getSize() == 0) {
         this.showEmptyMessage();
       } else {
         this.clearEmptyMessage();
@@ -145,13 +151,11 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	 * Overrides the method from the superclass to change the colour of the handles
 	 * @param {draw2d.Figure} figure The figure on which the resize handles are to be displayed
 	 */
-	showResizeHandles: function(/*:draw2d.Figure*/ figure)
-	{
+	showResizeHandles: function(figure) {
 	  this.hideLineResizeHandles();
 	  this.hideResizeHandles();
 	
-	  if(this.getEnableSmoothFigureHandling() && this.getCurrentSelection()!=figure)
-	  {
+	  if(this.getEnableSmoothFigureHandling() && this.getCurrentSelection() != figure) {
 	     this.resizeHandle1.setAlpha(0.01);
 	     this.resizeHandle2.setAlpha(0.01);
 	     this.resizeHandle3.setAlpha(0.01);
@@ -182,8 +186,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	  this.resizeHandle3.setCanDrag(figure.isResizeable());
 	  this.resizeHandle5.setCanDrag(figure.isResizeable());
 	  this.resizeHandle7.setCanDrag(figure.isResizeable());
-	  if(figure.isResizeable())
-	  {
+	  if (figure.isResizeable()) {
 	    var blue = new draw2d.Color(217,232,251);
 	    var brightblue = new draw2d.Color(170,204,246);
 	    this.resizeHandle1.setBackgroundColor(blue);
@@ -202,9 +205,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	    this.resizeHandle6.setColor(brightblue);
 	    this.resizeHandle7.setColor(brightblue);
 	    this.resizeHandle8.setColor(brightblue);
-	  }
-	  else
-	  {
+	  } else {
 	  	var grey = new draw2d.Color(174,174,174);
 	    this.resizeHandle1.setBackgroundColor(null);
 	    this.resizeHandle2.setBackgroundColor(null);
@@ -224,8 +225,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	    this.resizeHandle8.setColor(grey);
 	  }
 	
-	  if(figure.isStrechable() && figure.isResizeable())
-	  {
+	  if(figure.isStrechable() && figure.isResizeable()) {
 	    this.resizeHandle2.setCanDrag(figure.isResizeable());
 	    this.resizeHandle4.setCanDrag(figure.isResizeable());
 	    this.resizeHandle6.setCanDrag(figure.isResizeable());
@@ -242,11 +242,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	},
 	/**
 	 * Customize the resize handles
-	 * @param {draw2d.Line} line The line for the resize handles.
+	 * @param {draw2d.Line} figure The line for the resize handles.
 	 * @private
 	 **/
-	showLineResizeHandles:function(/*:draw2d.Line*/ figure )
-	{
+	showLineResizeHandles:function(figure) {
 	  var blue = new draw2d.Color(217,232,251);
 	  var brightblue = new draw2d.Color(170,204,246);
 	  var resizeWidthHalf = this.resizeHandleStart.getWidth()/2;
@@ -257,8 +256,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandleEnd,endPoint.x-resizeWidthHalf,endPoint.y-resizeWidthHalf);
 	  this.resizeHandleStart.setCanDrag(figure.isResizeable());
 	  this.resizeHandleEnd.setCanDrag(figure.isResizeable());
-	  if(figure.isResizeable())
-	  {
+	  if(figure.isResizeable()) {
 	    this.resizeHandleStart.setBackgroundColor(blue);
 	    this.resizeHandleStart.setColor(brightblue);
 	    this.resizeHandleEnd.setBackgroundColor(blue);
@@ -267,9 +265,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	   this.resizeHandleStart.draggable.targets= this.dropTargets;
 	   this.resizeHandleEnd.draggable.targets= this.dropTargets;
 	
-	  }
-	  else
-	  {
+	  } else {
 	    this.resizeHandleStart.setBackgroundColor(null);
 	    this.resizeHandleEnd.setBackgroundColor(null);
 	  }
@@ -280,20 +276,20 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	 * @param {boolean} ctrl
 	 */
 	onKeyDown: function(keyCode, ctrl) {
-	  if((keyCode==46 || keyCode==8) && this.currentSelection!=null)
+	  if((keyCode==46 || keyCode==8) && this.currentSelection!=null) {
 	     this.commandStack.execute(this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
-	  else if(keyCode==90 && ctrl)
+      } else if(keyCode==90 && ctrl) {
 	     this.commandStack.undo();
-	  else if(keyCode==89 && ctrl)
+      } else if(keyCode==89 && ctrl) {
 	     this.commandStack.redo();
-	
+      }
 	},
     /** 
      * Render the contents as an image. Renders the current window into a canvas (resizing so that
      * the entire drawing area is visible), and then uses the toDataURL method on the canvas to
      * produce a PNG image
      * @return Data URL to the image  **/
-    getAsImage : function(){
+    getAsImage : function() {
      try {
         var imageW = this.getWidth();
         var imageH = this.getHeight();
@@ -319,26 +315,27 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 
         //lore.global.util.launchTab(imgData);
         return imgData;
-     } catch (e){
+     } catch (e) {
         lore.debug.ore("getAsImage: ",e);
      }
         
     },
-    /** Construct the context menu displayed for the graph
+    /** 
+     * Construct the context menu displayed for the graph
      * @return {draw2d.Menu} The contextmenu
      */
-	getContextMenu: function(){
+	getContextMenu: function() {
 		var menu=new draw2d.Menu();
         var oThis = this;
 	    menu.appendMenuItem(new draw2d.MenuItem("Add current URL",
 	        "chrome://lore/skin/icons/add.png",
-	        function(x,y){
+	        function(x,y) {
 	            lore.ore.addFigure(lore.ore.ui.currentURL);  
 	        })
 	    );
 		menu.appendMenuItem(new draw2d.MenuItem("Auto layout",
 	        "chrome://lore/skin/icons/layout.png",
-	        function(x,y){
+	        function(x,y) {
 		       lore.ore.doLayout();  
 	        })
 	    );
@@ -346,7 +343,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
             "chrome://lore/skin/icons/image.png",
             function(x,y){
                 var imgData = oThis.getAsImage();
-                if (imgData){
+                if (imgData) {
                     lore.global.util.writeURIWithSaveAs("diagram", "png", window, imgData);
                 } else {
                     lore.ore.ui.loreError("Unable to generate diagram image");

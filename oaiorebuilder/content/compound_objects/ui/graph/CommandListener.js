@@ -28,7 +28,7 @@ lore.ore.ui.graph.CommandListener = Ext.extend(draw2d.CommandStackEventListener,
      * Respond to move, delete, undo and redo commands in the graphical editor
      * @param {} event
      */
-    stackChanged : function(event){
+    stackChanged : function(event) {
 	    var details = event.getDetails();
 	    var comm = event.getCommand();
 	    var comm_fig = comm.figure;
