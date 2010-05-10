@@ -268,7 +268,48 @@
 	color: #51666b !important;
 	font-size:100% !important;
 }
-
+.co-uri {
+	padding-left: 3px;
+	color: #333333;
+	border-bottom: 1px solid #aeaeae;
+    overflow: hidden;
+}
+.co-header {
+	background-color: #e5e5e5;
+	color: #333333;
+	border-top: 1px solid #aeaeae;
+	font-size: 11px;
+	text-align: center;
+	font-family: tahoma, arial, helvetica;
+}
+.co-preview {
+	background-color: white;
+	border-top: 1px solid #aeaeae;
+	border-left: 1px solid #aeaeae;
+	border-right: 1px solid #aeaeae;
+	overflow: hidden;
+	font-size: 9pt;
+}
+.co-footer {
+	background-color: white;
+	border-bottom: 1px solid #aeaeae;
+	font-size: 2px;
+}
+.co-tl {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left;
+}
+.co-bl {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left;
+}
+.co-br {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom right;
+}
+.co-tr-minus {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right;
+}
+.co-tr-plus {
+	background: url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right;
+}
 #remrdfview, #remfoxmlview, #remtrigview {
  	color: #51666b;
  	font-family: courier monospace;
@@ -365,6 +406,7 @@
 	cursor:pointer;
 	padding:2px;
 }
+
 #exploreReset {
 	z-index: 999; 
 	position: absolute; 
