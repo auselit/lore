@@ -10,6 +10,7 @@
       <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
       <preference id="disable_co" name="extensions.lore.disable_compoundobjects" type="bool"/>
       <preference id="filelogging_pref" name="extensions.lore.filelogging" type="bool" />
+      <preference id="high_contrast" name="extensions.lore.high_contrast" type="bool" />
     </preferences>
     <label accesskey="&dccreator.accesskey;" control="text_dccreator">&dccreator.label;</label><textbox id="text_dccreator" preference="dccreator_pref"/>
     <groupbox>
@@ -17,7 +18,10 @@
         <checkbox label="&disable_anno.label;" preference="disable_anno"/>
         <checkbox label="&disable_co.label;" preference="disable_co"/>
     </groupbox>
-    
+    <groupbox>
+        <caption label="&accessibility.label;"/>
+        <checkbox label="&highcontrast.label;" preference="high_contrast"/>
+    </groupbox>
     <groupbox>
         <caption label="&debug.label;" />
         <checkbox label="&filelogging.label;" preference="filelogging_pref" />
