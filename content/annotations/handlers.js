@@ -221,6 +221,7 @@ lore.anno.ui.updateAnnoFromForm = function(updatereal){
   */
 lore.anno.ui.handlePrefsChange = function (args ) {
 	lore.anno.ui.disableUIFeatures({disable: args.disable});
+    lore.global.util.setHighContrast(window, args.high_contrast);
 }
 
 /**
