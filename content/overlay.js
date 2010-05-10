@@ -416,7 +416,7 @@ try {
 		loadGlobalPrefs: function () {
 			try {
 				var logging = this.prefs.getBoolPref("filelogging");
-				lore.debug.enableFileLogger(logging);
+                lore.debug.enableFileLogger(logging);
 			} catch (ex) {
 			}
 		},
@@ -430,6 +430,7 @@ try {
 				var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
 				var annoserver = this.prefs.getCharPref("annoserver");
 				var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
+                var high_contrast = this.prefs.getBoolPref("high_contrast");
 				var tmkey = this.prefs.getCharPref("tmkey");
 				// hide or show XUL toolbar buttons depending on prefs
 				
@@ -456,7 +457,8 @@ try {
                     rdfrepostype: rdfrepostype,
                     annoserver: annoserver,
                     disable: disable_co,
-                    tmkey: tmkey
+                    tmkey: tmkey,
+                    high_contrast: high_contrast
                 });
 			} 
 		},
@@ -467,7 +469,7 @@ try {
 				
 				var annoserver = this.prefs.getCharPref("annoserver");
 				var dccreator = this.prefs.getCharPref("dccreator");
-				
+				var high_contrast = this.prefs.getBoolPref("high_contrast");
 				var disable = this.prefs.getBoolPref("disable_annotations");
 				document.getElementById('annsep').hidden = disable;
 				document.getElementById('annsep2').hidden = disable;
@@ -490,7 +492,8 @@ try {
 					url: annoserver,
 					cacheTimeout: timeout,
 					disable: disable,
-					mode: mode
+					mode: mode, 
+                    high_contrast: high_contrast
 				}]);
 			}
 			else {
