@@ -428,7 +428,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						enableFont: false,
 						enableColors: false,
 						enableSourceEdit: false,
-						anchor: '-30 100%'
+						anchor: '-30 65%'
 					}, {
 						fieldLabel: 'Alt Body',
 						xtype: 'htmleditor',
@@ -437,7 +437,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						enableFont: false,
 						enableColors: false,
 						enableSourceEdit: false,
-						anchor: '-30 100%'
+						anchor: '-30 65%'
 					}],
 					buttons: this.buttonsConfig ? this.buttonsConfig : []
 				}]
@@ -698,10 +698,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			 	}
 			
 				// hide/show fields depending on whether annotation is a scholarly annotation or not
-				var isNormal = this.annomode == lore.constants.ANNOMODE_NORMAL;
-				lore.anno.ui.setVisibilityFormField(this.form,'importance', 	isNormal);
-				lore.anno.ui.setVisibilityFormField(this.form,'altbody', 		isNormal);
-				lore.anno.ui.setVisibilityFormField(this.form,'references', 	isNormal);
+				var scholarlyFields = ['importance', 'altbody', 'references'];
+				if (this.annomode == lore.constants.ANNOMODE_NORMAL) {
+					lore.anno.ui.hideFormFields(this.form, scholarlyFields);
+				} else {
+					lore.anno.ui.showFormFields(this.form, scholarlyFields);
+				}
 			
 				
 				var val = rec.data.resource;
