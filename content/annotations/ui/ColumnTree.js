@@ -795,7 +795,6 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 				iconCls: iCls,
 				title: lore.anno.ui.getAnnoTitle(anno),
 				uiProvider: lore.anno.ui.ColumnTreeNodeUI,
-				qtip: lore.anno.ui.genAnnotationCaption(anno, 't by c, d'),
 				nodeType: anno.type				
 			});
 			
