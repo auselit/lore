@@ -1,89 +1,261 @@
-lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
-    layout:'card',
-    activeItem: 0,
-    playing: false,
-    interval: 3,
-    bodyStyle: 'padding:3px',
-    defaults: {
-        border:false
-    },		
-    setActiveItem: function(i){
-        var max = this.items.length;
-        var ai = 0;
-        if (i < 0){
-            ai = max - 1;
-        } else {
-            ai = i % max;
-        } 
-        this.activeItem = ai;
-        this.layout.setActiveItem(ai);
+/* 
+ * Panel in the slideshow representing an AbstractOREResource
+ */
+lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{ 
+   initComponent: function(config){
+        this.autoScroll = true;
+        lore.ore.ui.SlidePanel.superclass.initComponent.call(this, config);
+   },
+   /** 
+    * Set the model represented by the SlidePanel.
+    * Model can be added but not changed - create a new Panel to represent a different resource
+    * @param {lore.ore.model.AbstractOREResource} resource The model object
+    */
+   addModel: function(resource){
+        if (!this.model){
+            this.model = resource;
+            // events for general Resources (related to properties)
+            this.model.on("addProperty", this.addProperty, this);
+            this.model.on("removeProperty", this.removeProperty, this);
+            this.model.on("propertyChanged", this.propertyChanged, this);
+            // events for CompoundObjects
+            this.model.on("addAggregatedResource",this.addResource,this);
+            this.model.on("removeAggregatedResource",this.removeResource,this);
+            this.loadContent(this.model);  
+        }
     },
-    next : function(){
-        this.setActiveItem(this.activeItem + 1);
-    },
-    prev : function(){
-        this.setActiveItem(this.activeItem - 1);
-    },
-    playPause : function (){
-      if(this.playing) {
-          this.pause();
-      } else {
-          this.play();
-      }  
-    },
-    pause: function(){
-      if(this.playing) {
-            Ext.TaskMgr.stop(this.playTask);
-            this.playTaskBuffer.cancel();
-            this.playing = false;
-            this.getTopToolbar().findById('play').removeClass('ux-carousel-playing');
-        }        
-        return this;  
-    },
-    play: function() {
-        if(!this.playing) {
-            this.playTask = this.playTask || {
-                run: function() {
-                    this.playing = true;
-                    this.next();
-                },
-                interval: this.interval*1000,
-                scope: this
-            };
-            
-            this.playTaskBuffer = this.playTaskBuffer || new Ext.util.DelayedTask(function() {
-                Ext.TaskMgr.start(this.playTask);
-            }, this);
-
-            this.playTaskBuffer.delay(this.interval*1000);
-            this.playing = true;
-            this.getTopToolbar().findById('play').addClass('ux-carousel-playing');
-        }  
-        return this;
-    },
-    initComponent: function(){
-         Ext.apply(this,
-            {  tbar: [
-                    '->',
-                    {
-                        id: 'move-prev',
-                        iconCls: 'ux-carousel-nav-prev',
-                        handler: this.prev.createDelegate(this)
-                    },
-                    {
-                        id: 'play',
-                        iconCls: 'ux-carousel-nav-play',
-                        handler: this.playPause.createDelegate(this)
-                    },
-                    {
-                        id: 'move-next',
-                        iconCls: 'ux-carousel-nav-next',
-                        handler: this.next.createDelegate(this)
-                    }
-                ]
+    /** 
+     * Load contents from the model
+     * 
+     */
+    loadContent: function(resource){
+        /*
+         * Helper function: given an array of content, make a table of contents
+         */
+        var makeTOC = function(contentResources){ 
+            var tochtml = "";
+            tochtml += "<ul style='text-align:left; list-style: circle inside;'>"
+            for (var i = 0; i < contentResources.length; i++){
+                var r = contentResources[i];
+                tochtml += "<li><a href='#' onclick='try{Ext.getCmp(\"newss\").setActiveItem(\"" + r.uri + "\");}catch(e){lore.debug.ore(e)}'>" + (r.getTitle() || "Untitled Resource") + "</a></li>";
             }
-        );
-        lore.ore.ui.SlidePanel.superclass.initComponent.call(this);
-   }
+            tochtml += "</ul>";
+            return tochtml;
+        }
+        /*
+         * Helper function: given a resource, produce html to display the properties 
+         */
+        var displayProperties = function(res, skip){
+            var prophtml = "";
+            var relhtml = "";
+            skip = skip || {};
+            var skipProps = Ext.apply(skip, {"rdf:type_0":true, "dc:format_0":true, "ore:describes_0":true,"dc:title_0":true, "dc:description_0":true,"dcterms:abstract_0":true, "dc:rights_0":true});
+            var desc = res.getProperty("dc:description_0");
+            if (desc) {
+             prophtml += "<tr valign='top'>" +
+                "<td><b>description:</b></td><td width='80%'>"
+                + desc.value + "</td></tr>";
+            }
+            var abst = resource.getProperty("dcterms:abstract_0");
+            if (abst) {
+                prophtml += "<tr valign='top'><td><b>abstract:</b></td>" +
+                    "<td width='80%'>"
+                    + abst.value + "</td></tr>";
+            }
+            var rights = resource.getProperty("dc:rights_0");
+            if (rights) {
+                prophtml += "<tr valign='top'><td><b>rights:</b></td>" +
+                    "<td width='80%'>"
+                    + rights.value + "</td></tr>";
+            }
+            // all other properties/rels
+            for (var p in res.properties){
+                if (!(p in skipProps)) {
+                    var theProp = res.getProperty(p);
+                    if ("layout" != theProp.prefix){
+                        if (theProp.value.toString().match("^http://") == "http://") {
+                            // Link to resource
+                            relhtml += "<tr valign='top'><td><b>" + theProp.name + ":</b>&nbsp;</td>";
+                            relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
+                            // lookup title
+                            var propR = (res.container? res.container.getAggregatedResource(theProp.value): false);
+                            if (propR) {
+                                relhtml += propR.getTitle() || theProp.value;
+                            } else {
+                                relhtml += theProp.value;
+                            }
+                            relhtml += "</a></td></tr>";
+                        } else {
+                            // Display value as property
+                            prophtml += "<tr valign='top'><td><b>" + theProp.name + ":</b>&nbsp;</td>";
+                            prophtml += theProp.value;
+                            prophtml += "</td></tr>";
+                        }  
+                    }
+                }
+            }
+            return prophtml + relhtml;
+        }
+        
+        // TODO: use Ext Template
+        var slidehtml = "";
+        var prophtml = "";
+        var title = resource.getTitle();
+        if (resource instanceof lore.ore.model.CompoundObject){
+            // Title slide for entire Slideshow
+            title = title || 'Compound object';
+            slidehtml += "<div style='padding:0.5em'><div class='slideshowTitle'>" + title + "</div>";
+            slidehtml += "<table class='slideshowProps'>";
+            slidehtml += displayProperties(resource,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
+            slidehtml += "</table>";
+            var contentResources = resource.aggregatedResources;
+            if (contentResources.length > 0){
+                slidehtml += "<div class='slideshowToc'><p style='font-weight:bold;'>Contents:</p>";
+                slidehtml += makeTOC(contentResources);
+                slidehtml += "</div>";
+            }
+            var ccreator = resource.getProperty("dc:creator_0");
+            var ccreated = resource.getProperty("dcterms:created_0");
+            var cmodified = resource.getProperty("dcterms:modified_0");
+            slidehtml += "<div class='slideshowProps'>Created" + (creator? " by " + ccreator.value : "") + ' on  ' + ccreated.value;
+            if (cmodified) {
+                slidehtml += ', last updated on ' + cmodified.value;
+            }
+            slidehtml += "</div>";
+            slidehtml += "</div>";
+            
+        } else if (resource.representsCO){
+             // content slide representing nested CO
+            // Properties
+            slidehtml += "<div style='padding:0.5em'>";
+            slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
+            slidehtml += "<table class='slideshowProps'>";
+            slidehtml += displayProperties(resource);
+            slidehtml += "</table>";
+            if (resource.representsCO instanceof lore.ore.model.CompoundObject){
+                slidehtml += "<table class='slideshowProps'>" + displayProperties(resource.representsCO,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true}) + "</table>";
+                var contentResources = resource.representsCO.aggregatedResources;
+	            if (contentResources.length > 0){
+	                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;'>In this section:</p>";
+                    slidehtml += makeTOC(contentResources);
+                    slidehtml += "</div>";
+	            }
+                var creator = resource.representsCO.getProperty("dc:creator_0");
+	            slidehtml += "<div class='slideshowProps'>This nested compound object created" + (creator? " by " + creator.value : "") + " on " + resource.representsCO.getProperty("dcterms:created_0").value;
+	            var mod = resource.representsCO.getProperty("dcterms:modified_0");
+	            if (mod){
+	                slidehtml += ", last updated on " + mod.value;
+	            }
+	            slidehtml += "</div>";
+            } else {
+                slidehtml = "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + resource.uri + "\");'>Nested Compound Object:<br>"
+                        + "<img src='../../skin/icons/action_go.gif'/> Load in LORE</p>";
+            }
+            slidehtml += "</div>";
+        } else {
+            // content slide representing resource
+            title = resource.getTitle() || "Untitled Resource";
+            var previewhtml = "";
+            var format = resource.getProperty("dc:format_0");
+            var rdftype = resource.getProperty("rdf:type_0");
+            var hasPreview = true;
+
+            var icontype = "pageicon";
+            if (format){
+		        if (format.value.match("html")){
+		            icontype += " htmlicon";
+		        } else if (format.value.match("image")) {
+		            icontype += " imageicon";
+		        } else if (format.value.match("audio")) {
+		            icontype += " audioicon";
+		        } else if (format.value.match("video") || format.value.match("flash")){
+		            icontype += " videoicon";
+		        }
+		        else if (format.value.match("pdf")) {
+		            icontype += " pdficon";
+		        }
+            }
+
+            slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
+            slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
+            slidehtml += "</div>";
+            slidehtml += "<table class='slideshowProps'>" + displayProperties(resource) + "</table>";
+            if (format && format.value.match("image")){
+                previewhtml += "<img class='sspreview' src='" + resource.uri + "' alt='image preview' style='max-height:100%;'/>";
+            } else if (resource.uri.match('austlit.edu.au') && (resource.uri.match('ShowWork') || resource.uri.match('ShowAgent'))){
+                previewhtml += '<object class="sspreview" data="' + resource.uri + '&amp;printPreview=y"  height="100%" width="100%"></object>';
+            } else if (rdftype && (rdftype.value.match('http://www.w3.org/2000/10/annotation') || rdftype.value.match('http://www.w3.org/2001/12/replyType'))){
+                previewhtml += '<object class="sspreview" data="' + resource.uri + '?danno_useStylesheet="  height="100%" width="100%"></object>';
+            } else {
+                var previewFrame = lore.global.util.createSecureIFrame(window.top, resource.uri);
+                previewFrame.style.width = "100%";
+                previewFrame.style.height = "100%";
+                previewFrame.name = resource.uri + "-ss";
+                previewFrame.id = resource.uri + "-ss";
+                previewFrame.style.zIndex = "-9001"; 
+            }
+            // Only allow http/https previews (ie no chrome, data, view-source etc uris) for security reasons
+            if (!(resource.uri.match("^http") == "http")){
+                hasPreview = false;
+            }
+            
+            // TODO: Add source info + container info
+            
+            slidehtml += "<p style='font-size:60%;padding-top:1em;'>Source: <a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#'>"  + resource.uri + "</a>";
+            if (resource.container){
+                slidehtml += " &nbsp;&nbsp;&nbsp; from &nbsp;&nbsp;&nbsp;<a href='#' onclick='lore.ore.readRDF(\"" + resource.container.uri + "\");'>" + (resource.container.getTitle() || resource.container.uri) + "</a>"; 
+            }
+            slidehtml += "</p>";
+            
+        }
+        
+        if (hasPreview) {
+            this.layout = 'anchor';
+            if (previewFrame){
+                this.add({anchor: '100% 75%', autoScroll: true, contentEl: previewFrame});   
+            } else {
+                this.add({anchor: '100% 75%', autoScroll: true, html: previewhtml});
+            }
+            this.add({anchor: '100% 25%', autoScroll: true, html: slidehtml});
+        } else {
+            this.html = slidehtml;   
+        }
+    },
+    /**
+     * Add to displayed props
+     * @param {} aProp
+     */
+    addProperty : function(aProp) {
+        
+    },
+    /**
+     * Remove from displayed props
+     * @param {} aProp
+     */
+    removeProperty : function(aProp) {
+        
+    },
+    /** 
+     * Update displayed list of properties
+     * @param {} oldProp
+     * @param {} newProp
+     */
+    propertyChanged : function(oldProp,newProp) {
+        
+    },
+    /**
+     * Add to TOC
+     * @param {} aResource
+     */
+    addResource : function(aResource){
+        
+    },
+    /**
+     * Remove from TOC
+     * @param {} aResource
+     */
+    removeResource : function(aResource){
+        
+    }
 });
 Ext.reg('slidepanel',lore.ore.ui.SlidePanel);
