@@ -430,10 +430,18 @@
 
 #trailcarousel {height:100%;width:100%}
 .slideshowTitle {
-	color:#cc0000;font-weight:bold;font-size:120%;padding-top:2em;padding-bottom:0.5em
+	color:#cc0000;font-weight:bold;font-size:120%;padding-top:1em;padding-bottom:0.5em;border-bottom:1px solid #cc0000;
 }
+.sectionTitle {
+	font-weight:bold;font-size:120%;padding-top:2em;padding-bottom:0.5em; 
+	border-bottom: 1px solid #51666b
+}
+
 .slideshowProps {
-	width:100%;font-size:80%;color:#465458;border-top:1px solid #cc0000;padding-top:0.5em;line-height:1.3em
+	width:100%;font-size:80%;color:#465458;padding-top:0.5em;line-height:1.3em
+}
+.slideshowTOC {
+	font-size:90%;color:#465458;padding-top:1em;line-height:1.2em
 }
 .left-spacer4 {
 	padding-left: 4px;
