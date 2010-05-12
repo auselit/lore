@@ -42,7 +42,7 @@ lore.ore.NODE_SPACING = 40;
 /** Used for layout in graphical editor - Maximum width before nodes are positioned on new row 
  * @const */
 lore.ore.ROW_WIDTH        = 400;
-
+lore.ore.MAX_NESTING      = 2;
 // TODO: #10 replace with an ontology
 /** Default list of properties that can be specified for compound objects or resources 
  * @const */
@@ -131,11 +131,9 @@ lore.ore.ui.loreWarning = function(/*String*/message){
 
 lore.ore.setPrefs = function(prefs){
   try{ 
-	  lore.debug.ore("lore.ore.setPrefs",prefs);
 	  lore.ore.setDcCreator(prefs.creator);
 	  lore.ore.setrelonturl(prefs.relonturl);
 	  lore.ore.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
-      lore.global.util.setHighContrast(window, prefs.high_contrast);
   } catch (e){
     lore.debug.ore("Unable to set repos prefs",e);
   }
@@ -148,8 +146,9 @@ lore.ore.setPrefs = function(prefs){
     lore.ore.disableUIFeatures({
         'disable_compoundobjects': prefs.disable
     });  
+    lore.global.util.setHighContrast(window, prefs.high_contrast);
   } catch (e){
-    lore.debug.ore("Unable to disable CO UI",e);
+    lore.debug.ore("Unable to set UI prefs",e);
   }
 };
 /**
@@ -252,10 +251,15 @@ lore.ore.search = function (searchuri, searchpred, searchval){
  * @return {Boolean} Returns true if the compound object has been modified
  */
 lore.ore.compoundObjectDirty = function (){
-    // TODO: #56 implement this method - compare lore.ore.loadedRDF with state of model
+    // TODO: #56 implement this method - compare state of model
+
+    // return false if there is no compound object loaded
+    if (!lore.ore.cache.getLoadedCompoundObject()){
+        return false;
+    }
     // If it was a new compound object and the graphical view is either not defined 
     // or has no resources, don't consider it to be dirty
-    if (lore.global.util.isEmptyObject(lore.ore.loadedRDF) 
+    if (lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent()) 
         && (!lore.ore.ui.graph.coGraph || 
             (lore.ore.ui.graph.coGraph 
                 && lore.ore.ui.graph.coGraph.getDocument().getFigures().getSize() == 0))){
@@ -283,10 +287,12 @@ lore.ore.createCompoundObject = function (dontRaise){
         var dateString = lore.ore.getToday();
         // TODO: fix properties - use date string for now
         // TODO: should not assign an id until it has been saved
-        lore.ore.currentREM = lore.ore.reposAdapter.generateID();
+        currentREM = lore.ore.reposAdapter.generateID();
+        lore.ore.cache.add(currentREM,new lore.ore.model.CompoundObject({uri: currentREM}));
+        lore.ore.cache.setLoadedCompoundObjectUri(currentREM);
         lore.ore.ui.grid.store.loadData(
         [
-            {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: lore.ore.currentREM},
+            {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: currentREM},
             {id: "dc:creator_0", name: "dc:creator", value: lore.defaultCreator},
             {id: "dcterms:modified_0", name: "dcterms:modified", value:dateString},
             {id:"dcterms:created_0", name:"dcterms:created",value:dateString},
@@ -581,159 +587,56 @@ lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*
     tab.show();
 };
 
-lore.ore.showCompoundObjectNarrative = function(p){
- var panel = p.getComponent('newss');
-    // TODO: panel should listen to model changes and update automatically - this is a hack
+// Temporary function to preload nested compound objects into cache
+lore.ore.cacheNested = function(coContents,nestingLevel) {
+    if (nestingLevel < lore.ore.MAX_NESTING){
+        coContents.where('?a ore:aggregates ?url')
+            .where('?url rdf:type <' + lore.constants.RESOURCE_MAP + '>')
+            .each(function(){
+                try{
+                  var theurl = this.url.value.toString();
+                  var nestedCO = lore.ore.cache.getCompoundObject(theurl);
+                  if (!nestedCO){
+                      lore.debug.ore("Adding to cache " + theurl);
+	                  // TODO: Load these asynchronously via the repository adapter
+	                  var xhr = new XMLHttpRequest();
+	                  xhr.overrideMimeType('text/xml');
+	                  xhr.open("GET", theurl, false);
+	                  xhr.send(null);
+	                  nestedCO = new lore.ore.model.CompoundObject({uri: theurl});
+	                  nestedCO.load({format: 'application/rdf+xml', content: xhr.responseXML});
+	                  lore.ore.cache.add(theurl, nestedCO);
+                  }
+                } catch (e) {
+                    lore.debug.ore("Problem loading nested CO into cache",e);
+                }
+            }
+        );
+    }
+};
+/** Generate a slideshow representing the current compound object */
+lore.ore.showSlideshow = function(p){
+    var panel = p.getComponent('newss');
     lore.debug.ore("generating slideshow");
-    var prophtml = "", previewhtml;
-    try{
-    // clear panel
-    panel.removeAll();
-    var items = [];
-    // Compound Object title slide
-    var ctitle = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Compound Object";
-    prophtml += "<div style='padding:2em'><div class='slideshowTitle'>" + ctitle + "</div>";
-    prophtml += '<table class="slideshowProps">';
+    Ext.MessageBox.show({
+           msg: 'Generating Slideshow',
+           width:250,
+           defaultTextHeight: 0,
+           closable: false,
+           cls: 'co-load-msg'
+    });
     
-    var ccreator = lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid);
-    var ccreated = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
-    var cmodified = lore.ore.getPropertyValue("dcterms:modified",lore.ore.ui.grid);
-    prophtml += '<tr style="vertical-align:top">'
-        + '<td colspan="2">Created by ' + ccreator + ' on  ' + ccreated;
-    if (cmodified) {
-        prophtml += ', last updated on ' + cmodified;
-    }
-    prophtml += "</td></tr>";
-    var desc = lore.ore.getPropertyValue("dc:description",lore.ore.ui.grid);
-    if (desc) {
-        prophtml += "<tr valign='top'>" +
-                "<td><b>Description:</b></td><td width='80%'>"
-                + desc + "</td></tr>";
-    }
-    var abst = lore.ore.getPropertyValue("dcterms:abstract",lore.ore.ui.grid);
-    if (abst) {
-        prophtml += "<tr valign='top'><td><b>Abstract:</b></td>" +
-            "<td width='80%'>"
-            + abst + "</td></tr>";
-    }
-    var rights = lore.ore.getPropertyValue("dc:rights",lore.ore.ui.grid);
-    if (rights) {
-        prophtml += "<tr valign='top'><td><b>Rights:</b></td>" +
-            "<td width='80%'>"
-            + rights + "</td></tr>";
-    }
-    // TODO: add other properties
-    prophtml += "</table></div>";
-
-    items.push({id: lore.ore.currentREM, autoScroll: true, html: prophtml});
-
-    // Slide for each resource
-    var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
-    allfigures.sort(lore.ore.ui.graph.figSortingFunction);
-    for (var i = 0; i < allfigures.length; i++) {
-        var fig = allfigures[i];
-        prophtml = "<div style='padding:2px'>";
-        previewhtml = "";
-        var isExternalResource = false;
-        if (fig && fig instanceof lore.ore.ui.graph.ResourceFigure){
-            var figurl = lore.global.util.escapeHTML(fig.url);
-            var title = fig.getProperty("dc:title_0") || "Untitled Resource";
-            var rdftype = fig.getProperty("rdf:type_0") || "";
-            var figformat = fig.getProperty("dc:format_0");
-            var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
-            // Properties header (title with icon/link)
-            prophtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
-            if (isCompObject){
-                prophtml +=  "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'>" + title + "</a>";
-            }
-            else {
-                prophtml += "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'><img src='../../skin/icons/page_go.png' title='Open in a new tab'/></a>&nbsp;"  + title;
-            }
-            prophtml += "</div>";
-            
-            // preview (eg image, iframe)
-            if (isCompObject){
-                previewhtml += "<p style='color:#51666b;margin-top:3em'>" 
-                        + "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'>Nested Compound Object:<br>"
-                        + "<img src='../../skin/icons/action_go.gif'/> Load in LORE</p>"; 
-            } else if (figformat && figformat.match("image")){
-                previewhtml += "<img class='sspreview' src='" + figurl + "' alt='image preview' style='max-height:100%;text-align:center'/>";
-            } else if (figurl.match('austlit.edu.au') && (figurl.match('ShowWork') || figurl.match('ShowAgent'))){
-                previewhtml += '<object class="sspreview" data="' + figurl + '&amp;printPreview=y"  height="100%" width="100%"></object>';
-            } else if (rdftype.match('http://www.w3.org/2000/10/annotation') || rdftype.match('http://www.w3.org/2001/12/replyType')){
-                previewhtml += '<object class="sspreview" data="' + figurl + '?danno_useStylesheet="  height="100%" width="100%"></object>';
-            }
-            else {
-                /*//previewhtml += //"<iframe src='" + figurl + "' height='100%' width='100%'>";
-                ;*/
-                // FIXME: EVIL! this should be a secure iframe! Enabled temporarily for user feedback
-                //previewhtml += "<object class='sspreview' data='" + figurl + "' height='100%' width='100%'></object>";
-                previewhtml += '<div style="color:#51666b;margin-top:3px;">Non-AustLit Resource (click to view in browser): '
-                    + '<a title="Open in new tab" onclick="lore.global.util.launchTab(\"' + figurl + '\");return false;" href="' + figurl + '">'
-                + figurl + '</a></div>'
-                isExternalResource = true;
-            }
-            
-            
-            for (p in fig.metadataproperties){
-                var pname = p;
-                var pidx = p.indexOf("_");
-                if (pidx != -1){
-                    pname = p.substring(0,pidx);
-                }
-                if (pname != 'resource' && pname != 'dc:format' && pname != 'rdf:type' && pname != 'dc:title'){
-                    prophtml += //"<a href='#' onclick='lore.ore.editResDetail(\"" + fig.url + "\",\"" +  p + "\");'><img title='Edit in Resource Details view' src='chrome://lore/skin/icons/pencil.png'></a>&nbsp;" +
-                            "<span style='color:#51666b;font-size:90%'><b>" + pname + "</b>: " + fig.metadataproperties[p] + "<br></span>";
-                }
-            }
-            prophtml += "<p style='padding-top:0.5em'>";
-            var ports = fig.getPorts();
-            for (var p = 0; p < ports.getSize(); p++){
-                var outgoingconnections = ports.get(p).getConnections();
-                for (var j = 0; j < outgoingconnections.getSize(); j++) {
-                    var theconnector = outgoingconnections.get(j);
-                    var relpred = theconnector.edgetype;
-                    var relobj = "";
-            
-                    if (figurl == lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url)){
-                       relobj = theconnector.targetPort.parentNode.url;
-                       prophtml += "<span style='color:#51666b;font-size:90%'>This resource <b>" 
-                       + relpred + "</b> <a href='#' onclick='lore.global.util.launchTab(\"" + relobj + "\");'>"
-                       + relobj + "</a><br/></span>";
-                    } else {
-                       relobj = theconnector.sourcePort.parentNode.url;
-                       prophtml += "<span style='color:#51666b;font-size:90%'><a href='#' onclick='lore.global.util.launchTab(\"" + relobj + "\");'>"
-                       + relobj + "</a> <b>" 
-                       + relpred + "</b> this resource<br/></span>";
-                    }
-                    
-                }
-            } 
-            prophtml += "</p>";
-            if (!isCompObject){
-                prophtml += "<p style='font-size:60%;padding-top:1em'>Source: <a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>"  + figurl + "</a></p>";
-            }
-            prophtml += "</div>";
-            
-            var previewSize = (isExternalResource? "25" : "75");
-            
-            var pspec = {border: false, id: figurl, layout: 'anchor', 
-                items: [{anchor: '100% ' + previewSize + "%", autoScroll: true, html: previewhtml},
-                {anchor: '100% ' + (100 - previewSize) + '%', autoScroll: true, html: prophtml}]};
-            items.push(pspec);
-
-        }
-    }
-    }
-    catch (e) {
-        lore.debug.ore("problem",e);
-    }
-    lore.debug.ore("adding items",items);
-    panel.add(items);
-    panel.setActiveItem(0);
+    // TODO: slideshow should listen to model and this should not be regenerated each time
+    var coContents = lore.ore.serializeREM('rdfquery');
+    // preload all nested compound objects to cache
+    lore.ore.cacheNested(coContents, 0);
+    var tmpCO = new lore.ore.model.CompoundObject();
+    tmpCO.load({format: 'rdfquery',content: coContents});
+    panel.loadContent(tmpCO);
+    Ext.Msg.hide();
 }
 
-// TODO: either use XSLT or listen to model rather than updating entire view each time
+// TODO: listen to model rather than updating entire view each time
 /** Displays a summary of the resource URIs aggregated by the compound object 
  * @parm {Ext.Panel} summarypanel The panel to show the summary in */
 lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
@@ -746,7 +649,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
             + "<a href='#' onclick='lore.ore.handleSerializeREM(\"wordml\")'>"
             + "<img src='chrome://lore/skin/icons/page_white_word.png' title='Export summary to MS Word'>"
             + "</a></div>"
-            + lore.ore.currentREM + "</td></tr>";
+            + lore.ore.cache.getLoadedCompoundObjectUri() + "</td></tr>";
     var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
     if (title) {
         newsummary += "<tr valign='top'><td width='20%'><b>Title:</b></td><td>"
@@ -764,9 +667,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
             + abst + "</td></tr>";
     }
     newsummary += "</table>";
-     var newsummarydetail = "<a href='#' onclick='lore.global.util.setHighContrast(window,true);'>high contrast</a> ";
-     newsummarydetail += "<a href='#' onclick='lore.global.util.setHighContrast(window,false);'>normal contrast</a> ";
-    newsummarydetail += "<div style='padding-top:1em'>";
+    var newsummarydetail = "<div style='padding-top:1em'>";
     var tocsummary = "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
     var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
     allfigures.sort(lore.ore.ui.graph.figSortingFunction);
@@ -796,7 +697,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
                 if (pidx != -1){
                     pname = p.substring(0,pidx);
                 }
-                if (pname != 'resource' && pname != 'dc:format' && pname != 'rdf:type'){
+                if (pname != 'resource' && pname != 'dc:format' && pname != 'rdf:type' && fig.metadataproperties[p]){
                     newsummarydetail += //"<a href='#' onclick='lore.ore.editResDetail(\"" + fig.url + "\",\"" +  p + "\");'><img title='Edit in Resource Details view' src='chrome://lore/skin/icons/pencil.png'></a>&nbsp;" +
                             "<b>" + pname + "</b>: " + fig.metadataproperties[p] + "<br>";
                 }
@@ -851,8 +752,8 @@ lore.ore.updateFOXML = function (){
 lore.ore.updateTriG = function (){
     Ext.getCmp("remtrigview").body.update("<pre>" + Ext.util.Format.htmlEncode(lore.ore.serializeREM('trig')) + "</pre>");
 };
-/** Generate a slideshow representing the current compound object */
-lore.ore.showSlideshow = function (){
+
+/*lore.ore.showSlideshow = function (){
     var sscontents = "";
     var carouselel = Ext.get("trailcarousel");
     try{
@@ -867,7 +768,7 @@ lore.ore.showSlideshow = function (){
     } catch (ex){
         lore.debug.ore("adding slideshow",ex);
     }
-};
+};*/
 lore.ore.resizeSlideshow = function (comp,adjWidth, adjHeight, rawWidth, rawHeight){
     try {
 	    var carouselel = Ext.get("trailcarousel");
@@ -887,12 +788,12 @@ lore.ore.resizeSlideshow = function (comp,adjWidth, adjHeight, rawWidth, rawHeig
 /** Generate a visualisation to explore compound object connections */
 lore.ore.showExploreUI = function(){
     try{
-    if (lore.ore.exploreLoaded !== lore.ore.currentREM) {
-        if (lore.ore.loadedRDF){
-        }
-        lore.debug.ore("show in explore view", lore.ore.currentREM);
-        lore.ore.exploreLoaded = lore.ore.currentREM;
-        lore.ore.explore.showInExploreView(lore.ore.currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
+    var currentREM = lore.ore.cache.getLoadedCompoundObjectUri();
+    if (lore.ore.exploreLoaded !== currentREM) {
+        
+        lore.debug.ore("show in explore view", currentREM);
+        lore.ore.exploreLoaded = currentREM;
+        lore.ore.explore.showInExploreView(currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
     } else {
         lore.debug.ore("refresh explore view");
         lore.ore.explore.rg.refresh();
@@ -946,8 +847,10 @@ lore.ore.serializeREM = function(format) {
 	            databank.prefix(ns,lore.constants.NAMESPACES[ns]);
 	        }
 	        databank.load(rdfDoc);
-	    if (format == 'trig') {
-	       var result = "<" + lore.ore.currentREM + ">\n{\n";
+        if (format == 'rdfquery') {
+            return jQuery.rdf({databank: databank});
+        } else if (format == 'trig') {
+	       var result = "<" + lore.ore.cache.getLoadedCompoundObjectUri() + ">\n{\n";
 	       var triples = databank.triples();
 	       for (var t = 0; t < triples.length; t++){
 	        var triple = triples[t];
@@ -1014,9 +917,10 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     
     // Load existing aggregation id if any from original RDF
     var describedaggre = "#aggregation";
-    var existingAggre = !lore.global.util.isEmptyObject(lore.ore.loadedRDF);
+    var loadedRDF = lore.ore.cache.getLoadedCompoundObject().getInitialContent();
+    var existingAggre = !lore.global.util.isEmptyObject(loadedRDF);
     if (existingAggre) {
-        var remQuery = lore.ore.loadedRDF.where('?aggre rdf:type ore:Aggregation')
+        var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
             .where('<'+ rdfabout +'> ore:describes ?aggre');
         describedaggre = remQuery.get(0).aggre.value.toString();
     }
@@ -1090,7 +994,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     // LORE does not support editing these, but should preserve them
     // TODO: REFACTOR!! this code appears several times : properties should be serialised from model
     if (existingAggre){
-        var aggreprops = lore.ore.loadedRDF.where('<' + describedaggre + '> ?pred ?obj')
+        var aggreprops = loadedRDF.where('<' + describedaggre + '> ?pred ?obj')
             .filter(function(){
                 // filter out ore:aggregates, type and modified
                 if (this.pred.value.toString() === lore.constants.NAMESPACES["ore"] + "aggregates" ||
@@ -1141,7 +1045,6 @@ lore.ore.createRDF = function(/*boolean*/escape) {
 	                    if (midx != -1){
 	                        tagname = mprop.substring(0,midx);
 	                    }
-	                    //lore.debug.ore("2 serializing " + tagname, mpropval);
                         // why not using serialise_property function here?
 	                    //if (tagname == "rdf:type"){ // resource
                         if (mpropval.match("http:") || mpropval.match("mailto:")){
@@ -1206,14 +1109,14 @@ lore.ore.nsprefix = function(ns) {
         var nssize = 0;
         for (var prefix in lore.constants.NAMESPACES) {
             if (lore.constants.NAMESPACES[prefix] == ns) {
-                return prefix + ":";
+                return prefix;
             }
             nssize++;
         }
         // Prefix was not found: create a new one: ensure it has a unique ns prefix
         var nprefix = "ns" + nssize;
         lore.constants.NAMESPACES[nprefix] = ns;
-        return nprefix + ":";
+        return nprefix;
 };
 lore.ore.loadCompoundObjectContents = function (rdf,elem){
     
@@ -1269,16 +1172,18 @@ lore.ore.loadCompoundObject = function (rdf) {
             showInHistory = true;
             rdfDoc = rdf.responseXML;
         }
+        
 	    var databank = jQuery.rdf.databank();
         for (ns in lore.constants.NAMESPACES){
             databank.prefix(ns,lore.constants.NAMESPACES[ns]);
         }
 	    databank.load(rdfDoc);
         /* rdfquery triplestore that stores the original RDF triples that were loaded for a compound object */
-        lore.ore.loadedRDF = jQuery.rdf({databank: databank});
-        
+        // TODO change to var
+        var loadedRDF = jQuery.rdf({databank: databank});
+
         // Display the properties for the compound object
-	    var remQuery = lore.ore.loadedRDF.where('?aggre rdf:type ore:Aggregation')
+	    var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
             .where('?rem ore:describes ?aggre');
         var aggreurl, remurl;
         var res = remQuery.get(0);
@@ -1286,19 +1191,29 @@ lore.ore.loadCompoundObject = function (rdf) {
         if (res){
 	       remurl = res.rem.value.toString();
            aggreurl = res.aggre.value.toString();
+           var tmpCO = new lore.ore.model.CompoundObject();
+           tmpCO.load({format: 'application/rdf+xml',content:rdfDoc}); 
+           lore.debug.ore("CO model is",tmpCO);
+   
+            //lore.debug.ore("CO model is same as self? " + Ext.ux.util.Object.compare(tmpCO,tmpCO2),tmpCO2);
+       
+           lore.ore.cache.add(remurl, tmpCO);
+           lore.ore.cache.setLoadedCompoundObjectUri(remurl);
         }  else {
             lore.ore.ui.loreWarning("No compound object found");
-            lore.debug.ore("no remurl found in RDF",lore.ore.loadedRDF);
+            lore.debug.ore("no remurl found in RDF",loadedRDF);
             lore.debug.ore("the input rdf was",rdf); 
         }
+        // TODO: listen to model object
 	    lore.ore.ui.grid.store.loadData([
             {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: remurl}
 	    ]);
-        lore.ore.loadedRDF.about('<' + remurl + '>')
+        loadedRDF.about('<' + remurl + '>')
             .each(function(){
+                //lore.debug.ore("loading property",this);
                 var propurl = this.property.value.toString();
                 var propsplit = lore.global.util.splitTerm(propurl);
-                var propname = lore.ore.nsprefix(propsplit.ns);
+                var propname = lore.ore.nsprefix(propsplit.ns) + ":";
                 if (propname){
                     propname = propname + propsplit.term;
                 } else {
@@ -1311,7 +1226,7 @@ lore.ore.loadCompoundObject = function (rdf) {
  
          
         // create a node figure for each aggregated resource, restoring the layout
-        lore.ore.loadedRDF.where('<' + aggreurl  + '> ore:aggregates ?url')
+        loadedRDF.where('<' + aggreurl  + '> ore:aggregates ?url')
             .optional('?url layout:x ?x')
             .optional('?url layout:y ?y')
             .optional('?url layout:width ?w')
@@ -1350,7 +1265,7 @@ lore.ore.loadCompoundObject = function (rdf) {
         });
         
         // iterate over all predicates to create node connections and properties
-        lore.ore.loadedRDF.where('?subj ?pred ?obj')
+        loadedRDF.where('?subj ?pred ?obj')
             .filter(function(){
                 // filter out the layout properties and predicates about the resource map
                 // also filter format and title properties as they have already been set
@@ -1406,7 +1321,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                         
                     } else  { 
                         // not a node relationship, show in the property grid 
-                        srcfig.appendProperty(lore.ore.nsprefix(relresult.ns) + relresult.term, obj);
+                        srcfig.appendProperty(lore.ore.nsprefix(relresult.ns) + ":" + relresult.term, obj);
                         if (relresult.term == "title") {
                             // TODO this should not be necessary - send props to addFigureWithOpts
                             srcfig.setTitle(obj);
@@ -1423,7 +1338,12 @@ lore.ore.loadCompoundObject = function (rdf) {
         
         lore.ore.ui.loreInfo("Loading compound object");
         Ext.Msg.hide();
-        lore.ore.currentREM = remurl;
+        
+        try{
+            lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+        } catch (e){
+            lore.debug.ore("problem",e);
+        }
         lore.ore.populateResourceDetailsCombo();
        if (showInHistory){
 	        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
@@ -1633,9 +1553,8 @@ lore.ore.afterSaveCompoundObject = function(remid){
 /** Remove a compound object from the UI */
 lore.ore.afterDeleteCompoundObject = function(deletedrem){
     try{
-	    if (lore.ore.currentREM == deletedrem){
-	        lore.ore.loadedRDF = {};
-	        lore.ore.currentREM = "";
+	    if (lore.ore.cache.getLoadedCompoundObjectUri() == deletedrem){
+            lore.ore.cache.setLoadedCompoundObjectUri("");
             lore.ore.ui.graph.coGraph.clear();
 	        lore.ore.createCompoundObject(); 
 	    }
@@ -1785,6 +1704,11 @@ lore.ore.ui.graph.addFigureWithOpts = function(opts){
         fig.setContent(theURL);
         lore.ore.ui.graph.coGraph.addFigure(fig, opts.x, opts.y);
         lore.ore.ui.graph.lookup[theURL] = fig.getId();
+        /*
+         * TODO: add to model
+         * lore.ore.cache.getLoadedCompoundObject.addAggregatedResource(
+            new lore.ore.model.Resource({uri: theURL}));
+            */
       	Ext.getCmp("loreviews").activate("drawingarea");
     } else {
         lore.ore.ui.loreWarning("Resource is already in the compound object: " + theURL);
@@ -1857,7 +1781,7 @@ lore.ore.createSMIL = function() {
 /** Generate FOXML from the current compound object */
 lore.ore.createFOXML = function (){
     try {
-        var params = {'coid': 'demo:' + lore.global.util.splitTerm(lore.ore.currentREM).term};
+        var params = {'coid': 'demo:' + lore.global.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri()).term};
         return lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/foxml.xsl",params,true);     
     } catch (e) {
         lore.ore.ui.loreWarning("Unable to generate FOXML");
@@ -1980,7 +1904,7 @@ lore.ore.updateResDetails = function(node,ev){
         var newval = respropeditor.getValue();
         var currURI = Ext.getCmp("resselectcombo").getValue();
         // TODO use a proper mvc
-        if (currURI == lore.ore.currentREM){
+        if (currURI == lore.ore.cache.getLoadedCompoundObjectUri()){
             // update node details grid
             try{
                 if (lore.ore.ui.grid){
@@ -2043,7 +1967,7 @@ lore.ore.populateResourceDetailsCombo = function (){
         return;
     }
     // add compound object
-    lore.ore.resourceStore.loadData([["Current Compound Object", lore.ore.currentREM, "Current Compound Object (" + lore.ore.currentREM + ")"]]);
+    lore.ore.resourceStore.loadData([["Current Compound Object", lore.ore.cache.getLoadedCompoundObjectUri(), "Current Compound Object (" + lore.ore.cache.getLoadedCompoundObjectUri() + ")"]]);
     // add all resources in compound object
     var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
     allfigures.sort(lore.ore.ui.graph.figSortingFunction);
@@ -2054,7 +1978,7 @@ lore.ore.populateResourceDetailsCombo = function (){
             lore.ore.resourceStore.loadData([[title,fig.url,title + " ("+ fig.url +")"]],true);
         }
     }
-    Ext.getCmp("resselectcombo").setValue(lore.ore.currentREM);
+    Ext.getCmp("resselectcombo").setValue(lore.ore.cache.getLoadedCompoundObjectUri());
     lore.ore.loadResourceDetails(Ext.getCmp("resselectcombo"), lore.ore.resourceStore.getAt(0),0);
 }
 // TODO: refactor to use model classes
@@ -2069,7 +1993,7 @@ lore.ore.loadResourceDetails = function(combo,record,index){
     lore.global.ui.clearTree(lore.ore.ui.resreltreeroot);
     var tmpNode;
     var resurl = record.data.uri;
-    if (resurl == lore.ore.currentREM){
+    if (resurl == lore.ore.cache.getLoadedCompoundObjectUri()){
         // it's the current compound object - load props from the grid
         lore.ore.ui.grid.store.each(function (rec){
             var propname = rec.id.substring(0,rec.id.indexOf("_"));
