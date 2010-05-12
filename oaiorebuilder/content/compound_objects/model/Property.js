@@ -1,7 +1,8 @@
 lore.ore.model = lore.ore.model || {};
 /**
  * @class lore.ore.model.Property
- * Model Class representing a (datatype) property of a resource 
+ * Model Class representing a predicate about a resource
+ * This could translate into a property or a relationship in the view
  * @param {} aConfig
  */
 lore.ore.model.Property = function (aConfig){
@@ -14,4 +15,5 @@ lore.ore.model.Property = function (aConfig){
     // TODO: Look up prefix and type from loaded ontologies if not passed in
     // if prefix is not defined for this ns, create a new one
 };
+
 

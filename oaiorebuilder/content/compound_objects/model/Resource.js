@@ -5,7 +5,8 @@ lore.ore.model = lore.ore.model || {};
  */
 lore.ore.model.Resource = function (args){
     lore.ore.model.AbstractOREResource.call(this,args);
-    this.relationships = [];
+    this.representsCO = false; // indicates if this represents a nested compound object
+    this.container;
 }
 lore.ore.model.Resource.prototype = new lore.ore.model.AbstractOREResource;
 lore.ore.model.Resource.constructor = lore.ore.model.Resource;
