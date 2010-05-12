@@ -50,7 +50,7 @@ saveCompoundObject : function (coid,thexml,callback){
     // TODO: allow modification of existing
     // FIXME:
     var foxml = lore.ore.createFOXML();
-    //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.currentREM).term;
+    //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri() ).term;
     lore.debug.ore("saving foxml to fedora",foxml);
     try {                  
            var xmlhttp2 = new XMLHttpRequest();
