@@ -82,7 +82,7 @@
 .co-tr-plus {
 	background: url(chrome://lore/skin/resourcenodecircleplus-hc.gif) no-repeat top right;
 }
-.slideshowTitle {
+.slideshowTitle, .sectionTitle, .slideshowToc, .slideshowProps {
 	color: #fffff6;
 }
 .slideshowProps {
