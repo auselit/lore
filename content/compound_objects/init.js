@@ -30,13 +30,10 @@
  */
 lore.ore.ui.initGraphicalView = function() {
 	Ext.getCmp("loreviews").activate("drawingarea");
+
 	/** Used to lookup figures by their URIs in the graphical editor */
 	lore.ore.ui.graph.lookup = {};
-	/**
-	 * Triple store representing the compound object last loaded from the
-	 * repository
-	 */
-	lore.ore.loadedRDF = {};
+
 	/** Indicates whether the compound object has been edited since being loaded */
 	lore.ore.ui.graph.modified = false;
 	if (lore.ore.ui.graph.coGraph) {
@@ -102,7 +99,8 @@ lore.ore.ui.loadPreferences = function() {
 lore.ore.ui.initProperties = function() {
 	var dateString = lore.ore.getToday();
     if (lore.ore.reposAdapter) {
-	   lore.ore.currentREM = lore.ore.reposAdapter.generateID();
+	   var currentREM = lore.ore.reposAdapter.generateID();
+       lore.ore.cache.setLoadedCompoundObjectUri(currentREM, new lore.ore.model.CompoundObject({uri:currentREM}));
     }
 	lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
 	lore.ore.ui.nodegrid.store.on("remove", lore.ore.handleNodePropertyRemove);
@@ -126,11 +124,11 @@ lore.ore.ui.initProperties = function() {
 	// update the CO title in the tree if it is changed in the properties
 	lore.ore.ui.grid.on("afteredit", function(e) {
 				if (e.record.id == "dc:title_0") {
-					var treenode = lore.ore.ui.remstreeroot.findChild("id",lore.ore.currentREM);
+                    var treenode = lore.ore.ui.remstreeroot.findChild("id",lore.ore.cache.getLoadedCompoundObjectUri());
 					if (treenode) {
 						treenode.setText(e.value);
 					}
-					treenode = lore.ore.ui.recenttreeroot.findChild("id",lore.ore.currentREM + "r");
+					treenode = lore.ore.ui.recenttreeroot.findChild("id",lore.ore.cache.getLoadedCompoundObjectUri() + "r");
 					if (treenode) {
 						treenode.setText(e.value);
 					}
@@ -217,12 +215,11 @@ lore.ore.ui.initUIComponents = function() {
 							autoScroll : true
 
 						}, { layout:'fit',
-                            id : "remnarrativeview",
-                            //title : "Narrative View",
+                            id : "remslideview",
                             title: "Slideshow",
                             items: [{
 							id: 'newss',
-							xtype : "slidepanel",
+							xtype : "slideshowpanel",
 							autoScroll : true
                             }]
 						},
@@ -458,7 +455,7 @@ lore.ore.ui.initUIComponents = function() {
 													 * 'x-form-ellipsis-trigger',
 													 * 'onTriggerClick':
 													 * function(ev) {
-													 * lore.ore.editResDetail(lore.ore.currentREM,
+													 * lore.ore.editResDetail(lore.ore.cache.getLoadedCompoundObjectUri(),
 													 * this.gridEditor.record.id,
 													 * this.getValue()); } })
 													 */
@@ -740,12 +737,13 @@ lore.ore.ui.initUIComponents = function() {
 	slidetab.on("activate", lore.ore.showSlideshow);
 	slidetab.on("resize", lore.ore.resizeSlideshow);
     */
-    Ext.getCmp("remnarrativeview").on("activate",lore.ore.showCompoundObjectNarrative);
+    Ext.getCmp("remslideview").on("activate",lore.ore.showSlideshow);
+    //Ext.getCmp("remnarrativeview").on("activate",lore.ore.showCompoundObjectNarrative);
     
 	var exploretab = Ext.getCmp("remexploreview");
 	var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
 			+ "<script type='text/javascript' src='chrome://lore/content/compound_objects/lore_explore.js'></script>"
-			+ "<a id='exploreReset' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.currentREM,\"Current Compound Object\",true);'>RESET VISUALISATION</a>"
+			+ "<a id='exploreReset' href='#' onclick='lore.ore.explore.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),\"Current Compound Object\",true);'>RESET VISUALISATION</a>"
 			+ "<div id='exploreHistory'></div>"
 			+ "<div id='infovis'></div>";
 	exploretab.body.update(contents, true);
@@ -757,6 +755,7 @@ lore.ore.ui.initUIComponents = function() {
 lore.ore.initModel = function() {
 	lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();
 	lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
+    lore.ore.cache = new lore.ore.model.CompoundObjectCache();
 	lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
 				fields : ['title', 'uri', 'display'],
 				data : [],
