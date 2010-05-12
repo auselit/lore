@@ -289,20 +289,25 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
  * @param {string} theurl
  */
 lore.ore.ui.graph.ResourceFigure.prototype.createPreview = function(theurl) {
-	var iframe = lore.global.util.createSecureIFrame(window.top, theurl);
-	/*
-	 * function () { if ( this.scrollx != 0 || this.scrolly != 0 ) {
-	 * iframe.contentDocument.body.scrollLeft = this.scrollx;
-	 * iframe.contentDocument.body.scrollTop = this.scrolly; } });
-	 */
-
-	iframe.style.width = "100%";
-	iframe.style.height = "100%";
-	iframe.name = theurl + "-data";
-	iframe.id = theurl + "-data";
-	iframe.style.zIndex = "-9001";
-    this.iframe = iframe;
-	this.iframearea.appendChild(iframe);
+	    var iframe;
+	    if (theurl.match("^http")  == "http"){
+			iframe = lore.global.util.createSecureIFrame(window.top, theurl);
+	    } else {
+	        iframe = lore.global.util.createSecureIFrame(window.top,"about:blank");
+	    }
+		/*
+		 * function () { if ( this.scrollx != 0 || this.scrolly != 0 ) {
+		 * iframe.contentDocument.body.scrollLeft = this.scrollx;
+		 * iframe.contentDocument.body.scrollTop = this.scrolly; } });
+		 */
+	
+		iframe.style.width = "100%";
+		iframe.style.height = "100%";
+		iframe.name = theurl + "-data";
+		iframe.id = theurl + "-data";
+		iframe.style.zIndex = "-9001";
+	    this.iframe = iframe;
+		this.iframearea.appendChild(iframe);
 };
 /**
  * Set the URL of the resource represented by this figure
