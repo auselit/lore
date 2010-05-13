@@ -273,17 +273,13 @@ lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
 	if (thefield) {
 		var cont = thefield.container.up('div.x-form-item');
 		
-		cont.setDisplayed(false);
-		if (hide && cont.isVisible()) {
-//			cont.slideOut();
+		if (hide) {
 			thefield.hide();
+			cont.setDisplayed(false);
+		} else {
+			thefield.show();
+			cont.setDisplayed(true);
 		}
-		else if (!hide && !cont.isVisible()) {
-//				thefield.hide();
-//				cont.slideIn();
-				thefield.show();
-				cont.setDisplayed(true);
-			}
 	}
 }
 
