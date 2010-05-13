@@ -144,7 +144,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                 var contentResources = resource.representsCO.aggregatedResources;
 	            if (contentResources.length > 0){
 	                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;'>In this section:</p>";
-                    slidehtml += makeTOC(contentResources, resource.representsCO.uri);
+                    slidehtml += makeTOC(contentResources, resource.representsCO.uri,this.ssid);
                     slidehtml += "</div>";
 	            }
                 var creator = resource.representsCO.getProperty("dc:creator_0");
@@ -225,12 +225,16 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         
         if (hasPreview) {
             this.layout = 'anchor';
+            //this.layout = 'border';
             if (previewFrame){
-                this.add({anchor: '100% 75%', autoScroll: true, contentEl: previewFrame});   
+                this.add({anchor: '100% 75%', autoScroll: true, contentEl: previewFrame}); 
+                //this.add({region:'center', autoScroll: true,  contentEl: previewFrame});  
             } else {
                 this.add({anchor: '100% 75%', autoScroll: true, html: previewhtml});
+                //this.add({region:'center', autoScroll: true, html: previewhtml});
             }
             this.add({anchor: '100% 25%', autoScroll: true, html: slidehtml});
+            //this.add({region:'south', height: 100,  split: true, collapseMode: 'mini', autoScroll: true, html: slidehtml});
         } else {
             this.html = slidehtml;   
         }
