@@ -139,7 +139,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         this.removeAll();
         if (co){
             // Title slide for slideshow
-            var slide = new lore.ore.ui.SlidePanel({id: co.uri,ssid:this.id});
+            var slide = new lore.ore.ui.SlidePanel({id: co.uri, ssid: this.id});
             slide.loadContent(co);
             this.add(slide);
             this.setActiveItem(0);
