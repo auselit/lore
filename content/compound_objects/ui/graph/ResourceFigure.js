@@ -373,7 +373,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.setRdfType = function(theurl){
 lore.ore.ui.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 	if (!this.metadataproperties["dc:format_0"]) { 
 		var req = new XMLHttpRequest();
-		req.open('GET', theurl, true);
+		req.open('HEAD', theurl, true);
 		var thisobj = this;
 		req.onreadystatechange = function() {
 			if (req.readyState == 4) {
