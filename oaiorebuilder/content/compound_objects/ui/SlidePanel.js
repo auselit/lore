@@ -188,7 +188,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                     hasPreview = false;
 		        }
             }
-
+            lore.debug.ore("slidepanel found rdf:type",rdftype);
             slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
             slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
             slidehtml += "</div>";
@@ -197,7 +197,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                 previewhtml += "<img class='sspreview' src='" + resource.uri + "' alt='image preview' style='max-height:100%;'/>";
             } else if (resource.uri.match('austlit.edu.au') && (resource.uri.match('ShowWork') || resource.uri.match('ShowAgent'))){
                 previewhtml += '<object class="sspreview" data="' + resource.uri + '&amp;printPreview=y"  height="100%" width="100%"></object>';
-            } else if (rdftype && (rdftype.value.match('http://www.w3.org/2000/10/annotation') || rdftype.value.match('http://www.w3.org/2001/12/replyType'))){
+            } else if (rdftype && (rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || rdftype.value.toString().match('http://www.w3.org/2001/12/replyType'))){
                 previewhtml += '<object class="sspreview" data="' + resource.uri + '?danno_useStylesheet="  height="100%" width="100%"></object>';
             } else {
                 var previewFrame = lore.global.util.createSecureIFrame(window.top, resource.uri);
