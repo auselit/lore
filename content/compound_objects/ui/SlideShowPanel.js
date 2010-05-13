@@ -102,24 +102,28 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     * @param {} nestingLevel Current level of nesting
     * @return {} Array of lore.ore.model.SlidePanel objects
     */
-   createContentSlides: function(cr, nestingLevel){
+   createContentSlides: function(cr, nestingLevel, containerid){
         var items = [];
         var slide;
         try{
             for (var i = 0; i < cr.length; i++) {
-                var r = cr[i];    
+                var r = cr[i]; 
                 if (r.representsCO && (nestingLevel < lore.ore.MAX_NESTING)) {
                     // process nested content
                     var rco = lore.ore.cache.getCompoundObject(r.uri);
                     r.representsCO = rco;
-                    slide = new lore.ore.ui.SlidePanel({id: r.uri});
-                    slide.loadContent(r);
-                    items.push(slide);
-                    if (rco) {
-                        items.push(this.createContentSlides(rco.aggregatedResources, nestingLevel + 1));
+                    // nested compound objects must be unique across entire slideshow - ie only create slides once
+                    if (!this.findById(r.uri)) {
+                        slide = new lore.ore.ui.SlidePanel({id: r.uri, ssid: this.id});
+                        slide.loadContent(r);
+                        items.push(slide);
+                        if (rco) {
+                            items.push(this.createContentSlides(rco.aggregatedResources, nestingLevel + 1, rco.uri));
+                        }
                     }
                 } else {
-                    slide = new lore.ore.ui.SlidePanel({id: r.uri});
+                    // resource slides are unique within their container (can appear in multiple nested comp objs)
+                    slide = new lore.ore.ui.SlidePanel({id: r.uri + "_" + containerid, ssid: this.id});
                     slide.loadContent(r);
                     items.push(slide);
                 }
@@ -135,12 +139,12 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         this.removeAll();
         if (co){
             // Title slide for slideshow
-            var slide = new lore.ore.ui.SlidePanel({id: co.uri});
+            var slide = new lore.ore.ui.SlidePanel({id: co.uri,ssid:this.id});
             slide.loadContent(co);
             this.add(slide);
             this.setActiveItem(0);
             // make a slide for each aggregated resource
-            this.add(this.createContentSlides(co.aggregatedResources, 0)); 
+            this.add(this.createContentSlides(co.aggregatedResources, 0, co.uri)); 
         }
     } catch (e){
         lore.debug.ore("Problem loading slideshow content",e);

@@ -597,7 +597,6 @@ lore.ore.cacheNested = function(coContents,nestingLevel) {
                   var theurl = this.url.value.toString();
                   var nestedCO = lore.ore.cache.getCompoundObject(theurl);
                   if (!nestedCO){
-                      lore.debug.ore("Adding to cache " + theurl);
 	                  // TODO: Load these asynchronously via the repository adapter
 	                  var xhr = new XMLHttpRequest();
 	                  xhr.overrideMimeType('text/xml');
@@ -617,7 +616,6 @@ lore.ore.cacheNested = function(coContents,nestingLevel) {
 /** Generate a slideshow representing the current compound object */
 lore.ore.showSlideshow = function(p){
     var panel = p.getComponent('newss');
-    lore.debug.ore("generating slideshow");
     Ext.MessageBox.show({
            msg: 'Generating Slideshow',
            width:250,
