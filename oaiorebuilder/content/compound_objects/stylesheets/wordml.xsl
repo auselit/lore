@@ -137,13 +137,13 @@
 						</xsl:if>
 					</xsl:for-each>
 				</w:p>
-				<xsl:apply-templates select="//rdf:Description[contains(@rdf:about,'#aggregation')]/ore:aggregates"/>
+				<xsl:apply-templates select="//rdf:Description/ore:aggregates"/>
 			</wx:sub-section>
 		</wx:sect>
 	</xsl:template>
 	
 	<!--  about each aggregated resource -->
-	<xsl:template match="rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
+	<xsl:template match="rdf:Description/ore:aggregates">
 		<xsl:variable name="res" select="@rdf:resource"/>
 		<xsl:variable name="displaytitle">
 			<xsl:choose>
