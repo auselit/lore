@@ -648,7 +648,8 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
             + "<img src='chrome://lore/skin/icons/page_white_word.png' title='Export summary to MS Word'>"
             + "</a></div>"
             + lore.ore.cache.getLoadedCompoundObjectUri() + "</td></tr>";
-    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
+        || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
     if (title) {
         newsummary += "<tr valign='top'><td width='20%'><b>Title:</b></td><td>"
                 + title + "</td></tr>";
@@ -673,7 +674,9 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
         var fig = allfigures[i];
         if (fig instanceof lore.ore.ui.graph.ResourceFigure){
 	        var figurl = lore.global.util.escapeHTML(fig.url);
-	        var title = fig.getProperty("dc:title_0") || "Untitled Resource";
+	        var title = fig.getProperty("dc:title_0") 
+                || fig.getProperty("dcterms:title_0") 
+                || "Untitled Resource";
 	        tocsummary += "<li>";
             var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
             if (isCompObject){
@@ -1344,7 +1347,8 @@ lore.ore.loadCompoundObject = function (rdf) {
         }
         lore.ore.populateResourceDetailsCombo();
        if (showInHistory){
-	        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+	        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) ||
+                lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
             if (!title){
                 title = "Untitled";
             }
@@ -1509,7 +1513,8 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
     var title = aTitle;
     if (!remid){
         remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
-        title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid);
+        title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
+            || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
     }
     Ext.Msg.show({
         title : 'Remove Compound Object',
@@ -1534,7 +1539,9 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
 /** Add saved compound object to the model lsits
  * @param {String} remid The compound object that was saved */
 lore.ore.afterSaveCompoundObject = function(remid){
-    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Untitled";
+    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
+        || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid) 
+        || "Untitled";
     // TODO: check first that it is related to the current URL
     var coopts = {
             'uri': remid,
@@ -1570,7 +1577,9 @@ lore.ore.saveRDFToRepository = function(callback) {
     // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
     // update rdfquery to reflect most recent save
     var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
-    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) || "Untitled";
+    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
+        || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid) 
+        || "Untitled";
     Ext.Msg.show({
         title : 'Save RDF',
         buttons : Ext.MessageBox.OKCANCEL,
@@ -1668,7 +1677,7 @@ lore.ore.ui.graph.addFigureWithOpts = function(opts){
     var fig = null;
     var theURL = opts.url;
     opts.props = opts.props || {};
-    if (!opts.loaded && !opts.props["dc:title_0"]){ // dodgy way of determining if this is a new CO
+    if (!opts.loaded && !(opts.props["dc:title_0"] || opts.props["dcterms:title_0"])){ // dodgy way of determining if this is a new CO
         try{
         // Try getting the page title from the browser history: 
         // getting it from the history avoids any problems with waiting for the document to be loaded
@@ -1972,7 +1981,9 @@ lore.ore.populateResourceDetailsCombo = function (){
     for (var i = 0; i < allfigures.length; i++) {
         var fig = allfigures[i];
         if (fig instanceof lore.ore.ui.graph.ResourceFigure){
-            var title = fig.metadataproperties["dc:title_0"] || "Untitled Resource";
+            var title = fig.metadataproperties["dc:title_0"] 
+                || fig.metadataproperties["dcterms:title_0"] 
+                || "Untitled Resource";
             lore.ore.resourceStore.loadData([[title,fig.url,title + " ("+ fig.url +")"]],true);
         }
     }

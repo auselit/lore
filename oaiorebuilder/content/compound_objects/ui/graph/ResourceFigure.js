@@ -33,7 +33,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
     if(!this.metadataproperties["resource_0"]){
         this.metadataproperties["resource_0"] = "";
     }
-    if (!(this.metadataproperties["dc:title_0"] ||this.metadataproperties["dcterms:title_0"])){
+    if (!(this.metadataproperties["dc:title_0"] || this.metadataproperties["dcterms:title_0"])){
         this.metadataproperties["dc:title_0"] = "";
     }
     this.url = this.metadataproperties["resource_0"];
@@ -663,7 +663,9 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
                     var rdftype = thisfig.metadataproperties["rdf:type_0"];
                     var isCO = (rdftype && rdftype.match("ResourceMap"));
                     var title = thisfig.metadataproperties["dc:title_0"] || thisfig.metadataproperties["dcterms:title_0"];
-                    if (!title) title = thisfig.url;
+                    if (!title) {
+                        title = thisfig.url;
+                    }
 					if (thisfig.url) {
 						lore.ore.exploreLoaded = thisfig.url;
 						lore.ore.explore.showInExploreView(thisfig.url, title, isCO);
