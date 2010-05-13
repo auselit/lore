@@ -2,6 +2,11 @@
  * Panel in the slideshow representing an AbstractOREResource
  */
 lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{ 
+   constructor: function (config){
+        config = config || {};
+        this.ssid = config.ssid; // id of parent SlideShowPanel
+        lore.ore.ui.SlidePanel.superclass.constructor.call(this, config);
+   },
    initComponent: function(config){
         this.autoScroll = true;
         lore.ore.ui.SlidePanel.superclass.initComponent.call(this, config);
@@ -26,18 +31,20 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
     },
     /** 
      * Load contents from the model
+     * TODO: ssid should be configured at creation not provided to this method
      * 
      */
     loadContent: function(resource){
         /*
          * Helper function: given an array of content, make a table of contents
          */
-        var makeTOC = function(contentResources){ 
+        var makeTOC = function(contentResources,containerid, ssid){ 
             var tochtml = "";
             tochtml += "<ul style='text-align:left; list-style: circle inside;'>"
             for (var i = 0; i < contentResources.length; i++){
                 var r = contentResources[i];
-                tochtml += "<li><a href='#' onclick='try{Ext.getCmp(\"newss\").setActiveItem(\"" + r.uri + "\");}catch(e){lore.debug.ore(e)}'>" + (r.getTitle() || "Untitled Resource") + "</a></li>";
+                var id = (r.representsCO? r.uri : r.uri + "_" + containerid);
+                tochtml += "<li><a href='#' onclick='try{Ext.getCmp(\"" + ssid + "\").setActiveItem(\"" + id + "\");}catch(e){lore.debug.ore(e)}'>" + (r.getTitle() || "Untitled Resource") + "</a></li>";
             }
             tochtml += "</ul>";
             return tochtml;
@@ -111,7 +118,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             var contentResources = resource.aggregatedResources;
             if (contentResources.length > 0){
                 slidehtml += "<div class='slideshowToc'><p style='font-weight:bold;'>Contents:</p>";
-                slidehtml += makeTOC(contentResources);
+                slidehtml += makeTOC(contentResources, resource.uri, this.ssid);
                 slidehtml += "</div>";
             }
             var ccreator = resource.getProperty("dc:creator_0");
@@ -137,7 +144,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                 var contentResources = resource.representsCO.aggregatedResources;
 	            if (contentResources.length > 0){
 	                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;'>In this section:</p>";
-                    slidehtml += makeTOC(contentResources);
+                    slidehtml += makeTOC(contentResources, resource.representsCO.uri);
                     slidehtml += "</div>";
 	            }
                 var creator = resource.representsCO.getProperty("dc:creator_0");
@@ -148,7 +155,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	            }
 	            slidehtml += "</div>";
             } else {
-                slidehtml = "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + resource.uri + "\");'>Nested Compound Object:<br>"
+                slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + resource.uri + "\");'>Nested Compound Object:<br>"
                         + "<img src='../../skin/icons/action_go.gif'/> Load in LORE</p>";
             }
             slidehtml += "</div>";
@@ -168,11 +175,17 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 		            icontype += " imageicon";
 		        } else if (format.value.match("audio")) {
 		            icontype += " audioicon";
+                    // Disable preview as secure iframe does not allow plugins
+                    hasPreview = false;
 		        } else if (format.value.match("video") || format.value.match("flash")){
 		            icontype += " videoicon";
+                    // Disable preview as secure iframe does not allow plugins
+                    hasPreview = false;
 		        }
 		        else if (format.value.match("pdf")) {
 		            icontype += " pdficon";
+                    // Disable preview as secure iframe does not allow plugins
+                    hasPreview = false;
 		        }
             }
 
@@ -203,7 +216,8 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             
             slidehtml += "<p style='font-size:60%;padding-top:1em;'>Source: <a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#'>"  + resource.uri + "</a>";
             if (resource.container){
-                slidehtml += " &nbsp;&nbsp;&nbsp; from &nbsp;&nbsp;&nbsp;<a href='#' onclick='lore.ore.readRDF(\"" + resource.container.uri + "\");'>" + (resource.container.getTitle() || resource.container.uri) + "</a>"; 
+                // TODO: remove hardcoded ref to slideshow
+                slidehtml += " &nbsp;&nbsp;&nbsp; from &nbsp;&nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + resource.container.uri + "\");'>" + (resource.container.getTitle() || resource.container.uri) + "</a>"; 
             }
             slidehtml += "</p>";
             
