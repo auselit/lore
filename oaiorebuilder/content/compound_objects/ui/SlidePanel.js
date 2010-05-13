@@ -124,7 +124,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             var ccreator = resource.getProperty("dc:creator_0");
             var ccreated = resource.getProperty("dcterms:created_0");
             var cmodified = resource.getProperty("dcterms:modified_0");
-            slidehtml += "<div class='slideshowProps'>Created" + (creator? " by " + ccreator.value : "") + ' on  ' + ccreated.value;
+            slidehtml += "<div class='slideshowProps'>Created" + (ccreator? " by " + ccreator.value : "") + ' on  ' + ccreated.value;
             if (cmodified) {
                 slidehtml += ', last updated on ' + cmodified.value;
             }
