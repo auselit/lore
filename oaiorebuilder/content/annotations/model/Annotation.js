@@ -488,7 +488,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 			if ( annoOrig.meta.context) {
 				rdfxml += '<meta-context xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
 				for ( var i =0; i < anno.meta.context.length; i++ ) {
-					rdfxml += lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.meta.context[i] + "\n";
+					rdfxml += lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.meta.context[i].replace(/&/g, '&amp;') + "\n";
 				}
 				rdfxml += '</meta-context>';
 			}
@@ -627,6 +627,229 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				body +
 				'</body></html>' +
 				'</Body></rdf:Description>';
+	}
+	
+}
+
+/**
+ * Class that serializes Annotation object/s as OAC RDF
+ * @class lore.anno.OACAnnotationSerialize
+ */
+lore.anno.OACAnnotationSerializer  = function () {
+	
+}
+
+lore.anno.OACAnnotationSerializer.prototype = {
+	/**
+	 * Generate the OAC RDF for an array of annotations  
+	 * @param {Array} annos An array of records or Annotation objects 
+	 * @param {Object} storeDates (Optional) Specify whethere dates are to be stored in the OAC RDF. Defaults to false
+	 * @return {String} The RDF that was generated
+	 */
+
+	serialize : function ( annos, store, storeDates ) {
+		if (!annos.length )
+			annos = [annos];
+		var appendxml;
+		
+		var rdfxml = "<?xml version=\"1.0\" ?>";
+		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '" '
+				+ ' xmlns:oac="' + lore.constants.NAMESPACES["oac"] + '">';
+		
+		for (var i = 0; i < annos.length; i++) {
+			var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
+			var anno = {};
+			
+			for (var e in annoOrig) {
+				var val = annoOrig[e];
+				if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
+					anno[e] = val.replace(/&/g, '&amp;');
+				}
+				else 
+					anno[e] =val;
+				
+			}
+			
+			appendxml = '';
+			rdfxml += '<oac:Annotation';
+			if (annoOrig.id && !annoOrig.isNew() ) {
+				rdfxml += ' rdf:about="' + anno.id + '"';
+			}
+			rdfxml += ">";
+/*			if (annoOrig.isReply) {
+				rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
+			}
+			else {
+				rdfxml += '<rdf:type rdf:resource="' + lore.constants.NAMESPACES["annotea"] +
+				'Annotation"/>';
+			}
+			if (annoOrig.type) {
+				rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
+			}
+			*/
+			
+			
+			if (annoOrig.isReply) {
+				rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
+				
+				var rootannonode = lore.global.util.findRecordById(store, annoOrig.about);
+				if (rootannonode) {
+					while (rootannonode.data.isReply) {
+						rootannonode = lore.global.util.findRecordById(store, rootannonode.data.about);
+					}
+					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id.replace(/&/g,'&amp;') + '"/>';
+				}
+				else {
+					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
+				}
+				
+			}
+				
+
+			// also send variant as annotates for backwards compatability with older clients
+			
+			
+			if (annoOrig.creator) {
+				rdfxml += 
+				'<creator xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
+					+ '<Agent xmlns="' + lore.constants.NAMESPACES["foaf"] + '">'
+						+ '<name xmlns="' + lore.constants.NAMESPACES["foaf"] + '">'
+							+ lore.global.util.trim(anno.creator)
+						+ '</name></Agent>'
+				+ '</creator>';
+			}
+			
+			if (annoOrig.lang) {
+				rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
+				anno.lang +
+				'</language>';
+			}
+			if (annoOrig.title) {
+				rdfxml += '<title xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' + anno.title +
+				'</title>';
+			}
+			if (!annoOrig.created) {
+				anno.created = new Date();
+			}
+			if (storeDates) {
+				// TODO: #48 - store as dates not strings
+				rdfxml += '<created xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
+						+ anno.created.toString() + '</created>';
+				anno.modified = new Date();
+				rdfxml += '<modified xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
+						+ anno.modified.toString() + '</modified>';
+			}
+			
+			
+			
+			if (annoOrig.isReply) {
+				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/repliesTo"/>';
+				rdfxml += '<oac:hasTarget rdf:resource="' + anno.about + '"/>';
+								
+			} else if (annoOrig.variant) {
+				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/annotates"/>';
+				rdfxml += '<oac:hasTarget xmlns="' + lore.constants.NAMESPACES["annotea"] +
+					'" rdf:resource="' +
+					anno.original + '"/>';
+				var curURN = 'urn:uuid:' + Math.uuid();
+				
+				rdfxml += '<oac:hasTargetContext>'
+						+ '<oac:TargetContext>'
+							+ '<oac:contextAbout rdf:resource="' + anno.original + '"/>'
+							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
+						+ '</oac:TargetContext></oac:hasTargetContext>';
+					
+				appendxml += 
+					'<oac:SegmentDescription rdf:about="' + curURN + '">'
+						+ '<rdf:value>' + anno.originalcontext + '</rdf:value>'
+					+ '</oac:SegmentDescription>';	
+					
+					
+				rdfxml += '<oac:hasTarget xmlns="' + lore.constants.NAMESPACES["annotea"] +
+					'" rdf:resource="' +
+					anno.variant + '"/>';
+					
+				var curURN = 'urn:uuid:' + Math.uuid();
+				
+				rdfxml += '<oac:hasTargetContext>'
+						+ '<oac:TargetContext>'
+							+ '<oac:contextAbout rdf:resource="' + anno.variant + '"/>'
+							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
+						+ '</oac:TargetContext></oac:hasTargetContext>';
+					
+				appendxml += 
+					'<oac:SegmentDescription rdf:about="' + curURN + '">'
+						+ '<rdf:value>' + anno.variantcontext + '</rdf:value>'
+					+ '</oac:SegmentDescription>';	
+			} else {
+				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/annotates"/>';
+				rdfxml += '<oac:hasTarget rdf:resource="' 
+					+ anno.resource	+ '"/>';
+				
+				var curURN = 'urn:uuid:' + Math.uuid();
+				
+				rdfxml += '<oac:hasTargetContext>'
+						+ '<oac:TargetContext>'
+							+ '<oac:contextAbout rdf:resource="' + anno.resource + '"/>'
+							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
+						+ '</oac:TargetContext></oac:hasTargetContext>';
+					
+				appendxml += 
+					'<oac:SegmentDescription rdf:about="' + curURN + '">'
+						+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
+					+ '</oac:SegmentDescription>';	
+			}
+			
+			
+			
+
+			if (annoOrig.body != null) {
+				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
+				rdfxml +=
+				'<oac:hasContent>' 
+					+ '<oac:Note>'
+						+ '<oac:body rdf:parseType="Literal">'
+						+  anno.body
+						+ '</oac:body>'
+					+ '</oac:Note>'
+				+ '</oac:hasContent>';
+			}
+
+			rdfxml += '</oac:Annotation>';
+			
+			rdfxml += appendxml;
+			if (annoOrig.variant) {
+				appendxml += 
+					'<oac:SegmentDescription>'
+						+ '<rdf:value>' + anno.originalcontext + '</rdf:value>'
+					+ '</oac:SegmentDescription>';	
+				appendxml += 
+					'<oac:SegmentDescription>'
+						+ '<rdf:value>' + anno.variantcontext + '</rdf:value>'
+					+ '</oac:SegmentDescription>';	
+			} else {		
+			}
+			
+			
+		}
+		rdfxml += '</rdf:RDF>';
+		
+		return rdfxml;
+	},
+	
+	convertImageRangeXpointerToMediaFragment: function(/*string*/xpointer) {
+		if (!lore.global.util.isXPointerImageRange(xpointer))
+			return xpointer;
+		
+		var decoded = lore.global.util.decodeImageRangeXPointer(xpointer);
+		var x = decoded.coords.x1,
+		    y = decoded.coords.y1,
+		    w = decoded.coords.x2 - x,
+		    h = decoded.coords.y2 - y;
+		    
+		
+		
+		return decoded.imgUrl + '#xywh=' + [x,y,w,h].join(',');
 	}
 	
 }

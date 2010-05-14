@@ -376,7 +376,7 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
 		Ext.getCmp("treeview").doLayout();				
 	} 
 	catch (e) {
-		lore.debug.anno("Error occurred highlightling " + e, e);
+		lore.debug.anno("Error occurred highlighting", e);
 	}
 
 }
@@ -848,7 +848,8 @@ lore.anno.ui.handleEditTreeNode = function (node) {
 lore.anno.ui.handleSerialize = function (format ) {
 	 var fileExtensions = {
         "rdf": "xml",
-        "wordml": "xml"
+        "wordml": "xml",
+        "oac": "xml"
     }
 	if ( !format) {
 		format = "rdf";

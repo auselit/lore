@@ -820,8 +820,32 @@ util = {
 	isXPointerImageRange: function ( xp) {
 		return xp.indexOf("image-range") != -1;
 	},
+	
 	/**
-     * 
+	 * Decode an image-range xpointer into it's component parts
+	 */
+	decodeImageRangeXPointer: function(xpointer) {
+		if (!util.isXPointerImageRange(xpointer))
+			return null;
+		
+		xpointer = util.normalizeXPointer(xpointer);
+		var xpBits = xpointer.substring("xpointer(image-range(".length ).split(',');
+		var xp =  xpBits[0];
+	
+		// co-ordinates
+		var x1 = parseInt(xpBits[1].substring(1)),
+	    	y1 = parseInt(xpBits[2].substring(0,xpBits[2].length-1)),
+			x2 = parseInt(xpBits[3].substring(1)),
+			y2 = parseInt(xpBits[4].substring(0,xpBits[4].length-1));
+		var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
+		
+		var imgUrl = xpBits[5].replace(/\"\)\).*/g, '').replace(/\"/, '');		
+		
+		return {xp:xp, coords: coords, imgUrl:imgUrl};
+	},
+	
+	/**
+     * Parse and resolve in the document an iamge-range xpointer
      * @param {} xpointer
      * @param {} targetDocument
      * @return {}
@@ -830,20 +854,12 @@ util = {
 		if (!util.isXPointerImageRange(xpointer))
 			return null;
 		
-		xpointer = util.normalizeXPointer(xpointer);
+		var decoded = this.decodeImageRangeXPointer(xpointer);
 		
-		var xpBits = xpointer.substring("xpointer(image-range(".length ).split(',');
-		var xp =  xpBits[0];
-		//debug.ui("xpath is " + xp, targetDocument);
-		var img = util.getNodeForXPath(xp, targetDocument);
+		if (targetDocument)
+			decoded.image = util.getNodeForXPath(decoded.xp, targetDocument);
 	
-		// co-ordinates
-		var x1 = parseInt(xpBits[1].substring(1)),
-	    	y1 = parseInt(xpBits[2].substring(0,xpBits[2].length-1)),
-			x2 = parseInt(xpBits[3].substring(1)),
-			y2 = parseInt(xpBits[4].substring(0,xpBits[4].length-1));
-		var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
-		return { image: img, coords: coords};
+		return decoded;
 	},
 	
 	/**

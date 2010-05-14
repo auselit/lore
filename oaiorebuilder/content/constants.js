@@ -47,7 +47,9 @@ constants = {
         "vanno"   : "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#",
         "sparql"  : "http://www.w3.org/2005/sparql-results#",
         "http"    : "http://www.w3.org/1999/xx/http#",
-        "xsd"     : "http://www.w3.org/2001/XMLSchema#"     
+        "xsd"     : "http://www.w3.org/2001/XMLSchema#",
+        "oac"     : "http://www.openannotation.org/ns/",
+        "owl"     : "http://www.w3.org/2002/07/owl#"
     },
     
     // RDF/OWL
