@@ -140,6 +140,10 @@
 	 */
 	ui.onClose = function (window, instId) {
 		var annoView = ui.annotationView.get(instId);
+		if (!annoView) {
+			lore.debug.anno("in ui.onClose, unable to get annoView", {annotationView:ui.annotationView});
+			return;
+		}
 		if (annoView.hasModifiedAnnotations()) {
 			if (window.confirm("Click 'Ok' to save changes to modified annotations.")) {
 				annoView.handleSaveAllAnnotationChanges();

@@ -905,6 +905,20 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	},
 	
 	/**
+	 * Serialize the annotations into an OAC RDF format
+	 * 
+	 * @param {} annos the list of annotations to serialize
+	 * @param {} store the data store they're contained within
+	 * @param {Boolean} showDates whether to save the annotation dates
+	 * @return {String} serialized version of the annotations in OAC RDF
+	 */
+	createAnnoOAC : function (annos, store, showDates) {
+		var oacSerializer = new lore.anno.OACAnnotationSerializer();
+		
+		return oacSerializer.serialize(annos, store, showDates);		
+	},
+	
+	/**
 	 * Serialize the current annotations on the page into the given format. 
 	 * @param {String} format The format to serialize the annotations in. 'wordml' or 'rdf'.
 	 * @return {String} Returns the serialized annotations in the new format
@@ -915,6 +929,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return this.createAnnoWord( lore.global.util.getContentWindow(window).document.body, true);
 		} else if ( format == 'rdf') {
 			return this.serializer.serialize(this.annods.getRange(), this.annods, true);
+		} else if (format === 'oac') {
+			return this.createAnnoOAC(this.annods.getRange(), this.annods, true);
 		} else {
 			return null;
 		}
