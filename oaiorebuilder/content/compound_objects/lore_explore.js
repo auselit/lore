@@ -117,7 +117,7 @@ lore.ore.explore.init = function() {
     onPlaceLabel: function(domElement, node) {
         domElement.style.display = "none";
          if(node._depth <= 2){
-            domElement.innerHTML = node.name;
+            domElement.innerHTML = node.name.replace(/&amp;/g,'&');
             domElement.style.display = "";
             var left = parseInt(domElement.style.left);
             domElement.style.width = '';
