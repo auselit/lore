@@ -1125,7 +1125,6 @@ util = {
               } else if (isHC && !activate) {
                  link.disabled = true;
               }
-              debug.ore("setHighContrast " + activate,link);
 	       }
 	     }
 	},
