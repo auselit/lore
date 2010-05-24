@@ -188,7 +188,6 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                     hasPreview = false;
 		        }
             }
-            lore.debug.ore("slidepanel found rdf:type",rdftype);
             slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
             slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
             slidehtml += "</div>";
