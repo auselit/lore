@@ -186,10 +186,10 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
             //lore.debug.ore("sparql query is",thequery);
 		    var json;
             var xsltproc = new XSLTProcessor();
+            var xhr = new XMLHttpRequest();                
+            xhr.overrideMimeType('text/xml');
             if (!this.exploreStylesheet){
 		        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
-		        var xhr = new XMLHttpRequest();
-		        xhr.overrideMimeType('text/xml');
 		        xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl', false);
 		        xhr.send(null);
 		        this.exploreStylesheet = xhr.responseXML;
