@@ -35,7 +35,7 @@ lore.anno.ui.Marker = function(args){
 	this.target = args.target || lore.global.util.getContentWindow(window).document;
 	this.type = lore.global.util.isXPointerImageRange(this.xpointer) ? 1 : 0;
 	this.visible = false;
-	this.bw = args.borderWidth || 1;
+	this.bw = args.borderWidth || 2;
 	this.page = args.page;
 }
 	
