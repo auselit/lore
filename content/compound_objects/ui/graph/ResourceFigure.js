@@ -175,7 +175,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.setDimension = function(w, h) {
  * @param {string} title
  */
 lore.ore.ui.graph.ResourceFigure.prototype.setTitle = function(title) {
-    //lore.debug.ore("ResourceFigure: setTitle " + title);
 	this.header.innerHTML = title;
 };
 /**
@@ -201,23 +200,19 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
 	var mimetype = this.metadataproperties["dc:format_0"];
     var rdftype = this.metadataproperties["rdf:type_0"];
     this.setIcon(theurl);
-	if (mimetype && mimetype.match("rdf")){
-        if (rdftype && rdftype.match("ResourceMap")) {
-    
-			this.iframearea.innerHTML = "<div class='orelink' id='"
-					+ this.id
-					+ "-data'><a href='#' onclick=\"lore.ore.readRDF('"
-					+ theurl
-					+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
-			var identifierURI = lore.ore.getOREIdentifier(theurl);
-			this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='" + identifierURI +"' class='mimeicon oreicon'>"
+    if (rdftype && rdftype.match("ResourceMap")) {
+            this.iframearea.innerHTML = "<div class='orelink' id='"
+                    + this.id
+                    + "-data'><a href='#' onclick=\"lore.ore.readRDF('"
+                    + theurl
+                    + "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
+            var identifierURI = lore.ore.getOREIdentifier(theurl);
+            this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='" + identifierURI +"' class='mimeicon oreicon'>"
                 + this.uriexpander
                 + "<a onclick='lore.ore.readRDF(\"" + theurl + "\");' href='#'>"
-				+ identifierURI + "</a></li></ul>";
-        } else {
-            this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>RDF document (no preview available)</p>";
-        }
-    
+                + identifierURI + "</a></li></ul>";
+    } else if (mimetype && mimetype.match("rdf")){
+        this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>RDF document (no preview available)</p>";
 	} else if (mimetype && mimetype.match("application/xml")){
         // if it is an annotation, add a stylesheet parameter
         var stylesheet = "danno_useStylesheet="; // danno will use default stylesheet
@@ -320,8 +315,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.setResourceURL = function(urlparam) {
             + this.uriexpander
 			+ "<a title='" + urlparam +"' onclick='lore.global.util.launchTab(\"" + urlparam
 			+ "\",window);' href='#'>" + urlparam + "</a></li></ul>";
-    //lore.debug.ore("set url to " + urlparam,this.metadataarea.innerHTML);
-
 };
 /**
  * Displays an icon depending on the mimetype of the resource
@@ -331,7 +324,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.setIcon = function() {
 			? this.metadataproperties["dc:format_0"]
 			: "text/html";
 	this.icontype = "mimeicon ";
-    //lore.debug.ore("ResourceFigure: mimetype is" + mimetype,mimetype);
 	if (mimetype.match("html")){
 		this.icontype += "htmlicon";
     }
@@ -384,16 +376,16 @@ lore.ore.ui.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 					lore.debug.ore("ResourceFigure: exception getting mime type", e);
 				}
 				if (!mimetype){
+                    
 					mimetype = "text/html";
                 }
+                lore.debug.ore("mimetype is " + mimetype,[req, req.getAllResponseHeaders()]);
 				thisobj.metadataproperties["dc:format_0"] = mimetype;
-                //lore.debug.ore("ResourceFigure: determined mimetype as " + mimetype,this);
 				thisobj.showContent();
 			}
 		};
 		req.send(null);
 	} else {
-		//lore.debug.ore("ResourceFigure: using stored mimetype for resource figure", this);
 		this.showContent();
 	}
 };
@@ -569,7 +561,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.appendProperty = function(pname, pval
 lore.ore.ui.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
   
   var oldval = this.metadataproperties[pid];
-  //lore.debug.ore("ResourceFigure: setProperty " + pid + " " + pval,this);
   this.metadataproperties[pid] = pval;
   if (pid == "resource_0" && pval != oldval){
     this.setContent(pval);
@@ -612,11 +603,9 @@ lore.ore.ui.graph.ResourceFigure.prototype.getProperty = function(pid){
  */
 lore.ore.ui.graph.ResourceFigure.prototype.createPlusMinusIcon = function() {
 	if (!this.isCollapsed()) {
-		//this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right";
-        this.top_right.className="co-tr-minus";
+		this.top_right.className="co-tr-minus";
 	} else {
-		//this.top_right.style.background = "url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right";
-        this.top_right.className="co-tr-plus";
+		this.top_right.className="co-tr-plus";
 	}
 };
 /** Generate a context menu for the figure
@@ -672,11 +661,13 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
 					}
 				}));
 	}
-  /*  menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", null,
+    menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", null,
         function (){
-            // TODO jump to resource in summary view
+            // TODO: don't hardcode the slideshow id and the url for the containing compound object should come from the model
+            Ext.getCmp("loreviews").activate("remslideview");
+            Ext.getCmp("newss").setActiveItem(thisfig.url + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
         }
-    ));*/
+    ));
 	return menu;
 };
 
@@ -685,7 +676,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
  * @param {} ctrl
  */
 lore.ore.ui.graph.ResourceFigure.prototype.onKeyDown = function (keyCode, ctrl){
-  //lore.debug.ore("ResourceFigure: onKeyDown " + keyCode,ctrl);
   // on delete or backspace
   if(keyCode==46 || keyCode==8){ 
      this.workflow.getCommandStack().execute(this.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
