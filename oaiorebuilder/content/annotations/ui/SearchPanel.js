@@ -106,7 +106,11 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 			colModel: new Ext.grid.ColumnModel({
 				// grid columns
 				defaults: {
-					sortable: true
+					sortable: true,
+					renderer: function searchColRenderer(val, p, rec) {
+						p.attr = 'title="' + val + '"';
+						return val;
+					}
 				},
 			columns: [
 					// expander,
@@ -120,6 +124,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 					dataIndex: "type",
 					width: 32,
 					renderer: function(val, p, rec) {
+						p.attr = 'title="' + val + '"';
 						p.css = lore.anno.ui.getAnnoTypeIcon(rec.data);
 					}
 				},
@@ -135,15 +140,13 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 					header : 'modified',
 					dataIndex : 'modified',
 					renderer : function(val, p, rec) {
+						p.attr = 'title="' + val + '"';
 						return val ? val : "<i>not yet modified</i>";
 					}
 				},
 				{
 					header : 'annotates',
-					dataIndex : 'resource',
-					renderer : function(val, p, rec) {
-						return String.format("<a class='anno-search'onclick='lore.global.util.launchTab(\"{0}\");'>{1}</a>",rec.data.resource, val);
-					}
+					dataIndex : 'resource'
 				}]
 			}),
 
@@ -188,9 +191,14 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 			this.sgrid = this.getComponent("annosearchgrid");
 
 			this.getComponent("search").on('click', this.handleSearchAnnotations, this);
-			this.getComponent("resetSearch").on('click', function() {
+			this.getComponent("resetSearch").on('click', function resetSearch() {
 						this.sform.reset();
 					}, this);
+			
+			this.sgrid.on('rowdblclick', function searchLaunchTab(grid, rowIndex, event) {
+				var record = grid.getStore().getAt(rowIndex);
+				lore.global.util.launchTab(record.data.resource);
+			});
 
 		} catch (e) {
 			lore.debug.anno("SearchPanel:initComponent() - " + e, e);
