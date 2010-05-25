@@ -335,7 +335,7 @@ lore.anno.ui.initGUIConfig = function(){
 				id: 'hideeditbtn',
 				tooltip: 'Hides the annotation editor from view'
 			},{
-				text: 'Save Annotation',
+				text: 'Save',
 				id: 'updannobtn',
 				tooltip: 'Save the annotation to the repository'
 			}]
