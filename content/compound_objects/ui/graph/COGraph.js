@@ -333,12 +333,24 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	            lore.ore.addFigure(lore.ore.ui.currentURL);  
 	        })
 	    );
-		menu.appendMenuItem(new draw2d.MenuItem("Auto layout",
-	        "chrome://lore/skin/icons/layout.png",
-	        function(x,y) {
-		       lore.ore.doLayout();  
-	        })
-	    );
+        menu.appendMenuItem(new draw2d.MenuItem("Undo",
+            "chrome://lore/skin/icons/arrow_undo.png",
+            function(x,y){
+                oThis.commandStack.undo();      
+            })
+        );
+        menu.appendMenuItem(new draw2d.MenuItem("Redo",
+            "chrome://lore/skin/icons/arrow_redo.png",
+            function(x,y){
+                oThis.commandStack.redo();      
+            })
+        );
+        menu.appendMenuItem(new draw2d.MenuItem("Auto layout",
+            "chrome://lore/skin/icons/layout.png",
+            function(x,y) {
+               lore.ore.doLayout();  
+            })
+        );
         menu.appendMenuItem(new draw2d.MenuItem("Save diagram as image (PNG)",
             "chrome://lore/skin/icons/image.png",
             function(x,y){
