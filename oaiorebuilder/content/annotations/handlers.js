@@ -382,7 +382,7 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
 }
 
 /**
- * Notifiation function called when a change in location is detected in the currently
+ * Notification function called when a change in location is detected in the currently
  * selected tab
  * @param {String} contextURL The url the currently selected browser tab is now pointing to    
  */
@@ -456,6 +456,8 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 	} catch(e) {
 		lore.debug.anno(e,e);
 	}
+	
+	lore.anno.ui.tabpanel.activate('treeview');
 	lore.anno.ui.loadedURL = contextURL;
 }
 
