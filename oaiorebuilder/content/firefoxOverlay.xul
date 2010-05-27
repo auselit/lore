@@ -53,8 +53,8 @@
           		 </xul:toolbarbutton>
 		          <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" /> 
 		          <xul:toolbarseparator id ="annsep3" />
-		          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetAnnos();"/>
                   <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
+                  <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetAnnos();"/>
 		        </xul:toolbar>
 		     </xul:toolbox>
 	     	<xul:iframe tooltip="aHTMLTooltip" flex="1" width="100%" height="100%" src="about:blank" name="annographiframe" id="annographiframe"/> 
@@ -88,8 +88,8 @@
                 </xul:menupopup>
           </xul:toolbarbutton>
           <xul:toolbarseparator/>
-          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/>
           <xul:toolbarbutton id="show-prefs2" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
+          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/>
         </xul:toolbar>
       </xul:toolbox>
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
