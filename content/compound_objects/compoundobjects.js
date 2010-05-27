@@ -291,7 +291,7 @@ lore.ore.createCompoundObject = function (dontRaise){
         // TODO: fix properties - use date string for now
         // TODO: should not assign an id until it has been saved
         currentREM = lore.ore.reposAdapter.generateID();
-        lore.ore.cache.add(currentREM,new lore.ore.model.CompoundObject({uri: currentREM}));
+        lore.ore.cache.add(currentREM, new lore.ore.model.CompoundObject({uri: currentREM}));
         lore.ore.cache.setLoadedCompoundObjectUri(currentREM);
         lore.ore.ui.grid.store.loadData(
         [
@@ -608,6 +608,7 @@ lore.ore.cacheNested = function(coContents,nestingLevel) {
 	                  nestedCO = new lore.ore.model.CompoundObject({uri: theurl});
 	                  nestedCO.load({format: 'application/rdf+xml', content: xhr.responseXML});
 	                  lore.ore.cache.add(theurl, nestedCO);
+                      lore.ore.cacheNested(nestedCO.getInitialContent(), nestingLevel + 1)
                   }
                 } catch (e) {
                     lore.debug.ore("Problem loading nested CO into cache",e);
@@ -644,7 +645,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
 
     var newsummary = 
             "<table style='width:100%;border:none'>"
-            + "<tr valign='top'><td width='20%'>" 
+            + "<tr valign='top'><td width='23%'>" 
             + "<b>Compound object:</b></td><td>"
             + "<div style='float:right;padding-right:5px'>" 
             + "<a href='#' onclick='lore.ore.handleSerializeREM(\"wordml\")'>"
@@ -654,18 +655,18 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
     var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
         || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
     if (title) {
-        newsummary += "<tr valign='top'><td width='20%'><b>Title:</b></td><td>"
+        newsummary += "<tr valign='top'><td width='23%'><b>Title:</b></td><td>"
                 + title + "</td></tr>";
     }
    
     var desc = lore.ore.getPropertyValue("dc:description",lore.ore.ui.grid);
     if (desc) {
-        newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='80%'>"
+        newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='77%'>"
                 + desc + "</td></tr>";
     }
     var abst = lore.ore.getPropertyValue("dcterms:abstract",lore.ore.ui.grid);
     if (abst) {
-        newsummary += "<tr valign='top'><td><b>Abstract:</b></td><td width='80%'>"
+        newsummary += "<tr valign='top'><td><b>Abstract:</b></td><td width='77%'>"
             + abst + "</td></tr>";
     }
     newsummary += "</table>";
