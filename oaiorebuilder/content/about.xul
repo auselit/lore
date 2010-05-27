@@ -5,7 +5,10 @@
 <groupbox align="center" orient="horizontal">
 <vbox>
   <text value="LORE" style="font-weight: bold; font-size: x-large;"/>
-  <text value="Literature Object Re-use and Exchange"/>
+  <description style="white-space: pre;">
+LORE (Literature Object Re-use and Exchange)
+enables literary scholars to author, publish and
+search annotations and compound objects.</description>
   <!--text value="&version; 0.25"/-->
   <separator class="thin"/>
   <text value="&createdBy;" style="font-weight: bold;"/>
