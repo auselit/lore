@@ -662,7 +662,6 @@ lore.ore.ui.initUIComponents = function() {
 
 		Ext.getCmp("searchpred").getStore().loadData(searchproplist);
 		// Ext.getCmp("searchpred").getStore().commitChanges();
-		// lore.debug.ore("store is",Ext.getCmp("searchpred").getStore());
 	} catch (e) {
 		lore.debug.ui("error setting up search combo", e);
 	}
@@ -722,21 +721,7 @@ lore.ore.ui.initUIComponents = function() {
 	if (smiltab) {
 		smiltab.on("activate", lore.ore.showSMIL);
 	}
-	/*var slidetab = Ext.getCmp("remslideview");
-	try {
-		lore.ore.ui.carousel = new Ext.ux.Carousel("trailcarousel", {
-					itemSelector : "div.item",
-					showPlayButton : true,
-					transitionType : "fade",
-					interval : 7
-				});
-	} catch (e) {
-		lore.debug.ore("error setting up carousel", e);
-	}
-
-	slidetab.on("activate", lore.ore.showSlideshow);
-	slidetab.on("resize", lore.ore.resizeSlideshow);
-    */
+	
     Ext.getCmp("remslideview").on("activate",lore.ore.showSlideshow);
     //Ext.getCmp("remnarrativeview").on("activate",lore.ore.showCompoundObjectNarrative);
     
@@ -789,7 +774,6 @@ lore.ore.ui.init = function() {
 				.getItemLocation(lore.constants.EXTENSION_ID);
 
 		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
-        //lore.debug.ore("topView",lore.ore.ui.topView);
         window.addEventListener("dragover", lore.ore.ui.dragOver, true);
         window.addEventListener("dragdrop", lore.ore.ui.dragDrop, true);
         
