@@ -284,6 +284,9 @@ lore.ore.getToday = function(){
 /** Initialize a new compound object in the editor, prompting first whether to save the current compound object */
 lore.ore.createCompoundObject = function (dontRaise){
     var newCO = function (){
+        if (lore.ore.ui.topView){
+            lore.ore.ui.topView.hideAddIcon(false);
+        }
         var dateString = lore.ore.getToday();
         // TODO: fix properties - use date string for now
         // TODO: should not assign an id until it has been saved
@@ -754,22 +757,6 @@ lore.ore.updateTriG = function (){
     Ext.getCmp("remtrigview").body.update("<pre>" + Ext.util.Format.htmlEncode(lore.ore.serializeREM('trig')) + "</pre>");
 };
 
-/*lore.ore.showSlideshow = function (){
-    var sscontents = "";
-    var carouselel = Ext.get("trailcarousel");
-    try{
-    var params = {
-    "width": carouselel.getWidth(),
-    "height": (carouselel.getHeight() - 35)}; // minus 29 to account for slide nav bar
-    sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/slideshow_view.xsl",params,true);
-    //sscontents += lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/TrailDetail.xsl",params,true);
-    lore.debug.ore("slideshow html is",sscontents);
-	carouselel.update(sscontents,true);
-    lore.ore.ui.carousel.reloadMarkup();
-    } catch (ex){
-        lore.debug.ore("adding slideshow",ex);
-    }
-};*/
 lore.ore.resizeSlideshow = function (comp,adjWidth, adjHeight, rawWidth, rawHeight){
     try {
 	    var carouselel = Ext.get("trailcarousel");
@@ -1211,7 +1198,6 @@ lore.ore.loadCompoundObject = function (rdf) {
 	    ]);
         loadedRDF.about('<' + remurl + '>')
             .each(function(){
-                //lore.debug.ore("loading property",this);
                 var propurl = this.property.value.toString();
                 var propsplit = lore.global.util.splitTerm(propurl);
                 var propname = lore.ore.nsprefix(propsplit.ns) + ":";
@@ -1522,13 +1508,6 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
         msg : 'Are you sure you want to delete this compound object from the repository?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",
         fn : function(btn, theurl) {
             if (btn == 'ok') {
-                /*if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
-                    lore.ore.sesame.deleteCompoundObject(remid);
-                }else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
-                    //lore.ore.fedora.deleteCompoundObject(remid);
-                } else {
-                    lore.ore.ui.loreWarning("Not yet implemented: please change your repository type preference to sesame");
-                }*/
                 lore.ore.reposAdapter.deleteCompoundObject(remid,lore.ore.afterDeleteCompoundObject);
             }
         }
@@ -1646,6 +1625,13 @@ lore.ore.ui.graph.nextXY = function(prevx, prevy) {
         lore.ore.ui.graph.dummylayouty = prevy;
     }
 };
+
+lore.ore.isInCompoundObject = function(theURL){
+    var isInCO = typeof(lore.ore.ui.graph.lookup[theURL]) !== 'undefined';
+    lore.debug.ore("isInCompoundObject? " +theURL + " " + isInCO);
+    return isInCO;
+}
+
 /**
  * Get the figure that represents a resource
  * 
@@ -1847,6 +1833,13 @@ lore.ore.handleNodePropertyChange = function(args) {
 		           lore.ore.ui.graph.lookup[theval] = lore.ore.ui.graph.selectedFigure.getId();
 	               delete lore.ore.ui.graph.lookup[args.originalValue];
 		        }
+                if (lore.ore.ui.topView){
+	                if (lore.ore.ui.currentURL == theval){
+	                   lore.ore.ui.topView.hideAddIcon(true);
+	                } else if (lore.ore.ui.currentURL == args.originalValue){
+	                   lore.ore.ui.topView.hideAddIcon(false);
+	                }
+                }
             }
             lore.ore.ui.graph.selectedFigure.setProperty(args.record.id,args.value);
         }
