@@ -9,6 +9,7 @@ pref("extensions.lore.DBG_LORE_UI", false);
 pref("extensions.lore.DBG_LORE_ANNOTATIONS", false);
 pref("extensions.lore.DBG_LORE_COMPOUND_OBJECTS", false);
 pref("extensions.lore.DBG_LORE_TEXT_MINING", false);
+pref("extensions.lore.DBG_LORE_PROFILING", false);
 pref("extensions.lore.disable_annotations", false);
 pref("extensions.lore.disable_compoundobjects", false);
 pref("extensions.lore.disable_textmining", true);
