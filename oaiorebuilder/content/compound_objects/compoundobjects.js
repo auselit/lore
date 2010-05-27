@@ -1343,7 +1343,9 @@ lore.ore.loadCompoundObject = function (rdf) {
        }
        if (lore.ore.ui.topView && lore.ore.ui.graph.lookup[lore.ore.ui.currentURL]){
             lore.ore.ui.topView.hideAddIcon(true);
-       } 
+       } else {
+            lore.ore.ui.topView.hideAddIcon(false);
+       }
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
         lore.debug.ore("exception loading RDF from string",e);
