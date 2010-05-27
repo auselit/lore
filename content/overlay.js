@@ -42,6 +42,7 @@ try {
 					return this;
 				throw Components.results.NS_NOINTERFACE;
 			},
+            
             /** 
              * Respond to the URL loaded in the browser changing  
              * @param {} aProgress
@@ -57,18 +58,21 @@ try {
                     }
 					var co = loreoverlay.coView();
 					var an = loreoverlay.annoView();
+                    if (lore.global.ui.compoundObjectView.loaded(loreoverlay.instId)){
+                        // If the URL is not in the current compound object, show the add url icon
+                        var hideAdd = loreoverlay.coView().isInCompoundObject(updateURI);
+                        loreoverlay.hideAddIcon(hideAdd);
+                    }
 					
 					if (updateURI == lore.global.ui.getCurrentURL(loreoverlay.instId)) {
 						if ( co && co.refreshPage) co.refreshPage();
 						loreoverlay.fireEvent("location_refresh", []);
-						
 						return;
 					}
 					if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId)) {
 						lore.global.ui.setCurrentURL(loreoverlay.instId, updateURI);
 						co.handleLocationChange(updateURI);
-						loreoverlay.fireEvent("location_changed", [updateURI]);
-						
+						loreoverlay.fireEvent("location_changed", [updateURI]); 
 					}
 				} catch(e) {
 					alert("loreoverlay.onLocationChange: " + e + " " +  e.stack);
@@ -189,8 +193,9 @@ try {
          *  @param {} event
          **/
 		onMenuItemCommand: function(event){
-			if (gContextMenu.onLink) 
-				loreoverlay.coView().addFigure(gContextMenu.linkURL, {"dc:title_0":gContextMenu.linkText()});
+			if (gContextMenu.onLink) {
+				loreoverlay.coView().addFigure(gContextMenu.linkURL, {"dc:title_0": gContextMenu.linkText()});
+            }
 		},
         /** Show a popup menu in the extension */
         onMenuPopupExt: function(event){
@@ -253,28 +258,34 @@ try {
 		},
         /** Trigger adding a node to the compound object editor from browser context menu on images */ 
 		addImageMenuItemCommand: function(e){
-			if (gContextMenu.onImage) 
-				loreoverlay.coView().addFigure(gContextMenu.imageURL);
+			if (gContextMenu.onImage) {
+                var props = {"dc:source_0": gContextMenu.browser.currentURI.spec}
+                if (gContextMenu.onLink){
+                    props["dc:relation_0"] = gContextMenu.linkURL;
+                }
+				loreoverlay.coView().addFigure(gContextMenu.imageURL, props);
+            }
 		},
         /** Trigger adding a node to the compound object editor from browser context menu on background images */
 		addBGImageMenuItemCommand: function(e){
-			if (gContextMenu.hasBGImage) 
-				loreoverlay.coView().addFigure(gContextMenu.bgImageURL);
+			if (gContextMenu.hasBGImage) {
+				loreoverlay.coView().addFigure(gContextMenu.bgImageURL,{"dc:source_0": gContextMenu.browser.currentURI.spec});
+            }
 		},
         /** Toggle LORE visibility when LORE menu item is selected */
 		onToolbarMenuCommand: function(e){
 			this.toggleBar();
 		},
+        
         /** Toggle the visibility of LORE */
-		toggleBar: function(){
+		toggleBar: function(forceVisible){
 			try {
 	            var toolsMenuItem = document.getElementById('lore-tools-item');
 	            var annoContentBox = document.getElementById('oobAnnoContentBox');
 	            var contentBox = document.getElementById('oobContentBox');
 	            
 				lore.global.ui.setCurrentURL(loreoverlay.instId,gBrowser.currentURI.spec);
-				
-	            if (annoContentBox.getAttribute("collapsed") == "false" || contentBox.getAttribute("collapsed") == "false"){
+	            if (!forceVisible && (annoContentBox.getAttribute("collapsed") == "false" || contentBox.getAttribute("collapsed") == "false")){
 	               toolsMenuItem.removeAttribute("checked");
 	                this.setAnnotationsVisibility(false);
 	                this.setCompoundObjectsVisibility(false); 
@@ -388,6 +399,8 @@ try {
         /** Compound Object Toolbar button handler: Trigger adding the current URI to the compound object editor */
 		addGraphNode: function(){
 			loreoverlay.coView().addFigure(window.content.location.href);
+            document.getElementById('ore-add-icon').hidden = true;
+            document.getElementById('ore-added-icon').hidden = false;
 		},
         layoutGraph: function(){
             loreoverlay.coView().doLayout();  
@@ -648,6 +661,10 @@ try {
 				lore.debug.anno("hideVariationSplitter(): " +e, e);
 			}
 		},
+        hideAddIcon: function(hideAdd){
+            document.getElementById('ore-add-icon').hidden = hideAdd;
+            document.getElementById('ore-added-icon').hidden = !hideAdd;
+        },
 		/**
          * @return {boolean} Returns true if the annotations view is visible
 		 */
