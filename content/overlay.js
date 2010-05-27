@@ -445,14 +445,7 @@ try {
 				var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
 				var tmkey = this.prefs.getCharPref("tmkey");
-				// hide or show XUL toolbar buttons depending on prefs
 				
-				document.getElementById('cosep').hidden = disable_co;
-				document.getElementById('add-node').hidden = disable_co;
-				document.getElementById('save-rdf').hidden = disable_co;
-				// document.getElementById('load-rdf').hidden = disable_co;
-				document.getElementById('import-export').hidden = disable_co;
-
                 /*this.fireEvent("coprefs_changed",
                 [{
                     creator: dccreator,
@@ -484,17 +477,7 @@ try {
 				var dccreator = this.prefs.getCharPref("dccreator");
 				var high_contrast = this.prefs.getBoolPref("high_contrast");
 				var disable = this.prefs.getBoolPref("disable_annotations");
-				document.getElementById('annsep').hidden = disable;
-				document.getElementById('annsep2').hidden = disable;
-				document.getElementById('annsep3').hidden = disable;
-				document.getElementById('add-annotation').hidden = disable;
-				document.getElementById('show-annotations').hidden = disable;
-				document.getElementById('edit-annotation').hidden = disable;
-				document.getElementById('remove-annotation').hidden = disable;
-				document.getElementById('reply-annotation').hidden = disable;
-				document.getElementById('save-all-annotations').hidden = disable;
-				document.getElementById('import-export-anno').hidden = disable;
-				
+
 				var mode = this.prefs.getBoolPref("annotationmode");
 				var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
 				
