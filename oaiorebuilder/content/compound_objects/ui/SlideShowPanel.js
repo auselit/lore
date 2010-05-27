@@ -111,7 +111,12 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
                 if (r.representsCO && (nestingLevel < lore.ore.MAX_NESTING)) {
                     // process nested content
                     var rco = lore.ore.cache.getCompoundObject(r.uri);
-                    r.representsCO = rco;
+                    
+                    if (rco) {
+                        r.representsCO = rco;
+                    } else {
+                        lore.debug.ore("CO not found in cache " + r.uri,lore.ore.cache);
+                    }
                     // nested compound objects must be unique across entire slideshow - ie only create slides once
                     if (!this.findById(r.uri)) {
                         slide = new lore.ore.ui.SlidePanel({id: r.uri, ssid: this.id});
