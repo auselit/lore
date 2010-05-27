@@ -46,16 +46,30 @@ lore.ore.ui.graph.CommandListener = Ext.extend(draw2d.CommandStackEventListener,
 	    if (0!=(details&(draw2d.CommandStack.POST_EXECUTE))) {
 	        if (comm instanceof draw2d.CommandDelete) {
 	            delete lore.ore.ui.graph.lookup[comm_fig.url];
+                if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+                       lore.ore.ui.topView.hideAddIcon(false);
+                }
 	        }
 	    }
 	    else if (0!=(details&(draw2d.CommandStack.POST_UNDO))) {
 	           if (comm instanceof draw2d.CommandDelete) {
+                    //  check that URI isn't in resource map (eg another node's resource may have been changed)
+                    if (lore.ore.ui.graph.lookup[comm_fig.url]){
+                        lore.ore.ui.loreWarning("Cannot undo deletion: resource is aleady in Compound Object");
+                        comm.redo();
+                    }
 	                lore.ore.ui.graph.lookup[comm_fig.url] = comm_fig.getId();
+                    if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+                       lore.ore.ui.topView.hideAddIcon(true);
+                    }
 	           }
         }   
 	    else if (0!=(details&(draw2d.CommandStack.POST_REDO))) {
 	        if (comm instanceof draw2d.CommandDelete) {
-	            delete lore.ore.ui.graph.lookup[comm_gif.url];
+	            delete lore.ore.ui.graph.lookup[comm_fig.url];
+                if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+                       lore.ore.ui.topView.hideAddIcon(false);
+                }
 	        }
         }
     }
