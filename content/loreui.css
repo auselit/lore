@@ -428,20 +428,26 @@
 }
 #infovis {width: 100%; height:100%;}
 
-#trailcarousel {height:100%;width:100%}
+#remslideview *, #remlistview * {
+	font-family: "Helvetica","Arial",sans-serif;
+}
 .slideshowTitle {
-	color:#cc0000;font-weight:bold;font-size:120%;padding-top:1em;padding-bottom:0.5em;border-bottom:1px solid #cc0000;
+	color:#cc0000;font-weight:bold;font-size:120%;padding-top:0.5em;
+	padding-bottom:0.5em;border-bottom:1px solid #cc0000;
 }
 .sectionTitle {
-	font-weight:bold;font-size:120%;padding-top:2em;padding-bottom:0.5em; 
+	font-weight:bold;font-size:120%;padding-top:0.5em;padding-bottom:0.5em; 
 	border-bottom: 1px solid #51666b
 }
 
 .slideshowProps {
-	width:100%;font-size:80%;color:#465458;padding-top:0.5em;line-height:1.3em
+	width:100%;font-size:85%;color:#465458;padding-top:0.5em;line-height:1.3em;
 }
 .slideshowTOC {
-	font-size:90%;color:#465458;padding-top:1em;line-height:1.2em
+	font-size:95%;color:#465458;padding-top:1em;line-height:1.2em
+}
+.slideshowFooter {
+	font-size:70%;padding-top:1em;color:#465458;padding-left:3px;
 }
 .left-spacer4 {
 	padding-left: 4px;

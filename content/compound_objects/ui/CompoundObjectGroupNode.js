@@ -77,7 +77,6 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
      **/
     addCompoundObjects : function(coList){
         try{
-        //lore.debug.ore("addCompoundObjects " + coList.length,coList);
         if (coList){
             for (var i=0; i<coList.length;i++){   
                 var remuri = coList[i].getUri();
@@ -121,7 +120,7 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
      * @param {Ext.tree.TreeNode} node The node to which to attach actions
      **/
     attachRemActions: function (node){
-        // TODO: should this go in TreeNode?
+        
         node.on('click', function(node) {
             lore.ore.readRDF(node.attributes.uri);
         });

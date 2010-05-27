@@ -40,7 +40,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
          */
         var makeTOC = function(contentResources,containerid, ssid){ 
             var tochtml = "";
-            tochtml += "<ul style='text-align:left; list-style: circle inside;'>"
+            tochtml += "<ul style='text-align:left; list-style: disc inside;padding-left:6px;'>"
             for (var i = 0; i < contentResources.length; i++){
                 var r = contentResources[i];
                 var id = (r.representsCO? r.uri : r.uri + "_" + containerid);
@@ -53,25 +53,25 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
          * Helper function: given a resource, produce html to display the properties 
          */
         var displayProperties = function(res, skip){
-            var prophtml = "";
+            var prophtml = "<table class='slideshowProps'>";
             var relhtml = "";
             skip = skip || {};
             var skipProps = Ext.apply(skip, {"rdf:type_0":true, "dc:format_0":true, "ore:describes_0":true,"dc:title_0":true, "dc:description_0":true,"dcterms:abstract_0":true, "dc:rights_0":true});
             var desc = res.getProperty("dc:description_0");
             if (desc) {
              prophtml += "<tr valign='top'>" +
-                "<td><b>description:</b></td><td width='80%'>"
+                "<td><b>Description:</b></td><td width='80%'>"
                 + desc.value + "</td></tr>";
             }
             var abst = resource.getProperty("dcterms:abstract_0");
             if (abst) {
-                prophtml += "<tr valign='top'><td><b>abstract:</b></td>" +
+                prophtml += "<tr valign='top'><td><b>Abstract:</b></td>" +
                     "<td width='80%'>"
                     + abst.value + "</td></tr>";
             }
             var rights = resource.getProperty("dc:rights_0");
             if (rights) {
-                prophtml += "<tr valign='top'><td><b>rights:</b></td>" +
+                prophtml += "<tr valign='top'><td><b>Rights:</b></td>" +
                     "<td width='80%'>"
                     + rights.value + "</td></tr>";
             }
@@ -82,7 +82,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                     if ("layout" != theProp.prefix){
                         if (theProp.value.toString().match("^http://") == "http://") {
                             // Link to resource
-                            relhtml += "<tr valign='top'><td><b>" + theProp.name + ":</b>&nbsp;</td>";
+                            relhtml += "<tr valign='top'><td><b>" + lore.global.util.capitalizeString(theProp.name) + ":</b>&nbsp;</td>";
                             relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
                             // lookup title
                             var propR = (res.container? res.container.getAggregatedResource(theProp.value): false);
@@ -94,14 +94,14 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                             relhtml += "</a></td></tr>";
                         } else {
                             // Display value as property
-                            prophtml += "<tr valign='top'><td><b>" + theProp.name + ":</b>&nbsp;</td>";
+                            prophtml += "<tr valign='top'><td><b>" + lore.global.util.capitalizeString(theProp.name) + ":</b>&nbsp;</td>";
                             prophtml += theProp.value;
                             prophtml += "</td></tr>";
                         }  
                     }
                 }
             }
-            return prophtml + relhtml;
+            return prophtml + relhtml + "</table>";
         }
         
         // TODO: use Ext Template
@@ -112,19 +112,18 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             // Title slide for entire Slideshow
             title = title || 'Compound object';
             slidehtml += "<div style='padding:0.5em'><div class='slideshowTitle'>" + title + "</div>";
-            slidehtml += "<table class='slideshowProps'>";
             slidehtml += displayProperties(resource,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
-            slidehtml += "</table>";
             var contentResources = resource.aggregatedResources;
             if (contentResources.length > 0){
-                slidehtml += "<div class='slideshowToc'><p style='font-weight:bold;'>Contents:</p>";
+                slidehtml += "<div class='slideshowToc'><p style='font-weight:bold;padding-bottom:0.5em;'>Contents:</p>";
                 slidehtml += makeTOC(contentResources, resource.uri, this.ssid);
                 slidehtml += "</div>";
             }
+
             var ccreator = resource.getProperty("dc:creator_0");
             var ccreated = resource.getProperty("dcterms:created_0");
             var cmodified = resource.getProperty("dcterms:modified_0");
-            slidehtml += "<div class='slideshowProps'>Created" + (ccreator? " by " + ccreator.value : "") + ' on  ' + ccreated.value;
+            slidehtml += "<div class='slideshowFooter'>Created" + (ccreator? " by " + ccreator.value : "") + ' on  ' + ccreated.value;
             if (cmodified) {
                 slidehtml += ', last updated on ' + cmodified.value;
             }
@@ -136,19 +135,17 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             // Properties
             slidehtml += "<div style='padding:0.5em'>";
             slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
-            slidehtml += "<table class='slideshowProps'>";
             slidehtml += displayProperties(resource);
-            slidehtml += "</table>";
             if (resource.representsCO instanceof lore.ore.model.CompoundObject){
-                slidehtml += "<table class='slideshowProps'>" + displayProperties(resource.representsCO,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true}) + "</table>";
+                slidehtml +=  displayProperties(resource.representsCO,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
                 var contentResources = resource.representsCO.aggregatedResources;
 	            if (contentResources.length > 0){
-	                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;'>In this section:</p>";
+	                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;padding-bottom:0.5em;'>In this section:</p>";
                     slidehtml += makeTOC(contentResources, resource.representsCO.uri,this.ssid);
                     slidehtml += "</div>";
 	            }
                 var creator = resource.representsCO.getProperty("dc:creator_0");
-	            slidehtml += "<div class='slideshowProps'>This nested compound object created" + (creator? " by " + creator.value : "") + " on " + resource.representsCO.getProperty("dcterms:created_0").value;
+	            slidehtml += "<div class='slideshowFooter'>This nested compound object created" + (creator? " by " + creator.value : "") + " on " + resource.representsCO.getProperty("dcterms:created_0").value;
 	            var mod = resource.representsCO.getProperty("dcterms:modified_0");
 	            if (mod){
 	                slidehtml += ", last updated on " + mod.value;
@@ -181,17 +178,18 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 		            icontype += " videoicon";
                     // Disable preview as secure iframe does not allow plugins
                     hasPreview = false;
-		        }
-		        else if (format.value.match("pdf")) {
+		        } else if (format.value.match("pdf")) {
 		            icontype += " pdficon";
                     // Disable preview as secure iframe does not allow plugins
                     hasPreview = false;
-		        }
+		        } else {
+                    hasPreview = false;
+                }
             }
             slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
             slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
             slidehtml += "</div>";
-            slidehtml += "<table class='slideshowProps'>" + displayProperties(resource) + "</table>";
+            slidehtml += displayProperties(resource);
             if (format && format.value.match("image")){
                 previewhtml += "<img class='sspreview' src='" + resource.uri + "' alt='image preview' style='max-height:100%;'/>";
             } else if (resource.uri.match('austlit.edu.au') && (resource.uri.match('ShowWork') || resource.uri.match('ShowAgent'))){
@@ -213,7 +211,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             
             // TODO: Add source info + container info
             
-            slidehtml += "<p style='font-size:60%;padding-top:1em;'>Source: <a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#'>"  + resource.uri + "</a>";
+            slidehtml += "<p class='slideshowFooter'>Viewing <a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#'>"  + resource.uri + "</a>";
             if (resource.container){
                 // TODO: remove hardcoded ref to slideshow
                 slidehtml += " &nbsp;&nbsp;&nbsp; from &nbsp;&nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + resource.container.uri + "\");'>" + (resource.container.getTitle() || resource.container.uri) + "</a>"; 
@@ -226,13 +224,13 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             this.layout = 'anchor';
             //this.layout = 'border';
             if (previewFrame){
-                this.add({anchor: '100% 75%', autoScroll: true, contentEl: previewFrame}); 
+                this.add({anchor: '100% 70%', autoScroll: true, contentEl: previewFrame}); 
                 //this.add({region:'center', autoScroll: true,  contentEl: previewFrame});  
             } else {
-                this.add({anchor: '100% 75%', autoScroll: true, html: previewhtml});
+                this.add({anchor: '100% 70%', autoScroll: true, html: previewhtml});
                 //this.add({region:'center', autoScroll: true, html: previewhtml});
             }
-            this.add({anchor: '100% 25%', autoScroll: true, html: slidehtml});
+            this.add({anchor: '100% 30%', autoScroll: true, html: slidehtml});
             //this.add({region:'south', height: 100,  split: true, collapseMode: 'mini', autoScroll: true, html: slidehtml});
         } else {
             this.html = slidehtml;   
