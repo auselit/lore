@@ -45,7 +45,7 @@ debug = {
 	 * @param {String} message The logging message
 	 * @param {Object} obj An object to attach
 	 */
-	mozConsole: function (module, message, obj) {
+	mozConsole : function (module, message, obj) {
 		if (debug.moz) {
 			// TODO: Send a more details message object via other console logging function
 			debug.moz.console.logStringMessage(module + message + (obj ? (" " + obj):''));
@@ -59,63 +59,75 @@ debug = {
 	 * @param {} obj
 	 */
 	ui : function (message, obj){
-	    if (debug.ui_pref){
+	    if (debug.fbTrace.DBG_LORE_UI){
 	        debug.fbTrace.sysout(debug.FB_UI + message, obj);
 	    } 
 		debug.mozConsole(debug.UI, message, obj);
 	},
+	
 	/**
 	 * Log debug message for Annotations components
 	 * @param {} message
 	 * @param {} obj
 	 */
 	anno : function (message, obj){
-	    if (debug.anno_pref){
+	    if (debug.fbTrace.DBG_LORE_ANNOTATIONS){
 	        debug.fbTrace.sysout(debug.FB_ANNO + message, obj);
 	    } 
 		debug.mozConsole(debug.ANNO, message, obj);
 	},
+	
 	/**
 	 * Lore debug message for ORE components
 	 * @param {} message
 	 * @param {} obj
 	 */
 	ore : function (message, obj){
-	    if (debug.ore_pref){
+	    if (debug.fbTrace.DBG_LORE_COMPOUND_OBJECTS){
 	        debug.fbTrace.sysout(debug.FB_ORE + message, obj);
 	    } 
 		debug.mozConsole(debug.ORE, message, obj);
 	},
-	/** Log debug message for Text mining components
-	 * 
+	
+	/**
+	 * Log debug message for Text mining components
 	 * @param {} message
 	 * @param {} obj
 	 */
 	tm : function (message, obj){
-	    if (debug.tm_pref){
+	    if (debug.fbTrace.DBG_LORE_TEXT_MINING){
 	        debug.fbTrace.sysout(debug.FB_TM + message, obj);
 	    } 
 		debug.mozConsole(debug.TM, message, obj);
     },
 	
-	enableFileLogger: function (enable) {
+	enableFileLogger : function (enable) {
 		if ( enable && !debug.moz ) {
 			debug.moz = new MozillaFileLogger();
 		} else if( !enable && debug.moz) {
 			debug.moz.destruct();
 			debug.moz = null;
 		}
-				
 	},
-    // debugging options
-    /** Preference for UI messages  */
-    ui_pref   : false,
-    /** Preference for Annotation messages */
-    anno_pref : false,
-    /** Preference for ORE/Compound Object messages */
-    ore_pref  : false,
-    /** Preference for Text mining messages */
-    tm_pref   : false
+	
+	/**
+	 * Record the current time, for profiling a series of events
+	 */
+	startTiming : function() {
+		debug.starttime = Date.now();
+	},
+	
+	/**
+	 * Log the elapsed time since calling startTiming() with the included message
+	 * @param {} message
+	 */
+	timeElapsed : function(message) {
+		if (debug.fbTrace.DBG_LORE_PROFILING) {
+			var elapsed = Date.now() - debug.starttime;
+			debug.fbTrace.sysout(" Elapsed: " + elapsed + "ms " + message);
+		}
+	}
+	
     /** @property fbTrace
      * Instance of Firebug Tracer */
 };
@@ -205,10 +217,6 @@ try {
         .getService(Components.interfaces.nsISupports)
         .wrappedJSObject
         .getTracer("extensions.lore");
-    debug.ui_pref   = debug.fbTrace.DBG_LORE_UI;
-    debug.anno_pref = debug.fbTrace.DBG_LORE_ANNOTATIONS;
-    debug.ore_pref  = debug.fbTrace.DBG_LORE_COMPOUND_OBJECTS;
-    debug.tm_pref   = debug.fbTrace.DBG_LORE_TEXT_MINING;
 	
 } catch (ex) {
     // suppress errors if getting fbTrace fails - Firebug probably not enabled
