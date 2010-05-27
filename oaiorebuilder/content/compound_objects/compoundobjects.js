@@ -1340,6 +1340,9 @@ lore.ore.loadCompoundObject = function (rdf) {
             }
             lore.ore.historyManager.addToHistory(remurl, title);  
        }
+       if (lore.ore.ui.topView && lore.ore.ui.graph.lookup[lore.ore.ui.currentURL]){
+            lore.ore.ui.topView.hideAddIcon(true);
+       } 
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
         lore.debug.ore("exception loading RDF from string",e);
@@ -1354,13 +1357,6 @@ lore.ore.loadCompoundObject = function (rdf) {
  * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
  */
 lore.ore.readRDF = function(rdfURL){
-    /*if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
-        lore.ore.sesame.loadCompoundObject(rdfURL);
-    } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
-        //lore.lore.fedora.loadCompoundObject(rdfURL);
-    }else {
-        lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
-    }*/
     Ext.MessageBox.show({
            msg: 'Loading compound object',
            width:250,
