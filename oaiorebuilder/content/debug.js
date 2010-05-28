@@ -219,5 +219,6 @@ try {
         .getTracer("extensions.lore");
 	
 } catch (ex) {
+	debug.fbTrace = {};
     // suppress errors if getting fbTrace fails - Firebug probably not enabled
 }
