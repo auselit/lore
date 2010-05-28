@@ -423,7 +423,9 @@ try {
 		},
         /** Display the preferences window */
 		openOptions: function(){
-			window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
+            var instantApply = getBoolPref("browser.preferences.instantApply", false);
+            var features = "chrome,titlebar,toolbar,centerscreen" + (instantApply ? ",dialog=no" : ",modal");
+            openDialog("chrome://lore/content/options.xul","", features);
 		},
 		
 		loadGlobalPrefs: function () {
