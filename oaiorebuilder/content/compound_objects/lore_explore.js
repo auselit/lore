@@ -155,16 +155,15 @@ lore.ore.explore.init = function() {
  */
 lore.ore.explore.showInExploreView = function (id, title, isCompoundObject){
     lore.ore.explore.init();
-    lore.debug.ore("showInExploreView " + id + " " + title + " " + isCompoundObject);
     lore.ore.explore.loadRem(id, title, isCompoundObject, function(json){
         lore.ore.explore.rg.loadJSON(json);
         lore.ore.explore.rg.refresh();
         var existhistory = Ext.get('exploreHistory').dom.innerHTML;
-        // TODO: check is is a comp obj- use lore icon and open in lore instead of browser link
+        
         var action = "lore.global.util.launchTab(\"" + id + "\", window);";
         var icon = "chrome://lore/skin/icons/page_go.png";
         var tooltip = "Show in browser";
-        // stylesheet sets type to circle for compound objects
+        // if it is a compound object use lore icon and open in lore instead of browser link
         if (isCompoundObject){
             action = "lore.ore.readRDF(\"" + id + "\");";
             icon = "chrome://lore/skin/oaioreicon-sm.png";

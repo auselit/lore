@@ -240,7 +240,6 @@
 					this.views = {};
 				}
 				else {
-					//TODO: done? 14/04/10
 					try {
 						if (this.views[instId].uninit) {
 								this.views[instId].uninit();

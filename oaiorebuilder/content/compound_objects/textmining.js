@@ -51,7 +51,6 @@ lore.ore.textm.processRDFa = function(tmtab) {
                 position:["-20","0"],
                 showCustom: function(){
                   try{
-                    //lore.debug.ore("showcustom",this);
                     this.context.style.padding="2px";
                     this.context.style.position= 'absolute';
                     this.context.style.opacity = "1";
@@ -78,7 +77,6 @@ lore.ore.textm.processRDFa = function(tmtab) {
        var resultStr = this.athing.value + " is a " + this.atype.value + "<br>";
        tmtab.body.insertHtml('beforeEnd',resultStr);
        myrdf.about(this.athing).each(function(){
-        //lore.debug.ore("properties of thing "+ this.property.value.toString(),this);
         
        });
        
@@ -97,7 +95,7 @@ lore.ore.textm.processRDFa = function(tmtab) {
        plain: true
     });
     win.show(this);
-    lore.debug.ore("grid created",rdfgrid);*/
+    */
     var ser = new XMLSerializer();
     var rdfxml = jQuery.rdf.dump(triples,{'format': 'application/rdf+xml', 'namespaces': {'austlit': 'http://austlit.edu.au/owl/austlit.owl#'}});
     tmtab.body.insertHtml('beforeEnd',"The RDF/XML is:<pre style='font-size:smaller;color:#51666b;'>"

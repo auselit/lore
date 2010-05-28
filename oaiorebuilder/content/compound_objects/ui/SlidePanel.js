@@ -5,6 +5,12 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
    constructor: function (config){
         config = config || {};
         this.ssid = config.ssid; // id of parent SlideShowPanel
+
+        // Templates
+        this.tocTemplate = new Ext.Template("<li><a href='#' onclick='Ext.getCmp(\"" 
+            + this.ssid + "\").setActiveItem(\"{id}\");'>{title}</a></li>",
+            {compiled: true}
+        );
         lore.ore.ui.SlidePanel.superclass.constructor.call(this, config);
    },
    initComponent: function(config){
@@ -31,20 +37,22 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
     },
     /** 
      * Load contents from the model
-     * TODO: ssid should be configured at creation not provided to this method
      * 
      */
     loadContent: function(resource){
+        var oThis = this;
         /*
          * Helper function: given an array of content, make a table of contents
          */
         var makeTOC = function(contentResources,containerid, ssid){ 
             var tochtml = "";
-            tochtml += "<ul style='text-align:left; list-style: disc inside;padding-left:6px;'>"
+            tochtml += "<ul id='" + this.id + "_toc' style='text-align:left; list-style: disc inside;padding-left:6px;'>"
             for (var i = 0; i < contentResources.length; i++){
                 var r = contentResources[i];
-                var id = (r.representsCO? r.uri : r.uri + "_" + containerid);
-                tochtml += "<li><a href='#' onclick='try{Ext.getCmp(\"" + ssid + "\").setActiveItem(\"" + id + "\");}catch(e){lore.debug.ore(e)}'>" + (r.getTitle() || "Untitled Resource") + "</a></li>";
+                tochtml += oThis.tocTemplate.apply({
+                    id: (r.representsCO? r.uri : r.uri + "_" + containerid),
+                    title: (r.getTitle() || "Untitled Resource")
+                })
             }
             tochtml += "</ul>";
             return tochtml;
@@ -208,12 +216,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             if (!(resource.uri.match("^http") == "http")){
                 hasPreview = false;
             }
-            
-            // TODO: Add source info + container info
-            
+
             slidehtml += "<p class='slideshowFooter'>Viewing <a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#'>"  + resource.uri + "</a>";
             if (resource.container){
-                // TODO: remove hardcoded ref to slideshow
                 slidehtml += " &nbsp;&nbsp;&nbsp; from &nbsp;&nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + resource.container.uri + "\");'>" + (resource.container.getTitle() || resource.container.uri) + "</a>"; 
             }
             slidehtml += "</p>";

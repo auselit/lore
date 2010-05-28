@@ -363,7 +363,7 @@ SimileAjax.WindowManager._onBodyMouseUp = function(elmt, evt, target) {
                     }
                     
                     if (!dropped) {
-                        // TODO: do holywood explosion here
+                        
                     }
                 }
             }
