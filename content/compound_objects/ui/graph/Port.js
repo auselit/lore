@@ -50,7 +50,7 @@ lore.ore.ui.graph.Port.prototype.onDrag = function()
     this.isMoving = true;
     this.setAlpha(0.0);
     wf.showMask(); 
-    wf.connectionLine.setAlpha(0.3);
+    wf.connectionLine.setAlpha(0.8);
     this.yoffset = wf.getScrollTop();
     this.xoffset = wf.getScrollLeft();
   }
@@ -84,7 +84,7 @@ lore.ore.ui.graph.Port.prototype.onDragEnter = function(/*:draw2d.Port*/ port)
 }
 lore.ore.ui.graph.Port.prototype.onDragLeave = function(/*:draw2d.Port*/ port)
 {
-  this.parentNode.workflow.connectionLine.setAlpha(0.3);
+  this.parentNode.workflow.connectionLine.setAlpha(0.8);
   this.showCorona(false);
   this.setBackgroundColor(this.fillColor);
 }
