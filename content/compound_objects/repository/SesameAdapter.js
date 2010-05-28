@@ -85,7 +85,6 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	                    var listname = (isSearchQuery? "search" : "browse");  
 					    var result = {};
 					    if (xmldoc) {
-					        //lore.debug.ore("compound objects sparql " + listname, xmldoc);
 					        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
 					    }
 					    if (result.length > 0){
@@ -183,7 +182,6 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 		    var queryURL = this.reposURL
 		            + "?queryLn=sparql&query=" 
 		            + thequery;
-            //lore.debug.ore("sparql query is",thequery);
 		    var json;
             var xsltproc = new XSLTProcessor();
             var xhr = new XMLHttpRequest();                
@@ -208,9 +206,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        var rdfDoc = xhr.responseXML;
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
 	        var serializer = new XMLSerializer();
-	        //lore.debug.ore("explore data response is",serializer.serializeToString(rdfDoc));
 	        eval ("json = " + serializer.serializeToString(thefrag));
-	        //lore.debug.ore("got json",json);
             return json;
 	    } catch (ex){
 	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);

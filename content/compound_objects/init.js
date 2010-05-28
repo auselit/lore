@@ -526,8 +526,7 @@ lore.ore.ui.initUIComponents = function() {
 													 * 'x-form-ellipsis-trigger',
 													 * 'onTriggerClick':
 													 * function(ev) {
-													 * lore.debug.ore("triggered
-													 * for ",[this,ev]);
+													 * 
 													 *  } })
 													 */
 													editor : new Ext.form.TextField()

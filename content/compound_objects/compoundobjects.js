@@ -1012,8 +1012,6 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                     + ltsymb + "/" + propname + ">" + nlsymb;
                 }
             });
-            //lore.debug.ore("aggreprops are",aggreprops.dump({format:'application/rdf+xml',serialize:true}));
-        
     }
     var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
     allfigures.sort(lore.ore.ui.graph.figSortingFunction);
@@ -1167,10 +1165,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             databank.prefix(ns,lore.constants.NAMESPACES[ns]);
         }
 	    databank.load(rdfDoc);
-        /* rdfquery triplestore that stores the original RDF triples that were loaded for a compound object */
-        // TODO change to var
         var loadedRDF = jQuery.rdf({databank: databank});
-
         // Display the properties for the compound object
 	    var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
             .where('?rem ore:describes ?aggre');
@@ -1227,7 +1222,6 @@ lore.ore.loadCompoundObject = function (rdf) {
             .optional('?url dc:title ?title')
             .each(function(){
              var resourceURL = this.url.value.toString(); 
-             //lore.debug.ore("found aggregated resource " + resourceURL,this);
              var fig;
              
              if (this.x && this.y) {
@@ -1290,7 +1284,6 @@ lore.ore.loadCompoundObject = function (rdf) {
                     if (tgtfig && (srcfig != tgtfig)) { // this is a connection
                         try {
                         var c = new lore.ore.ui.graph.ContextmenuConnection();
-                        //lore.debug.ore("processing connection: " + subject + " " + this.pred.value.toString() + " " + obj,[relresult,srcfig, tgtfig,c]);
                         var srcPort = srcfig.getPort("output");
                         var tgtPort = tgtfig.getPort("input");
                         if (srcPort && tgtPort){
@@ -1520,7 +1513,6 @@ lore.ore.afterSaveCompoundObject = function(remid){
     var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
         || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid) 
         || "Untitled";
-    // TODO: check first that it is related to the current URL
     var coopts = {
             'uri': remid,
             'title': title,
@@ -1627,7 +1619,6 @@ lore.ore.ui.graph.nextXY = function(prevx, prevy) {
 
 lore.ore.isInCompoundObject = function(theURL){
     var isInCO = typeof(lore.ore.ui.graph.lookup[theURL]) !== 'undefined';
-    lore.debug.ore("isInCompoundObject? " +theURL + " " + isInCO);
     return isInCO;
 }
 

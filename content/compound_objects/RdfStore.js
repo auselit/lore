@@ -62,7 +62,7 @@ Ext.ux.RdfStore = Ext.extend(Ext.data.Store, {
 					"update" : {
 						fn : function(store, rec, op) {
 							try {
-								// if (op == Ext.data.Record.COMMIT) {
+								
 								var subj = rec.modified.subject
 										? rec.modified.subject
 										: rec.data.subject;
@@ -87,8 +87,7 @@ Ext.ux.RdfStore = Ext.extend(Ext.data.Store, {
 								}
 								lore.debug.ore("RdfStore: updated databank",
 										this.databank);
-								// }
-								// lore.debug.ore("RdfStore: update handler");
+								
 							} catch (ex) {
 								lore.debug.ore(
 										"RdfStore: error on update databank",
