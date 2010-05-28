@@ -563,6 +563,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.setProperty = function (pid, pval){
   var oldval = this.metadataproperties[pid];
   this.metadataproperties[pid] = pval;
   if (pid == "resource_0" && pval != oldval){
+    delete this.metadataproperties["dc:format_0"];
     this.setContent(pval);
   } else if ((pid == "dc:title_0" || pid == "dcterms:title_0") && pval != oldval){
     if (pval && pval != ""){
