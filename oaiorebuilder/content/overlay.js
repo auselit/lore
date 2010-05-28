@@ -424,7 +424,7 @@ try {
         /** Display the preferences window */
 		openOptions: function(){
             var instantApply = getBoolPref("browser.preferences.instantApply", false);
-            var features = "chrome,titlebar,toolbar,centerscreen" + (instantApply ? ",dialog=no" : ",modal");
+            var features = "chrome,titlebar,toolbar,centerscreen,resizable=yes" + (instantApply ? ",dialog=no" : ",modal");
             openDialog("chrome://lore/content/options.xul","", features);
 		},
 		
