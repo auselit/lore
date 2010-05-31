@@ -43,34 +43,46 @@ lore.ore.ui.graph.CommandListener = Ext.extend(draw2d.CommandStackEventListener,
 	        comm.undo();
 	    }
         // remove the url from lookup if node is deleted, add it back if it is undone
+        // update address bar add icon to reflect whether current URL is in compound object
 	    if (0!=(details&(draw2d.CommandStack.POST_EXECUTE))) {
+            lore.debug.ore("post execute",comm);
 	        if (comm instanceof draw2d.CommandDelete) {
 	            delete lore.ore.ui.graph.lookup[comm_fig.url];
                 if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
                        lore.ore.ui.topView.hideAddIcon(false);
                 }
-	        }
-	    }
-	    else if (0!=(details&(draw2d.CommandStack.POST_UNDO))) {
-	           if (comm instanceof draw2d.CommandDelete) {
-                    //  check that URI isn't in resource map (eg another node's resource may have been changed)
-                    if (lore.ore.ui.graph.lookup[comm_fig.url]){
-                        lore.ore.ui.loreWarning("Cannot undo deletion: resource is aleady in Compound Object");
-                        comm.redo();
-                    }
-	                lore.ore.ui.graph.lookup[comm_fig.url] = comm_fig.getId();
-                    if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+	        } else if (comm instanceof draw2d.CommandAdd) {
+                if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
                        lore.ore.ui.topView.hideAddIcon(true);
-                    }
-	           }
-        }   
-	    else if (0!=(details&(draw2d.CommandStack.POST_REDO))) {
-	        if (comm instanceof draw2d.CommandDelete) {
-	            delete lore.ore.ui.graph.lookup[comm_fig.url];
-                if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
-                       lore.ore.ui.topView.hideAddIcon(false);
                 }
-	        }
+            }
+	    }
+	    else if ((0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandDelete)
+            || (0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandAdd)) {
+            //  check that URI isn't in resource map (eg another node's resource may have been changed)
+            if (lore.ore.ui.graph.lookup[comm_fig.url]){
+                if (comm instanceof draw2d.CommandDelete) {
+                    lore.ore.ui.loreWarning("Cannot undo deletion: resource is aleady in Compound Object");
+                    comm.redo();
+                } else {
+                    lore.ore.ui.loreWarning("Cannot redo addition: resource is aleady in Compound Object");
+                    comm.undo();
+                }
+            }
+            lore.ore.ui.graph.lookup[comm_fig.url] = comm_fig.getId();
+            if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+               lore.ore.ui.topView.hideAddIcon(true);
+            }       
+       } 
+         
+	    else if ((0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandDelete)
+         || (0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandAdd)) {
+            lore.debug.ore("redo delete or undo add",comm);
+            delete lore.ore.ui.graph.lookup[comm_fig.url];
+            if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+                   lore.ore.ui.topView.hideAddIcon(false);
+            }
+	        
         }
     }
 });
