@@ -110,8 +110,8 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	},
 	loadCompoundObject : function(remid, callback, failcallback){
 	     Ext.Ajax.request({
-	            url: this.reposURL + "/statements?context=<" + remid + ">",
-	            //url: remid,
+	            //url: this.reposURL + "/statements?context=<" + remid + ">",
+	            url: remid,
                 headers: {
                     Accept: 'application/rdf+xml'
                 },
