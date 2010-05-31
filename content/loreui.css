@@ -104,7 +104,6 @@
 	list-style-image: url(chrome://lore/skin/icons/oaioreicon-sm.png); 
 	padding-top:2px;
 }
-
 .rdficon {
 	background-image: url(chrome://lore/skin/icons/rdf.png) !important;	
 }
@@ -130,6 +129,9 @@
 }
 .x-tree-node .oreresult {
 	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png) !important;
+}
+.x-tree-node .ro-oreresult {
+    background-image: url(chrome://lore/skin/icons/oaioreicon-grey.png) !important; 
 }
 .x-tree-node .anno-icon, .anno-icon {
 	background-image: url(chrome://lore/skin/icons/comment.png);
@@ -199,6 +201,15 @@
 #propertytabs * .x-tree-node a:hover {
     text-decoration:none;
     color:black;
+}
+.add-icon {
+	background-image: url(chrome://lore/skin/icons/add.png);
+}
+.delete-icon {
+    background-image: url(chrome://lore/skin/icons/database_delete.png);
+}
+.edit-icon {
+    background-image: url(chrome://lore/skin/icons/pencil.png);
 }
 .orelink {
 	font-style:italic; 
