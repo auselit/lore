@@ -128,27 +128,58 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
             node.select();
             if (!node.contextmenu) {
                 node.contextmenu = new Ext.menu.Menu({
-                    id : node.attributes.uri + "-context-menu"
+                    id : node.attributes.uri + "-context-menu",
+                    showSeparator: false
                 });
+                if (node.config.iconCls != 'ro-oreresult'){
+                    node.contextmenu.add({
+                        text : "Edit compound object",
+                        iconCls: "edit-icon",
+                        handler : function(evt) {
+                            lore.ore.readRDF(node.attributes.uri);
+                            // set ui to editable
+                        }
+                    });
+                    node.contextmenu.add({
+                        text : "Delete compound object",
+                        iconCls: "delete-icon",
+                        handler : function(evt) {
+                            lore.ore.deleteFromRepository(node.attributes.uri,node.text);
+                        }
+                    });
+                } else {
+                    node.contextmenu.add({
+                        xtype: "label",
+                        //iconCls: "no-icon",
+                        text : "Compound object is not from default repository"
+                    });
+                    node.contextmenu.addSeparator();
+                    node.contextmenu.add({
+                        text : "View compound object in editor (read-only)",
+                        iconCls: "edit-icon",
+                        handler : function(evt) {
+                            lore.ore.readRDF(node.attributes.uri);
+                            // set ui to readonly
+                        }
+                    });
+                }
                 node.contextmenu.add({
-                    text : "Edit compound object",
-                    handler : function(evt) {
-                        lore.ore.readRDF(node.attributes.uri);
-                    }
-                });
-                node.contextmenu.add({
-                    text : "Delete compound object",
-                    handler : function(evt) {
-                        lore.ore.deleteFromRepository(node.attributes.uri,node.text);
-                    }
-                });
-                node.contextmenu.add({
-                    text : "Add as node in compound object editor",
+                    text : "Add as nested compound object",
+                    iconCls: "add-icon",
                     handler : function(evt) {
                         lore.ore.ui.graph.addFigure(node.attributes.uri,{
                             "rdf:type_0": lore.constants.RESOURCE_MAP,
                             "dc:title_0": node.text});
                     }
+                });
+                node.contextmenu.add({
+                   text: "Do not show in Recently Viewed",
+                   iconCls: "no-icon",
+                   handler: function(evt) {
+                        if (lore.ore.historyManager){
+                            lore.ore.historyManager.deleteFromHistory(node.attributes.uri);
+                        }
+                   }
                 });
             }
             node.contextmenu.showAt(e.xy);
