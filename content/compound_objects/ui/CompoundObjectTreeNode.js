@@ -51,9 +51,9 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
     */
    initConfig: function(coSummary){
         var coProps = coSummary.getProperties();
-        var iconCls = 'oreresult';
-        if (lore.ore.reposAdapter && !coProps.uri.match(lore.ore.reposAdapter.idPrefix)){
-            iconCls = 'ro-oreresult';  
+        var iconCls = 'ro-oreresult';
+        if (lore.ore.reposAdapter && coProps.uri.match(lore.ore.reposAdapter.idPrefix)){
+            iconCls = 'oreresult';  
         }
         
         Ext.apply(this.config,{
