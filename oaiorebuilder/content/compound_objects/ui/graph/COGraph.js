@@ -56,6 +56,7 @@ lore.ore.ui.graph.COGraph = function(id) {
         // default colour for line that is displayed for creating connections
         this.connectionLine.setColor(new draw2d.Color(174, 174, 174));
         this.previewCanvas = document.createElement("canvas");
+        this.readOnly = false;
     } catch (ex){
         lore.debug.ore("error setting up COGraph",ex);
     }
@@ -75,6 +76,9 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	        lore.debug.ore("failed to do layout",e);
 	    }
 	},
+    setReadOnly : function(readonly) {
+        this.readOnly = readonly;
+    },
     /**
      * Show a message indicating the compound object is empty
      * @private
@@ -276,13 +280,15 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	 * @param {boolean} ctrl
 	 */
 	onKeyDown: function(keyCode, ctrl) {
-	  if((keyCode==46 || keyCode==8) && this.currentSelection!=null) {
-	     this.commandStack.execute(this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
-      } else if(keyCode==90 && ctrl) {
-	     this.commandStack.undo();
-      } else if(keyCode==89 && ctrl) {
-	     this.commandStack.redo();
-      }
+        if (!this.readOnly){
+    	  if((keyCode==46 || keyCode==8) && this.currentSelection!=null) {
+    	     this.commandStack.execute(this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+          } else if(keyCode==90 && ctrl) {
+    	     this.commandStack.undo();
+          } else if(keyCode==89 && ctrl) {
+    	     this.commandStack.redo();
+          }
+        }
 	},
     /** 
      * Render the contents as an image. Renders the current window into a canvas (resizing so that
@@ -320,6 +326,18 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      }
         
     },
+    doCommand : function(action) {
+        if(!oThis.readOnly){
+            action();
+        } else {
+             lore.ore.ui.loreWarning("Editor is read-only");
+        }
+    },
+    addResourceFigure: function(fig, x, y) {
+        if (!this.readOnly){
+            this.commandStack.execute(new draw2d.CommandAdd(this, fig, x, y));
+        }
+    },
     /** 
      * Construct the context menu displayed for the graph
      * @return {draw2d.Menu} The contextmenu
@@ -330,24 +348,26 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	    menu.appendMenuItem(new draw2d.MenuItem("Add current URL",
 	        "chrome://lore/skin/icons/add.png",
 	        function(x,y) {
+                // TODO: change to a local method
 	            lore.ore.addFigure(lore.ore.ui.currentURL);  
 	        })
 	    );
         menu.appendMenuItem(new draw2d.MenuItem("Undo",
             "chrome://lore/skin/icons/arrow_undo.png",
             function(x,y){
-                oThis.commandStack.undo();      
+                    oThis.doCommand(oThis.commandStack.undo());
             })
         );
         menu.appendMenuItem(new draw2d.MenuItem("Redo",
             "chrome://lore/skin/icons/arrow_redo.png",
             function(x,y){
-                oThis.commandStack.redo();      
+                    oThis.doCommand(oThis.commandStack.redo());
             })
         );
         menu.appendMenuItem(new draw2d.MenuItem("Auto layout",
             "chrome://lore/skin/icons/layout.png",
             function(x,y) {
+                // TODO : change to a local method
                lore.ore.doLayout();  
             })
         );
