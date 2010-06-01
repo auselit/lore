@@ -78,16 +78,19 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
                     '->',
                     {
                         id: 'move-prev',
+                        tooltip: 'Move to previous slide',
                         iconCls: 'ux-carousel-nav-prev',
                         handler: this.prev.createDelegate(this)
                     },
                     {
                         id: 'play',
+                        tooltip: 'Play slideshow',
                         iconCls: 'ux-carousel-nav-play',
                         handler: this.playPause.createDelegate(this)
                     },
                     {
                         id: 'move-next',
+                        tooltip: 'Move to next slide',
                         iconCls: 'ux-carousel-nav-next',
                         handler: this.next.createDelegate(this)
                     }
@@ -164,7 +167,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         this.model = co;
         this.model.on("addAggregatedResource", this.addResourceSlide, this);
         this.model.on("removeAggregatedResource", this.removeResourceSlide, this);
-        // TODO load contents from model: create a slidePanel for each resource including itself 
+        this.loadContent(this.model);
     }
 });
 Ext.reg('slideshowpanel',lore.ore.ui.SlideShowPanel);
