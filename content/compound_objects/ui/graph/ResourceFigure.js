@@ -190,7 +190,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.setContent = function(urlparam) {
 	}
 	this.setResourceURL(theurl);
 	this.setMimeType(theurl);
-    this.setRdfType(theurl);
+    //this.setRdfType(theurl);
 };
 /**
  * Loads the content URL into the preview area
@@ -213,21 +213,19 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
                 + identifierURI + "</a></li></ul>";
     } else if (mimetype && mimetype.match("rdf")){
         this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>RDF document (no preview available)</p>";
-	} else if (mimetype && mimetype.match("application/xml")){
-        // if it is an annotation, add a stylesheet parameter
-        var stylesheet = "danno_useStylesheet="; // danno will use default stylesheet
-        var displayUrl = theurl;
-        try{
-        if ((rdftype  && (rdftype.match(lore.constants.NAMESPACES["annotype"]) || 
+	} else if (rdftype  && (rdftype.match(lore.constants.NAMESPACES["annotype"]) || 
                     rdftype.match(lore.constants.NAMESPACES["vanno"]) ||
-                    rdftype.match(lore.constants.NAMESPACES["annoreply"])))){ 
-                        
+                    rdftype.match(lore.constants.NAMESPACES["annoreply"]))){
+                    
+            // if it is an annotation, add a stylesheet parameter
+            var stylesheet = "danno_useStylesheet="; // danno will use default stylesheet
+            var displayUrl = theurl;
             if (theurl.match("\\?")&& !theurl.match("danno_useStylesheet")){
-                displayUrl = theurl + "&" + stylesheet;
-                
+                displayUrl = theurl + "&" + stylesheet; 
             } else {
                 displayUrl = theurl + "?" + stylesheet;
             }
+            
             var domObj = this.iframearea.firstChild;
             if (domObj) {
                 this.iframearea.removeChild(domObj);
@@ -239,12 +237,8 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
             + this.uriexpander
             + "<a title='" + theurl +"' onclick='lore.global.util.launchTab(\"" + displayUrl
             + "\",window);' href='#'>" + theurl + "</a></li></ul>";
-        } else {
+    } else if (mimetype && mimetype.match("application/xml")) {
             this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>XML document (no preview available)</p>";
-        }
-        } catch (ex){
-            lore.debug.ore("problem displaying annotation",ex);
-        }
     } else if (mimetype && mimetype.match("pdf")) {
         // Don't display PDFs in preview
         this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>PDF document (no preview available)</p>";
@@ -364,27 +358,41 @@ lore.ore.ui.graph.ResourceFigure.prototype.setRdfType = function(theurl){
  */
 lore.ore.ui.graph.ResourceFigure.prototype.setMimeType = function(theurl) {
 	if (!this.metadataproperties["dc:format_0"]) { 
-		var req = new XMLHttpRequest();
-		req.open('HEAD', theurl, true);
-		var thisobj = this;
-		req.onreadystatechange = function() {
-			if (req.readyState == 4) {
-				var mimetype;
-				try {
-					mimetype = req.getResponseHeader('Content-Type');
-				} catch (e) {
-					lore.debug.ore("ResourceFigure: exception getting mime type", e);
-				}
-				if (!mimetype){
-                    
-					mimetype = "text/html";
-                }
-                lore.debug.ore("mimetype is " + mimetype,[req, req.getAllResponseHeaders()]);
-				thisobj.metadataproperties["dc:format_0"] = mimetype;
-				thisobj.showContent();
-			}
-		};
-		req.send(null);
+        // If we know it's an annotation or a resource map, set the mime type automatically
+        var rdftype = this.metadataproperties["rdf:type_0"];
+        if (rdftype && rdftype.match("ResourceMap")){
+            this.metadataproperties["dc:format_0"] = "application/rdf+xml";
+            this.showContent();
+        } else if ((rdftype  && (rdftype.match(lore.constants.NAMESPACES["annotype"]) || 
+                    rdftype.match(lore.constants.NAMESPACES["vanno"]) ||
+                    rdftype.match(lore.constants.NAMESPACES["annoreply"])))) {
+            this.metadataproperties["dc:format_0"] = "application/xml";
+            this.showContent();
+        } else {
+            // Otherwise, use a HEAD request to find out the content type
+    		var req = new XMLHttpRequest();
+    		req.open('HEAD', theurl, true);
+    		var thisobj = this;
+    		req.onreadystatechange = function() {
+                // TODO: if the HEAD request returns an error, do a get instead
+    			if (req.readyState == 4) {
+    				var mimetype;
+    				try {
+    					mimetype = req.getResponseHeader('Content-Type');
+    				} catch (e) {
+    					lore.debug.ore("ResourceFigure: exception getting mime type", e);
+    				}
+    				if (!mimetype){
+                        
+    					mimetype = "text/html";
+                    }
+                    lore.debug.ore("mimetype is " + mimetype,[req, req.getAllResponseHeaders()]);
+    				thisobj.metadataproperties["dc:format_0"] = mimetype;
+    				thisobj.showContent();
+    			}
+    		};
+    		req.send(null);
+        }
 	} else {
 		this.showContent();
 	}
