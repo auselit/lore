@@ -45,7 +45,6 @@ lore.ore.ui.graph.CommandListener = Ext.extend(draw2d.CommandStackEventListener,
         // remove the url from lookup if node is deleted, add it back if it is undone
         // update address bar add icon to reflect whether current URL is in compound object
 	    if (0!=(details&(draw2d.CommandStack.POST_EXECUTE))) {
-            lore.debug.ore("post execute",comm);
 	        if (comm instanceof draw2d.CommandDelete) {
 	            delete lore.ore.ui.graph.lookup[comm_fig.url];
                 if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
@@ -77,7 +76,6 @@ lore.ore.ui.graph.CommandListener = Ext.extend(draw2d.CommandStackEventListener,
          
 	    else if ((0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandDelete)
          || (0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandAdd)) {
-            lore.debug.ore("redo delete or undo add",comm);
             delete lore.ore.ui.graph.lookup[comm_fig.url];
             if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
                    lore.ore.ui.topView.hideAddIcon(false);
