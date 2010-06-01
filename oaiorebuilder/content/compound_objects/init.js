@@ -594,7 +594,7 @@ lore.ore.ui.initUIComponents = function() {
 	lore.ore.ui.recenttreeroot = new lore.ore.ui.CompoundObjectGroupNode({
 		id : "recenttree",
 		text : "Recently Viewed Compound Objects",
-		qtip : "Compound Objects that have been viewed during this browsing session",
+		qtip : "Compound Objects that have been viewed recently",
 		reverse : true
 	});
 	// set up the sources tree
@@ -781,13 +781,14 @@ lore.ore.ui.init = function() {
 		lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 		/** Indicates whether the Compound Object UI is visible */
 		lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
+        
 
-		lore.ore.initModel();
+		lore.global.ui.compoundObjectView.registerView(lore.ore,window.instanceId);
+        lore.ore.ui.loadPreferences();
+        lore.ore.initModel();
 		lore.ore.ui.initUIComponents();
 		lore.ore.ui.initProperties();
 
-		lore.global.ui.compoundObjectView.registerView(lore.ore,window.instanceId);
-		lore.ore.ui.loadPreferences();
 
 		lore.ore.ui.loreInfo("Welcome to LORE");
 		lore.ore.createCompoundObject();

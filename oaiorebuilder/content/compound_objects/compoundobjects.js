@@ -189,7 +189,41 @@ lore.ore.setrelonturl = function(relonturl) {
  */
 lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*String*/annoserver){
     lore.debug.ore("lore.ore.setRepos " + rdfrepos + " " + rdfrepostype + " " + annoserver);
-    // Access the repository 
+    /** The access URL of the annotation server */
+    lore.ore.annoServer = annoserver;
+    
+    if (lore.ore.reposAdapter && lore.ore.reposAdapter.reposURL == rdfrepos) {
+        // same access url, use existing adapter
+        return;
+    }    
+    // check whether currently loaded compound object is from different repos
+    var diffReposToEditor = true;
+    var isEmpty = lore.ore.cache && lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent());
+    // check whether there is a compound object being edited and prompt to save if changed
+    if (!isEmpty && diffReposToEditor){
+        // TODO set editor to read-only
+        if (lore.ore.compoundObjectDirty()){
+            lore.debug.ore("setrepos: dirty");
+            Ext.Msg.show({
+                title : 'Save Compound Object?',
+                buttons : Ext.MessageBox.YESNO,
+                msg : 'The default Compound Object repository preferences have been changed. <br>You will be able to view the current compound object in read-only mode, however you will not be able to save changes unless the repository preferences are changed back to the repository that contains this compound object. <br><br>Would you like to save your changes before proceeding?',
+                fn : function(btn, theurl) {
+                    if (btn == 'yes') {
+                        // TODO: #56 check that the save completed successfully?
+                        var remid = lore.ore.getPropertyValue(lore.ore.REM_ID_PROP,lore.ore.ui.grid);
+                        var therdf = lore.ore.createRDF(false);
+                        lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
+                            lore.ore.afterSaveCompoundObject(remid);
+                        });
+                    }  
+                }
+            });
+        }
+    } else {
+        // its from the same repository, set editor to editable
+        lore.debug.ore("setrepos: not different");
+    }
     if (rdfrepostype == 'sesame'){
         /** Adapter used to access the repository */
         lore.ore.reposAdapter = new lore.ore.SesameAdapter(rdfrepos);
@@ -198,8 +232,26 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
     }else {
         lore.ore.ui.loreWarning("Not yet implemented: change your repository type preference");
     }
-    /** The access URL of the annotation server */
-    lore.ore.annoServer = annoserver;
+    if (isEmpty) {
+            // empty compound object, reset it to get a new id
+            lore.debug.ore("setrepos: empty");
+            lore.ore.ui.newCO(true);
+    }
+    // Reload history so that compound objects from other repositories are marked as read-only
+    if (lore.ore.historyManager){
+        lore.ore.historyManager.onEndUpdateBatch();
+    }
+    // Reload the related compound objects list
+    lore.ore.updateCompoundObjectsBrowseList(lore.ore.ui.loadedURL);
+    
+    // Reset the search results and explore view
+    if (lore.ore.coListManager){
+        lore.ore.coListManager.clear("search");
+        lore.ore.ui.searchtreeroot.setDetails([]);
+    }
+    if (lore.ore.explore && lore.ore.cache){
+        lore.ore.explore.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
+    }
 };
 /** Handle click of search button in search panel */
 lore.ore.keywordSearch = function(){
@@ -254,7 +306,7 @@ lore.ore.compoundObjectDirty = function (){
     // TODO: #56 implement this method - compare state of model
 
     // return false if there is no compound object loaded
-    if (!lore.ore.cache.getLoadedCompoundObject()){
+    if (!lore.ore.cache || !lore.ore.cache.getLoadedCompoundObject()){
         return false;
     }
     // If it was a new compound object and the graphical view is either not defined 
@@ -281,10 +333,8 @@ lore.ore.getToday = function(){
     }
    return yearString + "-" + monthString + "-" + dayString;
 }
-/** Initialize a new compound object in the editor, prompting first whether to save the current compound object */
-lore.ore.createCompoundObject = function (dontRaise){
-    var newCO = function (){
-        if (lore.ore.ui.topView){
+lore.ore.ui.newCO = function(dontRaise){
+    if (lore.ore.ui.topView){
             lore.ore.ui.topView.hideAddIcon(false);
         }
         var dateString = lore.ore.getToday();
@@ -307,7 +357,11 @@ lore.ore.createCompoundObject = function (dontRaise){
         if (!dontRaise) {
             Ext.getCmp("propertytabs").activate("properties");
         }
-    };
+        
+}
+/** Initialize a new compound object in the editor, prompting first whether to save the current compound object */
+lore.ore.createCompoundObject = function (dontRaise){
+    
     try{
         // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
 	    if (lore.ore.compoundObjectDirty()){
@@ -324,17 +378,18 @@ lore.ore.createCompoundObject = function (dontRaise){
                         var therdf = lore.ore.createRDF(false);
                         lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
                             lore.ore.afterSaveCompoundObject(remid);
-                            newCO();  
+                            lore.ore.ui.newCO(dontRaise);  
                         });
 		                
 		            } else if (btn === 'no') {
-                        newCO();
+                        lore.ore.ui.newCO(dontRaise);
                     }
 		        }
 		    });
         } else {
-            newCO();
+            lore.ore.ui.newCO(dontRaise);
         }
+
     } catch (e){
         lore.debug.ore("Error in createCompoundObject",e);
     }
@@ -681,14 +736,19 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
 	        var title = fig.getProperty("dc:title_0") 
                 || fig.getProperty("dcterms:title_0") 
                 || "Untitled Resource";
-	        tocsummary += "<li>";
+            tocsummary += "<li>";
+	        
             var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
             if (isCompObject){
                 tocsummary += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
             }
             tocsummary += title + ": &lt;"
 	        + (!isCompObject?"<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" 
-	        + figurl + "</a>" : figurl) + "&gt;<a href='#res" + i + "'> (details)</a></li>";
+	        + figurl + "</a>" : figurl) + "&gt;<a href='#res" + i + "'> (details)</a>";
+            tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graph.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
+            tocsummary += " <a href='#' title='Show in slideshow view' onclick='Ext.getCmp(\"loreviews\").activate(\"remslideview\");Ext.getCmp(\"newss\").setActiveItem(\"" + figurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri() + "\");'><img src='chrome://lore/skin/icons/picture_empty.png' alt='View in slideshow view'></a>";
+            tocsummary += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explore.showInExploreView(\"" + figurl + "\",\"" + title + "\"," + isCompObject+ ");'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
+            tocsummary += "</li>";
             newsummarydetail += "<div style='border-top: 1px solid rgb(220, 224, 225); width: 100%; margin-top: 0.5em;'> </div>";
             newsummarydetail += "<p id='res"+ i + "'>";
             if (isCompObject){
@@ -1584,12 +1644,9 @@ lore.ore.handleLocationChange = function (contextURL) {
  * @param {String} contextURL The escaped URL
  */
 lore.ore.updateCompoundObjectsBrowseList = function(contextURL) {
-    lore.ore.coListManager.clear("browse");
-    /*if (lore.ore.reposURL && lore.ore.reposType == 'sesame') {
-        lore.ore.sesame.getCompoundObjects(contextURL); 
-    } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
-        //lore.ore.fedora.getCompoundObjects(contextURL);
-    }*/
+    if (lore.ore.coListManager){
+        lore.ore.coListManager.clear("browse");
+    }
     if (lore.ore.reposAdapter){
         lore.ore.reposAdapter.getCompoundObjects(contextURL);
     }
@@ -1633,7 +1690,18 @@ lore.ore.ui.graph.lookupFigure = function(theURL) {
     var figid = lore.ore.ui.graph.lookup[theURL];
     return lore.ore.ui.graph.coGraph.getDocument().getFigure(figid);
 };
-
+/** scroll to the figure that represents the URL
+ * @param {} theURL
+ */
+lore.ore.ui.graph.scrollToFigure = function(theURL) {
+    var fig = lore.ore.ui.graph.lookupFigure(theURL);
+    if (fig) {
+        Ext.getCmp("loreviews").activate("drawingarea");
+        lore.ore.ui.graph.coGraph.scrollTo(fig.x, fig.y);
+        // TODO: highlight?
+        
+    }
+};
 /**
  *  sort figures according to their x and y coordinates 
  **/
@@ -1685,7 +1753,7 @@ lore.ore.ui.graph.addFigureWithOpts = function(opts){
             fig.setProperty("rdf:type_0",opts.rdftype);
         }
         fig.setContent(theURL);
-        lore.ore.ui.graph.coGraph.addFigure(fig, opts.x, opts.y);
+        lore.ore.ui.graph.coGraph.addResourceFigure(fig, opts.x, opts.y);
         lore.ore.ui.graph.lookup[theURL] = fig.getId();
         /*
          * TODO: add to model
@@ -1716,7 +1784,7 @@ lore.ore.ui.graph.addFigure = function(theURL,props) {
         "y": lore.ore.ui.graph.dummylayouty,
         "props": props
     });
-    // TODO: scroll to fig
+    lore.ore.ui.graph.scrollToFigure(theURL);
     return fig;
 };
 /** Transform RDF/XML of the current compound object using XSLT 
