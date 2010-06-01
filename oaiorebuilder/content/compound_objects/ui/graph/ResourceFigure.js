@@ -621,32 +621,38 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
         w.setCurrentSelection(thisfig);
     }
     
-    menu.appendMenuItem(new draw2d.MenuItem("Copy URI to clipboard", null,
+    menu.appendMenuItem(new draw2d.MenuItem("Copy URI to clipboard", "../../skin/icons/page_white_paste.png",
         function (){
             lore.global.util.copyToClip(thisfig.url);
             lore.ore.ui.loreInfo("URI copied to clipboard: " + thisfig.url);
         }
     ));
     if (this.iframe){
-    menu.appendMenuItem(new draw2d.MenuItem("Reset preview", null,
+    menu.appendMenuItem(new draw2d.MenuItem("Reset preview", "../../skin/icons/arrow_refresh.png",
         function (){
             thisfig.iframe.contentWindow.location.href=thisfig.url;
         }
     ));
     }
+    
 	if (!this.metadataproperties["dc:format_0"].match("rdf")) {
 		menu.appendMenuItem(new draw2d.MenuItem(
-				"Open resource in separate window", null, function() {
+				"Open resource in separate window", "../../skin/icons/page_go.png", function() {
 					lore.global.util.launchWindow(thisfig.url, true, window);
 				}));
 	}
+    menu.appendMenuItem(new draw2d.MenuItem("Delete resource from Compound Object", "../../skin/icons/delete.png",
+        function(){
+            thisfig.workflow.getCommandStack().execute(thisfig.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+        }
+    ));
    /* menu.appendMenuItem(new draw2d.MenuItem("Show in Narrative view", null,
         function (){
             // TODO jump to resource in summary view
         }
     ));*/
 	if (Ext.getCmp("remexploreview")) {
-		menu.appendMenuItem(new draw2d.MenuItem("Show in Explore view", null,
+		menu.appendMenuItem(new draw2d.MenuItem("Show in Explore view", "../../skin/icons/chart_line.png",
 				function() {
 					Ext.getCmp("loreviews").activate("remexploreview");
                     
@@ -662,7 +668,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
 					}
 				}));
 	}
-    menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", null,
+    menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", "../../skin/icons/picture_empty.png",
         function (){
             // TODO: don't hardcode the slideshow id and the url for the containing compound object should come from the model
             Ext.getCmp("loreviews").activate("remslideview");
