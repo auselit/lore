@@ -250,8 +250,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
         this.iframearea.innerHTML="<object name='" + theurl 
             + "-data' id='" + theurl + "-data' data='" 
             + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>"; 
-    } else if (mimetype && mimetype.match("image")) {
-    
+    } else if (mimetype && mimetype.match("image")) { 
 		this.iframearea.innerHTML = "<img id='" + theurl + "-data' src='"
 				+ theurl + "' style='width:auto;z-index:-9001' height='95%'>";
 	} else  { // All other resources displayed in secure iframe 
@@ -529,9 +528,8 @@ lore.ore.ui.graph.ResourceFigure.prototype.toggle = function() {
         var oldHeight = this.originalHeight;
         this.originalHeight = -1;
 		this.setDimension(this.width, oldHeight);
-		if (!this.iframearea.firstChild
-				&& !this.metadataproperties["dc:format_0"].match("pdf")) {
-			this.createPreview(this.url);
+		if (!this.iframearea.firstChild) {        
+            this.showContent();
 		}
 		this.iframearea.style.display = "block";
 	}
@@ -638,7 +636,9 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
     if (this.iframe){
     menu.appendMenuItem(new draw2d.MenuItem("Reset preview", "../../skin/icons/arrow_refresh.png",
         function (){
-            thisfig.iframe.contentWindow.location.href=thisfig.url;
+            if (thisfig.iframe){
+                thisfig.iframe.contentWindow.location.href=thisfig.iframe.getAttribute("src");
+            }
         }
     ));
     }
