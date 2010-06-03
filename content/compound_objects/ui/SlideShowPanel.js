@@ -72,9 +72,22 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         }  
         return this;
     },
+    /** 
+     * Reset current slide preview, in case user has navigated away from page in iframe
+     */
+    resetSlide: function() {
+        var ai = this.layout.activeItem;
+        ai.resetPreview();
+    },
     initComponent: function(){
          Ext.apply(this,
             {  tbar: [
+                    {
+                        id: 'reset-slide',
+                        tooltip: 'Reset slide preview',
+                        icon: 'chrome://lore/skin/icons/arrow_refresh.png',
+                        handler: this.resetSlide.createDelegate(this)
+                    },
                     '->',
                     {
                         id: 'move-prev',

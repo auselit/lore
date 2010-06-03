@@ -40,6 +40,10 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
      * 
      */
     loadContent: function(resource){
+        // TODO: remove this when we use MVC properly
+        if (!this.model) {
+            this.model = resource;
+        }
         var oThis = this;
         /*
          * Helper function: given an array of content, make a table of contents
@@ -167,54 +171,55 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         } else {
             // content slide representing resource
             title = resource.getTitle() || "Untitled Resource";
-            var previewhtml = "";
             var format = resource.getProperty("dc:format_0");
-            var rdftype = resource.getProperty("rdf:type_0");
-            var hasPreview = true;
-
+            
+            var hasPreview = false; // preview disabled by default as secure iframe does not allow plugins
             var icontype = "pageicon";
             if (format){
 		        if (format.value.match("html")){
 		            icontype += " htmlicon";
+                    hasPreview = true;
 		        } else if (format.value.match("image")) {
 		            icontype += " imageicon";
+                    hasPreview = true;
 		        } else if (format.value.match("audio")) {
 		            icontype += " audioicon";
-                    // Disable preview as secure iframe does not allow plugins
-                    hasPreview = false;
 		        } else if (format.value.match("video") || format.value.match("flash")){
 		            icontype += " videoicon";
-                    // Disable preview as secure iframe does not allow plugins
-                    hasPreview = false;
 		        } else if (format.value.match("pdf")) {
 		            icontype += " pdficon";
-                    // Disable preview as secure iframe does not allow plugins
-                    hasPreview = false;
-		        } else {
-                    hasPreview = false;
-                }
+		        } 
+            }
+            if (resource.representsAnno){
+                hasPreview = true;
+            }
+            // Only allow http/https previews (ie no chrome, data, view-source etc uris) for security reasons
+            if (!(resource.uri.match("^http") == "http")){
+                hasPreview = false;
             }
             slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
             slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
             slidehtml += "</div>";
             slidehtml += displayProperties(resource);
+            var previewEl;
             if (format && format.value.match("image")){
-                previewhtml += "<img class='sspreview' src='" + resource.uri + "' alt='image preview' style='max-height:100%;'/>";
-            } else if (resource.uri.match('austlit.edu.au') && (resource.uri.match('ShowWork') || resource.uri.match('ShowAgent'))){
-                previewhtml += '<object class="sspreview" data="' + resource.uri + '&amp;printPreview=y"  height="100%" width="100%"></object>';
-            } else if (rdftype && (rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || rdftype.value.toString().match('http://www.w3.org/2001/12/replyType'))){
-                previewhtml += '<object class="sspreview" data="' + resource.uri + '?danno_useStylesheet="  height="100%" width="100%"></object>';
-            } else {
-                var previewFrame = lore.global.util.createSecureIFrame(window.top, resource.uri);
-                previewFrame.style.width = "100%";
-                previewFrame.style.height = "100%";
-                previewFrame.name = resource.uri + "-ss";
-                previewFrame.id = resource.uri + "-ss";
-                previewFrame.style.zIndex = "-9001"; 
-            }
-            // Only allow http/https previews (ie no chrome, data, view-source etc uris) for security reasons
-            if (!(resource.uri.match("^http") == "http")){
-                hasPreview = false;
+                previewEl = document.createElement('img');
+                previewEl.src=resource.uri;
+                previewEl.alt = "image preview";
+                previewEl.style.maxHeight = "100%";
+            } else if (hasPreview) {
+                var theURL = resource.uri;
+                if (resource.representsAnno){
+                    theURL = theURL + '?danno_useStylesheet=';
+                } else if (resource.uri.match('austlit.edu.au') && (resource.uri.match('ShowWork') || resource.uri.match('ShowAgent'))){
+                    theURL = theURL + '&printPreview=y';
+                }
+                previewEl = lore.global.util.createSecureIFrame(window.top, theURL);
+                previewEl.style.width = "100%";
+                previewEl.style.height = "100%";
+                previewEl.name = resource.uri + "-ss";
+                previewEl.id = resource.uri + "-ss";
+                previewEl.style.zIndex = "-9001";
             }
 
             slidehtml += "<p class='slideshowFooter'>Viewing <a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#'>"  + resource.uri + "</a>";
@@ -231,22 +236,19 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             
             
         }
-        
         if (hasPreview) {
             this.layout = 'anchor';
-            //this.layout = 'border';
-            if (previewFrame){
-                this.add({anchor: '100% 70%', autoScroll: true, contentEl: previewFrame}); 
-                //this.add({region:'center', autoScroll: true,  contentEl: previewFrame});  
-            } else {
-                this.add({anchor: '100% 70%', autoScroll: true, html: previewhtml});
-                //this.add({region:'center', autoScroll: true, html: previewhtml});
-            }
+            this.previewEl = previewEl;
+            this.add({anchor: '100% 70%', autoScroll: true, contentEl: previewEl}); 
             this.add({anchor: '100% 30%', autoScroll: true, html: slidehtml});
-            //this.add({region:'south', height: 100,  split: true, collapseMode: 'mini', autoScroll: true, html: slidehtml});
         } else {
             this.html = slidehtml;   
         }
+    },
+    resetPreview: function(){ 
+      if (this.previewEl && this.previewEl.tagName == 'iframe'){
+        this.previewEl.contentWindow.location.href=this.previewEl.getAttribute("src");
+      }
     },
     /**
      * Add to displayed props
