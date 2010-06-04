@@ -325,7 +325,7 @@ lore.ore.ui.newCO = function(dontRaise){
     if (lore.ore.ui.topView){
             lore.ore.ui.topView.hideAddIcon(false);
         }
-        var w3cDate = new Date.W3CDTF();
+        var cDate = new Date();
         // TODO: fix properties - use date string for now
         // TODO: should not assign an id until it has been saved
         currentREM = lore.ore.reposAdapter.generateID();
@@ -335,8 +335,8 @@ lore.ore.ui.newCO = function(dontRaise){
         [
             {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: currentREM},
             {id: "dc:creator_0", name: "dc:creator", value: lore.defaultCreator},
-            {id: "dcterms:modified_0", name: "dcterms:modified", value: w3cDate},
-            {id:"dcterms:created_0", name:"dcterms:created",value: w3cDate},
+            {id: "dcterms:modified_0", name: "dcterms:modified", value: cDate},
+            {id:"dcterms:created_0", name:"dcterms:created",value: cDate},
             {id: "dc:title_0", name: "dc:title", value: ""}
         ]  
         );
@@ -945,7 +945,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         nlsymb = "<br/>";
     }
     // TODO: check whether CO has been modified before changing the date
-    var modifiedDate = new Date.W3CDTF();
+    var modifiedDate = new Date();
     var proprecidx = lore.ore.ui.grid.store.find("name","dcterms:modified");
     if (proprecidx != -1){
        lore.ore.ui.grid.store.getAt(proprecidx).set("value", modifiedDate);
@@ -971,7 +971,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     var fullclosetag = "\"/>" + nlsymb;
     var rdfdescclose = "/rdf:Description>";
 
-    // create RDF for resource map: modified and creator are required
+    // create RDF for resource map: modified is required
     var rdfxml = ltsymb + "?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + nlsymb
             + ltsymb + 'rdf:RDF ' + nlsymb;
     for (var pfx in lore.constants.NAMESPACES) {
@@ -979,19 +979,21 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                 + "\"" + nlsymb;
     }
     
-    var modifiedString = modifiedDate.getW3CDTF();
+    var modifiedString = modifiedDate.format('c');
     rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb + ltsymb
             + rdfdescabout + rdfabout + closetag + ltsymb
             + "ore:describes rdf:resource=\"" + describedaggre + fullclosetag
             + ltsymb + 'rdf:type rdf:resource="' + lore.constants.RESOURCE_MAP
-            + '" />' + nlsymb + ltsymb + 'dcterms:modified>'//rdf:datatype="'
-            //+ lore.constants.NAMESPACES["xsd"] + 'date">' +
+            + '" />' + nlsymb + ltsymb + 'dcterms:modified rdf:datatype="'
+            + lore.constants.NAMESPACES["dcterms"] + 'W3CDTF">' 
             + modifiedString + ltsymb + "/dcterms:modified>"
             + nlsymb;
     var created = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
     
     if (created && created instanceof Date) {
-        rdfxml += ltsymb + 'dcterms:created>'+ created.getW3CDTF() + ltsymb + "/dcterms:created>" + nlsymb;
+        rdfxml += ltsymb + 'dcterms:created rdf:datatype="' 
+        + lore.constants.NAMESPACES["dcterms"] + 'W3CDTF">'
+        + created.format('c') + ltsymb + "/dcterms:created>" + nlsymb;
     }   
      else if (created) {
         rdfxml += ltsymb + 'dcterms:created>'// rdf:datatype="'
@@ -1549,7 +1551,6 @@ lore.ore.afterSaveCompoundObject = function(remid){
             'uri': remid,
             'title': title,
             'creator': lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid),
-            'created': lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid),
             'modified': lore.ore.getPropertyValue("dcterms:modified",lore.ore.ui.grid)
     };
     // If the current URL is in the compound object, show in related compound objects

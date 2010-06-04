@@ -91,10 +91,17 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
             + ((s2 < (coProps.match.length))? "..":"")+ ")</i>");
         }
         if (coProps.accessed) { // history result
-            details.push("Last accessed " + coProps.accessed.format('Y-m-d')); 
+            details.push("Last accessed " + coProps.accessed.format("j M Y, g:ia")); 
         }
         if (coProps.creator) { // browse result
-            details.push(coProps.creator + ", " + (coProps.created || "(Unknown date)"));
+            var cDetail = coProps.creator;
+            var cMod = coProps.modified;
+            if (cMod && cMod instanceof Date){
+                cDetail += ", last modified " + cMod.format("j M Y, g:ia");
+            } else if (cMod){
+                cDetail += ", last modified " + cMod;
+            }
+            details.push(cDetail);
         }
         return details;
    },
