@@ -89,16 +89,39 @@ lore.ore.model.CompoundObject = Ext.extend(lore.ore.model.AbstractOREResource, {
             // Load properties for this Compound Object
             this.loadedContent.about('<' + this.uri + '>')
             .each(function(){
+                try {
                 var propurl = this.property.value.toString();
-                var propsplit = lore.global.util.splitTerm(propurl);  
-                var theProp = new lore.ore.model.Property({
-                   ns: propsplit.ns,
-                   name: propsplit.term,
-                   value: this.value.value,
-                   prefix: lore.ore.nsprefix(propsplit.ns)
-                   //valueType: this.value.datatype.toString()
-                });
-                oThis.setProperty(theProp);
+                var propsplit = lore.global.util.splitTerm(propurl); 
+                var propval = this.value.value;
+                var props = {
+                    ns: propsplit.ns,
+                    name: propsplit.term,
+                    prefix: lore.ore.nsprefix(propsplit.ns)
+                };
+                var dt = this.value.datatype;
+                if (dt){
+                    var dtString = dt.toString();
+                    props.valueType = dtString;
+                    if (dtString == lore.constants.NAMESPACES["dcterms"] + "W3CDTF"){
+                        props.value = Date.parseDate(propval,'c');
+                    } else if (dtString == lore.constants.NAMESPACES["xsd"] + "date") {
+                        props.value = Date.parseDate(propval,'Y-m-d')
+                    } 
+                    // TODO: #10 handle other data types?
+                } else if (propurl == lore.constants.NAMESPACES["dcterms"] + "created" || propurl == lore.constants.NAMESPACES["dcterms"] + "modified"){
+                    // try to parse dcterms:created and dcterms:modified as dates, even if they don't have a datatype
+                    var modDate = Date.parseDate(propval,'c') || Date.parseDate(propval,'Y-m-d');
+                    if (modDate){
+                        props.value = modDate;
+                    }
+                }  
+                if (!props.value) {
+                    props.value = propval;
+                }
+                oThis.setProperty(new lore.ore.model.Property(props));
+                } catch (e){
+                    lore.debug.ore("Error loading compound object properties",e);
+                }
             });
             
             

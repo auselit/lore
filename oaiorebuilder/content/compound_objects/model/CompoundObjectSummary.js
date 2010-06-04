@@ -45,8 +45,8 @@ lore.ore.model.CompoundObjectSummary = Ext.extend(Ext.util.Observable,{
    getCreator: function (){
         return this.props.creator;
    },
-   getCreated: function (){
-        return this.props.created;
+   getModified: function (){
+        return this.props.modified;
    },
    /** Get all properties of the compound object
     * @return {Object} Object with properties set to compound object properties
@@ -100,8 +100,16 @@ lore.ore.model.CompoundObjectSummary = Ext.extend(Ext.util.Observable,{
                     this.props.title = nodeVal;
                 } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
                     this.props.creator = nodeVal;
-                } else if (attr.nodeValue == 'c' && nodeVal){ // dcterms:created
-                    this.props.created = nodeVal;
+                } else if (attr.nodeValue == 'm' && nodeVal){ // dcterms:modified
+                    this.props.modified = nodeVal;
+                    try {
+                        var modDate = Date.parseDate(this.props.modified,'c') || Date.parseDate(this.props.modified,'Y-m-d');
+                        if (modDate){
+                            this.props.modified = modDate;
+                        }
+                    } catch (e){
+                        lore.debug.ore("CompoundObjectSummary: error converting date",e);
+                    }
                 } 
             }
            }

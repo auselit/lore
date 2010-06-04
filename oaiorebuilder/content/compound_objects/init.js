@@ -97,7 +97,6 @@ lore.ore.ui.loadPreferences = function() {
  * Initialise property grids and set up listeners
  */
 lore.ore.ui.initProperties = function() {
-    var dateString = new Date.W3CDTF().getW3CDTF();
     if (lore.ore.reposAdapter) {
 	   var currentREM = lore.ore.reposAdapter.generateID();
        lore.ore.cache.setLoadedCompoundObjectUri(currentREM, new lore.ore.model.CompoundObject({uri:currentREM}));

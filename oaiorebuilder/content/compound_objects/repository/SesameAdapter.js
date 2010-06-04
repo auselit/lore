@@ -56,22 +56,22 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 			    } 
 		        queryURL = this.reposURL
 		        + "?queryLn=sparql&query=" 
-		        + "select distinct ?g ?a ?c ?t ?v where {"
+		        + "select distinct ?g ?a ?m ?t ?v where {"
 		        + " graph ?g {" + escapedURL + " " + matchpred + " ?v ."
 		        + filter + "} ."
 		        + "{?g <http://purl.org/dc/elements/1.1/creator> ?a} ."
-		        + "{?g <http://purl.org/dc/terms/created> ?c} ."
+		        + "{?g <http://purl.org/dc/terms/modified> ?m} ."
 		        + "OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
 	       } else {
 		       queryURL = this.reposURL
 		            + "?queryLn=sparql&query=" 
-		            + "select distinct ?g ?a ?c ?t where { graph ?g {" 
+		            + "select distinct ?g ?a ?m ?t where { graph ?g {" 
 		            + "{<" + escapedURL + "> ?p ?o .} UNION " 
 		            + "{?s ?p2 <" + escapedURL + ">} UNION "
 		            + "{<" + altURL + "> ?p3 ?o2 .} UNION "
 		            + "{?s2 ?p4 <" + altURL + ">}"
 		            + "} . {?g <http://purl.org/dc/elements/1.1/creator> ?a}"
-		            + ". {?g <http://purl.org/dc/terms/created> ?c}"
+		            + ". {?g <http://purl.org/dc/terms/modified> ?m}"
 		            + ". OPTIONAL {?g <http://purl.org/dc/elements/1.1/title> ?t}}";
 	       }
 	        
