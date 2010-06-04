@@ -111,7 +111,9 @@ lore.ore.model.CompoundObject = Ext.extend(lore.ore.model.AbstractOREResource, {
 	             if (this.rdftype && this.rdftype.value.toString() == lore.constants.RESOURCE_MAP){
 	                // TODO: check if it has been cached or load?
                     theResource.representsCO = true;
-	             } 
+	             }  else if(this.rdftype && (this.rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || this.rdftype.value.toString().match('http://www.w3.org/2001/12/replyType'))){
+                    theResource.representsAnno = true;
+                 }
 	             // TODO: Load aggregated resource predicates
 	             oThis.loadedContent.about('<' + resourceURL + '>')
                     .each(function() {
