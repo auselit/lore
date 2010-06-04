@@ -40,6 +40,19 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
      * 
      */
     loadContent: function(resource){
+        var displayDate = function(cprop, desc){
+            var cval;
+            var datehtml = "";
+            if (cprop){
+                cval = cprop.value;
+                if (cval instanceof Date){
+                    datehtml += desc + cval.format("j M Y");
+                } else {
+                    datehtml += desc + cval;
+                }
+            }
+            return datehtml;
+        }
         // TODO: remove this when we use MVC properly
         if (!this.model) {
             this.model = resource;
@@ -120,6 +133,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         var slidehtml = "";
         var prophtml = "";
         var title = resource.getTitle();
+        var ccreator;
         if (resource instanceof lore.ore.model.CompoundObject){
             // Title slide for entire Slideshow
             title = title || 'Compound object';
@@ -132,13 +146,10 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                 slidehtml += "</div>";
             }
 
-            var ccreator = resource.getProperty("dc:creator_0");
-            var ccreated = resource.getProperty("dcterms:created_0");
-            var cmodified = resource.getProperty("dcterms:modified_0");
-            slidehtml += "<div class='slideshowFooter'>Created" + (ccreator? " by " + ccreator.value : "") + ' on  ' + ccreated.value;
-            if (cmodified) {
-                slidehtml += ', last updated on ' + cmodified.value;
-            }
+            ccreator = resource.getProperty("dc:creator_0");
+            slidehtml += "<div class='slideshowFooter'>Created" + (ccreator? " by " + ccreator.value : "");
+            slidehtml += displayDate(resource.getProperty("dcterms:created_0"),' on ');
+            slidehtml += displayDate(resource.getProperty("dcterms:modified_0"), ', last updated ');
             slidehtml += "</div>";
             slidehtml += "</div>";
             
@@ -156,12 +167,10 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                     slidehtml += makeTOC(contentResources, resource.representsCO.uri,this.ssid);
                     slidehtml += "</div>";
 	            }
-                var creator = resource.representsCO.getProperty("dc:creator_0");
-	            slidehtml += "<div class='slideshowFooter'>This nested compound object created" + (creator? " by " + creator.value : "") + " on " + resource.representsCO.getProperty("dcterms:created_0").value;
-	            var mod = resource.representsCO.getProperty("dcterms:modified_0");
-	            if (mod){
-	                slidehtml += ", last updated on " + mod.value;
-	            }
+                ccreator = resource.representsCO.getProperty("dc:creator_0");
+	            slidehtml += "<div class='slideshowFooter'>This nested compound object created" + (ccreator? " by " + ccreator.value : "");
+                slidehtml += displayDate(resource.representsCO.getProperty("dcterms:created_0"), ' on ');
+                slidehtml += displayDate(resource.representsCO.getProperty("dcterms:modified_0"),", last updated ");
 	            slidehtml += "</div>";
             } else {
                 slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + resource.uri + "\");'>Nested Compound Object:<br>"
