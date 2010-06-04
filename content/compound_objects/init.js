@@ -97,7 +97,7 @@ lore.ore.ui.loadPreferences = function() {
  * Initialise property grids and set up listeners
  */
 lore.ore.ui.initProperties = function() {
-	var dateString = lore.ore.getToday();
+    var dateString = new Date.W3CDTF().getW3CDTF();
     if (lore.ore.reposAdapter) {
 	   var currentREM = lore.ore.reposAdapter.generateID();
        lore.ore.cache.setLoadedCompoundObjectUri(currentREM, new lore.ore.model.CompoundObject({uri:currentREM}));
@@ -106,7 +106,7 @@ lore.ore.ui.initProperties = function() {
 	lore.ore.ui.nodegrid.store.on("remove", lore.ore.handleNodePropertyRemove);
 
 	lore.ore.ui.nodegrid.on("beforeedit", function(e) {
-				// don't allow autocreated format or type field to be edited
+				// don't allow generated format or type field to be edited
 				if (e.record.id == "dc:format_0" || e.record.id == "rdf:type_0") {
 					e.cancel = true;
 				}
@@ -431,7 +431,7 @@ lore.ore.ui.initUIComponents = function() {
 													type : 'string'
 												}, {
 													name : 'value',
-													type : 'string'
+													type : 'auto'
 												}]
 									}),
 							colModel : new Ext.grid.ColumnModel({
@@ -503,7 +503,7 @@ lore.ore.ui.initUIComponents = function() {
 													type : 'string'
 												}, {
 													name : 'value',
-													type : 'string'
+													type : 'auto'
 												}]
 									}),
 							colModel : new Ext.grid.ColumnModel({
