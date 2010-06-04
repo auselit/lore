@@ -320,24 +320,12 @@ lore.ore.compoundObjectDirty = function (){
         return true;
     }
 };
-lore.ore.getToday = function(){
-    var today = new Date();
-    var yearString = today.getFullYear();
-    var monthString = today.getMonth() + 1 + "";
-    if (monthString.length < 2){
-        monthString = '0' + monthString;
-    }
-    var dayString = today.getDate() + "";
-    if (dayString.length < 2){
-        dayString = "0" + dayString;
-    }
-   return yearString + "-" + monthString + "-" + dayString;
-}
+
 lore.ore.ui.newCO = function(dontRaise){
     if (lore.ore.ui.topView){
             lore.ore.ui.topView.hideAddIcon(false);
         }
-        var dateString = lore.ore.getToday();
+        var w3cDate = new Date.W3CDTF();
         // TODO: fix properties - use date string for now
         // TODO: should not assign an id until it has been saved
         currentREM = lore.ore.reposAdapter.generateID();
@@ -347,8 +335,8 @@ lore.ore.ui.newCO = function(dontRaise){
         [
             {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: currentREM},
             {id: "dc:creator_0", name: "dc:creator", value: lore.defaultCreator},
-            {id: "dcterms:modified_0", name: "dcterms:modified", value:dateString},
-            {id:"dcterms:created_0", name:"dcterms:created",value:dateString},
+            {id: "dcterms:modified_0", name: "dcterms:modified", value: w3cDate},
+            {id:"dcterms:created_0", name:"dcterms:created",value: w3cDate},
             {id: "dc:title_0", name: "dc:title", value: ""}
         ]  
         );
@@ -926,12 +914,12 @@ lore.ore.serializeREM = function(format) {
  */
 lore.ore.createRDF = function(/*boolean*/escape) {
     /*
-     * Helper function that serialises a property to RDF/XML propname The name
-     * of the property to serialise properties All of the properties ltsymb Less
+     * Helper function that serializes a property to RDF/XML propname The name
+     * of the property to serialize properties All of the properties ltsymb Less
      * than symbol nlsymb New line symbol returns The RDF/XML representation of
      * the property
      */
-    var serialise_property = function(propname, propval, ltsymb, nlsymb) {
+    var serialize_property = function(propname, propval, ltsymb, nlsymb) {
         var result = "";
         if (propval && propval != '') {
             if (propval.match("http:") || propval.match("mailto:")){
@@ -945,7 +933,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                 + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
                 + ltsymb + "/" + propname + ">" + nlsymb;
             }
-            lore.debug.ore("serialize_property "+ result);
+            
         }
         return result;
     };
@@ -956,7 +944,8 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         ltsymb = "&lt;";
         nlsymb = "<br/>";
     }
-    var modifiedDate = new Date();
+    // TODO: check whether CO has been modified before changing the date
+    var modifiedDate = new Date.W3CDTF();
     var proprecidx = lore.ore.ui.grid.store.find("name","dcterms:modified");
     if (proprecidx != -1){
        lore.ore.ui.grid.store.getAt(proprecidx).set("value", modifiedDate);
@@ -989,15 +978,8 @@ lore.ore.createRDF = function(/*boolean*/escape) {
         rdfxml += "xmlns:" + pfx + "=\"" + lore.constants.NAMESPACES[pfx]
                 + "\"" + nlsymb;
     }
-    var monthString = modifiedDate.getMonth() + 1 + "";
-    if (monthString.length < 2){
-        monthString = '0' + monthString;
-    }
-    var dayString = modifiedDate.getDate() + "";
-    if (dayString.length < 2){
-        dayString = "0" + dayString;
-    }
-    var modifiedString = modifiedDate.getFullYear() + "-" + monthString + "-" + dayString;
+    
+    var modifiedString = modifiedDate.getW3CDTF();
     rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb + ltsymb
             + rdfdescabout + rdfabout + closetag + ltsymb
             + "ore:describes rdf:resource=\"" + describedaggre + fullclosetag
@@ -1007,21 +989,11 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             + modifiedString + ltsymb + "/dcterms:modified>"
             + nlsymb;
     var created = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
+    
     if (created && created instanceof Date) {
-        monthString = created.getMonth() + 1 + "";
-        if (monthString.length < 2){
-            monthString = '0' + monthString;
-        }
-        dayString = created.getDate() + "";
-	    if (dayString.length < 2){
-	        dayString = "0" + dayString;
-	    }
-        rdfxml += ltsymb + 'dcterms:created>'//rdf:datatype="'
-                //+ lore.constants.NAMESPACES["xsd"] + 'date">'
-                + created.getFullYear() + "-" + monthString + "-"
-                + dayString + ltsymb + "/dcterms:created>" + nlsymb;
-    } 
-    else if (created) {
+        rdfxml += ltsymb + 'dcterms:created>'+ created.getW3CDTF() + ltsymb + "/dcterms:created>" + nlsymb;
+    }   
+     else if (created) {
         rdfxml += ltsymb + 'dcterms:created>'// rdf:datatype="'
                 //+ lore.constants.NAMESPACES["xsd"] + 'date">'
                 + created + ltsymb + "/dcterms:created>" + nlsymb;
@@ -1030,7 +1002,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     lore.ore.ui.grid.store.each(function (rec){
        var propname = rec.id.substring(0,rec.id.indexOf("_"));
        if (propname != 'dcterms:modified' && propname != 'dcterms:created' && propname != 'rdf:about'){
-        rdfxml += serialise_property(propname, rec.data.value, ltsymb, nlsymb);
+        rdfxml += serialize_property(propname, rec.data.value, ltsymb, nlsymb);
        }
     });
     rdfxml += ltsymb + rdfdescclose + nlsymb;
@@ -1041,7 +1013,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
     rdfxml += ltsymb + 'dcterms:modified>' + modifiedString + ltsymb + "/dcterms:modified>" + nlsymb;
     // Load original aggregation properties if any
     // LORE does not support editing these, but should preserve them
-    // TODO: REFACTOR!! this code appears several times : properties should be serialised from model
+    // TODO: REFACTOR!! this code appears several times : properties should be serialized from model
     if (existingAggre){
         var aggreprops = loadedRDF.where('<' + describedaggre + '> ?pred ?obj')
             .filter(function(){
@@ -1092,7 +1064,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
 	                    if (midx != -1){
 	                        tagname = mprop.substring(0,midx);
 	                    }
-                        // why not using serialise_property function here?
+                        // why not using serialize_property function here?
 	                    //if (tagname == "rdf:type"){ // resource
                         if (mpropval.match("http:") || mpropval.match("mailto:")){
 	                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
@@ -1577,7 +1549,8 @@ lore.ore.afterSaveCompoundObject = function(remid){
             'uri': remid,
             'title': title,
             'creator': lore.ore.getPropertyValue("dc:creator",lore.ore.ui.grid),
-            'created': lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid)
+            'created': lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid),
+            'modified': lore.ore.getPropertyValue("dcterms:modified",lore.ore.ui.grid)
     };
     // If the current URL is in the compound object, show in related compound objects
     if (lore.ore.ui.graph.lookup[lore.ore.ui.currentURL]){
@@ -1698,8 +1671,6 @@ lore.ore.ui.graph.scrollToFigure = function(theURL) {
     if (fig) {
         Ext.getCmp("loreviews").activate("drawingarea");
         lore.ore.ui.graph.coGraph.scrollTo(fig.x, fig.y);
-        // TODO: highlight?
-        
     }
 };
 /**
