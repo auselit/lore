@@ -292,7 +292,12 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 						}
 					}
 				});
-			
+			    node.contextmenu.add({
+                    text: "View annotation in browser",
+                    handler: function(evt) {
+                        lore.global.util.launchTab(node.id + "?danno_useStylesheet");
+                    }
+                });
 				if (node.nodeType == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
 					node.contextmenu.add({
 						text: "Show Variation Window",
@@ -732,7 +737,17 @@ lore.anno.ui.handleAddResultsToCO = function(evt){
 		lore.debug.anno("Error adding node/s to compound editor:" + e, e);
 	}
 }
-	
+lore.anno.ui.handleViewAnnotationInBrowser = function(evt){
+    try {
+        var sels = lore.anno.ui.search.grid().getSelectionModel().getSelections();
+        for (var i =0; i < sels.length; i++ ) {                             
+            var rec = sels[i];
+            lore.global.util.launchTab(rec.data.id + "?danno_useStylesheet");
+        }
+    } catch (e) {
+        lore.debug.anno("Error viewing node/s in browser",e);
+    }
+}
 /**
  * Toggle on and off the annotation highlighting for all annotations
  */
