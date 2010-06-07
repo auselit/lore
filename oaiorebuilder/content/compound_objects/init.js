@@ -31,50 +31,10 @@
 lore.ore.ui.initGraphicalView = function() {
 	Ext.getCmp("loreviews").activate("drawingarea");
 
-	/** Used to lookup figures by their URIs in the graphical editor */
-	lore.ore.ui.graph.lookup = {};
-
 	/** Indicates whether the compound object has been edited since being loaded */
 	lore.ore.ui.graph.modified = false;
-	if (lore.ore.ui.graph.coGraph) {
-		lore.ore.ui.graph.coGraph.getCommandStack()
-				.removeCommandStackEventListener(lore.ore.ui.graph.gCommandListener);
-		lore.ore.ui.graph.coGraph.removeSelectionListener(lore.ore.ui.graph.gSelectionListener);
-		lore.ore.ui.graph.coGraph.clear();
-	} else {
-		lore.ore.ui.graph.coGraph = new lore.ore.ui.graph.COGraph("drawingarea");
-		lore.ore.ui.graph.coGraph.scrollArea = document.getElementById("drawingarea").parentNode;
-	}
-	lore.ore.ui.graph.gSelectionListener = new lore.ore.ui.graph.SelectionProperties(lore.ore.ui.graph.coGraph);
-	lore.ore.ui.graph.coGraph.addSelectionListener(lore.ore.ui.graph.gSelectionListener);
-	lore.ore.ui.graph.gCommandListener = new lore.ore.ui.graph.CommandListener();
-	lore.ore.ui.graph.coGraph.getCommandStack().addCommandStackEventListener(lore.ore.ui.graph.gCommandListener);
-
-	// create drop target for dropping new nodes onto editor from the sources and search trees
-	var droptarget = new Ext.dd.DropTarget("drawingarea", {
-				'ddGroup' : 'TreeDD',
-				'copy' : false
-	});
-	droptarget.notifyDrop = function(dd, e, data) {
-		var figopts = {
-			url : data.node.attributes.uri,
-			x : (e.xy[0] - lore.ore.ui.graph.coGraph.getAbsoluteX() + lore.ore.ui.graph.coGraph.getScrollLeft()),
-			y : (e.xy[1] - lore.ore.ui.graph.coGraph.getAbsoluteY() + lore.ore.ui.graph.coGraph.getScrollTop()),
-			props : {
-				"rdf:type_0" : lore.constants.RESOURCE_MAP,
-				"dc:title_0" : data.node.text
-			}
-		};
-		lore.ore.ui.graph.addFigureWithOpts(figopts);
-		return true;
-	};
-
-	/** Most recently selected figure - updated in SelectionProperties.js */
-	lore.ore.ui.graph.selectedFigure = null;
-	/** Used for layout of new nodes */
-	lore.ore.ui.graph.dummylayoutx = lore.ore.NODE_SPACING;
-	/** Used for layout of new nodes */
-	lore.ore.ui.graph.dummylayouty = lore.ore.NODE_SPACING;
+    lore.ore.ui.graphicalEditor = Ext.getCmp("drawingarea");
+    lore.ore.ui.graphicalEditor.initGraph();
 	// clear the node properties
 	if (lore.ore.ui.nodegrid) {
 		lore.ore.ui.nodegrid.store.removeAll();
@@ -204,9 +164,7 @@ lore.ore.ui.initUIComponents = function() {
 				items : [{ 
 							title : "Graphical Editor",
 							id : "drawingarea",
-							bodyStyle : {
-								backgroundColor : 'transparent'
-							}              
+                            xtype: "grapheditor"
 						}, {
 							title : "Resources",
 							xtype : "panel",
@@ -434,6 +392,15 @@ lore.ore.ui.initUIComponents = function() {
 												}]
 									}),
 							colModel : new Ext.grid.ColumnModel({
+                                        getRenderer: function(col){
+                                            return function (val, meta, rec, ri, ci, s){
+                                                var rv = val;
+                                                if (Ext.isDate(val)){
+                                                    rv = val.format("j M Y, g:ia");
+                                                }
+                                                return Ext.util.Format.htmlEncode(rv);
+                                            }
+                                        },       
 										columns : [{
 													id : 'name',
 													header : 'Property Name',
@@ -445,7 +412,11 @@ lore.ore.ui.initUIComponents = function() {
 													header : 'Value',
 													dataIndex : 'value',
 													menuDisabled : true,
-													editor : new Ext.form.TextField()
+													editor : /*new Ext.form.TextArea({
+                                                        grow: true,
+                                                        height: 30
+                                                    })*/
+                                                    new Ext.form.TextField()
 													/*
 													 * new
 													 * Ext.form.TriggerField({
@@ -528,7 +499,10 @@ lore.ore.ui.initUIComponents = function() {
 													 * 
 													 *  } })
 													 */
-													editor : new Ext.form.TextField()
+													editor : /*new Ext.form.TextArea({
+                                                        grow: true,
+                                                        height: 30
+                                                    })*/ new Ext.form.TextField()
 												}
 
 										]

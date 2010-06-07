@@ -349,7 +349,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	        "chrome://lore/skin/icons/add.png",
 	        function(x,y) {
                 // TODO: change to a local method
-	            lore.ore.addFigure(lore.ore.ui.currentURL);  
+	            lore.ore.addResource(lore.ore.ui.currentURL);  
 	        })
 	    );
         menu.appendMenuItem(new draw2d.MenuItem("Undo",
@@ -367,8 +367,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         menu.appendMenuItem(new draw2d.MenuItem("Auto layout",
             "chrome://lore/skin/icons/layout.png",
             function(x,y) {
-                // TODO : change to a local method
-               lore.ore.doLayout();  
+               oThis.doCommand(oThis.doLayout());  
             })
         );
         menu.appendMenuItem(new draw2d.MenuItem("Save diagram as image (PNG)",

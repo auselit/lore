@@ -30,18 +30,7 @@
  */
  
 // Compound object editor graph view defaults
-/** Default width of new nodes in graphical editor 
- * @const */
-lore.ore.NODE_WIDTH   = 220;
-/** Default height of new nodes in graphical editor 
- * @const */
-lore.ore.NODE_HEIGHT  = 170;
-/** Default spacing between new nodes in graphical editor 
- * @const */
-lore.ore.NODE_SPACING = 40;
-/** Used for layout in graphical editor - Maximum width before nodes are positioned on new row 
- * @const */
-lore.ore.ROW_WIDTH        = 400;
+
 lore.ore.MAX_NESTING      = 2;
 // TODO: #10 replace with an ontology
 /** Default list of properties that can be specified for compound objects or resources 
@@ -201,7 +190,10 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
     var isEmpty = lore.ore.cache && lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent());
     // check whether there is a compound object being edited and prompt to save if changed
     if (!isEmpty && diffReposToEditor){
-        // TODO set editor to read-only
+        // set editor to read-only
+        /*if (lore.ore.ui.graphicalEditor){
+            lore.ore.ui.graphicalEditor.coGraph.setReadOnly(true);
+        }*/
         if (lore.ore.compoundObjectDirty()){
             lore.debug.ore("setrepos: dirty");
             Ext.Msg.show({
@@ -222,6 +214,9 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
         }
     } else {
         // its from the same repository, set editor to editable
+        /*if (lore.ore.ui.graphicalEditor.coGraph){
+            lore.ore.ui.graphicalEditor.coGraph.setReadOnly(false);
+        }*/
         lore.debug.ore("setrepos: not different");
     }
     if (rdfrepostype == 'sesame'){
@@ -312,9 +307,9 @@ lore.ore.compoundObjectDirty = function (){
     // If it was a new compound object and the graphical view is either not defined 
     // or has no resources, don't consider it to be dirty
     if (lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent()) 
-        && (!lore.ore.ui.graph.coGraph || 
-            (lore.ore.ui.graph.coGraph 
-                && lore.ore.ui.graph.coGraph.getDocument().getFigures().getSize() == 0))){
+        && (!lore.ore.ui.graphicalEditor || 
+            (lore.ore.ui.graphicalEditor.coGraph 
+                && lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().getSize() == 0))){
         return false;
     } else {
         return true;
@@ -398,15 +393,14 @@ lore.ore.onHide = function () {
 	lore.ore.ui.lorevisible = false;
 };
 
-// alias used by uiglobal
-// TODO: #34 MVC: change this to addNode - make it add to model and get view to listen on model
 /**
- * Add a figure representing a resource to the graphical editor
+ * Add a resource to the compound object (alias used by toolbar)
  * @param {} theURL
  * @param {} props
  */
-lore.ore.addFigure = function (/*URL*/theURL, props) {
-	lore.ore.ui.graph.addFigure(lore.global.util.preEncode(theURL), props);
+lore.ore.addResource = function (/*URL*/theURL, props) {
+    // TODO: #34 MVC:  make it add to model and get view to listen on model
+	lore.ore.ui.graphicalEditor.addFigure(lore.global.util.preEncode(theURL), props);
 };
 
 /**
@@ -451,9 +445,9 @@ lore.ore.ui.dragDrop = function(aEvent){
             if (sntitle){
                 figopts.props = {"dc:title_0": sntitle};
             }
-            lore.ore.ui.graph.addFigureWithOpts(figopts);
+            lore.ore.ui.graphicalEditor.addFigureWithOpts(figopts);
         } else if (sn instanceof HTMLImageElement){
-            lore.ore.ui.graph.addFigure(sn.src);
+            lore.ore.ui.graphicalEditor.addFigure(sn.src);
         }
         return;
     }
@@ -552,7 +546,7 @@ lore.ore.ui.addProperty = function (ev, toolEl, panel) {
     if (!panel.propMenu) {
         makeAddMenu(panel);
     }
-    if (panel.id == "remgrid" || lore.ore.ui.graph.selectedFigure instanceof lore.ore.ui.graph.ResourceFigure){
+    if (panel.id == "remgrid" || lore.ore.ui.graphicalEditor.getSelectedFigure() instanceof lore.ore.ui.graph.ResourceFigure){
         if (panel.collapsed) {
             panel.expand(false);
         }
@@ -715,8 +709,8 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
     newsummary += "</table>";
     var newsummarydetail = "<div style='padding-top:1em'>";
     var tocsummary = "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
-    var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
-    allfigures.sort(lore.ore.ui.graph.figSortingFunction);
+    var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().data;
+    allfigures.sort(lore.ore.ui.graphicalEditor.figSortingFunction);
     for (var i = 0; i < allfigures.length; i++) {
         var fig = allfigures[i];
         if (fig instanceof lore.ore.ui.graph.ResourceFigure){
@@ -733,7 +727,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
             tocsummary += title + ": &lt;"
 	        + (!isCompObject?"<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" 
 	        + figurl + "</a>" : figurl) + "&gt;<a href='#res" + i + "'> (details)</a>";
-            tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graph.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
+            tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
             tocsummary += " <a href='#' title='Show in slideshow view' onclick='Ext.getCmp(\"loreviews\").activate(\"remslideview\");Ext.getCmp(\"newss\").setActiveItem(\"" + figurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri() + "\");'><img src='chrome://lore/skin/icons/picture_empty.png' alt='View in slideshow view'></a>";
             tocsummary += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explore.showInExploreView(\"" + figurl + "\",\"" + title + "\"," + isCompObject+ ");'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
             tocsummary += "</li>";
@@ -776,7 +770,7 @@ lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
 /** Generate a SMIL presentation from the current compound object and display a link to launch it */
 lore.ore.showSMIL = function() {
     
-    var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures();
+    var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
     var smilcontents = "<p><a title='smil test hover' href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
     if (numfigs > 0) {
@@ -990,7 +984,7 @@ lore.ore.createRDF = function(/*boolean*/escape) {
             + nlsymb;
     var created = lore.ore.getPropertyValue("dcterms:created",lore.ore.ui.grid);
     
-    if (created && created instanceof Date) {
+    if (created && Ext.isDate(created)) {
         rdfxml += ltsymb + 'dcterms:created rdf:datatype="' 
         + lore.constants.NAMESPACES["dcterms"] + 'W3CDTF">'
         + created.format('c') + ltsymb + "/dcterms:created>" + nlsymb;
@@ -1047,8 +1041,8 @@ lore.ore.createRDF = function(/*boolean*/escape) {
                 }
             });
     }
-    var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
-    allfigures.sort(lore.ore.ui.graph.figSortingFunction);
+    var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().data;
+    allfigures.sort(lore.ore.ui.graphicalEditor.figSortingFunction);
     var resourcerdf = "";
     for (var i = 0; i < allfigures.length; i++) {
         var fig = allfigures[i];
@@ -1273,10 +1267,10 @@ lore.ore.loadCompoundObject = function (rdf) {
                 if (opts.y < 0) {
                     opts.y = 0;
                 }
-                fig = lore.ore.ui.graph.addFigureWithOpts(opts);
+                fig = lore.ore.ui.graphicalEditor.addFigureWithOpts(opts);
              } else {
                 // TODO: change to use opts but allow x,y etc to be optional
-                fig = lore.ore.ui.graph.addFigure(resourceURL);
+                fig = lore.ore.ui.graphicalEditor.addFigure(resourceURL);
              } 
         });
         
@@ -1297,11 +1291,10 @@ lore.ore.loadCompoundObject = function (rdf) {
             .each(function(){  
                 // try to find a node that this predicate applies to 
                 var subject = this.subj.value.toString();
-                var srcfig = lore.ore.ui.graph
-                    .lookupFigure(subject);
+                var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
                 if (!srcfig) {
                     // TODO: fix this as now preEncode is called - implement unPreEncode or something
-                   srcfig = lore.ore.ui.graph
+                   srcfig = lore.ore.ui.graphicalEditor
                     .lookupFigure(lore.global.util.unescapeHTML(subject.replace(
                     '%3C', '<').replace('%3F', '>')));
                 }
@@ -1309,9 +1302,9 @@ lore.ore.loadCompoundObject = function (rdf) {
                     var relresult = lore.global.util.splitTerm(this.pred.value.toString());
 
                     var obj = this.obj.value.toString();
-                    var tgtfig = lore.ore.ui.graph.lookupFigure(obj);
+                    var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
                     if (!tgtfig) {
-                        tgtfig = lore.ore.ui.graph
+                        tgtfig = lore.ore.ui.graphicalEditor
                             .lookupFigure(lore.global.util.unescapeHTML(obj.replace(
                                         '%3C', '<').replace('%3F', '>')));
                     }
@@ -1324,7 +1317,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                             c.setSource(srcPort);
                             c.setTarget(tgtPort);
                             c.setRelationshipType(relresult.ns, relresult.term);
-                            lore.ore.ui.graph.coGraph.addFigure(c);
+                            lore.ore.ui.graphicalEditor.coGraph.addFigure(c);
                         }
                         else {
                             throw "source or target port not defined";
@@ -1348,8 +1341,8 @@ lore.ore.loadCompoundObject = function (rdf) {
 
         // FIXME: #210 Temporary workaround to set drawing area size on load
         // problem still exists if a node is added that extends the boundaries
-        lore.ore.ui.graph.coGraph.showMask();
-        lore.ore.ui.graph.coGraph.hideMask();
+        lore.ore.ui.graphicalEditor.coGraph.showMask();
+        lore.ore.ui.graphicalEditor.coGraph.hideMask();
         
         lore.ore.ui.loreInfo("Loading compound object");
         Ext.Msg.hide();
@@ -1368,7 +1361,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             }
             lore.ore.historyManager.addToHistory(remurl, title);  
        }
-       if (lore.ore.ui.topView && lore.ore.ui.graph.lookup[lore.ore.ui.currentURL]){
+       if (lore.ore.ui.topView && lore.ore.ui.graphicalEditor.lookup[lore.ore.ui.currentURL]){
             lore.ore.ui.topView.hideAddIcon(true);
        } else {
             lore.ore.ui.topView.hideAddIcon(false);
@@ -1400,31 +1393,6 @@ lore.ore.readRDF = function(rdfURL){
     }
 };
 
-
-/**
- * Takes a repository access URI and returns the resource map identifier This is
- * only necessary until we implement proper access of resource maps via their
- * identifier URI
- * 
- * @param {}
- *            theurl
- * @return {}
- */
-lore.ore.getOREIdentifier = function(url) {
-    // Example of the url :
-    // http://austlit.edu.au/openrdf-sesame/repositories/lore/statements?context=<http://austlit.edu.au>
-    var result;
-    var theurl = url.toString().replace('%3C', '<').replace('%3E', '>');
-    if (theurl && theurl.indexOf('>') >= 0 ) {
-        result = theurl.substring((theurl.indexOf('<') + 1),
-                (theurl.length - 1));
-    }
-    if (result) {
-        return result;
-    } else {
-        return theurl;
-    }
-};
 /**
  * Load a resource map directly from a URL - prompt the user to enter the URL
  */
@@ -1554,7 +1522,7 @@ lore.ore.afterSaveCompoundObject = function(remid){
             'modified': lore.ore.getPropertyValue("dcterms:modified",lore.ore.ui.grid)
     };
     // If the current URL is in the compound object, show in related compound objects
-    if (lore.ore.ui.graph.lookup[lore.ore.ui.currentURL]){
+    if (lore.ore.ui.graphicalEditor.lookup[lore.ore.ui.currentURL]){
        lore.ore.coListManager.add([new lore.ore.model.CompoundObjectSummary(coopts)]);
     }
     lore.ore.historyManager.addToHistory(remid, title);  
@@ -1564,7 +1532,7 @@ lore.ore.afterDeleteCompoundObject = function(deletedrem){
     try{
 	    if (lore.ore.cache.getLoadedCompoundObjectUri() == deletedrem){
             lore.ore.cache.setLoadedCompoundObjectUri("");
-            lore.ore.ui.graph.coGraph.clear();
+            lore.ore.ui.graphicalEditor.coGraph.clear();
 	        lore.ore.createCompoundObject(); 
 	    }
         lore.ore.coListManager.remove(deletedrem);
@@ -1627,138 +1595,13 @@ lore.ore.updateCompoundObjectsBrowseList = function(contextURL) {
 };
 
 /* Graph related functions */
-lore.ore.doLayout = function(){
-    lore.ore.ui.graph.coGraph.doLayout();
-}
-/**
- * Updates global variables used for figure layout
- */
-lore.ore.ui.graph.nextXY = function(prevx, prevy) {
-    // TODO: Need a real graph layout algorithm
-    lore.ore.ui.graph.dummylayoutprevx = prevx;
-    lore.ore.ui.graph.dummylayoutprevy = prevy;
-    if (prevx > lore.ore.ROW_WIDTH) {
-        lore.ore.ui.graph.dummylayoutx = 50;
-        lore.ore.ui.graph.dummylayouty = prevy + lore.ore.NODE_HEIGHT
-                + lore.ore.NODE_SPACING;
-    } else {
-        lore.ore.ui.graph.dummylayoutx = prevx + lore.ore.NODE_WIDTH
-                + lore.ore.NODE_SPACING;
-        lore.ore.ui.graph.dummylayouty = prevy;
-    }
-};
 
 lore.ore.isInCompoundObject = function(theURL){
-    var isInCO = typeof(lore.ore.ui.graph.lookup[theURL]) !== 'undefined';
+    var isInCO = typeof(lore.ore.ui.graphicalEditor.lookup[theURL]) !== 'undefined';
     return isInCO;
 }
 
-/**
- * Get the figure that represents a resource
- * 
- * @param {}
- *            theURL The URL of the resource to be represented by the node
- * @return {} The figure representing the resource
- */
-lore.ore.ui.graph.lookupFigure = function(theURL) {
-    var figid = lore.ore.ui.graph.lookup[theURL];
-    return lore.ore.ui.graph.coGraph.getDocument().getFigure(figid);
-};
-/** scroll to the figure that represents the URL
- * @param {} theURL
- */
-lore.ore.ui.graph.scrollToFigure = function(theURL) {
-    var fig = lore.ore.ui.graph.lookupFigure(theURL);
-    if (fig) {
-        Ext.getCmp("loreviews").activate("drawingarea");
-        lore.ore.ui.graph.coGraph.scrollTo(fig.x, fig.y);
-    }
-};
-/**
- *  sort figures according to their x and y coordinates 
- **/
-lore.ore.ui.graph.figSortingFunction = function(figa,figb){        
-    if (figa.y == figb.y)
-        return figa.x > figb.x;
-    else
-        return figa.y > figb.y;
-};
-/**
- * Add a node figure with layout options
- * @param {} theURL
- * @param {} opts The layout options
- * @return {}
- */
-lore.ore.ui.graph.addFigureWithOpts = function(opts){
-    var fig = null;
-    var theURL = opts.url;
-    opts.props = opts.props || {};
-    if (!opts.loaded && !(opts.props["dc:title_0"] || opts.props["dcterms:title_0"])){ // dodgy way of determining if this is a new CO
-        try{
-        // Try getting the page title from the browser history: 
-        // getting it from the history avoids any problems with waiting for the document to be loaded
-        var globalHistory = Components.classes["@mozilla.org/browser/global-history;2"].
-                    getService(Components.interfaces.nsIGlobalHistory2);
-        opts.props["dc:title_0"] = globalHistory.getPageTitle(Components.classes["@mozilla.org/network/io-service;1"].
-            getService(Components.interfaces.nsIIOService).
-            newURI(theURL, null, null));
-        } catch (e) {
-            lore.debug.ore("Error getting title from history",e);
-        }
-    }
-    if (theURL && !lore.ore.ui.graph.lookup[theURL]) {
-        fig = new lore.ore.ui.graph.ResourceFigure(opts.props);
-        if (opts.oh) {
-           fig.originalHeight = opts.oh;
-        }
-        if (opts.w && opts.h){
-            fig.setDimension(opts.w, opts.h);    
-        } 
-        if (opts.sx && opts.sy) {
-            fig.scrollx = parseInt(opts.sx);
-            fig.scrolly = parseInt(opts.sy);
-        }
-        if (opts.format){
-            fig.setProperty("dc:format_0",opts.format);
-        }
-        if (opts.rdftype){
-            fig.setProperty("rdf:type_0",opts.rdftype);
-        }
-        fig.setContent(theURL);
-        lore.ore.ui.graph.coGraph.addResourceFigure(fig, opts.x, opts.y);
-        lore.ore.ui.graph.lookup[theURL] = fig.getId();
-        /*
-         * TODO: add to model
-         * lore.ore.cache.getLoadedCompoundObject.addAggregatedResource(
-            new lore.ore.model.Resource({uri: theURL}));
-            */
-      	Ext.getCmp("loreviews").activate("drawingarea");
-    } else {
-        lore.ore.ui.loreWarning("Resource is already in the compound object: " + theURL);
-    }
-	if (fig){
-	    lore.ore.ui.graph.nextXY(opts.x,opts.y);
-	}
-    return fig;
-};
 
-/**
- * Add a node figure to the graphical view to represent a resource
- * 
- * @param {}
- *            theURL The URL of the resource to be represented by the node
- */
-lore.ore.ui.graph.addFigure = function(theURL,props) {
-    lore.debug.ore("add figure props are",props);
-	var fig = lore.ore.ui.graph.addFigureWithOpts({
-        "url": lore.global.util.preEncode(theURL), 
-        "x": lore.ore.ui.graph.dummylayoutx,
-        "y": lore.ore.ui.graph.dummylayouty,
-        "props": props
-    });
-    lore.ore.ui.graph.scrollToFigure(theURL);
-    return fig;
-};
 /** Transform RDF/XML of the current compound object using XSLT 
  * @param {String} stylesheetURL The XSLT stylesheet (probably a chrome URI)
  * @param {object} params Any parameters to pass to the XSLT stylesheet
@@ -1825,7 +1668,7 @@ lore.ore.createOREWord = function (){
 
 lore.ore.handleNodePropertyRemove = function(store, record, index){
     lore.debug.ore("deleting property " + record.id,record);
-    lore.ore.ui.graph.selectedFigure.unsetProperty(record.id);
+    lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
 };
 
 lore.ore.handleNodePropertyAdd = function(store, records, index){
@@ -1833,7 +1676,7 @@ lore.ore.handleNodePropertyAdd = function(store, records, index){
     // user should only be editing a single record at a time
     // TODO: handle case where node has one record and is selected (triggering add record for existing value)
     if (records.length == 1){
-        lore.ore.ui.graph.selectedFigure.setProperty(records[0].id,records[0].data.value);
+        lore.ore.ui.graphicalEditor.getSelectedFigure().setProperty(records[0].id,records[0].data.value);
     }
 };
 
@@ -1842,10 +1685,11 @@ lore.ore.handleNodePropertyAdd = function(store, records, index){
 lore.ore.handleNodePropertyChange = function(args) {
     try{
 	    var theval;
+        var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
 	    lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
-	    if (lore.ore.ui.graph.selectedFigure instanceof lore.ore.ui.graph.ContextmenuConnection){
+	    if (selfig instanceof lore.ore.ui.graph.ContextmenuConnection){
             if (args.record.data.name == 'relationship'){ 
-                lore.ore.ui.graph.selectedFigure.setRelationshipType(
+                selfig.setRelationshipType(
                     lore.ore.getPropertyValue("namespace",lore.ore.ui.nodegrid),args.value);
             }
         } else { // Resource property
@@ -1856,12 +1700,12 @@ lore.ore.handleNodePropertyChange = function(args) {
 		        } else {
 		            theval = "about:blank";
 		        }
-		        if (lore.ore.ui.graph.lookup[theval]) {
+		        if (lore.ore.ui.graphicalEditor.lookup[theval]) {
 		            lore.ore.ui.loreWarning("Cannot change resource URL: a node already exists for " + theval);
 		            return;
 		        } else {
-		           lore.ore.ui.graph.lookup[theval] = lore.ore.ui.graph.selectedFigure.getId();
-	               delete lore.ore.ui.graph.lookup[args.originalValue];
+		           lore.ore.ui.graphicalEditor.lookup[theval] = selfig.getId();
+	               delete lore.ore.ui.graphicalEditor.lookup[args.originalValue];
 		        }
                 if (lore.ore.ui.topView){
 	                if (lore.ore.ui.currentURL == theval){
@@ -1871,7 +1715,7 @@ lore.ore.handleNodePropertyChange = function(args) {
 	                }
                 }
             }
-            lore.ore.ui.graph.selectedFigure.setProperty(args.record.id,args.value);
+            selfig.setProperty(args.record.id,args.value);
         }
         lore.ore.ui.nodegrid.store.commitChanges();
         lore.ore.ui.graph.modified = true;
@@ -1999,8 +1843,8 @@ lore.ore.populateResourceDetailsCombo = function (){
     // add compound object
     lore.ore.resourceStore.loadData([["Current Compound Object", lore.ore.cache.getLoadedCompoundObjectUri(), "Current Compound Object (" + lore.ore.cache.getLoadedCompoundObjectUri() + ")"]]);
     // add all resources in compound object
-    var allfigures = lore.ore.ui.graph.coGraph.getDocument().getFigures().data;
-    allfigures.sort(lore.ore.ui.graph.figSortingFunction);
+    var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().data;
+    allfigures.sort(lore.ore.ui.graphicalEditor.figSortingFunction);
     for (var i = 0; i < allfigures.length; i++) {
         var fig = allfigures[i];
         if (fig instanceof lore.ore.ui.graph.ResourceFigure){
@@ -2042,7 +1886,7 @@ lore.ore.loadResourceDetails = function(combo,record,index){
         });
     } else {
         // it's a resource - get the props and rels from the figure
-	    var fig = lore.ore.ui.graph.lookupFigure(resurl);
+	    var fig = lore.ore.ui.graphicalEditor.lookupFigure(resurl);
 	    if (fig){
 	            for (p in fig.metadataproperties){
 	                var pname = p;

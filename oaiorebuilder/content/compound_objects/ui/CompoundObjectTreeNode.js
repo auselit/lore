@@ -96,7 +96,7 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
         if (coProps.creator) { // browse result
             var cDetail = coProps.creator;
             var cMod = coProps.modified;
-            if (cMod && cMod instanceof Date){
+            if (cMod && Ext.isDate(cMod)){
                 cDetail += ", last modified " + cMod.format("j M Y, g:ia");
             } else if (cMod){
                 cDetail += ", last modified " + cMod;
