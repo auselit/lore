@@ -98,7 +98,7 @@ lore.ore.ui.graph.ContextmenuConnection.prototype.getContextMenu=function() {
 	            var symmquery = lore.ore.relOntology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
 	                .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
 		        var symm = symmquery.length > 0;
-				var functionstr = "lore.ore.ui.graph.selectedFigure.setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
+				var functionstr = "lore.ore.ui.graphicalEditor.getSelectedFigure().setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
 		 		lore.ore.ui.graph.ContextmenuConnection.contextMenu.appendMenuItem(new draw2d.MenuItem(rel,null,new Function(functionstr)));
 		 	}
 	        lore.ore.ui.graph.ContextmenuConnection.loadedOntology = lore.ore.onturl;

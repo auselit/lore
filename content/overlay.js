@@ -194,7 +194,7 @@ try {
          **/
         onMenuItemCommand: function(event){
             if (gContextMenu.onLink) {
-                loreoverlay.coView().addFigure(gContextMenu.linkURL, {"dc:title_0": gContextMenu.linkText()});
+                loreoverlay.coView().addResource(gContextMenu.linkURL, {"dc:title_0": gContextMenu.linkText()});
             }
         },
         /** Show a popup menu in the extension */
@@ -263,13 +263,13 @@ try {
                 if (gContextMenu.onLink){
                     props["dc:relation_0"] = gContextMenu.linkURL;
                 }
-                loreoverlay.coView().addFigure(gContextMenu.imageURL, props);
+                loreoverlay.coView().addResource(gContextMenu.imageURL, props);
             }
         },
         /** Trigger adding a node to the compound object editor from browser context menu on background images */
         addBGImageMenuItemCommand: function(e){
             if (gContextMenu.hasBGImage) {
-                loreoverlay.coView().addFigure(gContextMenu.bgImageURL,{"dc:source_0": gContextMenu.browser.currentURI.spec});
+                loreoverlay.coView().addResource(gContextMenu.bgImageURL,{"dc:source_0": gContextMenu.browser.currentURI.spec});
             }
         },
         /** Toggle LORE visibility when LORE menu item is selected */
@@ -398,7 +398,7 @@ try {
         },
         /** Compound Object Toolbar button handler: Trigger adding the current URI to the compound object editor */
         addGraphNode: function(){
-            loreoverlay.coView().addFigure(window.content.location.href);
+            loreoverlay.coView().addResource(window.content.location.href);
             document.getElementById('ore-add-icon').hidden = true;
             document.getElementById('ore-added-icon').hidden = false;
         },

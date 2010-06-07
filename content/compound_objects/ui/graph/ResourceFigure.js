@@ -206,11 +206,11 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
                     + "-data'><a href='#' onclick=\"lore.ore.readRDF('"
                     + theurl
                     + "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
-            var identifierURI = lore.ore.getOREIdentifier(theurl);
-            this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='" + identifierURI +"' class='mimeicon oreicon'>"
+            
+            this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='" + theurl +"' class='mimeicon oreicon'>"
                 + this.uriexpander
                 + "<a onclick='lore.ore.readRDF(\"" + theurl + "\");' href='#'>"
-                + identifierURI + "</a></li></ul>";
+                + theurl + "</a></li></ul>";
     } else if (mimetype && mimetype.match("rdf")){
         this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>RDF document (no preview available)</p>";
 	} else if (rdftype  && (rdftype.match(lore.constants.NAMESPACES["annotype"]) || 

@@ -285,7 +285,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 					handler: function(evt){
 						try {
 				            var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
-							lore.global.ui.compoundObjectView.get(window.instanceId).addFigure(lore.anno.ui.nodeIdToRecId(node),
+							lore.global.ui.compoundObjectView.get(window.instanceId).addResource(lore.anno.ui.nodeIdToRecId(node),
 				                {"rdf:type_0":rec.data.type});
 						} catch (e ){
 							lore.debug.anno("Error adding node to compound editor:" + e, e);
@@ -730,7 +730,7 @@ lore.anno.ui.handleAddResultsToCO = function(evt){
 		var sels = lore.anno.ui.search.grid().getSelectionModel().getSelections();
 		for (var i =0; i < sels.length; i++ ) {								
             var rec = sels[i];
-			lore.global.ui.compoundObjectView.get(window.instanceId).addFigure(rec.data.id,
+			lore.global.ui.compoundObjectView.get(window.instanceId).addResource(rec.data.id,
             {"rdf:type_0":rec.data.type});
 		}
 	} catch (e ){
