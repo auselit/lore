@@ -5,7 +5,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             columnLines : true,
             autoHeight : true,
             anchor : "100%",
-            //collapsed : true,
             collapsible : true,
             animCollapse : false,
             store : new Ext.data.JsonStore({
@@ -61,20 +60,72 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             tools : [{
                         id : 'plus',
                         qtip : 'Add a property',
-                        handler : this.handleAddProperty
+                        handler : this.addPropertyAction
                     }, {
                         id : 'minus',
                         qtip : 'Remove the selected property',
-                        handler : this.handleRemoveProperty
+                        handler : this.removePropertyAction
                     }, {
                         id : 'help',
                         qtip : 'Display information about the selected property',
-                        handler : this.handleHelpProperty
+                        handler : this.helpPropertyAction
                     }
             ]
                         
         });
         lore.ore.ui.PropertyEditor.superclass.initComponent.call(this,config);
+        
+        // hide/show the properties when the collapse/expand button in the toolbar is triggered
+        // FIXME: collapse/expand getting out of sync when CO is loaded
+        this.on('beforecollapse', function(p){p.body.setStyle('display','none');});
+        this.on('beforeexpand', function(p){p.body.setStyle('display','block');});
+
+        // Set up listeners
+        this.on("afteredit", this.handlePropertyChange);
+        this.store.on("remove", this.handlePropertyRemove);
+        
+        // TODO: use MVC, store read only status of properties in model rather than hardcoding this?
+        if (this.id == "nodegrid"){
+            this.on("beforeedit", function(e) {
+                    // don't allow generated format or type field to be edited
+                    if (e.record.id == "dc:format_0" || e.record.id == "rdf:type_0") {
+                        e.cancel = true;
+                    }
+                    
+            });
+        } else {
+            this.on("beforeedit", function(e) {
+                // don't allow these fields to be edited
+                if (e.record.id == "dcterms:modified_0"
+                        || e.record.id == "dcterms:created_0"
+                        || e.record.id == "rdf:about_0") {
+                    e.cancel = true;
+                }
+            });
+            // update the CO title in the tree if it is changed in the properties
+            this.on("afteredit", function(e) {
+                try{
+                if (e.record.id == "dc:title_0") {
+                    // FIXME: treenodes not being found
+                    var currREM = lore.ore.cache.getLoadedCompoundObjectUri();
+                    var treenode = lore.ore.ui.remstreeroot.findChild("id",currREM);
+                    if (treenode) {
+                        treenode.setText(e.value);
+                    }
+                    lore.debug.ore("related treenode? ",treenode);
+                    treenode = lore.ore.ui.recenttreeroot.findChild("id", currREM + "r");
+                    if (treenode) {
+                        treenode.setText(e.value);
+                    }
+                    lore.debug.ore("history treenode? ",treenode);
+                }
+                // commit the change to the datastore
+                this.store.commitChanges();
+                } catch (e){
+                    lore.debug.ore("problem",e);
+                }
+            });
+        }
     },
     /** Handler for plus tool button on property grids 
      * 
@@ -82,7 +133,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} toolEl
      * @param {} panel
      */
-    handleAddProperty : function (ev, toolEl, panel) {
+    addPropertyAction : function (ev, toolEl, panel) {
         var makeAddMenu  = function(panel){
             panel.propMenu = new Ext.menu.Menu({
                 id: panel.id + "-add-metadata"
@@ -131,7 +182,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} toolEl
      * @param {} panel
      */
-    handleRemoveProperty: function (ev, toolEl, panel) { 
+    removePropertyAction: function (ev, toolEl, panel) { 
         try {
         lore.debug.ore("remove Property was triggered",ev);
         var sel = panel.getSelectionModel().getSelected();
@@ -167,7 +218,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} toolEl
      * @param {} panel
      */
-    handleHelpProperty : function (ev,toolEl, panel) {
+    helpPropertyAction : function (ev,toolEl, panel) {
         var sel = panel.getSelectionModel().getSelected();
         if (panel.collapsed){
             lore.ore.ui.loreInfo("Please expand the properties panel and select a property");
@@ -190,6 +241,69 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         } else {
             lore.ore.ui.loreInfo("Please click on a property prior to selecting the help button");
         }
+    },
+    // TODO: use MVC
+    handlePropertyRemove : function(store, record, index){
+        if (this.id == "nodegrid"){
+            lore.debug.ore("deleting property " + record.id,record);
+            lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
+        }
+    },
+    /** update the metadataproperties recorded in the figure for that node */
+    handlePropertyChange : function(args) {
+        // TODO: MVC: this needs to update the model (and view needs to listen to model)
+        // at present this only updates resource/rel properties - also needs to update on compound object
+        try{
+            if (this.id == "nodegrid"){
+                var theval;
+                var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
+                lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
+                if (selfig instanceof lore.ore.ui.graph.ContextmenuConnection){
+                    if (args.record.data.name == 'relationship'){ 
+                        selfig.setRelationshipType(
+                            lore.ore.getPropertyValue("namespace",lore.ore.ui.nodegrid),args.value);
+                    }
+                } else { // Resource property
+                    if (args.record.data.name == 'resource') {
+                        // the URL of the resource has changed
+                        if (args.value && args.value != '') {
+                            theval = args.value;
+                        } else {
+                            theval = "about:blank";
+                        }
+                        if (lore.ore.ui.graphicalEditor.lookup[theval]) {
+                            lore.ore.ui.loreWarning("Cannot change resource URL: a node already exists for " + theval);
+                            return;
+                        } else {
+                           lore.ore.ui.graphicalEditor.lookup[theval] = selfig.getId();
+                           delete lore.ore.ui.graphicalEditor.lookup[args.originalValue];
+                        }
+                        if (lore.ore.ui.topView){
+                            if (lore.ore.ui.currentURL == theval){
+                               lore.ore.ui.topView.hideAddIcon(true);
+                            } else if (lore.ore.ui.currentURL == args.originalValue){
+                               lore.ore.ui.topView.hideAddIcon(false);
+                            }
+                        }
+                    }
+                    selfig.setProperty(args.record.id,args.value);
+                }
+                lore.ore.ui.nodegrid.store.commitChanges();
+                lore.ore.ui.graph.modified = true;
+            }
+        } catch (e){
+            lore.debug.ore("error handling node property change",e);
+        }
     }
 });
+/* Old code:
+lore.ore.handleNodePropertyAdd = function(store, records, index){
+    lore.debug.ore("added property " + record.id,record);
+    // user should only be editing a single record at a time
+    // TODO: handle case where node has one record and is selected (triggering add record for existing value)
+    if (records.length == 1){
+        lore.ore.ui.graphicalEditor.getSelectedFigure().setProperty(records[0].id,records[0].data.value);
+    }
+};
+*/
 Ext.reg('propertyeditor',lore.ore.ui.PropertyEditor);

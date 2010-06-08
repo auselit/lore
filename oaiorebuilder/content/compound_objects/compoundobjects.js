@@ -29,8 +29,7 @@
  * @class lore.ore
  */
  
-// Compound object editor graph view defaults
-
+/** Maximum level of nesting that the views will show (limited for performance reasons) */
 lore.ore.MAX_NESTING      = 2;
 // TODO: #10 replace with an ontology
 /** Default list of properties that can be specified for compound objects or resources 
@@ -45,7 +44,6 @@ lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
 /** Properties that are mandatory for compound objects
  *  @const */
 lore.ore.CO_REQUIRED = ["dc:creator","dcterms:created",
-
     "dcterms:modified", "ore:describes", "rdf:about", "rdf:type"
 ];
 /** Properties that are mandatory for an aggregated resource
@@ -323,7 +321,7 @@ lore.ore.ui.newCO = function(dontRaise){
         var cDate = new Date();
         // TODO: fix properties - use date string for now
         // TODO: should not assign an id until it has been saved
-        currentREM = lore.ore.reposAdapter.generateID();
+        var currentREM = lore.ore.reposAdapter.generateID();
         lore.ore.cache.add(currentREM, new lore.ore.model.CompoundObject({uri: currentREM}));
         lore.ore.cache.setLoadedCompoundObjectUri(currentREM);
         lore.ore.ui.grid.store.loadData(
@@ -504,113 +502,6 @@ lore.ore.ui.dragOver = function(aEvent){
       dragSession.canDrop = true;
 };
 
-lore.ore.ui.hideProps = function(p, animate) {
-        p.body.setStyle('display','none'); 
-};
-lore.ore.ui.showProps = function(p, animate) {
-        p.body.setStyle('display','block');
-};
-
-/** Handler for plus tool button on property grids */
-lore.ore.ui.addProperty = function (ev, toolEl, panel) {
-    var makeAddMenu  = function(panel){
-	    panel.propMenu = new Ext.menu.Menu({
-	        id: panel.id + "-add-metadata"
-	    });
-        panel.propMenu.panelref = panel.id;
-	    for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
-            var propname = lore.ore.METADATA_PROPS[i];
-            panel.propMenu.add({
-                id: panel.id + "-add-" + propname,
-                text: propname,
-                handler: function () {
-                    try{
-                        var panel = Ext.getCmp(this.parentMenu.panelref);
-                        var pstore = panel.getStore();
-                        var counter = 0;
-                        var prop = pstore.getById(this.text + "_" + counter);
-                        while (prop) {
-                            counter = counter + 1;
-                            prop = pstore.getById(this.text + "_" + counter);
-                        }
-                        var theid = this.text + "_" + counter;
-                        pstore.loadData([{id: theid, name: this.text, value: ""}],true);
-                        
-                    } catch (ex){
-                        lore.debug.ore("exception adding prop " + this.text,ex);
-                    }
-                }
-            });
-	    }
-	};
-    if (!panel.propMenu) {
-        makeAddMenu(panel);
-    }
-    if (panel.id == "remgrid" || lore.ore.ui.graphicalEditor.getSelectedFigure() instanceof lore.ore.ui.graph.ResourceFigure){
-        if (panel.collapsed) {
-            panel.expand(false);
-        }
-        panel.propMenu.showAt(ev.xy);
-    } else {
-        lore.ore.ui.loreInfo("Please click on a Resource node before adding property");
-    }
-};
-/** Handler for minus tool button on property grids */
-lore.ore.ui.removeProperty = function (ev, toolEl, panel) { 
-    try {
-    lore.debug.ore("remove Property was triggered",ev);
-    var sel = panel.getSelectionModel().getSelected();
-    // don't allow delete when panel is collapsed (user can't see what is selected)
-    if (panel.collapsed) {
-        lore.ore.ui.loreInfo("Please expand the properties panel and select the property to remove");
-    } else if (sel) {
-        // TODO: #2 (refactor): should allow first to be deleted as long as another exists
-        // should also probably renumber
-             if (sel.id.match("_0")){ // first instance of property: check if it's mandatory
-                var propId = sel.id.substring(0,sel.id.indexOf("_0"));
-                if ((panel.id == "remgrid" && lore.ore.CO_REQUIRED.indexOf(propId)!=-1) ||
-                    (panel.id == "nodegrid" && 
-                        (lore.ore.RES_REQUIRED.indexOf(propId) !=-1 ||
-                            lore.ore.REL_REQUIRED.indexOf(propId)!=-1))){
-                    lore.ore.ui.loreWarning("Cannot remove mandatory property: " + sel.data.name);
-                } else {
-                    panel.getStore().remove(sel);
-                }
-            } else { // not the first instance of the property: always ok to delete
-                panel.getStore().remove(sel);
-            }
-     } else {
-        lore.ore.ui.loreInfo("Please click on the property to remove prior to selecting the remove button");
-     }
-    } catch (ex) {
-        lore.debug.ore("error removing property ",ex);
-    }
-};
-/** Handler for help tool button on property grids */
-lore.ore.ui.helpProperty = function (ev,toolEl, panel) {
-    var sel = panel.getSelectionModel().getSelected();
-    if (panel.collapsed){
-        lore.ore.ui.loreInfo("Please expand the properties panel and select a property");
-    } else if (sel){
-        var splitprop =  sel.data.name.split(":");
-        var infoMsg = "<p style='font-weight:bold;font-size:130%'>" + sel.data.name + "</p><p style='font-size:110%;margin:5px;'>" 
-        + sel.data.value + "</p>";
-        if (splitprop.length > 1){
-            var ns = lore.constants.NAMESPACES[splitprop[0]];
-            infoMsg += "<p>This property is defined in " 
-                    + "<a style='text-decoration:underline' href='#' onclick='lore.global.util.launchTab(\"" 
-                    + ns + "\");'>" + ns + "</a></p>";
-        }
-        
-        Ext.Msg.show({
-                title : 'About ' + sel.data.name,
-                buttons : Ext.MessageBox.OK,
-                msg : infoMsg
-            });
-    } else {
-        lore.ore.ui.loreInfo("Please click on a property prior to selecting the help button");
-    }
-};
 
 /** Helper function to create a view displayed in a closeable tab */
 lore.ore.openView = function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
@@ -674,98 +565,6 @@ lore.ore.showSlideshow = function(p){
     panel.loadContent(tmpCO);
     Ext.Msg.hide();
 }
-
-// TODO: listen to model rather than updating entire view each time
-/** Displays a summary of the resource URIs aggregated by the compound object 
- * @parm {Ext.Panel} summarypanel The panel to show the summary in */
-lore.ore.showCompoundObjectSummary = function(/*Ext.Panel*/summarypanel) {
-
-    var newsummary = 
-            "<table style='width:100%;border:none'>"
-            + "<tr valign='top'><td width='23%'>" 
-            + "<b>Compound object:</b></td><td>"
-            + "<div style='float:right;padding-right:5px'>" 
-            + "<a href='#' onclick='lore.ore.handleSerializeREM(\"wordml\")'>"
-            + "<img src='chrome://lore/skin/icons/page_white_word.png' title='Export summary to MS Word'>"
-            + "</a></div>"
-            + lore.ore.cache.getLoadedCompoundObjectUri() + "</td></tr>";
-    var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
-        || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
-    if (title) {
-        newsummary += "<tr valign='top'><td width='23%'><b>Title:</b></td><td>"
-                + title + "</td></tr>";
-    }
-   
-    var desc = lore.ore.getPropertyValue("dc:description",lore.ore.ui.grid);
-    if (desc) {
-        newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='77%'>"
-                + desc + "</td></tr>";
-    }
-    var abst = lore.ore.getPropertyValue("dcterms:abstract",lore.ore.ui.grid);
-    if (abst) {
-        newsummary += "<tr valign='top'><td><b>Abstract:</b></td><td width='77%'>"
-            + abst + "</td></tr>";
-    }
-    newsummary += "</table>";
-    var newsummarydetail = "<div style='padding-top:1em'>";
-    var tocsummary = "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
-    var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().data;
-    allfigures.sort(lore.ore.ui.graphicalEditor.figSortingFunction);
-    for (var i = 0; i < allfigures.length; i++) {
-        var fig = allfigures[i];
-        if (fig instanceof lore.ore.ui.graph.ResourceFigure){
-	        var figurl = lore.global.util.escapeHTML(fig.url);
-	        var title = fig.getProperty("dc:title_0") 
-                || fig.getProperty("dcterms:title_0") 
-                || "Untitled Resource";
-            tocsummary += "<li>";
-	        
-            var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
-            if (isCompObject){
-                tocsummary += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
-            }
-            tocsummary += title + ": &lt;"
-	        + (!isCompObject?"<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" 
-	        + figurl + "</a>" : figurl) + "&gt;<a href='#res" + i + "'> (details)</a>";
-            tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
-            tocsummary += " <a href='#' title='Show in slideshow view' onclick='Ext.getCmp(\"loreviews\").activate(\"remslideview\");Ext.getCmp(\"newss\").setActiveItem(\"" + figurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri() + "\");'><img src='chrome://lore/skin/icons/picture_empty.png' alt='View in slideshow view'></a>";
-            tocsummary += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explore.showInExploreView(\"" + figurl + "\",\"" + title + "\"," + isCompObject+ ");'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
-            tocsummary += "</li>";
-            newsummarydetail += "<div style='border-top: 1px solid rgb(220, 224, 225); width: 100%; margin-top: 0.5em;'> </div>";
-            newsummarydetail += "<p id='res"+ i + "'>";
-            if (isCompObject){
-                newsummarydetail += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
-            }
-            newsummarydetail += "<b>" + title + "</b><br>&lt;" + (!isCompObject? "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" + figurl + "</a>" : figurl) + "&gt;</p><p>";
-            
-            for (p in fig.metadataproperties){
-                var pname = p;
-                var pidx = p.indexOf("_");
-                if (pidx != -1){
-                    pname = p.substring(0,pidx);
-                }
-                if (pname != 'resource' && pname != 'dc:format' && pname != 'rdf:type' && fig.metadataproperties[p]){
-                    newsummarydetail += //"<a href='#' onclick='lore.ore.editResDetail(\"" + fig.url + "\",\"" +  p + "\");'><img title='Edit in Resource Details view' src='chrome://lore/skin/icons/pencil.png'></a>&nbsp;" +
-                            "<b>" + pname + "</b>: " + fig.metadataproperties[p] + "<br>";
-                }
-                else if (pname == 'rdf:type' && fig.metadataproperties[p] == lore.constants.RESOURCE_MAP){
-                    isCompObject = true;
-                }
-            }
-            /*
-            if (isCompObject){
-                newsummarydetail += "<a href='#' onclick='lore.ore.loadCompoundObjectContents(\"" + fig.url + "\",jQuery(\"#content" + i + "\"))'><span id='content" + i + "' style='font-size:smaller'> View contents</span></a>";
-            }
-            */
-            newsummarydetail += "</p>";        
-        }
-    }
-    tocsummary += "</ul></div>";
-    newsummarydetail += "</div>";
-    summarypanel.body.update(newsummary + newsummarydetail + tocsummary);
-    
-    lore.ore.ui.loreInfo("Displaying a summary of compound object contents");
-};
 
 /** Generate a SMIL presentation from the current compound object and display a link to launch it */
 lore.ore.showSMIL = function() {
@@ -1666,63 +1465,6 @@ lore.ore.createOREWord = function (){
     }
 };
 
-lore.ore.handleNodePropertyRemove = function(store, record, index){
-    lore.debug.ore("deleting property " + record.id,record);
-    lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
-};
-
-lore.ore.handleNodePropertyAdd = function(store, records, index){
-    lore.debug.ore("added property " + record.id,record);
-    // user should only be editing a single record at a time
-    // TODO: handle case where node has one record and is selected (triggering add record for existing value)
-    if (records.length == 1){
-        lore.ore.ui.graphicalEditor.getSelectedFigure().setProperty(records[0].id,records[0].data.value);
-    }
-};
-
-// TODO: #34 MVC: this needs to update the model (and view needs to listen to model)
-/** update the metadataproperties recorded in the figure for that node */
-lore.ore.handleNodePropertyChange = function(args) {
-    try{
-	    var theval;
-        var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
-	    lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
-	    if (selfig instanceof lore.ore.ui.graph.ContextmenuConnection){
-            if (args.record.data.name == 'relationship'){ 
-                selfig.setRelationshipType(
-                    lore.ore.getPropertyValue("namespace",lore.ore.ui.nodegrid),args.value);
-            }
-        } else { // Resource property
-            if (args.record.data.name == 'resource') {
-		        // the URL of the resource has changed
-		        if (args.value && args.value != '') {
-		            theval = args.value;
-		        } else {
-		            theval = "about:blank";
-		        }
-		        if (lore.ore.ui.graphicalEditor.lookup[theval]) {
-		            lore.ore.ui.loreWarning("Cannot change resource URL: a node already exists for " + theval);
-		            return;
-		        } else {
-		           lore.ore.ui.graphicalEditor.lookup[theval] = selfig.getId();
-	               delete lore.ore.ui.graphicalEditor.lookup[args.originalValue];
-		        }
-                if (lore.ore.ui.topView){
-	                if (lore.ore.ui.currentURL == theval){
-	                   lore.ore.ui.topView.hideAddIcon(true);
-	                } else if (lore.ore.ui.currentURL == args.originalValue){
-	                   lore.ore.ui.topView.hideAddIcon(false);
-	                }
-                }
-            }
-            selfig.setProperty(args.record.id,args.value);
-        }
-        lore.ore.ui.nodegrid.store.commitChanges();
-        lore.ore.ui.graph.modified = true;
-    } catch (e){
-        lore.debug.ore("error handling node property change",e);
-    }
-};
 lore.ore.ui.graph.dummyBatchDialog = function(){
     // dummy dialog for OR09 challenge
     var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]

@@ -24,7 +24,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         this.lookup = {};
         
         this.readOnly = false;
-            
    },
    initGraph: function(){
     try{
@@ -38,12 +37,12 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             coGraph.removeSelectionListener(this);
             coGraph.clear();
         } else {
-            coGraph = new lore.ore.ui.graph.COGraph("drawingarea");
+            coGraph = new lore.ore.ui.graph.COGraph(this.id);
             this.coGraph = coGraph;
-            coGraph.scrollArea = document.getElementById("drawingarea").parentNode;
+            coGraph.scrollArea = document.getElementById(this.id).parentNode;
             
             // create drop target for dropping new nodes onto editor from the sources and search trees
-            var droptarget = new Ext.dd.DropTarget("drawingarea", {
+            var droptarget = new Ext.dd.DropTarget(this.id, {
                     'ddGroup' : 'TreeDD',
                     'copy' : false
             });
@@ -75,7 +74,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     * @param {draw2d.Figure} figure ResourceFigure or ContextmenuConnection that was selected
     */
    onSelectionChanged : function(figure) {
-        lore.debug.ore("ge selection changed",figure);
         if (figure != null) {
             lore.ore.ui.nodegrid.store.removeAll();
             if (figure.metadataproperties) {
@@ -103,15 +101,11 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             lore.ore.ui.nodegrid.collapse();
         }
    },
-   getSelectedFigure : function (){    
-        return this.coGraph.getCurrentSelection();
-   },
    /**
      * Respond to move, delete, undo and redo commands in the graphical editor
      * @param {} event
      */
     stackChanged : function(event) {
-        lore.debug.ore("ge stack changed",event);
         var details = event.getDetails();
         var comm = event.getCommand();
         var comm_fig = comm.figure;
@@ -166,18 +160,21 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             
         }
    },
+   getSelectedFigure : function (){    
+        return this.coGraph.getCurrentSelection();
+   },
    /** scroll to the figure that represents the URL
      * @param {} theURL
      */
    scrollToFigure : function(theURL) {
         var fig = this.lookupFigure(theURL);
         if (fig) {
-            Ext.getCmp("loreviews").activate("drawingarea");
+            Ext.getCmp("loreviews").activate(this.id);
             this.coGraph.scrollTo(fig.x, fig.y);
         }
    },
    /**
-     * Add a node figure to the graphical view to represent a resource
+     * Add a node figure to the graphical view to represent a resource using automatic layout
      * 
      * @param {} theURL The URL of the resource to be represented by the node
      */
@@ -243,7 +240,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
              * lore.ore.cache.getLoadedCompoundObject.addAggregatedResource(
                 new lore.ore.model.Resource({uri: theURL}));
                 */
-            Ext.getCmp("loreviews").activate("drawingarea");
+            Ext.getCmp("loreviews").activate(this.id);
         } else {
             lore.ore.ui.loreWarning("Resource is already in the compound object: " + theURL);
         }
