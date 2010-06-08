@@ -43,78 +43,6 @@ lore.ore.ui.initGraphicalView = function() {
 }
 
 /**
- * Load LORE preferences
- */
-lore.ore.ui.loadPreferences = function() {
-	try {
-		lore.ore.ui.topView.loadCompoundObjectPrefs();
-	} catch (ex) {
-		lore.debug.ore("Error loading preferences", ex);
-	}
-}
-
-/**
- * Initialise property grids and set up listeners
- */
-lore.ore.ui.initProperties = function() {
-    if (lore.ore.reposAdapter) {
-	   var currentREM = lore.ore.reposAdapter.generateID();
-       lore.ore.cache.setLoadedCompoundObjectUri(currentREM, new lore.ore.model.CompoundObject({uri:currentREM}));
-    }
-	lore.ore.ui.nodegrid.on("afteredit", lore.ore.handleNodePropertyChange);
-	lore.ore.ui.nodegrid.store.on("remove", lore.ore.handleNodePropertyRemove);
-
-	lore.ore.ui.nodegrid.on("beforeedit", function(e) {
-				// don't allow generated format or type field to be edited
-				if (e.record.id == "dc:format_0" || e.record.id == "rdf:type_0") {
-					e.cancel = true;
-				}
-			});
-	// TODO: is it possible to listen for deletion from property grid to remove from node?
-
-	lore.ore.ui.grid.on("beforeedit", function(e) {
-				// don't allow these fields to be edited
-				if (e.record.id == "dcterms:modified_0"
-						|| e.record.id == "dcterms:created_0"
-						|| e.record.id == "rdf:about_0") {
-					e.cancel = true;
-				}
-			});
-	// update the CO title in the tree if it is changed in the properties
-	lore.ore.ui.grid.on("afteredit", function(e) {
-				if (e.record.id == "dc:title_0") {
-                    var treenode = lore.ore.ui.remstreeroot.findChild("id",lore.ore.cache.getLoadedCompoundObjectUri());
-					if (treenode) {
-						treenode.setText(e.value);
-					}
-					treenode = lore.ore.ui.recenttreeroot.findChild("id",lore.ore.cache.getLoadedCompoundObjectUri() + "r");
-					if (treenode) {
-						treenode.setText(e.value);
-					}
-				}
-				// commit the change to the datastore
-				lore.ore.ui.grid.store.commitChanges();
-			});
-	var proptabs = Ext.getCmp("propertytabs");
-
-	// Fix collapsing so that the grids are hidden properly
-	lore.ore.ui.grid.on('beforecollapse', lore.ore.ui.hideProps);
-	lore.ore.ui.nodegrid.on('beforecollapse', lore.ore.ui.hideProps);
-	lore.ore.ui.grid.on('beforeexpand', lore.ore.ui.showProps);
-	lore.ore.ui.nodegrid.on('beforeexpand', lore.ore.ui.showProps);
-	proptabs.on('beforecollapse', function(p) {
-				lore.debug.ore("beforecollapse");
-				try {
-					p.body.setStyle('display', 'none');
-				} catch (e) {
-					lore.debug.ore("beforecollapse", e);
-				}
-	});
-	proptabs.on('beforeexpand', lore.ore.ui.showProps);
-	proptabs.activate("sourcestree");
-}
-
-/**
  * Initialise the Extjs UI components and listeners
  */
 lore.ore.ui.initUIComponents = function() {
@@ -167,10 +95,8 @@ lore.ore.ui.initUIComponents = function() {
                             xtype: "grapheditor"
 						}, {
 							title : "Resources",
-							xtype : "panel",
-							id : "remlistview",
-							autoScroll : true
-
+							xtype : "summarypanel",
+							id : "remlistview"
 						}, { layout:'fit',
                             id : "remslideview",
                             title: "Slideshow",
@@ -375,165 +301,13 @@ lore.ore.ui.initUIComponents = function() {
 						title : "Properties",
 						id : "properties",
 						items : [{
-							xtype : "editorgrid",
-							clicksToEdit : 1,
-							columnLines : true,
-							store : new Ext.data.JsonStore({
-										idProperty : 'id',
-										fields : [{
-													name : 'id',
-													type : 'string'
-												}, {
-													name : 'name',
-													type : 'string'
-												}, {
-													name : 'value',
-													type : 'auto'
-												}]
-									}),
-							colModel : new Ext.grid.ColumnModel({
-                                        getRenderer: function(col){
-                                            return function (val, meta, rec, ri, ci, s){
-                                                var rv = val;
-                                                if (Ext.isDate(val)){
-                                                    rv = val.format("j M Y, g:ia");
-                                                }
-                                                return Ext.util.Format.htmlEncode(rv);
-                                            }
-                                        },       
-										columns : [{
-													id : 'name',
-													header : 'Property Name',
-													sortable : true,
-													dataIndex : 'name',
-													menuDisabled : true
-												}, {
-													id : 'value',
-													header : 'Value',
-													dataIndex : 'value',
-													menuDisabled : true,
-													editor : /*new Ext.form.TextArea({
-                                                        grow: true,
-                                                        height: 30
-                                                    })*/
-                                                    new Ext.form.TextField()
-													/*
-													 * new
-													 * Ext.form.TriggerField({
-													 * id: "propedittrigger",
-													 * 'triggerClass':
-													 * 'x-form-ellipsis-trigger',
-													 * 'onTriggerClick':
-													 * function(ev) {
-													 * lore.ore.editResDetail(lore.ore.cache.getLoadedCompoundObjectUri(),
-													 * this.gridEditor.record.id,
-													 * this.getValue()); } })
-													 */
-
-												}]
-									}),
-							sm : new Ext.grid.RowSelectionModel({
-										singleSelect : true
-									}),
-							title : 'Compound Object',
-
-							tools : [{
-										id : 'plus',
-										qtip : 'Add a property',
-										handler : lore.ore.ui.addProperty
-									}, {
-										id : 'minus',
-										qtip : 'Remove the selected property',
-										handler : lore.ore.ui.removeProperty
-									}, {
-										id : 'help',
-										qtip : 'Display information about the selected property',
-										handler : lore.ore.ui.helpProperty
-									}],
-							collapsible : true,
-							animCollapse : false,
-							id : "remgrid",
-							autoHeight : true,
-							anchor : "100%",
-							viewConfig : {
-								forceFit : true,
-								scrollOffset : 0
-							}
+                            title : 'Compound Object',
+                            id : "remgrid",
+                            xtype: "propertyeditor"
 						}, {
-							xtype : "editorgrid",
-							clicksToEdit : 1,
-							columnLines : true,
-							store : new Ext.data.JsonStore({
-										idProperty : 'id',
-										fields : [{
-													name : 'id',
-													type : 'string'
-												}, {
-													name : 'name',
-													type : 'string'
-												}, {
-													name : 'value',
-													type : 'auto'
-												}]
-									}),
-							colModel : new Ext.grid.ColumnModel({
-										columns : [{
-													id : 'name',
-													header : 'Property Name',
-													sortable : true,
-													dataIndex : 'name',
-													menuDisabled : true
-												}, {
-													id : 'value',
-													header : 'Value',
-													dataIndex : 'value',
-													menuDisabled : true,
-													/*
-													 * editor: new
-													 * Ext.form.TriggerField({
-													 * id: "propedittrigger",
-													 * 'triggerClass':
-													 * 'x-form-ellipsis-trigger',
-													 * 'onTriggerClick':
-													 * function(ev) {
-													 * 
-													 *  } })
-													 */
-													editor : /*new Ext.form.TextArea({
-                                                        grow: true,
-                                                        height: 30
-                                                    })*/ new Ext.form.TextField()
-												}
-
-										]
-									}),
-							sm : new Ext.grid.RowSelectionModel({
-										singleSelect : true
-									}),
-							title : "Resource/Relationship",
-							id : "nodegrid",
-							autoHeight : true,
-							anchor : "100%",
-							collapsed : true,
-							viewConfig : {
-								forceFit : true,
-								scrollOffset : 0
-							},
-							collapsible : true,
-							animCollapse : false,
-							tools : [{
-										id : 'plus',
-										qtip : 'Add a property',
-										handler : lore.ore.ui.addProperty
-									}, {
-										id : 'minus',
-										qtip : 'Remove the selected property',
-										handler : lore.ore.ui.removeProperty
-									}, {
-										id : 'help',
-										qtip : 'Display information about the selected property',
-										handler : lore.ore.ui.helpProperty
-									}]
+                            title : "Resource/Relationship",
+                            id : "nodegrid",
+                            xtype: "propertyeditor"
 						}]
 					}]
 		}]
@@ -683,8 +457,7 @@ lore.ore.ui.initUIComponents = function() {
 	loreviews.on("contextmenu", function(tabpanel, tab, e) {
 				Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
 	});
-	// summary tab
-	Ext.getCmp("remlistview").on("activate", lore.ore.showCompoundObjectSummary);
+	
 	var rdftab = Ext.getCmp("remrdfview");
 	if (rdftab) {
 		rdftab.on("activate", lore.ore.updateRDFHTML);
@@ -695,7 +468,6 @@ lore.ore.ui.initUIComponents = function() {
 	}
 	
     Ext.getCmp("remslideview").on("activate",lore.ore.showSlideshow);
-    //Ext.getCmp("remnarrativeview").on("activate",lore.ore.showCompoundObjectNarrative);
     
 	var exploretab = Ext.getCmp("remexploreview");
 	var contents = "<script type='text/javascript' src='chrome://lore/content/lib/jit.js'></script>"
@@ -705,6 +477,19 @@ lore.ore.ui.initUIComponents = function() {
 			+ "<div id='infovis'></div>";
 	exploretab.body.update(contents, true);
 	exploretab.on("activate", lore.ore.showExploreUI);
+    
+    var sidetabs = Ext.getCmp("propertytabs");
+    // Fix collapsing
+    sidetabs.on('beforecollapse', function(p) {
+                lore.debug.ore("beforecollapse");
+                try {
+                    p.body.setStyle('display', 'none');
+                } catch (e) {
+                    lore.debug.ore("beforecollapse", e);
+                }
+    });
+    sidetabs.on('beforeexpand', function(p){p.body.setStyle('display','block');});
+    sidetabs.activate("sourcestree");
 	Ext.QuickTips.interceptTitles = true;
 	Ext.QuickTips.init();
 }
@@ -757,12 +542,10 @@ lore.ore.ui.init = function() {
         
 
 		lore.global.ui.compoundObjectView.registerView(lore.ore,window.instanceId);
-        lore.ore.ui.loadPreferences();
+        lore.ore.ui.topView.loadCompoundObjectPrefs();
         lore.ore.initModel();
 		lore.ore.ui.initUIComponents();
-		lore.ore.ui.initProperties();
-
-
+	
 		lore.ore.ui.loreInfo("Welcome to LORE");
 		lore.ore.createCompoundObject();
         
