@@ -170,7 +170,9 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         var fig = this.lookupFigure(theURL);
         if (fig) {
             Ext.getCmp("loreviews").activate(this.id);
+            this.coGraph.showMask();
             this.coGraph.scrollTo(fig.x, fig.y);
+            this.coGraph.hideMask();
         }
    },
    /**
