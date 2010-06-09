@@ -58,7 +58,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                         "dc:title_0" : data.node.text
                     }
                 };
-                ge.addFigureWithOpts(figopts);
+                ge.addFigure(figopts);
                 return true;
             };
         }
@@ -174,33 +174,23 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         }
    },
    /**
-     * Add a node figure to the graphical view to represent a resource using automatic layout
-     * 
-     * @param {} theURL The URL of the resource to be represented by the node
-     */
-   addFigure : function(theURL,props) {
-        lore.debug.ore("add figure props are",props);
-        var fig = this.addFigureWithOpts({
-            "url": lore.global.util.preEncode(theURL), 
-            "x": this.dummylayoutx,
-            "y": this.dummylayouty,
-            "props": props
-        });
-        this.scrollToFigure(theURL);
-        return fig;
-   },
-   /**
-    * Add a node figure with options
+    * Add a figure to represent a resource to the graphical editor
     * @param {} theURL
     * @param {} opts The options
     * @return {}
     */
-   addFigureWithOpts : function(opts) {
+   addFigure : function(opts) {
         var fig = null;
-        var theURL = opts.url;
+        var theURL = lore.global.util.preEncode(opts.url);
         opts.props = opts.props || {};
-        if (!opts.loaded && !(opts.props["dc:title_0"] || opts.props["dcterms:title_0"])){ 
-            // dodgy way of determining if this is a new CO
+        if (!opts.x){
+            opts.x = this.dummylayoutx;
+        }
+        if (!opts.y){
+            opts.y = this.dummylayouty;
+        }
+        if (!opts.batch && !(opts.props["dc:title_0"] || opts.props["dcterms:title_0"])){ 
+            // dodgy way of determining if this is a new node
             try{
             // Try getting the page title from the browser history: 
             // getting it from the history avoids any problems with 
@@ -233,7 +223,12 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                 fig.setProperty("rdf:type_0",opts.rdftype);
             }
             fig.setContent(theURL);
-            this.coGraph.addResourceFigure(fig, opts.x, opts.y);
+            if (opts.batch){
+                this.coGraph.addFigure(fig, opts.x, opts.y);
+            } else {
+                // adds to undo stack
+                this.coGraph.addResourceFigure(fig, opts.x, opts.y);
+            }
             this.lookup[theURL] = fig.getId();
             /*
              * TODO: add to model
@@ -246,6 +241,12 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         }
         if (fig){
             this.nextXY(opts.x,opts.y);
+        }
+        if (!opts.batch){
+            this.scrollToFigure(theURL);
+            // reset drawing area size
+            this.coGraph.showMask();
+            this.coGraph.hideMask();
         }
         return fig;
     },

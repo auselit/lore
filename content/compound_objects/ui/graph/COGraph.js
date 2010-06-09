@@ -118,10 +118,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         this.mask.style.display="none";
     },
     /** 
-     * Resizes the drawingarea and mask
+     * Resizes the drawing area and mask
      * @private */
     resizeMask : function () {
-        // set drawingarea back to 100% before getting scroll values - 
+        // set drawing area back to 100% before getting scroll values - 
         // allowing scroll area to shrink to content
         this.html.style.width = "100%";
         this.html.style.height = "100%";
