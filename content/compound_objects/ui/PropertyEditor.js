@@ -260,7 +260,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
                 if (selfig instanceof lore.ore.ui.graph.ContextmenuConnection){
                     if (args.record.data.name == 'relationship'){ 
-                        selfig.setRelationshipType(
+                        selfig.setRelationship(
                             lore.ore.getPropertyValue("namespace",lore.ore.ui.nodegrid),args.value);
                     }
                 } else { // Resource property

@@ -46,6 +46,11 @@ lore.ore.ui.graph.ContextmenuConnection=function() {
 };
 
 lore.ore.ui.graph.ContextmenuConnection.prototype=new draw2d.Connection;
+
+/** Set relationship with undo support */
+lore.ore.ui.graph.ContextmenuConnection.prototype.setRelationship = function(enamespace, etype, symmetric) {
+    this.workflow.getCommandStack().execute(new lore.ore.ui.graph.CommandSetRelationship(this, enamespace, etype, symmetric));
+};
 /**
  * Update the type of relationship that the connection represents
  * @param {} enamespace
@@ -55,6 +60,7 @@ lore.ore.ui.graph.ContextmenuConnection.prototype=new draw2d.Connection;
 lore.ore.ui.graph.ContextmenuConnection.prototype.setRelationshipType=function(enamespace, etype, symmetric) {
 	this.edgetype=etype;
 	this.edgens=enamespace;
+    this.symmetric = symmetric;
 	this.label.setText(etype);
     try {
 	    if (symmetric) {
@@ -98,7 +104,7 @@ lore.ore.ui.graph.ContextmenuConnection.prototype.getContextMenu=function() {
 	            var symmquery = lore.ore.relOntology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
 	                .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
 		        var symm = symmquery.length > 0;
-				var functionstr = "lore.ore.ui.graphicalEditor.getSelectedFigure().setRelationshipType(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
+				var functionstr = "lore.ore.ui.graphicalEditor.getSelectedFigure().setRelationship(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
 		 		lore.ore.ui.graph.ContextmenuConnection.contextMenu.appendMenuItem(new draw2d.MenuItem(rel,null,new Function(functionstr)));
 		 	}
 	        lore.ore.ui.graph.ContextmenuConnection.loadedOntology = lore.ore.onturl;
