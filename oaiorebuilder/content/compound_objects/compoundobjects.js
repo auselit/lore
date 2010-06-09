@@ -398,7 +398,7 @@ lore.ore.onHide = function () {
  */
 lore.ore.addResource = function (/*URL*/theURL, props) {
     // TODO: #34 MVC:  make it add to model and get view to listen on model
-	lore.ore.ui.graphicalEditor.addFigure(lore.global.util.preEncode(theURL), props);
+	lore.ore.ui.graphicalEditor.addFigure({url:theURL, props: props});
 };
 
 /**
@@ -443,9 +443,9 @@ lore.ore.ui.dragDrop = function(aEvent){
             if (sntitle){
                 figopts.props = {"dc:title_0": sntitle};
             }
-            lore.ore.ui.graphicalEditor.addFigureWithOpts(figopts);
+            lore.ore.ui.graphicalEditor.addFigure(figopts);
         } else if (sn instanceof HTMLImageElement){
-            lore.ore.ui.graphicalEditor.addFigure(sn.src);
+            lore.ore.ui.graphicalEditor.addFigure({url:sn.src});
         }
         return;
     }
@@ -1050,9 +1050,8 @@ lore.ore.loadCompoundObject = function (rdf) {
             .each(function(){
              var resourceURL = this.url.value.toString(); 
              var fig;
-             
+             var opts = {batch: true, url: resourceURL};
              if (this.x && this.y) {
-                var opts = {loaded: true};
                 for (prop in this) {
                     if (prop != 'url' && prop != 'format' && prop != 'rdftype' && prop != 'title'){
                         opts[prop] = parseInt(this[prop].value);
@@ -1066,11 +1065,9 @@ lore.ore.loadCompoundObject = function (rdf) {
                 if (opts.y < 0) {
                     opts.y = 0;
                 }
-                fig = lore.ore.ui.graphicalEditor.addFigureWithOpts(opts);
-             } else {
-                // TODO: change to use opts but allow x,y etc to be optional
-                fig = lore.ore.ui.graphicalEditor.addFigure(resourceURL);
              } 
+             fig = lore.ore.ui.graphicalEditor.addFigure(opts);
+             
         });
         
         // iterate over all predicates to create node connections and properties

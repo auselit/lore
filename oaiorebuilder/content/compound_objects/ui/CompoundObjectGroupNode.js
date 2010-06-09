@@ -167,9 +167,10 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
                     text : "Add as nested compound object",
                     iconCls: "add-icon",
                     handler : function(evt) {
-                        lore.ore.ui.graphicalEditor.addFigure(node.attributes.uri,{
+                        lore.ore.ui.graphicalEditor.addFigure({url:node.attributes.uri,
+                            props:{
                             "rdf:type_0": lore.constants.RESOURCE_MAP,
-                            "dc:title_0": node.text});
+                            "dc:title_0": node.text}});
                     }
                 });
                 node.contextmenu.add({
