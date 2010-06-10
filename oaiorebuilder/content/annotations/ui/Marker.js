@@ -43,7 +43,7 @@ lore.anno.ui.Marker.prototype = {
 	/**
 	* Highlight the marker  
 	* @param {Colour} colour Colour of the highlighting border
-	* @param {Function} styleCallback Callback function to override how the highlighting is performed
+	* @param {Function} style Callback Callback function to override how the highlighting is performed
 	* @param {Boolean} scroll Specify whether to scroll to the highlighted DOM element defaults to false
 	*/
 	show : function (colour, styleCallback, scroll) {
@@ -80,6 +80,7 @@ lore.anno.ui.Marker.prototype = {
 				
 				// if not string, then RDFa data
 				if (typeof(this.xpointer) != 'string' ) {
+					lore.debug.anno("Marker.show()", {xpointer:this.xpointer});
 					this.data = {};
 					 
 					if ( this.page.rdfa) {
@@ -191,14 +192,13 @@ lore.anno.ui.Marker.prototype = {
 			var uid = annodata.id;
 			
 			// generate the tooltip contents
-			var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" + annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" + lore.global.util.splitTerm(annodata.type).term +
-			" by " +
-			annodata.creator +
-			"<br />";
+			var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" 
+				+ annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" 
+				+ lore.global.util.splitTerm(annodata.type).term + " by "
+				+ annodata.creator + "<br />";
 			desc += "<div style='max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
 			desc += lore.anno.ui.genDescription(annodata, true);
 			desc += '</div>';
-			//desc += lore.anno.ui.genDescription(annodata, true);
 			var d = lore.global.util.longDate(annodata.created, Date);
 			desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
 			var descDom = doc.createElement("span");
