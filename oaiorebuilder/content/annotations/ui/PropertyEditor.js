@@ -54,7 +54,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 									id : 'name',
 									header : 'Property Name',
 									sortable : true,
-									renderer : this.shortName,
+//									renderer : this.shortName,
 									dataIndex : 'name',
 									menuDisabled : true
 								}, {
@@ -114,20 +114,21 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	        var props = panel.propertiesList;
 		    for (var i = 0; i < props.length; i++) {
 	            var propname = props[i];
+	            var pstore = panel.getStore();
 	            panel.propMenu.add({
 	                id: panel.id + "-add-" + propname,
-	                text: panel.shortName(propname),
+	                text: propname,
 	                handler: function () {
 	                    try{
-	                        var pstore = panel.getStore();
 	                        var counter = 0;
-	                        var prop = pstore.getById(propname + "_" + counter);
+	                        var prop = pstore.getById(this.text + "_" + counter);
+	                        
 	                        while (prop) {
 	                            counter = counter + 1;
-	                            prop = pstore.getById(propname + "_" + counter);
+	                            prop = pstore.getById(this.text + "_" + counter);
 	                        }
-	                        var theid = propname + "_" + counter;
-	                        pstore.loadData([{id: theid, name: propname, value: ""}],true);
+	                        var theid = this.text + "_" + counter;
+	                        pstore.loadData([{id: theid, name: this.text, value: ""}],true);
 	                        
 	                    } catch (ex){
 	                        lore.debug.anno("exception adding prop " + this.text,ex);
@@ -136,8 +137,9 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	            });
 		    }
 		};
-	    if (!panel.propMenu) {
+	    if (!panel.propMenu || panel.propertiesListChanged) {
 	        makeAddMenu(panel);
+	        this.propertiesListChanged = false;
 	    }
 	    panel.propMenu.showAt(ev.xy);
 	},
@@ -183,19 +185,24 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	    }
 	},
 	
-	
-	setObjectType: function (onturl) {
+	/**
+	 * Set the type of object we are editing the metadata for, restricting the
+	 * list of properties that can be added.
+	 * @param {} onturl 
+	 */
+	setObjectType: function (onturl, object) {
 		var tthis = this;
 		this.loadOntology(onturl, function callback(ontology) {
-			lore.debug.anno('loadOntology callback', ontology);
+			lore.debug.anno('loadOntology callback', {ontology:ontology,object:object});
 			tthis.propertiesList = [];
 			tthis.ontology = ontology;
 			
-			ontology.where('?prop rdfs:domain <http://austlit.edu.au/owl/austlitore.owl#Agent>')
+			ontology.where('?prop rdfs:domain <' + object + '>')
 				.each(function () {
 					var name = this.prop.value.toString();
-					tthis.propertiesList.push(name);
+					tthis.propertiesList.push(name.replace(lore.constants.NAMESPACES['austlit'], ''));
 			});
+			tthis.propertiesListChanged = true;
 		});
 		lore.debug.anno('setObjectType', {props: tthis.propertiesList});
 	},
@@ -207,7 +214,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	 */
 	shortName: function (longName) {
 		// TODO: actually do this for all the namespaces we know about!
-		return longName.replace(lore.constants.NAMESPACES['austlitore'], 'austlitore:');
+		return longName.replace(lore.constants.NAMESPACES['austlit'], '');
 	},
 	
 	/**
