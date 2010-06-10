@@ -41,6 +41,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	this.setDimension(220, 170);
     var title = this.metadataproperties["dc:title_0"] || this.metadataproperties["dcterms:title_0"];
     this.setTitle((title? title : 'Resource'));
+    this.hasPreview = false;
 };
 
 lore.ore.ui.graph.ResourceFigure.prototype = new draw2d.Node;
@@ -190,7 +191,6 @@ lore.ore.ui.graph.ResourceFigure.prototype.setContent = function(urlparam) {
 	}
 	this.setResourceURL(theurl);
 	this.setMimeType(theurl);
-    //this.setRdfType(theurl);
 };
 /**
  * Loads the content URL into the preview area
@@ -200,6 +200,11 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
 	var mimetype = this.metadataproperties["dc:format_0"];
     var rdftype = this.metadataproperties["rdf:type_0"];
     this.setIcon(theurl);
+    if (this.hasPreview){
+        lore.debug.ore("Regenerating node preview " + this.url,this);
+    } else {
+        this.hasPreview = true;
+    }
     if (rdftype && rdftype.match("ResourceMap")) {
             this.iframearea.innerHTML = "<div class='orelink' id='"
                     + this.id
@@ -546,6 +551,7 @@ lore.ore.ui.graph.clearFields = function() {
  * @param {} pval The value of the property
  */
 lore.ore.ui.graph.ResourceFigure.prototype.appendProperty = function(pname, pval){
+    lore.debug.ore("appendProperty " + this.url,this);
     var counter = 0;
     var oldrdftype = this.metadataproperties["rdf:type_0"];
     var prop = this.metadataproperties[pname + "_" + counter];
@@ -554,8 +560,8 @@ lore.ore.ui.graph.ResourceFigure.prototype.appendProperty = function(pname, pval
         prop = this.metadataproperties[pname + "_" + counter];
     }
     this.metadataproperties[(pname + "_" + counter)] = pval;
-    // if the rdf:type has changed, call show content (as it might be an annotation or compound object
-    if (oldrdftype != pval){
+    // if the rdf:type has changed, regenerate preview (as it might be an annotation or compound object
+    if (oldrdftype != pval && this.hasPreview){
         this.showContent();
     }
 };
