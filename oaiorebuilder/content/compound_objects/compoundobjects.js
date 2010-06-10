@@ -973,6 +973,7 @@ lore.ore.loadCompoundObjectFail = function (resp,opt){
  * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
  */
 lore.ore.loadCompoundObject = function (rdf) {
+    lore.debug.startTiming();
     var showInHistory = false;
     try {
         // reset the graphical view
@@ -986,7 +987,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             showInHistory = true;
             rdfDoc = rdf.responseXML;
         }
-        
+        //lore.debug.timeElapsed("creating databank");
 	    var databank = jQuery.rdf.databank();
         for (ns in lore.constants.NAMESPACES){
             databank.prefix(ns,lore.constants.NAMESPACES[ns]);
@@ -999,13 +1000,15 @@ lore.ore.loadCompoundObject = function (rdf) {
         var aggreurl, remurl;
         var res = remQuery.get(0);
         
+        
+        
         if (res){
 	       remurl = res.rem.value.toString();
            aggreurl = res.aggre.value.toString();
            var tmpCO = new lore.ore.model.CompoundObject();
            tmpCO.load({format: 'application/rdf+xml',content:rdfDoc}); 
-           lore.debug.ore("CO model is",tmpCO);
-   
+           lore.debug.ore("CO model is ",tmpCO);
+           //lore.debug.timeElapsed("Loaded model");
             //lore.debug.ore("CO model is same as self? " + Ext.ux.util.Object.compare(tmpCO,tmpCO2),tmpCO2);
        
            lore.ore.cache.add(remurl, tmpCO);
@@ -1016,6 +1019,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             lore.debug.ore("the input rdf was",rdf); 
         }
         // TODO: listen to model object
+        //lore.debug.timeElapsed("loading into grid ");
 	    lore.ore.ui.grid.store.loadData([
             {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: remurl}
 	    ]);
@@ -1034,7 +1038,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                 }
             });
  
-         
+        //lore.debug.timeElapsed("create figure for each resource ");
         // create a node figure for each aggregated resource, restoring the layout
         loadedRDF.where('<' + aggreurl  + '> ore:aggregates ?url')
             .optional('?url layout:x ?x')
@@ -1069,7 +1073,7 @@ lore.ore.loadCompoundObject = function (rdf) {
              fig = lore.ore.ui.graphicalEditor.addFigure(opts);
              
         });
-        
+        //lore.debug.timeElapsed("iterate over predicates to create props and rels ");
         // iterate over all predicates to create node connections and properties
         loadedRDF.where('?subj ?pred ?obj')
             .filter(function(){
@@ -1087,6 +1091,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             .each(function(){  
                 // try to find a node that this predicate applies to 
                 var subject = this.subj.value.toString();
+                var coGraph = lore.ore.ui.graphicalEditor.coGraph;
                 var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
                 if (!srcfig) {
                     // TODO: fix this as now preEncode is called - implement unPreEncode or something
@@ -1099,21 +1104,30 @@ lore.ore.loadCompoundObject = function (rdf) {
 
                     var obj = this.obj.value.toString();
                     var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
-                    if (!tgtfig) {
+                    /*if (!tgtfig) {
                         tgtfig = lore.ore.ui.graphicalEditor
                             .lookupFigure(lore.global.util.unescapeHTML(obj.replace(
                                         '%3C', '<').replace('%3F', '>')));
-                    }
+                    }*/
                     if (tgtfig && (srcfig != tgtfig)) { // this is a connection
+                        lore.debug.ore("processing connection " + relresult.term,[tgtfig, srcfig]);
+                        lore.debug.timeElapsed("connection 1");
                         try {
                         var c = new lore.ore.ui.graph.ContextmenuConnection();
+                        //lore.debug.timeElapsed("connection 2");
                         var srcPort = srcfig.getPort("output");
+                        //lore.debug.timeElapsed("connection 3");
                         var tgtPort = tgtfig.getPort("input");
+                        //lore.debug.timeElapsed("connection 4");
                         if (srcPort && tgtPort){
                             c.setSource(srcPort);
+                           // lore.debug.timeElapsed("connection 5");
                             c.setTarget(tgtPort);
+                            //lore.debug.timeElapsed("connection 6");
                             c.setRelationshipType(relresult.ns, relresult.term);
-                            lore.ore.ui.graphicalEditor.coGraph.addFigure(c);
+                            //lore.debug.timeElapsed("connection 7");
+                            coGraph.addFigure(c);
+                            lore.debug.timeElapsed("connection 8");
                         }
                         else {
                             throw "source or target port not defined";
@@ -1124,6 +1138,8 @@ lore.ore.loadCompoundObject = function (rdf) {
                         }
                         
                     } else  { 
+                        //lore.debug.ore("processing property " + relresult.term,srcfig);
+                        //lore.debug.timeElapsed("prop");
                         // not a node relationship, show in the property grid 
                         srcfig.appendProperty(lore.ore.nsprefix(relresult.ns) + ":" + relresult.term, obj);
                         if (relresult.term == "title") {
@@ -1134,7 +1150,7 @@ lore.ore.loadCompoundObject = function (rdf) {
                 }
             }
         );
-
+        //lore.debug.timeElapsed("hide/show mask ");
         // FIXME: #210 Temporary workaround to set drawing area size on load
         // problem still exists if a node is added that extends the boundaries
         lore.ore.ui.graphicalEditor.coGraph.showMask();
@@ -1142,13 +1158,14 @@ lore.ore.loadCompoundObject = function (rdf) {
         
         lore.ore.ui.loreInfo("Loading compound object");
         Ext.Msg.hide();
-        
+        //lore.debug.timeElapsed("set loaded in cache ");
         try{
             lore.ore.cache.setLoadedCompoundObjectUri(remurl);
         } catch (e){
             lore.debug.ore("problem",e);
         }
-        lore.ore.populateResourceDetailsCombo();
+        //lore.ore.populateResourceDetailsCombo();
+       //lore.debug.timeElapsed("show in history");
        if (showInHistory){
 	        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) ||
                 lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
@@ -1162,6 +1179,7 @@ lore.ore.loadCompoundObject = function (rdf) {
        } else {
             lore.ore.ui.topView.hideAddIcon(false);
        }
+       //lore.debug.timeElapsed("done");
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
         lore.debug.ore("exception loading RDF from string",e);
@@ -1292,6 +1310,14 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
         title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
             || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
     }
+    if(!remid.match(lore.ore.reposAdapter.idPrefix)){
+        Ext.Msg.show({
+            title: "Delete disabled",
+            msg: "Deletion is disabled for this compound object because it is from a different repository than your default repository. <br><br>To enable deletion for this compound object, please change the <i>Repository Acess URL</i> in the Compound Objects preferences.",
+            buttons: Ext.MessageBox.OK
+        });
+        return;
+    }
     Ext.Msg.show({
         title : 'Remove Compound Object',
         buttons : Ext.MessageBox.OKCANCEL,
@@ -1348,6 +1374,14 @@ lore.ore.saveRDFToRepository = function(callback) {
     var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
         || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid) 
         || "Untitled";
+    if(!remid.match(lore.ore.reposAdapter.idPrefix)){
+        Ext.Msg.show({
+            title: "Save disabled",
+            msg: "Saving is disabled for this compound object because it is from a different repository than your default repository. <br><br>To enable saving for this compound object, please change the <i>Repository Acess URL</i> in the Compound Objects preferences.",
+            buttons: Ext.MessageBox.OK
+        });
+        return;
+    }
     Ext.Msg.show({
         title : 'Save RDF',
         buttons : Ext.MessageBox.OKCANCEL,
@@ -1355,11 +1389,6 @@ lore.ore.saveRDFToRepository = function(callback) {
         fn : function(btn, theurl) {
             if (btn == 'ok') {
                 var therdf = lore.ore.createRDF(false);
-                /*if (lore.ore.reposURL && lore.ore.reposType == 'sesame') { 
-                    lore.ore.sesame.saveCompoundObject(remid,therdf);
-                } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora') {
-                    //lore.ore.fedora.createCompoundObject(remid,therdf);
-                }*/
                 lore.ore.reposAdapter.saveCompoundObject(remid,therdf,lore.ore.afterSaveCompoundObject);
             }
         }
