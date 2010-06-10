@@ -119,6 +119,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					}, {
 						fieldLabel: 'Creator',
 						name: 'creator',
+						allowBlank: false,
 						id: this.genID("creator")
 						
 					}, {
