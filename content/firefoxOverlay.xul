@@ -93,7 +93,8 @@
         </xul:toolbar>
       </xul:toolbox>
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
-      <xul:iframe context="clipmenu" tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
+      <!-- context="clipmenu" -->
+      <xul:iframe  tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
     
          
@@ -126,13 +127,13 @@
     </xul:statusbarpanel>
   </xul:statusbar>
 
-  <xul:popupset> 
+  <!--xul:popupset> 
         <xul:menupopup id="clipmenu" onpopupshown="loreoverlay.onMenuPopupExt(event)">
             <xul:menuitem id="clip-copy" label="Copy" command="cmd_copy"/>
             <xul:menuitem id="clip-cut" label="Cut" command="cmd_cut"/>
             <xul:menuitem id="clip-paste" label="Paste" command="cmd_paste"/>
         </xul:menupopup>
-  </xul:popupset>
+  </xul:popupset-->
   <xul:hbox id="urlbar-icons">
         <xul:image src="chrome://lore/skin/icons/ore_add.png" id="ore-add-icon" tooltiptext="&lore.addNodeTip;"  onclick="loreoverlay.addGraphNode();" position="1" hidden="false"/>
         <xul:image src="chrome://lore/skin/icons/ore_added.png" id="ore-added-icon" tooltiptext="&lore.addedNodeTip;"  onclick="loreoverlay.toggleBar(true);" position="1" hidden="true"/>
