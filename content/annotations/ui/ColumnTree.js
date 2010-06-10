@@ -341,106 +341,103 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
  * @extends lore.anno.ui.ColumnTree
  */
 lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
-		
-		initComponent: function(){
-      	  	try {
-				
-				var cmbname = this.genID("sorttypecombo");
-				
-				this.sorttypecombo = new Ext.form.ComboBox({
-					xtype: "combo",
-					editable: false,
-					store: new Ext.data.SimpleStore({
-						fields: ['type', 'typename', 'direction'],
-						data: [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
-							   ['creator', 'Creator(Ascending)', 'asc'], ['creator', 'Creator(Descending)', 'desc'],
-							   ['created', 'Creation Date(Ascending)','asc'], ['created', 'Creation Date(Descending)', 'desc'],
-							   ['modified','Modified Date(Ascending)', 'asc' ],['modified','Modified Date(Descending)', 'desc' ],
-							   ['type', 'Type(Ascending)', 'asc'],['type', 'Type(Descending)','desc']]
-					}),
-					valueField: 'typename',
-					displayField: 'typename',
-					//emptyText: "Sort by...",
-					emptyText: 'A-Z',
-					triggerAction: 'all',
-					mode: 'local',
-					forceSelection: true
-				});
-					
-					
-				Ext.apply(this, {
-					animate    	: false,
-		          	autoScroll	: true,
-					rootVisible: false,
-					containerScroll: true,
-					split: true,
-					border: false,
-					pathSeparator: " ",
-					root: new Ext.tree.TreeNode({
-						'draggable': false
-					}),
-					columns		: [{
-								'header': "Annotations",
-								'width': 260
-								}, {
-								'header': "Views",
-								'width': 80,
-								'links':true
-								}],
-								
-					header: true,
-					dropConfig: {
-						appendOnly: true
-					},
-					bbar: {
-						xtype: 'toolbar', 
-						items: [ this.sorttypecombo	]
-					}
-				});
-				
-				lore.anno.ui.AnnoColumnTree.superclass.initComponent.apply(this, arguments);
-				
-				this.addEvents("sortchange");
-				this.addTreeSorter('created', 'asc');
-				this.sorttypecombo.on("select", this.handleSortTypeChange, this);
-				
-				
-			} catch(e){
-				lore.debug.anno("AnnoColumnTree:initComponent() - " + e, e);
-			}
-		},
-		/**
-		 * Handler for sorting combo, set sorting field and direction
-		 * based off the combo selection
-		 * @param {Object} combo
-		 * @param {Object} rec
-		 * @param {Object} index
-		 */
-		handleSortTypeChange : function (combo, rec, index) {
-			try {
-				this.treesorter = {
-					sortField : rec.data.type,
-					direction  : rec.data.direction
+	initComponent: function() {
+  	  	try {
+			var cmbname = this.genID("sorttypecombo");
+			
+			this.sorttypecombo = new Ext.form.ComboBox({
+				xtype: "combo",
+				editable: false,
+				store: new Ext.data.SimpleStore({
+					fields: ['type', 'typename', 'direction'],
+					data: [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
+						   ['creator', 'Creator(Ascending)', 'asc'], ['creator', 'Creator(Descending)', 'desc'],
+						   ['created', 'Creation Date(Ascending)','asc'], ['created', 'Creation Date(Descending)', 'desc'],
+						   ['modified','Modified Date(Ascending)', 'asc' ],['modified','Modified Date(Descending)', 'desc' ],
+						   ['type', 'Type(Ascending)', 'asc'],['type', 'Type(Descending)','desc']]
+				}),
+				valueField: 'typename',
+				displayField: 'typename',
+				//emptyText: "Sort by...",
+				emptyText: 'A-Z',
+				triggerAction: 'all',
+				mode: 'local',
+				forceSelection: true
+			});
+			
+			Ext.apply(this, {
+				animate    	: false,
+	          	autoScroll	: true,
+				rootVisible: false,
+				containerScroll: true,
+				split: true,
+				border: false,
+				pathSeparator: " ",
+				root: new Ext.tree.TreeNode({
+					'draggable': false
+				}),
+				columns		: [{
+							'header': "Annotations",
+							'width': 260
+							}, {
+							'header': "Views",
+							'width': 80,
+							'links':true
+							}],
+							
+				header: true,
+				dropConfig: {
+					appendOnly: true
+				},
+				bbar: {
+					xtype: 'toolbar', 
+					items: [ this.sorttypecombo	]
 				}
-				
-				this.fireEvent("sortchange", this, this.getRootNode().firstChild);
-			} catch (e ) {
-				lore.debug.anno("Error occurred changing sort type: " + e,e);
+			});
+			
+			lore.anno.ui.AnnoColumnTree.superclass.initComponent.apply(this, arguments);
+			
+			this.addEvents("sortchange");
+			this.addTreeSorter('created', 'asc');
+			this.sorttypecombo.on("select", this.handleSortTypeChange, this);
+			
+			
+		} catch(e){
+			lore.debug.anno("AnnoColumnTree:initComponent() - " + e, e);
+		}
+	},
+	
+	/**
+	 * Handler for sorting combo, set sorting field and direction
+	 * based off the combo selection
+	 * @param {Object} combo
+	 * @param {Object} rec
+	 * @param {Object} index
+	 */
+	handleSortTypeChange : function (combo, rec, index) {
+		try {
+			this.treesorter = {
+				sortField : rec.data.type,
+				direction  : rec.data.direction
 			}
 			
-		},
+			this.fireEvent("sortchange", this, this.getRootNode().firstChild);
+		} catch (e ) {
+			lore.debug.anno("Error occurred changing sort type: " + e,e);
+		}
 		
-		refresh : function () {
-			
-		},
+	},
+	
+	refresh : function () {
+		
+	},
 	
 	/**
 	 * Add sorting event handlers
 	 * @param {Object} field Field to sort on
 	 * @param {String} direction The direction, 'asc' or 'desc'
 	 */	
-   	addTreeSorter: function(field, direction){
-			
+   	addTreeSorter: function(field, direction) {
 		  var ts = this.treesorter = {
 				sortField: field,
 				direction: direction
@@ -464,7 +461,6 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
 			
 			// compare two nodes and return positive depending on node1's value compared to node2's
 			var sortFn = function(n1, n2){
-
 				try {
 					if (n1.attributes["leaf"] && !n2.attributes["leaf"]) {
 						return 1;
@@ -498,11 +494,6 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
 			   node.sort(sortFn);
     		}
 			
-			// compare node text
-			//var compareNodes = function(n1, n2){
-        	//	return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
-    		//}
-    
     		var updateSort  = function(tree, node){
         		if(node.childrenRendered){
             		doSort.defer(1, this, [node]);
@@ -726,7 +717,6 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 		
 		
 	handleUpdate : function(store, rec, operation){
-			
 			try {
 				var node = lore.anno.ui.findNode(rec.data.id + this.postfix, this);
 				
