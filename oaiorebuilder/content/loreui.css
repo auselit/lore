@@ -360,7 +360,7 @@
 #delannobtn .x-btn-center .x-btn-text {
 	color:red;
 }
-#updctxtbtn, #updrctxtbtn, #addmetabtn, #remmetabtn, #chgmetactxbtn {
+#updctxtbtn, #addmetabtn, #remmetabtn, #chgmetactxbtn {
     width:70px !important;
     margin-left:auto;margin-right:13px;
     margin-bottom:3px;margin-top:3px;
