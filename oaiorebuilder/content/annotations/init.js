@@ -539,10 +539,11 @@ lore.anno.ui.attachContextMenus = function () {
 		handler: lore.anno.ui.handleAddResultsToCO
 	});
     grid.contextmenu.add({
-       text: "View annotation/s in browser",
-       handler: lore.anno.ui.handleViewAnnotationInBrowser
+    	text: "View annotation/s in browser",
+		handler: lore.anno.ui.handleViewAnnotationInBrowser
     });
-	grid.on('contextmenu', function(e) {
+	grid.on('rowcontextmenu', function(scope, rowIndex, e) {
+		grid.contextmenu.clickedRow = rowIndex;
 		grid.contextmenu.showAt(e.xy);
 	});
 }
