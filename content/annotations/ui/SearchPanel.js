@@ -195,7 +195,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 						this.sform.reset();
 					}, this);
 			
-			this.sgrid.on('rowdblclick', function searchLaunchTab(grid, rowIndex, event) {
+			this.sgrid.on('rowclick', function searchLaunchTab(grid, rowIndex, event) {
 				var record = grid.getStore().getAt(rowIndex);
 				lore.global.util.launchTab(record.data.resource);
 			});
