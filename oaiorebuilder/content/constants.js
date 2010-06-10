@@ -49,7 +49,9 @@ constants = {
         "http"    : "http://www.w3.org/1999/xx/http#",
         "xsd"     : "http://www.w3.org/2001/XMLSchema#",
         "oac"     : "http://www.openannotation.org/ns/",
-        "owl"     : "http://www.w3.org/2002/07/owl#"
+        "owl"     : "http://www.w3.org/2002/07/owl#",
+        "rdfs"    : "http://www.w3.org/2000/01/rdf-schema#",
+        "austlit" : "http://austlit.edu.au/owl/austlit.owl#"
     },
     
     // RDF/OWL
