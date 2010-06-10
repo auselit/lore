@@ -95,6 +95,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 		try {
 			Ext.apply(this, gridpanelconfig);
 
+			this.propertiesList = [];
 			lore.anno.ui.PropertyEditor.superclass.initComponent.apply(this, arguments);
 
 		} catch (e) {
@@ -106,6 +107,10 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	/** Handler for plus tool button on property grids */
 	addProperty: function (ev, toolEl, panel) {
+		if (panel.propertiesList.length === 0) {
+			lore.anno.ui.loreInfo("Make a semantic selection before adding metadata");
+			return;
+		}
 	    var makeAddMenu  = function(panel){
 		    panel.propMenu = new Ext.menu.Menu({
 		        id: panel.id + "-add-metadata"
@@ -194,7 +199,6 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 		var tthis = this;
 		this.loadOntology(onturl, function callback(ontology) {
 			lore.debug.anno('loadOntology callback', {ontology:ontology,object:object});
-			tthis.propertiesList = [];
 			tthis.ontology = ontology;
 			
 			ontology.where('?prop rdfs:domain <' + object + '>')

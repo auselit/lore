@@ -42,7 +42,7 @@ lore.anno.ui.RDFaManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} contentWindow
 	 */
 	load: function (contentWindow ){
-		// add check for store, and get cached RDFA
+		// TODO: add check for store, and get cached RDFA
 		if (!this.page.rdfa.triples) {
 			this.gleanRDFa(contentWindow.document);
 			this.fireEvent('rdfaloaded');
@@ -67,7 +67,7 @@ lore.anno.ui.RDFaManager = Ext.extend(Ext.util.Observable, {
 		}catch (e) {
 			lore.debug.anno("Error gleaning potential rdfa from page: " +e , e);
 		}
-	},
+	}
 	
 	// current not used
 	/*isRDFaEnabled : function (doc) {

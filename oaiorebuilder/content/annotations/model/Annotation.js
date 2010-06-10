@@ -42,9 +42,10 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 		 * of class
 		 * @constructor
 		 * @param {String} rdf The RDF
+		 * @param {XMlDoc} xmldoc The complete document, used for grabbing unnamed RDF sets
 		 * @param {Boolean} bodyEmbedded Whether the body value is embedded in the RDF or simply a URL to the body 
 		 */
-		constructor: function(rdf, bodyEmbedded){
+		constructor: function(rdf, xmldoc, bodyEmbedded){
 		
 		if (!rdf)
 			return; 
@@ -55,7 +56,6 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
          * The wrappered rdf
 		 */
 		this.rdf = rdf;
-		
 		try {
 			attr = rdf.getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'about');
 			if (attr) {
@@ -63,6 +63,12 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                  * Annotation URI (identifier)
                  */
 				this.id = attr.nodeValue;
+			} else {
+				var nodeID = rdf.getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'nodeID');
+				if (nodeID) {
+					// Not an Annotea Annotation
+					return;
+				}
 			}
 			var isReply = false;
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'type');
@@ -177,8 +183,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			this.meta = { context: null, fields: []};
 			if (this.isReply) {
 				this.context = '';
-			}
-			else {
+			} else {
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'context');
                 /** @property context
                  * From Annotea context
@@ -195,36 +200,55 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 					
 				}
 				//TODO: #194 - Enable code to read in semantic facts added, once changes to backend and UI have been done
-				/*node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta');
+//				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'semantic-context');
+//				if (node && node.length > 0) {
+//					this.semantictriple = {};
+//					
+//					var node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'subject');
+//					this.semantictriple.subject = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
+//					
+//					node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'predicate');
+//					this.semantictriple.property = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
+//					
+//					node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'object');
+//					this.semantictriple.object = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
+//				}
+				
+				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'metadata');
 				if (node && node.length > 0) {
-					lore.debug.anno(node.childNodes, node.childNodes);
-					if (node.childNodes) {
-						for (var i = 0; i < node.childNodes.length; i++) {
+					this.meta = [];
+					
+					var nodeID = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID');
+
+					lore.debug.anno('found metadata, looking for nodeID ' + nodeID, {xmldoc:xmldoc});
+					function getNodeID(xmldoc, nodeID) {
+						var matchingNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 						
-							var n = node.childNodes[i];
-							lore.debug.anno(n, n);
-							var type = n.getAttribute("typeof");
-							lore.debug.anno(type, type);
-							if (n.childNodes) {
-								for (var j = 0; j < n.childNodes.length; j++) {
-									var m = n.childNodes[i];
-									lore.debug.anno(m, m);
-									var prop = m.nodeName;
-									var value = lore.global.util.safeGetFirstChildValue(m);
-									lore.debug.anno(prop + ": " + value, {
-										p: prop,
-										v: value
-									});
-									this.meta.fields.push({
-										type: type,
-										prop: prop,
-										value: value
-									});
+						for (var i = 0; i < matchingNodes.length; i++) {
+							if (matchingNodes[i].hasAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID')) {
+								if (matchingNodes[i].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID') === nodeID) {
+									return matchingNodes[i].children;
 								}
 							}
 						}
+						return [];
 					}
-				}*/
+					
+					
+					var children = getNodeID(xmldoc, nodeID);
+					
+					lore.debug.anno('found children', {children:children});
+					
+					for (var i = 0; i < children.length; i++) {
+						var metaObj = {};
+							
+//						metaObj.name = children[i].namespaceURI + children[i].localName;
+						metaObj.name = children[i].localName;
+						metaObj.value = children[i].textContent;
+							
+						this.meta.push(metaObj);
+					}
+				}
 			}
 			
 						
@@ -400,7 +424,8 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				
 			}
 			
-		
+			lore.debug.anno('Serializing to RDF/XML', {anno:anno});
+			
 			rdfxml += '<rdf:Description';
 			if (annoOrig.id && !annoOrig.isNew() ) {
 				rdfxml += ' rdf:about="' + anno.id + '"';
@@ -431,8 +456,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
 				}
 				
-			}
-			else {
+			} else {
 				
 				if (annoOrig.variant) {
 					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
@@ -485,16 +509,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				'</context>';
 			}
 			
-			if ( annoOrig.meta.context) {
-				rdfxml += '<meta-context xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-				for ( var i =0; i < anno.meta.context.length; i++ ) {
-					rdfxml += lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.meta.context[i].replace(/&/g, '&amp;') + "\n";
-				}
-				rdfxml += '</meta-context>';
-			}
-			if (annoOrig.type ==
-			lore.constants.NAMESPACES["vanno"] +
-			"VariationAnnotation") {
+			if (annoOrig.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
 				if (annoOrig.originalcontext) {
 					rdfxml += '<original-context xmlns="' +
 					lore.constants.NAMESPACES["vanno"] +
@@ -585,21 +600,52 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				}
 			}
 
-			//TODO: #194 Enable save user meta data information, once changes to backend, and UI have been done 
-			/*if (annoOrig.meta.fields.length > 0) {
-				rdfxml += '<meta xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-				
-				//var cw = lore.global.util.getContentWindow(window);
-				//var url = '&lt;' + ('http://www.austlit.edu.au' + cw.location.pathname +	cw.location.search + '#me').replace(/&/g, '&amp;') + '&gt;';
-						
-				Ext.each(anno.meta.fields, function (item, index, all) {
-					var prop = "&lt;" + this.prop + "&gt;";
-					var type = "&lt;" + this.type + "&gt;";
-					rdfxml += type + " " + prop + " " +  this.value + " .\n";
-				});
-				rdfxml += '</meta>';
-			}*/
+//			if (annoOrig.semantictriple) {
+//				var doc = document.implementation.createDocument("","",null);
+//				var semanticContext = doc.createElementNS(lore.constants.NAMESPACES["vanno"], 'semantic-context');
+//				var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['rdf'], 'rdf:Statement');
+//				
+//				var rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:subject');
+//				rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.subject);
+//				rdfStatement.appendChild(rdfEl);
+//				
+//				rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:predicate');
+//				rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.property);
+//				rdfStatement.appendChild(rdfEl);
+//				
+//				rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:object');
+//				rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.object);
+//				
+//				semanticContext.appendChild(rdfStatement);
+//				rdfStatement.appendChild(rdfEl);
+//				doc.appendChild(semanticContext);
+//				
+//				var serializer = new XMLSerializer();
+//				rdfxml += serializer.serializeToString(doc);
+//			}
 
+				
+			if (annoOrig.meta && annoOrig.meta.length > 0) {
+				var meta = annoOrig.meta;
+				var doc = document.implementation.createDocument("","",null);
+				var body = doc.createElementNS(lore.constants.NAMESPACES["vanno"], 'metadata');
+				doc.appendChild(body);
+				
+				var rdfDesc = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:Description');
+				body.appendChild(rdfDesc);
+				
+				for (var i = 0; i < meta.length; i++) {
+					var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['austlit'], meta[i].name);
+					var textNode = doc.createTextNode(meta[i].value);
+					rdfStatement.appendChild(textNode);
+					rdfDesc.appendChild(rdfStatement);
+				}
+				
+				
+				var serializer = new XMLSerializer();
+				rdfxml += serializer.serializeToString(doc);
+			}
+			
 			rdfxml += '</rdf:Description>';
 		}
 		rdfxml += '</rdf:RDF>';

@@ -118,7 +118,6 @@ lore.anno.ui.selectAndShowNode = function (rec) {
 		var node = lore.anno.ui.findNode(rec.data.id);
 		
 		lore.anno.ui.page.setCurrentAnno(rec);
-		lore.anno.ui.formpanel.setRec(rec);
 		if (node) {
 			lore.anno.ui.formpanel.show(rec);
 			node.ensureVisible();
@@ -173,17 +172,15 @@ lore.anno.ui.hideAnnotationEditor = function() {
 		lore.anno.ui.formpanel.hide();
 		Ext.getCmp("treeview").doLayout();
 	}
-	lore.anno.ui.formpanel.setRec(null);
+	lore.anno.ui.formpanel.clearPanel();
 }
 
 /**
  * Update the annotation object to use the values from the
  * form and generate an unsaved tree node if the record has been 
  * modified.
- * @param {Record} rec The annotation to update
- * @param {Boolean} updatereal Update the record, not a copy of the record
  */
-lore.anno.ui.updateAnnoFromForm = function(updatereal){
+lore.anno.ui.updateAnnoFromForm = function(){
 	var form = lore.anno.ui.formpanel.form;
 
 
@@ -193,21 +190,31 @@ lore.anno.ui.updateAnnoFromForm = function(updatereal){
 		return;
 	}
 	
-	if (!updatereal && form.isDirty()) {
+	if (form.isDirty()) {
 		if (unsavedRec.store === lore.anno.annoMan.annods) {
 			lore.debug.anno("ERROR: Should never be trying to update Stored Recs!");
 		}
 	}
 	
-	if (updatereal) {
-		unsavedRec = lore.anno.annoMan.findStoredRecById(unsavedRec.data.id);
-	}
-	
 	if (unsavedRec)
 		form.updateRecord(unsavedRec); // update from form
-	return unsavedRec;
 	
 	form.reset(); // clear dirty flag
+}
+
+lore.anno.ui.updateAnnoForSave = function() {
+	var unsavedRec = lore.anno.ui.formpanel.getRec();
+	
+	if (!unsavedRec) {
+		return;
+	}
+	
+	unsavedRec = lore.anno.annoMan.findStoredRecById(unsavedRec.data.id);
+	
+	if (unsavedRec)
+		lore.anno.ui.formpanel.form.updateRecord(unsavedRec); // update from form
+	
+	lore.anno.ui.formpanel.form.reset(); // clear dirty flag
 }
 				
 /*
@@ -378,7 +385,7 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
 		
 		lore.anno.ui.page.setCurrentAnno(rec);
 		 
-		Ext.getCmp("treeview").doLayout();				
+		Ext.getCmp("treeview").doLayout();
 	} 
 	catch (e) {
 		lore.debug.anno("Error occurred highlighting", e);
@@ -430,8 +437,9 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 			// loaded a new page, no active annotation
 			lore.anno.ui.page.setCurrentAnno();
 			
+			
 			// load new URL's page info 
-			lore.anno.ui.page.load(contextURL, true);
+			lore.anno.ui.page.load(contextURL);
 		} catch (e ) {
 			lore.debug.anno(e,e);
 		}
@@ -444,16 +452,15 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 	}
 	
 	try {
-		// enable highlighting for the page and load annotations for the page
+		// enable highlighting for the page
 		lore.anno.ui.pageui.enableImageHighlighting();
 
+		//  load annotations for the page
 		lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
 		lore.anno.annoMan.updateAnnotationsSourceList(contextURL, 
 			function(result, resultMsg){
 				if (result == 'fail') {
-					lore.anno.annoMan.annods.each(function(rec){
-						lore.anno.annoMan.annods.remove(rec);
-					});
+					lore.anno.annoMan.annods.removeAll();
 					lore.anno.ui.loreError("Failure loading annotations for page.");
 				}
 			}
@@ -641,12 +648,12 @@ lore.anno.ui.handleSaveAllAnnotationChanges = function(uri ){
 	try {
 		
 		// update existing annotation if needed before saving occurs
-		lore.anno.ui.updateAnnoFromForm(true);
+		lore.anno.ui.updateAnnoForSave();
 		
 		if( lore.anno.ui.page.curSelAnno.data.isNew()) 
 			lore.anno.ui.page.setCurrentAnno();		// if new, this will be saved and removed from unsaved tree, so set current anno to blank
 			
-		lore.anno.annoMan.updateAnnotations(lore.anno.ui.currentURL, function(action, result, resultMsg, anno){
+		lore.anno.annoMan.updateAllAnnotations(lore.anno.ui.currentURL, function(action, result, resultMsg, anno){
 			try {
 				if (result == "success") {
 					lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
@@ -690,8 +697,14 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 			return;
 		}
 		
+		lore.debug.anno('handleSaveAnnotationChanges', {tthis:this,lore:lore,anno:anno});
+		if (!lore.anno.ui.formpanel.form.isValid()) {
+			lore.anno.ui.loreError('Annotation title required.');
+			return;
+		}
+		
 		// update anno with properties from form
-		lore.anno.ui.updateAnnoFromForm(true);
+		lore.anno.ui.updateAnnoForSave();
 		
 		
 		// if the record isn't found on the current page tree and it's a variation annotation

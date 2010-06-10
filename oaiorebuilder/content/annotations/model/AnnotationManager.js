@@ -154,26 +154,25 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
      * @param {} index
 	 */
 	onDSRemove : function(store, record, index){
+		var decParentReplies = function (rec, countonly) {
+			if ( !rec.data.isReply)
+				return;
 			
-			var decParentReplies = function (rec, countonly) {
-				if ( !rec.data.isReply)
-					return;
-				
-				var prec = lore.global.util.findRecordById(store, rec.data.about);
-				if ( !prec)
-					return;
-				
-				if (!countonly) {
-					prec.data.replies.map[rec.data.id] = null;
-					prec.data.replies.localcount--;
-				}
-				prec.data.replies.count--;
-				
-				store.fireEvent("update", store, prec, Ext.data.Record.EDIT);
-				decParentReplies(prec, true);
-				
-			};
-			decParentReplies(record);
+			var prec = lore.global.util.findRecordById(store, rec.data.about);
+			if ( !prec)
+				return;
+			
+			if (!countonly) {
+				prec.data.replies.map[rec.data.id] = null;
+				prec.data.replies.localcount--;
+			}
+			prec.data.replies.count--;
+			
+			store.fireEvent("update", store, prec, Ext.data.Record.EDIT);
+			decParentReplies(prec, true);
+			
+		};
+		decParentReplies(record);
 	},
 	
 	
@@ -200,14 +199,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			created:  new Date().format('c'),
 			modified: new Date().format('c'),
 			body: "",
-			title: (parent ? "Re: " + parent.data.title:"New Annotation"),
+			title: (parent ? "Re: " + parent.data.title:""),
 			type: lore.constants.NAMESPACES["annotype"] + "Comment",
 			lang: "en",
 			isReply: (parent ? true: null),
-			meta: {
-				context: null,
-				fields: []
-			},
 			bodyLoaded: true
 		});
 		
@@ -228,9 +223,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	updateAnnotations : function (currentURL, resultCallback) {
+	updateAllAnnotations : function (currentURL, resultCallback) {
 		
-		var modified = []
+		var modified = [];
 		this.annodsunsaved.each( function (rec) 
 		{ 
 			if ( rec.dirty || rec.data.isNew() ) {
@@ -253,7 +248,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					
 				if (resultCounter == modified.length) {
 					// once all annotations have been updated, refresh  
-					lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+					lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
 					t.updateAnnotationsSourceList(currentURL);
 				}
 			} catch (e ) {
@@ -271,15 +266,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} anno The annotation
 	 * @param {Object} resultCallback Callback when update finishes
 	 */
-	sendUpdateRequest : function(anno, resultCallback){
+	sendUpdateRequest : function(annoRec, resultCallback){
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading datasource
-		anno.commit(anno.data.isNew());
+		annoRec.commit(annoRec.data.isNew());
 		
-		var annoRDF = this.serializer.serialize([anno.data], this.annods);
+		var annoRDF = this.serializer.serialize([annoRec.data], this.annods);
 		
 		var xhr = new XMLHttpRequest();
-		if (anno.data.isNew()) {
+		if (annoRec.data.isNew()) {
 			lore.debug.anno("creating new annotation")
 			// create new annotation
 			xhr.open("POST", this.prefs.url);
@@ -290,7 +285,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				
 				if (xhr.readyState == 4) {
 					if (resultCallback) {
-						resultCallback(xhr, 'create', anno);
+						resultCallback(xhr, 'create', annoRec);
 					}
 				}
 				
@@ -300,16 +295,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			};
 			xhr.send(annoRDF);
 			lore.debug.anno("RDF of new annotation", annoRDF);
-		}
-		else {
+		} else {
 			lore.debug.anno("updating existing annotation")
 			// Update the annotation on the server via HTTP PUT
-			xhr.open("PUT", anno.data.id);
+			xhr.open("PUT", annoRec.data.id);
 			xhr.setRequestHeader('Content-Type', "application/xml");
 			xhr.onreadystatechange = function(){
 				if (xhr.readyState == 4) {
 					if (resultCallback) {
-						resultCallback(xhr, 'update', anno); 
+						resultCallback(xhr, 'update', annoRec); 
 					}
 				}
 			};
@@ -317,7 +311,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			lore.debug.anno("RDF of updated annotation", annoRDF);
 			
 		}
-		this.annodsunsaved.remove(anno);
+		this.annodsunsaved.remove(annoRec);
 	},
 		
 	
@@ -332,26 +326,26 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	updateAnnotation : function(anno, currentURL, refresh, resultCallback){
+	updateAnnotation : function(annoRec, currentURL, refresh, resultCallback){
 		var t = this;
-		var result = function(request, action ) {
+		var callback = function(request, action ) {
 			if (action == 'create') {
 				var result = request.status == 201 ? 'success' : 'fail';
 				resultCallback('create', result, request.responseText ? request.responseText : request.statusText);
-				lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+				lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
 				t.updateAnnotationsSourceList(currentURL);
 			}
 			else {
 				var result = request.status == 200 ? 'success' : 'fail';
 				resultCallback('update', result, request.statusText);
 				if (refresh) {
-					lore.global.store.remove(lore.constants.ANNOTATIONS_STORE, currentURL);
+					lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
 					t.updateAnnotationsSourceList(currentURL);
 				}
 			}
 		}
 						
-		this.sendUpdateRequest(anno, result);
+		this.sendUpdateRequest(annoRec, callback);
 
 	},
 	
@@ -365,44 +359,43 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	
 	deleteAnnotation : function(anno, resultCallback) {
-			// remove the annotation from the server
-			
-			if ( anno.data.hasChildren()) {
-				if ( resultCallback)
-					resultCallback("fail", "Annotation not deleted. Delete replies first.");
-				return;
-			}
-			
-			var existsInBackend = !anno.data.isNew();
-			
-			this.annods.remove(anno);
-			this.annodsunsaved.remove(anno);
-			
-			if (existsInBackend) {
+		// remove the annotation from the server
+		
+		if ( anno.data.hasChildren()) {
+			if ( resultCallback)
+				resultCallback("fail", "Annotation not deleted. Delete replies first.");
+			return;
+		}
+		
+		var existsInBackend = !anno.data.isNew();
+		
+		this.annods.remove(anno);
+		this.annodsunsaved.remove(anno);
+		
+		if (existsInBackend) {
 
-				Ext.Ajax.request({
-					url: anno.data.id,
-					success: function(resp){
-						lore.debug.anno("Deletion success: " + resp );
-						
-						//TODO: #199 - Remove from the cache
-						//lore.global.store.remove(this.annods,...;
-						if ( resultCallback) {
-							resultCallback('success', resp);
-						}
-						
-					},
-					failure: function(resp, opts){
-						lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
-						if ( resultCallback) {
-							resultCallback('fail', resp);
-						}
-					},
-					method: "DELETE",
-					scope:this
-				});
-			}
-
+			Ext.Ajax.request({
+				url: anno.data.id,
+				success: function(resp){
+					lore.debug.anno("Deletion success: " + resp );
+					
+					//TODO: #199 - Remove from the cache
+					//lore.global.store.remove(this.annods,...;
+					if ( resultCallback) {
+						resultCallback('success', resp);
+					}
+					
+				},
+				failure: function(resp, opts){
+					lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
+					if ( resultCallback) {
+						resultCallback('fail', resp);
+					}
+				},
+				method: "DELETE",
+				scope:this
+			});
+		}
 	},
 	
 	
@@ -410,16 +403,20 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Creates an array of Annotations from a list of RDF nodes in ascending date
 	 * created order - unchanged from dannotate.js
 	 *
-	 * @param {NodeList} nodeList
-	 *            Raw RDF list in arbitrary order
-	 * @param {Boolean} bodyOp (Optional) Specify whether the annotations came from a file. Defaults to false.
+	 * @param {XMLDoc} xmldoc
+	 *            XML Document containing annotations
+	 * @param {Boolean} bodyEmbedded (Optional) Specify whether the annotations came from a file. Defaults to false.
 	 * @return {Array} ordered array of Annotations
 	 */
-	orderByDate : function(nodeList, bodyEmbedded){
+	createAnnotationsFromRDF : function(xmldoc, bodyEmbedded){
+		var nodeList = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
+		
 		var tmp = [];
 		for (var j = 0; j < nodeList.length; j++) {
 			try {
-				tmp[j] = new lore.anno.Annotation(nodeList[j], bodyEmbedded);
+				var tmpAnno = new lore.anno.Annotation(nodeList[j], xmldoc, bodyEmbedded);
+				if (tmpAnno && tmpAnno.id) 
+					tmp.push(tmpAnno); 
 			} 
 			catch (ex) {
 				lore.debug.anno("Exception processing annotations", ex);
@@ -444,7 +441,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if ( !uri)
 			return;
 		
-		var async = callback != null;
 		var req = null;
 		
 		var handleResponse = function(){
@@ -510,40 +506,27 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		
 		try {
 			req = new XMLHttpRequest();
-			//req.open('GET', uri, false);
 			
-			if (async) {
-				req.onreadystatechange = function(){
-					try {
-			
-						if (req.readyState == 4) {
-							var b = handleResponse();
-							callback(anno, b);
-						}
-					} catch (e ) {
-						lore.debug.anno(e,e);
+			req.onreadystatechange = function(){
+				try {
+		
+					if (req.readyState == 4) {
+						var b = handleResponse();
+						callback(anno, b);
 					}
-				};
-			}
-			
-			req.open("GET",uri, async);
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+			};
+			req.open("GET",uri);
 			req.setRequestHeader('User-Agent', 'XMLHttpRequest');
 			req.setRequestHeader('Content-Type', 'application/text');
 			req.send(null);
-			
-			if (!async){
-				return handleResponse();
-			}
 		} 
 		catch (ex) {
-			lore.debug.anno("Error in AJAX request: " + uri, {
-				async: async,
-				ex: ex
-			});
+			lore.debug.anno("Error in AJAX request: " + uri, {ex: ex});
 			return null;
 		}
-		
-		
 	},
 	
 	/**
@@ -554,8 +537,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @return {Object} Server response as text or XML document.
 	 */
 	getBodyContentAsync : function(anno, window){
-	
-		var self = this;
+		var t = this;
 		var callback = function(anno, txt){
 			try {
 				var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
@@ -567,7 +549,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			 	encodeURIComponent(anno.variant) != url)))
 					return;
 					
-				var r = lore.global.util.findRecordById(self.annods, anno.id);
+				var r = lore.global.util.findRecordById(t.annods, anno.id);
 				if (r) {
 					r.data.body = txt || '';
 					r.data.bodyLoaded = true;
@@ -579,6 +561,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			catch (e) {
 				lore.debug.anno(e, e)
 			}
+			
+			lore.debug.timeElapsed("End getBodyContentAsync() callback");
 		}
 		
 		this.getBodyContent(anno, window, callback);
@@ -606,39 +590,41 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return; 
 		}*/
 		
-		// Get annotations for theURL
-		if (this.prefs.url) {
-			var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + encodeURIComponent(theURL).replace(/%5D/g,'%255d');
-			lore.debug.anno("Updating annotations with request URL: " + queryURL);
-			
-			var t = this;
-			Ext.Ajax.request({
-				url: queryURL,
-				method: "GET",
-				disableCaching: false,
-				success: function(resp, opt) {
-					try {
-						if (callbackFunc) 
-							callbackFunc('success', resp);
-						t.handleAnnotationsLoaded(resp);
-					} catch (e ) {
-						lore.debug.anno(e,e);
-					}
-				},
-				failure: function(resp, opt){
-					try {
-						lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
-					if ( callbackFunc) callbackFunc('fail', resp);
-					} catch (e ) {
-						lore.debug.anno(e,e);
-					}
-				},
-				scope:this
-			});
-		}
-		else {
+	lore.debug.timeElapsed("Start updateAnnotationsSourceList()");
+		if (!this.prefs.url) {
 			lore.debug.anno("Annotation server URL not set!");
+			return;
 		}
+		
+		var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + lore.global.util.fixedEncodeURIComponent(theURL);
+		lore.debug.anno("Updating annotations with request URL: " + queryURL);
+		
+		var t = this;
+		Ext.Ajax.request({
+			url: queryURL,
+			method: "GET",
+			disableCaching: false,
+			success: function(resp, opt) {
+				try {
+					lore.debug.anno("Success retrieving annotations from " + opt.url, resp);
+					if (callbackFunc) 
+						callbackFunc('success', resp);
+					t.handleAnnotationsLoaded(resp);
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+			},
+			failure: function(resp, opt){
+				try {
+					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
+					if (callbackFunc)
+						callbackFunc('fail', resp);
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+			},
+			scope:this
+		});
 	},
 	
 	/**
@@ -656,7 +642,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		
 		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ALL_OBJECTS);
 		for (var i = 0; i < filters.length; i++) {
-			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter).replace(/%5D/g,'%255d');
+			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter);
 		}
 		  
 		lore.debug.anno("Peforming search with the following request URL: " + queryURL);
@@ -667,9 +653,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			disableCaching: false,
 			success: function(resp, opt) {
 				try {
-					var annos = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
-					
-					annos = this.orderByDate(annos);
+					var annos = this.createAnnotationsFromRDF(resp.responseXML);
 					this.annosearchds.loadData(annos);
 						
 					if (resultCallback) {
@@ -704,8 +688,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Load annotation data into the current data store  
 	 * @param {Array} annotations
 	 */
-	loadAnnotation : function ( annotations) {
-		if ( !annotations.length)
+	loadAnnotation : function (annotations) {
+		if (annotations.length && annotations.length == 0)
+			return;
+		if (!annotations.length)
 			annotations = [annotations];
 			
 		var a = annotations[0];
@@ -719,36 +705,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if ( a.resource == lore.anno.ui.currentURL || ( (a.variant && a.variant == lore.anno.ui.currentURL) ||
 			(a.original && a.original == lore.anno.ui.currentURL) )) {
 			this.annods.loadData(annotations, true);
-			 
+		} else {
+			lore.debug.anno("loadAnnotation says switched tabs", {annotation:a,currentURL:lore.anno.ui.currentURL});
 		}
 	},
-	/*TODO: #199 - Reimplementation of Caching
-	    loadAnnotation : function ( annotations) {
-		if ( !annotations.length)
-			annotations = [annotations];
-			
-		var a = annotations[0];
-		
-		// find a leaf node
-		while(a && a.isReply ) {
-			a = lore.global.util.findRecordById(this.annods, a.resource).data;
-		}
-		
-		if ( a.resource == lore.anno.ui.currentURL || ( (a.variant && a.variant == lore.anno.ui.currentURL) ||
-			(a.original && a.original == lore.anno.ui.currentURL) )) {
-			this.annods.loadData(annotations, true);
-			
-			var ds = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, lore.anno.ui.currentURL);
-			if ( !ds )
-				ds = [];
-		
-			ds = ds.concat(annotations);
-			lore.global.store.set(lore.constants.ANNOTATIONS_STORE, ds, lore.anno.ui.currentURL, this.prefs.cachetimeout);
-					
-		} else {
-			//TODO: #199 -  they've switched pages, continue to load data for caching purposes
-		}
-	},*/
+
 	
 	/**
 	 * Handler function that's called when annotation information is successfully
@@ -764,23 +725,23 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
 		
 		}
-		lore.debug.anno('handleAnnotationsLoaded()', {
-			xml: xmldoc,
-			nodes: resultNodes
-		});
+		lore.debug.anno('handleAnnotationsLoaded()', {xml: xmldoc});
 		
 		this.clearAnnotationStore();
 				
 		if (resultNodes.length > 0) {
-			var annotations = this.orderByDate(resultNodes );
+			var annotations = this.createAnnotationsFromRDF(xmldoc);
 			var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
 
+			
+			lore.debug.anno('handleAnnotationsLoaded() loaded annotations', {annotations:annotations});
 			// cater for tab change while annotations were downloaded from server
-			if ( (!annotations[0].variant && encodeURIComponent(annotations[0].resource) != url) 
-			 ||  (annotations[0].variant && encodeURIComponent(annotations[0].original) != url &&
-			 	encodeURIComponent(annotations[0].variant) != url))
-					return;
-				
+			if ((!annotations[0].variant && encodeURIComponent(annotations[0].resource) != url) 
+				|| (annotations[0].variant && encodeURIComponent(annotations[0].original) != url && encodeURIComponent(annotations[0].variant) != url)) {
+			 	lore.debug.anno("Apparently, tab changed while annotations were downloading", {url:url,encodedResource:encodeURIComponent(annotations[0].resource),annotations:annotations});
+				return;
+			}
+			
 			for (var i = 0; i < annotations.length; i++) {
 				try {
 					this.getBodyContentAsync(annotations[i], window);
@@ -789,20 +750,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					lore.debug.anno('error loading body content: ' + e, e);
 				}
 			}
-			
-			/* TODO: #199  
-			 
-			// remove annotatino from datatstore that have been updated
-			var recs = this.annods.getRange();
-			
-			for ( var i =0; i < recs.length; i++) {
-				for (var j = 0; j < annotations.length; j++) {
-					if (recs[i].data.id == annotations[j].id) {
-						annotations[i] = recs[i].data;
-						this.annods.remove(recs[i]);
-					}
-				}
-			}*/
 			
 			this.loadAnnotation(annotations);
 							
@@ -825,7 +772,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					scope:this
 				});
 			}
-		};
+		}
+		
+		lore.debug.timeElapsed("End handleAnnotationsLoaded()");
 	},
 	
 	/**
@@ -835,28 +784,16 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	handleAnnotationRepliesLoaded : function(resp){
 		try {
-			var replyList = resp.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
+			var xmldoc = resp.responseXML;
+			var replyList = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 			var isLeaf = (replyList.length == 0);
 
 			if (!isLeaf) {
-				replies = this.orderByDate(replyList);
+				var replies = this.createAnnotationsFromRDF(xmldoc);
 				
 				for ( var i=0; i< replies.length; i++) {
 					this.getBodyContentAsync(replies[i], window);
 				}
-				
-				/*TODO: #199  
-				// don't add records that are already in the datastore
-				var recs = this.annods.getRange();
-				for ( var i =0; i < recs.length; i++) {
-					for (var j = 0; j < replies.length; j++) {
-						if (recs[i].data.id == replies[j].id) {
-							lore.debug.anno("j: " + j + ", " + recs[i].data.id, recs[i]);
-							replies[i] = recs[i].data;
-							
-						}
-					}
-				}*/
 				this.loadAnnotation(replies);
 			}
 		} catch (e ) {
@@ -969,11 +906,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return clone;
 		}
 	},
-	
-	
-	
-	
-	
 	
 	findRecById : function (id) {
 		return this.findStoredRecById(id) || this.findUnsavedRecById(id);
