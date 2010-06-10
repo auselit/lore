@@ -121,10 +121,10 @@ debug = {
 	 * Log the elapsed time since calling startTiming() with the included message
 	 * @param {} message
 	 */
-	timeElapsed : function(message) {
+	timeElapsed : function(message, obj) {
 		if (debug.fbTrace.DBG_LORE_PROFILING) {
 			var elapsed = Date.now() - debug.starttime;
-			debug.fbTrace.sysout(" Elapsed: " + elapsed + "ms " + message);
+			debug.fbTrace.sysout(" Elapsed: " + elapsed + "ms " + message, obj);
 		}
 	}
 	
