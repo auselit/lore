@@ -37,38 +37,21 @@ m_xps = new XPointerService();
  * @singleton
  */
 util = {
+    
     /**
-     * Create a clone of an object
-     * @param {Object} o The object to clone
-     * @return {Object} The clone
-     */
-    clone : function(o) {
-        if(!o || 'object' !== typeof o) {
-            return o;
-        }
-        var c = '[object Array]' === Object.prototype.toString.call(o) ? [] : {};
-        var p, v;
-        for(p in o) {
-            if(o.hasOwnProperty(p)) {
-                v = o[p];
-                if(v && 'object' === typeof v) {
-                    c[p] = util.clone(v);
-                }
-                else {
-                    c[p] = v;
-                }
-            }
-        }
-        return c;
-    },
-    /** Determine if an object is empty (has no properties)
+     * Determine if an object is empty (has no properties)
      * @param {Object} ob The object to check
      * @return {Boolean} true if the object is equivalent to {}
      */
 	isEmptyObject : function (ob){
-       for(var i in ob){ if(ob.hasOwnProperty(i)){return false;}}
-       return true;
+        for(var i in ob){
+            if(ob.hasOwnProperty(i)) {
+                return false;
+            }
+        }
+        return true;
     },
+    
 	/**
 	 * Dynamically create a wrapper around an object and return
 	 * the wrapper object. The wrapper object currently only
@@ -744,16 +727,14 @@ util = {
 	
 	  
 	/**
-     * 
+     * Return an object with a hash of the provided triple, and an xpointer to it's current location
      * @param {} triple
      * @return {}
 	 */
 	getMetaSelection: function(triple) {
-		var stringHash = '';
-		var sel = [];
+		var sel = {};
 		try {
-			stringHash = util.tripleToStringHash(triple);
-			sel.push(stringHash);
+			sel.hash = util.tripleToStringHash(triple);
 		} catch (e) {
 			debug.anno("Error occurred generating string hash for triple: " +e ,e );
 		}
@@ -764,18 +745,19 @@ util = {
 		}
 		
 		try {
-			var xp = "xpointer(" + m_xps.xptrCreator.create_child_XPointer(triple.source) + ")";
-			sel.push(xp);
+			sel.xp = "xpointer(" + m_xps.xptrCreator.create_child_XPointer(triple.source) + ")"; 
 		} catch (e) {
 			debug.anno("Error occurred generating xpointer for tirple:  " +e, e);
 		}
 		return sel;
 	},
+	
 	/**
+     * Search through the provided triples, to find one matching the srcHash
      * 
-     * @param {} srcHash
-     * @param {} triples
-     * @return {}
+     * @param {} srcHash A hashed triple
+     * @param {} triples All the triples on the page, to search through
+     * @return {} the matching rdf triple, or null
 	 */
 	stringHashToTriple: function( srcHash, triples ) {
 		srcHash = srcHash + '';
@@ -791,18 +773,18 @@ util = {
 		return null;
 	},
 	/**
+     * Return a section for a page from a list of page rdf triples
      * 
-     * @param {} srcHash
-     * @param {} triples
-     * @return {}
+     * @param {} srcHash Hash to search for
+     * @param {} triples List of triples on a page
+     * @return {} DOM Range object of the triple, or null if not found
 	 */
 	getSelectionForHash: function( srcHash, triples ){
 		try {
-			var triple = util.stringHashToTriple(srcHash, triples).source;
-			if ( triple ) {
-				
-				var r = triple.ownerDocument.createRange();
-				r.selectNode(triple);
+			var tripleSource = util.stringHashToTriple(srcHash, triples).source;
+			if ( tripleSource ) {
+				var r = tripleSource.ownerDocument.createRange();
+				r.selectNode(tripleSource);
 				return r;
 			}
 			return null;
@@ -812,6 +794,7 @@ util = {
 		
 		return null;
 	},
+	
 	/**
      * Checks if xpointer contains an image range
      * @param {} xp The xpointer to check
@@ -1179,5 +1162,14 @@ util = {
         var gClipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].  
             getService(Components.interfaces.nsIClipboardHelper);  
         gClipboardHelper.copyString(aString);
-    }
+    },
+    
+    /**
+     * 
+     * @param {} str
+     * @return {}
+     */
+    fixedEncodeURIComponent : function(str) {
+    	return encodeURIComponent(str).replace(/%5B/ig, '%255B').replace(/%5D/ig, '%255D');
+	}
 };

@@ -313,7 +313,8 @@ lore.anno.ui.PageView.prototype = {
 			}
 			if ( rec.data.variant == lore.anno.ui.currentURL) {
 				try {
-					if ( rec.data.variantcontext ) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, page: this.page }));
+					if ( rec.data.variantcontext )
+						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, page: this.page }));
 				} 
 				catch (e) {
 					lore.debug.anno("Error highlighting variation context: " + e, e);
@@ -358,65 +359,64 @@ lore.anno.ui.PageView.prototype = {
 	 * Highlight all annotations on the current page
 	 */
 	toggleAllAnnotations : function(){
-		
-			if (this.page.multiSelAnno.length == 0) {
-				// toggle to highlight all
-				
-				// set text to inherit for select all fields   
-				var selAllStyle = function(type, domObj){
-					if (type == 0) {
-						if (domObj) {
-							domObj.style.textDecoration = "inherit";
-						}
-					} else if ( type == 1) {
-						domObj.style.borderStyle = "dashed";
+		if (this.page.multiSelAnno.length == 0) {
+			// toggle to highlight all
+			
+			// set text to inherit for select all fields   
+			var selAllStyle = function(type, domObj){
+				if (type == 0) {
+					if (domObj) {
+						domObj.style.textDecoration = "inherit";
 					}
-						
-					return domObj;
+				} else if ( type == 1) {
+					domObj.style.borderStyle = "dashed";
 				}
-				
-				this.model.each(function highlightAnnotations(rec){
-					if ( rec.data.context || rec.data.meta.context ) {
-						try {
-							var markers = this.highlightAnnotation(rec, selAllStyle);	
-							
-							// 'attach' annotation description bubble
-							if (markers != null) {
-								this.page.multiSelAnno = this.page.multiSelAnno.concat(markers);
-								// create the tip div in the content window
-								for ( var i =0 ; i < markers.length;i++)						
-									markers[i].tip(rec.data);
-									
-							}
-							else {
-								lore.debug.anno("marker null for context: " + rec.data.context, rec);
-							}
-						} 
-						catch (ex) {
-							lore.debug.anno("Error during highlight all: " + ex, rec);
-						}
-					}
 					
-				}, this);
+				return domObj;
 			}
-			else {
-				// unhighlight
-				lore.debug.anno("Un-highlighting all annotations", this.page.multiSelAnno);
-				for (var i = 0; i < this.page.multiSelAnno.length; i++) {
+			
+			this.model.each(function highlightAnnotations(rec){
+				if ( rec.data.context || rec.data.meta.context ) {
 					try {
-						var m = this.page.multiSelAnno[i];
-						m.hide();
-						delete m;
+						var markers = this.highlightAnnotation(rec, selAllStyle);	
+						
+						// 'attach' annotation description bubble
+						if (markers != null) {
+							this.page.multiSelAnno = this.page.multiSelAnno.concat(markers);
+							// create the tip div in the content window
+							for ( var i =0 ; i < markers.length;i++)						
+								markers[i].tip(rec.data);
+								
+						}
+						else {
+							lore.debug.anno("marker null for context: " + rec.data.context, rec);
+						}
 					} 
 					catch (ex) {
-						lore.debug.anno("Error unhighlighting: " + ex, this.page.multiSelAnno[i]);
+						lore.debug.anno("Error during highlight all: " + ex, rec);
 					}
-					
 				}
-				// clear selection info
-				this.page.multiSelAnno = new Array();
+				
+			}, this);
+		}
+		else {
+			// unhighlight
+			lore.debug.anno("Un-highlighting all annotations", this.page.multiSelAnno);
+			for (var i = 0; i < this.page.multiSelAnno.length; i++) {
+				try {
+					var m = this.page.multiSelAnno[i];
+					m.hide();
+					delete m;
+				} 
+				catch (ex) {
+					lore.debug.anno("Error unhighlighting: " + ex, this.page.multiSelAnno[i]);
+				}
+				
 			}
-		},
+			// clear selection info
+			this.page.multiSelAnno = new Array();
+		}
+	},
 		
 	/**
 	 * Scan the DOM for a content window and find images that are loaded.  Attach event handlers
@@ -599,139 +599,104 @@ lore.anno.ui.PageView.prototype = {
 	}, 
 
 	/**
-	 * Show the RDFa triples on the page
-	 * @param {Boolean} show Visibility boolean
-	 * @param {Object} callback Function called when triple is selected
+	 * Remove all markers for RDFa triples on the page
 	 */
-	setVisibilityForPageTriples : function( show, callback) {
-		if (!show) {
-			// remove any existing span represting triples fropm the page 
-			var ms = this.page.metaSelections;
-			for (var i = 0; i < ms.length; i++) {
-				try {
-					var n = ms[i];
-					n.removeChild(n.firstChild);
-					lore.global.util.removeNodePreserveChildren(n, lore.global.util.getContentWindow(window));
-				} 
-				catch (e) {
-					lore.debug.anno('error removing node for meta selection: ' + e, e);
-				}
+	turnOffPageTripleMarkers : function() {
+		// remove any existing span represting triples fropm the page 
+		var ms = this.page.metaSelections;
+		for (var i = 0; i < ms.length; i++) {
+			try {
+				var n = ms[i];
+				n.removeChild(n.firstChild);
+				lore.global.util.removeNodePreserveChildren(n, lore.global.util.getContentWindow(window));
+			} 
+			catch (e) {
+				lore.debug.anno('error removing node for meta selection: ' + e, e);
 			}
-			this.page.metaSelections = [];
-		} else if (this.page.rdfa.triples.length > 0) {
-				
-			for ( var i =0 ;i < this.page.rdfa.triples.length; i++ ) {
-				// for each triple determine whether it's human readable
-				var z = this.page.rdfa.triples[i];
-				if ( !lore.anno.ui.isHumanReadableTriple(z))
-					continue;
+		}
+		this.page.metaSelections = [];
+	},
+	
+	/**
+	 * Show the RDFa triples on the page
+	 * @param {Object} callback Function called when RDFa element is selected
+	 */
+	turnOnPageTripleMarkers : function(/*function*/callback) {
+		for (var i=0 ; i < this.page.rdfa.triples.length; i++ ) {
+			// for each triple determine whether it's human readable
+			var z = this.page.rdfa.triples[i];
+			if ( !lore.anno.ui.isHumanReadableTriple(z))
+				continue;
 
-									
-				var isObject = z.property.toString().indexOf("#type") != -1;
-				//var val = z.object.toString();
-				//val = val.substring(val.lastIndexOf("#")+1, val.lastIndexOf(">"));
-				var val = lore.anno.ui.tripleURIToString(z.object);
-				lore.debug.anno(val, z);
+								
+			var isObject = z.property.toString().indexOf("#type") != -1;
+			var val = lore.anno.ui.tripleURIToString(z.object);
+//			lore.debug.anno(val, z);
+			
+			//TODO: #194 - This logic should be based on store with valid Objects
+			if ( isObject &&  val !='Agent' && val !='Work'
+			 && val != 'manifestation' && val != 'expression')
+			 	continue;
 				
-				//TODO: #194 - This logic should be based on store with valid Objects
-				if ( isObject &&  val !='Agent' && val !='Work'
-				 && val != 'manifestation' && val != 'expression')
-				 	continue;
-					
-				// create a span around the location of the triple that's embedded in the HTML
-				var cw = lore.global.util.getContentWindow(window);
-				var doc = cw.document;
-				var r = doc.createRange();
-				r.selectNode(z.source);
-				var span = lore.global.util.domCreate("span", doc);
-				r.surroundContents(span);
-																		
-				this.page.metaSelections.push(span);
-				var marker = lore.global.util.domCreate("img", doc);
-				
-				lore.debug.anno("isObject: " + isObject);
-				marker.src = isObject ? objectIcon: relIcon;
-				marker.setAttribute("rdfIndex", i);
-				span.insertBefore(marker, z.source);
-				var s = $(marker);
-		 	
-				//tooltip
-				marker.title = isObject ? val : lore.anno.ui.tripleURIToString(z.property);
-				
-				s.hover(function () {
+			// create a span around the location of the triple that's embedded in the HTML
+			var cw = lore.global.util.getContentWindow(window);
+			var doc = cw.document;
+			var r = doc.createRange();
+			r.selectNode(z.source);
+			var span = lore.global.util.domCreate("span", doc);
+			r.surroundContents(span);
+																	
+			this.page.metaSelections.push(span);
+			var marker = lore.global.util.domCreate("img", doc);
+			
+//			lore.debug.anno("isObject: " + isObject);
+			marker.src = isObject ? objectIcon: relIcon;
+			marker.setAttribute("rdfIndex", i);
+			span.insertBefore(marker, z.source);
+			var s = $(marker);
+	 	
+			//tooltip
+			marker.title = isObject ? val : lore.anno.ui.tripleURIToString(z.property);
+			
+			s.hover(function () {
+				$(this).parent().css({
+					'background-color': 'yellow'
+				});},
+				function() {
 					$(this).parent().css({
-						'background-color': 'yellow'
-					});},
-					function() {
-						$(this).parent().css({
-							'background-color': ''
-						});
+						'background-color': ''
 					});
-					
-				
-				var t = this;
-				
-				// when triple is selected, set the meta context to it's value and call callback
-				// and hide triples for the page
-				if ( isObject) 
-					s.click(function () {
-					try {
-						var triple = t.page.rdfa.triples[this.getAttribute("rdfIndex")];
-						
-						//TODO: #194 - This needs to be changed to store object not triple
-						if (triple) 
-							t.page.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(triple);
-							
-						lore.debug.anno("meta-context set to: " + t.page.curSelAnno.data.meta.context, {
-							val: triple,
-							ctx: t.page.curSelAnno.data.meta.context
-						});
-						
-						if ( callback)
-							callback(isObject, triple);
-						
-					} catch (e ) {
-						lore.debug.anno(e,e);
-					}
-					t.setVisibilityForPageTriples(false, callback);
-					});
-				else
-					s.click(function () {
-						try {
- 						var triple = t.page.rdfa.triples[this.getAttribute("rdfIndex")];
-						
-						if (triple) 
-							t.page.curSelAnno.data.meta.context = lore.global.util.getMetaSelection(triple);
-							
-						lore.debug.anno("meta-context set to: " + t.page.curSelAnno.data.meta.context, {
-							val: triple,
-							ctx: t.page.curSelAnno.data.meta.context
-						});
-						
-						if ( callback)
-							callback(isObject, triple);
-						var theField = lore.anno.ui.formpanel.form.findField('metares');
-						theField.setValue(lore.anno.ui.tripleURIToString(triple.property));
-					 
-						t.setVisibilityForPageTriples(false, callback);
-					
-					} catch (e) {
-						lore.debug.anno(e,e);
-					}
 				});
-			}
-		}  
+				
+			
+			var t = this;
+			
+			// when triple is selected, call callback and hide triples for the page
+			s.click(function () {
+				try {
+				var triple = t.page.rdfa.triples[this.getAttribute("rdfIndex")];
+				
+				if (typeof(callback) === 'function')
+					callback(isObject, triple);
+				
+				} catch (e ) {
+					lore.debug.anno(e,e);
+				}
+				
+				t.turnOffPageTripleMarkers();
+			});
+		}
 	},
 	
 	/**
 	 * Turn on/off triple markers for the triples on the pages
-	 * @param {Object} callback Function called when triple is selected
+	 * @param {Function} callback Function called when triple is selected
 	 */
-	toggleTripleMarkers: function (callback) {
+	toggleTripleMarkers: function (/*function*/callback) {
 		if (this.page.metaSelections.length == 0)
-			this.setVisibilityForPageTriples(true, callback);
+			this.turnOnPageTripleMarkers(callback);
 		else
-			this.setVisibilityForPageTriples(false, callback);
+			this.turnOffPageTripleMarkers();
 	},
 	
 	/**

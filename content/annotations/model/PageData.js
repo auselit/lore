@@ -46,15 +46,16 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	store : function(url){
 		var update_ds = {
 			multiSelAnno: this.multiSelAnno.slice(),
-			colourForOwner: lore.global.util.clone(this.colourForOwner),
+			colourForOwner: jQuery.extend(true, {}, this.colourForOwner), // clone
 			colourCount: this.colourCount,
 			curSelAnnoId: this.curSelAnno ? this.curSelAnno.data.id : null,
 			curAnnoMarkers: this.curAnnoMarkers.slice(),
 			curImage: this.curImage,
-			rdfa: lore.global.util.clone(this.rdfa),
+			rdfa: jQuery.extend(true, {}, this.rdfa), // clone
 			metaSelections: this.metaSelections.slice()
 		};
 		
+		lore.debug.anno("PageData.store()", {updated_ds:update_ds});
 		lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, url);
 	},
 	
@@ -65,37 +66,37 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 		this.multiSelAnno = new Array();
 		this.colourForOwner = {};
 		this.colourCount = 0;
-		this.curSelAnno;
+		this.curSelAnno = null;
 		this.curAnnoMarkers = new Array();
+		this.curImage = null;
 		this.rdfa = {};
 		this.metaSelections = [];
 	},
 	
 	/**
-	 * Load the current page data from the cache if it exists
+	 * Load the current page data from the cache if it exists, otherwise clear the PageData
 	 * @param {Object} url  The URL
-	 * @param {Object} clear If the data doesn't exist in the cache clear the values instead
 	 */
-	load : function(url, clear){
+	load : function(url){
 		
 		var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, url);
 		if (ds) {
 			this.multiSelAnno = ds.multiSelAnno;
 			this.colourForOwner = ds.colourForOwner;
-			this.colourCount = ds.colourCount
-			var curSelAnnoId = ds.curSelAnnoId;
+			this.colourCount = ds.colourCount;
 			this.curAnnoMarkers = ds.curAnnoMarkers;
 			this.curImage = ds.curImage;
 			this.rdfa = ds.rdfa;
 			this.metaSelections = ds.metaSelections;
 			
-			var rec = lore.global.util.findRecordById(this.model, curSelAnnoId);
+			var rec = lore.global.util.findRecordById(this.model, ds.curSelAnnoId);
 
 			if (rec) {
 				this.curSelAnno = rec;
 			}
-		} else if ( clear)
+		} else {
 			this.clear();
+		}
 	},
 	
 	/**

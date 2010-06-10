@@ -128,7 +128,7 @@ Components.utils.import("resource://lore/debug.js");
 	 	return store.datastores[datastoreName];	
 	 },
 	 
-	 remove : function( datastoreName, uid ) {
+	 removeCache : function( datastoreName, uid ) {
 	 	if ( store.uidcache[uid])
 			(store.uidcache[uid])[datastoreName] = null;
 	 }
