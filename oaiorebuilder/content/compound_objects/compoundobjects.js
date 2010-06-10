@@ -21,7 +21,6 @@
 /*
  * @include  "init.js"
  * @include  "../util.js"
- * @include "lore_explore.js"
  */
 
 /**
@@ -243,7 +242,7 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
         lore.ore.ui.searchtreeroot.setDetails([]);
     }
     if (lore.ore.explore && lore.ore.cache){
-        lore.ore.explore.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
+        lore.ore.explorePanel.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
     }
 };
 /** Handle click of search button in search panel */
@@ -615,22 +614,6 @@ lore.ore.resizeSlideshow = function (comp,adjWidth, adjHeight, rawWidth, rawHeig
         lore.debug.ore("error resizing slideshow",ex);
     }
 }
-/** Generate a visualisation to explore compound object connections */
-lore.ore.showExploreUI = function(){
-    try{
-    var currentREM = lore.ore.cache.getLoadedCompoundObjectUri();
-    if (lore.ore.exploreLoaded !== currentREM) {
-        
-        lore.debug.ore("show in explore view", currentREM);
-        lore.ore.exploreLoaded = currentREM;
-        lore.ore.explore.showInExploreView(currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
-    } else {
-        lore.debug.ore("refresh explore view");
-        lore.ore.explore.rg.refresh();
-    }
-    }catch(e){lore.debug.ore("error in showExploreUI",e);}
-    lore.ore.ui.loreInfo("Click on the nodes to explore connections between compound objects.");
-};
 
 /** Prompt for location to save serialized compound object and save as file
  * @param {String} format The format to which to serialize (rdf, wordml, foxml or trig)
