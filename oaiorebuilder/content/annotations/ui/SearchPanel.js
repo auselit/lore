@@ -196,8 +196,11 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 					}, this);
 			
 			this.sgrid.on('rowclick', function searchLaunchTab(grid, rowIndex, event) {
-				var record = grid.getStore().getAt(rowIndex);
-				lore.global.util.launchTab(record.data.resource);
+				if (!event.ctrlKey && !event.shiftKey) {
+					var record = grid.getStore().getAt(rowIndex);
+				
+					lore.global.util.launchTab(record.data.resource);
+				}
 			});
 
 		} catch (e) {
