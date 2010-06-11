@@ -716,11 +716,11 @@ lore.anno.ui.PageView.prototype = {
 				var title = '';
 				if (rec.data.original == lore.anno.ui.currentURL) {
 					ctx = rec.data.variant;
-					title = "Variation Resource";
+					title = "Variation";
 				}
 				else {
 					ctx = rec.data.original;
-					title = "Original Resource";
+					title = "Original";
 				}
 				
 				var t = this;
