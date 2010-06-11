@@ -18,7 +18,23 @@
 	width: 35%;	
 }
 
+#oobAnnoCloseButton {
+	-moz-appearance: none;
+	-moz-image-region: rect(0px, 14px, 14px, 0px);
+	border: 1px solid transparent;
+	list-style-image: url("chrome://global/skin/icons/close.png");
+	padding: 2px !important;
+}
+#oobAnnoCloseButton:hover {
+	-moz-image-region: rect(0px, 28px, 14px, 14px);
+}
+#oobAnnoCloseButton:hover:active {
+	-moz-image-region: rect(0px, 42px, 14px, 28px);
+}
 
+#oobAnnoVarContentLabel {
+	font-size: 110%;
+}
 
 
 #oobMenuButton {

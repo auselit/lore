@@ -598,8 +598,9 @@ try {
                     document.getElementById("oobAnnoVarContentSplitter").setAttribute("collapsed", "false");
                     document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "false");
                 }
+                title = title + ': ' + url;
                 document.getElementById("oobAnnoVarContentLabel").setAttribute("value", title);
-                document.getElementById("oobAnnoVarContentLabelURL").setAttribute("value", url);
+                //document.getElementById("oobAnnoVarContentLabelURL").setAttribute("value", url);
 
                 var iframe = document.getElementById("oobAnnoVarContent");
         

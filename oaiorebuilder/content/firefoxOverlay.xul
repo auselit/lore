@@ -19,12 +19,12 @@
 	 <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" orient="horizontal" collapsed = "true" />
 	 	
 	 	<xul:vbox id="oobAnnoVarContentBox" flex="0" height="100%" collapsed="true" >
-	 	  <!-- <xul:hbox width="100%" > -->
-	 	    <xul:label id = "oobAnnoVarContentLabel" value="Variation Resource" />
-	 	    <xul:textbox id = "oobAnnoVarContentLabelURL" value = "" />
-	 	  <!-- </xul:hbox> -->
-	 	<xul:button id = "oobAnnoVarContentHideMe" label="Hide Me" onclick = "loreoverlay.hideVariationSplitter();" />
-	 	<xul:browser disablehistory="false" id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
+	 		<xul:toolbar>
+	 			<xul:label id="oobAnnoVarContentLabel" value="Variation: " crop="end" flex="1"></xul:label>
+				<xul:toolbarbutton id="oobAnnoCloseButton"  tooltiptext="Close Variation Panel" oncommand="loreoverlay.hideVariationSplitter();"></xul:toolbarbutton>
+	 		</xul:toolbar>
+
+	 		<xul:browser disablehistory="false" id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
 	 	</xul:vbox>
  	
 	 	<xul:splitter id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" collapse="after" >
