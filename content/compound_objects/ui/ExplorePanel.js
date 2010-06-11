@@ -9,6 +9,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         lore.ore.ui.ExplorePanel.superclass.constructor.call(this, config);
         this.on("activate", this.updateContent);
         lore.ore.explorePanel = this;
+        this.previewCanvas = document.createElement("canvas");
    },
    initGraph : function(){
      if (this.canvas){
@@ -119,11 +120,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 }
                 var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
                     + "'><img style='border:none' src='" + icon 
-                    + "'></a>&nbsp;<a href='#' onclick=\"lore.ore.explorePanel.rg.onClick('" 
-                    + node.id + "');\">" + node.name + "</a>";
+                    + "'></a>&nbsp;<a href='#' onclick=\"try{lore.debug.ore('aftercompute click history');lore.ore.explorePanel.rg.onClick('" 
+                    + node.id + "');}catch(e){lore.debug.ore('problem with history onClick',e);}\">" + node.name + "</a>";
                 Ext.get('exploreHistory').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
                 lore.debug.ore("rg is ",lore.ore.explorePanel.rg);
-                lore.debug.ore("this is",this);
+                //lore.debug.ore("nodelink was " + nodelink);
+                //lore.debug.ore("this is",this);
                 this.requestGraph();
                 } catch (e){
                     lore.debug.ore("Problem in onAfterCompute",e);
@@ -141,22 +143,60 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     },
     onContextMenu : function (e){
         lore.debug.ore("ExplorePanel.onContextMenu: ",e);
+        
         if (!this.contextmenu) {
             this.contextmenu = new Ext.menu.Menu({
                 id : this.id + "-context-menu",
                 showSeparator: false
             });
+            
             this.contextmenu.add({
                     text : "Save diagram as image",
-                    //iconCls: "delete-icon",
+                    icon: "chrome://lore/skin/icons/image.png",
                     handler : function(evt) {
-                        lore.debug.ore("save diagram as image",this);
+                        lore.ore.explorePanel.contextmenu.hide();
+                        var imgData = lore.ore.explorePanel.getAsImage();
+                        if (imgData) {
+                            lore.global.util.writeURIWithSaveAs("explore", "png", window, imgData);
+                        } else {
+                            lore.ore.ui.loreError("Unable to generate explore image");
+                        }
+
                     }
                 });
         }
         this.contextmenu.showAt(e.xy);
         e.stopEvent();
         return false;
+    },
+    getAsImage : function() {
+     try {
+        var imageW = this.getInnerWidth() + 50;
+        var imageH = this.getInnerHeight() + 50;
+        var canvas = this.previewCanvas;
+        var context = canvas.getContext("2d");
+        var pos = this.getPosition();
+        var offsetX = pos[0] + 1;
+        var offsetY = pos[1] + 1;
+        // resize the viewport so that entire
+        var vp = lore.ore.ui.main_window;
+        var vpsize = vp.getSize();
+        vp.setSize(imageW + offsetX + 50, imageH + offsetY + 50);
+        canvas.setAttribute("width", imageW + "px");
+        canvas.setAttribute("height", imageH + "px");
+        context.clearRect(0,0, imageW, imageH);
+        
+        // Draw the window, cropping to display just the visualisation
+        context.drawWindow(window, offsetX, offsetY, imageW, imageH, "rgb(255,255,255)");
+        var imgData = canvas.toDataURL();
+        // restore viewport original size
+        vp.setSize(vpsize);
+        vp.syncSize();
+        return imgData;
+     } catch (e) {
+        lore.debug.ore("ExplorePanel.getAsImage: ",e);
+     }
+        
     },
     /** Temporary function to regenerate content each time the panel is activated 
      * @param {} p The panel
