@@ -740,9 +740,13 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
  */	
 lore.anno.ui.handleAddResultsToCO = function(evt){
 	try {
-		var rec = lore.anno.ui.search.grid().getStore().getAt(this.clickedRow);
-		lore.global.ui.compoundObjectView.get(window.instanceId).addResource(rec.data.id,
+		var sels = lore.anno.ui.search.grid().getSelectionModel().getSelections();
+            
+        for (var i =0; i < sels.length; i++ ) {								
+            var rec = sels[i];
+			lore.global.ui.compoundObjectView.get(window.instanceId).addResource(rec.data.id,
             {"rdf:type_0":rec.data.type});
+		}
 		
 	} catch (e ){
 		lore.debug.anno("Error adding node/s to compound editor:" + e, e);
@@ -750,8 +754,12 @@ lore.anno.ui.handleAddResultsToCO = function(evt){
 }
 lore.anno.ui.handleViewAnnotationInBrowser = function(evt){
     try {
-    	var rec = lore.anno.ui.search.grid().getStore().getAt(this.clickedRow);
-        lore.global.util.launchTab(rec.data.id + "?danno_useStylesheet");
+		var sels = lore.anno.ui.search.grid().getSelectionModel().getSelections();
+            
+        for (var i =0; i < sels.length; i++ ) {								
+            var rec = sels[i];
+        	lore.global.util.launchTab(rec.data.id + "?danno_useStylesheet");
+        }
     } catch (e) {
         lore.debug.anno("Error viewing node/s in browser",e);
     }
