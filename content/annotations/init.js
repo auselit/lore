@@ -546,7 +546,10 @@ lore.anno.ui.attachContextMenus = function () {
 		
     });
 	grid.on('rowcontextmenu', function(scope, rowIndex, e) {
-		grid.contextmenu.clickedRow = rowIndex;
+		var selModel = grid.getSelectionModel();
+		if (!selModel.isSelected(rowIndex)) {
+			selModel.selectRow(rowIndex);
+		}
 		grid.contextmenu.showAt(e.xy);
 	});
 }
