@@ -536,11 +536,14 @@ lore.anno.ui.attachContextMenus = function () {
 	
 	grid.contextmenu.add({
 		text: "Add as node/s in compound object editor",
-		handler: lore.anno.ui.handleAddResultsToCO
+		handler: lore.anno.ui.handleAddResultsToCO,
+		scope: grid.contextmenu
 	});
     grid.contextmenu.add({
     	text: "View annotation/s in browser",
-		handler: lore.anno.ui.handleViewAnnotationInBrowser
+		handler: lore.anno.ui.handleViewAnnotationInBrowser,
+		scope: grid.contextmenu
+		
     });
 	grid.on('rowcontextmenu', function(scope, rowIndex, e) {
 		grid.contextmenu.clickedRow = rowIndex;
