@@ -170,6 +170,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         var fig = this.lookupFigure(theURL);
         if (fig) {
             Ext.getCmp("loreviews").activate(this.id);
+            fig.header.style.backgroundColor="yellow";
+            setTimeout(function(theFig) {theFig.header.style.backgroundColor = "#e5e5e5";}, 3200, fig);
             this.coGraph.showMask();
             this.coGraph.scrollTo(fig.x, fig.y);
             this.coGraph.hideMask();
@@ -246,9 +248,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         }
         if (!opts.batch){
             this.scrollToFigure(theURL);
-            // reset drawing area size
-            this.coGraph.showMask();
-            this.coGraph.hideMask();
         }
         return fig;
     },
