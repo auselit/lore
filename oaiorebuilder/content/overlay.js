@@ -288,9 +288,7 @@ try {
                 if (!forceVisible && (annoContentBox.getAttribute("collapsed") == "false" || contentBox.getAttribute("collapsed") == "false")){
                    toolsMenuItem.removeAttribute("checked");
                     this.setAnnotationsVisibility(false);
-                    this.setCompoundObjectsVisibility(false); 
-                    if ( this.variationContentWindowIsVisible())
-                        this.hideVariationSplitter();
+                    this.setCompoundObjectsVisibility(false);
                 } else {
                    toolsMenuItem.setAttribute("checked", "true");
                    this.setAnnotationsVisibility(true);
@@ -693,6 +691,10 @@ try {
             } else {
                 annoContentBox.setAttribute("collapsed", "true");
                 annoContentSplitter.setAttribute("collapsed", "true");
+                
+                if ( this.variationContentWindowIsVisible())
+                    this.hideVariationSplitter();
+                
                 if ( lore.global.ui.annotationView.loaded(this.instId) ) {
                     loreoverlay.annoView().hide();
                 }       
