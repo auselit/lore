@@ -6,6 +6,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             autoHeight : true,
             anchor : "100%",
             collapsible : true,
+            collapseFirst: false,
             animCollapse : false,
             store : new Ext.data.JsonStore({
                 idProperty : 'id',
