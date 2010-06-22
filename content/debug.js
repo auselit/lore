@@ -22,6 +22,8 @@ var EXPORTED_SYMBOLS = ['debug'];
 
 Components.utils.import("resource://lore/constants.js");
 
+
+
 /**
  * @class lore.debug 
  * @singleton
@@ -208,17 +210,12 @@ MozillaFileLogger.prototype.destruct = function() {
 	this.exitObserver.unregister();
 }
 
-
+debug.fbTrace = {};
 
 //Use Firebug trace console for debug logs - edit the extension preferences to enable (about:config)
 try {
-    /* Firebug Tracer */
-    debug.fbTrace = Components.classes["@joehewitt.com/firebug-trace-service;1"]
-        .getService(Components.interfaces.nsISupports)
-        .wrappedJSObject
-        .getTracer("extensions.lore");
-	
+	Components.utils.import("resource://firebug/firebug-trace-service.js");
+	debug.fbTrace = traceConsoleService.getTracer("extensions.lore");
 } catch (ex) {
-	debug.fbTrace = {};
-    // suppress errors if getting fbTrace fails - Firebug probably not enabled
+	// suppress errors if getting fbTrace fails - Firebug probably not installed/enabled
 }
