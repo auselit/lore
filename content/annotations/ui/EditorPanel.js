@@ -475,8 +475,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 */
 		handleUpdateAnnotationVariantContext : function(){
 			try {
-				var panel = this.findParentByType('annoeditorpanel');  
-				var curSelAnno = panel.pageView.page.curSelAnno;
+				var panel = this.findParentByType('annoeditorpanel');
 				if (!panel.isVisible())
 					panel.show(panel.pageView.page.curSelAnno);
 				
@@ -616,16 +615,18 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				}
 				lore.debug.anno('EditorPanel.load() semantic meta section', {rec:rec, rdfa:rdfa});
 						
-				if (rdfa && rdfa.triples && lore.global.util.splitTerm(rec.data.type).term == 'MetadataAnnotation') {
+//				if (rdfa && rdfa.triples && lore.global.util.splitTerm(rec.data.type).term == 'MetadataAnnotation') {
+				
+				var semEntityField = this.form.findField('semantic-entity');
+				if (rec.data['semantic-entity']) {
 
 					this.metaUserGrid.setVisible(true);
 					this.metaUserGrid.setObjectType('chrome://lore/content/ontologies/AustLit.xml', rec.get("semantic-entity-type"));
 	
-					var semEntityField = this.form.findField('semantic-entity');
 					semEntityField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
-
+				} else {
+					semEntityField.getEl().setStyle("background-color", "inherit");
 				}
-
 				var val = rec.data.resource;
 					
 				if (rec.data.isReply) {
@@ -696,7 +697,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * @param {Record} rec  The record containing the annotation to show in the editor
 		 * @param {Boolean} loadOnly (Optional) Load the annotation data into form fields but don't show editor. Defaults to false.
 		 */
-		show : function(rec){
+		show: function(rec){
+			lore.debug.anno('EditorPanel.show()', {rec:rec,editorPanel:this, values:this.form.getValues()});
 			this.load(rec);
 			lore.anno.ui.EditorPanel.superclass.show.apply(this, arguments);
 			
@@ -721,7 +723,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * Update the form when the annotation type changes
 		 * @param {Combo} combo The Combo field that has changed
 		 */
-		handleAnnotationTypeChange : function(combo){
+		handleAnnotationTypeChange: function(combo){
 			var theVal = combo.getValue();
 			
 			if (theVal === 'Variation'){

@@ -207,6 +207,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		});
 		
 		if ( callback)	callback(anno);
+		
+		lore.debug.anno('AM.addAnnotation()', {currentContext:currentContext,anno:anno});
 			
 		this.annodsunsaved.loadData([anno], true); 
 		return lore.global.util.findRecordById(this.annodsunsaved, anno.id);
@@ -435,21 +437,19 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {window} The window object
 	 * @return {Object} Server response as text or XML document.
 	 */
-	 getBodyContent : function(anno, window, callback){
-		
+	 getBodyContent : function(anno, window, callback) {
 		var uri = anno.bodyURL;
 		if ( !uri)
 			return;
 		
 		var req = null;
 		
-		var handleResponse = function(){
+		var handleResponse = function() {
 			try {
 				if (req.status != 200) {
 					var hst = (uri.length < 65) ? uri : uri.substring(0, 64) + '...';
 					throw new Error('Synchronous AJAX request status error.\n  URI: ' + hst +
-					'\n  Status: ' +
-					req.status);
+					'\n  Status: ' + req.status);
 				}
 				
 				var rtype = req.getResponseHeader('Content-Type');
@@ -488,8 +488,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					else {
 						bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
 					}
-				}
-				else {
+				} else if (rtype === 'application/rdf+xml') {
+					return req.responseXML;
+				} else {
 					bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
 				}
 				
@@ -509,10 +510,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			
 			req.onreadystatechange = function(){
 				try {
-		
 					if (req.readyState == 4) {
-						var b = handleResponse();
-						callback(anno, b);
+						var body = handleResponse();
+						callback(anno, body);
 					}
 				} catch (e ) {
 					lore.debug.anno(e,e);
@@ -537,23 +537,23 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @return {Object} Server response as text or XML document.
 	 */
 	getBodyContentAsync : function(anno, window){
-		var t = this;
-		var callback = function(anno, txt){
+		var tthis = this;
+		this.getBodyContent(anno, window, function callback(anno, body) {
 			try {
-				var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
-				
 				// check for location change while loading occurred 
-				if ( !anno.isReply && 
-				 ((!anno.variant && encodeURIComponent(anno.resource) != url) 
-			 ||  (anno.variant && encodeURIComponent(anno.original) != url &&
-			 	encodeURIComponent(anno.variant) != url)))
+				if (tthis.locationChanged(anno))
 					return;
 					
-				var r = lore.global.util.findRecordById(t.annods, anno.id);
+				var r = lore.global.util.findRecordById(tthis.annods, anno.id);
+				
+				
 				if (r) {
-					r.data.body = txt || '';
-					r.data.bodyLoaded = true;
-					r.commit();
+					if (r.get('type') && r.get('type').indexOf('#MetadataAnnotation') > -1) {
+						tthis.parseMetaBody(r, body);
+					} else {
+						r.set('body', body || '');
+					}
+					r.set('bodyLoaded', true);
 				} else {
 					lore.debug.anno("getBodyContentAsync: record not found", anno);
 				}
@@ -563,9 +563,57 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			}
 			
 			lore.debug.timeElapsed("End getBodyContentAsync() callback");
+		});
+	},
+	
+	parseMetaBody: function(anno, rdfBody) {
+		lore.debug.anno('parseMetaBody()', rdfBody);
+		var node = rdfBody.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
+		
+		var meta = [];
+		
+		if (node && node.length > 0) {
+			var children = node[0].children;
+			lore.debug.anno('found metadata', {node:node,children:children});
+			
+			for (var i = 0; i < children.length; i++) {
+				var metaObj = {};
+					
+//				metaObj.name = children[i].namespaceURI + children[i].localName;
+				metaObj.name = children[i].localName;
+				metaObj.value = children[i].textContent;
+				
+				if (metaObj.name === 'type') {
+					anno.set('semantic-context-type', metaObj.value);
+				} else {					
+					meta.push(metaObj);
+				}
+			}
+		}
+		anno.set('meta', meta);
+		return anno;
+	},
+	
+	
+	locationChanged: function(anno) {
+		var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
+		if (!anno) {
+			return false;
+		}
+		if (anno.isReply) {
+			return false;
 		}
 		
-		this.getBodyContent(anno, window, callback);
+		if (!anno.variant && encodeURIComponent(anno.resource) != url) 
+			return true;
+			
+	    if (anno.variant) {
+	    	if ( encodeURIComponent(anno.original) != url
+	    	  && encodeURIComponent(anno.variant) != url) {
+	    	  	return true;
+	    	}
+	    }
+		return false;
 	},
 	
 	/**
@@ -578,19 +626,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * resultMsg: Result message as string 
 	 */
 	updateAnnotationsSourceList : function(theURL, callbackFunc){
-	
-	/* TODO: #199 -
-		// check cache
-		var annotations = lore.global.store.get(lore.constants.ANNOTATIONS_STORE, theURL);
-		
-	   if (annotations) {
-			lore.debug.anno("Using cached annotation data...");
-			this.clearAnnotationStore();
-			this.annods.loadData(annotations, true);
-			return; 
-		}*/
-		
-	lore.debug.timeElapsed("Start updateAnnotationsSourceList()");
 		if (!this.prefs.url) {
 			lore.debug.anno("Annotation server URL not set!");
 			return;
@@ -731,14 +766,12 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				
 		if (resultNodes.length > 0) {
 			var annotations = this.createAnnotationsFromRDF(xmldoc);
-			var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
 
 			
 			lore.debug.anno('handleAnnotationsLoaded() loaded annotations', {annotations:annotations});
 			// cater for tab change while annotations were downloaded from server
-			if ((!annotations[0].variant && encodeURIComponent(annotations[0].resource) != url) 
-				|| (annotations[0].variant && encodeURIComponent(annotations[0].original) != url && encodeURIComponent(annotations[0].variant) != url)) {
-			 	lore.debug.anno("Apparently, tab changed while annotations were downloading", {url:url,encodedResource:encodeURIComponent(annotations[0].resource),annotations:annotations});
+			if (this.locationChanged(anno)) {
+			 	lore.debug.anno("Apparently, tab changed while annotations were downloading", {annotations:annotations});
 				return;
 			}
 			
