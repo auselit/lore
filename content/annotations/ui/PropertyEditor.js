@@ -208,7 +208,6 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 			});
 			tthis.propertiesListChanged = true;
 		});
-		lore.debug.anno('setObjectType', {props: tthis.propertiesList});
 	},
 	
 	/**
