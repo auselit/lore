@@ -793,12 +793,11 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 				Ext.apply(this.config, {
 					text: anno.body || ''
 				});
-			}
-			else {
+			} else {
 				Ext.apply(this.config, {
 					text: lore.anno.ui.genTreeNodeText(anno),
 					bheader: lore.anno.ui.genAnnotationCaption(anno, 'by c, d r'),
-					links: this.config.links,
+					links: this.config.links
 				});
 			}
 		} catch (e ) {
