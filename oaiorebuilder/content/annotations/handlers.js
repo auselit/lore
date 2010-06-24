@@ -198,8 +198,6 @@ lore.anno.ui.updateAnnoFromForm = function(){
 	
 	if (unsavedRec)
 		form.updateRecord(unsavedRec); // update from form
-	
-	form.reset(); // clear dirty flag
 }
 
 lore.anno.ui.updateAnnoForSave = function() {
@@ -213,8 +211,6 @@ lore.anno.ui.updateAnnoForSave = function() {
 	
 	if (unsavedRec)
 		lore.anno.ui.formpanel.form.updateRecord(unsavedRec); // update from form
-	
-	lore.anno.ui.formpanel.form.reset(); // clear dirty flag
 }
 				
 /*
@@ -516,6 +512,8 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 	try {
 		var currentContext = "";
 		
+		lore.debug.anno('handleAddAnnotation()', {rec:rec});
+		
 		if (!rec) { // only get selected text for annotations that aren't replies
 			try {
 				// get text currently selected in the content window
@@ -530,6 +528,9 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 		// for the newly created annotation
 		lore.anno.ui.updateAnnoFromForm();
 
+		// RESET THE FORM
+		lore.anno.ui.formpanel.form.reset();
+		
 		// once the node for this new annotation is added, select it.
 		var addSelectNodeHandler = function (anno) {
 			try {

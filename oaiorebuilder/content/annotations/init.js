@@ -319,7 +319,6 @@ lore.anno.ui.initGUIConfig = function(){
 		 	region: "south",
 		 	split: true,
 			height: 300,
-			trackResetOnLoad: true,
 			pageView: lore.anno.ui.pageui,
 			rdfaManager: lore.anno.ui.rdfaMan,
 			model: lore.anno.annoMan.annodsunsaved,
@@ -508,17 +507,15 @@ lore.anno.ui.attachContextMenus = function () {
 		});
 	lore.anno.ui.views.contextmenu.add({
 	        text : "Show RDF/XML",
-    		handler : function (){try {
-        		lore.anno.ui.openView("remrdfview","RDF/XML",
-				function(){
+    		handler : function (){
+    			try {
+        			lore.anno.ui.openView("remrdfview","RDF/XML", function(){
 						Ext.getCmp("remrdfview").body.update(lore.global.util.escapeHTML(lore.anno.serialize("rdf")));
-					
-				}	);
-				} 
-					catch (e) {
-						lore.debug.anno("Error generating RDF view: " + e, e);	
-					}
-    	}
+					});
+				} catch (e) {
+					lore.debug.anno("Error generating RDF view: " + e, e);	
+				}
+    		}
 	});
  
 	lore.anno.ui.views.on("contextmenu", function(tabpanel, tab, e){

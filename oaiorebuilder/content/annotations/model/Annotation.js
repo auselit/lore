@@ -214,41 +214,6 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 //					this.semantictriple.object = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
 //				}
 				
-				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'metadata');
-				if (node && node.length > 0) {
-					this.meta = [];
-					
-					var nodeID = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID');
-
-					lore.debug.anno('found metadata, looking for nodeID ' + nodeID, {xmldoc:xmldoc});
-					function getNodeID(xmldoc, nodeID) {
-						var matchingNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
-						
-						for (var i = 0; i < matchingNodes.length; i++) {
-							if (matchingNodes[i].hasAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID')) {
-								if (matchingNodes[i].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID') === nodeID) {
-									return matchingNodes[i].children;
-								}
-							}
-						}
-						return [];
-					}
-					
-					
-					var children = getNodeID(xmldoc, nodeID);
-					
-					lore.debug.anno('found children', {children:children});
-					
-					for (var i = 0; i < children.length; i++) {
-						var metaObj = {};
-							
-//						metaObj.name = children[i].namespaceURI + children[i].localName;
-						metaObj.name = children[i].localName;
-						metaObj.value = children[i].textContent;
-							
-						this.meta.push(metaObj);
-					}
-				}
 			}
 			
 						
@@ -560,7 +525,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 					'"/>';
 				}
 			}
-			if (annoOrig.body != null) {
+			if (annoOrig.body != null && !annoOrig.meta && annoOrig.meta.length <= 0) {
 				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
 				rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
 				'">' + this.getBodyRDF(anno.title, anno.body) + '</body>';
@@ -628,18 +593,32 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 			if (annoOrig.meta && annoOrig.meta.length > 0) {
 				var meta = annoOrig.meta;
 				var doc = document.implementation.createDocument("","",null);
-				var body = doc.createElementNS(lore.constants.NAMESPACES["vanno"], 'metadata');
+				var body = doc.createElementNS(lore.constants.NAMESPACES["annotea"], 'body');
 				doc.appendChild(body);
 				
 				var rdfDesc = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:Description');
 				body.appendChild(rdfDesc);
 				
+				var node = doc.createElementNS(lore.constants.NAMESPACES["http"], 'ContentType');
+				var textNode = doc.createTextNode('application/rdf+xml');
+				node.appendChild(textNode);
+				rdfDesc.appendChild(node);
+				
+				body = doc.createElementNS(lore.constants.NAMESPACES["http"], 'Body');
+				body.setAttribute('rdf:parseType', 'Literal');
+				rdfDesc.appendChild(body);
+				
+				
+				node = this.createMetaRDFBody(annoOrig);
+				node = doc.importNode(node, true);
+				body.appendChild(node);
+				/*
 				for (var i = 0; i < meta.length; i++) {
 					var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['austlit'], meta[i].name);
 					var textNode = doc.createTextNode(meta[i].value);
 					rdfStatement.appendChild(textNode);
-					rdfDesc.appendChild(rdfStatement);
-				}
+					body.appendChild(rdfStatement);
+				}*/
 				
 				
 				var serializer = new XMLSerializer();
@@ -653,6 +632,31 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 		return rdfxml;
 	},
 	
+	createMetaRDFBody: function(anno) {
+		var meta = anno.meta;
+		var metaContext = anno['semantic-entity'];
+		var metaType = anno['semantic-entity-type'];
+		
+		var doc = document.implementation.createDocument("","",null);
+		var node = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:RDF');
+		doc.appendChild(node);
+		
+		var body = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:Description');
+		body.setAttributeNS(lore.constants.NAMESPACES["rdf"], 'rdf:about', metaContext);
+		node.appendChild(body);
+		
+		var type = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:type');
+		type.setAttributeNS(lore.constants.NAMESPACES["rdf"], 'rdf:resource', metaType);
+		body.appendChild(type);
+		
+		for (var i = 0; i < meta.length; i++) {
+				var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['austlit'], meta[i].name);
+				var textNode = doc.createTextNode(meta[i].value);
+				rdfStatement.appendChild(textNode);
+				body.appendChild(rdfStatement);
+		}
+		return node;
+	},
 	/**
 	 * Generate RDF for annotation body 
 	 * @param {String} title Annotation Title

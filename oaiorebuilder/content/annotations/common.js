@@ -42,13 +42,7 @@ lore.anno.ui.disableUIFeatures = function(opts){
 		lore.anno.ui.disableUIFeatures.initialCall = 1;
 	}
 	else {
-	
-		if (opts.disable) {
-			lore.anno.ui.topView.setAnnotationsVisibility(false);
-		}
-		else {
-			lore.anno.ui.topView.setAnnotationsVisibility(true);
-		}
+		lore.anno.ui.topView.setAnnotationsVisibility(!opts.disable);
 	}
 }
 
@@ -344,8 +338,19 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
         "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
     }
 	
-	var defText = annodata.bodyLoaded ? annodata.body : 'Loading content...';
-	var body = lore.global.util.externalizeLinks(defText);
+    var body;
+    if (annodata.bodyLoaded) {
+    	if (annodata.meta.length > 0) {
+    		// Metadata annotation
+    		body = 'Metadata Annotation<br>';
+    	} else {
+    		body = annodata.body;
+    	}
+    } else {
+    	body = 'Loading content...';
+    }
+    
+	body = lore.global.util.externalizeLinks(body);
 	res += body;
 	
 	
