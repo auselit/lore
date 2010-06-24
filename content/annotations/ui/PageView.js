@@ -635,7 +635,7 @@ lore.anno.ui.PageView.prototype = {
 			
 			//TODO: #194 - This logic should be based on store with valid Objects
 			if ( isObject &&  val !='Agent' && val !='Work'
-			 && val != 'manifestation' && val != 'expression')
+			 && val != 'Manifestation' && val != 'Expression')
 			 	continue;
 				
 			// create a span around the location of the triple that's embedded in the HTML
