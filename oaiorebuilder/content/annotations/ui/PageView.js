@@ -75,7 +75,6 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Object} newRec
 	 */
 	handleAnnoChanged: function (oldRec, newRec ) {
-		this.removeHighlightForCurrentAnnotation();
 		if (newRec) {
 			if ( newRec.data.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation" ) {	
 				 this.updateSplitter(newRec, lore.anno.ui.topView.variationContentWindowIsVisible(), lore.anno.ui.formpanel.updateSplitterContextField, lore.anno.ui.formpanel);
@@ -260,17 +259,21 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Record} rec The record of the annotation to highlight
 	 */
 	highlightCurrentAnnotation: function(rec){
-		this.removeHighlightForCurrentAnnotation();
-		if (this.page.curImage) {
-			var inst = this.page.curImage.imgAreaSelectInst();
-			inst.setOptions({
-				show: false,
-				hide: true
-			});
-			inst.update();
-			
+		try {
+			this.removeHighlightForCurrentAnnotation();
+			if (this.page.curImage) {
+				var inst = this.page.curImage.imgAreaSelectInst();
+				inst.setOptions({
+					show: false,
+					hide: true
+				});
+				inst.update();
+				
+			}
+			this.page.curAnnoMarkers = this.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
+		} catch (e) {
+			lore.anno.ui.loreError('Unable to highlight. Page has been modified.');
 		}
-		this.page.curAnnoMarkers = this.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
 	},
 	
 	/**
