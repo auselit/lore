@@ -361,32 +361,26 @@ lore.anno.ui.handleAttachNodeLinks = function(tree, thus, n, index){
  * @param {Object} event Not Used
  */
 lore.anno.ui.handleTreeNodeSelection = function(node, event){
-	try {
-		// retrieve record for node
-		var unsavedNode = node.isAncestor(lore.anno.ui.treeunsaved);
-		var store = unsavedNode ? lore.anno.annoMan.annodsunsaved : lore.anno.annoMan.annods;
-		var rec = lore.global.util.findRecordById(store, lore.anno.ui.nodeIdToRecId(node));
-		
-		if ( rec == lore.anno.ui.page.curSelAnno )
-			return;
-		
-		lore.anno.ui.updateAnnoFromForm();
-		
-		if (rec == null) { // if they select root element, if it's shown 
-			lore.anno.ui.page.setCurrentAnno();
-			return;
-		}
+	// retrieve record for node
+	var unsavedNode = node.isAncestor(lore.anno.ui.treeunsaved);
+	var store = unsavedNode ? lore.anno.annoMan.annodsunsaved : lore.anno.annoMan.annods;
+	var rec = lore.global.util.findRecordById(store, lore.anno.ui.nodeIdToRecId(node));
 	
-		// set current anno and fire anno change event
-		
-		lore.anno.ui.page.setCurrentAnno(rec);
-		 
-		Ext.getCmp("treeview").doLayout();
-	} 
-	catch (e) {
-		lore.debug.anno("Error occurred highlighting", e);
+	if ( rec == lore.anno.ui.page.curSelAnno )
+		return;
+	
+	lore.anno.ui.updateAnnoFromForm();
+	
+	if (rec == null) { // if they select root element, if it's shown 
+		lore.anno.ui.page.setCurrentAnno();
+		return;
 	}
 
+	// set current anno and fire anno change event
+	
+	lore.anno.ui.page.setCurrentAnno(rec);
+	 
+	Ext.getCmp("treeview").doLayout();
 }
 
 /**
@@ -395,17 +389,17 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
  * @param {String} contextURL The url the currently selected browser tab is now pointing to    
  */
 lore.anno.ui.handleLocationChange = function(contextURL) {
-		var oldurl = lore.anno.ui.currentURL + '';
-		lore.anno.ui.currentURL = contextURL;
-		// only run when annotations are visibile and initialized
-		if (!lore.anno.ui.initialized ||	!lore.anno.ui.lorevisible)
-				return;
-			
-		var initialLoad = oldurl == lore.anno.ui.currentURL;
-					
-		lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
+	var oldurl = lore.anno.ui.currentURL + '';
+	lore.anno.ui.currentURL = contextURL;
+	// only run when annotations are visibile and initialized
+	if (!lore.anno.ui.initialized ||	!lore.anno.ui.lorevisible)
+			return;
 		
-		if ( !initialLoad ) {
+	var initialLoad = oldurl == lore.anno.ui.currentURL;
+				
+	lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
+
+	if ( !initialLoad ) {
 		try{
 			// store current page data, save current annotation data
 			lore.anno.ui.page.store(oldurl);
@@ -488,8 +482,6 @@ lore.anno.ui.handleContentPageRefresh = function () {
 	} catch(e ){
 		lore.debug.anno("refreshPage(): " + e, e);
 	}
-	 
-	
 }
 
 	
