@@ -530,15 +530,11 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
 lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode, 
 {
 	constructor: function(config ){
-		  this.config = config || {};
-        /** 
-         * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
-         * @property 
-         * */
+		this.config = config || {};
         this.model = config.model;
         this.initConfig(this.model);
-        
-		this.model.on("load", this.handleLoad, this);
+
+		this.model.on("add", this.handleLoad, this);
 		this.model.on("remove", this.handleRemove, this);
 		this.model.on("update", this.handleUpdate, this);
 		this.model.on("clear", this.handleClear, this);
@@ -560,40 +556,35 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 	 * @param {Object} options Not used
 	 */
 	handleLoad : function(store, records, options ) {
-		
 		try {
-			
-				for (var i = 0; i < records.length; i++) {
-					var rec = records[i];
-				 	var anno = rec.data;
+			for (var i = 0; i < records.length; i++) {
+				var rec = records[i];
+				var anno = rec.data;
 					
-					try {
-						var n = new lore.anno.ui.AnnoColumnTreeNode({
-							anno: anno
-						})
+				try {
+					var n = new lore.anno.ui.AnnoColumnTreeNode({
+						anno: anno
+					})
 						
-						var parent = null;
-						if (  anno.isReply) 
-							parent = lore.anno.ui.findNode(anno.about, this);				
-						else 
-							parent = this;
-						
-						parent.appendChild(n);
+					var parent = null;
+					if (  anno.isReply) 
+						parent = lore.anno.ui.findNode(anno.about, this);				
+					else 
+						parent = this;
+					
+					parent.appendChild(n);
 				
-					} 
-					catch (e) {
-						lore.debug.anno("error loading: " + rec.id, e);
-					}
+				} catch (e) {
+					lore.debug.anno("error loading: " + rec.id, e);
 				}
-			
-				if (!this.isExpanded())
-					this.expand();
-			} 
-			catch (e) {
-				lore.debug.ui("Error loading annotation tree view: " + e, e);
 			}
-		
-		
+			
+			if (!this.isExpanded())
+				this.expand();
+		}
+		catch (e) {
+			lore.debug.ui("Error loading annotation tree view: " + e, e);
+		}
 	},
 	
 		/**
