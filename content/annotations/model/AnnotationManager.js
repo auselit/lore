@@ -723,25 +723,38 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Load annotation data into the current data store  
 	 * @param {Array} annotations
 	 */
-	loadAnnotation : function (annotations) {
+	loadAnnotation: function (annotations) {
 		if (annotations.length && annotations.length == 0)
 			return;
 		if (!annotations.length)
 			annotations = [annotations];
 			
-		var a = annotations[0];
+		var firstAnno = annotations[0];
 		
 		// find a leaf node
-		while(a && a.isReply ) {
-			a = lore.global.util.findRecordById(this.annods, a.resource).data;
+		while(firstAnno && firstAnno.isReply ) {
+			firstAnno = lore.global.util.findRecordById(this.annods, firstAnno.resource).data;
 		}
 
+		function stripFragment(url) {
+			return url.replace(/\#.*$/,'');
+		}
+		var currentURL = stripFragment(lore.anno.ui.currentURL);
+		
+		function annoMatchesURL(anno, url) {
+			if (anno.resource == url || 
+				anno.variant == url ||
+				anno.original == url) {
+				return true;
+			}
+			return false;
+		}
+		
 		// check that they haven't switched tabs since data was loaded from server, if not load into datastore		
-		if ( a.resource == lore.anno.ui.currentURL || ( (a.variant && a.variant == lore.anno.ui.currentURL) ||
-			(a.original && a.original == lore.anno.ui.currentURL) )) {
+		if (annoMatchesURL(firstAnno, currentURL)) {
 			this.annods.loadData(annotations, true);
 		} else {
-			lore.debug.anno("loadAnnotation says switched tabs", {annotation:a,currentURL:lore.anno.ui.currentURL});
+			lore.debug.anno("loadAnnotation says switched tabs", {annotation:firstAnno,currentURL:lore.anno.ui.currentURL});
 		}
 	},
 
