@@ -601,7 +601,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	
 	
 	locationChanged: function(anno) {
-		var url = encodeURIComponent(lore.global.util.getContentWindow(window).location);
 		if (!anno) {
 			return false;
 		}
@@ -609,16 +608,17 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return false;
 		}
 		
-		if (!anno.variant && encodeURIComponent(anno.resource) != url) 
-			return true;
-			
-	    if (anno.variant) {
-	    	if ( encodeURIComponent(anno.original) != url
-	    	  && encodeURIComponent(anno.variant) != url) {
-	    	  	return true;
-	    	}
-	    }
-		return false;
+		function stripFragment(url) {
+			return url.replace(/\#.*$/,'');
+		}
+		var currentURL = stripFragment(lore.anno.ui.currentURL);
+		
+		if (anno.resource == currentURL || 
+			anno.variant == currentURL ||
+			anno.original == currentURL) {
+			return false;
+		}
+		return true;
 	},
 	
 	/**
@@ -741,25 +741,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			firstAnno = lore.global.util.findRecordById(this.annods, firstAnno.resource).data;
 		}
 
-		function stripFragment(url) {
-			return url.replace(/\#.*$/,'');
-		}
-		var currentURL = stripFragment(lore.anno.ui.currentURL);
-		
-		function annoMatchesURL(anno, url) {
-			if (anno.resource == url || 
-				anno.variant == url ||
-				anno.original == url) {
-				return true;
-			}
-			return false;
-		}
-		
 		// check that they haven't switched tabs since data was loaded from server, if not load into datastore		
-		if (annoMatchesURL(firstAnno, currentURL)) {
-			this.annods.loadData(annotations, true);
-		} else {
+		if (this.locationChanged(firstAnno)) {
 			lore.debug.anno("loadAnnotation says switched tabs", {annotation:firstAnno,currentURL:lore.anno.ui.currentURL});
+		} else {
+			this.annods.loadData(annotations, true);
 		}
 	},
 
