@@ -567,7 +567,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 					})
 						
 					var parent = null;
-					if (  anno.isReply) 
+					if (anno.isReply) 
 						parent = lore.anno.ui.findNode(anno.about, this);				
 					else 
 						parent = this;

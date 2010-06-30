@@ -946,8 +946,8 @@ util = {
     findRecordById : function(store, xid) {
         var ind = store.findBy(function(rec, id){
                 if ( !xid ) {
-                    return !rec.json.id;
-                } else  if (rec.json.id == xid) {
+                    return !rec.id;
+                } else  if (rec.id == xid) {
                     return true;
                 }
             })
