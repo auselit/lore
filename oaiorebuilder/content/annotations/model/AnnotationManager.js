@@ -67,7 +67,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					{name: 'meta'},
 					{name: 'scholarly'},
 					{name: 'isNew'},
-					{name: 'hasChildren'}
+					{name: 'hasChildren'},
+					{name: 'semanticEntity'},
+					{name: 'semanticEntityType'}
                         ];
 						
 		/** @property annods
@@ -571,8 +573,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var node = rdfBody.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 		
 		var meta = [];
-		
+		anno.beginEdit();
 		if (node && node.length > 0) {
+			var semanticEntity = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'about');
+			anno.set('semanticEntity', semanticEntity);
+			
 			var children = node[0].children;
 			lore.debug.anno('found metadata', {node:node,children:children});
 			
@@ -584,14 +589,14 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				metaObj.value = children[i].textContent;
 				
 				if (metaObj.name === 'type') {
-					anno.set('semantic-context-type', metaObj.value);
+					anno.set('semanticEntityType', children[i].attributes[0].value);
 				} else {					
 					meta.push(metaObj);
 				}
 			}
 		}
 		anno.set('meta', meta);
-		return anno;
+		anno.endEdit();
 	},
 	
 	
@@ -855,7 +860,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Boolean} serialize Specify whether the output will be serialized to a string. Defaults to a document fragment.
 	 * @return {Object} If serialize was supplied as true, then resulting XML will be returned as a string otherwise as a document fragment  
 	 */
-	transformRDF : function(stylesheetURL, params, serialize){
+	transformRDF: function(stylesheetURL, params, serialize){
 		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
 				
@@ -867,7 +872,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param domNode HTML node to serialize
 	 * @return {String} The annotated page returned as String containing WordML XML.
 	 */
-	createAnnoWord : function(domNode){
+	createAnnoWord: function(domNode){
 		/* TODO: #117 - Further implementation required
 		 
 		var serializer= new XMLSerializer();
@@ -895,7 +900,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Boolean} showDates whether to save the annotation dates
 	 * @return {String} serialized version of the annotations in OAC RDF
 	 */
-	createAnnoOAC : function (annos, store, showDates) {
+	createAnnoOAC: function (annos, store, showDates) {
 		var oacSerializer = new lore.anno.OACAnnotationSerializer();
 		
 		return oacSerializer.serialize(annos, store, showDates);		
@@ -906,7 +911,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {String} format The format to serialize the annotations in. 'wordml' or 'rdf'.
 	 * @return {String} Returns the serialized annotations in the new format
 	 */
-	serialize : function ( format) {
+	serialize: function (format) {
 		lore.debug.anno("serialize format: " + format);
 		if ( format == 'wordml') {
 			return this.createAnnoWord( lore.global.util.getContentWindow(window).document.body, true);
@@ -925,7 +930,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Always edit in the 'unsaved' store, either get the appropriate record from there
 	 * or copy into it and use the copy.
 	 */
-	editRec : function(rec) {
+	editRec: function(rec) {
 		if (rec.store === this.annodsunsaved) {
 			return rec;
 		}
@@ -950,6 +955,14 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				clone[e] = obj.data[e];
 			}
 			return clone;
+		}
+	},
+	
+	updateStoredRec: function(unsavedRec) {
+		var storedRec = this.findStoredRecById(unsavedRec.data.id)
+		if (storedRec) {
+			this.annods.remove(storedRec);
+			this.annods.addSorted(unsavedRec.copy());
 		}
 	},
 	

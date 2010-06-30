@@ -95,9 +95,9 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 		try {
 			Ext.apply(this, gridpanelconfig);
 
-			this.propertiesList = [];
 			lore.anno.ui.PropertyEditor.superclass.initComponent.apply(this, arguments);
 
+			this.propertiesList = [];
 		} catch (e) {
 			lore.debug.anno("PropertyEditor:initComponent() - " + e, e);
 		}
@@ -112,14 +112,15 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 			return;
 		}
 	    var makeAddMenu  = function(panel){
+	    	lore.debug.anno('makeAddMenu', {panel:panel});
 		    panel.propMenu = new Ext.menu.Menu({
 		        id: panel.id + "-add-metadata"
 		    });
 
 	        var props = panel.propertiesList;
+            var pstore = panel.getStore();
 		    for (var i = 0; i < props.length; i++) {
 	            var propname = props[i];
-	            var pstore = panel.getStore();
 	            panel.propMenu.add({
 	                id: panel.id + "-add-" + propname,
 	                text: propname,
@@ -134,7 +135,6 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	                        }
 	                        var theid = this.text + "_" + counter;
 	                        pstore.loadData([{id: theid, name: this.text, value: ""}],true);
-	                        
 	                    } catch (ex){
 	                        lore.debug.anno("exception adding prop " + this.text,ex);
 	                    }
@@ -144,7 +144,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 		};
 	    if (!panel.propMenu || panel.propertiesListChanged) {
 	        makeAddMenu(panel);
-	        this.propertiesListChanged = false;
+	        panel.propertiesListChanged = false;
 	    }
 	    panel.propMenu.showAt(ev.xy);
 	},
@@ -195,13 +195,19 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	 * list of properties that can be added.
 	 * @param {} onturl 
 	 */
-	setObjectType: function (onturl, object) {
+	setObjectType: function (onturl, type) {
 		var tthis = this;
+		if (this.onturl === onturl && this.type === type) {
+			return;
+		}
+		this.onturl = onturl;
+		this.type = type;
 		this.loadOntology(onturl, function callback(ontology) {
-			lore.debug.anno('loadOntology callback', {ontology:ontology,object:object});
+			lore.debug.anno('loadOntology callback', {ontology:ontology,type:type});
 			tthis.ontology = ontology;
+			tthis.propertiesList = [];
 			
-			ontology.where('?prop rdfs:domain <' + object + '>')
+			ontology.where('?prop rdfs:domain <' + type + '>')
 				.each(function () {
 					var name = this.prop.value.toString();
 					tthis.propertiesList.push(name.replace(lore.constants.NAMESPACES['austlit'], ''));
@@ -250,6 +256,13 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	        };
 	        xhr.send(null);
 		}
+	},
+	
+	reset: function () {
+		this.propertiesList = [];
+		this.onturl = "-";
+		this.propertiesListChanged = true;
+		this.getStore().removeAll();
 	}
 });
 
