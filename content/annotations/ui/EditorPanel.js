@@ -300,8 +300,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						items: [
 							{
 								xtype: 'textfield',
-								name: 'semantic-entity',
-								id: this.genID('semantic-entity'),
+								name: 'semanticEntity',
+								id: this.genID('semanticEntity'),
 								readOnly: true,
 								flex: 1
 							}, {
@@ -515,8 +515,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					editedRec.beginEdit();
 					
 					// TODO: check that the triple.property is rdf:type
-					editedRec.set("semantic-entity", triple.subject.value.toString());
-					editedRec.set("semantic-entity-type", triple.object.value.toString());
+					editedRec.set("semanticEntity", triple.subject.value.toString());
+					editedRec.set("semanticEntityType", triple.object.value.toString());
 					var metaselection = lore.global.util.getMetaSelection(triple);
 					editedRec.set("context", metaselection.xp);
 					
@@ -544,9 +544,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						var selText = '';
 						try {
 							selText = lore.global.util.getSelectionText(
-							rec.data.context, lore.global.util.getContentWindow(window).document)
-						} 
-						catch (e) {
+								rec.data.context, lore.global.util.getContentWindow(window).document)
+						} catch (e) {
 						}
 						
 						this.form.setValues([{
@@ -581,8 +580,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							
 							selText = lore.global.util.getSelectionText(
 							rec.data.variantcontext, lore.global.util.getContentWindow(window).document)
-						} 
-						catch (e) {
+						} catch (e) {
 						}
 						this.form.setValues([{
 							id: 'rcontextdisptxt',
@@ -604,24 +602,16 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					ctxtField.getEl().setStyle("background-color", "inherit");
 				}
 				
-				
-				// if semantic annotation and rdfa exists for page and a meta-context exists then resolve
-				// the context to a value and display in the meta context field
-				var rdfa = this.pageView.page.rdfa;
-				
 				var meta = rec.get('meta');
 				if (meta) {
 					this.metaUserGrid.getStore().loadData(meta);
 				}
-				lore.debug.anno('EditorPanel.load() semantic meta section', {rec:rec, rdfa:rdfa});
-						
-//				if (rdfa && rdfa.triples && lore.global.util.splitTerm(rec.data.type).term == 'MetadataAnnotation') {
-				
-				var semEntityField = this.form.findField('semantic-entity');
-				if (rec.data['semantic-entity']) {
+			
+				var semEntityField = this.form.findField('semanticEntity');
+				if (rec.get('semanticEntityType')) {
 
 					this.metaUserGrid.setVisible(true);
-					this.metaUserGrid.setObjectType('chrome://lore/content/ontologies/AustLit.xml', rec.get("semantic-entity-type"));
+					this.metaUserGrid.setObjectType('chrome://lore/content/ontologies/AustLit.xml', rec.get("semanticEntityType"));
 	
 					semEntityField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 				} else {
@@ -637,8 +627,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						if (!prec.data.isNew()) {
 							val += " ( " + rec.data.about + " )";
 						}
-					} 
-					else 
+					} else 
 						val = '';
 				}
 				this.form.setValues([{ id: 'res', value: val }]);
@@ -823,18 +812,24 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * @param {} metaStore The Store object from the Metadata Grid
 		 */
 		updateRecMetaFields: function(metaStore) {
-			lore.debug.anno('updateRecMetaFields()', {tthis:this});
 			var metaProps = [];
 			metaStore.each(function (rec) {
 				metaProps.push(rec.data);
 			});
+			this.rec.store.suspendEvents();
 			this.rec.set('meta', metaProps);
+			this.rec.store.resumeEvents();
 		},
 		
-		 /**
-   * Retrieve sub-component of this component
-   * @param {Object} id Id of sub-component
-   */
+		resetPanel: function() {
+			this.form.reset();
+			this.metaUserGrid.reset();
+		},
+		
+		/**
+		 * Retrieve sub-component of this component
+		 * @param {Object} id Id of sub-component
+		 */
 		genID: function (id) {
 			return this.id + "_" + id;
 		},

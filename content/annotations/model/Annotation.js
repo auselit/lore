@@ -367,7 +367,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 	 * @return {String} The RDF that was generated
 	 */
 
-	serialize : function ( annos, store, storeDates ) {
+	serialize: function ( annos, store, storeDates ) {
 		if (!annos.length )
 			annos = [annos];
 		
@@ -525,11 +525,6 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 					'"/>';
 				}
 			}
-			if (annoOrig.body != null && !annoOrig.meta && annoOrig.meta.length <= 0) {
-				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
-				rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
-				'">' + this.getBodyRDF(anno.title, anno.body) + '</body>';
-			}
 			if (annoOrig.tags) {
 				var tagsarray = anno.tags.split(',');
 				
@@ -589,8 +584,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 //				rdfxml += serializer.serializeToString(doc);
 //			}
 
-				
-			if (annoOrig.meta && annoOrig.meta.length > 0) {
+			if (anno.type.indexOf('Metadata') > -1) {
 				var meta = annoOrig.meta;
 				var doc = document.implementation.createDocument("","",null);
 				var body = doc.createElementNS(lore.constants.NAMESPACES["annotea"], 'body');
@@ -607,22 +601,19 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				body = doc.createElementNS(lore.constants.NAMESPACES["http"], 'Body');
 				body.setAttribute('rdf:parseType', 'Literal');
 				rdfDesc.appendChild(body);
-				
-				
+
 				node = this.createMetaRDFBody(annoOrig);
 				node = doc.importNode(node, true);
 				body.appendChild(node);
-				/*
-				for (var i = 0; i < meta.length; i++) {
-					var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['austlit'], meta[i].name);
-					var textNode = doc.createTextNode(meta[i].value);
-					rdfStatement.appendChild(textNode);
-					body.appendChild(rdfStatement);
-				}*/
-				
 				
 				var serializer = new XMLSerializer();
 				rdfxml += serializer.serializeToString(doc);
+			} else {
+				if (annoOrig.body != null) {
+					anno.body = lore.global.util.sanitizeHTML(anno.body, window);
+					rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
+					'">' + this.getBodyRDF(anno.title, anno.body) + '</body>';
+				}
 			}
 			
 			rdfxml += '</rdf:Description>';
@@ -634,8 +625,8 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 	
 	createMetaRDFBody: function(anno) {
 		var meta = anno.meta;
-		var metaContext = anno['semantic-entity'];
-		var metaType = anno['semantic-entity-type'];
+		var metaContext = anno['semanticEntity'];
+		var metaType = anno['semanticEntityType'];
 		
 		var doc = document.implementation.createDocument("","",null);
 		var node = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:RDF');

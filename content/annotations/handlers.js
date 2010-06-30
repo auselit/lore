@@ -116,6 +116,9 @@ lore.anno.ui.findNode = function (id, tree){
  */
 lore.anno.ui.selectAndShowNode = function (rec) {
 		var node = lore.anno.ui.findNode(rec.data.id);
+
+		// RESET THE FORM
+		lore.anno.ui.formpanel.resetPanel();
 		
 		lore.anno.ui.page.setCurrentAnno(rec);
 		if (node) {
@@ -198,19 +201,6 @@ lore.anno.ui.updateAnnoFromForm = function(){
 	
 	if (unsavedRec)
 		form.updateRecord(unsavedRec); // update from form
-}
-
-lore.anno.ui.updateAnnoForSave = function() {
-	var unsavedRec = lore.anno.ui.formpanel.getRec();
-	
-	if (!unsavedRec) {
-		return;
-	}
-	
-	unsavedRec = lore.anno.annoMan.findStoredRecById(unsavedRec.data.id);
-	
-	if (unsavedRec)
-		lore.anno.ui.formpanel.form.updateRecord(unsavedRec); // update from form
 }
 				
 /*
@@ -510,8 +500,7 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 			try {
 				// get text currently selected in the content window
 				currentContext = lore.anno.ui.pageui.getCurrentSelection();
-			} 
-			catch (e) {
+			} catch (e) {
 				lore.debug.anno("exception creating xpath for new annotation", e);
 			}
 		}
@@ -520,9 +509,6 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 		// for the newly created annotation
 		lore.anno.ui.updateAnnoFromForm();
 
-		// RESET THE FORM
-		lore.anno.ui.formpanel.form.reset();
-		
 		// once the node for this new annotation is added, select it.
 		var addSelectNodeHandler = function (anno) {
 			try {
@@ -536,19 +522,15 @@ lore.anno.ui.handleAddAnnotation = function(rec){
 					}
 					lore.anno.ui.treeunsaved.un('append', selectNode);
 				});
-			}catch(e){
+			} catch(e){
 				lore.debug.anno(e,e);
 			}
 		}
 		
 		var newRec = lore.anno.annoMan.addAnnotation(currentContext,  lore.anno.ui.currentURL, addSelectNodeHandler, rec);
 		
-		lore.anno.ui.page.setCurrentAnno(newRec);
-		lore.anno.ui.formpanel.show(newRec);
-		Ext.getCmp("treeview").doLayout();
-
-	} 
-	catch (e) {
+		lore.anno.ui.selectAndShowNode(newRec);
+	} catch (e) {
 		lore.debug.anno(e, e);
 	}
 }
@@ -641,7 +623,8 @@ lore.anno.ui.handleSaveAllAnnotationChanges = function(uri ){
 	try {
 		
 		// update existing annotation if needed before saving occurs
-		lore.anno.ui.updateAnnoForSave();
+		var unsavedRec = lore.anno.ui.formpanel.getRec();
+		lore.anno.annoMan.updateStoredRec(unsavedRec);
 		
 		if( lore.anno.ui.page.curSelAnno.data.isNew()) 
 			lore.anno.ui.page.setCurrentAnno();		// if new, this will be saved and removed from unsaved tree, so set current anno to blank
@@ -697,13 +680,13 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 		}
 		
 		// update anno with properties from form
-		lore.anno.ui.updateAnnoForSave();
+		lore.anno.annoMan.updateStoredRec(anno);
 		
 		
 		// if the record isn't found on the current page tree and it's a variation annotation
 		// then need update to tree as it should appear once the save is complete 
 		var refresh = anno.data.type == (lore.constants.NAMESPACES["vanno"] + "VariationAnnotation")
-		&& 	(lore.anno.ui.findNode(anno.data.id, lore.anno.ui.treeroot) == null);
+			&& (lore.anno.ui.findNode(anno.data.id, lore.anno.ui.treeroot) == null);
 		
 		
 		lore.anno.annoMan.updateAnnotation(anno, lore.anno.ui.currentURL, refresh, function(action, result, resultMsg){
@@ -712,8 +695,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 				lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
 				lore.debug.anno(action + 'd ' + anno.data.title, resultMsg);
 				lore.anno.ui.hideAnnotationEditor();
-			}
-			else {
+			} else {
 				lore.anno.ui.loreError('Unable to ' + action + ' annotation');
 				lore.debug.anno('Unable to ' + action + ' annotation', resultMsg);
 			}
@@ -857,9 +839,8 @@ lore.anno.ui.handleEditTreeNode = function (node) {
 		} else {
 			rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
 		}
+		
 		rec = lore.anno.annoMan.editRec(rec);
-		
-		
 		lore.anno.ui.selectAndShowNode(rec);
 	} catch (e) {
 		lore.debug.anno(e,e);

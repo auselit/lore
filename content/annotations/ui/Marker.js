@@ -173,7 +173,7 @@ lore.anno.ui.Marker.prototype = {
 				}
 			}
 			this.visible = false;
-		}catch (e){
+		} catch (e){
 			lore.debug.anno(e,e);
 		}
 	},
