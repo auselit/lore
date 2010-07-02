@@ -42,11 +42,12 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             coGraph.scrollArea = document.getElementById(this.id).parentNode;
             
             // create drop target for dropping new nodes onto editor from the sources and search trees
-            var droptarget = new Ext.dd.DropTarget(this.id, {
+            /*var droptarget = new Ext.dd.DropTarget(this.id, {
                     'ddGroup' : 'TreeDD',
                     'copy' : false
             });
             droptarget.notifyDrop = function(dd, e, data) {
+                lore.debug.ore("notifydrop treedd",data);
                 var ge = lore.ore.ui.graphicalEditor;
                 var coGraph = ge.coGraph;
                 var figopts = {
@@ -59,6 +60,30 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     }
                 };
                 ge.addFigure(figopts);
+                return true;
+            };*/
+            
+            
+            // create drop target for dropping new nodes onto editor from the compound objects dataview
+            var droptarget = new Ext.dd.DropTarget(this.id, {
+                    'ddGroup' : 'coDD',
+                    'copy' : false
+            });
+            droptarget.notifyDrop = function(dd, e, data) {
+                //lore.debug.ore("notifydrop codd",data);
+                var ge = lore.ore.ui.graphicalEditor;
+                var coGraph = ge.coGraph;
+                var figopts = {
+                    url : data.draggedRecord.data.uri,
+                    x : (e.xy[0] - coGraph.getAbsoluteX() + coGraph.getScrollLeft()),
+                    y : (e.xy[1] - coGraph.getAbsoluteY() + coGraph.getScrollTop()),
+                    props : {
+                        "rdf:type_0" : lore.constants.RESOURCE_MAP,
+                        "dc:title_0" : data.draggedRecord.data.title
+                    }
+                };
+                ge.addFigure(figopts);
+                
                 return true;
             };
         }

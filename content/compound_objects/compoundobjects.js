@@ -239,7 +239,8 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
     // Reset the search results and explore view
     if (lore.ore.coListManager){
         lore.ore.coListManager.clear("search");
-        lore.ore.ui.searchtreeroot.setDetails([]);
+        
+        //lore.ore.ui.searchtreeroot.setDetails([]);
     }
     if (lore.ore.explore && lore.ore.cache){
         lore.ore.explorePanel.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
@@ -277,13 +278,13 @@ lore.ore.search = function (searchuri, searchpred, searchval){
     if (searchval){
         searchTerms.push("<i>matching: </i>" + searchval);
     }
-    lore.ore.ui.searchtreeroot.setDetails(searchTerms);
+    //TODO: display search details in new dataview
+    //lore.ore.ui.searchtreeroot.setDetails(searchTerms);
+
+    // display loading message
+    var searchview = Ext.getCmp('cosview');
+    searchview.onBeforeLoad();
     
-    /*if (lore.ore.reposURL && lore.ore.reposType == 'sesame'){
-        lore.ore.sesame.getCompoundObjects(searchuri, searchpred, searchval, true);
-    } else if (lore.ore.reposURL && lore.ore.reposType == 'fedora'){
-        // lore.ore.fedora.getCompoundObjects(searchuri, searchpred, searchval, true);
-    }*/
     lore.ore.reposAdapter.getCompoundObjects(searchuri, searchpred,searchval,true);
     } catch (e){
         lore.debug.ore("exception in search",e);
@@ -1328,7 +1329,11 @@ lore.ore.afterSaveCompoundObject = function(remid){
     };
     // If the current URL is in the compound object, show in related compound objects
     if (lore.ore.ui.graphicalEditor.lookup[lore.ore.ui.currentURL]){
-       lore.ore.coListManager.add([new lore.ore.model.CompoundObjectSummary(coopts)]);
+       lore.ore.coListManager.add([
+       //new lore.ore.model.CompoundObjectSummary(
+       coopts
+       //)
+       ]);
     }
     lore.ore.historyManager.addToHistory(remid, title);  
 }

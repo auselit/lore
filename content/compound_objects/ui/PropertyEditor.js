@@ -103,23 +103,19 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     e.cancel = true;
                 }
             });
-            // update the CO title in the tree if it is changed in the properties
+           
             this.on("afteredit", function(e) {
                 try{
-                if (e.record.id == "dc:title_0") {
-                    // FIXME: treenodes not being found
-                    var currREM = lore.ore.cache.getLoadedCompoundObjectUri();
-                    var treenode = lore.ore.ui.remstreeroot.findChild("id",currREM);
-                    if (treenode) {
-                        treenode.setText(e.value);
-                    }
-                    lore.debug.ore("related treenode? ",treenode);
-                    treenode = lore.ore.ui.recenttreeroot.findChild("id", currREM + "r");
-                    if (treenode) {
-                        treenode.setText(e.value);
-                    }
-                    lore.debug.ore("history treenode? ",treenode);
-                }
+                    
+                
+                 // update the CO title in the dataview
+                   
+                  if (e.record.id == "dc:title_0") {
+                    lore.ore.coListManager.updateCompoundObject(
+                        lore.ore.cache.getLoadedCompoundObjectUri(),
+                        {title: e.value}
+                    );
+                  }
                 // commit the change to the datastore
                 this.store.commitChanges();
                 } catch (e){

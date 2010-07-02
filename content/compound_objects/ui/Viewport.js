@@ -1,3 +1,4 @@
+
 lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
     layout : "border",
     border : false,
@@ -15,21 +16,24 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                 plugins : new Ext.ux.plugin.VisibilityMode({
                             hideMode : 'nosize',
                             bubble : false
-                        }),
+                }),
                 deferredRender : false,
                 autoScroll : true,
                 items : [{
                             title : "Graphical Editor",
+                            tabTip: "View or edit the current compound object",
                             id : "drawingarea",
                             xtype : "grapheditor"
                         }, {
                             title : "Resources",
+                            tabTip: "View textual summary of current compound object contents",
                             xtype : "summarypanel",
                             id : "remlistview"
                         }, {
                             layout : 'fit',
                             id : "remslideview",
                             title : "Slideshow",
+                            tabTip: "View current compound object contents as a slideshow",
                             items : [{
                                         id : 'newss',
                                         xtype : "slideshowpanel",
@@ -75,6 +79,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                              * id='trailcarousel'></div>" },
                              */{
                             title : "Explore",
+                            tabTip: "Discover related resources from the repository",
                             id : "remexploreview",
                             xtype : "explorepanel"
                             /*
@@ -82,6 +87,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                              */
                     }   , {
                             title : "Using Compound Objects",
+                            tabTip: "View LORE documentation",
                             id : "welcome",
                             autoWidth : true,
                             autoScroll : true,
@@ -112,14 +118,49 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             },
             fitToFrame : true,
             items : [{
-                        xtype : "cotree",
-                        title : "Browse",
-                        id : "sourcestree"
-
-                    }, {
+                        "xtype": "panel",
+                        layout: "anchor",
+                        "title": "Browse",
+                        tabTip: "Browse related compound objects",
+                        "id": "browsePanel",
+                        autoScroll: true, 
+                            "tbar": {
+                                "xtype": "lore.paging",
+                                "store": "browse",
+                                "id": "bpager"
+                            },
+                        items: [
+                            {
+                                "xtype": "codataview",
+                                "store": "browse",
+                                "id": "cobview"
+                            }
+                        ]
+                     },
+                     {
+                            title: "History",
+                            tabTip: "List recently viewed compound objects",
+                            id: "historyPanel",
+                            xtype: "panel",
+                            anchor: "100% 50%",
+                            autoScroll: true,
+                            "tbar": {
+                                "xtype": "lore.paging",
+                                "store": "history",
+                                "id": "hpager"
+                           
+                            },
+                        items: [{
+                            "xtype": "codataview",
+                            "store": "history",
+                            "id": "cohview"
+                        }]
+                    },
+                    {
                         xtype : "panel",
                         layout : "border",
                         title : "Search",
+                        tabTip: "Find compound objects",
                         id : "searchpanel",
                         autoScroll : false,
                         items : [{
@@ -135,6 +176,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                 xtype : "panel",
                                 layout : "hbox",
                                 title : "Keyword",
+                                tabTip: "Search by keyword across all fields",
                                 id : "kwsearchform",
                                 padding : 3,
                                 layoutConfig : {
@@ -164,6 +206,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                 }]
                             }, {
                                 title : "Advanced",
+                                tabTip: "Search specific fields",
                                 autoHeight : true,
                                 autoWidth : true,
                                 xtype : "form",
@@ -200,6 +243,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                     valueField : 'uri',
                                     emptyText : "any property or relationship",
                                     store : new Ext.data.ArrayStore({
+                                                storeId: 'advancedSearchPredStore',
                                                 fields : ['uri', 'curie'],
                                                 data : []
                                             })
@@ -216,16 +260,34 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                     tooltip : 'Run the search'
                                 }]
                             }]
-                        }, {
-                            region : "center",
-                            minHeight : 0,
-                            xtype : "cotree",
-                            id : "searchtree"
-                        }]
+                        }, 
+                        {
+                            region:"center",
+                            minHeight: 0,
+                            "xtype": "panel",
+                            layout: "anchor",
+                            "id": "searchResultPanel",
+                            autoScroll: true, 
+                                "tbar": {
+                                    "xtype": "lore.paging",
+                                    "store": "search",
+                                    "id": "spager"
+                                    
+                                },
+                            items: [
+                                {
+                                    "xtype": "codataview",
+                                    "store": "search",
+                                    "id": "cosview"
+                                }
+                            ]
+                         }
+                        ]
                     }, {
                         xtype : "panel",
                         layout : "anchor",
                         title : "Properties",
+                        tabTip: "View or edit compound object properties",
                         id : "properties",
                         items : [{
                                     title : 'Compound Object',
@@ -238,7 +300,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                 }]
                     }]
         }];
+        
         lore.ore.ui.Viewport.superclass.initComponent.call(this);
     }
-
 });

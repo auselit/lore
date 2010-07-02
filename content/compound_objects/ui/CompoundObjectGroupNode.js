@@ -57,9 +57,8 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
             this.model.on("clear",this.clearChildren,this);
             this.model.on("remove", this.removeCompoundObject, this);
             // load contents from model
-            var initialContents = this.model.getCompoundObjectsList();
-            if (initialContents){
-                this.addCompoundObjects(initialContents);
+            if (this.model.data.items){
+                this.addCompoundObjects(this.model,this.model.data.items);
             }
         }
     },
@@ -73,29 +72,31 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
     },
     /** 
      * Respond to add event from the model 
-     * @param {lore.ore.model.CompoundObjectSummary} coSummary Details of added compound objects
      **/
-    addCompoundObjects : function(coList){
+    addCompoundObjects : function(store, records, index){
         try{
-        if (coList){
-            for (var i=0; i<coList.length;i++){   
-                var remuri = coList[i].getUri();
-                // if node already exists remove it
-                this.removeCompoundObject(remuri); 
-                var newNode = new lore.ore.ui.CompoundObjectTreeNode(
-                    {
-                        'id': this.generateNodeId(remuri),
-                        'model':coList[i]
-                    }
-                );
-                
-                if (this.reverse && this.firstChild){
-                        this.insertBefore(newNode, this.firstChild);
-                } else {
-                    this.appendChild(newNode);  
+        if (records){
+            for (var i=0; i < records.length;i++){
+                var rec = records[i].data;
+                if (rec && rec.uri){
+                    var remuri = rec.uri;
+                    // if node already exists remove it
+                    this.removeCompoundObject(this.model, records[i]); 
+                    var newNode = new lore.ore.ui.CompoundObjectTreeNode(
+                        {
+                            'id': this.generateNodeId(remuri),
+                            'model': rec
+                        }
+                    );
                     
+                    if (this.reverse && this.firstChild){
+                            this.insertBefore(newNode, this.firstChild);
+                    } else {
+                        this.appendChild(newNode);  
+                        
+                    }
+                    this.attachRemActions(newNode); 
                 }
-                this.attachRemActions(newNode); 
             }
             // only expand if this node has been added to a tree
             if (this.getOwnerTree()) {this.expand();}
@@ -108,7 +109,8 @@ lore.ore.ui.CompoundObjectGroupNode = Ext.extend(Ext.tree.TreeNode,{
      * Respond to remove event from the model 
      * @param {String} uri The identifier for the compound object that was removed
      **/
-    removeCompoundObject: function (uri){
+    removeCompoundObject: function (store, record, index){
+        var uri = record.data.uri;
         var existingNode = this.findChild('id',this.generateNodeId(uri));
         if (existingNode){
             existingNode.remove(true);
