@@ -127,10 +127,10 @@
 .x-tree-node .rel-out {
 	background-image: url(chrome://lore/skin/icons/arrow_right.png);
 }
-.x-tree-node .oreresult {
+.oreresult {
 	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png) !important;
 }
-.x-tree-node .ro-oreresult {
+.ro-oreresult {
     background-image: url(chrome://lore/skin/icons/oaioreicon-grey.png) !important; 
 }
 .x-tree-node .anno-icon, .anno-icon {
@@ -210,6 +210,13 @@
 }
 .edit-icon {
     background-image: url(chrome://lore/skin/icons/pencil.png);
+}
+.underlined {
+	
+	padding-bottom: 2px;
+	display:block;
+	width: 100%;
+	border-bottom: 1px solid #51666b;
 }
 .orelink {
 	font-style:italic; 
@@ -584,4 +591,17 @@
 }
 .co-load-msg .x-window-header {
 	height:0;
+}
+
+.coListing {
+	padding: 2px;
+    padding-bottom:3px;
+    cursor:pointer;
+}
+.coListing table {
+    font-family: tahoma, arial, helvetica;
+    font-size: smaller;
+}
+div.coListing:hover {
+	background-color: #eeeeee;
 }

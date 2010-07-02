@@ -112,5 +112,7 @@
 .x-tree-node a, .anno-search {
 	color: orange !important;
 }
-
+div.coListing:hover {
+    background-color: orange;
+}
 	
