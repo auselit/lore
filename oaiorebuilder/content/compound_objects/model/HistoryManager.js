@@ -52,12 +52,13 @@ lore.ore.model.HistoryManager.prototype = {
 		     var browserHistory = this.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
 		     browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
              this.listManager.add(
-	            [new lore.ore.model.CompoundObjectSummary(
+	            [
 	            {
 	                'uri': remurl,
 	                'title': title,
 	                'accessed': visitDate
-	            })],
+	            }
+                ],
 	            'history'
 	         );
           } catch (e){
@@ -91,6 +92,7 @@ lore.ore.model.HistoryManager.prototype = {
 		    var result = this.historyService.executeQuery(query, options);
 		    result.root.containerOpen = true;
 		    var count = result.root.childCount;
+            var coList = [count];
 		    for (var i = 0; i < count; i++) {
 		        var theobj = {};
 		        var node = result.root.getChild(i);
@@ -100,16 +102,13 @@ lore.ore.model.HistoryManager.prototype = {
 		        var lastVisitedTimeInMicrosecs = node.time;
 		        var thedate = new Date();
 		        thedate.setTime(lastVisitedTimeInMicrosecs / 1000);
-		        this.listManager.add(
-		                [new lore.ore.model.CompoundObjectSummary(
-		                {
-		                    'uri': uri,
-		                    'title': title,
-		                    'accessed': thedate
-		                })],
-		                'history'
-		        );
+		        coList[i] = {
+                    'uri': uri,
+                    'title': title,
+                    'accessed': thedate
+		        };
 		    }
+            this.listManager.add(coList, 'history');
 		    result.root.containerOpen = false;
 		  } catch (e) {
 		    lore.debug.ore("Error retrieving history",e);

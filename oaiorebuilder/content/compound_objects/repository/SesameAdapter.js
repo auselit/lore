@@ -93,7 +93,8 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 					        for (var i = 0; i < result.length; i++) {
 					            var theobj = new lore.ore.model.CompoundObjectSummary(result[i]);
 					            if (matchval) {theobj.setSearchVal(matchval);}
-					            coList[i] = theobj; 
+                                // TODO: hack to make it work with store
+					            coList[i] = theobj.getProperties(); 
 					        }
 					        lore.ore.coListManager.add(coList,listname);
 					    } 

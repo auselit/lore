@@ -76,44 +76,6 @@ lore.ore.ui.initUIComponents = function() {
 	lore.ore.ui.nodegrid = Ext.getCmp("nodegrid");
 	lore.ore.ui.status = Ext.getCmp("lorestatus");
 
-	/**
-	 * The root of the tree used to display compound objects related to the
-	 * resource loaded in the browser
-	 */
-	lore.ore.ui.remstreeroot = new lore.ore.ui.CompoundObjectGroupNode({
-		id : "remstree",
-		text : "Related Compound Objects",
-		qtip : "Compound Objects that refer to the page displayed in the web browser"
-	});
-	// display browse tree if nodes are added
-	lore.ore.ui.remstreeroot.on("append", function() {
-				Ext.getCmp("propertytabs").activate("sourcestree");
-			});
-	/** The root of the tree used to display compound objects from history */
-	lore.ore.ui.recenttreeroot = new lore.ore.ui.CompoundObjectGroupNode({
-		id : "recenttree",
-		text : "Recently Viewed Compound Objects",
-		qtip : "Compound Objects that have been viewed recently",
-		reverse : true
-	});
-	// set up the sources tree
-	var sourcestreeroot = Ext.getCmp("sourcestree").getRootNode();
-	sourcestreeroot.appendChild(lore.ore.ui.remstreeroot);
-	sourcestreeroot.appendChild(lore.ore.ui.recenttreeroot);
-	lore.ore.ui.remstreeroot.addModel(lore.ore.coListManager.getList("browse"));
-	lore.ore.ui.recenttreeroot.addModel(lore.ore.coListManager.getList("history"));
-
-	/** Tree used to display search results */
-	lore.ore.ui.searchtreeroot = new lore.ore.ui.CompoundObjectGroupNode({
-				id : "searchtreeR",
-                qtip: "Search results",
-				text : "Search Results"
-	});
-	Ext.getCmp("searchtree").getRootNode().appendChild(lore.ore.ui.searchtreeroot);
-	lore.ore.ui.searchtreeroot.addModel(lore.ore.coListManager.getList("search"));
-    lore.debug.ore("searchtree",Ext.getCmp("searchtree"));
-    lore.debug.ore("sourcestree", Ext.getCmp("sourcestree"));
-    
 	/** Tree used to display properties in resource details editor */
 	lore.ore.ui.resproptreeroot = new Ext.tree.TreeNode({
 				id : "resproptree",
@@ -232,16 +194,22 @@ lore.ore.ui.initUIComponents = function() {
                 }
     });
     sidetabs.on('beforeexpand', function(p){p.body.setStyle('display','block');});
-    sidetabs.activate("sourcestree");
+    sidetabs.activate("browsePanel");
 	Ext.QuickTips.interceptTitles = true;
 	Ext.QuickTips.init();
+    
+    // set up drag and drop from browse/history/search dataviews to graphical editor
+    var d1 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cobview'));
+    var d2 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cohview'));
+    var d3 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cosview'));
 }
 
 lore.ore.initModel = function() {
 	lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();
 	lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
     lore.ore.cache = new lore.ore.model.CompoundObjectCache();
-	lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
+	/*lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
+                storeId: "resourceStore",
 				fields : ['title', 'uri', 'display'],
 				data : [],
 				lastOptions : {
@@ -251,7 +219,7 @@ lore.ore.initModel = function() {
 					}
 				}
 			});
-
+    */
 	lore.ore.resource_metadata_props = [];
 	lore.ore.all_props = lore.ore.METADATA_PROPS;
 }

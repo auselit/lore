@@ -37,7 +37,7 @@ lore.ore.ui.CompoundObjectTree = Ext.extend(Ext.tree.TreePanel, {
         Ext.apply(this, {
             root: new Ext.tree.TreeNode({'draggable':false})
         });
-        lore.ore.ui.CompoundObjectTree.superclass.initComponent.apply(this, arguments);
+        lore.ore.ui.CompoundObjectTree.superclass.initComponent.call(this, arguments);
     },
     /** 
      * Override the onInvalidDrop function on the dragZone  so that dragged element is 

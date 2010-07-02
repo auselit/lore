@@ -30,7 +30,10 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
         this.model = config.model;
         this.initConfig(this.model);
         // listen for model property changes
-        this.model.on("propertiesChanged", this.handleModelPropertiesChanged, this);
+        
+        // TODO: listen for update from store
+        //this.model.on("propertiesChanged", this.handleModelPropertiesChanged, this);
+        
         this.addEvents('detailschange');
         lore.ore.ui.CompoundObjectTreeNode.superclass.constructor.call(this, this.config); 
    },
@@ -49,8 +52,8 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
     * Set the intial config values for text, uri etc from the model object
     * @param {lore.ore.model.CompoundObjectSummary} coSummary Model object for this tree node
     */
-   initConfig: function(coSummary){
-        var coProps = coSummary.getProperties();
+   initConfig: function(coProps){
+       
         var iconCls = 'ro-oreresult';
         if (lore.ore.reposAdapter && coProps.uri.match(lore.ore.reposAdapter.idPrefix)){
             iconCls = 'oreresult';  
