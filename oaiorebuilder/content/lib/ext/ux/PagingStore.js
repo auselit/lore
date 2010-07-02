@@ -24,6 +24,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.data.Store, {
         // *** add ***
         this.totalLength += records.length;
         // *** end ***
+        this.applySort();
         this.fireEvent('add', this, records, index);
     },
     remove: function (record) {
