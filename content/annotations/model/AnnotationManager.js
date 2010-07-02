@@ -569,7 +569,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	},
 	
 	parseMetaBody: function(anno, rdfBody) {
-		lore.debug.anno('parseMetaBody()', rdfBody);
 		var node = rdfBody.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
 		
 		var meta = [];
@@ -579,7 +578,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			anno.set('semanticEntity', semanticEntity);
 			
 			var children = node[0].children;
-			lore.debug.anno('found metadata', {node:node,children:children});
 			
 			for (var i = 0; i < children.length; i++) {
 				var metaObj = {};

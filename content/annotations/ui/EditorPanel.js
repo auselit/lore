@@ -350,15 +350,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						enableFont: false,
 						enableColors: false,
 						enableSourceEdit: false,
-						anchor: '-30 65%'/*,
-						listeners: {
-							sync: {
-								fn: function updateForm() {
-									lore.anno.ui.updateAnnoFromForm();
-								},
-								scope: this
-							}
-						}*/
+						anchor: '-30 65%'
 					}, {
 						fieldLabel: 'Alt Body',
 						xtype: 'htmleditor',
@@ -687,7 +679,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * @param {Boolean} loadOnly (Optional) Load the annotation data into form fields but don't show editor. Defaults to false.
 		 */
 		show: function(rec){
-			lore.debug.anno('EditorPanel.show()', {rec:rec,editorPanel:this, values:this.form.getValues()});
 			this.load(rec);
 			lore.anno.ui.EditorPanel.superclass.show.apply(this, arguments);
 			
