@@ -1,4 +1,5 @@
 lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
+       pageSize: 5,
        initComponent : function(){
         var pagingItems = [this.prev = new Ext.Toolbar.Button({
             tooltip: this.prevText,
@@ -31,7 +32,25 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
             disabled: true,
             handler: this.moveNext,
             scope: this
-        }),'->'
+        }),'Sort by:',
+        {
+                xtype: 'combo',
+                triggerAction: 'all',
+                width: 100,
+                editable: false,
+                mode: 'local',
+                displayField: 'desc',
+                valueField: 'name',
+                lazyInit: false,
+                value: this.id == 'hpager'? 'accessed' : 'modified',
+                store: new Ext.data.ArrayStore({
+                    fields: ['name', 'desc'],
+                    data : (this.id == 'hpager'? [['title', 'Title'],['accessed','Last accessed']] : [['title', 'Title'],['creator','Creator'],['modified', 'Last Modified']])
+                }),
+                listeners: {
+                    'select': {fn:this.sortCompoundObjects, scope:this}
+                }
+        }
         ];
 
 
@@ -55,8 +74,15 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
         this.cursor = 0;
         this.bindStore(this.store, true);
     },
+    sortCompoundObjects: function(){
+        var v = this.items.last().getValue();
+        this.store.sort(v, (v == 'title' || v == 'creator') ? 'asc' : 'desc');
+        this.moveFirst();
+    },
     onClear: function () {
         this.cursor = 0;
+        // Fix paging after clear: reset back to first page
+        this.store.lastOptions = {params:{start: 0, limit: 5}};
         this.onChange();
     },
     bindStore: function (store, initial) {
@@ -103,8 +129,6 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
             this.cursor = Math.ceil((t + 1) / s) * s;
         }
         var d = this.getPageData(), ap = d.activePage, ps = d.pages;
-        lore.debug.ore("store data " + this.store.data.items.length,this.store.data);
-        lore.debug.ore("number of pages is " + ps +  " total is " + t);
         this.afterTextItem.setText(String.format(this.afterPageText, ps));
         this.inputItem.setValue(ap);
         if (ps <= 1){
@@ -112,8 +136,7 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
             this.beforePageTextItem.hide();
             this.inputItem.hide();
             this.afterTextItem.hide();
-            this.next.hide();
-            
+            this.next.hide(); 
         } else {
             this.prev.show();
             this.beforePageTextItem.show();
