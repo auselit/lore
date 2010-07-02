@@ -78,7 +78,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 }
             },
             onCreateLabel: function(domElement, node) {
-               lore.debug.ore("onCreateLabel",domElement);
+               //lore.debug.ore("onCreateLabel",domElement);
                var d = Ext.get(domElement);
                d.update(node.name);
                d.setOpacity(0.8);
@@ -120,10 +120,10 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 }
                 var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
                     + "'><img style='border:none' src='" + icon 
-                    + "'></a>&nbsp;<a href='#' onclick=\"try{lore.debug.ore('aftercompute click history');lore.ore.explorePanel.rg.onClick('" 
+                    + "'></a>&nbsp;<a href='#' onclick=\"try{lore.ore.explorePanel.rg.onClick('" 
                     + node.id + "');}catch(e){lore.debug.ore('problem with history onClick',e);}\">" + node.name + "</a>";
                 Ext.get('exploreHistory').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
-                lore.debug.ore("rg is ",lore.ore.explorePanel.rg);
+                //lore.debug.ore("rg is ",lore.ore.explorePanel.rg);
                 //lore.debug.ore("nodelink was " + nodelink);
                 //lore.debug.ore("this is",this);
                 this.requestGraph();
@@ -132,7 +132,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 }
             }
         });
-        lore.debug.ore("added contextmenu to infovis");
+        //lore.debug.ore("added contextmenu to infovis");
         
         if (this.body){
             this.mon(this.body, {
@@ -142,7 +142,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         }
     },
     onContextMenu : function (e){
-        lore.debug.ore("ExplorePanel.onContextMenu: ",e);
+        //lore.debug.ore("ExplorePanel.onContextMenu: ",e);
         
         if (!this.contextmenu) {
             this.contextmenu = new Ext.menu.Menu({
@@ -204,11 +204,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     updateContent : function (p) {
         var currentREM = lore.ore.cache.getLoadedCompoundObjectUri();
         if (this.exploreLoaded !== currentREM) {
-            lore.debug.ore("updateContent: show in explore view", currentREM);
+            //lore.debug.ore("updateContent: show in explore view", currentREM);
             this.exploreLoaded = currentREM;
             this.showInExploreView(currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
         } else {
-            lore.debug.ore("refresh explore view");
+            //lore.debug.ore("refresh explore view");
             this.rg.refresh();
         }
         lore.ore.ui.loreInfo("Click on the nodes to explore connections between compound objects.");
@@ -220,7 +220,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {function} f Function to apply
      */
     loadRem : function(id, title, isCompoundObject, f){
-        lore.debug.ore("loadRem " + title + " " + id);
+        //lore.debug.ore("loadRem " + title + " " + id);
         // get json from sparql query
         var json = lore.ore.reposAdapter.getExploreData(id,title,isCompoundObject);
         if (json){
@@ -232,7 +232,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {String} title Label to display for the compound object
      */
         showInExploreView : function (id, title, isCompoundObject){
-            lore.debug.ore("show in explore view " + title);
+            //lore.debug.ore("show in explore view " + title);
             try{
         this.initGraph();
         this.loadRem(id, title, isCompoundObject, function(json){
@@ -251,7 +251,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             }
             var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
             + "'><img style='border:none' src='" + icon +"'>" 
-            + "</a>&nbsp;<a href='#' onclick=\"try{lore.debug.ore('click history');lore.ore.explorePanel.rg.onClick('" 
+            + "</a>&nbsp;<a href='#' onclick=\"try{lore.ore.explorePanel.rg.onClick('" 
             + id + "');}catch(e){lore.ore.debug('problem',e);}\">" + title + "</a>";
             Ext.get('exploreHistory').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
         });  
