@@ -602,6 +602,8 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				body.setAttribute('rdf:parseType', 'Literal');
 				rdfDesc.appendChild(body);
 
+				var pi = doc.createProcessingInstruction('xml-stylesheet', 'href="/danno/stylesheets/meta-to-html.xslt" type="text/xsl"');
+				body.appendChild(pi);
 				node = this.createMetaRDFBody(annoOrig);
 				node = doc.importNode(node, true);
 				body.appendChild(node);
@@ -629,6 +631,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 		var metaType = anno['semanticEntityType'];
 		
 		var doc = document.implementation.createDocument("","",null);
+		
 		var node = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:RDF');
 		doc.appendChild(node);
 		

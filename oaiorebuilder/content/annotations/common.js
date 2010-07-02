@@ -338,11 +338,14 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
         "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
     }
 	
-    var body;
+    var body = '';
     if (annodata.bodyLoaded) {
     	if (annodata.meta.length > 0) {
     		// Metadata annotation
     		body = 'Metadata Annotation<br>';
+    		for (var i = 0; i < annodata.meta.length; i++) {
+    			body += '<b>' + annodata.meta[i].name + '</b>: ' + annodata.meta[i].value + '<br>';
+    		}
     	} else {
     		body = annodata.body;
     	}
