@@ -1063,6 +1063,8 @@ util = {
     sanitizeHTML : function(html, win) {
         var serializer = new win.XMLSerializer();
         
+        html = html.replace(/<br>$/,'');
+        
         var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
             .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
             .parseFragment(html, false, null, win.document.body);
