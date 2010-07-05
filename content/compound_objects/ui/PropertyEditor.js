@@ -8,6 +8,72 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             collapsible : true,
             collapseFirst: false,
             animCollapse : false,
+            propEditorWindow: new Ext.Window({ 
+                modal: true,
+                closable: false,
+                layout: 'fit',
+                animateTarget: 'properties',
+                focus: function() {
+                    this.getComponent(0).focus();
+                },
+                editField: function(tfield,row){
+                    try {
+                        lore.debug.ore("editField",[tfield,row]);
+                        this.triggerField = tfield;
+                        this.activeRow = row;
+                        var val = tfield.getValue();
+                        this.getComponent(0).setValue(val? val : '');
+                        this.show(); 
+                        this.focus();
+                    } catch (e){
+                        lore.debug.ore("problem in editField",e);
+                    }
+                },
+                items: [
+                    {
+                        xtype: 'textarea',
+                        validateOnBlur: false,
+                        width: 400,
+                        grow: false,
+                        height: 150
+                    }
+                ],
+                bbar: [
+                    '->',
+                    {
+                        xtype: 'button',
+                        qtip: 'Update the property value and close editor',
+                        text: 'Update',
+                        scope: this, // the properties panel
+                        handler: function(btn, ev){
+                            try{
+                                var w = this.propEditorWindow;
+                                var ta = w.getComponent(0);
+                                lore.debug.ore("text area value is ",ta.getRawValue());
+                                this.store.getAt(w.activeRow).set('value',ta.getRawValue());
+                                this.store.commitChanges();
+                                w.hide();
+                            } catch (e){
+                                lore.debug.ore("problem in update",e);
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'button', 
+                        qtip: 'Cancel edits and close editor',
+                        text: 'Cancel',
+                        scope: this, // the properties panel
+                        handler: function(btn, ev){
+                            try{
+                                var w = this.propEditorWindow;
+                                w.hide();
+                            } catch (e){
+                                lore.debug.ore("problem in cancel",e);
+                            }
+                        }
+                    }
+                ]
+            }),
             store : new Ext.data.JsonStore({
                 idProperty : 'id',
                 fields : [
@@ -25,28 +91,30 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }),
             colModel : new Ext.grid.ColumnModel({
                 columns : [{
-                            id : 'name',
+                            //id : 'pname',
                             header : 'Property Name',
                             sortable : true,
                             dataIndex : 'name',
                             menuDisabled : true
                  }, {
-                            id : 'value',
+                            //id : 'pvalue',
                             header : 'Value',
                             dataIndex : 'value',
                             menuDisabled : true,
-                            /*
-                             * editor: new
-                             * Ext.form.TriggerField({
-                             * id: "propedittrigger",
-                             * 'triggerClass':
-                             * 'x-form-ellipsis-trigger',
-                             * 'onTriggerClick':
-                             * function(ev) {
-                             * 
-                             *  } })
-                             */
-                            editor : new Ext.form.TextField()
+                            
+                           editor: new Ext.form.TriggerField({
+                                 propertyEditor: this,
+                                 'triggerClass': 'x-form-ellipsis-trigger',
+                                 onTriggerClick: function(ev) {
+                                    try{ 
+                                     var row = this.propertyEditor.lastEdit.row;
+                                     this.propertyEditor.stopEditing();
+                                     this.propertyEditor.propEditorWindow.editField(this,row);  
+                                    } catch (e){
+                                        lore.debug.ore("problem in trigger click",e);
+                                    }
+                                 } 
+                           })
                         }
 
                 ]
