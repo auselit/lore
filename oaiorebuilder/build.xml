@@ -3,8 +3,9 @@
 <project name="lore" default="dist-nojar">
 	<property name="src.dir" value="." />
 	<property name="dist.dir" value="dist" />
+	<property name="build.dir" value="tmpbuild" />
 	<property name="app.name" value="lore@maenad.itee.uq.edu.au" />
-	<property name="app.id" value="${app.name}" /> 
+	<property name="app.id" value="${app.name}" />
 
 	<target name="chrome">
 		<mkdir dir="${dist.dir}" />
@@ -32,13 +33,14 @@
 			</fileset>
 		</zip>
 	</target>
-	
-	<target name="dist-nojar" >
+
+	<target name="dist-nojar">
 		<mkdir dir="${dist.dir}" />
-		<zip destfile="${dist.dir}/${app.name}.xpi">
-			<zipfileset file="${src.dir}/chrome.manifest" fullpath="chrome.manifest"/>
+		<mkdir dir="${build.dir}" />
+		
+		<!-- Copy all required dist files into a temporary directory -->
+		<copy todir="${build.dir}">
 			<fileset dir="${src.dir}">
-				<!--include name="chrome.manifest" /-->
 				<include name="content/**" />
 				<include name="locale/**" />
 				<include name="skin/**" />
@@ -50,7 +52,20 @@
 				<exclude name="content/lib/ext3.2/adapter/jquery/ext-jquery-adapter-debug.js" />
 				<exclude name="**/*.psd" />
 			</fileset>
+			<filelist dir="." files="chrome.manifest" />
+		</copy>
+		
+		<!-- replace references to development/debugging library files -->
+		<replace dir="${build.dir}/" includes="**/*.html" token="ext-jquery-adapter-debug.js" value="ext-jquery-adapter.js"/>
+		<replace dir="${build.dir}/" includes="**/*.html" token="ext-all-debug.js" value="ext-all.js"/>
+
+		<!-- create distribution xpi -->
+		<zip destfile="${dist.dir}/${app.name}.xpi">
+			<fileset dir="${build.dir}" />
 		</zip>
+		
+		<!-- remove temporary directory -->
+		<delete dir="${build.dir}" />
 	</target>
 	
 	<target name="clean">
