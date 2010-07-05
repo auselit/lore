@@ -42,13 +42,7 @@ lore.anno.ui.disableUIFeatures = function(opts){
 		lore.anno.ui.disableUIFeatures.initialCall = 1;
 	}
 	else {
-	
-		if (opts.disable) {
-			lore.anno.ui.topView.setAnnotationsVisibility(false);
-		}
-		else {
-			lore.anno.ui.topView.setAnnotationsVisibility(true);
-		}
+		lore.anno.ui.topView.setAnnotationsVisibility(!opts.disable);
 	}
 }
 
