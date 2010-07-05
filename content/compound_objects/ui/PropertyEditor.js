@@ -49,9 +49,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             try{
                                 var w = this.propEditorWindow;
                                 var ta = w.getComponent(0);
-                                lore.debug.ore("text area value is ",ta.getRawValue());
-                                this.store.getAt(w.activeRow).set('value',ta.getRawValue());
-                                this.store.commitChanges();
+                                // need to start/stop editing to trigger handlePropertyChange to update model
+                                this.startEditing(w.activeRow,1);
+                                w.triggerField.setValue(ta.getRawValue());
+                                this.stopEditing();
+                                
                                 w.hide();
                             } catch (e){
                                 lore.debug.ore("problem in update",e);
@@ -104,7 +106,13 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             
                            editor: new Ext.form.TriggerField({
                                  propertyEditor: this,
-                                 'triggerClass': 'x-form-ellipsis-trigger',
+                                 triggerClass: 'x-form-ellipsis-trigger',
+                                 triggerConfig: {
+                                    tag : "img", 
+                                    src : Ext.BLANK_IMAGE_URL,
+                                    cls: "x-form-trigger x-form-ellipsis-trigger",
+                                    qtip: 'Edit this value'
+                                 },
                                  onTriggerClick: function(ev) {
                                     try{ 
                                      var row = this.propertyEditor.lastEdit.row;
