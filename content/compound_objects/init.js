@@ -47,7 +47,9 @@ lore.ore.ui.initGraphicalView = function() {
  */
 lore.ore.ui.initUIComponents = function() {
 	Ext.Container.prototype.bufferResize = false;
-
+    // make sure popup windows appear above everything else, particularly when over the graphical editor
+    Ext.WindowMgr.zseed = 10000;
+    
 	lore.ore.ui.resselectcombo = new Ext.form.ComboBox({
 				displayField : 'display',
 				id : "resselectcombo",
