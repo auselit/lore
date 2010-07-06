@@ -102,7 +102,15 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             xtype : "statusbar",
             id : "lorestatus",
             defaultText : "",
-            autoClear : 6000
+            autoClear : 6000,
+            items: [
+                '-',
+                {
+                    xtype:'label',
+                    id:'currentCOMsg', 
+                    text: 'New compound object'
+                }
+            ]
         }, {
             region : "west",
             width : 280,

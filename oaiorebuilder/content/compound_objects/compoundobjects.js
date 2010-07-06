@@ -334,6 +334,7 @@ lore.ore.ui.newCO = function(dontRaise){
         ]  
         );
         lore.ore.ui.initGraphicalView();
+        Ext.getCmp('currentCOMsg').setText('New compound object');
         lore.ore.populateResourceDetailsCombo();
         if (!dontRaise) {
             Ext.getCmp("propertytabs").activate("properties");
@@ -1164,6 +1165,7 @@ lore.ore.loadCompoundObject = function (rdf) {
             lore.ore.ui.topView.hideAddIcon(false);
        }
        //lore.debug.timeElapsed("done");
+       Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50));
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
         lore.debug.ore("exception loading RDF from string",e);
