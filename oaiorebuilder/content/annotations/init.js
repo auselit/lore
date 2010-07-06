@@ -568,7 +568,7 @@ lore.anno.ui.attachHandlers = function () {
 	Ext.getCmp("canceleditbtn").on('click', lore.anno.ui.handleCancelEditing);
 	
 	// Annotation Manager
-//	lore.anno.annoMan.on('annotationsloaded', lore.anno.ui.handleAnnotationsLoaded);
+	lore.anno.annoMan.on('annotationsloaded', lore.anno.ui.handleAnnotationsLoaded);
 	
 	lore.anno.ui.formpanel.getComponent("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 	lore.anno.ui.formpanel.getComponent("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);

@@ -41,6 +41,18 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {String} theURL  (Currently not utilized)The URL for which to create the store
 	 */
 	constructor: function (config) {
+
+		this.addEvents({
+			"annotationsloaded" : true
+		});
+		
+		// Copy configured listeners into *this* object so that the base class's
+		// constructor will add them.
+		this.listeners = config.listeners;
+	
+		// Call our superclass constructor to complete construction process.
+		lore.anno.AnnotationManager.superclass.constructor.call(this, config)
+	
 		var fields = [
 					{name: 'created'}, 
 					{name: 'creator'}, 
@@ -106,8 +118,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		})	
 		
 		// model event handlers						
-		 this.annods.on("load",  this.onDSLoad);
-		 this.annods.on("remove", this.onDSRemove);
+		this.annods.on("load",  this.onDSLoad);
+		this.annods.on("remove", this.onDSRemove);
 		
 		this.serializer = new lore.anno.RDFAnnotationSerializer();
 		this.prefs = config.prefs;
@@ -623,12 +635,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Updates the annotations store with updated values for the
 	 * annotations for the specified URL from the annotation server
 	 * @param {String} theURL The escaped URL
-	 * @param {Function} callbackFunction Callback function used to output success or failure.
-	 * The function must support the following parameters:
-	 * result: Result as string ( 'success' or 'fail')
-	 * resultMsg: Result message as string 
 	 */
-	updateAnnotationsSourceList : function(theURL, callbackFunc){
+	updateAnnotationsSourceList : function(theURL){
 		if (!this.prefs.url) {
 			lore.debug.anno("Annotation server URL not set!");
 			return;
@@ -645,8 +653,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			success: function(resp, opt) {
 				try {
 					lore.debug.anno("Success retrieving annotations from " + opt.url, resp);
-					if (callbackFunc) 
-						callbackFunc('success', resp);
+
 					t.handleAnnotationsLoaded(resp);
 				} catch (e ) {
 					lore.debug.anno(e,e);
@@ -655,8 +662,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			failure: function(resp, opt){
 				try {
 					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
-					if (callbackFunc)
-						callbackFunc('fail', resp);
+					lore.anno.ui.loreError("Failure loading annotations for page.");
+					lore.anno.annoMan.annods.removeAll();
 				} catch (e ) {
 					lore.debug.anno(e,e);
 				}
@@ -807,9 +814,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					scope:this
 				});
 			}
+			
+			this.fireEvent("annotationsloaded", annotations.length);
 		}
 		
-		lore.debug.timeElapsed("End handleAnnotationsLoaded()");
 	},
 	
 	/**

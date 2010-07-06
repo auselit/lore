@@ -437,20 +437,22 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 
 		//  load annotations for the page
 		lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
-		lore.anno.annoMan.updateAnnotationsSourceList(contextURL, 
-			function(result, resultMsg){
-				if (result == 'fail') {
-					lore.anno.annoMan.annods.removeAll();
-					lore.anno.ui.loreError("Failure loading annotations for page.");
-				}
-			}
-		);
+		lore.anno.annoMan.updateAnnotationsSourceList(contextURL);
 	} catch(e) {
 		lore.debug.anno(e,e);
 	}
 	
-	lore.anno.ui.tabpanel.activate('treeview');
 	lore.anno.ui.loadedURL = contextURL;
+}
+
+lore.anno.ui.handleAnnotationsLoaded = function(numLoaded) {
+	if (numLoaded > 0) {
+		lore.anno.ui.tabpanel.activate('treeview');
+	}
+}
+
+lore.anno.ui.setPrefs = function(args) {
+	lore.anno.prefs.setPrefs(args);
 }
 
 /**
