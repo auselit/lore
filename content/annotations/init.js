@@ -207,16 +207,14 @@ lore.anno.ui.init = function(){
 		
 		// set up preferences
 		lore.anno.prefs = new lore.anno.Preferences({
-			prefsObj: lore.anno.ui.topView,
 			creator: 'Anonymous',
 			server: '',
 			cacheTimeout: '1',
 			disable: false,
-            high_contrast: false
+			high_contrast: false
 		});
 		
 		lore.anno.prefs.on('prefs_changed', lore.anno.ui.handlePrefsChange);
-		lore.anno.prefs.load();
 		
 		lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;
 		lore.anno.annoMan = new lore.anno.AnnotationManager({
@@ -232,6 +230,9 @@ lore.anno.ui.init = function(){
 		
 		lore.anno.ui.lorevisible = lore.anno.ui.topView.annotationsVisible();
 		lore.global.ui.annotationView.registerView(lore.anno.ui, window.instanceId);
+
+		// Load Preferences
+		lore.anno.ui.topView.loadAnnotationPrefs();
 		
 		lore.anno.ui.initialized = true;
 		
@@ -286,7 +287,6 @@ lore.anno.ui.uninit = function () {
 	lore.anno.ui.pageui.removeHighlightForCurrentAnnotation();
 	lore.anno.ui.topView.un('location_changed', lore.anno.ui.handleLocationChange);
 	lore.anno.ui.topView.un('location_refresh', lore.anno.ui.handleContentPageRefresh);
-	lore.anno.prefs.destructor();
 	if (lore.anno.ui.pageui.removeResizeListeners) {
 		lore.anno.ui.pageui.removeResizeListeners();
 	}
@@ -567,6 +567,8 @@ lore.anno.ui.attachHandlers = function () {
 	Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
 	Ext.getCmp("canceleditbtn").on('click', lore.anno.ui.handleCancelEditing);
 	
+	// Annotation Manager
+//	lore.anno.annoMan.on('annotationsloaded', lore.anno.ui.handleAnnotationsLoaded);
 	
 	lore.anno.ui.formpanel.getComponent("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 	lore.anno.ui.formpanel.getComponent("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);

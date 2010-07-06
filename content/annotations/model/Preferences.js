@@ -31,10 +31,8 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} config Can contain the prefsObj which points to object that generates 'annoprefs_changed' events
 	 */
 	constructor: function (config) {
-		this.prefsObj = config.prefObj;
 		this.addEvents('prefs_changed');
 		this.setPrefs(config);
-		this.prefsObj.on('annoprefs_changed', this.setPrefs, this);
 	},
 	
 	/**
@@ -50,24 +48,5 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
 		} catch(e) {
 			lore.debug.anno(e,e);
 		}	
-	},
-	
-	/**
-	 * Load preferences from the parent preferences object
-	 */
-	load: function () {
-		try{
-			this.prefsObj.loadAnnotationPrefs();
-    	} catch (ex){
-        	lore.debug.anno("Error loading annotation preferences: " + ex, ex);
-    	}
-	},
-	
-	/**
-	 * Destructor to be called when view is shutting down. 
-	 */
-	destructor: function () {
-		this.prefsObj.un('annoprefs_changed', this.setPrefs, this);
 	}
-	
 });
