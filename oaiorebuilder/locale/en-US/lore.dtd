@@ -7,8 +7,8 @@
 <!ENTITY loreContextAddAnno.label "Create annotation with selection">
 <!ENTITY loreContextModAnnoSel.label "Update annotation selection">
 <!ENTITY loreToolbar.label "LORE">
-<!ENTITY annoSplitter.tooltip "Resize Annotations Panel (click to minimize)">
-<!ENTITY coSplitter.tooltip "Resize Compound Objects Panel (click to minimize)">
+<!ENTITY annoSplitter.tooltip "Resize Annotations Panel (click between arrows to minimize)">
+<!ENTITY coSplitter.tooltip "Resize Compound Objects Panel (click between arrows to minimize)">
 <!ENTITY loreToolbar.tooltip "Toggle LORE">
 <!ENTITY lore.addNodeLabel "Add Resource">
 <!ENTITY lore.addNodeTip "Add browser URL to LORE compound object">
