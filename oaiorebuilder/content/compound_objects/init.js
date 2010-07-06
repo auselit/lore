@@ -247,7 +247,6 @@ lore.ore.ui.init = function() {
         window.addEventListener("dragover", lore.ore.ui.dragOver, true);
         window.addEventListener("dragdrop", lore.ore.ui.dragDrop, true);
         
-        //lore.ore.ui.topView.on('coprefs_changed', lore.ore.setPrefs);
 		/** The url shown in the current browser tab */
 		lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
 		/** Indicates whether the Compound Object UI is visible */

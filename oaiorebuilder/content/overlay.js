@@ -127,7 +127,7 @@ try {
                 
                 this.initialized = true;
                 this.strings = document.getElementById("lore-strings");
-                this.addEvents(["annoprefs_changed", "coprefs_changed", "location_changed", "location_refresh"]);
+                this.addEvents(["location_changed", "location_refresh"]);
                 lore.global.ui.load(window, this.instId);
             } 
             catch (e) {
@@ -446,16 +446,6 @@ try {
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
                 var tmkey = this.prefs.getCharPref("tmkey");
                 
-                /*this.fireEvent("coprefs_changed",
-                [{
-                    creator: dccreator,
-                    relonturl: relonturl,
-                    rdfrepos: rdfrepos,
-                    rdfrepostype: rdfrepostype,
-                    annoserver: annoserver,
-                    disable: disable_co,
-                    tmkey: tmkey
-                }]);*/
                 loreoverlay.coView().setPrefs({
                     creator: dccreator,
                     relonturl: relonturl,
@@ -470,27 +460,23 @@ try {
         },
         
         loadAnnotationPrefs: function(){
-            
             if (this.prefs) {
                 
                 var annoserver = this.prefs.getCharPref("annoserver");
                 var dccreator = this.prefs.getCharPref("dccreator");
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
                 var disable = this.prefs.getBoolPref("disable_annotations");
-
                 var mode = this.prefs.getBoolPref("annotationmode");
                 var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
-                
-                
-                this.fireEvent("annoprefs_changed",
-                [{
+
+                loreoverlay.annoView().setPrefs({
                     creator: dccreator,
                     url: annoserver,
                     cacheTimeout: timeout,
                     disable: disable,
                     mode: mode, 
                     high_contrast: high_contrast
-                }]);
+                });
             }
             else {
                 lore.debug.ui("preferences object not loaded, can't read in annotation preferences!");
@@ -728,7 +714,7 @@ try {
                 contentSplitter.setAttribute("collapsed", "true");
                 if ( lore.global.ui.compoundObjectView.loaded(this.instId)) {
                     loreoverlay.coView().onHide();
-                } 
+                }
             }
                 
         },
