@@ -27,7 +27,7 @@
 	 		<xul:browser disablehistory="false" id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
 	 	</xul:vbox>
  	
-	 	<xul:splitter id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" collapse="after" >
+	 	<xul:splitter tooltiptext="&annoSplitter.tooltip;" id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" collapse="after" >
 	 	<xul:grippy />
 	 	</xul:splitter>
 	    
@@ -61,7 +61,7 @@
 	    </xul:vbox>
  	</xul:tabbrowser>
  	
-    <xul:splitter id="oobContentSplitter" collapsed="true" orient="vertical" collapse="after">
+    <xul:splitter tooltiptext="&coSplitter.tooltip;" id="oobContentSplitter" collapsed="true" orient="vertical" collapse="after">
     <xul:grippy /> 
     </xul:splitter>
     <xul:vbox flex="1" align="stretch" id="oobContentBox" collapsed="true" persist="height" width="100%">
