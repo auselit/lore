@@ -42,7 +42,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     '->',
                     {
                         xtype: 'button',
-                        qtip: 'Update the property value and close editor',
+                        tooltip: 'Update the property value and close editor',
                         text: 'Update',
                         scope: this, // the properties panel
                         handler: function(btn, ev){
@@ -62,7 +62,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     },
                     {
                         xtype: 'button', 
-                        qtip: 'Cancel edits and close editor',
+                        tooltip: 'Cancel edits and close editor',
                         text: 'Cancel',
                         scope: this, // the properties panel
                         handler: function(btn, ev){

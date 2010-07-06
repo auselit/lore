@@ -109,7 +109,8 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                     xtype:'label',
                     id:'currentCOMsg', 
                     text: 'New compound object'
-                }
+                },
+                ' '
             ]
         }, {
             region : "west",
