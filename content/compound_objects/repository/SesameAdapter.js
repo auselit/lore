@@ -87,6 +87,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 					    if (xmldoc) {
 					        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
 					    }
+                        lore.ore.coListManager.clear(listname);
 					    if (result.length > 0){
 	                        // add the results to the model
 					        var coList = [result.length];
