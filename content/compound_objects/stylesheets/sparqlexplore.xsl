@@ -54,7 +54,7 @@
       <xsl:for-each select="sparql:result">
       <xsl:text>{"nodeTo":"</xsl:text>
       <xsl:value-of select="sparql:binding[@name='something']/sparql:uri"/>
-      <xsl:text>","data":{"relType":"</xsl:text>
+      <xsl:text>","data":{"rel":"</xsl:text>
       <xsl:value-of select="sparql:binding[@name='somerel']/sparql:uri"/>
       <xsl:text>"}}</xsl:text>
       <xsl:if test="position()!=last()">

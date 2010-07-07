@@ -449,6 +449,9 @@
 }
 #infovis {width: 100%; height:100%;}
 span.exploreclose {
+    color:white;
+}
+span.exploreclose:hover {
     color: #FF5555;
     font-size: 1.5em;
     cursor: pointer;

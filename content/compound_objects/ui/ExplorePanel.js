@@ -10,32 +10,42 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         this.on("activate", this.updateContent);
         lore.ore.explorePanel = this;
         this.previewCanvas = document.createElement("canvas");
+        this.colorKey = {
+                    /*"usesPseudoAgent" : "#33ff00",
+                    "usedAsPseudoAgentBy" : "#33ff00",
+                    "influencedByAgent": "#0099cc",
+                    "influenceOnAgent": "#0099cc",
+                    "coauthorWith": "#660099",
+                    "relatedTo": "#ff9900",*/
+                    "http://purl.org/dc/elements/1.1/relation": "#E3E851"
+        },
+        this.ckTemplate = new Ext.Template("<li style='line-height:1.3em; padding:3px;'>&nbsp;<span style='border:1px solid black;background-color:{color};'>&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;{rel}</li>",
+            {compiled: true}
+        );
+        this.colorKeyWin = new Ext.Window({ 
+                closable: true,
+                closeAction: 'hide',
+                animateTarget: 'remexploreview',
+                width: 400,
+                height: 200,
+                autoScroll: true,
+                title: "Explore View Color Key",
+                html: "Color Key"
+        });
    },
    initGraph : function(){
-     if (this.canvas){
-        // clear history
-        Ext.get('exploreHistory').update("");
-        // clear the labels and canvas
-        for(var id in this.rg.fx.labels){
-               this.rg.fx.disposeLabel(id);
-               delete this.rg.fx.labels[id];
-        } 
-        this.canvas.clear();
-        delete this.canvas;
-      }
+    Ext.get('exploreHistory').update("");
       var infovis = document.getElementById('infovis');
       infovis.innerHTML = "";
       var w = infovis.offsetWidth, h = infovis.offsetHeight;
-      // create a new canvas
-      /** The canvas used to render the explore visualization */
-      this.canvas = new Canvas('explorecanvas', {
-            'injectInto':'infovis',
-            'width': w,
-            'height':h
-      });
       /** The JIT RGraph that provides the explore visualization */
-        this.rg = rg=new RGraph(this.canvas,  {
-            // Controller for rg graph 
+        this.fd = new $jit.ForceDirected({
+            injectInto: 'infovis',
+            Navigation: {
+              enable: true,
+              panning: 'avoid nodes',
+              zooming: 10 
+            },
             Node: {
                overridable: true,
                type: "square",
@@ -46,68 +56,52 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 lineWidth: 2,
                 color: "#ddd"
             },
-            clickedNode: {},
-            /*onBeforePlotNode: function(node){
-              if (node.data.type == "rem"){
-                node.data["$type"] = "circle";
-                node.data["$color"] = "orange";
-                node.data["$dim"] = 6;
+            /*Tips: {
+              enable: true,
+              onShow: function(tip, node) {
+                //count connections
+                var count = 0;
+                node.eachAdjacency(function() { count++; });
+                //display node info in tooltip
+                tip.innerHTML = "<div class=\"exploretip-title\">" + node.name + "</div>"
+                  + "<div class=\"exploretip-text\"><b>connections:</b> " + count + "</div>";
               }
             },*/
-            /*onBeforePlotLine: function(adj) {
-               if (adj.data["relType"] == "http://www.openarchives.org/ore/terms/ResourceMap"){
-                   adj.data["$color"]="orange";
-               } 
-            },*/  
-            requestGraph: function() {
-                try{
-                lore.ore.explorePanel.loadRem(this.clickedNode.id, this.clickedNode.name, (this.clickedNode.data["$type"]=='circle'), function(json) {
-                    try{
-                    lore.ore.explorePanel.rg.op.sum(json, {
-                        'type': 'fade:con',
-                        duration: 1500,
-                        hideLabels: true,
-                        onAfterCompute: function(){}
-                    });
-                    } catch (e){
-                        lore.debug.ore("Problem in requestGraph",e);
-                    }
-                });
-                } catch (e){
-                    lore.debug.ore("problem in requestGraph",e);
-                }
+            Events: {
+              enable: true,
+              type: 'Native',
+              //Change cursor style when hovering a node
+              onMouseEnter: function() {
+                lore.ore.explorePanel.fd.canvas.getElement().style.cursor = 'move';
+              },
+              onMouseLeave: function() {
+                lore.ore.explorePanel.fd.canvas.getElement().style.cursor = '';
+              },
+              //Update node positions when dragged
+              onDragMove: function(node, eventInfo, e) {
+                var pos = eventInfo.getPos();
+                node.pos.setc(pos.x, pos.y);
+                lore.ore.explorePanel.fd.plot();
+              },
+              //Implement the same handler for touchscreens
+              onTouchMove: function(node, eventInfo, e) {
+                $jit.util.event.stop(e); //stop default touchmove event
+                this.onDragMove(node, eventInfo, e);
+              }
             },
-            onCreateLabel: function(domElement, node) {
-               //lore.debug.ore("onCreateLabel",domElement);
-               var d = Ext.get(domElement);
-               d.update(node.name);
-               d.setOpacity(0.8);
-               d.on('mouseover', function() {d.setOpacity(1.0);});
-               d.on('mouseout', function() {d.setOpacity(0.8);});
-               d.on('click', function() {
-                try{
-                lore.ore.explorePanel.rg.onClick(node.id);
-                } catch (e){
-                    lore.debug.ore("Problem with onClick",e);
+            //Number of iterations for the FD algorithm
+            iterations: 200,
+            //Edge length
+            levelDistance: 130,
+            clickedNode: {},
+            requestGraph: function(node) {
+                if (!node.id || !node.id.match ("http")) {
+                    lore.debug.ore("requestGraph not http", node);
+                    return;
                 }
-               });
-            },
-            onPlaceLabel: function(domElement, node) {
-                domElement.style.display = "none";
-                 if(node._depth <= 2){
-                    domElement.innerHTML = node.name.replace(/&amp;/g,'&');
-                    domElement.style.display = "";
-                    var left = parseInt(domElement.style.left);
-                    domElement.style.width = '';
-                    domElement.style.height = '';
-                    var w = domElement.offsetWidth;
-                    domElement.style.left = (left - w /2) + 'px';
-                 }
-            }, 
-            onAfterCompute: function() {
+                //lore.debug.ore("requestGraph",node);
+                lore.ore.ui.loreProgress("Retrieving data for explore view");
                 try{
-                var node = Graph.Util.getClosestNodeToOrigin(lore.ore.explorePanel.rg.graph, "pos");
-                this.clickedNode = node;
                 var existhistory = Ext.get('exploreHistory').dom.innerHTML;
                 var action = "lore.global.util.launchTab(\"" + node.id + "\", window);";
                 var icon = "chrome://lore/skin/icons/page_go.png";
@@ -123,14 +117,89 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     + "'></a>&nbsp;<a href='#' onclick=\"try{lore.ore.explorePanel.rg.onClick('" 
                     + node.id + "');}catch(e){lore.debug.ore('problem with history onClick',e);}\">" + node.name + "</a>";
                 Ext.get('exploreHistory').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
-                //lore.debug.ore("rg is ",lore.ore.explorePanel.rg);
-                //lore.debug.ore("nodelink was " + nodelink);
-                //lore.debug.ore("this is",this);
-                this.requestGraph();
+                
+                
+                
+              
+                lore.ore.explorePanel.loadRem(node.id, node.name, (node.data["$type"]=='circle'), function(json) {
+                    try{
+                    lore.ore.explorePanel.fd.op.sum(json, {
+                        'type': 'fade:con',
+                        duration: 1500,
+                        hideLabels: true,
+                        onAfterCompute: function(){
+                            lore.ore.ui.loreInfo("Explore view updated");
+                        }
+                    });
+                    } catch (e){
+                        lore.debug.ore("Problem in requestGraph",e);
+                    }
+                });
                 } catch (e){
-                    lore.debug.ore("Problem in onAfterCompute",e);
+                    lore.debug.ore("problem in requestGraph",e);
                 }
+            },
+            onCreateLabel: function(domElement, node) {
+              var nameContainer = document.createElement('span'),
+                  closeButton = document.createElement('span'),
+                  style = nameContainer.style;
+              nameContainer.className = 'x-unselectable explorename';
+              if (!node.name){
+                node.name = "Untitled";
+              } else {
+                node.name = node.name.replace(/&amp;/g, '&');
+              }
+              nameContainer.innerHTML = node.name;
+              nameContainer.setAttribute("title","Show connections for \"" + node.name + "\"");
+              closeButton.className = 'x-unselectable exploreclose';
+              closeButton.innerHTML = 'x';
+              closeButton.setAttribute("title","Remove \"" + node.name + "\" from explore view");
+              
+              domElement.appendChild(nameContainer);
+              domElement.appendChild(closeButton);
+              //domElement.appendChild(expandButton);
+              style.fontSize = "1.1em";
+              style.color = "#51666b";
+              closeButton.onclick = function() {
+                node.setData('alpha', 0, 'end');
+                node.eachAdjacency(function(adj) {
+                  adj.setData('alpha', 0, 'end');
+                });
+                lore.ore.explorePanel.fd.fx.animate({
+                  modes: ['node-property:alpha',
+                          'edge-property:alpha'],
+                  duration: 500
+                });
+              };
+              nameContainer.onclick = function () {
+                lore.ore.explorePanel.fd.controller.requestGraph(node);
+              };
+            },
+            
+            onPlaceLabel: function(domElement, node) {
+                 var style = domElement.style;
+                  var left = parseInt(style.left);
+                  var w = domElement.offsetWidth;
+                  style.left = (left - w / 2) + 'px';
+                  style.display = '';
+              }, 
+               
+               onBeforePlotLine: function(adj) {
+       
+                   var rel = adj.data["rel"];
+                   var newColor = "";
+                   if (rel){
+                        if (lore.ore.explorePanel.colorKey[rel]){
+                            newColor = lore.ore.explorePanel.colorKey[rel];
+                        } else {
+                            // generate a random color to represent this type of relationship
+                            newColor = "#" + Math.round(0xffffff * Math.random()).toString(16);
+                            lore.ore.explorePanel.colorKey[rel] = newColor;                       
+                        }
+                       adj.data["$color"] = newColor;
+                   }
             }
+            
         });
         //lore.debug.ore("added contextmenu to infovis");
         
@@ -153,9 +222,10 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             this.contextmenu.add({
                     text : "Save diagram as image",
                     icon: "chrome://lore/skin/icons/image.png",
+                    scope: this,
                     handler : function(evt) {
-                        lore.ore.explorePanel.contextmenu.hide();
-                        var imgData = lore.ore.explorePanel.getAsImage();
+                        this.contextmenu.hide();
+                        var imgData = this.getAsImage();
                         if (imgData) {
                             lore.global.util.writeURIWithSaveAs("explore", "png", window, imgData);
                         } else {
@@ -163,7 +233,46 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         }
 
                     }
-                });
+             });
+             this.contextmenu.add({
+                text: "Reset visualisation",
+                scope: this,
+                handler: function(evt){
+                    this.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
+                }
+             });
+             this.contextmenu.add({
+                text: "Show color key",
+                scope: this,
+                handler: function(evt){
+                    try{
+                    var colorKeyHTML = "";
+                    for (c in this.colorKey) { 
+                        colorKeyHTML += this.ckTemplate.apply({rel: c, color: this.colorKey[c]});
+                    }
+                    
+                    this.colorKeyWin.show();
+                    this.colorKeyWin.body.update("<ul>" + colorKeyHTML + "</ul>");
+                    } catch (e) {
+                        lore.debug.ore("Problem showing color key",e);
+                    }
+                }
+             });
+             this.contextmenu.add({
+                // TODO: tooltips for when labels are hidden, provide another option to expand graph
+                    text: "Hide Labels",
+                    scope: this,
+                    handler: function (){
+                       this.fd.labels.hideLabels(true);     
+                    }
+             });
+             this.contextmenu.add({
+                    text: "Show Labels",
+                    scope: this,
+                    handler: function (){
+                        this.fd.labels.hideLabels(false);
+                    }
+             });
         }
         this.contextmenu.showAt(e.xy);
         e.stopEvent();
@@ -209,7 +318,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             this.showInExploreView(currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
         } else {
             //lore.debug.ore("refresh explore view");
-            this.rg.refresh();
+            this.fd.refresh();
         }
         lore.ore.ui.loreInfo("Click on the nodes to explore connections between compound objects.");
     },
@@ -233,11 +342,26 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      */
         showInExploreView : function (id, title, isCompoundObject){
             //lore.debug.ore("show in explore view " + title);
+            lore.ore.ui.loreProgress("Retrieving data for explore view");
             try{
         this.initGraph();
         this.loadRem(id, title, isCompoundObject, function(json){
-            lore.ore.explorePanel.rg.loadJSON(json);
-            lore.ore.explorePanel.rg.refresh();
+            lore.ore.explorePanel.fd.loadJSON(json);
+            lore.ore.explorePanel.fd.computeIncremental({
+                iter: 40,
+                property: 'end',
+                onStep: function(perc){
+                  //Log.write(perc + '% loaded...');
+                },
+                onComplete: function(){
+                  lore.ore.ui.loreInfo("Explore data loaded");
+                  lore.ore.explorePanel.fd.animate({
+                    modes: ['linear'],
+                    duration: 1000
+                  });
+                }
+              });
+            //lore.ore.explorePanel.fd.refresh();
             var existhistory = Ext.get('exploreHistory').dom.innerHTML;
             
             var action = "lore.global.util.launchTab(\"" + id + "\", window);";
