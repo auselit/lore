@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <title>Privileges test</title>
+        <script type="text/javascript">
+            
+            RemoteCanvas = function(){
+                this.url = "http://austlit.edu.au";
+            };
+            
+            RemoteCanvas.CANVAS_WIDTH = 300;
+            RemoteCanvas.CANVAS_HEIGHT = 300;
+            
+            RemoteCanvas.prototype.load = function(){
+                var windowWidth = window.innerWidth - 25;
+                var iframe;
+                iframe = document.createElement("iframe");
+                iframe.id = "test-iframe";
+                iframe.height = "10px";
+                iframe.width = windowWidth + "px";
+                iframe.style.visibility = "hidden";
+                iframe.src = this.url;
+                iframe.addEventListener("load", this.remotePageLoaded, true);
+                window.document.body.appendChild(iframe);
+                return;
+            };
+            
+            RemoteCanvas.prototype.remotePageLoaded = function(){
+                try {
+                    // Look back up the iframe by id
+                    var ldrFrame = document.getElementById("test-iframe");
+                    // Get a reference to the window object you need for the canvas
+                    // drawWindow method
+                    var remoteWindow = ldrFrame.contentWindow;
+                    
+                    //Draw canvas
+                    var canvas = document.createElement("canvas");
+                    canvas.style.width = RemoteCanvas.CANVAS_WIDTH + "px";
+                    canvas.style.height = RemoteCanvas.CANVAS_HEIGHT + "px";
+                    canvas.width = RemoteCanvas.CANVAS_WIDTH;
+                    canvas.height = RemoteCanvas.CANVAS_HEIGHT;
+                    var windowWidth = window.innerWidth - 25;
+                    var windowHeight = window.innerHeight;
+                    
+                    var ctx = canvas.getContext("2d");
+                    ctx.clearRect(0, 0, RemoteCanvas.CANVAS_WIDTH, RemoteCanvas.CANVAS_HEIGHT);
+                    ctx.save();
+                    ctx.scale(RemoteCanvas.CANVAS_WIDTH / windowWidth, RemoteCanvas.CANVAS_HEIGHT / windowHeight);
+                    ctx.drawWindow(remoteWindow, 0, 0, windowWidth, windowHeight, "rgb(255,255,255)");
+                    ctx.restore();
+                    alert("No errors creating canvas");
+                } 
+                catch (e) {
+                    alert("Exception creating canvas: " + e.toString());
+                }
+                
+                
+            };
+            
+           
+        </script>
+    </head>
+    <body>
+        <p>This page can be used to test that certain privileges are not available in previews.</p> 
+        <p>It first attempt to load a webpage into a canvas (requires chrome privs): unprivileged pages should alert Security error 1000.</p>
+        <p>This page also attempts a cross domain XMLHttpRequest. Unprivileged pages should get a NS_ERRORFAILURE in nsIXMlHttpRequest.send.</p>
+        <p>Finally it tries to break out of any containing frame</p>
+        <script type="text/javascript">
+            
+            
+            var remoteCanvas = new RemoteCanvas();
+            remoteCanvas.load();
+                
+           
+            try {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET","http://austlit.edu.au/",false);
+                xhr.send(null);
+                alert("No errors doing cross domain XMLHttpRequest");
+            } catch (e) {
+                alert("Exception with remote XMLHttpRequest: " + e.toString());
+            }
+            
+            // Finally try to break out of frame
+            if (top.location != document.location) {
+                top.location = document.location;
+            }
+            
+        </script>
+    </body>
+</html>
