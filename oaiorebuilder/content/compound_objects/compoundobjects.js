@@ -239,7 +239,6 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
     // Reset the search results and explore view
     if (lore.ore.coListManager){
         lore.ore.coListManager.clear("search");
-        
         //lore.ore.ui.searchtreeroot.setDetails([]);
     }
     if (lore.ore.explore && lore.ore.cache){
@@ -267,7 +266,7 @@ lore.ore.search = function (searchuri, searchpred, searchval){
         searchval = lore.constants.RESOURCE_MAP;
     }
     try{
-    lore.ore.coListManager.clear("search");
+    
     var searchTerms = [];
     if (searchuri){
         searchTerms.push("<i>containing: </i>" + searchuri);
@@ -1388,6 +1387,8 @@ lore.ore.saveRDFToRepository = function(callback) {
 
 lore.ore.handleLocationChange = function (contextURL) {
 	lore.ore.ui.currentURL = lore.global.util.preEncode(contextURL);
+    var uri = lore.global.util.makeURI(lore.ore.ui.currentURL)
+    lore.debug.ore("loaded " + lore.ore.ui.currentURL, uri.asciiSpec);
 	if ( !lore.ore.ui.lorevisible || ! lore.ore.ui.initialized){
 		return;
     }
@@ -1401,9 +1402,6 @@ lore.ore.handleLocationChange = function (contextURL) {
  * @param {String} contextURL The escaped URL
  */
 lore.ore.updateCompoundObjectsBrowseList = function(contextURL) {
-    if (lore.ore.coListManager){
-        lore.ore.coListManager.clear("browse");
-    }
     if (lore.ore.reposAdapter){
         lore.ore.reposAdapter.getCompoundObjects(contextURL);
     }
