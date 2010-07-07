@@ -114,7 +114,15 @@ lore.ore.ui.loreWarning = function(/*String*/message){
     lore.ore.ui.status.setStatus(statusopts);
     lore.global.ui.loreWarning(message);
 };
-
+lore.ore.ui.loreProgress = function(message){
+    var statusopts = {
+        'text': message,
+        'iconCls': 'loading-icon',
+        'clear': false
+    };
+    lore.ore.ui.status.setStatus(statusopts);
+    lore.global.ui.loreWarning(message);
+};
 lore.ore.setPrefs = function(prefs){
   try{ 
 	  lore.ore.setDcCreator(prefs.creator);
