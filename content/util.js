@@ -1003,11 +1003,10 @@ util = {
     
     createXULIFrame : function(win) {
         var iframe = win.top.document.createElement("iframe"); // create a XUL iframe 
-        
-        iframe.setAttribute("type", "content");
+        iframe.setAttribute("type", "content-targetable");
         iframe.setAttribute("collapsed", true);
         iframe.style.visibility = "visible";
-        iframe.setAttribute("src", "about:config");
+        iframe.setAttribute("src", "data:text/html,%3Chtml%3E%3Cbody%3E%3C/body%3E%3C/html%3E");
         iframe.setAttribute("transparent", true);
         return iframe;
     },
@@ -1022,14 +1021,15 @@ util = {
         // dochsell must be set before loading the page
         // so reload the page
         iframe.docShell.allowAuth = false;
-        //iframe.docShell.allowImages = false;
-        iframe.docShell.allowJavascript = false;
+        
+        // As the pages are being loaded in XUL content iframes, it should be ok to allow Javascript
+        //iframe.docShell.allowJavascript = false;
+        
         iframe.docShell.allowMetaRedirects = false;
         iframe.docShell.allowPlugins = false;
-        // subframes inherit the permissons of the parents
-        //iframe.docShell.allowSubframes = false;
         
         iframe.setAttribute("src",theurl);
+        
     },
     /**
      * @param {} win
@@ -1039,19 +1039,17 @@ util = {
      */
     createSecureIFrame : function(win, theurl, extraFunc) {
         var iframe = util.createXULIFrame(win);
-        
         iframe.addEventListener("load", function onLoadTrigger (event) {
-                                try {
-                                    iframe.removeEventListener("load", onLoadTrigger, true);
-                                    util.setSecureXULIFrameContent(iframe, theurl);
-                                    if ( extraFunc) {
-                                        extraFunc();
-                                    }
-                                } catch (e ) {
-                                    debug.ore("iframe(onload): " + e, e);
-                                }
+                try {
+                    iframe.removeEventListener("load", onLoadTrigger, true);
+                    util.setSecureXULIFrameContent(iframe, theurl);
+                    if ( extraFunc) {
+                        extraFunc();
+                    }
+                } catch (e ) {
+                    debug.ore("iframe(onload): " + e, e);
+                }
             }, true);
-            
         iframe.setAttribute("src", "about:blank"); // trigger onload
         return iframe;
     },
@@ -1173,5 +1171,11 @@ util = {
      */
     fixedEncodeURIComponent : function(str) {
     	return encodeURIComponent(str).replace(/%5B/ig, '%255B').replace(/%5D/ig, '%255D');
-	}
+	},
+    /** Make a nsIURI object from a string URI */
+    makeURI: function(aURL, aOriginCharset, aBaseURI) {  
+        var ioService = Components.classes["@mozilla.org/network/io-service;1"]  
+                            .getService(Components.interfaces.nsIIOService);  
+        return ioService.newURI(aURL, aOriginCharset, aBaseURI);  
+    }  
 };
