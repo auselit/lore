@@ -88,8 +88,20 @@
       	<xsl:if test="$creator">,"creator": "<xsl:value-of select="$creator/*"/>"</xsl:if>
       	<xsl:variable name="modified" select="key('results-key',$theuri)/sparql:binding[@name='modified']"/>
       	<xsl:if test="$creator">,"modified": "<xsl:value-of select="$modified/*"/>"</xsl:if>
-      	<!--  todo: adjacencies for these nodes -->
-      	<xsl:text>}, "adjacencies": [], "name": "</xsl:text>
+      	<!--  adjacencies to other nodes -->
+      	<xsl:text>}, "adjacencies": [</xsl:text>
+      	<xsl:for-each select="key('results-key',$theuri)/sparql:binding[@name='somethingelse'][key('results-key',sparql:uri)]">
+      	 <xsl:text>{"nodeTo":"</xsl:text>
+         <xsl:value-of select="sparql:uri"/>
+         <xsl:text>","data":{"rel":"</xsl:text>
+         <xsl:value-of select="key('results-key',$theuri)/sparql:binding[@name='anotherrel']/sparql:uri"/>
+         <xsl:text>"}}</xsl:text>
+         <xsl:if test="position()!=last()">
+           <xsl:text>,</xsl:text>
+         </xsl:if>
+      	
+      	</xsl:for-each>
+      	<xsl:text>], "name": "</xsl:text>
       	<xsl:choose>
       		<xsl:when test="key('results-key',$theuri)/sparql:binding[@name='sometitle']">
       			<xsl:value-of select="key('results-key',$theuri)/sparql:binding[@name='sometitle']/sparql:literal"/>

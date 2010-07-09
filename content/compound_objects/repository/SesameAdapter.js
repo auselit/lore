@@ -178,7 +178,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
             + "PREFIX dcterms:<http://purl.org/dc/terms/>"
             + "PREFIX ore:<http://www.openarchives.org/ore/terms/> " 
             + "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns%23>"
-		    + "SELECT DISTINCT ?something ?somerel ?sometitle ?sometype ?creator ?modified WHERE {"
+		    + "SELECT DISTINCT ?something ?somerel ?sometitle ?sometype ?creator ?modified ?anotherrel ?somethingelse WHERE {"
             // Compound objects that contain this uri
 		    + "{?aggre ore:aggregates <" + eid2 + "> . " 
                     + "?something ore:describes ?aggre . "
@@ -206,6 +206,8 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
                     + "FILTER isURI(?something) ."
                     + "FILTER (?somerel != rdf:type) ." 
                     + "OPTIONAL {?something dc:title ?sometitle . } . " 
+                    + "OPTIONAL {?something ?anotherrel ?somethingelse} . "
+                    + "FILTER isURI(?somethingelse) . "
                     + "OPTIONAL {?something a ?sometype}}}";
 
 		    var queryURL = this.reposURL
@@ -233,8 +235,10 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        xhr.open("GET",queryURL, false);
 	        xhr.send(null);
 	        var rdfDoc = xhr.responseXML;
+            var serializer = new XMLSerializer();
+            lore.debug.ore("sparql result is",serializer.serializeToString(rdfDoc));
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
-	        var serializer = new XMLSerializer();
+	        
             lore.debug.ore("json is",serializer.serializeToString(thefrag));
 	        eval ("json = " + serializer.serializeToString(thefrag));
             return json;
