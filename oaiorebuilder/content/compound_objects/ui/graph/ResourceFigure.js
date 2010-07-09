@@ -664,23 +664,19 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
             // TODO jump to resource in summary view
         }
     ));*/
-	if (Ext.getCmp("remexploreview")) {
+	
 		menu.appendMenuItem(new draw2d.MenuItem("Show in Explore view", "../../skin/icons/chart_line.png",
 				function() {
-					Ext.getCmp("loreviews").activate("remexploreview");
-                    
+                    Ext.getCmp("loreviews").activate("remexploreview");
                     var rdftype = thisfig.metadataproperties["rdf:type_0"];
                     var isCO = (rdftype && rdftype.match("ResourceMap"));
                     var title = thisfig.metadataproperties["dc:title_0"] || thisfig.metadataproperties["dcterms:title_0"];
                     if (!title) {
                         title = thisfig.url;
                     }
-					if (thisfig.url) {
-						lore.ore.exploreLoaded = thisfig.url;
-						lore.ore.explore.showInExploreView(thisfig.url, title, isCO);
-					}
+				     lore.ore.explorePanel.showInExploreView(thisfig.url, title, isCO);
 				}));
-	}
+	
     menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view", "../../skin/icons/picture_empty.png",
         function (){
             // TODO: don't hardcode the slideshow id and the url for the containing compound object should come from the model
