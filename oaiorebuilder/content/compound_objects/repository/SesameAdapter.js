@@ -206,8 +206,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
                     + "FILTER isURI(?something) ."
                     + "FILTER (?somerel != rdf:type) ." 
                     + "OPTIONAL {?something dc:title ?sometitle . } . " 
-                    + "OPTIONAL {?something ?anotherrel ?somethingelse} . "
-                    + "FILTER isURI(?somethingelse) . "
+                    + "OPTIONAL {?something ?anotherrel ?somethingelse . FILTER isURI(?somethingelse)} . "
                     + "OPTIONAL {?something a ?sometype}}}";
 
 		    var queryURL = this.reposURL
