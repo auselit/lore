@@ -461,10 +461,14 @@ span.exploreclose:hover {
 span.explorename {
     cursor: pointer;
 }
-span.exploretip-title {
-    font-size: 11px;
-    text-align: center;
-    margin-bottom: 2px;
+div.exploretip-title {
+    font-size: smaller;
+    font-weight: bold;
+}
+div.exploretip-text {
+	font-size: smaller;
+	font-weight: normal;
+	color: #51666b;
 }
 #remslideview *, #remlistview * {
 	font-family: "Helvetica","Arial",sans-serif;
