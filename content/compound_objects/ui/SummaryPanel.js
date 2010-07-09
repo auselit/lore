@@ -85,7 +85,7 @@ lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{
                 + figurl + "</a>" : figurl) + "&gt;<a href='#res" + i + "'> (details)</a>";
                 tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
                 tocsummary += " <a href='#' title='Show in slideshow view' onclick='Ext.getCmp(\"loreviews\").activate(\"remslideview\");Ext.getCmp(\"newss\").setActiveItem(\"" + figurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri() + "\");'><img src='chrome://lore/skin/icons/picture_empty.png' alt='View in slideshow view'></a>";
-                tocsummary += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explore.showInExploreView(\"" + figurl + "\",\"" + title + "\"," + isCompObject+ ");'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
+                tocsummary += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + figurl + "\",\"" + title + "\"," + isCompObject+ ");'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
                 tocsummary += "</li>";
                 newsummarydetail += "<div style='border-top: 1px solid rgb(220, 224, 225); width: 100%; margin-top: 0.5em;'> </div>";
                 newsummarydetail += "<p id='res"+ i + "'>";

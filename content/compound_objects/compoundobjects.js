@@ -249,7 +249,7 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
         lore.ore.coListManager.clear("search");
         //lore.ore.ui.searchtreeroot.setDetails([]);
     }
-    if (lore.ore.explore && lore.ore.cache){
+    if (lore.ore.explorePanel && lore.ore.cache){
         lore.ore.explorePanel.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
     }
 };
