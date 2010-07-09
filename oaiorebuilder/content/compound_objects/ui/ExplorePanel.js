@@ -16,7 +16,10 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     id: "exploreHistory",
                     collapseMode: "mini",
                     useSplitTips: true,
-                    height: 30
+                    height: 28,
+                    minHeight: 0,
+                    bodyStyle: "vertical-align:middle;line-height: 2em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;"
+                    
                 }
             ]
         })
@@ -48,6 +51,10 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         this.ckTemplate = new Ext.Template("<li style='line-height:1.3em; padding:3px;'>&nbsp;<span style='border:1px solid black;background-color:{color};'>&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;{rel}</li>",
             {compiled: true}
         );
+        this.historyTemplate = new Ext.Template(
+            "<span style='white-space:nowrap;'><a title='{tooltip}' href='#' onclick='{action}'><img style='border:none' src='{icon}'></a>&nbsp;{name}</a></span>",
+            {compiled: true}
+        );
         this.colorKeyWin = new Ext.Window({ 
                 closable: true,
                 closeAction: 'hide',
@@ -74,6 +81,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             },
             Node: {
                overridable: true,
+               dim: 4,
                type: "square",
                color: "#ddd"
             },
@@ -137,6 +145,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             //Edge length
             levelDistance: 130,
             clickedNode: {},
+            
             requestGraph: function(node) {
                 if (!node.id || !node.id.match ("http")) {
                     lore.debug.ore("requestGraph not http", node);
@@ -145,23 +154,24 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 //lore.debug.ore("requestGraph",node);
                 lore.ore.ui.loreProgress("Retrieving data for explore view");
                 try{
+                var historyData = {
+                    name: Ext.util.Format.ellipsis(node.name.toString(),30),
+                    action : "lore.global.util.launchTab(\"" + node.id + "\", window);",
+                    icon : "chrome://lore/skin/icons/page_go.png",
+                    tooltip : "Show in browser"
+                };
                 
-                var action = "lore.global.util.launchTab(\"" + node.id + "\", window);";
-                var icon = "chrome://lore/skin/icons/page_go.png";
-                var tooltip = "Show in browser";
                 // stylesheet sets type to circle for compound objects
                 if (node.data["$type"] == "circle"){
-                    action = "lore.ore.readRDF(\"" + node.id + "\");";
-                    icon = "chrome://lore/skin/oaioreicon-sm.png";
-                    tooltip = "Load in LORE";
+                    historyData.action = "lore.ore.readRDF(\"" + node.id + "\");";
+                    historyData.icon = "chrome://lore/skin/oaioreicon-sm.png";
+                    historyData.tooltip = "Load in LORE";
                 }
-                var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
-                    + "'><img style='border:none' src='" + icon 
-                    + "'></a>&nbsp;<a href='#' onclick=\"try{lore.ore.explorePanel.fd.onClick('" 
-                    + node.id + "');}catch(e){lore.debug.ore('problem with history onClick',e);}\">" + node.name + "</a>";
-                Ext.getCmp('exploreHistory').update(nodelink + " ");//(existhistory? " &lt; " + existhistory : ""));
                 
+                var historyEl = Ext.getCmp("exploreHistory").body.dom;
                 
+                historyEl.innerHTML = lore.ore.explorePanel.historyTemplate.apply(historyData) 
+                    + ((history.innerHTML != '')? " &lt;&nbsp;" : "") + historyEl.innerHTML;
                 
               
                 lore.ore.explorePanel.loadRem(node.id, node.name, (node.data["$type"]=='circle'), function(json) {
@@ -464,24 +474,25 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         canv.translate(newx,newy);
                       }
                     }
-             });
-            
-            
-            var action = "lore.global.util.launchTab(\"" + id + "\", window);";
-            var icon = "chrome://lore/skin/icons/page_go.png";
-            var tooltip = "Show in browser";
-            // if it is a compound object use lore icon and open in lore instead of browser link
-            if (isCompoundObject){
-                action = "lore.ore.readRDF(\"" + id + "\");";
-                icon = "chrome://lore/skin/oaioreicon-sm.png";
-                tooltip = "Load in LORE";
-            }
-            var nodelink = "<a title='" + tooltip + "' href='#' onclick='" + action 
-            + "'><img style='border:none' src='" + icon +"'>" 
-            + "</a>&nbsp;<a href='#' onclick=\"try{lore.ore.explorePanel.rg.onClick('" 
-            + id + "');}catch(e){lore.ore.debug('problem',e);}\">" + title + "</a>";
-            Ext.getCmp("exploreHistory").body.update(nodelink + " ");
-            //Ext.get('exploreHistory').update(nodelink + (existhistory? " &lt; " + existhistory : ""));
+                });
+
+                var historyData = {
+                        name: Ext.util.Format.ellipsis(title,30),
+                        action : "lore.global.util.launchTab(\"" + id + "\", window);",
+                        icon : "chrome://lore/skin/icons/page_go.png",
+                        tooltip : "Show in browser"
+                };
+                // if it is a compound object use lore icon and open in lore instead of browser link
+                if (isCompoundObject){
+                    historyData.action = "lore.ore.readRDF(\"" + id + "\");";
+                    historyData.icon = "chrome://lore/skin/oaioreicon-sm.png";
+                    historyData.tooltip = "Load in LORE";
+                }
+                    
+                var historyEl = Ext.getCmp("exploreHistory").body.dom;
+                    
+                historyEl.innerHTML = lore.ore.explorePanel.historyTemplate.apply(historyData);
+
         });  
             } catch (e){
                 lore.debug.ore("problem in show in explore view",e);
