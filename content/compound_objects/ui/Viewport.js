@@ -1,4 +1,23 @@
-
+/** Override Viewport to allow manual resize (for generating image) */
+Ext.override(Ext.Viewport, {
+    initComponent : function() {
+        Ext.Viewport.superclass.initComponent.call(this);
+        document.getElementsByTagName('html')[0].className += ' x-viewport';
+        this.el = Ext.getBody();
+        this.el.setHeight = Ext.emptyFn;
+        this.el.setWidth = Ext.emptyFn;
+        this.el.dom.scroll = 'no';
+        this.allowDomMove = false;
+        Ext.EventManager.onWindowResize(this.fireResize, this);
+        this.renderTo = this.el;
+    },
+    syncSize : function(){
+        delete this.lastSize;
+        this.el.dom.style.height="100%";
+        this.el.dom.style.width="auto";
+        return this;
+    }
+});
 lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
     layout : "border",
     border : false,
@@ -118,8 +137,34 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             split : true,
             animCollapse : false,
             collapseMode : 'mini',
+            useSplitTips: true,
             id : "propertytabs",
             xtype : "tabpanel",
+            // Override collapse behaviour to improve UI responsiveness
+            onCollapseClick: function(e,args,arg2,arg3,arg4){
+                lore.debug.ore("oncollapse click",this);
+                var activetab = Ext.getCmp("loreviews").getActiveTab();
+                activetab.hide();
+                Ext.layout.BorderLayout.SplitRegion.prototype.onCollapseClick.apply(this,arguments);
+                activetab.show();
+            },
+            onExpandClick : function (e){
+                var activetab = Ext.getCmp("loreviews").getActiveTab();
+                activetab.hide();
+                Ext.layout.BorderLayout.SplitRegion.prototype.onExpandClick.apply(this,arguments);
+                activetab.show();
+            },
+            onSplitMove : function (split, newSize){
+                var activetab = Ext.getCmp("loreviews").getActiveTab();
+                var propactivetab = Ext.getCmp("propertytabs").getActiveTab();
+                activetab.hide();
+                // TODO: should hide these but doing this means property grids don't resize
+                //propactivetab.hide();
+                Ext.layout.BorderLayout.SplitRegion.prototype.onSplitMove.apply(this, arguments);
+                activetab.show();
+                //propactivetab.show();
+                return false;
+            },
             deferredRender : false,
             enableTabScroll : true,
             defaults : {
@@ -177,6 +222,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             region : "north",
                             animCollapse : false,
                             collapseMode : 'mini',
+                            useSplitTips: true,
                             autoHide : true,
                             split : true,
                             minHeight : 0,
@@ -311,5 +357,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         }];
         
         lore.ore.ui.Viewport.superclass.initComponent.call(this);
+        
     }
 });
