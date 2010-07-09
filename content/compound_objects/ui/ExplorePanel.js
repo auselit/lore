@@ -12,10 +12,10 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 },
                 {
                     region : "north",
-                    split: true,
+                    //split: true,
                     id: "exploreHistory",
-                    collapseMode: "mini",
-                    useSplitTips: true,
+                    //collapseMode: "mini", disabled because drag/contextmenu ops positioning goes out
+                    //useSplitTips: true,
                     height: 28,
                     minHeight: 0,
                     bodyStyle: "vertical-align:middle;line-height: 2em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;"
@@ -263,6 +263,16 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     lore.ore.explorePanel.fd.controller.requestGraph(node); 
                 }
             });
+            /*nodemenu.add({
+               text: "Show in browser",
+               scope: fdcontroller,
+               handler: function(evt) {
+                    var node = this.clickedNode;
+                    // TODO: need to unescape node.id first
+                    // also disable this option if it's a compound object: provide option to open in LORE instead
+                    lore.global.util.launchTab(node.id, window);
+               }
+            });*/
             nodemenu.add({
                 text : "Remove from visualisation",
                 scope: fdcontroller,
@@ -442,7 +452,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {String} title Label to display for the compound object
      */
         showInExploreView : function (id, title, isCompoundObject){
-            //lore.debug.ore("show in explore view " + title);
+            lore.debug.ore("ExplorePanel: show in explore view " + title);
             lore.ore.ui.loreProgress("Retrieving data for explore view");
             try{
             if (!this.fd){
