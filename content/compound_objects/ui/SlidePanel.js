@@ -246,10 +246,20 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             
         }
         if (hasPreview) {
-            this.layout = 'anchor';
+            this.layout = "border";
             this.previewEl = previewEl;
-            this.add({anchor: '100% 70%', autoScroll: true, contentEl: previewEl}); 
-            this.add({anchor: '100% 30%', autoScroll: true, html: slidehtml});
+            this.add({
+                region: "center",
+                autoScroll: true, 
+                contentEl: previewEl}); 
+            this.add({
+                useSplitTips: true,
+                region: "south",
+                height: 90,
+                split: true,
+                collapseMode: "mini",
+                autoScroll: true, 
+                html: slidehtml});
         } else {
             this.html = slidehtml;   
         }
