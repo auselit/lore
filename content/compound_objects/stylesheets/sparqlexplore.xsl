@@ -41,7 +41,10 @@
       	<xsl:value-of select="$title"/>
       </xsl:when>
       <xsl:otherwise>
-      <xsl:value-of select="$subj"/>
+      <xsl:choose>
+        <xsl:when test="$isCompoundObject = 'y'">Untitled Compound Object</xsl:when>
+        <xsl:otherwise><xsl:value-of select="$subj"/></xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
       </xsl:choose>
       
@@ -70,19 +73,34 @@
       
       <!--  create a node for each something -->
       <xsl:for-each select="sparql:result[count(. | key('results-key',sparql:binding[@name='something']/sparql:uri)[1]) = 1]">
-      	<xsl:variable name="theuri" select="sparql:binding[@name='something']/sparql:uri"/>
+        <xsl:variable name="theuri" select="sparql:binding[@name='something']/sparql:uri"/>
+        <xsl:variable name="isCO">
+            <xsl:choose>
+                <xsl:when test="key('results-key',$theuri)/sparql:binding[@name='sometype']/sparql:uri = 'http://www.openarchives.org/ore/terms/ResourceMap'">y</xsl:when>
+                <xsl:otherwise>n</xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+      	
       	<xsl:text>{"id" : "</xsl:text><xsl:value-of select="$theuri"/>
       	<xsl:text>", "data": {</xsl:text>
-      	<xsl:if test="key('results-key',$theuri)/sparql:binding[@name='sometype']/sparql:uri = 'http://www.openarchives.org/ore/terms/ResourceMap'">
-      		"$dim": 6, "$color": "orange", "$type": "circle"
-      	</xsl:if>
+      	<xsl:if test="$isCO = 'y'">"$dim": 6, "$color": "orange", "$type": "circle"</xsl:if>
+      	<xsl:variable name="creator" select="key('results-key',$theuri)/sparql:binding[@name='creator']"/>
+      	<xsl:if test="$creator">,"creator": "<xsl:value-of select="$creator/*"/>"</xsl:if>
+      	<xsl:variable name="modified" select="key('results-key',$theuri)/sparql:binding[@name='modified']"/>
+      	<xsl:if test="$creator">,"modified": "<xsl:value-of select="$modified/*"/>"</xsl:if>
+      	<!--  todo: adjacencies for these nodes -->
       	<xsl:text>}, "adjacencies": [], "name": "</xsl:text>
       	<xsl:choose>
       		<xsl:when test="key('results-key',$theuri)/sparql:binding[@name='sometitle']">
       			<xsl:value-of select="key('results-key',$theuri)/sparql:binding[@name='sometitle']/sparql:literal"/>
       		</xsl:when>
       		<xsl:otherwise>
-      			<xsl:value-of select="$theuri"/>
+      		    <xsl:choose>
+      		    <xsl:when test="$isCO='y'">Untitled Compound Object</xsl:when>
+      		    <xsl:otherwise>
+      			   <xsl:value-of select="$theuri"/>
+      			</xsl:otherwise>
+      			</xsl:choose>
       		</xsl:otherwise>
       		</xsl:choose>
       	<xsl:text>"}</xsl:text>

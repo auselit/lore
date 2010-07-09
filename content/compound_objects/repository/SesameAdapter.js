@@ -173,14 +173,41 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
         var eid = uri.replace(/&amp;/g,'&').replace(/&amp;/g,'&');
         var eid2 = escape(eid);
         try {
-		    var thequery = "PREFIX dc:<http://purl.org/dc/elements/1.1/> PREFIX ore:<http://www.openarchives.org/ore/terms/> PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns%23>"
-		    + "SELECT DISTINCT ?something ?somerel ?sometitle ?sometype WHERE {"
-		    + "{?aggre ore:aggregates <" + eid2 + "> . ?something ore:describes ?aggre ."
-		    + " ?something a ?sometype . OPTIONAL {?something dc:title ?sometitle .}}"
-		    +  "UNION { ?something ?somerel <" + eid2 + "> . FILTER isURI(?something) ."
-		    + "FILTER (?somerel != ore:aggregates) . FILTER (?somerel != rdf:type) . OPTIONAL {?something dc:title ?sometitle.} }"
-		    + "UNION {<"+ eid2 + "> ?somerel ?something . FILTER isURI(?something). FILTER (?somerel != rdf:type) . FILTER (?somerel != ore:describes) . OPTIONAL {?something dc:title ?sometitle.}}"
-		    + "UNION {<" + eid2 + "> ore:describes ?aggre .?aggre ?somerel ?something . FILTER (?somerel != rdf:type) .OPTIONAL {?something dc:title ?sometitle . } . OPTIONAL {?something a ?sometype}}}";
+		    var thequery = 
+            "PREFIX dc:<http://purl.org/dc/elements/1.1/> " 
+            + "PREFIX dcterms:<http://purl.org/dc/terms/>"
+            + "PREFIX ore:<http://www.openarchives.org/ore/terms/> " 
+            + "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns%23>"
+		    + "SELECT DISTINCT ?something ?somerel ?sometitle ?sometype ?creator ?modified WHERE {"
+            // Compound objects that contain this uri
+		    + "{?aggre ore:aggregates <" + eid2 + "> . " 
+                    + "?something ore:describes ?aggre . "
+		            + "?something a ?sometype . " 
+                    + "OPTIONAL {?something dc:creator ?creator .} "
+                    + "OPTIONAL {?something dcterms:modified ?modified .} "
+                    + "OPTIONAL {?something dc:title ?sometitle .}}"
+            // uris that have an asserted relationship to this uri
+		    +  "UNION { ?something ?somerel <" + eid2 + "> . " 
+                    + "FILTER isURI(?something) ."
+		            + "FILTER (?somerel != ore:aggregates) . " 
+                    + "FILTER (?somerel != rdf:type) . " 
+                    + "OPTIONAL {?something a ?sometype} ."
+                    + "OPTIONAL {?something dc:title ?sometitle.} }"
+            // uris that have an asserted relationships from this uri
+		    + "UNION {<"+ eid2 + "> ?somerel ?something . " 
+                    + "FILTER isURI(?something). " 
+                    + "FILTER (?somerel != rdf:type) . " 
+                    + "FILTER (?somerel != ore:describes) . "
+                    + "OPTIONAL {?something a ?sometype} ."
+                    + "OPTIONAL {?something dc:title ?sometitle.}}"
+            // if this is a compound object, uris contained
+		    + "UNION {<" + eid2 + "> ore:describes ?aggre ."
+                    + "?aggre ?somerel ?something . " 
+                    + "FILTER isURI(?something) ."
+                    + "FILTER (?somerel != rdf:type) ." 
+                    + "OPTIONAL {?something dc:title ?sometitle . } . " 
+                    + "OPTIONAL {?something a ?sometype}}}";
+
 		    var queryURL = this.reposURL
 		            + "?queryLn=sparql&query=" 
 		            + thequery;
@@ -208,6 +235,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        var rdfDoc = xhr.responseXML;
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
 	        var serializer = new XMLSerializer();
+            lore.debug.ore("json is",serializer.serializeToString(thefrag));
 	        eval ("json = " + serializer.serializeToString(thefrag));
             return json;
 	    } catch (ex){
