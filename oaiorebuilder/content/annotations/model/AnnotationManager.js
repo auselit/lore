@@ -43,7 +43,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	constructor: function (config) {
 
 		this.addEvents({
-			"annotationsloaded" : true
+			"annotationsloaded" : true,
+			'load': true,
+			'remove': true,
+			'update': true
 		});
 		
 		// Copy configured listeners into *this* object so that the base class's
@@ -102,8 +105,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
          * The annotation search data store
 		 */
 		this.annosearchds =  new Ext.data.JsonStore({
-									fields: fields,
-									data: {}
+									fields: fields
 								});
 		
 		var mfields = [  {name: 'type'}, {name: 'prop'}, {name: 'value'}];
@@ -395,8 +397,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				success: function(resp){
 					lore.debug.anno("Deletion success: " + resp );
 					
-					//TODO: #199 - Remove from the cache
-					//lore.global.store.remove(this.annods,...;
 					if ( resultCallback) {
 						resultCallback('success', resp);
 					}
@@ -673,7 +673,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	},
 	
 	/**
-	 * Search for annoations given the search parameters and update data searching data store
+	 * Search for annotations given the search parameters and update data searching data store
 	 * @param {String} url Specific URL to filter on. Can be NULL if all URLs should be searched.
 	 * @param {Object} filters An array of objects. The objects should have an 'attribute' and 'filter' attribute, where
 	 * 'attribute' is the name of the search parameter and 'filter' is the value to search on. 
@@ -685,7 +685,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 	searchAnnotations : function (url, filters, resultCallback) {
 		
-		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ALL_OBJECTS);
+		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ANNOTEA_OBJECTS);
 		for (var i = 0; i < filters.length; i++) {
 			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter);
 		}
@@ -968,6 +968,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	
 	findStoredRecById : function (id) {
 		return lore.global.util.findRecordById(this.annods, id);
+	},
+	
+	numUnsavedAnnotations: function() {
+		return this.annodsunsaved.getCount();
 	}
 });
 	
