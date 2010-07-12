@@ -108,28 +108,27 @@ constants = {
      */
     ANNOTEA_BOOKMARKS : "w3c_bookmarks",
 	
-	 /**
+    /**
      * This Danno-specific request parameter sets the primary query type to select all 
      * Annotea objects in the triple store; i.e. those with an <rdf:type>  property with
      * a value of either "http://www.w3.org/2000/10/annotation-ns#Annotation" or 
      * "http://www.w3.org/2001/03/thread#Reply".
-     * @const
      */
-	DANNO_ALL_OBJECTS : "?danno_allObjects=true",
+    DANNO_ANNOTEA_OBJECTS : "?danno_allAnnoteaObjects=true",
+	 
 	
 	
 	
 	
 	// query parameters - currently not used/supported by LORE annotations
-	 /**
+    /**
      * This Danno-specific request parameter sets the primary query type to select all 
-     * Annotea objects in the triple store; i.e. those with an <rdf:type>  property with
-     * a value of either "http://www.w3.org/2000/10/annotation-ns#Annotation" or 
-     * "http://www.w3.org/2001/03/thread#Reply".
+     * objects in the triple store;
+     * @const
      */
-    DANNO_ANNOTEA_OBJECTS : "danno_allAnnoteaObjects",
-    
-	/**
+    DANNO_ALL_OBJECTS : "?danno_allObjects=true",
+	
+    /**
      * This Danno-specific request parameter restricts the result-set of a QUERY to records
      * whose 'a:annotates' value matches a regex.
      */

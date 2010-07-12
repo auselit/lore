@@ -73,7 +73,7 @@ lore.anno.ui.hideVariationSplitter = function () {
  */
 lore.anno.ui.hasModifiedAnnotations = function () {
 	lore.anno.ui.updateAnnoFromForm();
-	return lore.anno.annoMan.annodsunsaved.getCount() > 0;
+	return lore.anno.annoMan.numUnsavedAnnotations() > 0;
 }
 /**
  * Get the currently selected image
@@ -235,7 +235,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 		if (!node.contextmenu) {
 			node.contextmenu = new Ext.menu.Menu({id: node.id + "-context-menu" });
 	 
-			var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
+			var rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
 			var isNew = (rec === null || rec.data.isNew());
 			if (!isNew) {
 				// only saved annotations should be in timeline or able to be replied to
@@ -277,7 +277,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 					text: "Add as node in compound object editor",
 					handler: function(evt){
 						try {
-				            var rec = lore.global.util.findRecordById(lore.anno.annoMan.annods, lore.anno.ui.nodeIdToRecId(node));
+				            var rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
 							lore.global.ui.compoundObjectView.get(window.instanceId).addResource(lore.anno.ui.nodeIdToRecId(node),
 				                {"rdf:type_0":rec.data.type});
 						} catch (e ){
@@ -318,7 +318,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
  */
 lore.anno.ui.handleAttachNodeLinks = function(tree, thus, n, index){ 
 	try {
-		var anno = lore.global.util.findRecordById(lore.anno.annoMan.annods, n.id).data;
+		var anno = lore.anno.annoMan.findStoredRecById(n.id).data;
 		
 		var nodeLinks = [{
 			title: 'View annotation body in a new window',
@@ -353,8 +353,7 @@ lore.anno.ui.handleAttachNodeLinks = function(tree, thus, n, index){
 lore.anno.ui.handleTreeNodeSelection = function(node, event){
 	// retrieve record for node
 	var unsavedNode = node.isAncestor(lore.anno.ui.treeunsaved);
-	var store = unsavedNode ? lore.anno.annoMan.annodsunsaved : lore.anno.annoMan.annods;
-	var rec = lore.global.util.findRecordById(store, lore.anno.ui.nodeIdToRecId(node));
+	var rec = unsavedNode ? lore.anno.annoMan.findUnsavedRecById(recId) : lore.anno.annoMan.findStoredRecById(recId);
 	
 	if ( rec == lore.anno.ui.page.curSelAnno )
 		return;
@@ -800,7 +799,7 @@ lore.anno.ui.handleEditTimeline = function ( id ) {
 		// the user has come here from an info bubble pop-up.
 		lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
 		lore.anno.ui.tabpanel.activate('treeview');
-		var rec =  lore.global.util.findRecordById(lore.anno.annoMan.annods, id);
+		var rec = lore.anno.annoMan.findStoredRecById(id);
 		
 		rec = lore.anno.annoMan.editRec(rec);
 		lore.anno.ui.selectAndShowNode(rec);
