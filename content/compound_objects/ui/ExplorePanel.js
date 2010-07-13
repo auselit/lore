@@ -368,6 +368,20 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         this.hideLabels = false;
                     }
              });
+             this.contextmenu.add({
+                    text: "Zoom out",
+                    scope: this,
+                    handler: function (){
+                        this.fd.canvas.scale(0.7,0.7);                     
+                    }
+             });
+             this.contextmenu.add({
+                    text: "Zoom in",
+                    scope: this,
+                    handler: function (){
+                        this.fd.canvas.scale(1.3,1.3);                     
+                    }
+             });
         }
         this.contextmenu.showAt(e.xy);
         e.stopEvent();
