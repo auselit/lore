@@ -87,6 +87,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             },
             Edge: {
                 overridable: true,
+                //type: 'arrow', #302: wait until JIT fixes redraw bug to enable
                 lineWidth: 2,
                 color: "#ddd"
            },
@@ -203,7 +204,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
               } else {
                 node.name = node.name.replace(/&amp;/g, '&');
               }
-              nameContainer.innerHTML = node.name;
+              nameContainer.innerHTML = Ext.util.Format.ellipsis(node.name,30);
               nameContainer.setAttribute("title","Show connections for \"" + node.name + "\"");
               domElement.appendChild(nameContainer);
               
