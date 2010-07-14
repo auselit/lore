@@ -569,7 +569,4 @@ lore.anno.ui.attachHandlers = function () {
 	
 	// Annotation Manager
 	lore.anno.annoMan.on('annotationsloaded', lore.anno.ui.handleAnnotationsLoaded);
-	
-	lore.anno.ui.formpanel.getComponent("variantfield").on('specialkey', lore.anno.ui.launchFieldWindow);
-	lore.anno.ui.formpanel.getComponent("originalfield").on('specialkey', lore.anno.ui.launchFieldWindow);
 }
