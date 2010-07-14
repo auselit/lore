@@ -107,7 +107,6 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	setCurrentAnno : function(rec){
 		var old = this.curSelAnno;
 		this.curSelAnno = rec;
-		this.curSelAnnoStore = rec ? rec.store : null;
 		this.fireEvent("annochanged", old, this.curSelAnno );
 	},
 	
