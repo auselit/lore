@@ -56,6 +56,10 @@ lore.ore.ui.graph.COGraph = function(id) {
         // default colour for line that is displayed for creating connections
         this.connectionLine.setColor(new draw2d.Color(174, 174, 174));
         this.previewCanvas = document.createElement("canvas");
+        this.setSnapToGeometry(true);
+        this.setPanning(true);
+        // don't use move cursor for panning
+        this.html.style.cursor="default";
         this.readOnly = false;
     } catch (ex){
         lore.debug.ore("error setting up COGraph",ex);
