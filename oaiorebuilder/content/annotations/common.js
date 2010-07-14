@@ -377,14 +377,6 @@ lore.anno.ui.genTreeNodeText = function(anno){
 }
 
 /**
- * Launch field value in a new window
- * @param {Field} field Form field to launch in a new window
- */
-lore.anno.ui.launchFieldWindow = function(field){
-	lore.global.util.launchWindow(field.value, true, window);
-}
-
-/**
  * Detemerine whether the triple object supplied is a relationship
  * understandable by a user
  * @param {Object} triple
