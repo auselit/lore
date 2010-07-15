@@ -94,7 +94,7 @@
       	 <xsl:text>{"nodeTo":"</xsl:text>
          <xsl:value-of select="sparql:uri"/>
          <xsl:text>","data":{"rel":"</xsl:text>
-         <xsl:value-of select="key('results-key',$theuri)/sparql:binding[@name='anotherrel']/sparql:uri"/>
+         <xsl:value-of select="following-sibling::sparql:binding[@name='anotherrel']/sparql:uri"/>
          <xsl:text>"}}</xsl:text>
          <xsl:if test="position()!=last()">
            <xsl:text>,</xsl:text>
