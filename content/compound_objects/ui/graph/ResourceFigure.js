@@ -256,7 +256,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.showContent = function() {
             + "-data' id='" + theurl + "-data' data='" 
             + theurl + "' style='z-index:-9001' width='100%' height='100%'></object>"; 
     } else if (mimetype && mimetype.match("image")) { 
-		this.iframearea.innerHTML = "<img id='" + theurl + "-data' src='"
+		this.iframearea.innerHTML = "<img onclick='var e = arguments[0];lore.global.util.launchTab(this.getAttribute(\"src\"),window);e.stopPropagation();return false' id='" + theurl + "-data' src='"
 				+ theurl + "' style='width:auto;z-index:-9001' height='95%'>";
 	} else  { // All other resources displayed in secure iframe 
         var displayUrl = theurl;

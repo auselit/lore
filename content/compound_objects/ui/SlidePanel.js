@@ -215,6 +215,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                 previewEl = document.createElement('img');
                 previewEl.src=resource.uri;
                 previewEl.alt = "image preview";
+                previewEl.onclick= function(e){lore.global.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false};
                 previewEl.style.maxHeight = "100%";
             } else if (hasPreview) {
                 var theURL = resource.uri;
