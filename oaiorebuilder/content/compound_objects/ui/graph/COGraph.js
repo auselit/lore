@@ -72,13 +72,9 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      * Trigger automatic layout of figures
      */
 	doLayout : function() {
-	    try {
 	        //if (this.getDocument().getLines().getSize() > 0){
 	            this.layouter.doLayout();
 	        //}
-	    } catch (e){
-	        lore.debug.ore("failed to do layout",e);
-	    }
 	},
     setReadOnly : function(readonly) {
         this.readOnly = readonly;
@@ -410,5 +406,13 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	        })
 	    );
 		return menu;
-	}
+	},
+    /**  Don't show snap to lines when making a connection */
+    snapToHelper: function(figure,  pos){
+        if (figure instanceof lore.ore.ui.graph.Port){
+            var result = new draw2d.Dimension(pos.x,pos.y, figure.getWidth(), figure.getHeight());
+            return result.getTopLeft();
+        }
+        return draw2d.Workflow.prototype.snapToHelper.call(this,figure,pos);
+    }
 });
