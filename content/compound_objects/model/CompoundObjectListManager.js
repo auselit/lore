@@ -108,7 +108,7 @@ lore.ore.model.CompoundObjectListManager.prototype = {
     },
     /**
      * Add compound objects to a list
-     * @param {Array} coSummaries Array of {@link lore.ore.model.CompoundObjectSummary} objects to be added
+     * @param {Array} coSummaries Array of objects to be added
      * @param {String} listname The list to which to add the compound objects. If not supplied, the compound object will be added to the 'browse' list by default.
      */
     add: function(coSummaries, listname){
