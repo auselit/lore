@@ -654,10 +654,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
 
 	constructor: function(config ){
 		  this.config = config || {};
-        /** 
-         * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
-         * @property 
-         * */
+
         this.model = config.model;
         this.initConfig(this.model);
         
@@ -745,18 +742,15 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
  
 				
 					
-/** Tree node for representing Compound objects 
- * @class lore.ore.ui.AnnoColumnTreeNode
+/** Tree node for representing Annotations
+ * @class lore.anno.ui.AnnoColumnTreeNode
  * @extends Ext.tree.TreeNode */
 lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
   
   
    constructor: function(config){
         this.config = config || {};
-        /** 
-         * @cfg {lore.ore.model.CompoundObjectSummary} The compound object represented by this tree node 
-         * @property 
-         * */
+        
       
         this.initConfig();
         lore.anno.ui.AnnoColumnTreeNode.superclass.constructor.call(this, this.config); 
@@ -764,7 +758,7 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
    
     /**
     * Set the intial config values for text, uri etc from the model object
-    * @param {lore.ore.model.CompoundObjectSummary} coSummary Model object for this tree node
+   
     */
    initConfig: function(){
 		try {
