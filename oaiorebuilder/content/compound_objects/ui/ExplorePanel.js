@@ -1,3 +1,8 @@
+/**
+ * 
+ * @class lore.ore.ui.ExplorePanel Panel to display explore view: visualisation of connections from repository 
+ * @extends Ext.Panel
+ */
 lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{ 
    constructor: function (config){ 
         this.hideLabels = false;
@@ -66,8 +71,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 html: "Color Key"
         });
    },
+   /** Set up the visualisation */
    initGraph : function(){
-        lore.debug.ore("init explore view");
         Ext.getCmp("exploreHistory").body.update("");
       /** The JIT Graph that provides the explore visualization */
         this.fd = new $jit.ForceDirected({
@@ -100,11 +105,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 if (!lore.ore.explorePanel.hideLabels) {
                     tip.innerHTML = "";
                 } else {
-                    //count connections
-                    //var count = 0;
-                    //node.eachAdjacency(function() { count++; });
                     var tiptext = "<div class=\"exploretip-title\">" + node.name + "</div><div class=\"exploretip-text\">";
-                    //tiptext += "<i>" + node.id + "</i><br>";
                     if (node.data.creator){
                         tiptext += "Created by " + node.data.creator; 
                     } 
@@ -152,7 +153,6 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     lore.debug.ore("requestGraph not http", node);
                     return;
                 }
-                //lore.debug.ore("requestGraph",node);
                 lore.ore.ui.loreProgress("Retrieving data for explore view");
                 try{
                 var historyData = {
@@ -249,6 +249,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             });
         }
     },
+    /** Handle context menu for nodes in visualisation: allow deletion/expansion of each node */
     onNodeMenu: function(fdcontroller,e){        
         if (!this.nodemenu) {
             var nodemenu = new Ext.menu.Menu({
@@ -257,7 +258,6 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             });
             nodemenu.add({
                 text : "Show connections",
-                //icon: "chrome://lore/skin/icons/image.png",
                 scope: fdcontroller,
                 handler : function(evt) {
                     var node = this.clickedNode;
@@ -296,6 +296,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
          lore.debug.ore("right click event ",e);
          this.nodemenu.showAt([e.pageX,e.pageY]);          
     },
+    /** Handle context menu on explore view background, providing diagram-wide options such as export to image */
     onContextMenu : function (e){ 
         if (!this.contextmenu) {
             this.contextmenu = new Ext.menu.Menu({
@@ -387,6 +388,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         e.stopEvent();
         return false;
     },
+    /** generate a PNG image capturing the visualisation from this view */
     getAsImage : function() {
      try {
        
@@ -442,7 +444,6 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     updateContent : function (p) {
         var currentREM = lore.ore.cache.getLoadedCompoundObjectUri();
         if (this.exploreLoaded !== currentREM) {
-            //lore.debug.ore("updateContent: show in explore view", currentREM);
             this.exploreLoaded = currentREM;
             this.showInExploreView(currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
         } 
@@ -455,7 +456,6 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {function} f Function to apply
      */
     loadRem : function(id, title, isCompoundObject, f){
-        //lore.debug.ore("loadRem " + title + " " + id);
         // get json from sparql query
         var json = lore.ore.reposAdapter.getExploreData(id,title,isCompoundObject);
         if (json){
@@ -466,23 +466,20 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {URI} id The URI of the compound object
      * @param {String} title Label to display for the compound object
      */
-        showInExploreView : function (id, title, isCompoundObject){
+    showInExploreView : function (id, title, isCompoundObject){
             lore.debug.ore("ExplorePanel: show in explore view " + title);
-            lore.ore.ui.loreProgress("Retrieving data for explore view");
             try{
             if (!this.fd){
                     this.initGraph();
                 } else {
                     this.fd.graph.empty();
             }
+            lore.ore.ui.loreProgress("Retrieving data for explore view");
             this.loadRem(id, title, isCompoundObject, function(json){
                 lore.ore.explorePanel.fd.loadJSON(json);
                 lore.ore.explorePanel.fd.computeIncremental({
                     iter: 40,
                     property: 'end',
-                    onStep: function(perc){
-                      //Log.write(perc + '% loaded...');
-                    },
                     onComplete: function(){
                       var ep = lore.ore.explorePanel;
                       lore.ore.ui.loreInfo("Explore data loaded");
