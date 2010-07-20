@@ -18,8 +18,7 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * The Graphical compound object editing view
- * @class lore.ore.ui.graph.COGraph
+ * @class lore.ore.ui.graph.COGraph The Graphical compound object editing view
  * @extends draw2d.Workflow
  * @param {} id
  */
@@ -28,8 +27,6 @@ lore.ore.ui.graph.COGraph = function(id) {
     try {
 	    this.layouter = new lore.ore.ui.graph.autolayout.Layouter(this);
 	    this.layouter.setPreferredEdgeLength(180);
-        this.showEmptyMessage();
-        
         /* The mask element covers figures to allow mouse to move over figures during moves
          * without interference from figure contents
          **/
@@ -41,7 +38,7 @@ lore.ore.ui.graph.COGraph = function(id) {
 	    this.mask.style.display="none";
         this.mask.style.zIndex="6000";
         this.html.appendChild(this.mask);
-        
+        this.showEmptyMessage();
         /* Override resizeHandles to use handles that raise/lower figures when resizing */
         this.resizeHandle1 = new lore.ore.ui.graph.ResizeHandle(this,1); // 1 = LEFT TOP
 		this.resizeHandle2 = new lore.ore.ui.graph.ResizeHandle(this,2); // 2 = CENTER_TOP
@@ -61,6 +58,7 @@ lore.ore.ui.graph.COGraph = function(id) {
         // don't use move cursor for panning
         this.html.style.cursor="default";
         this.readOnly = false;
+        
     } catch (ex){
         lore.debug.ore("error setting up COGraph",ex);
     }
@@ -100,6 +98,11 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     /** Override getWidth because html element width is incorrect on initial load */
     getWidth : function () {
         return this.scrollArea.scrollWidth;
+    },
+    /** Set the scroll area */
+    setScrollArea : function(scrollarea){
+        this.scrollArea = scrollarea;
+        this.resizeMask();
     },
     /**
      * Show the mask to prevent other figures previews interfering with mouse 
@@ -290,6 +293,34 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
           }
         }
 	},
+    /** Override to prevent panning when hovering over a figure */
+    onMouseMove: function(x , y) {
+      // DragDrop of a connection/Line
+      if(this.dragging==true && this.draggingLine!=null)
+      {
+       var diffX = x-this.mouseDownPosX;
+       var diffY = y-this.mouseDownPosY;
+       this.draggingLine.startX= this.draggingLine.getStartX()+diffX;
+       this.draggingLine.startY= this.draggingLine.getStartY()+diffY;
+       this.draggingLine.setEndPoint(this.draggingLine.getEndX()+diffX, this.draggingLine.getEndY()+diffY);
+       this.mouseDownPosX = x;
+       this.mouseDownPosY = y;
+       this.showLineResizeHandles(this.currentSelection);
+      }
+      else if(this.dragging==true && this.panning==true && !this.currentSelection)
+      {
+       var diffX = x-this.mouseDownPosX;
+       var diffY = y-this.mouseDownPosY;
+    
+       // set the new viewpoint
+       //
+       this.scrollTo(this.getScrollLeft()-diffX,  this.getScrollTop()-diffY,true);
+    
+       // adjust all palletes and toolbars
+       //
+       this.onScroll();
+      }
+    },
     /** 
      * Render the contents as an image. Renders the current window into a canvas (resizing so that
      * the entire drawing area is visible), and then uses the toDataURL method on the canvas to
