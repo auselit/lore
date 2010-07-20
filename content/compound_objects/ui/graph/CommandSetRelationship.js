@@ -1,3 +1,10 @@
+/**
+ * @class lore.ore.ui.graph.CommandSetRelationship Command to set relationship (provides undo support for setting relationship type on connections)
+ * @param {} figure
+ * @param {} edgens
+ * @param {} edgetype
+ * @param {} symmetric
+ */
 lore.ore.ui.graph.CommandSetRelationship = function(figure, edgens, edgetype, symmetric){
    this.figure = figure;
    this.newNS = edgens;

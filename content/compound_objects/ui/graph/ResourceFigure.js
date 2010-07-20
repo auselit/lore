@@ -18,8 +18,7 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Displays a resource identified by a url and stored associated metadata
- * @class lore.ore.ui.graph.ResourceFigure
+ * @class lore.ore.ui.graph.ResourceFigure Displays a resource identified by a url and stored associated metadata
  * @extends draw2d.Node
  * @param {Object} initprops initial properties
  */
