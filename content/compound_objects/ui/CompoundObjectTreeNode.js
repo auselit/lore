@@ -24,7 +24,7 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
    constructor: function(config){
         this.config = config || {};
         /** 
-         * @cfg {lore.ore.model.CompoundObjectSummary} model The compound object represented by this tree node 
+         * @cfg {} model The compound object represented by this tree node 
          * @property 
          * */
         this.model = config.model;
@@ -50,7 +50,7 @@ lore.ore.ui.CompoundObjectTreeNode = Ext.extend(Ext.tree.TreeNode,{
 
    /**
     * Set the intial config values for text, uri etc from the model object
-    * @param {lore.ore.model.CompoundObjectSummary} coSummary Model object for this tree node
+    * @param {} coSummary Model object for this tree node
     */
    initConfig: function(coProps){
        
