@@ -121,11 +121,17 @@
 .tree-anno, .tree-ore {
     display:none;
 }
-.x-tree-node .rel-in {
+.rel-to {
 	background-image: url(chrome://lore/skin/icons/arrow_left.png);
+	background-repeat:no-repeat;
 }
-.x-tree-node .rel-out {
+.rel-from {
 	background-image: url(chrome://lore/skin/icons/arrow_right.png);
+	background-repeat:no-repeat;
+}
+.rel-with {
+    background-image: url(chrome://lore/skin/icons/arrow_both.png);
+    background-repeat:no-repeat;
 }
 .oreresult {
 	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png) !important;
