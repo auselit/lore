@@ -1,3 +1,7 @@
+/**
+ * @class lore.ore.ui.PagingToolbar Used to page compound object results in browse, history and search lists
+ * @extends Ext.PagingToolbar
+ */
 lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
        pageSize: 5,
        initComponent : function(){
@@ -74,14 +78,17 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
         this.cursor = 0;
         this.bindStore(this.store, true);
     },
+    /** Sorts compound objects */
     sortCompoundObjects: function(){
         var v = this.items.last().getValue();
         this.store.sort(v, (v == 'title' || v == 'creator') ? 'asc' : 'desc');
         this.moveFirst();
     },
+    /**
+     * Fix paging after clear: reset back to first page
+     */
     onClear: function () {
         this.cursor = 0;
-        // Fix paging after clear: reset back to first page
         this.store.lastOptions = {params:{start: 0, limit: 5}};
         this.onChange();
     },
