@@ -24,6 +24,7 @@
  */
 lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
     getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
+        var sa = this;
 	    try {
 	       var escapedURL = "";
 	       var altURL = "";
@@ -92,10 +93,9 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	                        // add the results to the model
 					        var coList = [result.length];
 					        for (var i = 0; i < result.length; i++) {
-					            var theobj = new lore.ore.model.CompoundObjectSummary(result[i]);
-					            if (matchval) {theobj.setSearchVal(matchval);}
-                                // TODO: hack to make it work with store
-					            coList[i] = theobj.getProperties(); 
+					            var theobj = sa.parseCOFromXML(result[i]);
+					            if (matchval) {theobj.searchval = matchval;}
+					            coList[i] = theobj; 
 					        }
 					        lore.ore.coListManager.add(coList,listname);
 					    } 
@@ -263,6 +263,62 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
             fExpr = "FILTER regex(str(?v), \"" + matchval + "\", \"i\")";
         }
         return {filter: fExpr, matchval: newmatchval};
+    },
+   /**
+    * Parses compound object details from a SPARQL XML result
+    * @param {XMLNode} XML node to be parsed
+    * Returns an object with the following properties
+    * */
+    /** {string} uri The identifier of the compound object */
+    /**  {string} title The (Dublin Core) title of the compound object */
+    /**  {string} creator The (Dublin Core) creator of the compound object */
+    /**  {Date} created The date on which the compound object was created (from dc:created) */
+    /**  {string} match The value of the subject, predicate or object from the triple that matched the search */
+    /**  {Date} acessed The date this compound object was last accessed (from the browser history) */
+
+   parseCOFromXML: function(/*Node*/result){
+        var props = {};
+        var bindings, node, attr, nodeVal;
+        props.title = "Untitled";
+        props.creator = "Anonymous";
+        try {  
+           bindings = result.getElementsByTagName('binding');
+           for (var j = 0; j < bindings.length; j++){  
+            attr = bindings[j].getAttributeNode('name');
+            if (attr.nodeValue =='g'){ //graph uri
+                node = bindings[j].getElementsByTagName('uri'); 
+                props.uri = lore.global.util.safeGetFirstChildValue(node);
+            } else if (attr.nodeValue == 'v'){
+                node = bindings[j].getElementsByTagName('literal');
+                nodeVal = lore.global.util.safeGetFirstChildValue(node);
+                if (!nodeVal){
+                    node = bindings[j].getElementsByTagName('uri');
+                }
+                props.match = lore.global.util.safeGetFirstChildValue(node);
+            } else {
+                node = bindings[j].getElementsByTagName('literal');
+                nodeVal = lore.global.util.safeGetFirstChildValue(node);
+                if (attr.nodeValue == 't' && nodeVal){ //title
+                    props.title = nodeVal;
+                } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
+                    props.creator = nodeVal;
+                } else if (attr.nodeValue == 'm' && nodeVal){ // dcterms:modified
+                    props.modified = nodeVal;
+                    try {
+                        var modDate = Date.parseDate(props.modified,'c') || Date.parseDate(props.modified,'Y-m-d');
+                        if (modDate){
+                            props.modified = modDate;
+                        }
+                    } catch (e){
+                        lore.debug.ore("parseCOFromXML: error converting date",e);
+                    }
+                } 
+            }
+           }
+        } catch (ex) {
+            lore.debug.ore("Unable to process compound object result list", ex);
+        }
+        return props;
     }
 });
 
