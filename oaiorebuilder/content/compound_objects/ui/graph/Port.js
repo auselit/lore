@@ -18,8 +18,8 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /** 
- * Port that accepts connections from ContextmenuConnections 
- * @class lore.ore.ui.graph.Port
+ * @class lore.ore.ui.graph.Port Port that accepts connections from ContextmenuConnections 
+ * @extends draw2d.Port
  */
 lore.ore.ui.graph.Port = function(uirep) {
     draw2d.Port.call(this,uirep);
@@ -32,11 +32,6 @@ lore.ore.ui.graph.Port = function(uirep) {
 };
 lore.ore.ui.graph.Port.prototype = new draw2d.Port;
 lore.ore.ui.graph.Port.prototype.type = "lore.ore.ui.graph.Port";
-
-/*lore.ore.ui.graph.Port.prototype.onDragLeave = function(){
-    draw2d.Port.prototype.onDragLeave.call(this);
-    this.parentNode.workflow.showMask();  
-}*/
 
 /** Override onDrag: don't show port and account for scroll offsets */
 lore.ore.ui.graph.Port.prototype.onDrag = function()
@@ -61,7 +56,7 @@ lore.ore.ui.graph.Port.prototype.onDrag = function()
     pn.y+this.originY);
   this.fireMoveEvent();
 }
-
+/** Reset state back to that before drag */
 lore.ore.ui.graph.Port.prototype.onDragend = function(){
     this.setAlpha(1.0);
     this.setPosition(this.originX, this.originY);
@@ -76,12 +71,18 @@ lore.ore.ui.graph.Port.prototype.createHTMLElement = function(){
     item.className = "port";
     return item;
 }
+/** Show a corona when dragging near a port
+ * @param {} port
+ */
 lore.ore.ui.graph.Port.prototype.onDragEnter = function(/*:draw2d.Port*/ port)
 {
   this.parentNode.workflow.connectionLine.setAlpha(1.0);
   this.showCorona(true);
   this.setBackgroundColor(this.highlightFillColor);
 }
+/** Hide corona 
+ * @param {} port
+ */
 lore.ore.ui.graph.Port.prototype.onDragLeave = function(/*:draw2d.Port*/ port)
 {
   this.parentNode.workflow.connectionLine.setAlpha(0.8);

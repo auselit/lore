@@ -18,8 +18,7 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /** 
- * Locates labels on connections
- * @class lore.ore.ui.graph.LabelLocator
+ * @class lore.ore.ui.graph.LabelLocator Locates labels on connections
  * @param {lore.ore.ui.graph.ContextmenuConnection} connection
  */
 lore.ore.ui.graph.LabelLocator = function(connection) {
