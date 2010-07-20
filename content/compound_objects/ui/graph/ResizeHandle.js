@@ -18,17 +18,18 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /** 
- * ResizeHandles that raise and lower figure to avoid interference from other node preview contents
  * @class lore.ore.ui.graph.ResizeHandle
  * @extends draw2d.ResizeHandle
  */
 lore.ore.ui.graph.ResizeHandle = Ext.extend(draw2d.ResizeHandle, {
     type : "lore.ore.ui.graph.ResizeHandle",
+    /**  Lower figure */
     onDragend : function (){
         var figure = this.workflow.currentSelection;
         figure.lower();
         draw2d.ResizeHandle.prototype.onDragend.call(this);
     },
+    /** Raise  figure to avoid interference from other node preview contents */
     onDragstart: function (x, y) {
         var figure = this.workflow.currentSelection;
         figure.raise();
@@ -36,12 +37,12 @@ lore.ore.ui.graph.ResizeHandle = Ext.extend(draw2d.ResizeHandle, {
     }
 });
 /** 
- * Handle offsets and enabling mask to avoid interference from node previews during connection moving 
  * @class lore.ore.ui.graph.LineStartResizeHandle
  * @extends draw2d.LineStartResizeHandle
  * */
 lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandle, {
    type :  "lore.ore.ui.graph.LineResizeHandle",
+   /** Handle offsets and enable mask to avoid interference from node previews during connection moving */
    onDrag : function () {  
 	    var wf = this.workflow;
 	    var line = wf.currentSelection;
@@ -57,6 +58,7 @@ lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandl
         // setPosition forces position of this resize handle to update and fires move event
 	    this.setPosition(this.x,this.y);
    },
+   /** Hide mask and reset offsets when drag ends */
    onDragend : function () {
         this.workflow.hideMask();
         draw2d.LineStartResizeHandle.prototype.onDragend.call(this);
@@ -65,12 +67,12 @@ lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandl
     }
 });
 /** 
- * Handle offsets and enabling mask to avoid interference from node previews during connection moving 
  * @class lore.ore.ui.graph.LineEndResizeHandle
  * @extends draw2d.LineEndResizeHandle
  * */
 lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
    type :  "lore.ore.ui.graph.LineResizeHandle",
+   /** Handle offsets and enabling mask to avoid interference from node previews during connection moving  */
    onDrag : function (){  
         var wf = this.workflow;
         var line = wf.currentSelection;
@@ -86,6 +88,7 @@ lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
         // setPosition forces position of this resize handle to update and fires move event
         this.setPosition(this.x,this.y);
    },
+   /** Hide mask and reset offsets when drag ends */
    onDragend : function () {
         this.workflow.hideMask();
         draw2d.LineEndResizeHandle.prototype.onDragend.call(this);
