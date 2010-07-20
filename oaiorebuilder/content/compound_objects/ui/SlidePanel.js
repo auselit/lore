@@ -1,6 +1,9 @@
-/* 
- * Panel in the slideshow representing an AbstractOREResource
- */
+
+ /**
+  * 
+  * @class lore.ore.ui.SlidePanel Panel in the slideshow representing an AbstractOREResource
+  * @extends Ext.Panel
+  */
 lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{ 
    constructor: function (config){
         config = config || {};
@@ -265,6 +268,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             this.html = slidehtml;   
         }
     },
+    /** Reset the iframe to show resource URL */
     resetPreview: function(){ 
       if (this.previewEl && this.previewEl.tagName == 'iframe'){
         this.previewEl.contentWindow.location.href=this.previewEl.getAttribute("src");

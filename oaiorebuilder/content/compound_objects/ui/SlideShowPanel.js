@@ -1,7 +1,8 @@
-/* 
- * Represents a slideshow
- * 
- */
+ /**
+  * 
+  * @class lore.ore.ui.SlideShowPanel Represents a slideshow with navigation buttons
+  * @extends Ext.Panel
+  */
 lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     layout:'card',
     activeItem: 0,
@@ -11,8 +12,11 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     defaults: {
         border:false
     },      
+    /** 
+     * Sets the slide to be displayed in the slideshow
+     * @param {} i Number or id of the item to make active
+     */
     setActiveItem: function(i){
-        // i can be a number or id
         if (typeof i == 'string'){
             this.layout.setActiveItem(i);
             this.activeItem = this.items.indexOf(this.layout.activeItem);
@@ -29,12 +33,15 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         }
        
     },
+    /** Display next slide */
     next : function(){
         this.setActiveItem(this.activeItem + 1);
     },
+    /** Display previous slide */
     prev : function(){
         this.setActiveItem(this.activeItem - 1);
     },
+    /** Toggle between auto play */
     playPause : function (){
       if(this.playing) {
           this.pause();
@@ -42,6 +49,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
           this.play();
       }  
     },
+    /** Pause the auto play */
     pause: function(){
       if(this.playing) {
             Ext.TaskMgr.stop(this.playTask);
@@ -51,6 +59,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         }        
         return this;  
     },
+    /** Start the auto play */
     play: function() {
         if(!this.playing) {
             this.playTask = this.playTask || {
@@ -154,6 +163,10 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         }
         return items;
    },
+   /** Clear and reload content to represent a compound object
+    * 
+    * @param {} co The compound object to render
+    */
    loadContent: function(co){
     
     try{
@@ -171,6 +184,10 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         lore.debug.ore("Problem loading slideshow content",e);
     }
    },
+   /**
+    * Sets the compound object represented by the slide show
+    * @param {} co The compound object model object
+    */
    setModel: function(co){
         if (this.model) {
             panel.removeAll();

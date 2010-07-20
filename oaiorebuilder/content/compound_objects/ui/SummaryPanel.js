@@ -1,3 +1,7 @@
+/**
+ * @class lore.ore.ui.SummaryPanel Display a text-based summary of the entire compound object
+ * @extends Ext.Panel
+ */
 lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{ 
    constructor: function (config){
         config = config || {};
