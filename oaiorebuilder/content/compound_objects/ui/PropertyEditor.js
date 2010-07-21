@@ -161,6 +161,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         this.on("afteredit", this.handlePropertyChange);
         this.store.on("remove", this.handlePropertyRemove);
         
+        this.propEditorWindow.on("show", function(){
+            // force redraw of text area of popup editor on scroll to get around FF iframe bug see #209
+            var taEl = this.getComponent(0).getEl();
+            taEl.on("scroll",function(e,t,o){this.repaint();},taEl);
+        }, this.propEditorWindow, {single:true});
+        
         // TODO: use MVC, store read only status of properties in model rather than hardcoding this?
         if (this.id == "nodegrid"){
             this.on("beforeedit", function(e) {
