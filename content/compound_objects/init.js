@@ -196,6 +196,13 @@ lore.ore.ui.initUIComponents = function() {
                 }
     });
     sidetabs.on('beforeexpand', function(p){p.body.setStyle('display','block');});
+        
+    sidetabs.items.each(function(item){
+        // force repaint on scroll for the sidetabs to avoid rendering issues if iframe previews are scrolled behind #209
+        var tabEl = item.body;
+        tabEl.on("scroll",function(e,t,o){this.repaint();},tabEl);
+    });
+    
     sidetabs.activate("browsePanel");
 	Ext.QuickTips.interceptTitles = true;
 	Ext.QuickTips.init();
