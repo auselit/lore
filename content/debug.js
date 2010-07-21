@@ -217,5 +217,13 @@ try {
 	Components.utils.import("resource://firebug/firebug-trace-service.js");
 	debug.fbTrace = traceConsoleService.getTracer("extensions.lore");
 } catch (ex) {
-	// suppress errors if getting fbTrace fails - Firebug probably not installed/enabled
+    // Maybe this is an old version of Firebug, try loading the trace service from XPCOM
+    try {
+        debug.fbTrace = Components.classes["@joehewitt.com/firebug-trace-service;1"] 
+            .getService(Components.interfaces.nsISupports) 
+            .wrappedJSObject 
+            .getTracer("extensions.lore"); 
+    } catch (ex) {
+        // suppress errors if getting fbTrace fails - Firebug probably not installed/enabled        
+    }
 }
