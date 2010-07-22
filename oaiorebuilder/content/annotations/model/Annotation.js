@@ -552,12 +552,6 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 					rdfxml += anno.scholarly.importance;
 					rdfxml += '</importance>';
 				}
-				
-				if (annoOrig.scholarly.altbody) {
-					anno.scholarly.altbody = lore.global.util.sanitizeHTML(anno.scholarly.altbody, window);
-					rdfxml += '<altbody xmlns="' + lore.constants.NAMESPACES["vanno"] + 
-					'">' + this.getBodyRDF(anno.title, anno.scholarly.altbody) + '</altbody>';
-				}
 			}
 
 //			if (annoOrig.semantictriple) {
