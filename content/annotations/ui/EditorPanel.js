@@ -352,15 +352,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						enableSourceEdit: false,
 						anchor: '-30 65%'
 					}, {
-						fieldLabel: 'Alt Body',
-						xtype: 'htmleditor',
-						plugins: [new Ext.ux.form.HtmlEditor.Img()],
-						name: 'altbody',
-						enableFont: false,
-						enableColors: false,
-						enableSourceEdit: false,
-						anchor: '-30 65%'
-					}, {
 						id: this.genID('metausergrid'),
 						name: 'metausergrid',
 						xtype: "annopropertyeditor",
@@ -734,7 +725,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 * @param {Boolean} show true to show the fields, false to hide them
 		 */		
 		showScholarlyFields: function(/*boolean*/show) {
-			var scholarlyFields = ['importance', 'references', 'altbody'];
+			var scholarlyFields = ['importance', 'references'];
 			
 			if (show) {
 				lore.anno.ui.showFormFields(this.form, scholarlyFields);
