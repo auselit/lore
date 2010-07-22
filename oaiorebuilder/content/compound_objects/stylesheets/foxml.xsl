@@ -25,13 +25,13 @@
     			<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="A"/>
     			<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Compound object exported from LORE"/>
   			</foxml:objectProperties>
- 			<xsl:apply-templates select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates"/>
+ 			<xsl:apply-templates select="//rdf:Description/ore:aggregates"/>
  			<xsl:apply-templates/>
  		</foxml:digitalObject>
 	</xsl:template>
 	
 	<!--  create a data stream for each aggregated resource -->
-	<xsl:template match="rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
+	<xsl:template match="rdf:Description/ore:aggregates">
 		<xsl:variable name="aggregates" select="@rdf:resource"/>
 		<xsl:variable name="aggnum" select="position()"/>
 		<xsl:variable name="mimetype">
@@ -57,7 +57,7 @@
 	</xsl:template>
 	
 	<!--  dc datastream and rels-int for the entire resource map -->
-	<xsl:template match="rdf:Description[ore:describes[@rdf:resource='#aggregation']]">
+	<xsl:template match="rdf:Description[ore:describes]">
 		<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X">
 	    	<foxml:datastreamVersion FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/"
 	      		ID="DC.0" MIMETYPE="text/xml"
@@ -102,7 +102,7 @@
 				<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 				xmlns:ore="http://www.openarchives.org/ore/terms/">
 				    <!-- properties for aggregated resources -->
-					<xsl:for-each select="//rdf:Description[@rdf:about='#aggregation']/ore:aggregates">
+					<xsl:for-each select="//rdf:Description/ore:aggregates">
 						<xsl:variable name="resURI" select="@rdf:resource"/>
 						<rdf:Description rdf:about="info:fedora/{$coid}/OBJ.{position()}">
 						<xsl:for-each select="//rdf:Description[@rdf:about=$resURI]">
