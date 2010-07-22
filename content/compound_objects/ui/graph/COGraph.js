@@ -321,6 +321,39 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
        this.onScroll();
       }
     },
+    /** Override to prevent two selection events being fired in succession */
+    onMouseDown: function(/*:int*/ x, /*:int*/ y)
+    {
+      this.dragging = true;
+      this.mouseDownPosX = x;
+      this.mouseDownPosY = y;
+
+      if(this.toolPalette!=null && this.toolPalette.getActiveTool()!=null)
+      {
+        this.toolPalette.getActiveTool().execute(x,y);
+      }
+
+      this.showMenu(null);
+      // check if a line has been hit
+      var line = this.getBestLine(x,y);
+      if(line!=null && line.isSelectable())
+      {
+        this.hideResizeHandles();
+        this.setCurrentSelection(line);
+        this.showLineResizeHandles(this.currentSelection);
+        // you can move a line with Drag&Drop...but not a connection.
+        // A Connection is well bounded with the corresponding ports.
+        //
+        if(line instanceof draw2d.Line && !(line instanceof draw2d.Connection))
+        {
+           this.draggingLineCommand = line.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
+           if(this.draggingLineCommand!=null)
+              this.draggingLine = line;
+        }
+      } else {
+        this.setCurrentSelection(null);
+      }
+    },
     /** 
      * Render the contents as an image. Renders the current window into a canvas (resizing so that
      * the entire drawing area is visible), and then uses the toDataURL method on the canvas to
