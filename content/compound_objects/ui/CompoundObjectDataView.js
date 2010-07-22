@@ -28,7 +28,8 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
             ),
             loadingText: "Loading compound objects...",
             singleSelect: true,
-            autoScroll: true,
+            autoScroll: false,
+            style: "overflow-y:auto;overflow-x:hidden",
             itemSelector : "div.coListing"
         });
         lore.ore.ui.CompoundObjectDataView.superclass.initComponent.call(this,arguments); 
