@@ -283,6 +283,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	 * @param {boolean} ctrl
 	 */
 	onKeyDown: function(keyCode, ctrl) {
+        try{
         if (!this.readOnly){
     	  if((keyCode==46 || keyCode==8) && this.currentSelection!=null) {
     	     this.commandStack.execute(this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
@@ -290,7 +291,32 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     	     this.commandStack.undo();
           } else if(keyCode==89 && ctrl) {
     	     this.commandStack.redo();
+          } else if (keyCode==39 && this.currentSelection){ // keyboard right
+            var comm = this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
+            comm.setPosition(this.currentSelection.getX() + 10, this.currentSelection.getY());
+            this.commandStack.execute(comm);
+          } else if (keyCode==37 && this.currentSelection){ // keyboard left
+            var x = this.currentSelection.getX();
+            if (x >= 10){
+                var comm = this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
+                comm.setPosition(x - 10,this.currentSelection.getY());
+                this.commandStack.execute(comm);
+            }
+          } else if (keyCode==40 && this.currentSelection){ // keyboard down
+            var comm = this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
+            comm.setPosition(this.currentSelection.getX(), this.currentSelection.getY() + 10);
+            this.commandStack.execute(comm);
+          } else if (keyCode==38 && this.currentSelection){ // keyboard up
+            var y = this.currentSelection.getY();
+            if (y >= 10){
+                var comm = this.currentSelection.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
+                comm.setPosition(this.currentSelection.getX(), this.currentSelection.getY() - 10);
+                this.commandStack.execute(comm);
+            }
           }
+        }
+        } catch (e){
+            lore.debug.ore("COGraph: onKeyDown",e);
         }
 	},
     /** Override to prevent panning when hovering over a figure */
