@@ -23,10 +23,23 @@ Ext.extend(lore.ore.ui.graph.CommandSetRelationship, draw2d.Command, {
    },
    /** Redo the command after it has been undone */
    redo: function() {
-        this.figure.setRelationshipType(this.newNS, this.newType, this.newSymmetric);
+        var fig = this.figure;
+        var wf = fig.workflow;
+        fig.setRelationshipType(this.newNS, this.newType, this.newSymmetric);
+        // workaround to force relationship grid to update until we have proper MVC (it can then listen to model)
+        if (wf.currentSelection == fig){
+            wf.setCurrentSelection(fig);
+        }
+    
    },
    /** Undo the command */
    undo: function() {
-        this.figure.setRelationshipType(this.oldNS, this.oldType, this.oldSymmetric);
+        var fig = this.figure;
+        var wf = fig.workflow;
+        fig.setRelationshipType(this.oldNS, this.oldType, this.oldSymmetric);
+        // workaround to force relationship grid to update until we have proper MVC (it can then listen to model)
+        if (wf.currentSelection == fig){
+            wf.setCurrentSelection(fig);
+        }
    }
 });
