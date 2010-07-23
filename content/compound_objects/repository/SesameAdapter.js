@@ -267,14 +267,14 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
    /**
     * Parses compound object details from a SPARQL XML result
     * @param {XMLNode} XML node to be parsed
-    * Returns an object with the following properties
+    * Returns an object with the following properties:
+    *  {string} uri The identifier of the compound object 
+    *  {string} title The (Dublin Core) title of the compound object 
+    *  {string} creator The (Dublin Core) creator of the compound object 
+    *  {Date} modified The date on which the compound object was modified (from dcterms:modified) 
+    *  {string} match The value of the subject, predicate or object from the triple that matched the search 
+    *  {Date} acessed The date this compound object was last accessed (from the browser history) 
     * */
-    /** {string} uri The identifier of the compound object */
-    /**  {string} title The (Dublin Core) title of the compound object */
-    /**  {string} creator The (Dublin Core) creator of the compound object */
-    /**  {Date} created The date on which the compound object was created (from dc:created) */
-    /**  {string} match The value of the subject, predicate or object from the triple that matched the search */
-    /**  {Date} acessed The date this compound object was last accessed (from the browser history) */
 
    parseCOFromXML: function(/*Node*/result){
         var props = {};
