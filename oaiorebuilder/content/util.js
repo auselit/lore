@@ -597,10 +597,10 @@ util = {
      * @param {} scrollToHighlight Boolean indicating whether to scroll
      * @param {} colour highlight colour
      */
-	highlightRange : function ( sel, targetDocument, scrollToHighlight, styleCallback) {
+	highlightRange : function (sel, targetDocument, scrollToHighlight, styleCallback) {
 		try {
             var highlightNodeTmpl = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
-			if ( styleCallback)
+			if (styleCallback)
 				styleCallback(highlightNodeTmpl);
 			
 			var highlightNodes =  util.safeSurroundContents(targetDocument, sel, highlightNodeTmpl);
@@ -666,6 +666,20 @@ util = {
 		
 		return targetDocument.evaluate( xp, targetDocument, null, 0, null ).iterateNext();
     },
+    
+    /**
+     * Currently only works for an xpointer containing only an xpath,
+     * not for image-range or string-range xpointers
+     * @param {} xp
+     * @return {}
+     */
+    getXPathFromXPointer : function(xp) {
+        xp = util.normalizeXPointer(xp);
+        var start = xp.indexOf('(') + 1,
+            end = xp.lastIndexOf(')');
+        return xp.substring(start, end);
+    },
+    
 	/**
      * 
      * @param {} xp
@@ -772,43 +786,37 @@ util = {
 		}
 		return null;
 	},
-	/**
-     * Return a section for a page from a list of page rdf triples
-     * 
-     * @param {} srcHash Hash to search for
-     * @param {} triples List of triples on a page
-     * @return {} DOM Range object of the triple, or null if not found
-	 */
-	getSelectionForHash: function( srcHash, triples ){
-		try {
-			var tripleSource = util.stringHashToTriple(srcHash, triples).source;
-			if ( tripleSource ) {
-				var r = tripleSource.ownerDocument.createRange();
-				r.selectNode(tripleSource);
-				return r;
-			}
-			return null;
-		} catch (e) {
-			debug.anno(e,e);
-		}
-		
-		return null;
-	},
+    
+    /**
+     * Find the type of an xpointer, either 'image-range', 'string-range',
+     * or 'plain'
+     * @param {} xp
+     * @return {String}
+     */
+    getXPointerType: function(xp) {
+        if (xp.indexOf("image-range") != -1) {
+            return "image-range";
+        } else if (xp.indexOf("string-range") != -1) {
+            return "string-range";
+        } else {
+            return "plain";
+        }
+    },
 	
 	/**
      * Checks if xpointer contains an image range
      * @param {} xp The xpointer to check
      * @return {Boolean} True if xp contains an image range
 	 */
-	isXPointerImageRange: function ( xp) {
+	isXPointerImageRange: function (xp) {
 		return xp.indexOf("image-range") != -1;
 	},
-	
+    
 	/**
 	 * Decode an image-range xpointer into it's component parts
 	 */
 	decodeImageRangeXPointer: function(xpointer) {
-		if (!util.isXPointerImageRange(xpointer))
+		if (!util.isXPointerImageRange(xpointer) )
 			return null;
 		
 		xpointer = util.normalizeXPointer(xpointer);

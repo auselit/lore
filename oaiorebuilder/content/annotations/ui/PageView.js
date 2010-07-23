@@ -81,7 +81,9 @@ lore.anno.ui.PageView.prototype = {
 			} else {
 				this.highlightCurrentAnnotation(newRec);
 			}
-		}
+		} else {
+            this.removeHighlightForCurrentAnnotation();
+        }
 	},
 	
 	/**
@@ -272,6 +274,7 @@ lore.anno.ui.PageView.prototype = {
 			}
 			this.page.curAnnoMarkers = this.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
 		} catch (e) {
+            lore.debug.anno("Error highlighting (in highlightCurrentAnnotation)", {rec:rec,e:e});
 			lore.anno.ui.loreError('Unable to highlight. Page has been modified.');
 		}
 	},
@@ -367,11 +370,11 @@ lore.anno.ui.PageView.prototype = {
 			
 			// set text to inherit for select all fields   
 			var selAllStyle = function(type, domObj){
-				if (type == 0) {
+				if (type === 'string-range' || type === 'plain') {
 					if (domObj) {
 						domObj.style.textDecoration = "inherit";
 					}
-				} else if ( type == 1) {
+				} else if ( type === 'image-range') {
 					domObj.style.borderStyle = "dashed";
 				}
 					
@@ -518,7 +521,7 @@ lore.anno.ui.PageView.prototype = {
 					for (var i = 0; i < markers.length; i++) {
 						var m = markers[i];
 						try {
-							if (m.type == 1 && (m.target == d)) {
+							if (m.isImageMarker() && (m.target == d)) {
 								m.update();
 							}
 						} catch (e ) {

@@ -30,10 +30,9 @@
  */
 	
 lore.anno.ui.Marker = function(args){
-
 	this.xpointer = lore.global.util.normalizeXPointer(args.xpointer);
 	this.target = args.target || lore.global.util.getContentWindow(window).document;
-	this.type = lore.global.util.isXPointerImageRange(this.xpointer) ? 1 : 0;
+    this.type = lore.global.util.getXPointerType(this.xpointer);
 	this.visible = false;
 	this.bw = args.borderWidth || 2;
 	this.page = args.page;
@@ -50,7 +49,7 @@ lore.anno.ui.Marker.prototype = {
 		this.colour = colour;
 		this.styleCallback = styleCallback;
 		
-		if ( this.type == 1) {
+		if (this.isImageMarker()) {
 			// image marker
 			if (!this.data) {
 				this.data = lore.global.util.parseImageRangeXPointer(this.xpointer, this.target);
@@ -67,38 +66,20 @@ lore.anno.ui.Marker.prototype = {
 			if ( scroll )
 				lore.global.util.scrollToElement(this.data.nodes[0], this.target.defaultView);
 			
-		} else {
+		} else if (this.isStringMarker()) {
 			// text marker
 			var type = this.type;
 			var stylin = function(domNode){
 					domNode.style.backgroundColor = colour || "yellow";
-					if ( styleCallback) styleCallback(type, domNode);
+					if (styleCallback) styleCallback(type, domNode);
 				}
 				
 			if (!this.data || !this.data.nodes) {
-				// retrieve data
-				
-				// if not string, then RDFa data
-				if (typeof(this.xpointer) != 'string' ) {
-					lore.debug.anno("Marker.show()", {xpointer:this.xpointer});
-					this.data = {};
-					 
-					if ( this.page.rdfa) {
-						// resolve hash
-						this.data.range = lore.global.util.getSelectionForHash(this.xpointer[0], this.page.rdfa.rdf.databank.triples());
-						lore.debug.anno("Resolved from hashed triple string to range: " + this.data.range, this.data.range);
-					}
-					else {
-						// if no rdfa for page use regular xpointer as backup
-						this.data.range = lore.global.util.getSelectionForXPath(this.xpointer[1], this.target);
-					}
-				}
-				else {
-					// get range from xpath
-					this.data = {
-						range: lore.global.util.getSelectionForXPath(this.xpointer, this.target)
-					};
-				}
+				// get range from xpath
+				this.data = {
+					range: lore.global.util.getSelectionForXPath(this.xpointer, this.target)
+				};
+                
 				// highlight marker
 				this.data.nodes = lore.global.util.highlightRange(this.data.range, this.target, scroll, stylin);
 			} else {
@@ -107,7 +88,15 @@ lore.anno.ui.Marker.prototype = {
 					stylin(this.data.nodes[i]);
 				}
 			}
-		}	
+        } else {
+            var xpath = lore.global.util.getXPathFromXPointer(this.xpointer);
+            var node = lore.global.util.getNodeForXPath(xpath, this.target);
+            
+            this.data = {};
+            this.data.nodes = [node];
+            this.oldBackgroundColor = node.style.backgroundColor;
+            node.style.backgroundColor = colour;
+        }
 		
 		this.visible = true;		
 	},
@@ -120,7 +109,7 @@ lore.anno.ui.Marker.prototype = {
 	 */
 	update : function(colour, styleCallback){
 		try {
-			if (this.data.nodes && this.type == 1) {
+			if (this.data.nodes && this.isImageMarker()) {
 				// image annotation
 				this.colour = colour || this.colour;
 				this.styleCallback = styleCallback || this.styleCallback;
@@ -155,7 +144,7 @@ lore.anno.ui.Marker.prototype = {
 				// for each of the dom nodes, set display to none
 				// and then to remove from DOM.
 				var w = lore.global.util.getContentWindow(window);
-				if (this.type == 0) {
+				if (this.isStringMarker()) {
 					for (var i = 0; i < this.data.nodes.length; i++) {
 						var n = this.data.nodes[i];
 						if (n) {
@@ -165,16 +154,17 @@ lore.anno.ui.Marker.prototype = {
 						}
 					}
 					this.data = null;
-				}
-				else {
+				} else if (this.isImageMarker()) {
 					// set display none and then try to remove from DOM
 					this.data.nodes[0].style.display = 'none';
 					lore.global.util.removeNodePreserveChildren(this.data.nodes[0], w);
-				}
+				} else {
+                    this.data.nodes[0].style.backgroundColor = this.oldBackgroundColor;
+                }
 			}
 			this.visible = false;
 		} catch (e){
-			lore.debug.anno(e,e);
+			lore.debug.anno("lore.anno.ui.Marker.hide()",e);
 		}
 	},
 					
@@ -255,6 +245,18 @@ lore.anno.ui.Marker.prototype = {
 		catch (ex) {
 			lore.debug.anno("Tip creation failure: " + ex, ex);
 		}
-	}
+	},
+    
+    isImageMarker: function() {
+        return this.type === 'image-range';
+    },
+    
+    isStringMarker: function() {
+        return this.type === 'string-range';
+    },
+    
+    isNodeMarker: function() {
+        return this.type === 'plain';
+    }
 		
 }

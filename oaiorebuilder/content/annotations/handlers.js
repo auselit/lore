@@ -353,6 +353,7 @@ lore.anno.ui.handleAttachNodeLinks = function(tree, thus, n, index){
 lore.anno.ui.handleTreeNodeSelection = function(node, event){
 	// retrieve record for node
 	var unsavedNode = node.isAncestor(lore.anno.ui.treeunsaved);
+    var recId = lore.anno.ui.nodeIdToRecId(node);
 	var rec = unsavedNode ? lore.anno.annoMan.findUnsavedRecById(recId) : lore.anno.annoMan.findStoredRecById(recId);
 	
 	if ( rec == lore.anno.ui.page.curSelAnno )
