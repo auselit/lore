@@ -96,8 +96,12 @@ lore.ore.ui.graph.Port.prototype.onDragLeave = function(/*:draw2d.Port*/ port)
 lore.ore.ui.graph.Port.prototype.onDrop = function(port) {
 	if (this.parentNode.id != port.parentNode.id) {
 		var commConn = new draw2d.CommandConnect(this.parentNode.workflow, this, port);
-		commConn.setConnection(new lore.ore.ui.graph.ContextmenuConnection());
-		this.parentNode.workflow.getCommandStack().execute(commConn);
+        var conn = new lore.ore.ui.graph.ContextmenuConnection();
+		commConn.setConnection(conn);
+        this.parentNode.workflow.getCommandStack().execute(commConn);
+        this.parentNode.workflow.setCurrentSelection(conn);
+        // FIXME: workaround: graphical editor not focused after drag
+        Ext.getCmp('drawingarea').focus();
 	} else {
         lore.ore.ui.loreWarning("LORE does not currently support relating a resource to itself");
     }
