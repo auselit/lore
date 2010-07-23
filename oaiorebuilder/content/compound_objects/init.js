@@ -30,7 +30,6 @@
  */
 lore.ore.ui.initGraphicalView = function() {
 	Ext.getCmp("loreviews").activate("drawingarea");
-
 	/** Indicates whether the compound object has been edited since being loaded */
 	lore.ore.ui.graph.modified = false;
     lore.ore.ui.graphicalEditor = Ext.getCmp("drawingarea");
@@ -39,6 +38,8 @@ lore.ore.ui.initGraphicalView = function() {
 	if (lore.ore.ui.nodegrid) {
 		lore.ore.ui.nodegrid.store.removeAll();
 		lore.ore.ui.nodegrid.collapse();
+        lore.ore.ui.relsgrid.store.removeAll();
+        lore.ore.ui.relsgrid.collapse();
 	}
 }
 
@@ -67,6 +68,13 @@ lore.ore.ui.initUIComponents = function() {
 	});
 
 	try {
+        Ext.MessageBox.show({
+           msg: 'Loading LORE...',
+           width:250,
+           defaultTextHeight: 0,
+           closable: false,
+           cls: 'co-load-msg'
+       });
         lore.ore.ui.main_window = new lore.ore.ui.Viewport();
 		lore.ore.ui.main_window.show();
 	} catch (e) {
@@ -76,6 +84,7 @@ lore.ore.ui.initUIComponents = function() {
 	// set up glocal variable references to main UI components
 	lore.ore.ui.grid = Ext.getCmp("remgrid");
 	lore.ore.ui.nodegrid = Ext.getCmp("nodegrid");
+    lore.ore.ui.relsgrid = Ext.getCmp("relsgrid");
 	lore.ore.ui.status = Ext.getCmp("lorestatus");
 
 	/** Tree used to display properties in resource details editor */
@@ -100,8 +109,7 @@ lore.ore.ui.initUIComponents = function() {
 		lore.ore.ui.resproptreeroot.on("beforeclick", lore.ore.updateResDetails);
 		lore.ore.ui.resreltreeroot.on("beforeclick", lore.ore.updateResDetails);
 		// load resource details handler
-		lore.ore.ui.resselectcombo.on("select", lore.ore.loadResourceDetails);
-        
+		lore.ore.ui.resselectcombo.on("select", lore.ore.loadResourceDetails); 
 	}
     
 	// set up search handlers
@@ -114,8 +122,9 @@ lore.ore.ui.initUIComponents = function() {
 	// populate search combo with dublin core fields
 	try {
 		var searchproplist = [];
-		for (var p = 0; p < lore.ore.METADATA_PROPS.length; p++) {
-			var curie = lore.ore.METADATA_PROPS[p];
+        var om = lore.ore.ontologyManager;
+		for (var p = 0; p < om.METADATA_PROPS.length; p++) {
+			var curie = om.METADATA_PROPS[p];
 			var splitprop = curie.split(":");
 			searchproplist.push([
 				"" + lore.constants.NAMESPACES[splitprop[0]]
@@ -142,12 +151,13 @@ lore.ore.ui.initUIComponents = function() {
 							lore.ore.textm.requestTextMiningMetadata);
 				}
 	});*/
-	loreviews.contextmenu.add({
+	/* disable SMIL view for now
+     * loreviews.contextmenu.add({
 				text : "Show SMIL View",
 				handler : function() {
 					lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
 				}
-	});
+	});*/
 	loreviews.contextmenu.add({
 				text : "Show RDF/XML",
 				handler : function() {
@@ -158,8 +168,7 @@ lore.ore.ui.initUIComponents = function() {
 	loreviews.contextmenu.add({
 				text : "Show TriG",
 				handler : function() {
-					lore.ore.openView("remtrigview", "TriG",
-							lore.ore.updateTriG);
+					lore.ore.openView("remtrigview", "TriG", lore.ore.updateTriG);
 				}
 	});
 	loreviews.contextmenu.add({
@@ -196,7 +205,7 @@ lore.ore.ui.initUIComponents = function() {
                 }
     });
     sidetabs.on('beforeexpand', function(p){p.body.setStyle('display','block');});
-        
+    
     sidetabs.items.each(function(item){
         // force repaint on scroll for the sidetabs to avoid rendering issues if iframe previews are scrolled behind #209
         var tabEl = item.body;
@@ -211,26 +220,6 @@ lore.ore.ui.initUIComponents = function() {
     var d1 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cobview'));
     var d2 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cohview'));
     var d3 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cosview'));
-}
-
-lore.ore.initModel = function() {
-	lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();
-	lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
-    lore.ore.cache = new lore.ore.model.CompoundObjectCache();
-	/*lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
-                storeId: "resourceStore",
-				fields : ['title', 'uri', 'display'],
-				data : [],
-				lastOptions : {
-					params : {
-						start : 0,
-						limit : 5
-					}
-				}
-			});
-    */
-	lore.ore.resource_metadata_props = [];
-	lore.ore.all_props = lore.ore.METADATA_PROPS;
 }
 
 /**
@@ -261,8 +250,26 @@ lore.ore.ui.init = function() {
         
 
 		lore.global.ui.compoundObjectView.registerView(lore.ore,window.instanceId);
+        lore.ore.ontologyManager = new lore.ore.model.OntologyManager();
         lore.ore.ui.topView.loadCompoundObjectPrefs();
-        lore.ore.initModel();
+        
+        lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();
+        lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
+        lore.ore.cache = new lore.ore.model.CompoundObjectCache();
+        
+        // Temporary store for choosing resources: update to use model
+            lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
+                storeId: "resourceStore",
+                fields : ['title', 'uri', 'display'],
+                data : [],
+                lastOptions : {
+                    params : {
+                        start : 0,
+                        limit : 5
+                    }
+                }
+            });
+            
 		lore.ore.ui.initUIComponents();
 	
 		lore.ore.ui.loreInfo("Welcome to LORE");
@@ -280,6 +287,9 @@ lore.ore.ui.init = function() {
 		/** Indicates whether the compound objects UI has been initialized */
 		lore.ore.ui.initialized = true;
 		lore.debug.ui("LORE Compound Object init complete", lore);
+        Ext.Msg.hide();
+        Ext.getCmp("drawingarea").focus();
+        
 	} catch (e) {
 		lore.debug.ui("Exception in Compound Object init", e);
 	}
