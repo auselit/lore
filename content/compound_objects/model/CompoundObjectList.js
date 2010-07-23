@@ -34,7 +34,7 @@ lore.ore.model.CompoundObjectList = Ext.extend(Ext.ux.data.PagingJsonStore, {
             lastOptions : {
                 params : {
                     start : 0,
-                    limit : 30
+                    limit : 5
                 }
             },
             "fields" : [{
