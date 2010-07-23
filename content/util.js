@@ -1017,7 +1017,7 @@ util = {
         iframe.setAttribute("src", "data:text/html,%3Chtml%3E%3Cbody%3E%3C/body%3E%3C/html%3E");
         iframe.setAttribute("transparent", true);
         // clicks open the resource in the main browser
-        iframe.setAttribute("onclick","var e = arguments[0];lore.global.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false");
+        iframe.setAttribute("onclick","var e = arguments[0];lore.global.util.launchTab(this.getAttribute('src'),window);");//e.stopPropagation();return false");
         return iframe;
     },
     /**
@@ -1130,7 +1130,7 @@ util = {
 	     }
 	},
 	/**
-     * Transform RDF to a presentation format using an XSLT stylesheet
+     * Transform XML to a presentation format using an XSLT stylesheet
      * @param {} stylesheetURL
      * @param {} theRDF
      * @param {} params
@@ -1138,35 +1138,33 @@ util = {
      * @param {} serialize
      * @return {}
 	 */
-	transformRDF: function(stylesheetURL, theRDF, params, win, serialize) {
-	
-		var xsltproc = new win.XSLTProcessor();
-	    // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
-	    var xhr = new win.XMLHttpRequest();
-	    xhr.overrideMimeType('text/xml');
-	    xhr.open("GET", stylesheetURL, false);
-	    xhr.send(null);
-	    var stylesheetDoc = xhr.responseXML;
-	    xsltproc.importStylesheet(stylesheetDoc
-		);
-	    for (param in params){
-	        xsltproc.setParameter(null,param,params[param]);
-	    }
-	    xsltproc.setParameter(null, "indent", "yes");
-	    
-	    var parser = new win.DOMParser();
-	    var rdfDoc = parser.parseFromString(theRDF, "text/xml");
-        try{
-	    var resultFrag = xsltproc.transformToFragment(rdfDoc, win.document);
+	transformXML: function(stylesheetURL, theXML, params, win, serialize) {
+	   try{
+    		var xsltproc = new win.XSLTProcessor();
+    	    // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
+    	    var xhr = new win.XMLHttpRequest();
+    	    xhr.overrideMimeType('text/xml');
+    	    xhr.open("GET", stylesheetURL, false);
+    	    xhr.send(null);
+    	    var stylesheetDoc = xhr.responseXML;
+    	    xsltproc.importStylesheet(stylesheetDoc);
+    	    for (param in params){
+    	        xsltproc.setParameter(null,param,params[param]);
+    	    }
+    	    xsltproc.setParameter(null, "indent", "yes");
+    	    var parser = new win.DOMParser();
+    	    var doc = parser.parseFromString(theXML, "text/xml");
+    	    var resultFrag = xsltproc.transformToFragment(doc, win.document);
+    	    if (serialize){
+    	         var serializer = new win.XMLSerializer();
+    	         return serializer.serializeToString(resultFrag);
+    	    } else {
+    	        return resultFrag
+    	    }
         } catch (e){
             debug.ui("Error transforming RDF",e);
+            return "";
         }
-	    if (serialize){
-	         var serializer = new win.XMLSerializer();
-	         return serializer.serializeToString(resultFrag);
-	    } else {
-	        return resultFrag
-	    }
 	},
     copyToClip : function(aString){
         var gClipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].  
@@ -1187,5 +1185,15 @@ util = {
         var ioService = Components.classes["@mozilla.org/network/io-service;1"]  
                             .getService(Components.interfaces.nsIIOService);  
         return ioService.newURI(aURL, aOriginCharset, aBaseURI);  
-    }  
+    },
+    expandXML: function (e) {
+        if (e.parentNode.className != 'expander-closed') {
+            e.parentNode.className = 'expander-closed';
+            e.className = 'expander-display-closed';
+        } else {
+            e.parentNode.className = '';
+            e.className = 'expander-display-open';
+        }
+    }
+
 };
