@@ -178,7 +178,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                         tabTip: "Browse related compound objects",
                         "id": "browsePanel",
                         autoScroll: true, 
-                            "tbar": {
+                        tbar: {
                                 "xtype": "lore.paging",
                                 "store": "browse",
                                 "id": "bpager"
@@ -345,14 +345,22 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                         tabTip: "View or edit compound object properties",
                         id : "properties",
                         items : [{
-                                    title : 'Compound Object',
+                                    title : 'Compound Object Properties',
                                     id : "remgrid",
+                                    propertyType: "property",
                                     xtype : "propertyeditor"
                                 }, {
-                                    title : "Resource/Relationship",
+                                    title : "Resource Properties",
                                     id : "nodegrid",
+                                    propertyType: "property",
                                     xtype : "propertyeditor"
-                                }]
+                                }, {
+                                    title: "Relationships",
+                                    id: "relsgrid",
+                                    propertyType: "relationship",
+                                    xtype: "relationshipeditor"
+                                }
+                                ]
                     }]
         }];
         
