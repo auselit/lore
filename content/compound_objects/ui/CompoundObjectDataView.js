@@ -11,7 +11,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                     '<tpl if="lore.ore.reposAdapter && !uri.match(lore.ore.reposAdapter.idPrefix)"><img src="chrome://lore/skin/icons/oaioreicon-grey.png"></tpl>',
                     '</div>',
                     '<div>{title}</div>',
-                    '<div style="padding-left:20px;color:#51666b;font-size:90%">{creator}',
+                    '<div style="padding-left:20px;color:#51666b;font-size:87%">{creator}',
                         '<tpl if="typeof modified != \'undefined\' && modified != null">, last modified {[fm.date(values.modified,\'j M Y, g:ia\')]}</tpl>',
                         '<tpl if="typeof accessed != \'undefined\' && accessed != null">Last accessed {[fm.date(values.accessed,\'j M Y, g:ia\')]}</tpl>',
                     '</div>',
