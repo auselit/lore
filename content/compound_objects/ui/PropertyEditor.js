@@ -1,3 +1,7 @@
+/** 
+ * @class lore.ore.ui.PropertyEditor Grid-based editor for Compound object or resource properties and relationships
+ * @extends Ext.grid.EditorGridPanel
+ */
 lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{ 
     initComponent: function(config){
         Ext.apply(this, { 
@@ -8,6 +12,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             collapsible : true,
             collapseFirst: false,
             animCollapse : false,
+            /** Pop up editor for property value */
             propEditorWindow: new Ext.Window({ 
                 modal: true,
                 closable: false,
@@ -93,13 +98,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }),
             colModel : new Ext.grid.ColumnModel({
                 columns : [{
-                            //id : 'pname',
                             header : 'Property Name',
                             sortable : true,
                             dataIndex : 'name',
-                            menuDisabled : true
+                            menuDisabled : true,
+                            width: 70
                  }, {
-                            //id : 'pvalue',
                             header : 'Value',
                             dataIndex : 'value',
                             menuDisabled : true,
@@ -111,13 +115,13 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                     tag : "img", 
                                     src : Ext.BLANK_IMAGE_URL,
                                     cls: "x-form-trigger x-form-ellipsis-trigger",
-                                    qtip: 'Edit this value'
+                                    qtip: 'Edit this value in a pop up window'
                                  },
                                  onTriggerClick: function(ev) {
                                     try{ 
                                      var row = this.propertyEditor.lastEdit.row;
                                      this.propertyEditor.stopEditing();
-                                     this.propertyEditor.propEditorWindow.editField(this,row);  
+                                     this.propertyEditor.propEditorWindow.editField(this,row);
                                     } catch (e){
                                         lore.debug.ore("problem in trigger click",e);
                                     }
@@ -132,7 +136,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }),
             viewConfig : {
                 forceFit : true,
-                scrollOffset : 0
+                scrollOffset : 0,
+                deferEmptyText: false,
+                emptyText: "No resource selected"
             },
             tools : [{
                         id : 'plus',
@@ -218,8 +224,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 id: panel.id + "-add-metadata"
             });
             panel.propMenu.panelref = panel.id;
-            for (var i = 0; i < lore.ore.METADATA_PROPS.length; i++) {
-                var propname = lore.ore.METADATA_PROPS[i];
+            var mp = lore.ore.ontologyManager.METADATA_PROPS;
+            for (var i = 0; i < mp.length; i++) {
+                var propname = mp[i];
                 panel.propMenu.add({
                     id: panel.id + "-add-" + propname,
                     text: propname,
@@ -263,6 +270,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      */
     removePropertyAction: function (ev, toolEl, panel) { 
         try {
+        var om = lore.ore.ontologyManager;
         lore.debug.ore("remove Property was triggered",ev);
         var sel = panel.getSelectionModel().getSelected();
         // don't allow delete when panel is collapsed (user can't see what is selected)
@@ -273,10 +281,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             // should also probably renumber
                  if (sel.id.match("_0")){ // first instance of property: check if it's mandatory
                     var propId = sel.id.substring(0,sel.id.indexOf("_0"));
-                    if ((panel.id == "remgrid" && lore.ore.CO_REQUIRED.indexOf(propId)!=-1) ||
+                    if ((panel.id == "remgrid" && om.CO_REQUIRED.indexOf(propId)!=-1) ||
                         (panel.id == "nodegrid" && 
-                            (lore.ore.RES_REQUIRED.indexOf(propId) !=-1 ||
-                                lore.ore.REL_REQUIRED.indexOf(propId)!=-1))){
+                            (om.RES_REQUIRED.indexOf(propId) !=-1 ||
+                                om.REL_REQUIRED.indexOf(propId)!=-1))){
                         lore.ore.ui.loreWarning("Cannot remove mandatory property: " + sel.data.name);
                     } else {
                         panel.getStore().remove(sel);
@@ -300,7 +308,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     helpPropertyAction : function (ev,toolEl, panel) {
         var sel = panel.getSelectionModel().getSelected();
         if (panel.collapsed){
-            lore.ore.ui.loreInfo("Please expand the properties panel and select a property");
+            lore.ore.ui.loreInfo("Please expand the panel and select a property");
         } else if (sel){
             var splitprop =  sel.data.name.split(":");
             var infoMsg = "<p style='font-weight:bold;font-size:130%'>" + sel.data.name + "</p><p style='font-size:110%;margin:5px;'>" 
