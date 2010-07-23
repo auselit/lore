@@ -41,7 +41,7 @@ lore.ore.ui.graph.ResizeHandle = Ext.extend(draw2d.ResizeHandle, {
  * @extends draw2d.LineStartResizeHandle
  * */
 lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandle, {
-   type :  "lore.ore.ui.graph.LineResizeHandle",
+   type :  "lore.ore.ui.graph.LineStartResizeHandle",
    /** Handle offsets and enable mask to avoid interference from node previews during connection moving */
    onDrag : function () {  
 	    var wf = this.workflow;
@@ -64,6 +64,27 @@ lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandl
         draw2d.LineStartResizeHandle.prototype.onDragend.call(this);
         delete this.yoffset;
         delete this.xoffset;
+    },
+    onDrop : function(/*: draw2d.Port*/ dropPort){
+      var wf = this.workflow;
+      var line = wf.currentSelection;
+      var p = line.getTarget();
+      line.isMoving=false;
+      // don't allow reconnect to same node
+      if(line instanceof draw2d.Connection && dropPort.parentNode.id != p.parentNode.id)
+      {
+         this.command.setNewPorts(dropPort, p);
+         wf.getCommandStack().execute(this.command);
+         // force relationships panel to update (remove once MVC is set up)
+         wf.setCurrentSelection(wf.currentSelection);
+      } else if (line instanceof draw2d.Connection) {
+        lore.ore.ui.loreWarning("LORE does not currently support relating a resource to itself");
+        this.command.cancel();
+        
+      }
+      // Workaround to give focus to editor
+      Ext.getCmp("drawingarea").focus();
+      this.command = null;
     }
 });
 /** 
@@ -71,7 +92,7 @@ lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandl
  * @extends draw2d.LineEndResizeHandle
  * */
 lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
-   type :  "lore.ore.ui.graph.LineResizeHandle",
+   type :  "lore.ore.ui.graph.LineEndResizeHandle",
    /** Handle offsets and enabling mask to avoid interference from node previews during connection moving  */
    onDrag : function (){  
         var wf = this.workflow;
@@ -94,5 +115,27 @@ lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
         draw2d.LineEndResizeHandle.prototype.onDragend.call(this);
         delete this.yoffset;
         delete this.xoffset;
+    },
+    onDrop : function(/*: draw2d.Port*/ dropPort){
+        
+      var wf = this.workflow;
+      var line = wf.currentSelection;
+      var p = line.getSource();
+      line.isMoving=false;
+      // don't allow reconnect to same node
+      if(line instanceof draw2d.Connection && dropPort.parentNode.id != p.parentNode.id)
+      {
+         this.command.setNewPorts(p,dropPort);
+         wf.getCommandStack().execute(this.command);
+         // force relationships panel to update (remove once MVC is set up)
+        wf.setCurrentSelection(wf.currentSelection);
+      } else if (line instanceof draw2d.Connection) {
+        lore.ore.ui.loreWarning("LORE does not currently support relating a resource to itself");
+        this.command.cancel();
+        
+      }
+      // Workaround to give focus to editor
+      Ext.getCmp("drawingarea").focus();
+      this.command = null;
     }
 });
