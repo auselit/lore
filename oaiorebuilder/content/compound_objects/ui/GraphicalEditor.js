@@ -1,6 +1,8 @@
 lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{ 
    constructor: function (config){
         config = config || {};
+        config.autoHeight = true;
+        config.autoWidth = true;
         config.bodyStyle = { backgroundColor : 'transparent' }
         lore.ore.ui.GraphicalEditor.superclass.constructor.call(this, config);
 
@@ -39,30 +41,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         } else {
             coGraph = new lore.ore.ui.graph.COGraph(this.id);
             this.coGraph = coGraph;
-            coGraph.scrollArea = document.getElementById(this.id).parentNode;
-            
-            // create drop target for dropping new nodes onto editor from the sources and search trees
-            /*var droptarget = new Ext.dd.DropTarget(this.id, {
-                    'ddGroup' : 'TreeDD',
-                    'copy' : false
-            });
-            droptarget.notifyDrop = function(dd, e, data) {
-                lore.debug.ore("notifydrop treedd",data);
-                var ge = lore.ore.ui.graphicalEditor;
-                var coGraph = ge.coGraph;
-                var figopts = {
-                    url : data.node.attributes.uri,
-                    x : (e.xy[0] - coGraph.getAbsoluteX() + coGraph.getScrollLeft()),
-                    y : (e.xy[1] - coGraph.getAbsoluteY() + coGraph.getScrollTop()),
-                    props : {
-                        "rdf:type_0" : lore.constants.RESOURCE_MAP,
-                        "dc:title_0" : data.node.text
-                    }
-                };
-                ge.addFigure(figopts);
-                return true;
-            };*/
-            
+            coGraph.setScrollArea(document.getElementById(this.id).parentNode);
             
             // create drop target for dropping new nodes onto editor from the compound objects dataview
             var droptarget = new Ext.dd.DropTarget(this.id, {
@@ -99,8 +78,13 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     * @param {draw2d.Figure} figure ResourceFigure or ContextmenuConnection that was selected
     */
    onSelectionChanged : function(figure) {
+        //lore.debug.ore("selected figure is",figure);
         if (figure != null) {
+            // raise tab first so that properties are rendered and column widths get sized correctly for resource/rels
+            Ext.getCmp("propertytabs").activate("properties");
+            
             lore.ore.ui.nodegrid.store.removeAll();
+            // resource figure
             if (figure.metadataproperties) {
                 for (p in figure.metadataproperties){
                     var pname = p;
@@ -110,20 +94,80 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     } 
                     lore.ore.ui.nodegrid.store.loadData([{id: p, name: pname, value: figure.metadataproperties[p]}],true);
                 }
-                Ext.getCmp("propertytabs").activate("properties");
+                // get connections
+                var relationshipsData = [];
+                var ports = figure.getPorts(); 
+                for (var port = 0; port < ports.getSize(); port++){
+                    var connections = ports.get(port).getConnections();
+                    for (var j = 0; j < connections.getSize(); j++) {
+                        var theconnector = connections.get(j);
+                        var dir;
+                       
+                        var sp = theconnector.sourcePort.parentNode;
+                        var tp = theconnector.targetPort.parentNode;
+                        if (figure.url == sp.url){
+                            // it's an outgoing connection
+                            //toURI = tp.url;
+                            //toTitle = tp.getProperty("dc:title_0") || tp.url;
+                            dir = "from";
+                        } else {
+                            // incoming connection
+                            dir = "to";
+                        }
+                        if (theconnector.symmetric) {
+                            dir = "with";
+                        }
+                        var toURI = tp.url;
+                        var toTitle = tp.getProperty("dc:title_0") || tp.url;
+                        var fromURI = sp.url;
+                        var fromTitle = sp.getProperty("dc:title_0") || sp.url;
+                        var relpred = theconnector.edgetype;
+                        var relns = theconnector.edgens;
+                        relationshipsData.push({
+                            id: theconnector.id, 
+                            relName: relpred, 
+                            relNS: relns,
+                            fromURI: fromURI,
+                            fromTitle: fromTitle,
+                            toURI: toURI, 
+                            direction: dir, 
+                            toTitle: toTitle});
+                    }
+                }
+                lore.ore.ui.relsgrid.store.loadData(relationshipsData);
+                // Resource and relationships grid will be visible
                 lore.ore.ui.nodegrid.expand();
             }
             else if (figure.edgetype) {
-                lore.ore.ui.nodegrid.store.loadData([
-                    {name:'relationship',id:'relationship',value:figure.edgetype},
-                    {name: 'namespace', id: 'namespace', value:figure.edgens}
+                var tp = figure.targetPort.parentNode;
+                var sp = figure.sourcePort.parentNode;
+                lore.ore.ui.relsgrid.store.loadData([
+                   {id: figure.id, 
+                    relName: figure.edgetype,
+                    relNS: figure.edgens,
+                    toURI: tp.url,
+                    toTitle: tp.getProperty("dc:title_0") || tp.url,
+                    fromURI: sp.url,
+                    fromTitle: sp.getProperty("dc:title_0") || sp.url,
+                    direction: ''}
+                   
                 ]);
-                Ext.getCmp("propertytabs").activate("properties");
-                lore.ore.ui.nodegrid.expand();
+                lore.ore.ui.relsgrid.getSelectionModel().selectFirstRow();
+                // Connection: only show relationships grid
+                lore.ore.ui.nodegrid.store.removeAll();
+                lore.ore.ui.nodegrid.collapse();
+               
             }
+            lore.ore.ui.relsgrid.expand();
+            lore.ore.ui.grid.collapse();
         } else {
             lore.ore.ui.nodegrid.store.removeAll();
+            lore.ore.ui.relsgrid.store.removeAll();
+            // Background selected: only show compound object properties
+            lore.ore.ui.relsgrid.collapse();
+            lore.ore.ui.grid.expand();
             lore.ore.ui.nodegrid.collapse();
+            
         }
    },
    /**
@@ -135,54 +179,60 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         var comm = event.getCommand();
         var comm_fig = comm.figure;
         lore.ore.ui.graph.modified = true;
-        // reset dummy graph layout position to prevent new nodes being added too far from content
-        if (comm instanceof draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
-            && comm.oldY == this.dummylayoutprevy) {   
-                this.nextXY(comm.newX, comm.newY);
-        }
+        
         // don't allow figures to be moved outside bounds of canvas
         if (comm instanceof draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)) {
             comm.undo();
         }
-        // remove the url from lookup if node is deleted, add it back if it is undone
-        // update address bar add icon to reflect whether current URL is in compound object
-        if (0!=(details&(draw2d.CommandStack.POST_EXECUTE))) {
-            if (comm instanceof draw2d.CommandDelete) {
+        
+        if (comm_fig instanceof lore.ore.ui.graph.ResourceFigure) {
+            // reset dummy graph layout position to prevent new nodes being added too far from content
+            if (comm instanceof draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
+                && comm.oldY == this.dummylayoutprevy) {   
+                    this.nextXY(comm.newX, comm.newY);
+            }
+            // remove the url from lookup if node is deleted, add it back if it is undone
+            // update address bar add icon to reflect whether current URL is in compound object
+            if (0!=(details&(draw2d.CommandStack.POST_EXECUTE))) {
+                if (comm instanceof draw2d.CommandDelete) {
+                    delete this.lookup[comm_fig.url];
+                    if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+                           lore.ore.ui.topView.hideAddIcon(false);
+                    }
+                } else if (comm instanceof draw2d.CommandAdd) {
+                    if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+                           lore.ore.ui.topView.hideAddIcon(true);
+                    }
+                }
+            }
+            else if ((0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandDelete)
+                || (0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandAdd)) {
+                //  check that URI isn't in resource map (eg another node's resource may have been changed)
+                
+                if (this.lookup[comm_fig.url]){
+                    if (comm instanceof draw2d.CommandDelete) {
+                        lore.ore.ui.loreWarning("Cannot undo deletion: resource is aleady in Compound Object");
+                        comm.redo();
+                    } else {
+                        lore.ore.ui.loreWarning("Cannot redo addition: resource is aleady in Compound Object");
+                        comm.undo();
+                    }
+                }
+                this.lookup[comm_fig.url] = comm_fig.getId();
+                if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
+                   lore.ore.ui.topView.hideAddIcon(true);
+                }       
+                
+           } 
+             
+            else if ((0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandDelete)
+             || (0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandAdd)) {
                 delete this.lookup[comm_fig.url];
                 if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
                        lore.ore.ui.topView.hideAddIcon(false);
                 }
-            } else if (comm instanceof draw2d.CommandAdd) {
-                if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
-                       lore.ore.ui.topView.hideAddIcon(true);
-                }
+                
             }
-        }
-        else if ((0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandDelete)
-            || (0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandAdd)) {
-            //  check that URI isn't in resource map (eg another node's resource may have been changed)
-            if (this.lookup[comm_fig.url]){
-                if (comm instanceof draw2d.CommandDelete) {
-                    lore.ore.ui.loreWarning("Cannot undo deletion: resource is aleady in Compound Object");
-                    comm.redo();
-                } else {
-                    lore.ore.ui.loreWarning("Cannot redo addition: resource is aleady in Compound Object");
-                    comm.undo();
-                }
-            }
-            this.lookup[comm_fig.url] = comm_fig.getId();
-            if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
-               lore.ore.ui.topView.hideAddIcon(true);
-            }       
-       } 
-         
-        else if ((0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandDelete)
-         || (0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandAdd)) {
-            delete this.lookup[comm_fig.url];
-            if (lore.ore.ui.topView && lore.ore.ui.currentURL == comm_fig.url){
-                   lore.ore.ui.topView.hideAddIcon(false);
-            }
-            
         }
    },
    getSelectedFigure : function (){    
@@ -195,6 +245,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         var fig = this.lookupFigure(theURL);
         if (fig) {
             Ext.getCmp("loreviews").activate(this.id);
+            this.coGraph.setCurrentSelection(fig);
             fig.header.style.backgroundColor="yellow";
             setTimeout(function(theFig) {theFig.header.style.backgroundColor = "#e5e5e5";}, 3200, fig);
             this.coGraph.showMask();
