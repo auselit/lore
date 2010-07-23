@@ -540,8 +540,7 @@ try {
             var prefservice = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
             var loreprefs = prefservice.getBranch("extensions.lore.");
             var relonturl = loreprefs.getCharPref("relonturl");
-            loreoverlay.coView().setrelonturl(relonturl);
-            loreoverlay.coView().loadRelationshipsFromOntology();
+            loreoverlay.coView().setOntology(relonturl);
             return true;
         },
         /** Used to provide tooltips for title attributes in HTML inside the chrome window */
