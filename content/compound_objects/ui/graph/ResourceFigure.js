@@ -475,6 +475,13 @@ lore.ore.ui.graph.ResourceFigure.prototype.setCanDrag = function(flag) {
 		this.header.style.cursor = "";
 	}
 };
+lore.ore.ui.graph.ResourceFigure.prototype.setHighlight = function(highlight) {
+    if (highlight) {
+        this.html.style.border = "3px solid rgb(170,204,246)";
+    } else {
+        this.html.style.border = "none";
+    }
+}
 /**
  * 
  * @param {lore.ore.ui.graph.COGraph} wf The parent draw2d.Workflow object 
@@ -506,6 +513,23 @@ lore.ore.ui.graph.ResourceFigure.prototype.setWorkflow = function(wf) {
 		this.addPort(this.outputPort2, this.width / 2, this.height + 5);
 
 	}
+    this.draggable.removeEventListener("dragstart",this.tmpDragstart);
+    var oThis = this;
+    // override dragstart to not select figure (we do this by default in setCurrentSelection
+    this.tmpDragstart = function(oEvent) {
+       var w = oThis.workflow;
+       w.showMenu(null);
+       // reset old action of the toolbar
+       if(w.toolPalette && w.toolPalette.activeTool) {
+          oEvent.returnValue = false;
+          w.onMouseDown(oThis.x+oEvent.x, oEvent.y+oThis.y);
+          w.onMouseUp(oThis.x+oEvent.x, oEvent.y+oThis.y);
+          return;
+       }
+       w.setCurrentSelection(oThis); 
+       oEvent.returnValue = oThis.onDragstart(oEvent.x,oEvent.y);
+    };
+    this.draggable.addEventListener("dragstart",this.tmpDragstart);
 };
 
 /** Determine if figure needs to be resized (after toggling or URI hiding 
@@ -626,10 +650,7 @@ lore.ore.ui.graph.ResourceFigure.prototype.getContextMenu = function() {
 	var menu = new draw2d.Menu();
     var w = this.workflow;
 	var thisfig = this;
-    if(thisfig.isSelectable()) {
-        w.showResizeHandles(thisfig);
-        w.setCurrentSelection(thisfig);
-    }
+    w.setCurrentSelection(thisfig);
     
     menu.appendMenuItem(new draw2d.MenuItem("Copy URI to clipboard", "../../skin/icons/page_white_paste.png",
         function (){
