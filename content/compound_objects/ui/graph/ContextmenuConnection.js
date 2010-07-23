@@ -46,7 +46,9 @@ lore.ore.ui.graph.ContextmenuConnection=function() {
 };
 
 lore.ore.ui.graph.ContextmenuConnection.prototype=new draw2d.Connection;
-
+lore.ore.ui.graph.ContextmenuConnection.prototype.getId = function(){
+    return this.id;
+}
 /** Set relationship with undo support */
 lore.ore.ui.graph.ContextmenuConnection.prototype.setRelationship = function(enamespace, etype, symmetric) {
     this.workflow.getCommandStack().execute(new lore.ore.ui.graph.CommandSetRelationship(this, enamespace, etype, symmetric));
@@ -93,21 +95,23 @@ lore.ore.ui.graph.ContextmenuConnection.prototype.getContextMenu=function() {
 	        lore.debug.ore("generating context menu for connection",this);
 		    lore.ore.ui.graph.ContextmenuConnection.contextMenu=new draw2d.Menu();
 			// sort the menu entries alphabetically
+            var om = lore.ore.ontologyManager;
 			var keys = [];
-		 	for (var rel in lore.ore.ontrelationships) {
+		 	for (var rel in om.ontrelationships) {
 				keys.push(rel);
 		 	}
 		 	keys.sort();
+            
 		 	for (var i =0; i< keys.length; i++) {
 		 		rel = keys[i];
-				var relnamespace=lore.ore.ontrelationships[rel]; 
-	            var symmquery = lore.ore.relOntology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
+				var relnamespace=om.ontrelationships[rel]; 
+	            var symmquery = om.ontology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
 	                .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
 		        var symm = symmquery.length > 0;
 				var functionstr = "lore.ore.ui.graphicalEditor.getSelectedFigure().setRelationship(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
 		 		lore.ore.ui.graph.ContextmenuConnection.contextMenu.appendMenuItem(new draw2d.MenuItem(rel,null,new Function(functionstr)));
 		 	}
-	        lore.ore.ui.graph.ContextmenuConnection.loadedOntology = lore.ore.onturl;
+	        lore.ore.ui.graph.ContextmenuConnection.loadedOntology = om.ontologyURL;
 			return lore.ore.ui.graph.ContextmenuConnection.contextMenu;
 	    }
     } catch (ex){ 
