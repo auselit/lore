@@ -30,27 +30,6 @@
  
 /** Maximum level of nesting that the views will show (limited for performance reasons) */
 lore.ore.MAX_NESTING      = 2;
-// TODO: #10 replace with an ontology
-/** Default list of properties that can be specified for compound objects or resources 
- * @const */
-lore.ore.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
-    "dc:contributor", "dc:coverage", "dc:description",
-    //"dc:format", "dcterms:hasFormat", 
-    "dcterms:created", "dcterms:modified",
-    "dc:identifier", "dc:language",
-    "dc:publisher", "dc:rights", "dc:source",
-    "dc:subject", "dc:title"];
-/** Properties that are mandatory for compound objects
- *  @const */
-lore.ore.CO_REQUIRED = ["dc:creator","dcterms:created",
-    "dcterms:modified", "ore:describes", "rdf:about", "rdf:type"
-];
-/** Properties that are mandatory for an aggregated resource
- *  @const */
-lore.ore.RES_REQUIRED = ["resource"];
-/** Properties that are mandatory for a relationship 
- * @const */
-lore.ore.REL_REQUIRED = ["relationship", "namespace"];
 
 /** Property name displayed for the compound object identifier */
 lore.ore.REM_ID_PROP = "Compound Object ID";
@@ -126,7 +105,7 @@ lore.ore.ui.loreProgress = function(message){
 lore.ore.setPrefs = function(prefs){
   try{ 
 	  lore.ore.setDcCreator(prefs.creator);
-	  lore.ore.setrelonturl(prefs.relonturl);
+	  lore.ore.setOntology(prefs.relonturl);
 	  lore.ore.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
   } catch (e){
     lore.debug.ore("Unable to set repos prefs",e);
@@ -166,13 +145,11 @@ lore.ore.setTextMiningKey = function (tmkey){
  * @param {}
  *            relonturl The new locator for the ontology
  */
-lore.ore.setrelonturl = function(relonturl) {
-    lore.ore.onturl = relonturl;
-    try{
-        lore.ore.loadRelationshipsFromOntology();
-    } catch (ex){
-        lore.debug.ore("exception in setrelonturl", ex);
-    }
+lore.ore.setOntology = function(onturl) {
+    var om = lore.ore.ontologyManager;
+    if (om){
+        om.loadOntology(onturl);
+    } 
 };
 /**
  * Set the global variables for the repository access URLs
@@ -191,14 +168,26 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
         return;
     }    
     // check whether currently loaded compound object is from different repos
-    var diffReposToEditor = true;
     var isEmpty = lore.ore.cache && lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent());
+    // at this point the repos adaptor still contains the old value
+    var diffReposToEditor = lore.ore.reposAdapter && lore.ore.cache && lore.ore.cache.getLoadedCompoundObjectUri().match(lore.ore.reposAdapter.idPrefix);
+    var title = "";
+    var currentCOMsg = Ext.getCmp('currentCOMsg');
+    if (lore.ore.ui.grid){
+        title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) ||
+            lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
+        if (!title){
+            title = "Untitled";
+        }
+    }
     // check whether there is a compound object being edited and prompt to save if changed
     if (!isEmpty && diffReposToEditor){
         // set editor to read-only
         /*if (lore.ore.ui.graphicalEditor){
             lore.ore.ui.graphicalEditor.coGraph.setReadOnly(true);
         }*/
+        
+        if (currentCOMsg) {currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false)};
         if (lore.ore.compoundObjectDirty()){
             lore.debug.ore("setrepos: dirty");
             Ext.Msg.show({
@@ -222,6 +211,7 @@ lore.ore.setRepos = function(/*String*/rdfrepos, /*String*/rdfrepostype, /*Strin
         /*if (lore.ore.ui.graphicalEditor.coGraph){
             lore.ore.ui.graphicalEditor.coGraph.setReadOnly(false);
         }*/
+        if (currentCOMsg) {currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50),false);}
         lore.debug.ore("setrepos: not different");
     }
     if (rdfrepostype == 'sesame'){
@@ -576,7 +566,6 @@ lore.ore.showSlideshow = function(p){
 
 /** Generate a SMIL presentation from the current compound object and display a link to launch it */
 lore.ore.showSMIL = function() {
-    
     var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures();
     var numfigs = allfigures.getSize();
     var smilcontents = "<p><a title='smil test hover' href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
@@ -595,16 +584,26 @@ lore.ore.showSMIL = function() {
 };
 /** Render the current compound object as RDF/XML in the RDF view */
 lore.ore.updateRDFHTML = function() {
-    Ext.getCmp("remrdfview").body.update(lore.ore.createRDF(true));
+    var rdfString = lore.ore.transformORERDF("chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl",{},true);
+    if (!rdfString) {
+        rdfString = "Unable to generate RDF/XML";
+    }
+    Ext.getCmp("remrdfview").body.update(rdfString);
 };
 
 /** Render the current compound object as Fedora Object XML in the FOXML view */
 lore.ore.updateFOXML = function (){
-    Ext.getCmp("remfoxmlview").body.update(Ext.util.Format.htmlEncode(lore.ore.createFOXML()));
+    var foxml = lore.ore.createFOXML();
+    var foxmlString = lore.global.util.transformXML("chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl", foxml, {}, window, true);
+    if (!foxmlString){
+        foxmlString = "Unable to generate FOXML";
+    }
+    Ext.getCmp("remfoxmlview").body.update(foxmlString);
 };
 /** Render the current compound object in TriG format in the TriG view*/
 lore.ore.updateTriG = function (){
-    Ext.getCmp("remtrigview").body.update("<pre>" + Ext.util.Format.htmlEncode(lore.ore.serializeREM('trig')) + "</pre>");
+    var trig = lore.ore.serializeREM('trig');
+    Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;-moz-pre-wrap:true'>" + Ext.util.Format.htmlEncode(trig) + "</pre>");
 };
 
 lore.ore.resizeSlideshow = function (comp,adjWidth, adjHeight, rawWidth, rawHeight){
@@ -1172,7 +1171,8 @@ lore.ore.loadCompoundObject = function (rdf) {
             lore.ore.ui.topView.hideAddIcon(false);
        }
        //lore.debug.timeElapsed("done");
-       Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50));
+       var readOnly = !remurl.match(lore.ore.reposAdapter.idPrefix)
+       Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50) + (readOnly? ' (read-only)' : ''),false);
     } catch (e){
         lore.ore.ui.loreError("Error loading compound object");
         lore.debug.ore("exception loading RDF from string",e);
@@ -1216,51 +1216,7 @@ lore.ore.loadRDF = function() {
                 prompt : true
             });
 };
-/**
- * Populate connection context menu with relationship types from the ontology.
- * Assumes that onturl has been set in init from preferences
- */
-lore.ore.loadRelationshipsFromOntology = function() {
-    try{
-    lore.ore.ontrelationships = {};
-    lore.ore.resource_metadata_props = ["rdf:type", "ore:isAggregatedBy"];
-    if (lore.ore.onturl) {
-        lore.debug.ore("getting ontology : " + lore.ore.onturl);
-        var xhr = new XMLHttpRequest();
-        xhr.overrideMimeType('text/xml');
-        xhr.open("GET", lore.ore.onturl, true);
-        xhr.onreadystatechange= function(){
-            if (xhr.readyState == 4) {
-                try{
-                var db = jQuery.rdf.databank();
-                for (ns in lore.constants.NAMESPACES){
-                    db.prefix(ns,lore.constants.NAMESPACES[ns]);
-                }
-                db.load(xhr.responseXML);
-                lore.debug.ore("loading relationships from " + lore.ore.onturl,lore.ore.relOntology);      
-                lore.ore.relOntology = jQuery.rdf({databank: db});
-                lore.ore.relOntology.where('?prop rdf:type <'+lore.constants.OWL_OBJPROP+'>')
-                .each(function (){
-                    try{
-                    var relresult = lore.global.util.splitTerm(this.prop.value.toString());
-                    lore.ore.ontrelationships[relresult.term] = relresult.ns;
-                    } catch (e){
-                        lore.debug.ore("problem loading rels",e);
-                    }
-                });
-                // TODO: #13 load datatype properties for prop grids
-                // update properties UI eg combo box in search, menu for selecting rel type
-                } catch (e){
-                    lore.debug.ore("problem loading rels",e);
-                }
-            } 
-        };
-        xhr.send(null);
-     } 
-    } catch (e){
-        lore.debug.ore("lore.ore.loadRelationshipsFromOntology:",e);
-    }
-};
+
 /** Looks up property value from a grid by name
  * 
  * @param {} propname The name of the property to find
@@ -1338,11 +1294,7 @@ lore.ore.afterSaveCompoundObject = function(remid){
     };
     // If the current URL is in the compound object, show in related compound objects
     if (lore.ore.ui.graphicalEditor.lookup[lore.ore.ui.currentURL]){
-       lore.ore.coListManager.add([
-       //new lore.ore.model.CompoundObjectSummary(
-       coopts
-       //)
-       ]);
+       lore.ore.coListManager.add([coopts]);
     }
     lore.ore.historyManager.addToHistory(remid, title);  
 }
@@ -1416,7 +1368,6 @@ lore.ore.updateCompoundObjectsBrowseList = function(contextURL) {
 };
 
 /* Graph related functions */
-
 lore.ore.isInCompoundObject = function(theURL){
     var isInCO = typeof(lore.ore.ui.graphicalEditor.lookup[theURL]) !== 'undefined';
     return isInCO;
@@ -1430,7 +1381,7 @@ lore.ore.isInCompoundObject = function(theURL){
  * @return {object} String or Fragment containing result of applying the XSLT
  */
 lore.ore.transformORERDF = function(stylesheetURL, params, serialize){
-	 return lore.global.util.transformRDF(stylesheetURL, lore.ore.createRDF(false), params, window, serialize);
+	 return lore.global.util.transformXML(stylesheetURL, lore.ore.createRDF(false), params, window, serialize);
 };
 /**
  * Use XSLT to generate a smil file from the compound object, plus create an
@@ -1600,6 +1551,7 @@ lore.ore.editResDetail = function(resURI,pname,val){
         lore.debug.ore("problem in editResDetail",e);
     }
 };
+
 lore.ore.populateResourceDetailsCombo = function (){
     if (!Ext.getCmp("remresedit")){
         return;
