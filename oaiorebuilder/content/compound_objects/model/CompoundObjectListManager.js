@@ -6,7 +6,8 @@
  */
 lore.ore.model.CompoundObjectListManager = function(){
     this.lists = {
-        "search" : new Ext.ux.data.PagingJsonStore({"idProperty" : "uri",
+        "search" : new Ext.ux.data.PagingJsonStore({
+            idProperty : "uri",
             sortInfo: {
               field: "modified",
               direction: "desc"
@@ -19,7 +20,7 @@ lore.ore.model.CompoundObjectListManager = function(){
                     limit : 5
                 }
             },
-            "fields" : [{
+            fields : [{
                         "name" : "uri"
                     }, {
                         "name" : "title"
@@ -35,7 +36,8 @@ lore.ore.model.CompoundObjectListManager = function(){
                         "name" : "match"
                     }]
        }),
-       "browse" : new Ext.ux.data.PagingJsonStore({"idProperty" : "uri",
+       "browse" : new Ext.ux.data.PagingJsonStore({
+        idProperty : "uri",
             sortInfo: {
               field: "modified",
               direction: "desc"
@@ -48,7 +50,7 @@ lore.ore.model.CompoundObjectListManager = function(){
                     limit : 5
                 }
             },
-            "fields" : [{
+            fields : [{
                         "name" : "uri"
                     }, {
                         "name" : "title"
@@ -64,7 +66,8 @@ lore.ore.model.CompoundObjectListManager = function(){
                         "name" : "match"
                     }]
        }),
-        "history" : new Ext.ux.data.PagingJsonStore({"idProperty" : "uri",
+        "history" : new Ext.ux.data.PagingJsonStore({
+            idProperty : "uri",
             sortInfo: {
               field: "accessed",
               direction: "desc"
@@ -77,7 +80,7 @@ lore.ore.model.CompoundObjectListManager = function(){
                     limit : 5
                 }
             },
-            "fields" : [{
+            fields : [{
                         "name" : "uri"
                     }, {
                         "name" : "title"

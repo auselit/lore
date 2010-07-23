@@ -1,4 +1,4 @@
-lore.ore.model = lore.ore.model || {};
+Ext.namespace("lore.ore.model");
 
 /** @class lore.ore.model.CompoundObject
  * Model class representing a compound object */
