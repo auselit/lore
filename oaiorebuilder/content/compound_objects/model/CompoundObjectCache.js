@@ -2,6 +2,7 @@ lore.ore.model.CompoundObjectCache = function() {
     this.cache = {};
     this.timestamps = {};
     this.loadedCompoundObject = "";
+    this.loadedIsNew = true;
 }
 lore.ore.model.CompoundObjectCache.prototype = {
     add: function(aUri,co) {
@@ -17,6 +18,12 @@ lore.ore.model.CompoundObjectCache.prototype = {
         this.cache = {};
         delete this.timestamps;
         this.timestamps = {};
+    },
+    setLoadedCompoundObjectIsNew: function(boolean) {
+        this.loadedIsNew = boolean;  
+    },
+    getLoadedCompoundObjectIsNew: function(){
+        return this.loadedIsNew;
     },
     setLoadedCompoundObjectUri: function(aURI) {
         this.loadedCompoundObject = aURI;
