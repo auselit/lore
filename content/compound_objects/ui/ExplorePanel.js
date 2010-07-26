@@ -6,6 +6,7 @@
 lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{ 
    constructor: function (config){ 
         this.hideLabels = false;
+        this.edgeToolTip = new Ext.ToolTip({plain:true, showDelay: 100, title: 'Relationship type:'});
         Ext.apply(config, {
             layout: "border",
             items: [
@@ -43,7 +44,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     } 
               }
            } catch (e){
-              lore.debug.ore("problem",e);
+              lore.debug.ore("ExplorePanel:",e);
            }
         },this);
         this.on("activate", this.updateContent);
@@ -51,7 +52,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         this.previewCanvas = document.createElement("canvas");
         this.colorKey = {
                     "http://purl.org/dc/elements/1.1/relation": "#E3E851",
-                    "http://www.openarchives.org/ore/terms/aggregates": "#eeeeee"
+                    "http://www.openarchives.org/ore/terms/aggregates": "#EEEEEE"
         },
         this.ckTemplate = new Ext.Template("<li style='line-height:1.3em; padding:3px;'>&nbsp;<span style='border:1px solid black;background-color:{color};'>&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;{rel}</li>",
             {compiled: true}
@@ -88,13 +89,13 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                overridable: true,
                dim: 4,
                type: "square",
-               color: "#ddd"
+               color: "#DDDDDD"
             },
             Edge: {
                 overridable: true,
                 //type: 'arrow', #302: wait until JIT fixes redraw bug to enable
-                lineWidth: 2,
-                color: "#ddd"
+                lineWidth: 3,
+                color: "#DDDDDD"
            },
            Tips: {
               enable: true,
@@ -120,6 +121,44 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             Events: {
               enable: true,
               type: 'Native',
+              onMouseMove: function(node,eventInfo,e){
+                try{
+                if (!node){
+                    // show color key info when over edge: we do look up based on color of pixel under mouse
+                    // because we don't have access to a hover event for paths drawn on canvas
+                    var ep = lore.ore.explorePanel;
+                    var tt = ep.edgeToolTip;
+                    var canvasCtx = ep.fd.canvas.viz.canvas.getCtx();
+                    var data = canvasCtx.getImageData(e.layerX,e.layerY,1,1).data;
+                    var color = '#' + new draw2d.Color(data[0], data[1], data[2]).hex();
+                    var rel = false;
+                    if (color != '#000000') {
+                        if (color == '#DDDDDD') {
+                            rel = 'Unspecified relationship'; // default edge color is #DDDDDD
+                        } else {
+                            var cKey = ep.colorKey;
+                            for (c in cKey){
+                                if (cKey[c] == color) {
+                                    rel = c;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (rel) {
+                        tt.showAt(e.pageX, e.pageY);
+                        // showAt doesn't seem to be setting position properly
+                        tt.setPagePosition(e.pageX, e.pageY);   
+                        tt.update("<ul>" + ep.ckTemplate.apply({rel: rel, color: color}) + "</ul>");
+                    } else {
+                        // hide color info
+                        lore.ore.explorePanel.edgeToolTip.hide();        
+                    }         
+                }
+                } catch (ex){
+                    lore.debug.ore("ExplorePanel: problem with rel tooltip",ex);
+                }
+              },
               //Change cursor style when hovering a node
               onMouseEnter: function() {
                 lore.ore.explorePanel.fd.canvas.getElement().style.cursor = 'move';
@@ -136,9 +175,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
               onRightClick: function(node, eventInfo, e){
                     this.clickedNode = node;
                     if (node) {
+                        lore.ore.explorePanel.onNode = true;
                         lore.ore.explorePanel.onNodeMenu(this,e);
-                        // prevent default context menu
                         return false;
+                    } else {
+                        lore.ore.explorePanel.onNode = false;
                     }
               }
             },
@@ -188,7 +229,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         }
                     });
                     } catch (e){
-                        lore.debug.ore("Problem in requestGraph",e);
+                        lore.debug.ore("Problem in requestGraph loadRem",e);
                     }
                 });
                 } catch (e){
@@ -232,9 +273,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         } else {
                             // generate a semi-random color to represent this type of relationship
                             // this tends towards purple shades, but it looks better than actual random colours
-                            newColor = "#" + Math.round(0xffffff * Math.random()).toString(16);
-                            
-                            lore.ore.explorePanel.colorKey[rel] = newColor;                       
+                            newColor = Math.round(0xffffff * Math.random()).toString(16);
+                            while(newColor.length < 6) {
+                                newColor = "0" + newColor;
+                            }
+                            newColor = "#" + newColor.toUpperCase();
+                            lore.ore.explorePanel.colorKey[rel] = newColor;  
                         }
                        adj.data["$color"] = newColor;
                    }
@@ -250,7 +294,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         }
     },
     /** Handle context menu for nodes in visualisation: allow deletion/expansion of each node */
-    onNodeMenu: function(fdcontroller,e){        
+    onNodeMenu: function(fdcontroller,e){  
         if (!this.nodemenu) {
             var nodemenu = new Ext.menu.Menu({
                 id : "explore-node-menu",
@@ -288,16 +332,19 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                             'edge-property:alpha'],
                         duration: 500
                     });
+                    
                 }
             });
             
             this.nodemenu = nodemenu;
          }
-         lore.debug.ore("right click event ",e);
-         this.nodemenu.showAt([e.pageX,e.pageY]);          
+         this.nodemenu.showAt([e.pageX,e.pageY]); 
     },
     /** Handle context menu on explore view background, providing diagram-wide options such as export to image */
     onContextMenu : function (e){ 
+        if (this.onNode) {
+            return false;
+        }
         if (!this.contextmenu) {
             this.contextmenu = new Ext.menu.Menu({
                 id : this.id + "-context-menu",
@@ -353,12 +400,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     text: "Hide Labels",
                     scope: this,
                     handler: function (){
-                        try{
+                     try{
                        this.fd.labels.hideLabels(true);
                        this.hideLabels = true;
-                        } catch (e){
-                            lore.debug.ore("problem",e);
-                        }
+                     } catch (e){
+                            lore.debug.ore("problem hiding labels",e);
+                     }
                     }
              });
              this.contextmenu.add({
@@ -395,12 +442,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         var epanel = this.getComponent(0);
         var imageW = epanel.getInnerWidth() + 50;
         var imageH = epanel.getInnerHeight() + 50;
-        lore.debug.ore("initial height?" + epanel.body.getWidth() + " " + epanel.body.getHeight());
+        //lore.debug.ore("initial height?" + epanel.body.getWidth() + " " + epanel.body.getHeight());
         // TODO: get height from actual diagram rather than hardcoding image dimensions
         imageW = 1000;
         imageH = 1000;
         
-        lore.debug.ore("width " + imageW + " height " + imageH,this);
+        //lore.debug.ore("width " + imageW + " height " + imageH,this);
         // recenter jit canvas in case user has panned
         var fdc = this.fd.canvas;
         var fdcx = fdc.translateOffsetX;
@@ -423,7 +470,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         // Draw the window, cropping to display just the visualisation
         context.drawWindow(window, offsetX, offsetY, imageW, imageH, "rgb(255,255,255)");
         
-        lore.debug.ore("current height?" + epanel.body.getWidth() + " " + epanel.body.getHeight());
+        //lore.debug.ore("current height?" + epanel.body.getWidth() + " " + epanel.body.getHeight());
         
         var imgData = canvas.toDataURL();
         // restore viewport original size
@@ -442,12 +489,27 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {} p The panel
      */
     updateContent : function (p) {
+        
+        if (lore.ore.cache.getLoadedCompoundObjectIsNew()){
+            Ext.getCmp("exploreHistory").body.hide();
+            Ext.getCmp("exploreinfovis").body.hide();
+            try{
+            this.clearExploreData();
+            this.exploreLoaded = "";
+
+            lore.ore.ui.loreInfo("No connections to explore: current compound object is unsaved");
+            return;
+            } catch (ex){
+                lore.debug.ore("problem updating explore view",ex);
+            }
+        }
         var currentREM = lore.ore.cache.getLoadedCompoundObjectUri();
         if (this.exploreLoaded !== currentREM) {
             this.exploreLoaded = currentREM;
+            Ext.getCmp("exploreinfovis").body.hide();
             this.showInExploreView(currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
-        } 
-        lore.ore.ui.loreInfo("Click on the nodes to explore connections between compound objects.");
+        }
+
     },
     /**
      * Gets resource map as RDF, transforms to JSON and applies function to it
@@ -462,27 +524,32 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 f(json);
         }
     },
+    clearExploreData: function(){
+        if (!this.fd){
+            this.initGraph();
+        } else {
+            this.fd.graph.empty();
+        }
+    },
     /** Initialize the explore view to display resources from the repository related to a compound object
      * @param {URI} id The URI of the compound object
      * @param {String} title Label to display for the compound object
      */
     showInExploreView : function (id, title, isCompoundObject){
-            lore.debug.ore("ExplorePanel: show in explore view " + title);
+            //lore.debug.ore("ExplorePanel: show in explore view " + title);
             try{
-            if (!this.fd){
-                    this.initGraph();
-                } else {
-                    this.fd.graph.empty();
-            }
+            this.clearExploreData();
             lore.ore.ui.loreProgress("Retrieving data for explore view");
             this.loadRem(id, title, isCompoundObject, function(json){
                 lore.ore.explorePanel.fd.loadJSON(json);
                 lore.ore.explorePanel.fd.computeIncremental({
                     iter: 40,
                     property: 'end',
-                    onComplete: function(){
-                      var ep = lore.ore.explorePanel;
+                    onComplete: function(){ 
                       lore.ore.ui.loreInfo("Explore data loaded");
+                      var ep = lore.ore.explorePanel;
+                      Ext.getCmp("exploreinfovis").body.show();
+                      Ext.getCmp("exploreHistory").body.show();
                       ep.fd.animate({
                         modes: ['linear'],
                         duration: 1000
@@ -492,7 +559,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                       if (canv.translateOffsetX == 0){
                         var newx = 0 - ((1100 - ep.getWidth()) / 2);
                         var newy = 0 - ((1100 - ep.getHeight()) / 2);
-                        lore.debug.ore("translating canvas ", [newx, newy]);
+                        //lore.debug.ore("translating canvas ", [newx, newy]);
                         canv.translate(newx,newy);
                       }
                     }
