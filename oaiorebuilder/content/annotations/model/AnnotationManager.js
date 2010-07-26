@@ -621,11 +621,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		function stripFragment(url) {
 			return url.replace(/\#.*$/,'');
 		}
-		var currentURL = stripFragment(lore.anno.ui.currentURL);
-		
-		if (anno.resource == currentURL || 
-			anno.variant == currentURL ||
-			anno.original == currentURL) {
+		var currentURL = stripFragment(lore.anno.ui.currentURL).toLowerCase();
+ 
+		if (anno.resource.toLowerCase() == currentURL || 
+			anno.variant.toLowerCase() == currentURL ||
+			anno.original.toLowerCase() == currentURL) {
 			return false;
 		}
 		return true;
