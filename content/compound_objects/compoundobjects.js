@@ -321,6 +321,7 @@ lore.ore.ui.newCO = function(dontRaise){
         var currentREM = lore.ore.reposAdapter.generateID();
         lore.ore.cache.add(currentREM, new lore.ore.model.CompoundObject({uri: currentREM}));
         lore.ore.cache.setLoadedCompoundObjectUri(currentREM);
+        lore.ore.cache.setLoadedCompoundObjectIsNew(true);
         lore.ore.ui.grid.store.loadData(
         [
             {id:"rdf:about_0", name: lore.ore.REM_ID_PROP, value: currentREM},
@@ -1004,6 +1005,7 @@ lore.ore.loadCompoundObject = function (rdf) {
        
            lore.ore.cache.add(remurl, tmpCO);
            lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+           lore.ore.cache.setLoadedCompoundObjectIsNew(false);
         }  else {
             lore.ore.ui.loreWarning("No compound object found");
             lore.debug.ore("no remurl found in RDF",loadedRDF);
@@ -1283,6 +1285,7 @@ lore.ore.deleteFromRepository = function(aURI, aTitle){
 /** Add saved compound object to the model lsits
  * @param {String} remid The compound object that was saved */
 lore.ore.afterSaveCompoundObject = function(remid){
+    lore.ore.cache.setLoadedCompoundObjectIsNew(false);
     var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
         || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid) 
         || "Untitled";
