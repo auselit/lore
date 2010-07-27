@@ -888,6 +888,7 @@ lore.anno.ui.handleCancelEditing = function() {
 	var rec = lore.anno.ui.formpanel.getRec();
 	lore.anno.annoMan.annodsunsaved.remove(rec);
 	lore.anno.ui.page.setCurrentAnno();
+    lore.anno.ui.pageui.turnOffPageTripleMarkers();
 	lore.anno.ui.hideAnnotationEditor();
 	return;
 }
