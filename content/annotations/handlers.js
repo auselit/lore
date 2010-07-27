@@ -405,7 +405,7 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 					}
 					
 					var label = ' ';
-					if (rec.data.resource != lore.anno.ui.currentURL) {
+					if (!lore.global.util.urlsAreSame(rec.data.resource, lore.anno.ui.currentURL)) {
 						label = "Unsaved annotation from " + rec.data.resource;
 					}
 					node.setText(rec.data.title, label, null, lore.anno.ui.genTreeNodeText(rec.data));

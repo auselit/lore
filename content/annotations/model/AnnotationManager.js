@@ -611,6 +611,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	
 	
 	locationChanged: function(anno) {
+        var urlsAreSame = lore.global.util.urlsAreSame;
 		if (!anno) {
 			return false;
 		}
@@ -622,11 +623,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return url.replace(/\#.*$/,'');
 		}
         
-		var currentURL = decodeURIComponent(stripFragment(lore.anno.ui.currentURL));
+		var currentURL = stripFragment(lore.anno.ui.currentURL);
  
-		if (decodeURIComponent(anno.resource) == currentURL || 
-            decodeURIComponent(anno.variant) == currentURL || 
-            decodeURIComponent(anno.original) == currentURL) {
+		if (urlsAreSame(anno.resource, currentURL) || 
+            urlsAreSame(anno.variant, currentURL) || 
+            urlsAreSame(anno.original, currentURL)) {
 			return false;
 		}
 		return true;

@@ -485,10 +485,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			// load RDFa for page
 		 	this.rdfaManager.load(lore.global.util.getContentWindow(window));
 			
+            var panel = this;
+            
 			// callback, when a triple is chosen. Update field with supplied triple.
 			var setFormField = function (isObject, triple) {
 				lore.anno.ui.updateAnnoFromForm();
-				var editedRec = this.getRec();
+				var editedRec = panel.getRec();
 				
 				lore.debug.anno('handleChangeMetaSelection callback', {editedRec:editedRec});
 				editedRec.beginEdit();
@@ -514,12 +516,13 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	 * @param {Record} rec The record to load
 	 */
 	load: function(rec) {
+        var urlsAreSame = lore.global.util.urlsAreSame;
 		try {
 			// display contents of context
 			if (rec.data.context) {
 				
 				var ctxtField = this.form.findField('contextdisptxt');
-				if (rec.data.original == lore.anno.ui.currentURL) {
+				if (urlsAreSame(rec.data.original, lore.anno.ui.currentURL)) {
 					var selText = '';
 					try {
 						selText = lore.global.util.getSelectionText(
@@ -553,7 +556,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			// display contents of variant context 
 			if (rec.data.variantcontext) {
 				var vCtxtField = this.form.findField('rcontextdisptxt');
-				if (rec.data.variant == lore.anno.ui.currentURL) {
+				if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
 					var selText = '';
 					try {
 						
@@ -637,11 +640,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		// determine which context field to update
 		// depending on whether it's for the original or
 		// variant context for the variation annotation
+        var urlsAreSame = lore.global.utils.urlsAreSame;
 		
 		var fieldId = 'rcontextdisptxt';
 		var ctx = rec.data.variantcontext;
 		
-		if (rec.data.variant == lore.anno.ui.currentURL) {
+		if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
 			fieldId = 'contextdisptxt';
 			ctx = rec.data.context;
 		}

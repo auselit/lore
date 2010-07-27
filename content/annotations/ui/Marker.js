@@ -63,9 +63,6 @@ lore.anno.ui.Marker.prototype = {
 			this.data.nodes = [_div.get(0)];
 			this.update(); 
 			
-			if ( scroll )
-				lore.global.util.scrollToElement(this.data.nodes[0], this.target.defaultView);
-			
 		} else if (this.isStringMarker()) {
 			// text marker
 			var type = this.type;
@@ -81,7 +78,7 @@ lore.anno.ui.Marker.prototype = {
 				};
                 
 				// highlight marker
-				this.data.nodes = lore.global.util.highlightRange(this.data.range, this.target, scroll, stylin);
+				this.data.nodes = lore.global.util.highlightRange(this.data.range, this.target, stylin);
 			} else {
 				// apply style callback to dom node
 				for (var i=0; i < this.data.nodes.length; i++ ) {
@@ -92,12 +89,20 @@ lore.anno.ui.Marker.prototype = {
             var xpath = lore.global.util.getXPathFromXPointer(this.xpointer);
             var node = lore.global.util.getNodeForXPath(xpath, this.target);
             
+            //TODO: properly fix for when we have no nodes
+            
             this.data = {};
             this.data.nodes = [node];
-            this.oldBackgroundColor = node.style.backgroundColor;
-            node.style.backgroundColor = colour;
+            if (node) {
+                this.oldBackgroundColor = node.style.backgroundColor;
+                node.style.backgroundColor = colour;
+            }
         }
-		
+        
+		if (scroll) {
+            lore.global.util.scrollToElement(this.data.nodes[0], this.target.defaultView);
+        }
+            
 		this.visible = true;		
 	},
 
