@@ -244,7 +244,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							}, {
 								xtype: 'button',
 								text: 'Set',
-								onClick: this.handleUpdateAnnotationContext
+								handler: this.handleUpdateAnnotationContext,
+                                scope: this
 							}
 						]
 					}, {
@@ -289,7 +290,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							}, {
 								xtype: 'button',
 								text: 'Set',
-								onClick: this.handleUpdateAnnotationVariantContext
+								handler: this.handleUpdateAnnotationVariantContext,
+                                scope: this
 							}
 						]
 					}, {
@@ -308,7 +310,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 								xtype: 'button',
 								text: 'Choose',
 								tooltip: 'Select the item or relationship to annotate',
-								handler: this.handleChangeMetaSelection
+								handler: this.handleChangeMetaSelection,
+                                scope: this
 							}
 						]
 					}, {
@@ -422,407 +425,404 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	 * @param {Object} btn Not currently used
 	 * @param {Object} e Not currently used
 	 */
-	handleUpdateAnnotationContext : function(scope){
+	handleUpdateAnnotationContext : function(){
 		try {
-			
-			// either scope of field or scope supplied, the callee's scope
-			// can vary
-			
-			
-			var panel = this.findParentByType('annoeditorpanel') || scope;
 			lore.anno.ui.updateAnnoFromForm();
-			var editedRec = panel.getRec();
+			var editedRec = this.getRec();
 			
 			
-			lore.debug.anno('handleUpdateAnnotationContext', {tthis:this,scope:scope,panel:panel,editedRec:editedRec});
+			lore.debug.anno('handleUpdateAnnotationContext', {tthis:this,editedRec:editedRec});
 			
 			// get text selection, and update the appropriate fields
-			var currentCtxt = panel.pageView.getCurrentSelection();
+			var currentCtxt = this.pageView.getCurrentSelection();
 			
 			editedRec.beginEdit();
 			editedRec.set('context', currentCtxt);
 			editedRec.set('resource', lore.anno.ui.currentURL);
 			editedRec.endEdit();
 			
-			panel.pageView.highlightCurrentAnnotation(editedRec);
+			this.pageView.highlightCurrentAnnotation(editedRec);
 		} 
 		catch (ex) {
 			lore.debug.anno("Exception updating anno context", ex);
 		}
 	},
 		
-		/**
-		 * Update the variation annotation xpath context
-		 * @param {Object} btn Not currently used
-		 * @param {Object} e Not currently used
-		 */
-		handleUpdateAnnotationVariantContext : function(){
-			try {
-				var panel = this.findParentByType('annoeditorpanel');
-				if (!panel.isVisible())
-					panel.show(panel.pageView.page.curSelAnno);
-				
-				
+	/**
+	 * Update the variation annotation xpath context
+	 * @param {Object} btn Not currently used
+	 * @param {Object} e Not currently used
+	 */
+	handleUpdateAnnotationVariantContext : function(){
+		try {
+			if (!this.isVisible())
+				this.show(this.pageView.page.curSelAnno);
+			
+			
+			lore.anno.ui.updateAnnoFromForm();
+			var editedRec = this.getRec();
+			// get text selection, and update the appropriate fields
+			var currentCtxt = this.pageView.getCurrentSelection();
+			
+			editedRec.beginEdit();
+			editedRec.set('variant', lore.anno.ui.currentURL);
+			editedRec.set('variantcontext', currentCtxt);
+			
+			editedRec.endEdit();
+		} 
+		catch (ex) {
+			lore.debug.anno("Exception updating anno variant context", ex);
+		}
+	},
+		
+	/**
+	 * Update the semantic selection
+	 */
+	handleChangeMetaSelection : function () {
+		try {
+			lore.debug.anno("handleChangeMetaSelection()", {tthis:this});
+
+			// load RDFa for page
+		 	this.rdfaManager.load(lore.global.util.getContentWindow(window));
+			
+			// callback, when a triple is chosen. Update field with supplied triple.
+			var setFormField = function (isObject, triple) {
 				lore.anno.ui.updateAnnoFromForm();
-				var editedRec = panel.getRec();
-				// get text selection, and update the appropriate fields
-				var currentCtxt = panel.pageView.getCurrentSelection();
+				var editedRec = this.getRec();
 				
+				lore.debug.anno('handleChangeMetaSelection callback', {editedRec:editedRec});
 				editedRec.beginEdit();
-				editedRec.set('variant', lore.anno.ui.currentURL);
-				editedRec.set('variantcontext', currentCtxt);
+				
+				// TODO: check that the triple.property is rdf:type
+				editedRec.set("semanticEntity", triple.subject.value.toString());
+				editedRec.set("semanticEntityType", triple.object.value.toString());
+				var metaselection = lore.global.util.getMetaSelection(triple);
+				editedRec.set("context", metaselection.xp);
 				
 				editedRec.endEdit();
-			} 
-			catch (ex) {
-				lore.debug.anno("Exception updating anno variant context", ex);
-			}
-		},
-		
-		/**
-		 * Update the semantic selection
-		 */
-		handleChangeMetaSelection : function () {
-			try {
-				lore.debug.anno("handleChangeMetaSelection()", {tthis:this});
-				var panel = this.findParentByType('annoeditorpanel');
-				// load RDFa for page
-			 	panel.rdfaManager.load(lore.global.util.getContentWindow(window));
 				
-				// callback, when a triple is chosen. Update field with supplied triple.
-				var setFormField = function (isObject, triple) {
-					lore.anno.ui.updateAnnoFromForm();
-					var editedRec = panel.getRec();
-					
-					lore.debug.anno('handleChangeMetaSelection callback', {editedRec:editedRec});
-					editedRec.beginEdit();
-					
-					// TODO: check that the triple.property is rdf:type
-					editedRec.set("semanticEntity", triple.subject.value.toString());
-					editedRec.set("semanticEntityType", triple.object.value.toString());
-					var metaselection = lore.global.util.getMetaSelection(triple);
-					editedRec.set("context", metaselection.xp);
-					
-					editedRec.endEdit();
-					
-				}
-				// show the triples on the page
-			 	panel.pageView.toggleTripleMarkers(setFormField);
-			} catch (e) {
-				lore.debug.anno(e,e);
 			}
-		},
-		
-		/**
-		 * Load record into the editor panel
-		 * @param {Record} rec The record to load
-		 */
-		load: function(rec) {
-			try {
-				// display contents of context
-				if (rec.data.context) {
-					
-					var ctxtField = this.form.findField('contextdisptxt');
-					if (rec.data.original == lore.anno.ui.currentURL) {
-						var selText = '';
-						try {
-							selText = lore.global.util.getSelectionText(
-								rec.data.context, lore.global.util.getContentWindow(window).document)
-						} catch (e) {
-						}
-						
-						this.form.setValues([{
-							id: 'contextdisptxt',
-							value: '"' + selText + '"'
-						}]);
-					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
-						this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this); // when content is loaded in splitter
-																										 // context field will be set
-					}
-
-					ctxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
-					lore.anno.ui.setVisibilityFormField(this.form,'contextdisp', false);
-					
-				} else {
-					// otherwise display empty
-					var ctxtField = this.form.findField('contextdisptxt');
-					this.form.setValues([{
-						id: 'contextdisptxt',
-						value: ""
-					}]);
-					ctxtField.getEl().setStyle("background-color", "inherit");
-				}
-				
-				
-				// display contents of variant context 
-				if (rec.data.variantcontext) {
-					var vCtxtField = this.form.findField('rcontextdisptxt');
-					if (rec.data.variant == lore.anno.ui.currentURL) {
-						var selText = '';
-						try {
-							
-							selText = lore.global.util.getSelectionText(
-							rec.data.variantcontext, lore.global.util.getContentWindow(window).document)
-						} catch (e) {
-						}
-						this.form.setValues([{
-							id: 'rcontextdisptxt',
-							value: '"' + selText + '"'
-						}]);
-					} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
-						this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this); // when content is loaded in splitter
-															// context field will be set
-					}
-					vCtxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
-					lore.anno.ui.setVisibilityFormField(this.form,'rcontextdisp', false);
-				} else {
-					// otherwise empty
-					var ctxtField = this.form.findField('rcontextdisptxt');
-					this.form.setValues([{
-						id: 'rcontextdisptxt',
-						value: ""
-					}]);
-					ctxtField.getEl().setStyle("background-color", "inherit");
-				}
-				
-				var meta = rec.get('meta');
-				if (meta) {
-					this.metaUserGrid.getStore().loadData(meta);
-				}
-			
-				var semEntityField = this.form.findField('semanticEntity');
-				if (rec.get('semanticEntityType')) {
-
-					this.metaUserGrid.setVisible(true);
-					this.metaUserGrid.setObjectType('chrome://lore/content/ontologies/AustLit.xml', rec.get("semanticEntityType"));
-	
-					semEntityField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
-				} else {
-					semEntityField.getEl().setStyle("background-color", "inherit");
-				}
-				var val = rec.data.resource;
-					
-				if (rec.data.isReply) {
-					// update fields for annotations that are replies
-					var prec = lore.global.util.findRecordById(this.model, rec.data.about);
-					if (prec) {
-						val = "'" + prec.data.title + "'";
-						if (!prec.data.isNew()) {
-							val += " ( " + rec.data.about + " )";
-						}
-					} else 
-						val = '';
-				}
-				this.form.setValues([{ id: 'res', value: val }]);
-				
-				// hide context field if it is a reply
-				if (rec.data.isReply) {
-					this.form.findField('contextdisp').hide();
-				} else {
-					// TODO: doLayout() can be removed with Ext 3.2.1, just needed for combo fields now
-					this.form.findField('contextdisp').show();
-					this.doLayout();
-				}
-	
-				this.rec = rec;
-				this.form.loadRecord(rec);
-			} 
-			catch (e) {
-				lore.debug.anno("Error display annotation: " + e, e);
-			}
-		},
-		
-		/**
-		 * Callback that updates the context field
-		 * @param {Object} cw
-		 * @param {Object} rec
-		 */
-		updateSplitterContextField: function (cw, rec){
-			// determine which context field to update
-			// depending on whether it's for the original or
-			// variant context for the variation annotation
-			
-			var fieldId = 'rcontextdisptxt';
-			var ctx = rec.data.variantcontext;
-			
-			if (rec.data.variant == lore.anno.ui.currentURL) {
-				fieldId = 'contextdisptxt';
-				ctx = rec.data.context;
-			}
-				
-			var selText = '';
-				
-			try {
-				selText = lore.global.util.getSelectionText(ctx, cw.document);
-			} 
-			catch (e) {
-				lore.debug.anno(e, e);
-			}
-			this.form.setValues([{
-				id: fieldId,
-				value: '"' + selText + '"'
-			}]);
-		},
-		
-		/**
-		 * Show the annotation editor. 
-		 * @param {Record} rec  The record containing the annotation to show in the editor
-		 * @param {Boolean} loadOnly (Optional) Load the annotation data into form fields but don't show editor. Defaults to false.
-		 */
-		show: function(rec){
-			this.load(rec);
-			lore.anno.ui.EditorPanel.superclass.show.apply(this, arguments);
-			
-		},
-		
-		/**
-		 * When the record is updated, update the editor
-		 * @param {Object} store	 The data store
-		 * @param {Object} rec		 The record 
-		 * @param {Object} operation The operation performed
-		 */
-		handleRecordUpdate: function (store, rec, operation ) {
-			if ( this.pageView.page.curSelAnno == rec ) {
-				this.load(rec);
-			} else {
-				lore.debug.anno("Editor received an updated event for a non-current annotation",
-					{store:store,rec:rec,operation:operation});
-			}
-		},
-		
-		/**
-		 * Update the form when the annotation type changes
-		 * @param {Combo} combo The Combo field that has changed
-		 */
-		handleAnnotationTypeChange: function(combo){
-			var theVal = combo.getValue();
-			
-			if (theVal === 'Variation'){
-				this.setAnnotationFormUI(true, false);
-			} else if ( theVal === 'Metadata') {
-				this.setAnnotationFormUI(false, true);
-			} else if (theVal === 'Question' ||  theVal === 'Comment' || theVal === 'Explanation' ) {
-				this.setAnnotationFormUI(false, false);
-			}
-		},
-		
-		/**
-		 * When the preferences changes, update editor UI
-		 * @param {Object} args
-		 */
-		handlePrefsChanged: function(args) {
-			// update scholarly fields 
-			if (this.isVisible()) 
-					this.showScholarlyFields(args.mode === lore.constants.ANNOMODE_SCHOLARLY);
-
-			
-			this.annomode = args.mode;
-		},
-		
-		
-		/**
-		 * Show or hide the Scholarly Annotation fields
-		 * @param {Boolean} show true to show the fields, false to hide them
-		 */		
-		showScholarlyFields: function(/*boolean*/show) {
-			var scholarlyFields = ['importance', 'references'];
-			
-			if (show) {
-				lore.anno.ui.showFormFields(this.form, scholarlyFields);
-				// TODO: only necessary until Ext 3.2.1
-				this.doLayout();
-			} else {
-				lore.anno.ui.hideFormFields(this.form, scholarlyFields);
-			}
-		},
-		
-		
-		
-		/**
-		 * Show hide fields  
-		 * @param {Boolean} variation Specify changes to UI for variation
-		 * @param {Boolean} rdfa Specify changes to UI for rdfa
-		 */
-		setAnnotationFormUI : function(variation, rdfa) {
-		try {
-			var nonVariationFields = ['res'];
-			var variationFields = ['original', 'variant', 'rcontextdisp', 'variationagent', 'variationplace', 'variationdate'];
-			var rdfaFields = ['semanticselection'];
-			var nonRdfaFields = ['body'];
-			
-			// hide/show fields depending on whether annotation is a scholarly annotation or not
-			this.showScholarlyFields(this.annomode !== lore.constants.ANNOMODE_NORMAL);
-			
-			// variation
-			if (variation) {
-				lore.anno.ui.hideFormFields(this.form, nonVariationFields);
-				lore.anno.ui.showFormFields(this.form, variationFields);
-			} else {
-				lore.anno.ui.hideFormFields(this.form, variationFields);
-				lore.anno.ui.showFormFields(this.form, nonVariationFields);
-			}
-			
-			// rdfa
-			if (rdfa) {
-				lore.anno.ui.hideFormFields(this.form, nonRdfaFields);
-				lore.anno.ui.showFormFields(this.form, rdfaFields);
-				this.metaUserGrid.setVisible(true);
-			} else {
-				lore.anno.ui.hideFormFields(this.form, rdfaFields);
-				lore.anno.ui.showFormFields(this.form, nonRdfaFields);
-				this.metaUserGrid.setVisible(false);
-			}
-
-			// TODO: only necessary until Ext 3.2.1
-			this.doLayout();
+			// show the triples on the page
+		 	this.pageView.toggleTripleMarkers(setFormField);
 		} catch (e) {
 			lore.debug.anno(e,e);
 		}
-		},
+	},
+		
+	/**
+	 * Load record into the editor panel
+	 * @param {Record} rec The record to load
+	 */
+	load: function(rec) {
+		try {
+			// display contents of context
+			if (rec.data.context) {
+				
+				var ctxtField = this.form.findField('contextdisptxt');
+				if (rec.data.original == lore.anno.ui.currentURL) {
+					var selText = '';
+					try {
+						selText = lore.global.util.getSelectionText(
+							rec.data.context, lore.global.util.getContentWindow(window).document)
+					} catch (e) {
+					}
+					
+					this.form.setValues([{
+						id: 'contextdisptxt',
+						value: '"' + selText + '"'
+					}]);
+				} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+					this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this); // when content is loaded in splitter
+																									 // context field will be set
+				}
+
+				ctxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
+				lore.anno.ui.setVisibilityFormField(this.form,'contextdisp', false);
+				
+			} else {
+				// otherwise display empty
+				var ctxtField = this.form.findField('contextdisptxt');
+				this.form.setValues([{
+					id: 'contextdisptxt',
+					value: ""
+				}]);
+				ctxtField.getEl().setStyle("background-color", "inherit");
+			}
+			
+			
+			// display contents of variant context 
+			if (rec.data.variantcontext) {
+				var vCtxtField = this.form.findField('rcontextdisptxt');
+				if (rec.data.variant == lore.anno.ui.currentURL) {
+					var selText = '';
+					try {
+						
+						selText = lore.global.util.getSelectionText(
+						rec.data.variantcontext, lore.global.util.getContentWindow(window).document)
+					} catch (e) {
+					}
+					this.form.setValues([{
+						id: 'rcontextdisptxt',
+						value: '"' + selText + '"'
+					}]);
+				} else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+					this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this); // when content is loaded in splitter
+														// context field will be set
+				}
+				vCtxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
+				lore.anno.ui.setVisibilityFormField(this.form,'rcontextdisp', false);
+			} else {
+				// otherwise empty
+				var ctxtField = this.form.findField('rcontextdisptxt');
+				this.form.setValues([{
+					id: 'rcontextdisptxt',
+					value: ""
+				}]);
+				ctxtField.getEl().setStyle("background-color", "inherit");
+			}
+			
+			var meta = rec.get('meta');
+			if (meta) {
+				this.metaUserGrid.getStore().loadData(meta);
+			}
+		
+			var semEntityField = this.form.findField('semanticEntity');
+			if (rec.get('semanticEntityType')) {
+
+				this.metaUserGrid.setVisible(true);
+				this.metaUserGrid.setObjectType('chrome://lore/content/ontologies/AustLit.xml', rec.get("semanticEntityType"));
+
+				semEntityField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
+			} else {
+				semEntityField.getEl().setStyle("background-color", "inherit");
+			}
+			var val = rec.data.resource;
+				
+			if (rec.data.isReply) {
+				// update fields for annotations that are replies
+				var prec = lore.global.util.findRecordById(this.model, rec.data.about);
+				if (prec) {
+					val = "'" + prec.data.title + "'";
+					if (!prec.data.isNew()) {
+						val += " ( " + rec.data.about + " )";
+					}
+				} else 
+					val = '';
+			}
+			this.form.setValues([{ id: 'res', value: val }]);
+			
+			// hide context field if it is a reply
+			if (rec.data.isReply) {
+				this.form.findField('contextdisp').hide();
+			} else {
+				// TODO: doLayout() can be removed with Ext 3.2.1, just needed for combo fields now
+				this.form.findField('contextdisp').show();
+				this.doLayout();
+			}
+
+			this.rec = rec;
+			this.form.loadRecord(rec);
+		} 
+		catch (e) {
+			lore.debug.anno("Error display annotation: " + e, e);
+		}
+	},
+	
+	/**
+	 * Callback that updates the context field
+	 * @param {Object} cw
+	 * @param {Object} rec
+	 */
+	updateSplitterContextField: function (cw, rec){
+		// determine which context field to update
+		// depending on whether it's for the original or
+		// variant context for the variation annotation
+		
+		var fieldId = 'rcontextdisptxt';
+		var ctx = rec.data.variantcontext;
+		
+		if (rec.data.variant == lore.anno.ui.currentURL) {
+			fieldId = 'contextdisptxt';
+			ctx = rec.data.context;
+		}
+			
+		var selText = '';
+			
+		try {
+			selText = lore.global.util.getSelectionText(ctx, cw.document);
+		} 
+		catch (e) {
+			lore.debug.anno(e, e);
+		}
+		this.form.setValues([{
+			id: fieldId,
+			value: '"' + selText + '"'
+		}]);
+	},
+	
+	/**
+	 * Show the annotation editor. 
+	 * @param {Record} rec  The record containing the annotation to show in the editor
+	 * @param {Boolean} loadOnly (Optional) Load the annotation data into form fields but don't show editor. Defaults to false.
+	 */
+	show: function(rec){
+		this.load(rec);
+		lore.anno.ui.EditorPanel.superclass.show.apply(this, arguments);
+		
+	},
+	
+	/**
+	 * When the record is updated, update the editor
+	 * @param {Object} store	 The data store
+	 * @param {Object} rec		 The record 
+	 * @param {Object} operation The operation performed
+	 */
+	handleRecordUpdate: function (store, rec, operation ) {
+		if ( this.pageView.page.curSelAnno == rec ) {
+			this.load(rec);
+		} else {
+			lore.debug.anno("Editor received an updated event for a non-current annotation",
+				{store:store,rec:rec,operation:operation});
+		}
+	},
+	
+	/**
+	 * Update the form when the annotation type changes
+	 * @param {Combo} combo The Combo field that has changed
+	 */
+	handleAnnotationTypeChange: function(combo){
+		var theVal = combo.getValue();
+		
+		if (theVal === 'Variation'){
+			this.setAnnotationFormUI(true, false);
+		} else if ( theVal === 'Metadata') {
+			this.setAnnotationFormUI(false, true);
+		} else if (theVal === 'Question' ||  theVal === 'Comment' || theVal === 'Explanation' ) {
+			this.setAnnotationFormUI(false, false);
+		}
+        
+        if (theVal !== 'Metadata') {
+            this.pageView.turnOffPageTripleMarkers()
+        }
+	},
+	
+	/**
+	 * When the preferences changes, update editor UI
+	 * @param {Object} args
+	 */
+	handlePrefsChanged: function(args) {
+		// update scholarly fields 
+		if (this.isVisible()) 
+				this.showScholarlyFields(args.mode === lore.constants.ANNOMODE_SCHOLARLY);
 
 		
-		 /**
-		* Generated ID for a sub-component of this component
-		* @param id Id of sub-component
-		*/
-		getComponent: function ( id ) {
-			return Ext.getCmp( this.genID(id));
-		},
+		this.annomode = args.mode;
+	},
+	
+	
+	/**
+	 * Show or hide the Scholarly Annotation fields
+	 * @param {Boolean} show true to show the fields, false to hide them
+	 */		
+	showScholarlyFields: function(/*boolean*/show) {
+		var scholarlyFields = ['importance', 'references'];
 		
-		/**
-		 * Copy the data in the MetaData Grid into the Record
-		 * @param {} metaStore The Store object from the Metadata Grid
-		 */
-		updateRecMetaFields: function(metaStore) {
-			var metaProps = [];
-			metaStore.each(function (rec) {
-				metaProps.push(rec.data);
-			});
-			this.rec.store.suspendEvents();
-			this.rec.set('meta', metaProps);
-			this.rec.store.resumeEvents();
-		},
-		
-		resetPanel: function() {
-			this.form.reset();
-			this.metaUserGrid.reset();
-		},
-		
-		/**
-		 * Retrieve sub-component of this component
-		 * @param {Object} id Id of sub-component
-		 */
-		genID: function (id) {
-			return this.id + "_" + id;
-		},
-		
-		getRec: function() {
-			return this.rec;
-		},
-		
-		clearPanel: function() {
-			this.rec = null;
+		if (show) {
+			lore.anno.ui.showFormFields(this.form, scholarlyFields);
+			// TODO: only necessary until Ext 3.2.1
+			this.doLayout();
+		} else {
+			lore.anno.ui.hideFormFields(this.form, scholarlyFields);
 		}
+	},
+	
+	
+	
+	/**
+	 * Show hide fields  
+	 * @param {Boolean} variation Specify changes to UI for variation
+	 * @param {Boolean} rdfa Specify changes to UI for rdfa
+	 */
+	setAnnotationFormUI : function(variation, rdfa) {
+	try {
+		var nonVariationFields = ['res'];
+		var variationFields = ['original', 'variant', 'rcontextdisp', 'variationagent', 'variationplace', 'variationdate'];
+		var rdfaFields = ['semanticselection'];
+		var nonRdfaFields = ['body'];
+		
+		// hide/show fields depending on whether annotation is a scholarly annotation or not
+		this.showScholarlyFields(this.annomode !== lore.constants.ANNOMODE_NORMAL);
+		
+		// variation
+		if (variation) {
+			lore.anno.ui.hideFormFields(this.form, nonVariationFields);
+			lore.anno.ui.showFormFields(this.form, variationFields);
+		} else {
+			lore.anno.ui.hideFormFields(this.form, variationFields);
+			lore.anno.ui.showFormFields(this.form, nonVariationFields);
+		}
+		
+		// rdfa
+		if (rdfa) {
+			lore.anno.ui.hideFormFields(this.form, nonRdfaFields);
+			lore.anno.ui.showFormFields(this.form, rdfaFields);
+			this.metaUserGrid.setVisible(true);
+		} else {
+			lore.anno.ui.hideFormFields(this.form, rdfaFields);
+			lore.anno.ui.showFormFields(this.form, nonRdfaFields);
+			this.metaUserGrid.setVisible(false);
+		}
+
+		// TODO: only necessary until Ext 3.2.1
+		this.doLayout();
+	} catch (e) {
+		lore.debug.anno(e,e);
+	}
+	},
+
+	
+	 /**
+	* Generated ID for a sub-component of this component
+	* @param id Id of sub-component
+	*/
+	getComponent: function ( id ) {
+		return Ext.getCmp( this.genID(id));
+	},
+	
+	/**
+	 * Copy the data in the MetaData Grid into the Record
+	 * @param {} metaStore The Store object from the Metadata Grid
+	 */
+	updateRecMetaFields: function(metaStore) {
+		var metaProps = [];
+		metaStore.each(function (rec) {
+			metaProps.push(rec.data);
+		});
+		this.rec.store.suspendEvents();
+		this.rec.set('meta', metaProps);
+		this.rec.store.resumeEvents();
+	},
+	
+	resetPanel: function() {
+		this.form.reset();
+		this.metaUserGrid.reset();
+	},
+	
+	/**
+	 * Retrieve sub-component of this component
+	 * @param {Object} id Id of sub-component
+	 */
+	genID: function (id) {
+		return this.id + "_" + id;
+	},
+	
+	getRec: function() {
+		return this.rec;
+	},
+	
+	clearPanel: function() {
+		this.rec = null;
+	}
 		
 });
 
