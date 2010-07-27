@@ -617,15 +617,16 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (anno.isReply) {
 			return false;
 		}
-		
+
 		function stripFragment(url) {
 			return url.replace(/\#.*$/,'');
 		}
-		var currentURL = stripFragment(lore.anno.ui.currentURL).toLowerCase();
+        
+		var currentURL = decodeURIComponent(stripFragment(lore.anno.ui.currentURL));
  
-		if (anno.resource.toLowerCase() == currentURL || 
-			anno.variant.toLowerCase() == currentURL ||
-			anno.original.toLowerCase() == currentURL) {
+		if (decodeURIComponent(anno.resource) == currentURL || 
+            decodeURIComponent(anno.variant) == currentURL || 
+            decodeURIComponent(anno.original) == currentURL) {
 			return false;
 		}
 		return true;
