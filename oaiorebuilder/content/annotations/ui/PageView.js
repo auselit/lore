@@ -75,7 +75,7 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Object} newRec
 	 */
 	handleAnnoChanged: function (oldRec, newRec ) {
-		if (newRec) {
+s		if (newRec) {
 			if ( newRec.data.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation" ) {	
 				 this.updateSplitter(newRec, lore.anno.ui.topView.variationContentWindowIsVisible(), lore.anno.ui.formpanel.updateSplitterContextField, lore.anno.ui.formpanel);
 			} else {
@@ -288,8 +288,10 @@ lore.anno.ui.PageView.prototype = {
 	highlightAnnotation : function(rec, annoStyle) {
 		var markers = [];
 		
+        var urlsAreSame = lore.global.util.urlsAreSame;
+        
 		// regular non variant case for highlighting
-		if (rec.data.context && rec.data.resource == lore.anno.ui.currentURL &&
+		if (rec.data.context && urlsAreSame(rec.data.resource, lore.anno.ui.currentURL) &&
 			rec.data.type!= lore.constants.NAMESPACES["vanno"] + "VariationAnnotation")  {
 				try {
 					markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
@@ -299,7 +301,7 @@ lore.anno.ui.PageView.prototype = {
 				}
 		} else 	{
 		
-			if (rec.data.original == lore.anno.ui.currentURL) {
+			if (urlsAreSame(rec.data.original, lore.anno.ui.currentURL)) {
 				try {
 					if ( rec.data.context) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
 				} 
@@ -317,7 +319,7 @@ lore.anno.ui.PageView.prototype = {
 					
 				}
 			}
-			if ( rec.data.variant == lore.anno.ui.currentURL) {
+			if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
 				try {
 					if ( rec.data.variantcontext )
 						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, page: this.page }));
@@ -720,7 +722,7 @@ lore.anno.ui.PageView.prototype = {
 				// show splitter
 				var ctx = null;
 				var title = '';
-				if (rec.data.original == lore.anno.ui.currentURL) {
+				if (urlsAreSame(rec.data.original, lore.anno.ui.currentURL)) {
 					ctx = rec.data.variant;
 					title = "Variation";
 				}

@@ -384,18 +384,17 @@ util = {
      * @param {} xp
      */
     normalizeXPointer : function(xp) {
-		
-	if (typeof(xp) == 'string') {
-		var idx = xp.indexOf('#');
-		return xp.substring(idx + 1);
-	}
-
-	for ( var i =0; i < xp.length;i++) {
-		xp[i] = xp[i] + '';
-		xp[i] = xp[i].substring(xp[i].indexOf("#")+1);
-	}
-
-	return xp;
+		if (typeof(xp) == 'string') {
+			var idx = xp.indexOf('#');
+			return xp.substring(idx + 1);
+		}
+	
+		for ( var i =0; i < xp.length;i++) {
+			xp[i] = xp[i] + '';
+			xp[i] = xp[i].substring(xp[i].indexOf("#")+1);
+		}
+	
+		return xp;
     },
     
     /**
@@ -594,10 +593,9 @@ util = {
      * Highlight part of a document
      * @param {} sel Context to highlight (as DOM Range)
      * @param {} targetDocument The document in which to highlight
-     * @param {} scrollToHighlight Boolean indicating whether to scroll
      * @param {} colour highlight colour
      */
-	highlightRange : function (sel, targetDocument, scrollToHighlight, styleCallback) {
+	highlightRange : function (sel, targetDocument, styleCallback) {
 		try {
             var highlightNodeTmpl = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
 			if (styleCallback)
@@ -607,10 +605,6 @@ util = {
 			for ( var i =0; i< highlightNodes.length;i++) {
 				util.ignoreElementForXP(highlightNodes[i]);
 			}
-
-            if (scrollToHighlight) {
-                util.scrollToElement(highlightNodes[0], targetDocument.defaultView);
-            }
             
             return highlightNodes;
         } catch (e) {
@@ -730,14 +724,6 @@ util = {
 			debug.ui("The image region Xpointer is: " + xp);
 			return xp;	
 	},
-	/**
-     * Creates a hash to represent a triple
-     * @param {} triple
-     * @return {}
-	 */
-	tripleToStringHash: function( triple ) {
-		return util.ELFHash(triple.subject.toString() + "_" + triple.property.toString() + "_" + triple.object.value.toString());
-	},
 	
 	  
 	/**
@@ -747,11 +733,6 @@ util = {
 	 */
 	getMetaSelection: function(triple) {
 		var sel = {};
-		try {
-			sel.hash = util.tripleToStringHash(triple);
-		} catch (e) {
-			debug.anno("Error occurred generating string hash for triple: " +e ,e );
-		}
 		
 		if (!triple.source) {
 			debug.ui ( "Couldn't find dom context", triple);
@@ -765,27 +746,7 @@ util = {
 		}
 		return sel;
 	},
-	
-	/**
-     * Search through the provided triples, to find one matching the srcHash
-     * 
-     * @param {} srcHash A hashed triple
-     * @param {} triples All the triples on the page, to search through
-     * @return {} the matching rdf triple, or null
-	 */
-	stringHashToTriple: function( srcHash, triples ) {
-		srcHash = srcHash + '';
-		if ( srcHash.indexOf("#")!=-1)
-			srcHash = srcHash.substring(srcHash.indexOf("#")+1); 
-		
-		for (var i = 0; i < triples.length; i++) {
-			var hash = util.tripleToStringHash(triples[i]) + '';
-			if (srcHash == hash) {
-				return triples[i];
-			}
-		}
-		return null;
-	},
+
     
     /**
      * Find the type of an xpointer, either 'image-range', 'string-range',
@@ -1194,6 +1155,10 @@ util = {
             e.parentNode.className = '';
             e.className = 'expander-display-open';
         }
+    },
+    
+    urlsAreSame : function(url1, url2) {
+        return decodeURIComponent(url1) === decodeURIComponent(url2);
     }
 
 };
