@@ -640,7 +640,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		// determine which context field to update
 		// depending on whether it's for the original or
 		// variant context for the variation annotation
-        var urlsAreSame = lore.global.utils.urlsAreSame;
+        var urlsAreSame = lore.global.util.urlsAreSame;
 		
 		var fieldId = 'rcontextdisptxt';
 		var ctx = rec.data.variantcontext;

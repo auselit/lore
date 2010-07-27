@@ -75,7 +75,7 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Object} newRec
 	 */
 	handleAnnoChanged: function (oldRec, newRec ) {
-s		if (newRec) {
+		if (newRec) {
 			if ( newRec.data.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation" ) {	
 				 this.updateSplitter(newRec, lore.anno.ui.topView.variationContentWindowIsVisible(), lore.anno.ui.formpanel.updateSplitterContextField, lore.anno.ui.formpanel);
 			} else {
@@ -499,7 +499,7 @@ s		if (newRec) {
 							},
 							handles: 'corners',
 							imageHeight: scale.origHeight,
-							imageWidth: scale.origWidth,
+							imageWidth: scale.origWidth
 						})
 					} 
 					catch (e) {
