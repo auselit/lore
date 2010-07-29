@@ -49,7 +49,7 @@ var curtip;
       
       if(!conf.persistent)
       {
-         elem.hover(
+         elem.hoverIntent(
             function(event){  
 					if ( event.relatedTarget != tooltip.get(0) &&  (!closeIcon || (closeIcon && event.relatedTarget != closeIcon.get(0)))) 
 						self.show(event) 
