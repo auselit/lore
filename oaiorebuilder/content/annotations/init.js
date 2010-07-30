@@ -569,4 +569,6 @@ lore.anno.ui.attachHandlers = function () {
 	
 	// Annotation Manager
 	lore.anno.annoMan.on('annotationsloaded', lore.anno.ui.handleAnnotationsLoaded);
+    lore.anno.annoMan.on('committedannotation', lore.anno.ui.handleCommittedAnnotation);
+    lore.anno.annoMan.on('servererror', lore.anno.ui.handleServerError);
 }

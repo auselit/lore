@@ -131,8 +131,8 @@ lore.anno.ui.PageView.prototype = {
 		this.visible = visible;
 		try {
 			// if markers exist for the page view and it's being made visible, show them
-			if (visible && this.page.curAnnoMarkers.length > 0 && this.page.curSelAnno) {
-				var cc = this.getCreatorColour(this.page.curSelAnno.data.creator);
+			if (visible && this.page.curAnnoMarkers.length > 0 && this.page.getCurrentAnno()) {
+				var cc = this.getCreatorColour(this.page.getCurrentAnno().data.creator);
 				
 				for (var i = 0; i < lore.anno.ui.page.curAnnoMarkers.length; i++) {
 					this.page.curAnnoMarkers[i].show(cc, lore.anno.ui.setCurAnnoStyle, true);
@@ -715,7 +715,7 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Function} callbackScope The scope to run the callback in
 	 */
 	 updateSplitter :  function (rec, show, callback, callbackScope) {
-					
+		var urlsAreSame = lore.global.util.urlsAreSame;
 		try {
 			
 			if (rec.data.variant) {

@@ -81,12 +81,6 @@ lore.anno.ui.hasModifiedAnnotations = function () {
 lore.anno.ui.getCurSelImage = function () {
 	return lore.anno.ui.pageui.getCurSelImage();
 }
-/**
- * Get the currently selected annotation
- */
-lore.anno.ui.getCurrentAnno = function () {
-	return lore.anno.ui.page.curSelAnno;
-}
 
 /**
  * Get the currently edited annotation
@@ -115,20 +109,20 @@ lore.anno.ui.findNode = function (id, tree){
  * @param {Object} rec
  */
 lore.anno.ui.selectAndShowNode = function (rec) {
-		var node = lore.anno.ui.findNode(rec.data.id);
+	var node = lore.anno.ui.findNode(rec.data.id);
 
-		// RESET THE FORM
-		lore.anno.ui.formpanel.resetPanel();
-		
-		lore.anno.ui.page.setCurrentAnno(rec);
-		if (node) {
-			lore.anno.ui.formpanel.show(rec);
-			node.ensureVisible();
-			node.select();
-		}
-		// Necessary due to a bug in Ext related to drawing text fields
-		// Should be fixed in Ext 3.2.1
-		Ext.getCmp("treeview").doLayout();
+	// RESET THE FORM
+	lore.anno.ui.formpanel.resetPanel();
+	
+	lore.anno.ui.page.setCurrentAnno(rec);
+	if (node) {
+		lore.anno.ui.formpanel.show(rec);
+		node.ensureVisible();
+		node.select();
+	}
+	// Necessary due to a bug in Ext related to drawing text fields
+	// Should be fixed in Ext 3.2.1
+	Ext.getCmp("treeview").doLayout();
 }
 
 /**
@@ -138,7 +132,7 @@ lore.anno.ui.selectAndShowNode = function (rec) {
  */
 lore.anno.ui.showSplitter = function (rec) {
 	if (!rec) {
-		rec = lore.anno.ui.page.curSelAnno;
+		rec = lore.anno.ui.page.getCurrentAnno();
 	} else if ( typeof(rec) == 'string') {
 		rec = lore.anno.annoMan.findStoredRecById(rec);
 	}
@@ -230,7 +224,6 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function(tree, parent, childNode, i
 	 
 	childNode.on('contextmenu', function(node, e){
 		node.select();
-		lore.anno.ui.page.setCurrentAnno();
 		
 		if (!node.contextmenu) {
 			node.contextmenu = new Ext.menu.Menu({id: node.id + "-context-menu" });
@@ -356,7 +349,7 @@ lore.anno.ui.handleTreeNodeSelection = function(node, event){
     var recId = lore.anno.ui.nodeIdToRecId(node);
 	var rec = unsavedNode ? lore.anno.annoMan.findUnsavedRecById(recId) : lore.anno.annoMan.findStoredRecById(recId);
 	
-	if ( rec == lore.anno.ui.page.curSelAnno )
+	if ( rec == lore.anno.ui.page.getCurrentAnno() )
 		return;
 	
 	lore.anno.ui.updateAnnoFromForm();
@@ -551,11 +544,11 @@ lore.anno.ui.handleDeleteAnnotation = function (node) {
 			rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
 		}
 	} else { // request comes from toolbar or editor delete button
-		if (!lore.anno.ui.page.curSelAnno ){
+		if (!lore.anno.ui.page.getCurrentAnno() ){
 			lore.debug.anno("Nothing selected to delete.");
 			return;
 		}
-		rec = lore.anno.ui.page.curSelAnno;
+		rec = lore.anno.ui.page.getCurrentAnno();
 	}
 	
 	// don't need to prompt, just delete, since it's an unsaved annotation
@@ -605,7 +598,7 @@ lore.anno.ui.handleDeleteAnnotation2 = function(rec){
 		});
 		
 		
-		if (rec === lore.anno.ui.page.curSelAnno) {
+		if (rec === lore.anno.ui.page.getCurrentAnno()) {
 			lore.anno.ui.page.setCurrentAnno();
 			lore.anno.ui.hideAnnotationEditor();
 		}
@@ -628,38 +621,56 @@ lore.anno.ui.handleSaveAllAnnotationChanges = function(uri ){
 		var unsavedRec = lore.anno.ui.formpanel.getRec();
 		lore.anno.annoMan.updateStoredRec(unsavedRec);
 		
-		if( lore.anno.ui.page.curSelAnno.data.isNew()) 
+		if( lore.anno.ui.page.getCurrentAnno().data.isNew()) 
 			lore.anno.ui.page.setCurrentAnno();		// if new, this will be saved and removed from unsaved tree, so set current anno to blank
 			
-		lore.anno.annoMan.updateAllAnnotations(lore.anno.ui.currentURL, function(action, result, resultMsg, anno){
-			try {
-				if (result == "success") {
-					lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
-					lore.debug.anno(action + 'd ' + anno.data.title, anno);
-				}
-				else {
-					lore.anno.ui.loreError('Unable to ' + action + ' annotation');
-					lore.debug.anno('Unable to ' + action + ' annotation', resultMsg);
-				}
-			} 
-			catch (e) {
-				lore.debug.anno(e, e);
-			}
-		});
+		lore.anno.annoMan.updateAllAnnotations(lore.anno.ui.currentURL);
 		
 	} 
 	catch (e) {
 		lore.debug.anno(e, e);
 	}
 }
-	
+
+lore.anno.ui.handleCommittedAnnotation = function(action, anno) {
+    lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
+    lore.anno.ui.hideAnnotationEditor();
+    lore.debug.anno(action + 'd ' + anno.data.title, anno);
+}
+
+lore.anno.ui.handleServerError = function(action, request) {
+	lore.anno.ui.loreError('Unable to ' + action + ' annotation');
+	lore.debug.anno('Unable to ' + action + ' annotation', {request:request,headers:request.getAllResponseHeaders()});
+    
+    if (request.status == 401) { // Unauthorized
+        var challenge = request.getResponseHeader('WWW-Authenticate');
+        lore.debug.anno('Required auth: ' + challenge, challenge);
+        
+        var res = challenge.match(/Redirect\s+(.+)/);
+        
+        if (!res) {
+            lore.debug.anno("Cannot handle authentication request: " + challenge)
+            return;
+        }
+        var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
+
+        var newwindow = window.openDialog(res[1],'lore_login_window',winOpts);
+        
+        newwindow.addEventListener("change", function(ev){lore.debug.anno("onchange", ev);}, false);
+        newwindow.addEventListener("submit", function(ev){lore.debug.anno("onsubmit", [ev,newwindow]);}, false);
+        newwindow.addEventListener("load", function(ev){lore.debug.anno("onload", ev);}, false);
+        newwindow.addEventListener("pageshow", function(ev){lore.debug.anno("onpageshow", ev);}, false);
+        newwindow.addEventListener("unload", function(ev){lore.debug.anno("onunload", ev);}, false);
+        lore.debug.anno("created login window", newwindow);
+        
+    }
+}
+
 /**
  * Save the currently selected annotation
  */
-lore.anno.ui.handleSaveAnnotationChanges = function(){
-
+lore.anno.ui.handleSaveAnnotationChanges = function() {
 	try {
-	
 		lore.anno.ui.updateAnnoFromForm();
 		
 		var anno = lore.anno.ui.formpanel.getRec();
@@ -668,7 +679,6 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 			lore.anno.ui.loreError('No annotation selected to save! - SHOULD BE IMPOSSIBLE');
 			return;
 		}
-		
 		
 		if (!anno.data.isNew() && !lore.anno.ui.formpanel.isDirty() && !anno.dirty ) {
 			lore.anno.ui.loreWarning('Annotation content was not modified, save will not occur.');
@@ -691,17 +701,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function(){
 			&& (lore.anno.ui.findNode(anno.data.id, lore.anno.ui.treeroot) == null);
 		
 		
-		lore.anno.annoMan.updateAnnotation(anno, lore.anno.ui.currentURL, refresh, function(action, result, resultMsg){
-		
-			if (result == "success") {
-				lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
-				lore.debug.anno(action + 'd ' + anno.data.title, resultMsg);
-				lore.anno.ui.hideAnnotationEditor();
-			} else {
-				lore.anno.ui.loreError('Unable to ' + action + ' annotation');
-				lore.debug.anno('Unable to ' + action + ' annotation', resultMsg);
-			}
-		});
+		lore.anno.annoMan.updateAnnotation(anno, lore.anno.ui.currentURL, refresh);
 		lore.anno.ui.page.setCurrentAnno();
 	} 
 	catch (e) {
@@ -758,7 +758,7 @@ lore.anno.ui.handleReplyToAnnotation = function(arg){
 	try {
 		var rec;
 		if (!arg) { // request comes from toolbar
-			rec = lore.anno.ui.page.curSelAnno;
+			rec = lore.anno.ui.page.getCurrentAnno();
 			if (!rec)
 				return;
 		}
@@ -817,7 +817,7 @@ lore.anno.ui.handleEditTimeline = function ( id ) {
 lore.anno.ui.handleEdit = function ( ) {
 	try {
 		lore.anno.ui.updateAnnoFromForm();
-		var rec = lore.anno.ui.page.curSelAnno
+		var rec = lore.anno.ui.page.getCurrentAnno();
 		if (!rec) 
 			return;
 

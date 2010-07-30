@@ -241,42 +241,30 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	updateAllAnnotations : function (currentURL, resultCallback) {
+	updateAllAnnotations : function (currentURL) {
 		
 		var modified = [];
-		this.annodsunsaved.each( function (rec) 
-		{ 
+		this.annodsunsaved.each( function (rec) { 
 			if ( rec.dirty || rec.data.isNew() ) {
 				modified.push(rec);
 			}
-		}, this);
+		});
 		
 		var resultCounter = 0;
 		var t = this;
-		var result = function (request, action, anno) {
-			try {
-				resultCounter++;
-				
-				var result = 'success';
-				if( action == 'create' && request.status != 201 )
-					result = 'fail';
-				if ( action == 'update' && request.status != 200 )
-					result == 'fail';
-				resultCallback(action, result, request.statusText, anno);
-					
-				if (resultCounter == modified.length) {
-					// once all annotations have been updated, refresh  
-					lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
-					t.updateAnnotationsSourceList(currentURL);
-				}
-			} catch (e ) {
-				lore.debug.anno(e,e);
+		var callback = function () {
+			resultCounter++;
+            
+			if (resultCounter == modified.length) {
+				// once all annotations have been updated, refresh  
+				lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
+				t.updateAnnotationsSourceList(currentURL);
 			}
 		}
 			
 		
 		for ( var i =0; i < modified.length; i++ ) {
-			this.sendUpdateRequest(modified[i], result);
+			this.sendUpdateRequest(modified[i], callback);
 		}
 	},
 	/**
@@ -288,8 +276,12 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		// don't send out update notification if it's a new annotation as we'll
 		// be reloading datasource
 		annoRec.commit(annoRec.data.isNew());
+        if (!resultCallback) {
+            resultCallback = function(){};
+        }
 		
 		var annoRDF = this.serializer.serialize([annoRec.data], this.annods);
+        var t = this;
 		
 		var xhr = new XMLHttpRequest();
 		if (annoRec.data.isNew()) {
@@ -299,16 +291,21 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
 			xhr.onreadystatechange = function(){
-				try {
-				
+			try {
 				if (xhr.readyState == 4) {
-					if (resultCallback) {
-						resultCallback(xhr, 'create', annoRec);
-					}
+                    var action = 'create';
+                    var successful = xhr.status == 201;
+                    
+	                if (successful) {
+                        resultCallback(xhr, action);
+	                    t.fireEvent("committedannotation", action, annoRec);
+	                } else {
+	                    t.fireEvent('servererror', action, xhr);
+	                }
 				}
 				
 			} catch(e ) {
-				lore.debug.anno("error: " + e);
+				lore.debug.anno("error creating annotation on server: ", e);
 			}
 			};
 			xhr.send(annoRDF);
@@ -320,9 +317,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			xhr.setRequestHeader('Content-Type', "application/xml");
 			xhr.onreadystatechange = function(){
 				if (xhr.readyState == 4) {
-					if (resultCallback) {
-						resultCallback(xhr, 'update', annoRec); 
-					}
+                    var action = 'update';
+                    var successful = xhr.status == 200;
+                    
+                    if (successful) {
+                        resultCallback(xhr, action); 
+                        t.fireEvent("committedannotation", action, annoRec);
+                    } else {
+                        t.fireEvent('servererror', action, xhr);
+                    }
 				}
 			};
 			xhr.send(annoRDF);
@@ -338,29 +341,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} anno The annotation to update/create
 	 * @param {String} currentURL The URL of the page where the annotation is situated
 	 * @param {Boolean} refresh Explicity states whether to re-read the list of annotations after update or use cached entries
-	 * @param {Function} resultCallback A callback function that is used by the function to output success or failure
-	 * The callback should support the following parameters
-	 * action: Action performed on the record ('create' or 'update')
-	 * result: Result as a string ('success' or 'fail') 
-	 * resultMsg: Result message 
 	 */
-	updateAnnotation : function(annoRec, currentURL, refresh, resultCallback){
+	updateAnnotation : function(annoRec, currentURL, refresh){
 		var t = this;
-		var callback = function(request, action ) {
-			if (action == 'create') {
-				var result = request.status == 201 ? 'success' : 'fail';
-				resultCallback('create', result, request.responseText ? request.responseText : request.statusText);
-				lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
-				t.updateAnnotationsSourceList(currentURL);
-			}
-			else {
-				var result = request.status == 200 ? 'success' : 'fail';
-				resultCallback('update', result, request.statusText);
-				if (refresh) {
-					lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
-					t.updateAnnotationsSourceList(currentURL);
-				}
-			}
+		var callback = function(request, action) {
+
+            if (action == 'create' || refresh) {
+                    lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
+                    t.updateAnnotationsSourceList(currentURL);
+            }
 		}
 						
 		this.sendUpdateRequest(annoRec, callback);
