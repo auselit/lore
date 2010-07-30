@@ -455,19 +455,14 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	 */
 	handleUpdateAnnotationVariantContext : function(){
 		try {
-			if (!this.isVisible())
-				this.show(this.pageView.page.curSelAnno);
-			
-			
 			lore.anno.ui.updateAnnoFromForm();
 			var editedRec = this.getRec();
 			// get text selection, and update the appropriate fields
 			var currentCtxt = this.pageView.getCurrentSelection();
-			
-			editedRec.beginEdit();
+
+            editedRec.beginEdit();
 			editedRec.set('variant', lore.anno.ui.currentURL);
 			editedRec.set('variantcontext', currentCtxt);
-			
 			editedRec.endEdit();
 		} 
 		catch (ex) {
@@ -682,7 +677,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	 * @param {Object} operation The operation performed
 	 */
 	handleRecordUpdate: function (store, rec, operation ) {
-		if ( this.pageView.page.curSelAnno == rec ) {
+		if ( this.rec == rec ) {
 			this.load(rec);
 		} else {
 			lore.debug.anno("Editor received an updated event for a non-current annotation",
