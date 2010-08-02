@@ -18,10 +18,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 },
                 {
                     region : "north",
-                    //split: true,
+                    split: true,
                     id: "exploreHistory",
-                    //collapseMode: "mini", disabled because drag/contextmenu ops positioning goes out
-                    //useSplitTips: true,
+                    useSplitTips: true,
                     height: 28,
                     minHeight: 0,
                     bodyStyle: "vertical-align:middle;line-height: 2em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;"
@@ -32,7 +31,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         lore.ore.ui.ExplorePanel.superclass.constructor.call(this, config);
         this.getComponent(0).on("resize",function(c,adjw, adjh, raww, rawh){
            try{
-              if (this.fd) {
+              if (this.fd) {  
                     var canv = this.fd.canvas;
                     var csize = canv.getSize();
                     var w = c.getWidth();
@@ -42,12 +41,14 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     if (csize.width < w || csize.height < h){
                         canv.resize(w + 300, h + 300);
                     } 
+                    canv.getPos(true);
               }
            } catch (e){
               lore.debug.ore("ExplorePanel:",e);
            }
         },this);
         this.on("activate", this.updateContent);
+        
         lore.ore.explorePanel = this;
         this.previewCanvas = document.createElement("canvas");
         this.colorKey = {
