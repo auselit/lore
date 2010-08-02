@@ -540,7 +540,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             try{
             this.clearExploreData();
             lore.ore.ui.loreProgress("Retrieving data for explore view");
-            this.loadRem(id, title, isCompoundObject, function(json){
+            this.loadRem(id, title, isCompoundObject || false, function(json){
                 lore.ore.explorePanel.fd.loadJSON(json);
                 lore.ore.explorePanel.fd.computeIncremental({
                     iter: 40,
