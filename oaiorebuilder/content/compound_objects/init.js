@@ -51,7 +51,7 @@ lore.ore.ui.initUIComponents = function() {
     // make sure popup windows appear above everything else, particularly when over the graphical editor
     Ext.WindowMgr.zseed = 10000;
     
-	lore.ore.ui.resselectcombo = new Ext.form.ComboBox({
+	/*lore.ore.ui.resselectcombo = new Ext.form.ComboBox({
 				displayField : 'display',
 				id : "resselectcombo",
 				itemSelector : 'div.res-listing',
@@ -65,7 +65,7 @@ lore.ore.ui.initUIComponents = function() {
 				valueField : 'uri',
 				typeAhead : false,
 				store : lore.ore.resourceStore
-	});
+	});*/
 
 	try {
         Ext.MessageBox.show({
@@ -257,18 +257,7 @@ lore.ore.ui.init = function() {
         lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
         lore.ore.cache = new lore.ore.model.CompoundObjectCache();
         
-        // Temporary store for choosing resources: update to use model
-            lore.ore.resourceStore = new Ext.ux.data.PagingArrayStore({
-                storeId: "resourceStore",
-                fields : ['title', 'uri', 'display'],
-                data : [],
-                lastOptions : {
-                    params : {
-                        start : 0,
-                        limit : 5
-                    }
-                }
-            });
+        
             
 		lore.ore.ui.initUIComponents();
 	
