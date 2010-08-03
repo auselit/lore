@@ -208,43 +208,24 @@ lore.anno.ui.Marker.prototype = {
 			h.removeChild(descDom);
 			descDom.removeAttribute("display");
 
-			$(this.data.nodes[0], doc).simpletip({
+			this.addedtip = $(this.data.nodes[0], doc).simpletip({
 			content: descDom,
 			focus: true,
-			boundryCheck: false,
+			boundryCheck: true,
 			position: 'cursor',
-			showEffect: 'custom',
 			onetip: true,		// custom config which specifies only one tip can show at a time
-			closeIcon: closeIcon, // close button
-			showCustom: function(){
-				try {
-						// set custom CSS display options for the
-						// DOM node represeting the tooltip
-						Ext.apply(this.context.style, 
-						{
-							position : 'absolute',
-							opacity  : "1",
-							backgroundColor : "#fcfcfc",
-							fontSize : "9pt",
-							fontWeight : "normal",
-							color : "#51666b",
-							border : '1.5px solid darkgrey',
-							zIndex : "3",
-							fontFamily : 'sans-serif',
-							maxWidth : cw.innerWidth * 0.75,
-							maxHeight : cw.innerHeight * 0.75
-							//overflow : 'auto'
-						});
-						
-					jQuery(this).animate({
-						width: 'auto',
-						display: 'block'
-					}, 400);
-				} 
-				catch (e) {
-					lore.debug.anno("error showing tip: " + e, e);
-				}
-			}
+			closeIcon: closeIcon,  // close button
+            extraStyles: {
+                position : 'absolute',
+                opacity  : "1",
+                backgroundColor : "#fcfcfc",
+                fontSize : "9pt",
+                fontWeight : "normal",
+                color : "#51666b",
+                border : '1.5px solid darkgrey',
+                zIndex : "3",
+                fontFamily : 'sans-serif',
+                minWidth : "250px"}
 			});
 		}
 		catch (ex) {

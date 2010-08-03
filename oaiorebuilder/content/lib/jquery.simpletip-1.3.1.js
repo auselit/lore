@@ -41,11 +41,14 @@ var curtip;
 	 	tooltip.append(conf.content);
 	 }
 
+	tooltip.css(conf.extraStyles);
 	
 	
-	
-      if(!conf.hidden) tooltip.show();
-      else tooltip.hide();
+      if (!conf.hidden) {
+         tooltip.show();
+      } else {
+         tooltip.hide();
+      }
       
       if(!conf.persistent)
       {
@@ -153,8 +156,6 @@ var curtip;
 			
             conf.onBeforeShow.call(self);
             
-            self.updatePos( (conf.fixed && conf.position != 'cursor') ? null : event );
-            
             switch(conf.showEffect)
             {
                case 'fade': 
@@ -167,6 +168,8 @@ var curtip;
                case 'none':
                   tooltip.show(); break;
             };
+            
+            self.updatePos( (conf.fixed && conf.position != 'cursor') ? null : event );
             
             tooltip.addClass(conf.activeClass);
             
@@ -297,8 +300,12 @@ var curtip;
                if(conf.boundryCheck)
                {
 					var overflow = self.boundryCheck(posX, posY);
+                    lore.debug.anno("overflow: ", overflow);
 					if (overflow[0]) {
-						posX = posX - (tooltipWidth / 2) - (2 * conf.offset[0]);
+                        var w = tooltip.get(0).ownerDocument.defaultView ;
+                        var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
+                        posX = windowWidth - tooltipWidth;
+//						posX = posX - (tooltipWidth / 2) - (2 * conf.offset[0]);
 					}
 					if (overflow[1]) {
 						posY = posY - (tooltipHeight / 2) - (2 * conf.offset[1]);
