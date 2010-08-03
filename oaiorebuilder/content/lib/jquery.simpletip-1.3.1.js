@@ -300,11 +300,11 @@ var curtip;
                if(conf.boundryCheck)
                {
 					var overflow = self.boundryCheck(posX, posY);
-                    lore.debug.anno("overflow: ", overflow);
 					if (overflow[0]) {
                         var w = tooltip.get(0).ownerDocument.defaultView ;
                         var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
-                        posX = windowWidth - tooltipWidth;
+                        posX = windowWidth - tooltipWidth - 5;
+                        if (posX < 0) posX = 5;
 //						posX = posX - (tooltipWidth / 2) - (2 * conf.offset[0]);
 					}
 					if (overflow[1]) {

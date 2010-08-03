@@ -168,11 +168,18 @@ lore.anno.ui.Marker.prototype = {
                 }
 			}
 			this.visible = false;
+            
+            this.hideTip();            
 		} catch (e){
 			lore.debug.anno("lore.anno.ui.Marker.hide()",e);
 		}
 	},
-					
+    hideTip : function() {
+        if (this.displayedToolTip && this.displayedToolTip.simpletip) {
+            this.displayedToolTip.simpletip().hide();
+        }
+    },
+    
 	/**
 	 * Generated a pop up for the given annotation and place the HTML into the
 	 * supplied dom container
@@ -208,7 +215,7 @@ lore.anno.ui.Marker.prototype = {
 			h.removeChild(descDom);
 			descDom.removeAttribute("display");
 
-			this.addedtip = $(this.data.nodes[0], doc).simpletip({
+			this.displayedToolTip = $(this.data.nodes[0], doc).simpletip({
 			content: descDom,
 			focus: true,
 			boundryCheck: true,
