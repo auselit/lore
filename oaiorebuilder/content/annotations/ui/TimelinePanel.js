@@ -19,6 +19,76 @@
  */
 
 
+/**  
+ * Replaces default function for generating contents of timeline bubbles
+ * @param {Object} elmt  dom node that the timeline bubble will be inserted into
+ * @param {Object} theme See timeline documentation
+ * @param {Object} labeller See timeline documentation
+ */
+if (typeof Timeline !== "undefined") {
+        Timeline.DefaultEventSource.Event.prototype.fillInfoBubble = function(elmt, theme, labeller){
+            var doc = elmt.ownerDocument;
+            var title = this.getText();
+            var link = this.getLink();
+            var image = this.getImage();
+            
+            if (image != null) {
+                var img = doc.createElement("img");
+                img.src = image;
+                
+                theme.event.bubble.imageStyler(img);
+                elmt.appendChild(img);
+            }
+            
+            var divTitle = doc.createElement("div");
+            var textTitle = doc.createTextNode(title);
+            if (link != null) {
+                var a = doc.createElement("a");
+                a.href = link;
+                a.appendChild(textTitle);
+                divTitle.appendChild(a);
+            }
+            else {
+                divTitle.appendChild(textTitle);
+            }
+            theme.event.bubble.titleStyler(divTitle);
+            elmt.appendChild(divTitle);
+            
+            var divBody = doc.createElement("div");
+            this.fillDescription(divBody);
+            theme.event.bubble.bodyStyler(divBody);
+            elmt.appendChild(divBody);
+            
+            var divTime = doc.createElement("div");
+            this.fillTime(divTime, labeller);
+            divTime.className = 'anno-caption';
+            elmt.appendChild(divTime);
+            
+            var divOps = doc.createElement("div");
+            divOps.style.paddingTop = '5px';
+            
+            var divOpsInner = "<a class='timeline-link' href='#' " +
+            "onclick='try{lore.anno.ui.handleEditTimeline(\"" +
+            this._eventID +
+            "\")} catch(e){lore.debug.anno(\"e:\"+e,e);}'>EDIT</a> | " +
+            "<a class='timeline-link' href='#' " +
+            "onclick='lore.anno.ui.handleReplyToAnnotation(\"" +
+            this._eventID +
+            "\")'>REPLY</a>";
+            divOps.innerHTML = divOpsInner;
+            elmt.appendChild(divOps);
+            elmt.className = 'timeline-bubble';
+            var annoid = this._eventID;
+            var node = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', annoid);
+            if ( node) {
+                node.select();
+            } else {
+                lore.debug.anno("Could not select node for :" + annoid, annoid); 
+            }
+                                    
+        };
+};
+
 
 /**
  * Object that provides a timeline of the annotations
