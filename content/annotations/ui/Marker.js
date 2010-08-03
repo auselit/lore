@@ -187,16 +187,16 @@ lore.anno.ui.Marker.prototype = {
 			var uid = annodata.id;
 			
 			// generate the tooltip contents
-			var desc = "<div style='color:white;background-color:darkred;width:100%;min-height:18'><strong>" 
-				+ annodata.title + "</strong></div><span style='font-size:smaller;color:#51666b;'>" 
+			var desc = "<div style='color:white;background-color:darkred;min-height:18;padding:3px'><strong>" 
+				+ annodata.title + "</strong></div><div style='color:#51666b;padding:3px'>" 
 				+ lore.global.util.splitTerm(annodata.type).term + " by "
-				+ annodata.creator + "<br />";
-			desc += "<div style='max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
+				+ annodata.creator;
+			desc += "<div style='margin:4px;max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
 			desc += lore.anno.ui.genDescription(annodata, true);
 			desc += '</div>';
 			var d = lore.global.util.longDate(annodata.created, Date);
-			desc += "<br /><span style=\"font-size:smaller;color:#aaa\">" + d + "</span></span><br />";
-			var descDom = doc.createElement("span");
+			desc += "<span style=\"font-size:smaller;color:#aaa\">" + d + "</span></div>";
+			var descDom = doc.createElement("div");
 			descDom.setAttribute("style", "font-family:sans-serif");
 			descDom.setAttribute("display", "none");
 			
@@ -219,8 +219,9 @@ lore.anno.ui.Marker.prototype = {
                 position : 'absolute',
                 opacity  : "1",
                 backgroundColor : "#fcfcfc",
-                fontSize : "9pt",
-                fontWeight : "normal",
+//                fontSize : "9pt",
+//                padding : '2px',
+//                fontWeight : "normal",
                 color : "#51666b",
                 border : '1.5px solid darkgrey',
                 zIndex : "3",
