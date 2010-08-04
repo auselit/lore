@@ -197,6 +197,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 }
                 lore.ore.ui.loreProgress("Retrieving data for explore view");
                 try{
+                   /* var context  = lore.ore.explorePanel.fd.canvas.viz.canvas.getCtx();
+                    context.shadowOffsetX = 1;
+                    context.shadowOffsetY = 1;
+                    context.shadowBlur    = 2;
+                    context.shadowColor   = '#666666';*/
                 var historyData = {
                     name: Ext.util.Format.ellipsis(node.name.toString(),30),
                     action : "lore.global.util.launchTab(\"" + node.id + "\", window);",
@@ -260,8 +265,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             onPlaceLabel: function(domElement, node) {
                  var style = domElement.style;
                   var left = parseInt(style.left);
+                  var top = parseInt(style.top);  
                   var w = domElement.offsetWidth;
                   style.left = (left - w / 2) + 'px';
+                  style.top = (top + 4) + 'px';
+                  style.padding = '2px';
                   style.display = '';
               }, 
               onBeforePlotLine: function(adj) {
