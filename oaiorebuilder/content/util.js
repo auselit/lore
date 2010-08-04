@@ -926,14 +926,6 @@ util = {
             return null;
         }
     },
-    /**
-     * Capitalize a String
-     * @param {} str String to be capitalized
-     * @return {} The string with the first character converted to upper case
-     */
-    capitalizeString : function (str) {
-        return str.replace( /(^|\s)([a-z])/g , function(a,b,c){ return b + c.toUpperCase(); } );    
-    },
     
     /**
      * Escape characters for HTML display
