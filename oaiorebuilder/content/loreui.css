@@ -456,6 +456,7 @@ span.exploreclose:hover {
 }
 span.explorename {
     cursor: pointer;
+    background-image: url(chrome://lore/skin/transparentwhite.png);
 }
 div.exploretip-title {
     font-size: smaller;
