@@ -26,7 +26,7 @@ Components.utils.import("resource://lore/debug.js");
  /** 
   * Store object.  Used for storing/caching objects.
   * Basically a Map that contains Maps.
-  * @class lore.store
+  * @class lore.global.store
   * @singleton
   */
  store =  {
