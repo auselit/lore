@@ -37,7 +37,13 @@ m_xps = new XPointerService();
  * @singleton
  */
 util = {
-    
+    /** return a reference to the extension */
+    getExtension: function(){
+        return Components.classes["@mozilla.org/extensions/manager;1"]
+                .getService(Components.interfaces.nsIExtensionManager)
+                .getInstallLocation(lore.constants.EXTENSION_ID)
+                .getItemLocation(lore.constants.EXTENSION_ID);
+    },
     /**
      * Determine if an object is empty (has no properties)
      * @param {Object} ob The object to check
@@ -1152,5 +1158,5 @@ util = {
     urlsAreSame : function(url1, url2) {
         return decodeURIComponent(url1) === decodeURIComponent(url2);
     }
-
+   
 };
