@@ -25,6 +25,19 @@ var EXPORTED_SYMBOLS = ['constants'];
  * @class lore.constants
  */
 constants = {
+     nsprefix : function(ns) {
+        var nssize = 0;
+        for (var prefix in this.NAMESPACES) {
+            if (this.NAMESPACES[prefix] == ns) {
+                return prefix;
+            }
+            nssize++;
+        }
+        // Prefix was not found: create a new one: ensure it has a unique ns prefix
+        var nprefix = "ns" + nssize;
+        this.NAMESPACES[nprefix] = ns;
+        return nprefix;
+    },
     /** The name of the Firefox extension 
      * @const */
     EXTENSION_ID: "lore@maenad.itee.uq.edu.au",
