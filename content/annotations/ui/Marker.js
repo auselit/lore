@@ -223,12 +223,8 @@ lore.anno.ui.Marker.prototype = {
 			onetip: true,		// custom config which specifies only one tip can show at a time
 			closeIcon: closeIcon,  // close button
             extraStyles: {
-                position : 'absolute',
                 opacity  : "1",
                 backgroundColor : "#fcfcfc",
-//                fontSize : "9pt",
-//                padding : '2px',
-//                fontWeight : "normal",
                 color : "#51666b",
                 border : '1.5px solid darkgrey',
                 zIndex : "3",

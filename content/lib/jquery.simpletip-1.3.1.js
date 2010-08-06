@@ -42,7 +42,7 @@ var curtip;
 	 }
 
 	tooltip.css(conf.extraStyles);
-	
+	tooltip.css("position", "absolute");
 	
       if (!conf.hidden) {
          tooltip.show();
@@ -53,7 +53,7 @@ var curtip;
       if(!conf.persistent)
       {
          elem.hoverIntent(
-            function(event){  
+            function(event){
 					if ( event.relatedTarget != tooltip.get(0) &&  (!closeIcon || (closeIcon && event.relatedTarget != closeIcon.get(0)))) 
 						self.show(event) 
 			},
@@ -144,6 +144,8 @@ var curtip;
          
          show: function(event)
          {
+            try {
+            lore.debug.anno("Simpletip.show()", this);
 		 	if ( conf.fixed && tooltip.css('display') != 'none' )
 				return;
 			
@@ -175,6 +177,9 @@ var curtip;
             
             conf.onShow.call(self);
             
+            } catch (ex) {
+                lore.debug.anno(ex, ex);
+            }
             return self;
          },
          
@@ -223,9 +228,14 @@ var curtip;
          {
             var newX = posX + tooltip.outerWidth();
             var newY = posY + tooltip.outerHeight();
-			var w = tooltip.get(0).ownerDocument.defaultView ;
-			var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
-            var windowHeight = jQuery(w).height() + jQuery(w).scrollTop();
+            var w = tooltip.get(0).ownerDocument.defaultView ;
+            // TODO: This works with jquery 1.4, but not 1.3
+//			var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
+//            var windowHeight = jQuery(w).height() + jQuery(w).scrollTop();
+            
+            lore.debug.anno("boundryCheck()", tooltip.get(0).ownerDocument)
+            var windowWidth = w.innerWidth + w.pageXOffset;
+            var windowHeight = w.innerHeight + w.pageYOffset;
             
             return [(newX >= windowWidth), (newY >= windowHeight)];
          },
@@ -302,7 +312,9 @@ var curtip;
 					var overflow = self.boundryCheck(posX, posY);
 					if (overflow[0]) {
                         var w = tooltip.get(0).ownerDocument.defaultView ;
-                        var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
+                        //TODO, this doesn't work in jQuery 1.3.x
+//                        var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
+                        var windowWidth = w.innerWidth + w.pageXOffset;
                         posX = windowWidth - tooltipWidth - 5;
                         if (posX < 0) posX = 5;
 //						posX = posX - (tooltipWidth / 2) - (2 * conf.offset[0]);
