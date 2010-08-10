@@ -352,7 +352,7 @@
       tag, found = false;
     if (uri === undefined) {
       if (prefix === undefined) { // get the in-scope declarations on the first element
-        if (ns === undefined) {
+        if (!ns) {
           ns = {
 //            xml: $.uri(xmlNs)
           };
@@ -396,7 +396,7 @@
         this.find('*').andSelf().removeData('xmlns');
         return this;
       } else { // get the in-scope declaration associated with this prefix on the first element
-        if (ns === undefined) {
+        if (!ns) {
           ns = elem.xmlns();
         }
         return ns[prefix];
@@ -670,6 +670,19 @@
     strip: true,
     /** @ignore */
     value: function (v) {
+      v = v.replace(/^0+/, '')
+        .replace(/0+$/, '');
+      if (v === '') {
+        v = '0.0';
+      }
+      if (v.substring(0, 1) === '.') {
+        v = '0' + v;
+      }
+      if (/\.$/.test(v)) {
+        v = v + '0';
+      } else if (!/\./.test(v)) {
+        v = v + '.0';
+      }
       return v;
     }
   };
@@ -1308,7 +1321,7 @@
           return $.map(compatibleMs, function (compatibleM) {
             return {
               bindings: $.extend({}, existingM.bindings, compatibleM.bindings),
-              triples: $.unique(existingM.triples.concat(compatibleM.triples))
+              triples: unique(existingM.triples.concat(compatibleM.triples))
             };
           });
         } else {
@@ -2189,7 +2202,7 @@
         return false;
       }
       return true;
-    }
+    },
     
     dequeue = function (databank, url, result, args) {
       var callbacks = documentQueue[databank.id][url];
@@ -2197,6 +2210,20 @@
         callbacks[result].call(databank, args);
       }
       documentQueue[databank.id][url] = undefined;
+    },
+
+    unique = function( b ) {
+      var a = [];
+      var l = b.length;
+      for(var i=0; i<l; i++) {
+        for(var j=i+1; j<l; j++) {
+          // If b[i] is found later in the array
+          if (b[i] === b[j])
+            j = ++i;
+        }
+        a.push(b[i]);
+      }
+      return a;
     };
 
   $.typedValue.types['http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral'] = {
@@ -2253,7 +2280,7 @@
         databanks = $.map(this.union, function (query) {
           return query.databank;
         });
-        databanks = $.unique(databanks);
+        databanks = unique(databanks);
         if (databanks[1] !== undefined) {
           this.databank = $.rdf.databank(undefined, { union: databanks });
         } else {
@@ -3262,7 +3289,7 @@
         $.each(this.union, function (i, databank) {
           triples = triples.concat(databank.triples().get());
         });
-        triples = $.unique(triples);
+        triples = unique(triples);
       }
       return $(triples);
     },
@@ -3311,7 +3338,7 @@
           rhash[r] = true;
         }
       }
-      return $.unique(triples);
+      return unique(triples);
     },
 
     /**
