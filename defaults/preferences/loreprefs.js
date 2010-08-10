@@ -16,3 +16,4 @@ pref("extensions.lore.disable_textmining", true);
 pref("extensions.lore.filelogging", false);
 pref("extensions.lore.high_contrast", false);
 pref("extensions.lore.annocache_timeout", 1); // effectively disable for the moment
+pref("extensions.lore.annotationMetadataOntologyURL", "chrome://lore/content/ontologies/AustLit.xml");

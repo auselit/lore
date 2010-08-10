@@ -21,6 +21,7 @@
 <!ENTITY relontprefix.accesskey "P">
 <!ENTITY dccreator.label "Creator (your name):">
 <!ENTITY dccreator.accesskey "C">
+<!ENTITY annometaontology.label "Metadata Ontology URL:">
 <!ENTITY annoserver.label "Annotation Server URL:">
 <!ENTITY annocachetimeout.label "Page cache timeout" >
 <!ENTITY disable_anno.label "Disable annotation features">

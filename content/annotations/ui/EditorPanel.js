@@ -401,6 +401,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	setPreferences: function(prefObj ) {
 		this.prefs = prefObj;
 		this.annomode = this.prefs.mode;
+        this.metadataOntologyURL = this.prefs.metadataOntologyURL;
 		this.prefs.on('prefs_changed', this.handlePrefsChanged, this);
 	},
 	
@@ -588,7 +589,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			if (rec.get('semanticEntityType')) {
 
 				this.metaUserGrid.setVisible(true);
-				this.metaUserGrid.setObjectType('chrome://lore/content/ontologies/AustLit.xml', rec.get("semanticEntityType"));
+				this.metaUserGrid.setObjectType(this.metadataOntologyURL, rec.get("semanticEntityType"));
 
 				semEntityField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 			} else {
@@ -714,6 +715,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		if (this.isVisible()) 
 				this.showScholarlyFields(args.mode === lore.constants.ANNOMODE_SCHOLARLY);
 
+        this.metadataOntologyURL = args.metadataOntologyURL;
 		
 		this.annomode = args.mode;
 	},
