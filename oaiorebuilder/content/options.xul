@@ -33,8 +33,10 @@
       <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
       <preference id="annocachetimeout_pref" name="extensions.lore.annocache_timeout" type = "int" />
       <preference id="annotation_mode" name="extensions.lore.annotationmode" type="bool" />
+      <preference id="annometa_onturl_pref" name="extensions.lore.annotationMetadataOntologyURL" type="unichar"/>
     </preferences>
-        
+        <label control="text_annometaonturl">&annometaontology.label;</label>
+        <textbox id="text_annometaonturl" preference="annometa_onturl_pref"/>
         <groupbox>
             <caption label="&repos.label;"/>
             <label control="text_annoserver">&annoserver.label;</label><textbox id="text_annoserver" preference="annoserver_pref"/>

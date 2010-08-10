@@ -468,6 +468,7 @@ try {
                 var disable = this.prefs.getBoolPref("disable_annotations");
                 var mode = this.prefs.getBoolPref("annotationmode");
                 var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
+                var metadataOntologyURL = this.prefs.getCharPref("annotationMetadataOntologyURL");
 
                 loreoverlay.annoView().setPrefs({
                     creator: dccreator,
@@ -475,7 +476,8 @@ try {
                     cacheTimeout: timeout,
                     disable: disable,
                     mode: mode, 
-                    high_contrast: high_contrast
+                    high_contrast: high_contrast,
+                    metadataOntologyURL: metadataOntologyURL
                 });
             }
             else {
