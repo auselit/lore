@@ -169,15 +169,13 @@ lore.anno.ui.Marker.prototype = {
 			}
 			this.visible = false;
             
-            this.hideTip();            
+            this.disableTip();            
 		} catch (e){
 			lore.debug.anno("lore.anno.ui.Marker.hide()",e);
 		}
 	},
-    hideTip : function() {
-        if (this.displayedToolTip && this.displayedToolTip.simpletip) {
-            this.displayedToolTip.simpletip().hide();
-        }
+    disableTip : function() {
+        $(this.data.nodes[0]).simpletip().disable();
     },
     
 	/**
@@ -215,7 +213,7 @@ lore.anno.ui.Marker.prototype = {
 			h.removeChild(descDom);
 			descDom.removeAttribute("display");
 
-			this.displayedToolTip = $(this.data.nodes[0], doc).simpletip({
+			$(this.data.nodes[0], doc).simpletip({
 			content: descDom,
 			focus: true,
 			boundryCheck: true,
