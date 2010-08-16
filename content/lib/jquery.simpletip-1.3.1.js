@@ -73,8 +73,7 @@ var curtip;
 					self.hide();
 				});
 			  } else {
-			  jQuery(win).mousedown(function(event)
-         		{ 
+			     jQuery(win).mousedown(function(event) { 
             		if(tooltip.css('display') !== 'none')
             		{
                		var check = jQuery(event.target).parents('.tooltip').andSelf().filter(function(){ return this === tooltip.get(0) }).length ;
@@ -144,8 +143,10 @@ var curtip;
          
          show: function(event)
          {
+            if (conf.disabled) {
+                return;
+            }
             try {
-            lore.debug.anno("Simpletip.show()", this);
 		 	if ( conf.fixed && tooltip.css('display') != 'none' )
 				return;
 			
@@ -228,14 +229,15 @@ var curtip;
          {
             var newX = posX + tooltip.outerWidth();
             var newY = posY + tooltip.outerHeight();
-            var w = tooltip.get(0).ownerDocument.defaultView ;
-            // TODO: This works with jquery 1.4, but not 1.3
-//			var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
+
+//            For jQuery 1.4.2
+//            var w = tooltip.get(0).ownerDocument.defaultView ;
+//            var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
 //            var windowHeight = jQuery(w).height() + jQuery(w).scrollTop();
             
-            lore.debug.anno("boundryCheck()", tooltip.get(0).ownerDocument)
-            var windowWidth = w.innerWidth + w.pageXOffset;
-            var windowHeight = w.innerHeight + w.pageYOffset;
+            var doc = tooltip.get(0).ownerDocument.documentElement;
+            var windowWidth = doc.clientWidth + doc.scrollLeft;
+            var windowHeight = doc.clientHeight + doc.scrollTop;
             
             return [(newX >= windowWidth), (newY >= windowHeight)];
          },
@@ -311,13 +313,14 @@ var curtip;
                {
 					var overflow = self.boundryCheck(posX, posY);
 					if (overflow[0]) {
-                        var w = tooltip.get(0).ownerDocument.defaultView ;
-                        //TODO, this doesn't work in jQuery 1.3.x
+//                      For jQuery 1.4.2
+//                        var w = tooltip.get(0).ownerDocument.defaultView ;
 //                        var windowWidth = jQuery(w).width() + jQuery(w).scrollLeft();
-                        var windowWidth = w.innerWidth + w.pageXOffset;
+                        
+                        var doc = tooltip.get(0).ownerDocument.documentElement;
+                        var windowWidth = doc.clientWidth + doc.scrollLeft;
                         posX = windowWidth - tooltipWidth - 5;
                         if (posX < 0) posX = 5;
-//						posX = posX - (tooltipWidth / 2) - (2 * conf.offset[0]);
 					}
 					if (overflow[1]) {
 						posY = posY - (tooltipHeight / 2) - (2 * conf.offset[1]);
@@ -332,6 +335,14 @@ var curtip;
             self.setPos(posX, posY);
             
             return self;
+         },
+         
+         enable: function() {
+            conf.disabled = false;
+         },
+         disable: function() {
+            this.hide();
+            conf.disabled = true;
          }
       });
    };
@@ -340,7 +351,10 @@ var curtip;
    { 
       // Check if a simpletip is already present
       var api = jQuery(this).eq(typeof conf == 'number' ? conf : 0).data("simpletip");
-      if(api) return api;
+      if(api) {
+         api.enable();
+         return api;
+      }
       
       // Default configuration
       var defaultConf = {
@@ -349,6 +363,7 @@ var curtip;
          persistent: false,
          focus: false,
          hidden: true,
+         disabled: false,
          
          // Positioning
          position: 'default',
