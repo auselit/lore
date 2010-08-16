@@ -636,10 +636,15 @@ lore.anno.ui.PageView.prototype = {
 			if ( !lore.anno.ui.isHumanReadableTriple(z))
 				continue;
 
-								
 			var isObject = z.property.toString().indexOf("#type") != -1;
+            
+            // Don't display fields (not an object)
+            if (!isObject) {
+                continue;
+            }
+            
 			var val = lore.anno.ui.tripleURIToString(z.object);
-//			lore.debug.anno(val, z);
+
 			
 			//TODO: #194 - This logic should be based on store with valid Objects
 			if ( isObject &&  val !='Agent' && val !='Work'
@@ -657,7 +662,6 @@ lore.anno.ui.PageView.prototype = {
 			this.page.metaSelections.push(span);
 			var marker = lore.global.util.domCreate("img", doc);
 			
-//			lore.debug.anno("isObject: " + isObject);
 			marker.src = isObject ? objectIcon: relIcon;
 			marker.setAttribute("rdfIndex", i);
 			span.insertBefore(marker, z.source);
