@@ -1,22 +1,4 @@
-/*
- * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
- * Engineering, University of Queensland (www.itee.uq.edu.au).
- * 
- * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
- * project.
- * 
- * LORE is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- * 
- * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with
- * LORE. If not, see <http://www.gnu.org/licenses/>.
- */
+
 Ext.namespace('lore.anno.ui');
 
 /**
@@ -25,45 +7,126 @@ Ext.namespace('lore.anno.ui');
  * @extends Ext.grid.EditorGridPanel
  */
 lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
-
-	/**
-	 * Load configuration options and generate search GUI
-	 * @constructor
-	 */
-	initComponent: function() {
-		var t = this;
-		
-		var gridpanelconfig = {
+	initComponent: function(config) {
+        Ext.apply(this, { 
 			clicksToEdit : 1,
 			columnLines : true,
+            propEditorWindow: new Ext.Window({ 
+                modal: true,
+                closable: false,
+                layout: 'fit',
+                animateTarget: 'properties',
+                focus: function() {
+                    this.getComponent(0).focus();
+                },
+                editField: function(tfield,row){
+                    try {
+                        lore.debug.anno("editField",[tfield,row]);
+                        this.triggerField = tfield;
+                        this.activeRow = row;
+                        var val = tfield.getValue();
+                        this.getComponent(0).setValue(val? val : '');
+                        this.show(); 
+                        this.focus();
+                    } catch (e){
+                        lore.debug.anno("problem in editField",e);
+                    }
+                },
+                items: [
+                    {
+                        xtype: 'textarea',
+                        validateOnBlur: false,
+                        width: 300,
+                        grow: false,
+                        height: 150
+                    }
+                ],
+                bbar: [
+                    '->',
+                    {
+                        xtype: 'button',
+                        tooltip: 'Update the property value and close editor',
+                        text: 'Update',
+                        scope: this, // the properties panel
+                        handler: function(btn, ev){
+                            try{
+                                var w = this.propEditorWindow;
+                                var ta = w.getComponent(0);
+                                // need to start/stop editing to trigger handlePropertyChange to update model
+                                this.startEditing(w.activeRow,1);
+                                w.triggerField.setValue(ta.getRawValue());
+                                this.stopEditing();
+                                
+                                w.hide();
+                            } catch (e){
+                                lore.debug.anno("problem in update",e);
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'button', 
+                        tooltip: 'Cancel edits and close editor',
+                        text: 'Cancel',
+                        scope: this, // the properties panel
+                        handler: function(btn, ev){
+                            try{
+                                var w = this.propEditorWindow;
+                                w.hide();
+                            } catch (e){
+                                lore.debug.anno("problem in cancel",e);
+                            }
+                        }
+                    }
+                ]
+            }),
 			store : new Ext.data.JsonStore({
-						idProperty : 'id',
-						fields : [{
-									name : 'id',
-									type : 'string'
-								}, {
-									name : 'name',
-									type : 'string'
-								}, {
-									name : 'value',
-									type : 'string'
-								}]
-					}),
+                idProperty : 'id',
+                fields : [
+                    {
+                        name : 'id',
+                        type : 'string'
+                    }, {
+                        name : 'name',
+                        type : 'string'
+                    }, {
+                        name : 'value',
+                        type : 'string'
+                    }
+                ]
+            }),
 			colModel : new Ext.grid.ColumnModel({
-						columns : [{
-									id : 'name',
-									header : 'Property Name',
-									sortable : true,
-//									renderer : this.shortName,
-									dataIndex : 'name',
-									menuDisabled : true
-								}, {
-									id : 'value',
-									header : 'Value',
-									dataIndex : 'value',
-									menuDisabled : true,
-									editor : new Ext.form.TextField()
-								}]
+                columns : [{
+                            header : 'Property Name',
+                            sortable : true,
+                            dataIndex : 'name',
+                            menuDisabled : true,
+                 }, {
+                            header : 'Value',
+                            dataIndex : 'value',
+                            menuDisabled : true,
+                            
+                           editor: new Ext.form.TriggerField({
+                                 propertyEditor: this,
+                                 triggerClass: 'x-form-ellipsis-trigger',
+                                 triggerConfig: {
+                                    tag : "img", 
+                                    src : Ext.BLANK_IMAGE_URL,
+                                    cls: "x-form-trigger x-form-ellipsis-trigger",
+                                    qtip: 'Edit this value in a pop up window'
+                                 },
+                                 onTriggerClick: function(ev) {
+                                    try{ 
+                                     var row = this.propertyEditor.lastEdit.row;
+                                     this.propertyEditor.stopEditing();
+                                     this.propertyEditor.propEditorWindow.editField(this,row);
+                                    } catch (e){
+                                        lore.debug.anno("problem in trigger click",e);
+                                    }
+                                 } 
+                           })
+                        }
+
+                ]
 					}),
 			sm : new Ext.grid.RowSelectionModel({
 						singleSelect : true
@@ -73,15 +136,15 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 			tools : [{
 						id : 'plus',
 						qtip : 'Add a property',
-						handler : this.addProperty
+						handler : this.addPropertyAction
 					}, {
 						id : 'minus',
 						qtip : 'Remove the selected property',
-						handler : this.removeProperty
+						handler : this.removePropertyAction
 					}, {
 						id : 'help',
 						qtip : 'Display information about the selected property',
-						handler : this.helpProperty
+						handler : this.helpPropertyAction
 					}],
 			id : "remgrid",
 			autoHeight : true,
@@ -89,14 +152,15 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 			viewConfig : {
 				forceFit : true,
 				scrollOffset : 0
+
 			}
-		};
+		});
 		
 		try {
-			Ext.apply(this, gridpanelconfig);
 
 			lore.anno.ui.PropertyEditor.superclass.initComponent.apply(this, arguments);
-
+            
+            
 			this.propertiesList = [];
 		} catch (e) {
 			lore.debug.anno("PropertyEditor:initComponent() - " + e, e);
@@ -104,15 +168,13 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	},
 	
 	
-	
 	/** Handler for plus tool button on property grids */
-	addProperty: function (ev, toolEl, panel) {
+	addPropertyAction: function (ev, toolEl, panel) {
 		if (panel.propertiesList.length === 0) {
 			lore.anno.ui.loreInfo("Make a semantic selection before adding metadata");
 			return;
 		}
 	    var makeAddMenu  = function(panel){
-	    	lore.debug.anno('makeAddMenu', {panel:panel});
 		    panel.propMenu = new Ext.menu.Menu({
 		        id: panel.id + "-add-metadata"
 		    });
@@ -149,7 +211,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	    panel.propMenu.showAt(ev.xy);
 	},
 	/** Handler for minus tool button on property grids */
-	removeProperty: function (ev, toolEl, panel) { 
+	removePropertyAction: function (ev, toolEl, panel) { 
 	    try {
 		    var sel = panel.getSelectionModel().getSelected();
 		    
@@ -164,8 +226,13 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 			lore.debug.anno("error removing property ",ex);
 		}
 	},
-	/** Handler for help tool button on property grids */
-	helpProperty: function (ev,toolEl, panel) {
+    /** Handler for help tool button on property grids
+     * 
+     * @param {} ev
+     * @param {} toolEl
+     * @param {} panel
+     */
+	helpPropertyAction: function (ev,toolEl, panel) {
 	    var sel = panel.getSelectionModel().getSelected();
 	    if (panel.collapsed){
 	        lore.anno.ui.loreInfo("Please expand the properties panel and select a property");
