@@ -20,9 +20,15 @@
  
 var EXPORTED_SYMBOLS = ['util'];
 
-Components.utils.import("resource://lore/constants.js");
-Components.utils.import("resource://lore/debug.js");
-Components.utils.import("resource://lore/lib/nsXPointerService.js");
+if (typeof constants == "undefined") {
+    Components.utils.import("resource://lore/constants.js");
+}
+if (typeof debug == "undefined") {
+    Components.utils.import("resource://lore/debug.js");
+}
+if (typeof XPointerService == "undefined") {
+    Components.utils.import("resource://lore/lib/nsXPointerService.js");
+}
 
 /**
  * @property lore.global.util.xps
@@ -1132,12 +1138,24 @@ util = {
     },
     
     /**
-     * 
+     * Encodes a string to a format ready for passing as a parameter to a request.
+     * This includes double encoding special URI characters {}|\\^~[]`
      * @param {} str
      * @return {}
      */
     fixedEncodeURIComponent : function(str) {
-    	return encodeURIComponent(str).replace(/%5B/ig, '%255B').replace(/%5D/ig, '%255D');
+        /* Unsafe characters from rfc1738, not include tilde ~
+         * for some reason, tilde isn't encoded by the built in function.
+         */
+        var badchars = "{}|\\^[]`".split('');
+        var uri = encodeURIComponent(str);
+        for (var i = 0; i < badchars.length; i++) {
+            var once = encodeURIComponent(badchars[i]);
+            var twice = encodeURIComponent(once);
+            uri = uri.replace(once, twice);
+        }
+    	return uri;
+        //encodeURIComponent(str).replace(/%5B/ig, '%255B').replace(/%5D/ig, '%255D');
 	},
     /** Make a nsIURI object from a string URI */
     makeURI: function(aURL, aOriginCharset, aBaseURI) {  
