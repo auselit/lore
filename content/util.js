@@ -20,13 +20,14 @@
  
 var EXPORTED_SYMBOLS = ['util'];
 
-if (typeof constants == "undefined") {
+if (typeof constants === "undefined") {
     Components.utils.import("resource://lore/constants.js");
 }
-if (typeof debug == "undefined") {
+
+if (typeof debug !== "object") {
     Components.utils.import("resource://lore/debug.js");
 }
-if (typeof XPointerService == "undefined") {
+if (typeof XPointerService === "undefined") {
     Components.utils.import("resource://lore/lib/nsXPointerService.js");
 }
 
