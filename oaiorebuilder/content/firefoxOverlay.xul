@@ -15,54 +15,54 @@
 
     
   <xul:vbox id="appcontent">
- 	<xul:tabbrowser id="content" flex="3" orient="horizontal" >
-	 <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" orient="horizontal" collapsed = "true" />
+    <xul:tabbrowser id="content" flex="3" orient="horizontal" >
+      <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" orient="horizontal" collapsed = "true" />
 	 	
-	 	<xul:vbox id="oobAnnoVarContentBox" flex="0" height="100%" collapsed="true" >
-	 		<xul:toolbar>
-	 			<xul:label id="oobAnnoVarContentLabel" value="Variation: " crop="end" flex="1"></xul:label>
-				<xul:toolbarbutton id="oobAnnoCloseButton"  tooltiptext="Close Variation Panel" oncommand="loreoverlay.hideVariationSplitter();"></xul:toolbarbutton>
-	 		</xul:toolbar>
+      <xul:vbox id="oobAnnoVarContentBox" flex="0" height="100%" collapsed="true" >
+        <xul:toolbar>
+          <xul:label id="oobAnnoVarContentLabel" value="Variation: " crop="end" flex="1"></xul:label>
+          <xul:toolbarbutton id="oobAnnoCloseButton"  tooltiptext="Close Variation Panel" oncommand="loreoverlay.hideVariationSplitter();"></xul:toolbarbutton>
+        </xul:toolbar>
 
-	 		<xul:browser disablehistory="false" id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
-	 	</xul:vbox>
+        <xul:browser disablehistory="false" id = "oobAnnoVarContent" flex="1" src="about:blank" type="content" /> 
+      </xul:vbox>
  	
-	 	<xul:splitter tooltiptext="&annoSplitter.tooltip;" id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" collapse="after" >
-	 	<xul:grippy />
-	 	</xul:splitter>
+      <xul:splitter tooltiptext="&annoSplitter.tooltip;" id="oobAnnoContentSplitter" class="chromeclass-extrachrome" collapsed = "true" collapse="after" >
+        <xul:grippy />
+      </xul:splitter>
 	    
-	    <xul:vbox flex="0" id = "oobAnnoContentBox" collapsed="true" persist = "width">
+      <xul:vbox flex="0" id = "oobAnnoContentBox" collapsed="true" persist = "width">
 	    	
-		    <xul:toolbox>
+        <xul:toolbox>
 		    	
-		        <xul:toolbar id="anno-toolbar">
-		          <xul:toolbarbutton style="font-weight:bolder" label="&lore.annoLabel;"  tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()" />
-		          <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
-		          <xul:toolbarbutton id="remove-annotation" tooltiptext="&lore.removeAnnotationTip;" oncommand="loreoverlay.removeAnnotation();" />
-		          <xul:toolbarbutton id="edit-annotation" tooltiptext="&lore.editAnnotationTip;" oncommand="loreoverlay.editAnnotation();" />
-		          <xul:toolbarbutton id="reply-annotation" tooltiptext="&lore.replyAnnotationTip;" oncommand="loreoverlay.replyToAnnotation();" />
-                  <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/>
-		          <xul:toolbarseparator id ="annsep2" />
-		          <xul:toolbarbutton type="menu" id="import-export-anno" tooltip="&lore.saveMoreTip;">
-                	<xul:menupopup>
-	                    <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeAnnotations('rdf')"/>
-	                    <xul:menuitem id="save-oac" label="&lore.exportOACFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeAnnotations('oac')"/>
-   	                <!-- <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/>--> 
-    	            <!-- <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadAnnoRDF()"/> -->
-                	</xul:menupopup>
-          		 </xul:toolbarbutton>
-		          <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" /> 
-		          <xul:toolbarseparator id ="annsep3" />
-                  <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
-                  <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetAnnos();"/>
-		        </xul:toolbar>
-		     </xul:toolbox>
-	     	<xul:iframe tooltip="aHTMLTooltip" flex="1" width="100%" height="100%" src="about:blank" name="annographiframe" id="annographiframe"/> 
-	    </xul:vbox>
- 	</xul:tabbrowser>
+          <xul:toolbar id="anno-toolbar">
+            <xul:toolbarbutton style="font-weight:bolder" label="&lore.annoLabel;"  tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()" />
+            <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
+            <xul:toolbarbutton id="remove-annotation" tooltiptext="&lore.removeAnnotationTip;" oncommand="loreoverlay.removeAnnotation();" />
+            <xul:toolbarbutton id="edit-annotation" tooltiptext="&lore.editAnnotationTip;" oncommand="loreoverlay.editAnnotation();" />
+            <xul:toolbarbutton id="reply-annotation" tooltiptext="&lore.replyAnnotationTip;" oncommand="loreoverlay.replyToAnnotation();" />
+            <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/>
+            <xul:toolbarseparator id ="annsep2" />
+            <xul:toolbarbutton type="menu" id="import-export-anno" tooltip="&lore.saveMoreTip;">
+              <xul:menupopup>
+                <xul:menuitem id="save-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeAnnotations('rdf')"/>
+                <xul:menuitem id="save-oac" label="&lore.exportOACFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeAnnotations('oac')"/>
+                <!-- <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/>--> 
+                <!-- <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadAnnoRDF()"/> -->
+              </xul:menupopup>
+            </xul:toolbarbutton>
+            <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" /> 
+            <xul:toolbarseparator id ="annsep3" />
+            <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
+            <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetAnnos();"/>
+          </xul:toolbar>
+        </xul:toolbox>
+        <xul:iframe tooltip="aHTMLTooltip" flex="1" width="100%" height="100%" src="about:blank" name="annographiframe" id="annographiframe"/> 
+      </xul:vbox>
+    </xul:tabbrowser>
  	
     <xul:splitter tooltiptext="&coSplitter.tooltip;" id="oobContentSplitter" collapsed="true" orient="vertical" collapse="after">
-    <xul:grippy /> 
+      <xul:grippy /> 
     </xul:splitter>
     <xul:vbox flex="1" align="stretch" id="oobContentBox" collapsed="true" persist="height" width="100%">
       <xul:toolbox>
@@ -77,15 +77,15 @@
           <xul:toolbarseparator id="tmsep"/> 
           <!--xul:toolbarbutton id="text-mining" tooltiptext="&lore.textMiningTip;"  oncommand="loreoverlay.doTextMining();"/-->
           <xul:toolbarbutton type="menu" id="import-export" tooltiptext="&lore.saveMoreTip;">
-                <xul:menupopup>
-                    <xul:menuitem id="cosave-wordml" label="&lore.saveWordLabel;" tooltiptext="&lore.saveWordTip;" oncommand="loreoverlay.serializeREM('wordml')"/>
-                    <xul:menuitem id="cosave-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeREM('rdf')"/>
-                    <xul:menuitem id="cosave-trig" label="&lore.saveTrigLabel;" tooltiptext="&lore.saveTrigTip;" oncommand="loreoverlay.serializeREM('trig')"/>
-                    <xul:menuitem id="cosave-json" label="&lore.saveJsonLabel;" tooltiptext="&lore.saveJsonTip;" oncommand="loreoverlay.serializeREM('json')"/>
-                    <xul:menuitem id="cosave-foxml" label="&lore.saveFOXMLLabel;" tooltiptext="&lore.saveFOXMLTip;" oncommand="loreoverlay.serializeREM('foxml')"/>
-                    <xul:menuitem id="coload-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadRDF()"/>
-                    <xul:menuitem id="coload-rdf-url" label="&lore.loadRDFURLLabel;" tooltiptext="&lore.loadRDFURLTip;" oncommand="loreoverlay.loadRDFURL()"/>
-                </xul:menupopup>
+            <xul:menupopup>
+              <xul:menuitem id="cosave-wordml" label="&lore.saveWordLabel;" tooltiptext="&lore.saveWordTip;" oncommand="loreoverlay.serializeREM('wordml')"/>
+              <xul:menuitem id="cosave-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeREM('rdf')"/>
+              <xul:menuitem id="cosave-trig" label="&lore.saveTrigLabel;" tooltiptext="&lore.saveTrigTip;" oncommand="loreoverlay.serializeREM('trig')"/>
+              <xul:menuitem id="cosave-json" label="&lore.saveJsonLabel;" tooltiptext="&lore.saveJsonTip;" oncommand="loreoverlay.serializeREM('json')"/>
+              <xul:menuitem id="cosave-foxml" label="&lore.saveFOXMLLabel;" tooltiptext="&lore.saveFOXMLTip;" oncommand="loreoverlay.serializeREM('foxml')"/>
+              <xul:menuitem id="coload-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadRDF()"/>
+              <xul:menuitem id="coload-rdf-url" label="&lore.loadRDFURLLabel;" tooltiptext="&lore.loadRDFURLTip;" oncommand="loreoverlay.loadRDFURL()"/>
+            </xul:menupopup>
           </xul:toolbarbutton>
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="show-prefs2" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
@@ -102,23 +102,23 @@
   
   <xul:popup id="contentAreaContextMenu" onpopupshown="loreoverlay.onMenuPopup(event)">
     <xul:menuseparator id="oaioresep"/>
-	<xul:menuitem id="addanno-lore" label="&loreContextAddAnno.label;"
-	oncommand="loreoverlay.addAnnotation()" />
-	<xul:menuitem id="modannosel-lore" label="&loreContextModAnnoSel.label;"
-	oncommand="loreoverlay.updateAnnotationSel('normal')" />
+    <xul:menuitem id="addanno-lore" label="&loreContextAddAnno.label;"
+      oncommand="loreoverlay.addAnnotation()" />
+    <xul:menuitem id="modannosel-lore" label="&loreContextModAnnoSel.label;"
+      oncommand="loreoverlay.updateAnnotationSel('normal')" />
     
     <xul:menuitem id="addlink-lore" label="&loreContextLink.label;"
-        oncommand="loreoverlay.onMenuItemCommand(event)"/>
+      oncommand="loreoverlay.onMenuItemCommand(event)"/>
     <xul:menuitem id="addimage-lore" label="&loreContextImage.label;"
-        oncommand="loreoverlay.addImageMenuItemCommand(event)"/>
+      oncommand="loreoverlay.addImageMenuItemCommand(event)"/>
     <xul:menuitem id="addbgimg-lore" label="&loreContextBGImage.label;"
-        oncommand="loreoverlay.addBGImageMenuItemCommand(event)"/>
+      oncommand="loreoverlay.addBGImageMenuItemCommand(event)"/>
         
   </xul:popup>
-   <xul:menupopup id="menu_ToolsPopup">
+  <xul:menupopup id="menu_ToolsPopup">
     <xul:menuitem oncommand="loreoverlay.onToolbarMenuCommand()"
-       autoCheck="false" type="checkbox" insertbefore="menu_preferences"
-       accesskey="L" label="&loreToolbar.label;" id="lore-tools-item"/>
+      autoCheck="false" type="checkbox" insertbefore="menu_preferences"
+      accesskey="L" label="&loreToolbar.label;" id="lore-tools-item"/>
     <xul:menuseparator id="lore-tools-sep1" insertbefore="menu_preferences" />
   </xul:menupopup>
   <xul:statusbar id="status-bar">
@@ -128,14 +128,14 @@
   </xul:statusbar>
 
   <!--xul:popupset> 
-        <xul:menupopup id="clipmenu" onpopupshown="loreoverlay.onMenuPopupExt(event)">
-            <xul:menuitem id="clip-copy" label="Copy" command="cmd_copy"/>
-            <xul:menuitem id="clip-cut" label="Cut" command="cmd_cut"/>
-            <xul:menuitem id="clip-paste" label="Paste" command="cmd_paste"/>
-        </xul:menupopup>
-  </xul:popupset-->
+          <xul:menupopup id="clipmenu" onpopupshown="loreoverlay.onMenuPopupExt(event)">
+              <xul:menuitem id="clip-copy" label="Copy" command="cmd_copy"/>
+              <xul:menuitem id="clip-cut" label="Cut" command="cmd_cut"/>
+              <xul:menuitem id="clip-paste" label="Paste" command="cmd_paste"/>
+          </xul:menupopup>
+    </xul:popupset-->
   <xul:hbox id="urlbar-icons">
-        <xul:image src="chrome://lore/skin/icons/ore_add.png" id="ore-add-icon" tooltiptext="&lore.addNodeTip;"  onclick="loreoverlay.addGraphNode();" position="1" hidden="false"/>
-        <xul:image src="chrome://lore/skin/icons/ore_added.png" id="ore-added-icon" tooltiptext="&lore.addedNodeTip;"  onclick="loreoverlay.toggleBar(true);" position="1" hidden="true"/>
+    <xul:image src="chrome://lore/skin/icons/ore_add.png" id="ore-add-icon" tooltiptext="&lore.addNodeTip;"  onclick="loreoverlay.addGraphNode();" position="1" hidden="false"/>
+    <xul:image src="chrome://lore/skin/icons/ore_added.png" id="ore-added-icon" tooltiptext="&lore.addedNodeTip;"  onclick="loreoverlay.toggleBar(true);" position="1" hidden="true"/>
   </xul:hbox>
 </xul:overlay>
