@@ -17,30 +17,26 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
+Ext.namespace("lore.ore.ui.graph");
 /**
  * @class lore.ore.ui.graph.ArrowConnectionDecorator Arrows used on ends of connections
  * @extends draw2d.ConnectionDecorator
  */
-lore.ore.ui.graph.ArrowConnectionDecorator = function() {
-}
-
-lore.ore.ui.graph.ArrowConnectionDecorator.prototype = new draw2d.ConnectionDecorator;
-lore.ore.ui.graph.ArrowConnectionDecorator.prototype.type="lore.ore.ui.graph.ArrowConnectionDecorator";
-
-/**
- * Draw a filled arrow decoration.
- * Slightly smaller arrow dimension than draw2d.ArrowConnectionDecorator
- * @param {draw2d.Graphics} g 
- **/
-lore.ore.ui.graph.ArrowConnectionDecorator.prototype.paint=function(g) {
-  if (this.backgroundColor!=null)
-  {
-     g.setColor(this.backgroundColor);
-     g.fillPolygon([1,14,14,1],[0,4,-4,0]);
-  }
-
-  // draw the border
-  g.setColor(this.color);
-  g.setStroke(1);
-  g.drawPolygon([1,14,14,1],[0,4,-4,0]);
-}
+lore.ore.ui.graph.ArrowConnectionDecorator = Ext.extend(draw2d.ConnectionDecorator,{
+    type: "lore.ore.ui.graph.ArrowConnectionDecorator",
+    /**
+     * Draw a filled arrow decoration.
+     * Slightly smaller arrow dimension than draw2d.ArrowConnectionDecorator
+     * @param {draw2d.Graphics} g 
+     **/
+    paint: function(g) {
+      if (this.backgroundColor!=null) {
+         g.setColor(this.backgroundColor);
+         g.fillPolygon([1,14,14,1],[0,4,-4,0]);
+      }
+      // draw the border
+      g.setColor(this.color);
+      g.setStroke(1);
+      g.drawPolygon([1,14,14,1],[0,4,-4,0]);
+    }
+});
