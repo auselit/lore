@@ -18,71 +18,79 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
  
-// New Fedora adapter that uses the REST API : currently incomplete
-lore.ore.FedoraAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
+/**
+ * @class lore.ore.repos.FedoraAdapter New Fedora adapter that uses the REST API : currently incomplete
+ * @extends lore.ore.repos.RepositoryAdapter
+ */
+lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
     constructor: function(config){
       this.idPrefix = "demo:";
       lore.ore.FedoraAdapter.superclass.constructor.call(this, config); 
     },
-getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
-    
-},
-loadCompoundObject : function(remid, callback){
-    //var fedoraid = 'demo:' + lore.global.util.splitTerm(remid).term;
-    Ext.Ajax.request({
-                url: this.reposURL + "/objects/" + remid + "/export",
-                method: "GET",
-                disableCaching: false,
-                success: function(){
-                    // TODO: callback expects RDF: convert from FOXML to RDF/XML
-                    var rdf = "";
-                    callback(rdf);
-                },
-                failure: function(resp, opt){
-                    lore.debug.ore("Unable to load compound object " + opt.url, resp);
-                }
-            }); 
-},
-saveCompoundObject : function (coid,thexml,callback){
-    // /objects/ [{pid}| new] ? [label] [format] [encoding] [namespace] [ownerId] [logMessage] [ignoreMime]
-
-    // creates a new compound object
-    // TODO: allow modification of existing
-    // FIXME:
-    var foxml = lore.ore.createFOXML();
-    //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri() ).term;
-    lore.debug.ore("saving foxml to fedora",foxml);
-    try {                  
-           var xmlhttp2 = new XMLHttpRequest();
-           xmlhttp2.open("POST",
-               this.reposURL + "/objects/" + remid + "?format=info:fedora/fedora-system:FOXML-1.1", true);
-           xmlhttp2.onreadystatechange = function() {
-                if (xmlhttp2.readyState == 4) {
-                    if (xmlhttp2.status == 201) {
-                        lore.debug.ore("fedora: Compound object saved",xmlhttp2);
-                        lore.ore.ui.loreInfo("Compound object " + remid + " saved");
-                        callback(remid);
-                    } else {
-                        lore.ore.ui.loreError('Unable to save to repository' + xmlhttp2.responseText);
-                        lore.debug.ore("Unable to save to repository",xmlhttp2);
-                        Ext.Msg.show({
-                            title : 'Problem saving RDF',
-                            buttons : Ext.MessageBox.OKCANCEL,
-                            msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
-                        });
-                        
+    getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
+        
+    },
+    loadCompoundObject : function(remid, callback){
+        //var fedoraid = 'demo:' + lore.global.util.splitTerm(remid).term;
+        Ext.Ajax.request({
+                    url: this.reposURL + "/objects/" + remid + "/export",
+                    method: "GET",
+                    disableCaching: false,
+                    success: function(){
+                        // TODO: callback expects RDF: convert from FOXML to RDF/XML
+                        var rdf = "";
+                        callback(rdf);
+                    },
+                    failure: function(resp, opt){
+                        lore.debug.ore("Unable to load compound object " + opt.url, resp);
                     }
-                }
-            };
-            xmlhttp2.setRequestHeader("Content-Type", "text/xml");
-            xmlhttp2.send(foxml); 
-        } catch (e) {
-            xmlhttp = false;
-        }
-}/*,
-deleteCompoundObject : function(remid,callback){
-
-}
-TODO: getExploreData 
-*/
+                }); 
+    },
+    saveCompoundObject : function (coid,thexml,callback){
+        // /objects/ [{pid}| new] ? [label] [format] [encoding] [namespace] [ownerId] [logMessage] [ignoreMime]
+    
+        // creates a new compound object
+        // TODO: allow modification of existing
+        // FIXME:
+        var foxml = lore.ore.createFOXML();
+        //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri() ).term;
+        lore.debug.ore("saving foxml to fedora",foxml);
+        try {                  
+               var xmlhttp2 = new XMLHttpRequest();
+               xmlhttp2.open("POST",
+                   this.reposURL + "/objects/" + remid + "?format=info:fedora/fedora-system:FOXML-1.1", true);
+               xmlhttp2.onreadystatechange = function() {
+                    if (xmlhttp2.readyState == 4) {
+                        if (xmlhttp2.status == 201) {
+                            lore.debug.ore("fedora: Compound object saved",xmlhttp2);
+                            lore.ore.ui.vp.info("Compound object " + remid + " saved");
+                            callback(remid);
+                        } else {
+                            lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp2.responseText);
+                            lore.debug.ore("Unable to save to repository",xmlhttp2);
+                            Ext.Msg.show({
+                                title : 'Problem saving RDF',
+                                buttons : Ext.MessageBox.OKCANCEL,
+                                msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+                            });
+                            
+                        }
+                    }
+                };
+                xmlhttp2.setRequestHeader("Content-Type", "text/xml");
+                xmlhttp2.send(foxml); 
+            } catch (e) {
+                xmlhttp = false;
+            }
+    },
+/*    generateID: function(){
+    	use REST api getNextPID
+    }
+    */
+    /*,
+    deleteCompoundObject : function(remid,callback){
+    
+    }
+    TODO: getExploreData 
+    */
 });

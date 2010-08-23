@@ -19,18 +19,26 @@
  */
 /**
  * Abstract superclass providing functions for storing, loading compound objects from a repository
- * @class lore.ore.RepositoryAdapter
+ * @class lore.ore.repos.RepositoryAdapter
  * @param {} reposURL
  */
-lore.ore.RepositoryAdapter = function (reposURL){
+lore.ore.repos.RepositoryAdapter = function (reposURL){
     this.reposURL = reposURL;
     // prefix for identifiers is base URI (ie reposURL after http:// until next slash) plus 'rem/'
     this.idPrefix = reposURL.substring(0, reposURL.indexOf('/',7) + 1) + "rem/";
 }
-lore.ore.RepositoryAdapter.prototype = {
+Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
+    /**
+     * Set the access URL of the repository
+     * @param {} reposURL
+     */
     setReposURL : function(reposURL){
         this.reposURL = reposURL;
     },
+    /**
+     * Returns the access URL of the repository
+     * @return {}
+     */
     getReposURL : function (){
         return this.reposURL;
     },
@@ -67,9 +75,13 @@ lore.ore.RepositoryAdapter.prototype = {
     deleteCompoundObject : function(remid){
         throw "Method not implemented";
     },
+    /**
+     * Generate a URI for a compound object to be stored in this repository
+     * @return {}
+     */
     generateID: function(){
         // TODO: #125 should use a persistent identifier service to request an identifier
         // TODO: check that this id hasn't been used before
         return this.idPrefix + draw2d.UUID.create();
     }
-}
+});
