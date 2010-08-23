@@ -195,7 +195,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     lore.debug.ore("requestGraph not http", node);
                     return;
                 }
-                lore.ore.ui.loreProgress("Retrieving data for explore view");
+                lore.ore.ui.vp.progress("Retrieving data for explore view");
                 try{
                    /* var context  = lore.ore.explorePanel.fd.canvas.viz.canvas.getCtx();
                     context.shadowOffsetX = 1;
@@ -211,7 +211,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 
                 // stylesheet sets type to circle for compound objects
                 if (node.data["$type"] == "circle"){
-                    historyData.action = "lore.ore.readRDF(\"" + node.id + "\");";
+                    historyData.action = "lore.ore.controller.loadCompoundObjectFromURL(\"" + node.id + "\");";
                     historyData.icon = "chrome://lore/skin/oaioreicon-sm.png";
                     historyData.tooltip = "Load in LORE";
                 }
@@ -230,7 +230,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         duration: 1500,
                         hideLabels: true,
                         onAfterCompute: function(){
-                            lore.ore.ui.loreInfo("Explore view updated");
+                            lore.ore.ui.vp.info("Explore view updated");
                             lore.ore.explorePanel.fd.labels.hideLabels(lore.ore.explorePanel.hideLabels);
                         }
                     });
@@ -365,7 +365,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     icon: "chrome://lore/skin/icons/image.png",
                     scope: this,
                     handler : function(evt) {
-                        lore.ore.ui.loreProgress("Preparing explore image");
+                        lore.ore.ui.vp.progress("Preparing explore image");
                         this.contextmenu.hide();
                         // use set timeout so that UI updates
                         setTimeout(function(ep) {
@@ -373,7 +373,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                             if (imgData) {
                                 lore.global.util.writeURIWithSaveAs("explore", "png", window, imgData);
                             } else {
-                                lore.ore.ui.loreError("Unable to generate explore image");
+                                lore.ore.ui.vp.error("Unable to generate explore image");
                             }
                         }, 10, this);
                         
@@ -469,7 +469,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         var offsetY = pos[1] + 31; // don't show history
         
         // resize the viewport so that image captures entire diagram
-        var vp = lore.ore.ui.main_window;
+        var vp = lore.ore.ui.vp;
         var vpsize = vp.getSize();
         vp.setSize(imageW + offsetX + 50, imageH + offsetY + 50);
         canvas.setAttribute("width", imageW + "px");
@@ -487,7 +487,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         vp.syncSize();
         // translate jit canvas back to original position
         this.fd.canvas.translate(fdcx, fdcy);
-        lore.ore.ui.loreInfo("Image ready");
+        lore.ore.ui.vp.info("Image ready");
         return imgData;
      } catch (e) {
         lore.debug.ore("ExplorePanel.getAsImage: ",e);
@@ -506,7 +506,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             this.clearExploreData();
             this.exploreLoaded = "";
 
-            lore.ore.ui.loreInfo("No connections to explore: current compound object is unsaved");
+            lore.ore.ui.vp.info("No connections to explore: current compound object is unsaved");
             return;
             } catch (ex){
                 lore.debug.ore("problem updating explore view",ex);
@@ -516,7 +516,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         if (this.exploreLoaded !== currentREM) {
             this.exploreLoaded = currentREM;
             Ext.getCmp("exploreinfovis").body.hide();
-            this.showInExploreView(currentREM, lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid), true);
+            this.showInExploreView(currentREM, lore.ore.ui.grid.getPropertyValue("dc:title"), true);
         }
 
     },
@@ -548,14 +548,14 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             //lore.debug.ore("ExplorePanel: show in explore view " + title);
             try{
             this.clearExploreData();
-            lore.ore.ui.loreProgress("Retrieving data for explore view");
+            lore.ore.ui.vp.progress("Retrieving data for explore view");
             this.loadRem(id, title, isCompoundObject || false, function(json){
                 lore.ore.explorePanel.fd.loadJSON(json);
                 lore.ore.explorePanel.fd.computeIncremental({
                     iter: 40,
                     property: 'end',
                     onComplete: function(){ 
-                      lore.ore.ui.loreInfo("Explore data loaded");
+                      lore.ore.ui.vp.info("Explore data loaded");
                       var ep = lore.ore.explorePanel;
                       Ext.getCmp("exploreinfovis").body.show();
                       Ext.getCmp("exploreHistory").body.show();
@@ -582,7 +582,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 };
                 // if it is a compound object use lore icon and open in lore instead of browser link
                 if (isCompoundObject){
-                    historyData.action = "lore.ore.readRDF(\"" + id + "\");";
+                    historyData.action = "lore.ore.controller.loadCompoundObjectFromURL(\"" + id + "\");";
                     historyData.icon = "chrome://lore/skin/oaioreicon-sm.png";
                     historyData.tooltip = "Load in LORE";
                 }
