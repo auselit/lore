@@ -23,9 +23,10 @@ lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{
             });
             
             // TODO:  should listen to model and this should not be regenerated each time
-            var coContents = lore.ore.serializeREM('rdfquery');
+            var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            var coContents = currentCO.serialize('rdfquery');
             // preload all nested compound objects to cache
-            lore.ore.cacheNested(coContents, 0);
+            lore.ore.cache.cacheNested(coContents, 0);
             var tmpCO = new lore.ore.model.CompoundObject();
             tmpCO.load({format: 'rdfquery',content: coContents});
             p.loadContent(tmpCO);
@@ -45,23 +46,23 @@ lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{
                 + "<tr valign='top'><td width='23%'>" 
                 + "<b>Compound object:</b></td><td>"
                 + "<div style='float:right;padding-right:5px'>" 
-                + "<a href='#' onclick='lore.ore.handleSerializeREM(\"wordml\")'>"
+                + "<a href='#' onclick='lore.ore.controller.exportCompoundObject(\"wordml\")'>"
                 + "<img src='chrome://lore/skin/icons/page_white_word.png' title='Export summary to MS Word'>"
                 + "</a></div>"
                 + lore.ore.cache.getLoadedCompoundObjectUri() + "</td></tr>";
-        var title = lore.ore.getPropertyValue("dc:title",lore.ore.ui.grid) 
-            || lore.ore.getPropertyValue("dcterms:title",lore.ore.ui.grid);
+        var title = lore.ore.ui.grid.getPropertyValue("dc:title") 
+            || lore.ore.ui.grid.getPropertyValue("dcterms:title");
         if (title) {
             newsummary += "<tr valign='top'><td width='23%'><b>Title:</b></td><td>"
                     + title + "</td></tr>";
         }
        
-        var desc = lore.ore.getPropertyValue("dc:description",lore.ore.ui.grid);
+        var desc = lore.ore.ui.grid.getPropertyValue("dc:description");
         if (desc) {
             newsummary += "<tr valign='top'><td><b>Description:</b></td><td width='77%'>"
                     + desc + "</td></tr>";
         }
-        var abst = lore.ore.getPropertyValue("dcterms:abstract",lore.ore.ui.grid);
+        var abst = lore.ore.ui.grid.getPropertyValue("dcterms:abstract");
         if (abst) {
             newsummary += "<tr valign='top'><td><b>Abstract:</b></td><td width='77%'>"
                 + abst + "</td></tr>";
@@ -82,7 +83,7 @@ lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{
                 
                 var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
                 if (isCompObject){
-                    tocsummary += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
+                    tocsummary += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
                 }
                 tocsummary += title + ": &lt;"
                 + (!isCompObject?"<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" 
@@ -94,7 +95,7 @@ lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{
                 newsummarydetail += "<div style='border-top: 1px solid rgb(220, 224, 225); width: 100%; margin-top: 0.5em;'> </div>";
                 newsummarydetail += "<p id='res"+ i + "'>";
                 if (isCompObject){
-                    newsummarydetail += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
+                    newsummarydetail += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
                 }
                 newsummarydetail += "<b>" + title + "</b><br>&lt;" + (!isCompObject? "<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" + figurl + "</a>" : figurl) + "&gt;</p><p>";
                 
@@ -105,18 +106,13 @@ lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{
                         pname = p.substring(0,pidx);
                     }
                     if (pname != 'resource' && pname != 'dc:format' && pname != 'rdf:type' && fig.metadataproperties[p]){
-                        newsummarydetail += //"<a href='#' onclick='lore.ore.editResDetail(\"" + fig.url + "\",\"" +  p + "\");'><img title='Edit in Resource Details view' src='chrome://lore/skin/icons/pencil.png'></a>&nbsp;" +
+                        newsummarydetail += 
                                 "<b>" + pname + "</b>: " + fig.metadataproperties[p] + "<br>";
                     }
                     else if (pname == 'rdf:type' && fig.metadataproperties[p] == lore.constants.RESOURCE_MAP){
                         isCompObject = true;
                     }
                 }
-                /*
-                if (isCompObject){
-                    newsummarydetail += "<a href='#' onclick='lore.ore.loadCompoundObjectContents(\"" + fig.url + "\",jQuery(\"#content" + i + "\"))'><span id='content" + i + "' style='font-size:smaller'> View contents</span></a>";
-                }
-                */
                 newsummarydetail += "</p>";        
             }
         }
@@ -124,7 +120,7 @@ lore.ore.ui.SummaryPanel = Ext.extend(Ext.Panel,{
         newsummarydetail += "</div>";
         this.body.update(newsummary + newsummarydetail + tocsummary);
         
-        lore.ore.ui.loreInfo("Displaying a summary of compound object contents"); 
+        lore.ore.ui.vp.info("Displaying a summary of compound object contents"); 
     }
 });
 Ext.reg('summarypanel',lore.ore.ui.SummaryPanel);
