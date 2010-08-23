@@ -129,6 +129,10 @@ try {
                 this.strings = document.getElementById("lore-strings");
                 this.addEvents(["location_changed", "location_refresh"]);
                 lore.global.ui.load(window, this.instId);
+                
+                var self = this;
+                window.addEventListener("dragover", function(ev){self.onDragOver(ev);}, true);
+                window.addEventListener("dragdrop", function(ev){self.onDragDrop(ev);}, true);
             } 
             catch (e) {
                 alert("loreoverlay.onLoad: " + e + "\n" + e.stack);
@@ -180,6 +184,26 @@ try {
             }
             
             lore.global.ui.onUnLoad(this, loreoverlay.instId);
+        },
+        /** Support user dragging URLs/files directly from the browser or OS onto LORE */
+        onDragOver : function(aEvent){
+            var dragService = Components.classes["@mozilla.org/widget/dragservice;1"].getService(Components.interfaces.nsIDragService);
+            var dragSession = dragService.getCurrentSession();
+            var supported = dragSession.isDataFlavorSupported("text/x-moz-url");
+            /*if (!supported){
+              supported = dragSession.isDataFlavorSupported("application/x-moz-file");
+            }*/
+            
+            // currently only support dragging URLs onto compound objects
+            if (supported && aEvent.view.name == 'graphiframe'){
+              dragSession.canDrop = true;
+            } 
+        },
+        onDragDrop : function(aEvent){
+            lore.debug.ui("onDragDrop",aEvent);
+            var dragService = Components.classes["@mozilla.org/widget/dragservice;1"].getService(Components.interfaces.nsIDragService);
+            var dragSession = dragService.getCurrentSession();
+            this.coView().onDropURL(dragSession.sourceNode, aEvent);
         },
         /** 
          * Toggle LORE visibility when the status bar icon is clicked 
@@ -300,7 +324,7 @@ try {
         },
         /** Compound Objects Toolbar button handler: Triggers loading compound object RDF from a URL **/
         loadRDFURL: function(){
-            loreoverlay.coView().loadRDF();
+            loreoverlay.coView().loadCompoundObjectFromURL();
         },
         
         loadAnnoRDF: function () {
@@ -321,14 +345,14 @@ try {
                 lore.debug.ui("Exception importing compound object from file",e);
             }
         },
-        doTextMining: function(){
+       /* doTextMining: function(){
             lore.debug.ore("dotextmining");
             try{
             loreoverlay.coView().doTextMining();
             } catch (e){
                 lore.debug.ore("failed",e);
             }
-        },
+        },*/
         /** Annotations Toolbar button handler: Trigger adding an annotation */
         addAnnotation: function(){
             try {
@@ -382,17 +406,17 @@ try {
         },
         /** Compound Objects Toolbar button handler: Trigger saving the current compound object to the repository */
         saveRDF: function(){
-            loreoverlay.coView().saveRDFToRepository();
+            loreoverlay.coView().saveCompoundObjectToRepository();
         },
         /** Compound Objects Toolbar button handler: Trigger deleting a compound object from the repository */
         deleteRDF: function(){
-            loreoverlay.coView().deleteFromRepository();
+            loreoverlay.coView().deleteCompoundObjectFromRepository();
         },
         /** Compound Objects Toolbar button handler: Trigger serializing a compound object to a file
          * @param {String} format The format of the serialization
          */
         serializeREM: function (format) {
-            loreoverlay.coView().handleSerializeREM(format);
+            loreoverlay.coView().exportCompoundObject(format);
         },
         /** Compound Object Toolbar button handler: Trigger adding the current URI to the compound object editor */
         addGraphNode: function(){
@@ -400,9 +424,9 @@ try {
             document.getElementById('ore-add-icon').hidden = true;
             document.getElementById('ore-added-icon').hidden = false;
         },
-        layoutGraph: function(){
+        /*layoutGraph: function(){
             loreoverlay.coView().doLayout();  
-        },
+        },*/
         createCompoundObject: function(){
             loreoverlay.coView().createCompoundObject();  
         },
@@ -433,9 +457,9 @@ try {
             } catch (ex) {
             }
         },
-        /** Reload preferences for compound objects and disable/enable the compound objects view depending on prefs */
-        loadCompoundObjectPrefs: function(){
-            
+        /** Reload preferences for compound objects and disable/enable the compound objects view depending on prefs 
+         * @param {boolean} ignoreDisable Don't do anything with the disable preference eg on initial load */
+        loadCompoundObjectPrefs: function(ignoreDisable){
             if (this.prefs) {
                 var dccreator = this.prefs.getCharPref("dccreator");
                 var relonturl = this.prefs.getCharPref("relonturl");
@@ -446,7 +470,7 @@ try {
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
                 var tmkey = this.prefs.getCharPref("tmkey");
                 
-                loreoverlay.coView().setPrefs({
+                loreoverlay.coView().handlePreferencesChanged({
                     creator: dccreator,
                     relonturl: relonturl,
                     rdfrepos: rdfrepos,
@@ -456,6 +480,9 @@ try {
                     tmkey: tmkey,
                     high_contrast: high_contrast
                 });
+                if(!ignoreDisable){
+                    this.setCompoundObjectsVisibility(!disable_co);
+                }
             } 
         },
         
