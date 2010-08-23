@@ -314,8 +314,8 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         var sel = this.currentSelection;
         try{
         if (!this.readOnly){
-           /* disable until multi-selection bug is fixed
-           if (shift) {
+           /* disable until multi-selection bug is fixed */
+           /*if (shift) {
             this.selecting = true;
           } else if (!this.dragging) {
             this.selecting = false;
@@ -460,12 +460,12 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         } else {
             this.multiSelection = [];
         }
-        /* disable until multi selection bugs fixed
-        for (var i = 0; i < this.figures.getSize(); i++) {
+        /* disable until multi selection bugs fixed */
+       /* for (var i = 0; i < this.figures.getSize(); i++) {
             var figure = this.figures.get(i);
             figure.setHighlight(false);
-        }
-        */
+        }*/
+        
       }
       draw2d.Workflow.prototype.setCurrentSelection.call(this,figure);
       // Always show line resize handles when connection is selected
@@ -509,7 +509,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         var offsetX = this.getAbsoluteX() + 1;
         var offsetY = this.getAbsoluteY() + 1;
         // resize the viewport so that entire drawing area is shown in image
-        var vp = lore.ore.ui.main_window;
+        var vp = lore.ore.ui.vp;
         var vpsize = vp.getSize();
         vp.setSize(imageW + offsetX + 50, imageH + offsetY + 50);
         canvas.setAttribute("width", imageW + "px");
@@ -535,7 +535,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         if(!oThis.readOnly){
             action();
         } else {
-             lore.ore.ui.loreWarning("Editor is read-only");
+             lore.ore.ui.vp.warning("Editor is read-only");
         }
     },
     addResourceFigure: function(fig, x, y) {
@@ -557,7 +557,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	        "chrome://lore/skin/icons/add.png",
 	        function(x,y) {
                 // TODO: change to a local method
-	            lore.ore.addResource(lore.ore.ui.currentURL);  
+	            lore.ore.controller.addResource(lore.ore.controller.currentURL);  
 	        })
 	    );
         menu.appendMenuItem(new draw2d.MenuItem("Undo",
@@ -585,26 +585,26 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 if (imgData) {
                     lore.global.util.writeURIWithSaveAs("diagram", "png", window, imgData);
                 } else {
-                    lore.ore.ui.loreError("Unable to generate diagram image");
+                    lore.ore.ui.vp.error("Unable to generate diagram image");
                 }
             })
         );
 	    menu.appendMenuItem(new draw2d.MenuItem("New Compound Object",
 	        "chrome://lore/skin/icons/database_add.png",
 	        function(x,y){
-	            lore.ore.createCompoundObject();
+	            lore.ore.controller.createCompoundObject();
 	        })
 	    );
 		menu.appendMenuItem(new draw2d.MenuItem("Save Compound Object",
 	        "chrome://lore/skin/icons/database_save.png",
 	        function(x,y){
-		       lore.ore.saveRDFToRepository();
+		       lore.ore.controller.saveCompoundObjectToRepository();
 		    })
 	    );
 	    menu.appendMenuItem(new draw2d.MenuItem("Delete Compound Object",
 	        "chrome://lore/skin/icons/database_delete.png",
 	        function(x,y){
-	            lore.ore.deleteFromRepository();
+	            lore.ore.controller.deleteCompoundObjectFromRepository();
 	        })
 	    );
 	    menu.appendMenuItem(new draw2d.MenuItem("Open LORE preferences",
