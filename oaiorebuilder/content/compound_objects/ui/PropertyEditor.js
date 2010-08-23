@@ -164,8 +164,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         this.on('beforeexpand', function(p){p.body.setStyle('display','block');});
 
         // Set up listeners
-        this.on("afteredit", this.handlePropertyChange);
-        this.store.on("remove", this.handlePropertyRemove);
+        this.on("afteredit", this.handlePropertyChange,this);
+        this.store.on("remove", this.handlePropertyRemove,this);
         
         this.propEditorWindow.on("show", function(){
             // force redraw of text area of popup editor on scroll to get around FF iframe bug see #209
@@ -259,7 +259,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }
             panel.propMenu.showAt(ev.xy);
         } else {
-            lore.ore.ui.loreInfo("Please click on a Resource node before adding property");
+            lore.ore.ui.vp.info("Please click on a Resource node before adding property");
         }
     },
     /** Handler for minus tool button on property grids
@@ -275,7 +275,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         var sel = panel.getSelectionModel().getSelected();
         // don't allow delete when panel is collapsed (user can't see what is selected)
         if (panel.collapsed) {
-            lore.ore.ui.loreInfo("Please expand the properties panel and select the property to remove");
+            lore.ore.ui.vp.info("Please expand the properties panel and select the property to remove");
         } else if (sel) {
             // TODO: #2 (refactor): should allow first to be deleted as long as another exists
             // should also probably renumber
@@ -285,7 +285,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         (panel.id == "nodegrid" && 
                             (om.RES_REQUIRED.indexOf(propId) !=-1 ||
                                 om.REL_REQUIRED.indexOf(propId)!=-1))){
-                        lore.ore.ui.loreWarning("Cannot remove mandatory property: " + sel.data.name);
+                        lore.ore.ui.vp.warning("Cannot remove mandatory property: " + sel.data.name);
                     } else {
                         panel.getStore().remove(sel);
                     }
@@ -293,7 +293,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     panel.getStore().remove(sel);
                 }
          } else {
-            lore.ore.ui.loreInfo("Please click on the property to remove prior to selecting the remove button");
+            lore.ore.ui.vp.info("Please click on the property to remove prior to selecting the remove button");
          }
         } catch (ex) {
             lore.debug.ore("error removing property ",ex);
@@ -308,7 +308,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     helpPropertyAction : function (ev,toolEl, panel) {
         var sel = panel.getSelectionModel().getSelected();
         if (panel.collapsed){
-            lore.ore.ui.loreInfo("Please expand the panel and select a property");
+            lore.ore.ui.vp.info("Please expand the panel and select a property");
         } else if (sel){
             var splitprop =  sel.data.name.split(":");
             var infoMsg = "<p style='font-weight:bold;font-size:130%'>" + sel.data.name + "</p><p style='font-size:110%;margin:5px;'>" 
@@ -326,13 +326,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     msg : infoMsg
                 });
         } else {
-            lore.ore.ui.loreInfo("Please click on a property prior to selecting the help button");
+            lore.ore.ui.vp.info("Please click on a property prior to selecting the help button");
         }
     },
     // TODO: use MVC
     handlePropertyRemove : function(store, record, index){
-        if (this.id == "nodegrid"){
-            lore.debug.ore("deleting property " + record.id,record);
+        if (this.id == "nodegrid"){            
             lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
         }
     },
@@ -348,7 +347,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 if (selfig instanceof lore.ore.ui.graph.ContextmenuConnection){
                     if (args.record.data.name == 'relationship'){ 
                         selfig.setRelationship(
-                            lore.ore.getPropertyValue("namespace",lore.ore.ui.nodegrid),args.value);
+                            this.getPropertyValue("namespace"),args.value);
                     }
                 } else { // Resource property
                     if (args.record.data.name == 'resource') {
@@ -359,16 +358,16 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             theval = "about:blank";
                         }
                         if (lore.ore.ui.graphicalEditor.lookup[theval]) {
-                            lore.ore.ui.loreWarning("Cannot change resource URL: a node already exists for " + theval);
+                            lore.ore.ui.vp.warning("Cannot change resource URL: a node already exists for " + theval);
                             return;
                         } else {
                            lore.ore.ui.graphicalEditor.lookup[theval] = selfig.getId();
                            delete lore.ore.ui.graphicalEditor.lookup[args.originalValue];
                         }
                         if (lore.ore.ui.topView){
-                            if (lore.ore.ui.currentURL == theval){
+                            if (lore.ore.controller.currentURL == theval){
                                lore.ore.ui.topView.hideAddIcon(true);
-                            } else if (lore.ore.ui.currentURL == args.originalValue){
+                            } else if (lore.ore.controller.currentURL == args.originalValue){
                                lore.ore.ui.topView.hideAddIcon(false);
                             }
                         }
@@ -376,10 +375,22 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     selfig.setProperty(args.record.id,args.value);
                 }
                 lore.ore.ui.nodegrid.store.commitChanges();
-                lore.ore.ui.graph.modified = true;
             }
         } catch (e){
             lore.debug.ore("error handling node property change",e);
+        }
+    },
+    /** Looks up property value from a grid by name
+     * 
+     * @param {} propname The name of the property to find
+     * @return Object The value of the property
+     */
+    getPropertyValue : function(propname){
+        var proprecidx = this.store.find("name",propname);
+        if (proprecidx != -1){
+           return this.store.getAt(proprecidx).get("value");
+        } else {
+            return "";
         }
     }
 });
