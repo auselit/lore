@@ -44,7 +44,8 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
     /*
      * Helper function: given a resource, produce html to display the properties 
      */
-    displayProperties : function(res, skip){	
+    displayProperties : function(res, container, skip){
+      try{
     	var ns = lore.constants.NAMESPACES;
     	var dc = ns["dc"];
     	var dcterms = ns["dcterms"];
@@ -69,11 +70,11 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
         currentProp = res.properties.data[dc+"rights"];
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
-
-
+        lore.debug.ore("res properties are",res.properties.data);
         for (var p in res.properties.data){
+        	lore.debug.ore("processing " + p);
             if (!(p in skipProps)) {
-                var valArray = res.properties.getProperty(p);
+                var valArray = res.properties.data[p];
                 for (var i = 0; i < valArray.length; i++){
                 	var theProp = valArray[i];
                     if ("layout" != theProp.prefix){
@@ -82,9 +83,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                             relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
                             relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
                             // lookup title
-                            var propR = (res.container? res.container.getAggregatedResource(theProp.value): false);
+                            var propR = (container? container.getAggregatedResource(theProp.value): false);
                             if (propR) {
-                                relhtml += propR.properties.getTitle() || theProp.value;
+                                relhtml += propR.data.properties.getTitle() || theProp.value;
                             } else {
                                 relhtml += theProp.value;
                             }
@@ -98,13 +99,16 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             }
         }
         return prophtml + relhtml + "</div>";
+      } catch (e){
+    	  lore.debug.ore("displayProperties:",e);
+      }
     },
     /** 
      * Load contents from the model
      * 
      */
     loadContent: function(resource){
-
+      try{
     	var ns = lore.constants.NAMESPACES;
     	var dc = ns["dc"];
     	var dcterms = ns["dcterms"];
@@ -167,7 +171,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             skip[dcterms + "created"] = true;
             skip[dcterms + "modified"] = true;
             
-            slidehtml += this.displayProperties(resource,skip);
+            slidehtml += this.displayProperties(resource,false,skip);
             var contentResources = resource.aggregatedResourceStore;
             if (contentResources.getTotalCount() > 0){
                 slidehtml += "<div class='slideshowToc'><p style='font-weight:bold;padding-bottom:0.5em;'>Contents:</p>";
@@ -197,9 +201,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	            // Properties
 	            slidehtml += "<div style='padding:0.5em'>";
 	            slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
-	            slidehtml += this.displayProperties(resourceprops);
+	            slidehtml += this.displayProperties(resourceprops, resource.store.co);
 	            if (resourceprops.representsCO instanceof lore.ore.model.CompoundObject){
-	                slidehtml +=  this.displayProperties(resourceprops.representsCO,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
+	                slidehtml +=  this.displayProperties(resourceprops.representsCO,resource.store.co,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
 	                var contentResources = resourceprops.representsCO.aggregatedResourceStore;
 		            if (contentResources.getTotalCount() > 0){
 		                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;padding-bottom:0.5em;'>In this section:</p>";
@@ -248,7 +252,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	            slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
 	            slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
 	            slidehtml += "</div>";
-	            slidehtml += this.displayProperties(resourceprops);
+	            slidehtml += this.displayProperties(resourceprops, resource.store.co);
 	            var previewEl;
 	            if (format && format.value.match("image")){
 	                previewEl = document.createElement('img');
@@ -304,6 +308,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         } else {
             this.html = slidehtml;   
         }
+      } catch (e){
+    	  lore.debug.ore("loadContent",e);
+      }
     },
     /** Reset the iframe to show resource URL */
     resetPreview: function(){ 
