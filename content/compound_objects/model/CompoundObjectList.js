@@ -17,10 +17,9 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
-lore.ore.model = lore.ore.model || {};
+Ext.namespace("lore.ore.model");
 /** 
- * Represents a list of compound object summaries 
- * @class lore.ore.model.CompoundObjectList
+ * @class lore.ore.model.CompoundObjectList Represents a list of compound object summaries 
  * @extends Ext.ux.data.PagingJsonStore
  **/
 lore.ore.model.CompoundObjectList = Ext.extend(Ext.ux.data.PagingJsonStore, {
