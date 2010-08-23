@@ -1,4 +1,4 @@
-/** Override Viewport to allow manual resize (for generating image) */
+// Override Viewport to allow manual resize (for generating images) 
 Ext.override(Ext.Viewport, {
     initComponent : function() {
         Ext.Viewport.superclass.initComponent.call(this);
@@ -18,7 +18,12 @@ Ext.override(Ext.Viewport, {
         return this;
     }
 });
+/**
+ * @class lore.ore.ui.Viewport The LORE Compound Objects UI (except for toolbar, status icon etc which are in the overlay)
+ * @extends Ext.Viewport
+ */
 lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
+    // TODO: implement singleton pattern
     layout : "border",
     border : false,
     initComponent : function() {
@@ -48,7 +53,11 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             tabTip: "View textual summary of current compound object contents",
                             xtype : "summarypanel",
                             id : "remlistview"
-                        }, {
+                        }, /*{
+                            title : "Test",
+                            xtype: "narrativepanel"
+                            
+                        },*/ {
                             layout : 'fit',
                             id : "remslideview",
                             title : "Slideshow",
@@ -58,52 +67,11 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                         xtype : "slideshowpanel",
                                         autoScroll : true
                                     }]
-                        },
-                        /*
-                         * { title: "Resource Details", xtype: "panel",
-                         * autoScroll: true, id: "remresedit", layout: "border",
-                         * items: [ { region: "north", xtype: "panel", layout:
-                         * "border", id: "resselect", height: 23, items:[ {
-                         * xtype: "panel", region:"center", layout: "fit",
-                         * items:[ lore.ore.ui.resselectcombo ] },{ region:
-                         * "east", width:20, xtype:"panel", html:"<div
-                         * style='height:100%;width:100%;background-color:#d0d0d0'>" + "<a
-                         * href='#'
-                         * onclick='if(lore.ore.ui.resselectcombo.value){lore.global.util.launchTab(lore.ore.ui.resselectcombo.value,
-                         * window);}'>" + "<img alt='go' title='Show in
-                         * browser' style='padding-top:1px;padding-left:1px'" + "
-                         * src='chrome://lore/skin/icons/page_go.png'>" + "</a></div>" } ]
-                         *  }, { region: "west", split: true, layout: "fit",
-                         * title: " ", //collapseMode:'mini', width: 150, xtype:
-                         * "treepanel", id: "respreview", tools: [ { id:'plus',
-                         * qtip: 'Add a property or relationship', handler:
-                         * lore.ore.ui.addProperty }, { id:'minus', qtip:
-                         * 'Remove the selected property or relationship',
-                         * handler: lore.ore.ui.removeProperty } ], id:
-                         * "resdetailstree", animate: false, autoScroll: true,
-                         * fitToFrame: true, rootVisible: false,
-                         * containerScroll: true, border: false, root: new
-                         * Ext.tree.TreeNode({}) }, { xtype: "panel", title:
-                         * "Property / Relationship Editor", id:
-                         * "respropeditor", split: true, region: "center",
-                         * layout: "fit",
-                         * 
-                         * tools:[ { id: 'refresh', qtip: 'Cancel editing this
-                         * field and restore last saved value', handler:
-                         * lore.ore.ui.restorePropValue } ], items: [ { xtype:
-                         * "textarea", id: "detaileditor", anchor: "100% 100%" }] } ] } ,
-                         *//*
-                             * { title : "Slideshow", id : "remslideview",
-                             * autoScroll : false, html : "<div
-                             * id='trailcarousel'></div>" },
-                             */{
+                        }, {
                             title : "Explore",
                             tabTip: "Discover related resources from the repository",
                             id : "remexploreview",
                             xtype : "explorepanel"
-                            /*
-                             * forceLayout : true, autoScroll : true
-                             */
                     }   , {
                             title : "Using Compound Objects",
                             tabTip: "View LORE documentation",
@@ -211,133 +179,8 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                         }]
                     },
                     {
-                        xtype : "panel",
-                        layout : "border",
-                        title : "Search",
-                        tabTip: "Find compound objects",
-                        id : "searchpanel",
-                        autoScroll : false,
-                        items : [{
-                            xtype : "tabpanel",
-                            region : "north",
-                            animCollapse : false,
-                            collapseMode : 'mini',
-                            useSplitTips: true,
-                            autoHide : true,
-                            split : true,
-                            minHeight : 0,
-                            id : "searchforms",
-                            items : [{
-                                xtype : "panel",
-                                layout : "hbox",
-                                title : "Keyword",
-                                tabTip: "Search by keyword across all fields",
-                                id : "kwsearchform",
-                                padding : 3,
-                                layoutConfig : {
-                                    pack : 'start',
-                                    align : 'stretchmax'
-                                },
-                                border : false,
-                                autoHeight : true,
-                                items : [{
-                                    xtype : "textfield",
-                                    id : "kwsearchval",
-                                    flex : 1,
-                                    listeners : {
-                                        specialkey : function(field, el) {
-                                            if (el.getKey() == Ext.EventObject.ENTER)
-                                                Ext.getCmp("kwsearchbtn")
-                                                        .fireEvent("click");
-                                        }
-                                    }
-                                }, {
-                                    xtype : "button",
-                                    flex : 0,
-                                    margins : '0 10 0 0',
-                                    text : 'Search',
-                                    id : 'kwsearchbtn',
-                                    tooltip : 'Run the search'
-                                }]
-                            }, {
-                                title : "Advanced",
-                                tabTip: "Search specific fields",
-                                autoHeight : true,
-                                autoWidth : true,
-                                xtype : "form",
-                                id : "advsearchform",
-                                border : false,
-                                bodyStyle : "padding: 0 10px 4px 4px",
-                                labelWidth : 75,
-                                keys : [{
-                                    key : [10, 13],
-                                    fn : function() {
-                                        Ext.getCmp("advsearchbtn")
-                                                .fireEvent('click');
-                                    }
-                                }],
-                                items : [{
-                                    xtype : "label",
-                                    id : "find-co-label",
-                                    text : "Find Compound Objects",
-                                    style : "font-family: arial, tahoma, helvetica, sans-serif; font-size:11px;line-height:2em"
-                                }, {
-                                    xtype : "textfield",
-                                    anchor : "100%",
-                                    fieldLabel : "containing",
-                                    id : "searchuri",
-                                    emptyText : "any resource URI"
-                                }, {
-                                    xtype : "combo",
-                                    anchor : "100%",
-                                    fieldLabel : "having",
-                                    id : "searchpred",
-                                    mode : 'local',
-                                    typeAhead : true,
-                                    displayField : 'curie',
-                                    valueField : 'uri',
-                                    emptyText : "any property or relationship",
-                                    store : new Ext.data.ArrayStore({
-                                                storeId: 'advancedSearchPredStore',
-                                                fields : ['uri', 'curie'],
-                                                data : []
-                                            })
-                                }, {
-                                    xtype : "textfield",
-                                    anchor : "100%",
-                                    fieldLabel : "matching",
-                                    id : "searchval",
-                                    emptyText : ""
-                                }, {
-                                    xtype : 'button',
-                                    text : 'Search',
-                                    id : 'advsearchbtn',
-                                    tooltip : 'Run the search'
-                                }]
-                            }]
-                        }, 
-                        {
-                            region:"center",
-                            minHeight: 0,
-                            "xtype": "panel",
-                            layout: "anchor",
-                            "id": "searchResultPanel",
-                            autoScroll: true, 
-                                "tbar": {
-                                    "xtype": "lore.paging",
-                                    "store": "search",
-                                    "id": "spager"
-                                    
-                                },
-                            items: [
-                                {
-                                    "xtype": "codataview",
-                                    "store": "search",
-                                    "id": "cosview"
-                                }
-                            ]
-                         }
-                        ]
+                        xtype: "searchpanel",
+                        id : "searchpanel"
                     }, {
                         xtype : "panel",
                         layout : "anchor",
@@ -366,5 +209,179 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         
         lore.ore.ui.Viewport.superclass.initComponent.call(this);
         
+        var loreviews = Ext.getCmp("loreviews");
+        loreviews.on("beforeremove", this.closeView, this);
+        
+        // create a context menu to hide/show optional views
+        loreviews.contextmenu = new Ext.menu.Menu({
+                    id : "co-context-menu"
+        });
+        
+        /* disable SMIL view for now
+         * loreviews.contextmenu.add({
+                    text : "Show SMIL View",
+                    handler : function() {
+                        lore.ore.ui.vp.openView("remsmilview", "SMIL", this.updateSMILView);
+                    }
+        });*/
+        loreviews.contextmenu.add({
+            text : "Show RDF/XML",
+            handler : function() {
+                lore.ore.ui.vp.openView("remrdfview", "RDF/XML",this.updateRDFXMLView);
+            },
+            scope: this
+        });
+        loreviews.contextmenu.add({
+            text : "Show TriG",
+            handler : function() {
+                lore.ore.ui.vp.openView("remtrigview", "TriG", this.updateTriGView);
+            },
+            scope: this
+        });
+        loreviews.contextmenu.add({
+            text : "Show FOXML",
+            handler : function() {
+                lore.ore.ui.vp.openView("remfoxmlview", "FOXML", this.updateFOXMLView);
+            },
+            scope: this
+        });
+    
+        loreviews.on("contextmenu", function(tabpanel, tab, e) {
+                    Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
+        });
+    },
+    /** @private Create a compound object view displayed in a closeable tab */
+    openView : function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
+        var tab = Ext.getCmp(panelid);
+        if (!tab) {
+           tab = Ext.getCmp("loreviews").add({
+                'title' : paneltitle,
+                'id' : panelid,
+                'autoScroll' : true,
+                'closable' : true
+            });
+            tab.on("activate", activationhandler);
+        }
+        tab.show();
+    },
+    /**
+     * @private Remove listeners and reference to a Compound Object view if it is closed
+     * 
+     * @param {Object} tabpanel
+     * @param {Object} panel
+     */
+    closeView : function(/*Ext.TabPanel*/tabpanel, /*Ext.panel*/panel) {
+        // remove listeners
+        var tab = Ext.getCmp(panel.id);
+        if (panel.id == 'remrdfview') {
+            tab.un("activate", this.updateRDFXMLView);     
+        }
+        else if (panel.id == 'remsmilview') {
+            tab.un("activate", this.updateSMILView);   
+        }
+        else if (panel.id == 'remfoxmlview') {
+            tab.un("activate",this.updateFOXMLView);
+        }
+        else if (panel.id == 'remtrigview') {
+            tab.un("activate",this.updateTriGView);
+        }
+        return true;
+    },
+    /** @private Render the current compound object in TriG format in the TriG view*/
+    updateTrigView: function(){
+        var trig = lore.ore.cache.getLoadedCompoundObject().toTrig();
+        Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;-moz-pre-wrap:true'>" 
+            + Ext.util.Format.htmlEncode(trig) + "</pre>");
+    },
+    /** @private Render the current compound object as Fedora Object XML in the FOXML view */
+    updateFOXMLView : function (){
+        var foxml = lore.ore.cache.getLoadedCompoundObject().toFOXML();
+        var foxmlString = lore.global.util.transformXML("chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl", foxml, {}, window, true);
+        if (!foxmlString){
+            foxmlString = "Unable to generate FOXML";
+        }
+        Ext.getCmp("remfoxmlview").body.update(foxmlString);
+    },
+    /** @private Render the current compound object as RDF/XML in the RDF view */
+    updateRDFXMLView : function() {
+        var rdfString = lore.ore.cache.getLoadedCompoundObject().transform("chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl",{},true);
+        if (!rdfString) {
+            rdfString = "Unable to generate RDF/XML";
+        }
+        Ext.getCmp("remrdfview").body.update(rdfString);
+    },
+    /** @private Generate a SMIL presentation from the current compound object and display a link to launch it */
+    updateSMILView : function() {
+        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures();
+        var numfigs = allfigures.getSize();
+        var smilcontents = "<p><a title='smil test hover' href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
+        if (numfigs > 0) {
+            var smilpath = lore.ore.cache.getLoadedCompoundObject().generateSMIL(); // generate the new smil file
+            // into oresmil.xsl
+            smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p>"
+                    + "<a onclick='lore.global.util.launchWindow(this.href, false, window);return(false);' target='_blank' href='file://"
+                    + smilpath
+                    + "'>Click here to launch the slideshow in a new window</a><br/>";
+        } else {
+            smilcontents += "<p>Once you have added some resources to the current compound object a SMIL presentation will be available here.</p>";
+        }
+        Ext.getCmp("remsmilview").body.update(smilcontents);
+        this.info("Display a multimedia presentation generated from the compound object contents");
+    },
+    /** Display an error message to the user
+     * @param {String} message The message to display */
+    error : function(/*String*/message){
+        var statusopts = {
+                'text': message,
+                'iconCls': 'error-icon',
+                'clear': {
+                    'wait': 3000
+                }
+        };
+        lore.ore.ui.status.setStatus(statusopts);
+        lore.global.ui.loreError(message);
+    },
+    /**
+     * Display an information message to the user
+     * @param {String} message The message to display
+     */
+    info : function(/*String*/message) {
+        var statusopts = {
+                    'text': message,
+                    'iconCls': 'info-icon',
+                    'clear': {
+                        'wait': 3000
+                    }
+        };
+        lore.ore.ui.status.setStatus(statusopts);
+        lore.global.ui.loreInfo(message);
+    },
+    /**
+     * Display a warning message to the user
+     * @param {String} message The message to display
+     */
+    warning : function(/*String*/message){
+        var statusopts = {
+            'text': message,
+            'iconCls': 'warning-icon',
+            'clear': {
+                'wait': 3000
+            }
+        };
+        lore.ore.ui.status.setStatus(statusopts);
+        lore.global.ui.loreWarning(message);
+    },
+    /**
+     * Display a progress message (with loading icon) to the user
+     * @param {} message The message to display
+     */
+    progress : function(message){
+        var statusopts = {
+            'text': message,
+            'iconCls': 'loading-icon',
+            'clear': false
+        };
+        lore.ore.ui.status.setStatus(statusopts);
+        lore.global.ui.loreInfo(message);
     }
 });
