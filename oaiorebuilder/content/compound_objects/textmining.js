@@ -110,7 +110,7 @@ lore.ore.textm.processRDFa = function(tmtab) {
  * request to retrieve metadata using Calais web service
  */
 lore.ore.doTextMining = function() {
-    lore.ore.ui.loreInfo("Please wait while semantic entities are identified");
+    lore.ore.ui.vp.info("Please wait while semantic entities are identified");
     try{
     // TODO: do this async
     //lore.ore.textm.processRDFa(tmtab);
@@ -123,13 +123,13 @@ lore.ore.doTextMining = function() {
     // set contentStr to current selection
     var selection = lore.global.util.getContentWindow(window).getSelection();
     if (!selection || !selection.toString()){
-        lore.ore.ui.loreWarning("Please highlight text to be analysed from the current page prior to selecting the text mining button");
+        lore.ore.ui.vp.warning("Please highlight text to be analysed from the current page prior to selecting the text mining button");
     }
     var contentStr = selection.toString();
     
     // truncate - web service can only handle 100,000 chars
     if (contentStr.length > 99999) {
-        lore.ore.ui.loreInfo("Selection too long, identifying entities from the first 100,000 characters only");
+        lore.ore.ui.vp.info("Selection too long, identifying entities from the first 100,000 characters only");
         contentStr = str.substring(0, 99999);
     }
 
@@ -140,7 +140,7 @@ lore.ore.doTextMining = function() {
 	        success : lore.ore.textm.handleOpenCalaisMetadata,
 	        failure : function(resp) {
 	            lore.debug.tm("Unable to obtain OpenCalais metadata", resp);
-	            lore.ore.ui.loreWarning("Unable to obtain OpenCalais metadata");
+	            lore.ore.ui.vp.warning("Unable to obtain OpenCalais metadata");
 	        },
 	        params : {
 	            licenseID : lore.ore.textm.tmkey,
@@ -149,7 +149,7 @@ lore.ore.doTextMining = function() {
 	        }
 	    });
     } else {
-        lore.ore.ui.loreError("Please enter your text mining key in the preferences");
+        lore.ore.ui.vp.error("Please enter your text mining key in the preferences");
     }
     } catch (e){
         lore.debug.tm("error in doTextMining",e);
