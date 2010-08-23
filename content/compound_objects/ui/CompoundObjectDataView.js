@@ -1,10 +1,14 @@
+/** 
+ * @class lore.ore.ui.CompoundObjectDataView Displays a summary of a compound object eg in browse, history, search lists
+ * @extends Ext.DataView
+ */
 lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
     initComponent : function(){
         Ext.apply(this, { 
             plugins: new Ext.DataView.DragSelector({dragSafe:true}),
             tpl :  new Ext.XTemplate(               
                 '<tpl for=".">',
-                '<div class="coListing" onclick="lore.ore.readRDF(\'{uri}\')">',
+                '<div class="coListing" onclick="lore.ore.controller.loadCompoundObjectFromURL(\'{uri}\')">',
                     '<table><tr valign="top"><td>{[this.genNumber(values.uri)]}</td><td>',
                     '<div style="float:left;padding:2px;">',
                     '<tpl if="lore.ore.reposAdapter && uri.match(lore.ore.reposAdapter.idPrefix)"><img src="chrome://lore/skin/icons/oaioreicon-sm.png"></tpl>',
@@ -74,7 +78,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                        scope: this,
                        handler: function(obj,evt) {
                             lore.debug.ore("edit " + this.sel.data.uri);
-                            lore.ore.readRDF(this.sel.data.uri);
+                            lore.ore.controller.loadCompoundObjectFromURL(this.sel.data.uri);
                         }
                     });
                  cm.remoteLoad = new Ext.menu.Item({
@@ -83,7 +87,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                        scope: this,
                        handler: function(obj,evt) {
                             lore.debug.ore("view " + this.sel.data.uri);
-                            lore.ore.readRDF(this.sel.data.uri);
+                            lore.ore.controller.loadCompoundObjectFromURL(this.sel.data.uri);
                         }
                     });
                  
@@ -95,7 +99,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                     scope: this,
                     handler : function(obj,evt) {
                         lore.debug.ore("delete handler " + this.sel.data.uri,[this,obj, evt]);
-                        lore.ore.deleteFromRepository(this.sel.data.uri, this.sel.data.title);
+                        lore.ore.controller.deleteCompoundObjectFromRepository(this.sel.data.uri, this.sel.data.title);
                     }
                  });
                  
