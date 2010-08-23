@@ -78,7 +78,7 @@ lore.ore.ui.graph.LineStartResizeHandle = Ext.extend(draw2d.LineStartResizeHandl
          // force relationships panel to update (remove once MVC is set up)
          wf.setCurrentSelection(wf.currentSelection);
       } else if (line instanceof draw2d.Connection) {
-        lore.ore.ui.loreWarning("LORE does not currently support relating a resource to itself");
+        lore.ore.ui.vp.warning("LORE does not currently support relating a resource to itself");
         this.command.cancel();
         
       }
@@ -130,7 +130,7 @@ lore.ore.ui.graph.LineEndResizeHandle = Ext.extend(draw2d.LineEndResizeHandle, {
          // force relationships panel to update (remove once MVC is set up)
         wf.setCurrentSelection(wf.currentSelection);
       } else if (line instanceof draw2d.Connection) {
-        lore.ore.ui.loreWarning("LORE does not currently support relating a resource to itself");
+        lore.ore.ui.vp.warning("LORE does not currently support relating a resource to itself");
         this.command.cancel();
         
       }
