@@ -1,4 +1,23 @@
-
+/*
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ * 
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
+ * project.
+ * 
+ * LORE is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * LORE. If not, see <http://www.gnu.org/licenses/>.
+ */
+Ext.namespace("lore.ore.model");
 /** 
  * Manages the lists of compound objects which are 
  * the results of browse/search queries and stored in history
@@ -98,7 +117,7 @@ lore.ore.model.CompoundObjectListManager = function(){
        })
 	}
 };
-lore.ore.model.CompoundObjectListManager.prototype = {
+Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
     /**
 	 * Get one of the managed lists by name
 	 * 
@@ -161,6 +180,11 @@ lore.ore.model.CompoundObjectListManager.prototype = {
             lore.debug.ore("Problem removing from store " + uri,e);
         }
     },
+    /**
+     * Update some fields in the compound object
+     * @param {} uri
+     * @param {} fields
+     */
     updateCompoundObject : function(uri,fields){
         for (colist in this.lists){
             var list = this.lists[colist];
@@ -173,4 +197,4 @@ lore.ore.model.CompoundObjectListManager.prototype = {
             }
         }
     }
-}
+});
