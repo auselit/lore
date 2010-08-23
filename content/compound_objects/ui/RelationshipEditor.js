@@ -210,7 +210,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         lore.debug.ore("selection is",sel);
         // don't allow delete when panel is collapsed (user can't see what is selected)
         if (panel.collapsed) {
-            lore.ore.ui.loreInfo("Please expand the panel and select the relationship to remove");
+            lore.ore.ui.vp.info("Please expand the panel and select the relationship to remove");
          } else if (sel) {
             var coGraph = lore.ore.ui.graphicalEditor.coGraph;
             var fig = coGraph.getLine(sel.id);
@@ -219,7 +219,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }
             panel.getStore().remove(sel);        
          } else {
-            lore.ore.ui.loreInfo("Please click on the relationship to remove prior to selecting the remove button");
+            lore.ore.ui.vp.info("Please click on the relationship to remove prior to selecting the remove button");
          }
       } catch (ex) {
             lore.debug.ore("error removing relationship",ex);
@@ -235,7 +235,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         try{
         var sel = panel.getSelectionModel().getSelected();
         if (panel.collapsed){
-            lore.ore.ui.loreInfo("Please expand the panel and select a relationship");
+            lore.ore.ui.vp.info("Please expand the panel and select a relationship");
         } else if (sel){
             var infoMsg = panel.aboutTemplate.apply(sel.data);
             
@@ -245,7 +245,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     msg : infoMsg
                 });
         } else {
-            lore.ore.ui.loreInfo("Please click on a relationship prior to selecting the help button");
+            lore.ore.ui.vp.info("Please click on a relationship prior to selecting the help button");
         }
         } catch (e){
             lore.debug.ore("problem",e);
