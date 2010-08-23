@@ -26,46 +26,12 @@
  */
 
 /**
- * Initialise the graphical view
- */
-lore.ore.ui.initGraphicalView = function() {
-	Ext.getCmp("loreviews").activate("drawingarea");
-	/** Indicates whether the compound object has been edited since being loaded */
-	lore.ore.ui.graph.modified = false;
-    lore.ore.ui.graphicalEditor = Ext.getCmp("drawingarea");
-    lore.ore.ui.graphicalEditor.initGraph();
-	// clear the node properties
-	if (lore.ore.ui.nodegrid) {
-		lore.ore.ui.nodegrid.store.removeAll();
-		lore.ore.ui.nodegrid.collapse();
-        lore.ore.ui.relsgrid.store.removeAll();
-        lore.ore.ui.relsgrid.collapse();
-	}
-}
-
-/**
  * Initialise the Extjs UI components and listeners
  */
 lore.ore.ui.initUIComponents = function() {
 	Ext.Container.prototype.bufferResize = false;
     // make sure popup windows appear above everything else, particularly when over the graphical editor
     Ext.WindowMgr.zseed = 10000;
-    
-	/*lore.ore.ui.resselectcombo = new Ext.form.ComboBox({
-				displayField : 'display',
-				id : "resselectcombo",
-				itemSelector : 'div.res-listing',
-				emptyText : "Select resource to display... ",
-				triggerAction : "all",
-				mode : 'local',
-				pageSize : 5,
-				tpl : new Ext.XTemplate(
-						'<tpl for="."><div class="x-combo-list-item res-listing">',
-						'<h3>{title}</h3>', '<i>{uri}</i>', '</div></tpl>'),
-				valueField : 'uri',
-				typeAhead : false,
-				store : lore.ore.resourceStore
-	});*/
 
 	try {
         Ext.MessageBox.show({
@@ -75,8 +41,8 @@ lore.ore.ui.initUIComponents = function() {
            closable: false,
            cls: 'co-load-msg'
        });
-        lore.ore.ui.main_window = new lore.ore.ui.Viewport();
-		lore.ore.ui.main_window.show();
+        lore.ore.ui.vp = new lore.ore.ui.Viewport();
+		lore.ore.ui.vp.show();
 	} catch (e) {
 		lore.debug.ore("Error creating Ext UI components from spec", e);
 	}
@@ -111,88 +77,7 @@ lore.ore.ui.initUIComponents = function() {
 		// load resource details handler
 		lore.ore.ui.resselectcombo.on("select", lore.ore.loadResourceDetails); 
 	}
-    
-	// set up search handlers
-	Ext.getCmp("advsearchbtn").on('click', lore.ore.advancedSearch);
-	Ext.getCmp("kwsearchbtn").on('click', lore.ore.keywordSearch);
-    Ext.getCmp("advsearchform").on('activate',function(){Ext.getCmp("searchforms").setSize({height: 165});Ext.getCmp("searchpanel").doLayout();});
-    Ext.getCmp("kwsearchform").on('activate',function(){Ext.getCmp("searchforms").setSize({height: 60});Ext.getCmp("searchpanel").doLayout();});
-    Ext.getCmp("searchforms").activate("kwsearchform");
-    Ext.getCmp("searchforms").setSize({height: 30}); // for some reason this isn't happening
-	// populate search combo with dublin core fields
-	try {
-		var searchproplist = [];
-        var om = lore.ore.ontologyManager;
-		for (var p = 0; p < om.METADATA_PROPS.length; p++) {
-			var curie = om.METADATA_PROPS[p];
-			var splitprop = curie.split(":");
-			searchproplist.push([
-				"" + lore.constants.NAMESPACES[splitprop[0]]
-				+ splitprop[1], curie]);
-		}
 
-		Ext.getCmp("searchpred").getStore().loadData(searchproplist);
-		// Ext.getCmp("searchpred").getStore().commitChanges();
-	} catch (e) {
-		lore.debug.ui("error setting up search combo", e);
-	}
-
-	var loreviews = Ext.getCmp("loreviews");
-	// set up event handlers for tabs
-	loreviews.on("beforeremove", lore.ore.closeView);
-	// create a context menu to hide/show optional views
-	loreviews.contextmenu = new Ext.menu.Menu({
-				id : "co-context-menu"
-	});
-	/*loreviews.contextmenu.add({
-				text : "Show Text Mining view",
-				handler : function() {
-					lore.ore.openView("remtmview", "Text Mining",
-							lore.ore.textm.requestTextMiningMetadata);
-				}
-	});*/
-	/* disable SMIL view for now
-     * loreviews.contextmenu.add({
-				text : "Show SMIL View",
-				handler : function() {
-					lore.ore.openView("remsmilview", "SMIL", lore.ore.showSMIL);
-				}
-	});*/
-	loreviews.contextmenu.add({
-				text : "Show RDF/XML",
-				handler : function() {
-					lore.ore.openView("remrdfview", "RDF/XML",
-							lore.ore.updateRDFHTML);
-				}
-	});
-	loreviews.contextmenu.add({
-				text : "Show TriG",
-				handler : function() {
-					lore.ore.openView("remtrigview", "TriG", lore.ore.updateTriG);
-				}
-	});
-	loreviews.contextmenu.add({
-				text : "Show FOXML",
-				handler : function() {
-					lore.ore.openView("remfoxmlview", "FOXML",
-							lore.ore.updateFOXML);
-				}
-	});
-
-	loreviews.on("contextmenu", function(tabpanel, tab, e) {
-				Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
-	});
-	
-	var rdftab = Ext.getCmp("remrdfview");
-	if (rdftab) {
-		rdftab.on("activate", lore.ore.updateRDFHTML);
-	}
-	var smiltab = Ext.getCmp("remsmilview");
-	if (smiltab) {
-		smiltab.on("activate", lore.ore.showSMIL);
-	}
-	
-    Ext.getCmp("remslideview").on("activate",lore.ore.showSlideshow);
     
     var sidetabs = Ext.getCmp("propertytabs");
     // Fix collapsing
@@ -227,54 +112,36 @@ lore.ore.ui.initUIComponents = function() {
  */
 lore.ore.ui.init = function() {
 	try {
-		/**
-		 * Used to store options relating to parts of the UI that should be
-		 * disabled
-		 */
-		lore.ore.ui.disabled = {};
 
-		/** Reference to the Extension */
-		lore.ore.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
-				.getService(Components.interfaces.nsIExtensionManager)
-				.getInstallLocation(lore.constants.EXTENSION_ID)
-				.getItemLocation(lore.constants.EXTENSION_ID);
-
+        // The overlay
 		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
-        window.addEventListener("dragover", lore.ore.ui.dragOver, true);
-        window.addEventListener("dragdrop", lore.ore.ui.dragDrop, true);
+       
+        var currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
         
-		/** The url shown in the current browser tab */
-		lore.ore.ui.currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
-		/** Indicates whether the Compound Object UI is visible */
-		lore.ore.ui.lorevisible = lore.ore.ui.topView.compoundObjectsVisible();
+		/** Indicates whether the Compound Object UI is visible */	
+        lore.ore.controller = new lore.ore.Controller({
+            currentURL: currentURL
+        });
+		lore.global.ui.compoundObjectView.registerView(lore.ore.controller,window.instanceId);
         
-
-		lore.global.ui.compoundObjectView.registerView(lore.ore,window.instanceId);
         lore.ore.ontologyManager = new lore.ore.model.OntologyManager();
-        lore.ore.ui.topView.loadCompoundObjectPrefs();
+        lore.ore.ui.topView.loadCompoundObjectPrefs(true);
         
         lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();
         lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
-        lore.ore.cache = new lore.ore.model.CompoundObjectCache();
+        lore.ore.cache = new lore.ore.model.CompoundObjectCache();    
         
-        
-            
 		lore.ore.ui.initUIComponents();
-	
-		lore.ore.ui.loreInfo("Welcome to LORE");
-		lore.ore.createCompoundObject();
+	    lore.ore.ui.graphicalEditor = Ext.getCmp("drawingarea");
         
-		if (lore.ore.ui.currentURL && lore.ore.ui.currentURL != "about:blank"
-				&& lore.ore.ui.currentURL != '' && lore.ore.ui.lorevisible) {
-			lore.ore.updateCompoundObjectsBrowseList(lore.ore.ui.currentURL);
-			/**
-			 * The URL for which compound object search results have been loaded
-			 * in the tree
-			 */
-			lore.ore.ui.loadedURL = lore.ore.ui.currentURL;
-		}
-		/** Indicates whether the compound objects UI has been initialized */
-		lore.ore.ui.initialized = true;
+		lore.ore.ui.vp.info("Welcome to LORE");
+        
+		lore.ore.controller.createCompoundObject();
+
+        if (lore.ore.ui.topView.compoundObjectsVisible()){
+            lore.ore.controller.onShow();
+        }
+
 		lore.debug.ui("LORE Compound Object init complete", lore);
         Ext.Msg.hide();
         Ext.getCmp("drawingarea").focus();
