@@ -120,6 +120,8 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
             }
         );
         lore.ore.ui.SlideShowPanel.superclass.initComponent.call(this);
+        var parent = this.findParentByType('panel');
+        parent.on("activate",this.showSlideshow,this);
    },
    /**
     * Create slides to represent some resources
@@ -131,9 +133,9 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         var items = [];
         var slide;
         try{
-            for (var i = 0; i < cr.length; i++) {
-                var r = cr[i]; 
-                if (r.representsCO && (nestingLevel < lore.ore.MAX_NESTING)) {
+        	cr.each(function(rec){
+        		var r = rec.data;
+                if (r.representsCO && (nestingLevel < lore.ore.cache.MAX_NESTING)) {
                     // process nested content
                     var rco = lore.ore.cache.getCompoundObject(r.uri);
                     
@@ -142,26 +144,45 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
                     } else {
                         lore.debug.ore("CO not found in cache " + r.uri,lore.ore.cache);
                     }
-                    // nested compound objects must be unique across entire slideshow - ie only create slides once
+                    // nested compound objects must be unique across entire slideshow - ie only create slides once               
                     if (!this.findById(r.uri)) {
                         slide = new lore.ore.ui.SlidePanel({id: r.uri, ssid: this.id});
-                        slide.loadContent(r);
+                        slide.loadContent(rec);
                         items.push(slide);
                         if (rco) {
-                            items.push(this.createContentSlides(rco.aggregatedResources, nestingLevel + 1, rco.uri));
+                            items.push(this.createContentSlides(rco.aggregatedResourceStore, nestingLevel + 1, rco.uri));
                         }
                     }
                 } else {
                     // resource slides are unique within their container (can appear in multiple nested comp objs)
                     slide = new lore.ore.ui.SlidePanel({id: r.uri + "_" + containerid, ssid: this.id});
-                    slide.loadContent(r);
+                    slide.loadContent(rec);
                     items.push(slide);
                 }
-            }
+            },this);
         } catch (e) {
             lore.debug.ore("Problem creating content slides",e);
         }
         return items;
+   },
+   showSlideshow: function(p){
+        Ext.MessageBox.show({
+               msg: 'Generating Slideshow',
+               width:250,
+               defaultTextHeight: 0,
+               closable: false,
+               cls: 'co-load-msg'
+        });
+        
+        // TODO: slideshow should listen to model and this should not be regenerated each time
+        var currentCO = lore.ore.cache.getLoadedCompoundObject();
+        var coContents = currentCO.serialize('rdfquery');
+        // preload all nested compound objects to cache
+        lore.ore.cache.cacheNested(coContents, 0);
+        var tmpCO = new lore.ore.model.CompoundObject();
+        tmpCO.load({format: 'rdfquery',content: coContents});
+        this.loadContent(tmpCO);
+        Ext.Msg.hide();
    },
    /** Clear and reload content to represent a compound object
     * 
@@ -178,7 +199,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
             this.add(slide);
             this.setActiveItem(0);
             // make a slide for each aggregated resource
-            this.add(this.createContentSlides(co.aggregatedResources, 0, co.uri)); 
+            this.add(this.createContentSlides(co.aggregatedResourceStore, 0, co.uri)); 
         }
     } catch (e){
         lore.debug.ore("Problem loading slideshow content",e);
@@ -188,7 +209,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     * Sets the compound object represented by the slide show
     * @param {} co The compound object model object
     */
-   setModel: function(co){
+   bindModel: function(co){
         if (this.model) {
             panel.removeAll();
             this.model.un("addAggregatedResource", this.addResourceSlide,this);
