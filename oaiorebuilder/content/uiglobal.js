@@ -163,17 +163,7 @@
 			debug.ui('ui.onUnLoad(window, instId)', e);
 		}
 	}
-	
-	/**
-	 * Clear nodes all children from a tree node recursively
-	 * @param {Ext.tree.TreeNode} treeRoot The tree node to clear
-	 */
-	ui.clearTree = function(treeRoot){
-		while (treeRoot.firstChild) {
-			treeRoot.removeChild(treeRoot.firstChild,true);
-		}
-	}
-	
+
 	ui.setCurrentURL = function (instance,url) {
 		if ( !ui.currentURLs )
 			ui.currentURLs = {};
