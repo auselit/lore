@@ -30,79 +30,83 @@ lore.ore.ui.graph.Port = function(uirep) {
     this.setBackgroundColor(this.fillColor);
     this.setColor(grey);
 };
-lore.ore.ui.graph.Port.prototype = new draw2d.Port;
-lore.ore.ui.graph.Port.prototype.type = "lore.ore.ui.graph.Port";
-
-/** Override onDrag: don't show port and account for scroll offsets */
-lore.ore.ui.graph.Port.prototype.onDrag = function()
-{
-  this.x = this.draggable.getLeft();
-  this.y = this.draggable.getTop();
-  var pn = this.parentNode;
-  var wf = pn.workflow;
-  
-  if (!(this.isMoving)){
-    this.isMoving = true;
-    this.setAlpha(0.0);
-    wf.showMask(); 
-    wf.connectionLine.setAlpha(0.8);
-    this.yoffset = wf.getScrollTop();
-    this.xoffset = wf.getScrollLeft();
-  }
-  wf.showConnectionLine(
-    pn.x+this.x - (this.xoffset - wf.getScrollLeft()),
-    pn.y+this.y - (this.yoffset - wf.getScrollTop()),
-    pn.x+this.originX,
-    pn.y+this.originY);
-  this.fireMoveEvent();
-}
-/** Reset state back to that before drag */
-lore.ore.ui.graph.Port.prototype.onDragend = function(){
-    this.setAlpha(1.0);
-    this.setPosition(this.originX, this.originY);
-    this.parentNode.workflow.hideConnectionLine();
-    this.parentNode.workflow.hideMask();
-    this.isMoving = false;
-    delete this.yoffset;
-    delete this.xoffset;
-}
-lore.ore.ui.graph.Port.prototype.createHTMLElement = function(){
-    var item = draw2d.Port.prototype.createHTMLElement.call(this);
-    item.className = "port";
-    return item;
-}
-/** Show a corona when dragging near a port
- * @param {} port
- */
-lore.ore.ui.graph.Port.prototype.onDragEnter = function(/*:draw2d.Port*/ port)
-{
-  this.parentNode.workflow.connectionLine.setAlpha(1.0);
-  this.showCorona(true);
-  this.setBackgroundColor(this.highlightFillColor);
-}
-/** Hide corona 
- * @param {} port
- */
-lore.ore.ui.graph.Port.prototype.onDragLeave = function(/*:draw2d.Port*/ port)
-{
-  this.parentNode.workflow.connectionLine.setAlpha(0.8);
-  this.showCorona(false);
-  this.setBackgroundColor(this.fillColor);
-}
-/**
- * Create a connection between nodes if a port from another node is dropped on this port
- * @param {} port
- */
-lore.ore.ui.graph.Port.prototype.onDrop = function(port) {
-	if (this.parentNode.id != port.parentNode.id) {
-		var commConn = new draw2d.CommandConnect(this.parentNode.workflow, this, port);
-        var conn = new lore.ore.ui.graph.ContextmenuConnection();
-		commConn.setConnection(conn);
-        this.parentNode.workflow.getCommandStack().execute(commConn);
-        this.parentNode.workflow.setCurrentSelection(conn);
-        // FIXME: workaround: graphical editor not focused after drag
-        Ext.getCmp('drawingarea').focus();
-	} else {
-        lore.ore.ui.loreWarning("LORE does not currently support relating a resource to itself");
+Ext.extend(lore.ore.ui.graph.Port, draw2d.Port, {
+    type : "lore.ore.ui.graph.Port",
+    /** Override onDrag: don't show port and account for scroll offsets */
+    onDrag : function()
+    {
+      this.x = this.draggable.getLeft();
+      this.y = this.draggable.getTop();
+      var pn = this.parentNode;
+      var wf = pn.workflow;
+      
+      if (!(this.isMoving)){
+        this.isMoving = true;
+        this.setAlpha(0.0);
+        wf.showMask(); 
+        wf.connectionLine.setAlpha(0.8);
+        this.yoffset = wf.getScrollTop();
+        this.xoffset = wf.getScrollLeft();
+      }
+      wf.showConnectionLine(
+        pn.x+this.x - (this.xoffset - wf.getScrollLeft()),
+        pn.y+this.y - (this.yoffset - wf.getScrollTop()),
+        pn.x+this.originX,
+        pn.y+this.originY);
+      this.fireMoveEvent();
+    },
+    /** Reset state back to that before drag */
+    onDragend : function(){
+        this.setAlpha(1.0);
+        this.setPosition(this.originX, this.originY);
+        this.parentNode.workflow.hideConnectionLine();
+        this.parentNode.workflow.hideMask();
+        this.isMoving = false;
+        delete this.yoffset;
+        delete this.xoffset;
+    },
+    /**
+     * @private Override to add css class for ports
+     * @param {} port
+     */
+    createHTMLElement : function(){
+        var item = draw2d.Port.prototype.createHTMLElement.call(this);
+        item.className = "port";
+        return item;
+    },
+    /** Show a corona when dragging near a port
+     * @param {} port
+     */
+    onDragEnter : function(/*:draw2d.Port*/ port)
+    {
+      this.parentNode.workflow.connectionLine.setAlpha(1.0);
+      this.showCorona(true);
+      this.setBackgroundColor(this.highlightFillColor);
+    },
+    /** Hide corona 
+     * @param {} port
+     */
+    onDragLeave : function(/*:draw2d.Port*/ port)
+    {
+      this.parentNode.workflow.connectionLine.setAlpha(0.8);
+      this.showCorona(false);
+      this.setBackgroundColor(this.fillColor);
+    },
+    /**
+     * Create a connection between nodes if a port from another node is dropped on this port
+     * @param {} port
+     */
+    onDrop : function(port) {
+    	if (this.parentNode.id != port.parentNode.id) {
+    		var commConn = new draw2d.CommandConnect(this.parentNode.workflow, this, port);
+            var conn = new lore.ore.ui.graph.ContextmenuConnection();
+    		commConn.setConnection(conn);
+            this.parentNode.workflow.getCommandStack().execute(commConn);
+            this.parentNode.workflow.setCurrentSelection(conn);
+            // FIXME: workaround: graphical editor not focused after drag
+            Ext.getCmp('drawingarea').focus();
+    	} else {
+            lore.ore.ui.vp.warning("LORE does not currently support relating a resource to itself");
+        }
     }
-};
+});
