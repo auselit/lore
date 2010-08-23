@@ -14,6 +14,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             + this.ssid + "\").setActiveItem(\"{id}\");'>{title}</a></li>",
             {compiled: true}
         );
+        this.propTemplate = new Ext.XTemplate('<tpl for="."><p><span title="{uri}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;</span> {value}</p></tpl>',
+            {compiled:true}
+        );
         lore.ore.ui.SlidePanel.superclass.constructor.call(this, config);
    },
    initComponent: function(config){
@@ -38,11 +41,73 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             this.loadContent(this.model);  
         }
     },
+    /*
+     * Helper function: given a resource, produce html to display the properties 
+     */
+    displayProperties : function(res, skip){	
+    	var ns = lore.constants.NAMESPACES;
+    	var dc = ns["dc"];
+    	var dcterms = ns["dcterms"];
+        var prophtml = "<div class='slideshowProps'>";
+        var relhtml = "";
+        var currentProp;
+        
+        var skipProps = skip || {};
+        skipProps[ns["rdf"]+"type"] = true;
+        skipProps[dc+"format"]=true;
+        skipProps[ns["ore"]+"describes"]=true;
+        skipProps[dc+"title"]=true;
+        skipProps[dc+"description"]=true;
+        skipProps[dcterms+"abstract"]=true;
+        skipProps[dc+"rights"]=true;
+        
+        // ordering: description, abstract, rights, then all other props, then rels
+        currentProp = res.properties.data[dc+"description"];
+        lore.debug.ore("displayProperties",this);
+        if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
+        currentProp = res.properties.data[dcterms+"abstract"];  	
+        if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
+        currentProp = res.properties.data[dc+"rights"];
+        if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
+
+
+        for (var p in res.properties.data){
+            if (!(p in skipProps)) {
+                var valArray = res.properties.getProperty(p);
+                for (var i = 0; i < valArray.length; i++){
+                	var theProp = valArray[i];
+                    if ("layout" != theProp.prefix){
+                        if (theProp.value.toString().match("^http://") == "http://") {
+                            // Link to resource
+                            relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
+                            relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
+                            // lookup title
+                            var propR = (res.container? res.container.getAggregatedResource(theProp.value): false);
+                            if (propR) {
+                                relhtml += propR.properties.getTitle() || theProp.value;
+                            } else {
+                                relhtml += theProp.value;
+                            }
+                            relhtml += "</a></p>";
+                        } else {
+                            // Display value as property
+                            prophtml += this.propTemplate.apply(theProp);
+                        }  
+                    }
+                }
+            }
+        }
+        return prophtml + relhtml + "</div>";
+    },
     /** 
      * Load contents from the model
      * 
      */
     loadContent: function(resource){
+
+    	var ns = lore.constants.NAMESPACES;
+    	var dc = ns["dc"];
+    	var dcterms = ns["dcterms"];
         var displayDate = function(cprop, desc){
             var cval;
             var datehtml = "";
@@ -64,190 +129,162 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         /*
          * Helper function: given an array of content, make a table of contents
          */
-        var makeTOC = function(contentResources,containerid, ssid){ 
+        var makeTOC = function(contentResources,containerid, ssid){
             var tochtml = "";
             tochtml += "<ul id='" + this.id + "_toc' style='text-align:left; list-style: disc inside;padding-left:6px;'>"
-            for (var i = 0; i < contentResources.length; i++){
-                var r = contentResources[i];
-                tochtml += oThis.tocTemplate.apply({
-                    id: (r.representsCO? r.uri : r.uri + "_" + containerid),
-                    title: (r.getTitle() || "Untitled Resource")
-                })
-            }
+            contentResources.each(function(rec){
+                var r = rec.data;
+                if (r){
+                    tochtml += oThis.tocTemplate.apply({
+                        id: (r.representsCO? r.uri : r.uri + "_" + containerid),
+                        title: (r.properties.getTitle() || "Untitled Resource")
+                    })
+                }
+            });
             tochtml += "</ul>";
             return tochtml;
         }
-        /*
-         * Helper function: given a resource, produce html to display the properties 
-         */
-        var displayProperties = function(res, skip){
-            var prophtml = "<table class='slideshowProps'>";
-            var relhtml = "";
-            skip = skip || {};
-            var skipProps = Ext.apply(skip, {"rdf:type_0":true, "dc:format_0":true, "ore:describes_0":true,"dc:title_0":true, "dc:description_0":true,"dcterms:abstract_0":true, "dc:rights_0":true});
-            var desc = res.getProperty("dc:description_0");
-            if (desc) {
-             prophtml += "<tr valign='top'>" +
-                "<td><b>Description:</b></td><td width='80%'>"
-                + desc.value + "</td></tr>";
-            }
-            var abst = resource.getProperty("dcterms:abstract_0");
-            if (abst) {
-                prophtml += "<tr valign='top'><td><b>Abstract:</b></td>" +
-                    "<td width='80%'>"
-                    + abst.value + "</td></tr>";
-            }
-            var rights = resource.getProperty("dc:rights_0");
-            if (rights) {
-                prophtml += "<tr valign='top'><td><b>Rights:</b></td>" +
-                    "<td width='80%'>"
-                    + rights.value + "</td></tr>";
-            }
-            // all other properties/rels
-            for (var p in res.properties){
-                if (!(p in skipProps)) {
-                    var theProp = res.getProperty(p);
-                    if ("layout" != theProp.prefix){
-                        if (theProp.value.toString().match("^http://") == "http://") {
-                            // Link to resource
-                            relhtml += "<tr valign='top'><td><b>" + lore.global.util.capitalizeString(theProp.name) + ":</b>&nbsp;</td>";
-                            relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
-                            // lookup title
-                            var propR = (res.container? res.container.getAggregatedResource(theProp.value): false);
-                            if (propR) {
-                                relhtml += propR.getTitle() || theProp.value;
-                            } else {
-                                relhtml += theProp.value;
-                            }
-                            relhtml += "</a></td></tr>";
-                        } else {
-                            // Display value as property
-                            prophtml += "<tr valign='top'><td><b>" + lore.global.util.capitalizeString(theProp.name) + ":</b>&nbsp;</td>";
-                            prophtml += theProp.value;
-                            prophtml += "</td></tr>";
-                        }  
-                    }
-                }
-            }
-            return prophtml + relhtml + "</table>";
-        }
+        
         
         // TODO: use Ext Template
         var slidehtml = "";
         var prophtml = "";
-        var title = resource.getTitle();
+        
         var ccreator;
+        var resourceprops = resource.data;
+        if (resourceprops){
+        	var title = resourceprops.properties.getTitle();
+        } else {
+        	var title = resource.properties.getTitle();
+        }
         if (resource instanceof lore.ore.model.CompoundObject){
+        	
             // Title slide for entire Slideshow
             title = title || 'Compound object';
             slidehtml += "<div style='padding:0.5em'><div class='slideshowTitle'>" + title + "</div>";
-            slidehtml += displayProperties(resource,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
-            var contentResources = resource.aggregatedResources;
-            if (contentResources.length > 0){
+            var skip = {};
+            skip[dc + "creator"] = true;
+            skip[dcterms + "created"] = true;
+            skip[dcterms + "modified"] = true;
+            
+            slidehtml += this.displayProperties(resource,skip);
+            var contentResources = resource.aggregatedResourceStore;
+            if (contentResources.getTotalCount() > 0){
                 slidehtml += "<div class='slideshowToc'><p style='font-weight:bold;padding-bottom:0.5em;'>Contents:</p>";
                 slidehtml += makeTOC(contentResources, resource.uri, this.ssid);
                 slidehtml += "</div>";
             }
-
-            ccreator = resource.getProperty("dc:creator_0");
-            slidehtml += "<div class='slideshowFooter'>Created" + (ccreator? " by " + ccreator.value : "");
-            slidehtml += displayDate(resource.getProperty("dcterms:created_0"),' on ');
-            slidehtml += displayDate(resource.getProperty("dcterms:modified_0"), ', last updated ');
+            slidehtml += "<div class='slideshowFooter'>Created";
+            ccreator = resource.properties.data[dc+"creator"];
+            if (ccreator){
+            	slidehtml += " by";
+            	for (var i = 0; i< ccreator.length; i++){
+            		 if (i > 0) {
+            			 slidehtml += ",";
+            		 }
+            		 slidehtml += "  " + ccreator[i].value;
+            	}
+            }
+            slidehtml += displayDate(resource.properties.getProperty(dcterms+"created",0),' on ');
+            slidehtml += displayDate(resource.properties.getProperty(dcterms+"modified",0), ', last updated ');
             slidehtml += "</div>";
             slidehtml += "</div>";
             
-        } else if (resource.representsCO){
-             // content slide representing nested CO
-            // Properties
-            slidehtml += "<div style='padding:0.5em'>";
-            slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
-            slidehtml += displayProperties(resource);
-            if (resource.representsCO instanceof lore.ore.model.CompoundObject){
-                slidehtml +=  displayProperties(resource.representsCO,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
-                var contentResources = resource.representsCO.aggregatedResources;
-	            if (contentResources.length > 0){
-	                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;padding-bottom:0.5em;'>In this section:</p>";
-                    slidehtml += makeTOC(contentResources, resource.representsCO.uri,this.ssid);
-                    slidehtml += "</div>";
+        } else  {
+        	if (resourceprops.representsCO){
+	        
+	             // content slide representing nested CO
+	            // Properties
+	            slidehtml += "<div style='padding:0.5em'>";
+	            slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
+	            slidehtml += this.displayProperties(resourceprops);
+	            if (resourceprops.representsCO instanceof lore.ore.model.CompoundObject){
+	                slidehtml +=  this.displayProperties(resourceprops.representsCO,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
+	                var contentResources = resourceprops.representsCO.aggregatedResourceStore;
+		            if (contentResources.getTotalCount() > 0){
+		                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;padding-bottom:0.5em;'>In this section:</p>";
+	                    slidehtml += makeTOC(contentResources, resourceprops.representsCO.uri,this.ssid);
+	                    slidehtml += "</div>";
+		            }
+	                ccreator = resourceprops.representsCO.properties.getProperty(dc+"creator",0);
+		            slidehtml += "<div class='slideshowFooter'>This nested compound object created" + (ccreator? " by " + ccreator.value : "");
+	                slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"created",0), ' on ');
+	                slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"modified",0),", last updated ");
+		            slidehtml += "</div>";
+	            } else {
+	                slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + resourceprops.uri + "\");'>Nested Compound Object:<br>"
+	                        + "<img src='../../skin/icons/action_go.gif'/> Load in LORE</p>";
 	            }
-                ccreator = resource.representsCO.getProperty("dc:creator_0");
-	            slidehtml += "<div class='slideshowFooter'>This nested compound object created" + (ccreator? " by " + ccreator.value : "");
-                slidehtml += displayDate(resource.representsCO.getProperty("dcterms:created_0"), ' on ');
-                slidehtml += displayDate(resource.representsCO.getProperty("dcterms:modified_0"),", last updated ");
 	            slidehtml += "</div>";
-            } else {
-                slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.readRDF(\"" + resource.uri + "\");'>Nested Compound Object:<br>"
-                        + "<img src='../../skin/icons/action_go.gif'/> Load in LORE</p>";
-            }
-            slidehtml += "</div>";
-        } else {
-            // content slide representing resource
-            title = resource.getTitle() || "Untitled Resource";
-            var format = resource.getProperty("dc:format_0");
-            
-            var hasPreview = false; // preview disabled by default as secure iframe does not allow plugins
-            var icontype = "pageicon";
-            if (format){
-		        if (format.value.match("html")){
-		            icontype += " htmlicon";
-                    hasPreview = true;
-		        } else if (format.value.match("image")) {
-		            icontype += " imageicon";
-                    hasPreview = true;
-		        } else if (format.value.match("audio")) {
-		            icontype += " audioicon";
-		        } else if (format.value.match("video") || format.value.match("flash")){
-		            icontype += " videoicon";
-		        } else if (format.value.match("pdf")) {
-		            icontype += " pdficon";
-		        } 
-            }
-            if (resource.representsAnno){
-                hasPreview = true;
-            }
-            // Only allow http/https previews (ie no chrome, data, view-source etc uris) for security reasons
-            if (!(resource.uri.match("^http") == "http")){
-                hasPreview = false;
-            }
-            slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
-            slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
-            slidehtml += "</div>";
-            slidehtml += displayProperties(resource);
-            var previewEl;
-            if (format && format.value.match("image")){
-                previewEl = document.createElement('img');
-                previewEl.src=resource.uri;
-                previewEl.alt = "image preview";
-                previewEl.onclick= function(e){lore.global.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false};
-                previewEl.style.maxHeight = "100%";
-            } else if (hasPreview) {
-                var theURL = resource.uri;
-                if (resource.representsAnno){
-                    theURL = theURL + '?danno_useStylesheet=';
-                } else if (resource.uri.match('austlit.edu.au') && (resource.uri.match('ShowWork') || resource.uri.match('ShowAgent'))){
-                    theURL = theURL + '&printPreview=y';
-                }
-                previewEl = lore.global.util.createSecureIFrame(window.top, theURL);
-                previewEl.style.width = "100%";
-                previewEl.style.height = "100%";
-                previewEl.name = resource.uri + "-ss";
-                previewEl.id = resource.uri + "-ss";
-                previewEl.style.zIndex = "-9001";
-            }
-
-            slidehtml += "<p class='slideshowFooter'>Viewing <a onclick='lore.global.util.launchTab(\"" + resource.uri + "\");' href='#'>"  + resource.uri + "</a>";
+	        } else {
+	            // content slide representing resource
+	            title = resourceprops.properties.getTitle() || "Untitled Resource";
+	            var format = resourceprops.properties.getProperty(dc+"format",0);
+	            
+	            var hasPreview = false; // preview disabled by default as secure iframe does not allow plugins
+	            var icontype = "pageicon";
+	            if (format){
+			        if (format.value.match("html")){
+			            icontype += " htmlicon";
+	                    hasPreview = true;
+			        } else if (format.value.match("image")) {
+			            icontype += " imageicon";
+	                    hasPreview = true;
+			        } else if (format.value.match("audio")) {
+			            icontype += " audioicon";
+			        } else if (format.value.match("video") || format.value.match("flash")){
+			            icontype += " videoicon";
+			        } else if (format.value.match("pdf")) {
+			            icontype += " pdficon";
+			        } 
+	            }
+	            if (resourceprops.representsAnno){
+	                hasPreview = true;
+	            }
+	            // Only allow http/https previews (ie no chrome, data, view-source etc uris) for security reasons
+	            if (!(resourceprops.uri.match("^http") == "http")){
+	                hasPreview = false;
+	            }
+	            slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
+	            slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
+	            slidehtml += "</div>";
+	            slidehtml += this.displayProperties(resourceprops);
+	            var previewEl;
+	            if (format && format.value.match("image")){
+	                previewEl = document.createElement('img');
+	                previewEl.src=resourceprops.uri;
+	                previewEl.alt = "image preview";
+	                previewEl.onclick= function(e){lore.global.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false};
+	                previewEl.style.maxHeight = "100%";
+	            } else if (hasPreview) {
+	                var theURL = resourceprops.uri;
+	                if (resourceprops.representsAnno){
+	                    theURL = theURL + '?danno_useStylesheet=';
+	                } else if (resourceprops.uri.match('austlit.edu.au') && (resourceprops.uri.match('ShowWork') || resourceprops.uri.match('ShowAgent'))){
+	                    theURL = theURL + '&printPreview=y';
+	                }
+	                previewEl = lore.global.util.createSecureIFrame(window.top, theURL);
+	                previewEl.style.width = "100%";
+	                previewEl.style.height = "100%";
+	                previewEl.name = resourceprops.uri + "-ss";
+	                previewEl.id = resourceprops.uri + "-ss";
+	                previewEl.style.zIndex = "-9001";
+	            } 
+	        }   
+        	slidehtml += "<p class='slideshowFooter'>Viewing "
+        		+ (resourceprops.representsCO ? "nested compound object " :
+        		 "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#'>"  + resourceprops.uri + "</a>");
             // TODO: refactor: remove hardcoding
-            if (resource.container.uri.match(lore.ore.cache.getLoadedCompoundObjectUri())){
-                slidehtml += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + resource.uri +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
+            var container = resource.store.co;
+            if (container && container.uri.match(lore.ore.cache.getLoadedCompoundObjectUri())){
+                slidehtml += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + resourceprops.uri +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
             }   
-            slidehtml += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + resource.uri + "\",\"" + title + "\",false);'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
-            if (resource.container){
-                slidehtml += " &nbsp; from &nbsp;&nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + resource.container.uri + "\");'>" + (resource.container.getTitle() || resource.container.uri) + "</a>"; 
+            slidehtml += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + resourceprops.uri + "\",\"" + title + "\",false);'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
+            if (container){
+                slidehtml += " &nbsp; from &nbsp;&nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + container.uri + "\");'>" + (container.properties.getTitle() || container.uri) + "</a>"; 
             }
             
             slidehtml += "</p>";
-            
-            
         }
         if (hasPreview) {
             this.layout = "border";
@@ -298,9 +335,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
     },
     /**
      * Add to TOC
-     * @param {} aResource
+     * @param {} The data stored for the resource
      */
-    addResource : function(aResource){
+    addResource : function(resourceData){
         
     },
     /**
