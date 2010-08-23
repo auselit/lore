@@ -480,7 +480,7 @@ div.exploretip-text {
 }
 
 .slideshowProps {
-	width:100%;font-size:85%;color:#465458;padding-top:0.5em;line-height:1.3em;
+	font-size:85%;color:#465458;padding:2px;padding-top:0.5em;line-height:1.3em;
 }
 .slideshowTOC {
 	font-size:95%;color:#465458;padding-top:1em;line-height:1.2em
