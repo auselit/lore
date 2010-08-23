@@ -161,15 +161,16 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         } else {
         	var title = resource.properties.getTitle();
         }
+        var skip = {};
+        skip[dc + "creator"] = true;
+        skip[dcterms + "created"] = true;
+        skip[dcterms + "modified"] = true;
         if (resource instanceof lore.ore.model.CompoundObject){
         	
             // Title slide for entire Slideshow
             title = title || 'Compound object';
             slidehtml += "<div style='padding:0.5em'><div class='slideshowTitle'>" + title + "</div>";
-            var skip = {};
-            skip[dc + "creator"] = true;
-            skip[dcterms + "created"] = true;
-            skip[dcterms + "modified"] = true;
+
             
             slidehtml += this.displayProperties(resource,false,skip);
             var contentResources = resource.aggregatedResourceStore;
@@ -203,15 +204,24 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	            slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
 	            slidehtml += this.displayProperties(resourceprops, resource.store.co);
 	            if (resourceprops.representsCO instanceof lore.ore.model.CompoundObject){
-	                slidehtml +=  this.displayProperties(resourceprops.representsCO,resource.store.co,{"dc:creator_0":true,"dcterms:created_0":true,"dcterms:modified_0":true});
+	                slidehtml +=  this.displayProperties(resourceprops.representsCO,resource.store.co,skip);
 	                var contentResources = resourceprops.representsCO.aggregatedResourceStore;
 		            if (contentResources.getTotalCount() > 0){
 		                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;padding-bottom:0.5em;'>In this section:</p>";
 	                    slidehtml += makeTOC(contentResources, resourceprops.representsCO.uri,this.ssid);
 	                    slidehtml += "</div>";
 		            }
-	                ccreator = resourceprops.representsCO.properties.getProperty(dc+"creator",0);
-		            slidehtml += "<div class='slideshowFooter'>This nested compound object created" + (ccreator? " by " + ccreator.value : "");
+		            slidehtml += "<div class='slideshowFooter'>This nested compound object created";
+	                ccreator = resourceprops.representsCO.properties.data[dc+"creator"];
+	                if (ccreator){
+	                	slidehtml += " by";
+	                	for (var i = 0; i< ccreator.length; i++){
+	                		 if (i > 0) {
+	                			 slidehtml += ",";
+	                		 }
+	                		 slidehtml += "  " + ccreator[i].value;
+	                	}
+	                }
 	                slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"created",0), ' on ');
 	                slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"modified",0),", last updated ");
 		            slidehtml += "</div>";
