@@ -10,11 +10,12 @@ lore.ore.Controller = function(config){
     this.defaultCreator = "Anonymous";
     /** @private The URL for which related compound objects were most recently loaded */
     this.loadedURL;
-    /** Property name displayed for the compound object identifier */
+	/** Property name displayed for the compound object identifier */
     this.REM_ID_PROP = "Compound Object ID";
 
 }
 Ext.apply(lore.ore.Controller.prototype, {
+
     /** Activate Controller and trigger related compound objects to be fetched when lore Compound Objects panel is shown */
     onShow: function(){
         this.active = true; 
@@ -107,8 +108,10 @@ Ext.apply(lore.ore.Controller.prototype, {
                 }
                 // TODO: listen to model object
                 //lore.debug.timeElapsed("loading into grid ");
+                
+               lore.debug.ore("controller rem id prop is " + lore.ore.controller.REM_ID_PROP);
                 lore.ore.ui.grid.store.loadData([
-                    {id:"rdf:about_0", name: this.REM_ID_PROP, value: remurl}
+                    {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: remurl}
                 ]);
                 loadedRDF.about('<' + remurl + '>')
                     .each(function(){
@@ -232,6 +235,8 @@ Ext.apply(lore.ore.Controller.prototype, {
                                 if (relresult.term == "title") {
                                     // TODO this should not be necessary - send props to addFigureWithOpts
                                     srcfig.setTitle(obj);
+                                } else if (relresult.term == "abstract") {
+                                	srcfig.setAbstract(obj);
                                 }
                             }
                         }
@@ -330,7 +335,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         lore.ore.cache.setLoadedCompoundObjectIsNew(true);
         lore.ore.ui.grid.store.loadData(
         [
-            {id:"rdf:about_0", name: this.REM_ID_PROP, value: currentREM},
+            {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: currentREM},
             {id: "dc:creator_0", name: "dc:creator", value: lore.ore.controller.defaultCreator},
             {id: "dcterms:modified_0", name: "dcterms:modified", value: cDate},
             {id:"dcterms:created_0", name:"dcterms:created",value: cDate},
@@ -351,7 +356,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         var remid = aURI;
         var title = aTitle;
         if (!remid){
-            remid = lore.ore.ui.grid.getPropertyValue(this.REM_ID_PROP);
+            remid = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
             title = lore.ore.ui.grid.getPropertyValue("dc:title") 
                 || lore.ore.ui.grid.getPropertyValue("dcterms:title");
         }
@@ -393,7 +398,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     saveCompoundObjectToRepository: function(){
         // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
         // update rdfquery to reflect most recent save
-        var remid = lore.ore.ui.grid.getPropertyValue(this.REM_ID_PROP);
+        var remid = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
         var title = lore.ore.ui.grid.getPropertyValue("dc:title") 
             || lore.ore.ui.grid.getPropertyValue("dcterms:title") 
             || "Untitled";
