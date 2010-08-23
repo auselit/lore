@@ -18,11 +18,11 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
  
-/** Access and store compound objects using a Sesame 2 repository
- * @class lore.ore.SesameAdapter
- * @extends lore.ore.RepositoryAdapter
+/** 
+ * @class lore.ore.repos.SesameAdapter Access and store compound objects using a Sesame 2 repository
+ * @extends lore.ore.repos.RepositoryAdapter
  */
-lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
+lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
     getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
         var sa = this;
 	    try {
@@ -89,6 +89,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 					        result = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["sparql"], "result");
 					    }
                         lore.ore.coListManager.clear(listname);
+                        
 					    if (result.length > 0){
 	                        // add the results to the model
 					        var coList = [result.length];
@@ -107,7 +108,7 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        req.send(null);
 	    } catch (e) {
 	        lore.debug.ore("Unable to retrieve compound objects",e);
-	        lore.ore.ui.loreWarning("Unable to retrieve compound objects");
+	        lore.ore.ui.vp.warning("Unable to retrieve compound objects");
 	    }
 	},
 	loadCompoundObject : function(remid, callback, failcallback){
@@ -133,10 +134,10 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	            if (xmlhttp2.readyState == 4) {
 	                if (xmlhttp2.status == 204) {
 	                    lore.debug.ore("sesame: RDF saved",xmlhttp2);
-	                    lore.ore.ui.loreInfo("Compound object " + remid + " saved");
+	                    lore.ore.ui.vp.info("Compound object " + remid + " saved");
                         callback(remid);
 	                } else {
-	                    lore.ore.ui.loreError('Unable to save to repository' + xmlhttp2.responseText);
+	                    lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp2.responseText);
                         lore.debug.ore("Unable to save to repository",xmlhttp2);
 	                    Ext.Msg.show({
 	                        title : 'Problem saving RDF',
@@ -169,6 +170,13 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        lore.debug.ore("sesame: error deleting compound object",e);
 	    }        
 	},
+    /**
+     * Performs a SPARQL query to retrieve data for Explore view
+     * @param {} uri
+     * @param {} title
+     * @param {} isCompoundObject
+     * @return {}
+     */
     getExploreData : function(uri,title,isCompoundObject){
         var eid = uri.replace(/&amp;/g,'&').replace(/&amp;/g,'&');
         var eid2 = escape(eid);
@@ -245,6 +253,11 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
 	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);
 	    } 
     },
+    /**
+     * @private constructs a filter for SPARQL query
+     * @param {} matchval
+     * @return {}
+     */
     makeFilter : function(matchval){
         // implicit and, use quotes for phrase search
         var fExpr = "";
@@ -275,7 +288,6 @@ lore.ore.SesameAdapter = Ext.extend(lore.ore.RepositoryAdapter,{
     *  {string} match The value of the subject, predicate or object from the triple that matched the search 
     *  {Date} acessed The date this compound object was last accessed (from the browser history) 
     * */
-
    parseCOFromXML: function(/*Node*/result){
         var props = {};
         var bindings, node, attr, nodeVal;
