@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
+Ext.namespace("lore.ore.model");
 /**
  * History manager that observes the browser history and updates 
  * the list of recently viewed compound objects and records new visits
@@ -33,7 +34,7 @@ lore.ore.model.HistoryManager = function (listManager){
     this.loadHistory();
     
 };
-lore.ore.model.HistoryManager.prototype = {
+Ext.apply(lore.ore.model.HistoryManager.prototype, {
     /** 
      * Add a visit for a compound object. The time of the visit will be the current time
      * @param {} remurl The URI of the compound object
@@ -148,4 +149,4 @@ lore.ore.model.HistoryManager.prototype = {
         }
         throw Components.results.NS_ERROR_NO_INTERFACE;
       }
-};
+});
