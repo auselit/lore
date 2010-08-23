@@ -1,5 +1,6 @@
 /**
  * @class lore.ore.ui.SearchPanel Panel that includes forms for advanced and keyword search and a dataview for displaying results
+ * @extends Ext.Panel
  */
 lore.ore.ui.SearchPanel = Ext.extend(Ext.Panel,{ 
    initComponent: function (){
