@@ -115,6 +115,9 @@
 .hideuribox {
 	white-space: pre;
 }
+.nodeabstract {
+	height:95%;padding:4px;overflow:auto;
+}
 /* Source tree styles */
 
 /* suppress icons for top level tree nodes */
