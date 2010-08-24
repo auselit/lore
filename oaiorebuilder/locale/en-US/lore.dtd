@@ -37,6 +37,7 @@
 <!ENTITY lore.saveRDFTip "Save the compound object shown in the editor to the repository">
 <!ENTITY lore.deleteRDFLabel "Delete RDF">
 <!ENTITY lore.deleteRDFTip "Delete the compound object shown in the editor from the repository">
+<!ENTITY lore.findTip "Find text within currently visible compound object view">
 <!ENTITY lore.addAnnotationLabel "Add annotation">
 <!ENTITY lore.addAnnotationTip "Add annotation on the current page">
 <!ENTITY lore.editAnnotationLabel "Edit annotation">

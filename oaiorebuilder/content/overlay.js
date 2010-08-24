@@ -345,6 +345,10 @@ try {
                 lore.debug.ui("Exception importing compound object from file",e);
             }
         },
+        /** Compound Objects toolbar button handler: pop up find window to find text within Compound Object window */
+        find: function(){
+        	document.getElementById("graphiframe").contentWindow.find("",false, false, true, false, true, true);        	
+        },
        /* doTextMining: function(){
             lore.debug.ore("dotextmining");
             try{

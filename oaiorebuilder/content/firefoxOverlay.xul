@@ -88,6 +88,7 @@
             </xul:menupopup>
           </xul:toolbarbutton>
           <xul:toolbarseparator/>
+          <xul:toolbarbutton id="co-find" tooltiptext="&lore.findTip;" oncommand="loreoverlay.find();"/>
           <xul:toolbarbutton id="show-prefs2" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
           <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/>
         </xul:toolbar>
