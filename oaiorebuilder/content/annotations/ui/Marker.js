@@ -175,7 +175,8 @@ lore.anno.ui.Marker.prototype = {
 		}
 	},
     disableTip : function() {
-        $(this.data.nodes[0]).simpletip().disable();
+        if (this.data)
+            $(this.data.nodes[0]).simpletip().disable();
     },
     
 	/**
