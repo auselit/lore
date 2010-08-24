@@ -322,15 +322,15 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			lore.debug.anno("Error parsing RDF" +
 			(this.id ? ' for ' + this.id : ''), ex);
 		}
-		this.toString = function(){
-			return "Annotation [" + this.id + "," +
-			(this.modified ? this.modified : this.created) +
-			"," +
-			lore.global.util.splitTerm(this.type).term +
-			"]";
-		}
 	},
 	
+    toString: function(){
+            return "Annotation [" + this.id + "," +
+            (this.modified ? this.modified : this.created) +
+            "," +
+            lore.global.util.splitTerm(this.type).term +
+            "]";
+    },
 	/**
 	 * Determine whether an annotation is new, and is not in the respository
 	 * @param {Object} anno An Annotation object or an Ext Record object 
@@ -606,9 +606,8 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				rdfxml += serializer.serializeToString(doc);
 			} else {
 				if (annoOrig.body != null) {
-					anno.body = lore.global.util.sanitizeHTML(anno.body, window);
 					rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
-					'">' + this.getBodyRDF(anno.title, anno.body) + '</body>';
+					'">' + this.createHtmlBodyRDF(anno.title, anno.body) + '</body>';
 				}
 			}
 			
@@ -618,6 +617,8 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 		
 		return rdfxml;
 	},
+    
+    
 	
 	createMetaRDFBody: function(anno) {
 		var meta = anno.meta;
@@ -650,7 +651,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 	 * @param {String} title Annotation Title
 	 * @param {String} body Annotation Body
 	 */
-	getBodyRDF : function (title, body) {
+	createHtmlBodyRDF : function (title, body) {
 		return '<rdf:Description>' +
 				'<ContentType xmlns="' +
 				lore.constants.NAMESPACES["http"] +
@@ -658,11 +659,11 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				'<Body xmlns="' +
 				lore.constants.NAMESPACES["http"] +
 				'" rdf:parseType="Literal">' +
-				'<html xmlns="http://www.w3.org/TR/REC-html40"><head><title>' +
+				'<html xmlns="http://www.w3.org/1999/xhtml"><head><title>' +
 				(title ? title : 'Annotation') +
 				'</title></head>' +
 				'<body>' +
-				body +
+				lore.global.util.sanitizeHTML(body, window) +
 				'</body></html>' +
 				'</Body></rdf:Description>';
 	}
