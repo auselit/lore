@@ -241,7 +241,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * result: Result as a string ('success' or 'fail') 
 	 * resultMsg: Result message 
 	 */
-	updateAllAnnotations : function (currentURL) {
+	persistAllAnnotations: function (currentURL) {
 		
 		var modified = [];
 		this.annodsunsaved.each( function (rec) { 
@@ -271,6 +271,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Send an annotation update to server
 	 * @param {Object} anno The annotation
 	 * @param {Object} resultCallback Callback when update finishes
+     * 
+     * #private#
 	 */
 	sendUpdateRequest : function(annoRec, resultCallback){
 		// don't send out update notification if it's a new annotation as we'll
@@ -287,51 +289,37 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (annoRec.data.isNew()) {
 			lore.debug.anno("creating new annotation")
 			// create new annotation
+            var action = 'create';
+            var successfulStatus = 201;
 			xhr.open("POST", this.prefs.url);
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
-			xhr.onreadystatechange = function(){
-			try {
-				if (xhr.readyState == 4) {
-                    var action = 'create';
-                    var successful = xhr.status == 201;
-                    
-	                if (successful) {
-                        resultCallback(xhr, action);
-	                    t.fireEvent("committedannotation", action, annoRec);
-	                } else {
-	                    t.fireEvent('servererror', action, xhr);
-	                }
-				}
-				
-			} catch(e ) {
-				lore.debug.anno("error creating annotation on server: ", e);
-			}
-			};
-			xhr.send(annoRDF);
-			lore.debug.anno("RDF of new annotation", annoRDF);
+
 		} else {
 			lore.debug.anno("updating existing annotation")
 			// Update the annotation on the server via HTTP PUT
+            var action = 'create';
+            var successfulStatus = 200;
 			xhr.open("PUT", annoRec.data.id);
 			xhr.setRequestHeader('Content-Type', "application/xml");
-			xhr.onreadystatechange = function(){
-				if (xhr.readyState == 4) {
-                    var action = 'update';
-                    var successful = xhr.status == 200;
-                    
-                    if (successful) {
-                        resultCallback(xhr, action); 
+		}
+        xhr.onreadystatechange = function(){
+            try {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == successfulStatus) {
+                        resultCallback(xhr, action);
                         t.fireEvent("committedannotation", action, annoRec);
                     } else {
                         t.fireEvent('servererror', action, xhr);
                     }
-				}
-			};
-			xhr.send(annoRDF);
-			lore.debug.anno("RDF of updated annotation", annoRDF);
-			
-		}
+                }
+                
+            } catch(e ) {
+                lore.debug.anno("error sending annotation to server: ", e);
+            }
+        };
+        xhr.send(annoRDF);
+        lore.debug.anno("RDF of annotation", annoRDF);
 		this.annodsunsaved.remove(annoRec);
 	},
 		
@@ -342,7 +330,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {String} currentURL The URL of the page where the annotation is situated
 	 * @param {Boolean} refresh Explicity states whether to re-read the list of annotations after update or use cached entries
 	 */
-	updateAnnotation : function(annoRec, currentURL, refresh){
+	persistAnnotation: function(annoRec, currentURL, refresh){
 		var t = this;
 		var callback = function(request, action) {
 
@@ -365,37 +353,33 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * resultMsg: Result message 
 	 */
 	
-	deleteAnnotation : function(anno, resultCallback) {
+	deleteAnnotation: function(anno) {
 		// remove the annotation from the server
 		
 		if ( anno.data.hasChildren()) {
-			if ( resultCallback)
-				resultCallback("fail", "Annotation not deleted. Delete replies first.");
+            lore.anno.ui.loreError("Annotation not deleted. Delete replies first.");
 			return;
 		}
 		
 		var existsInBackend = !anno.data.isNew();
 		
-		this.annods.remove(anno);
+
 		this.annodsunsaved.remove(anno);
-		
 		if (existsInBackend) {
 
 			Ext.Ajax.request({
 				url: anno.data.id,
 				success: function(resp){
+                    this.annods.remove(anno);
 					lore.debug.anno("Deletion success: " + resp );
 					
-					if ( resultCallback) {
-						resultCallback('success', resp);
-					}
-					
+					lore.anno.ui.loreInfo('Annotation deleted');
 				},
+                
 				failure: function(resp, opts){
 					lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
-					if ( resultCallback) {
-						resultCallback('fail', resp);
-					}
+                    this.fireEvent('servererror', 'delete', resp);
+                    lore.anno.ui.loreError('Unable to delete annotation');
 				},
 				method: "DELETE",
 				scope:this
@@ -636,7 +620,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + lore.global.util.fixedEncodeURIComponent(theURL);
 		lore.debug.anno("Updating annotations with request URL: " + queryURL);
 		
-		var t = this;
 		Ext.Ajax.request({
 			url: queryURL,
 			method: "GET",
@@ -645,13 +628,14 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				try {
 					lore.debug.anno("Success retrieving annotations from " + opt.url, resp);
 
-					t.handleAnnotationsLoaded(resp);
+					this.handleAnnotationsLoaded(resp);
 				} catch (e ) {
 					lore.debug.anno(e,e);
 				}
 			},
 			failure: function(resp, opt){
 				try {
+                    this.fireEvent('servererror', 'list', resp);
 					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
 					lore.anno.ui.loreError("Failure loading annotations for page.");
 					lore.anno.annoMan.annods.removeAll();
@@ -673,9 +657,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * result: Result as string ( 'success' or 'fail')
 	 * resultMsg: Result message as string 
 	 */
-
 	searchAnnotations : function (url, filters, resultCallback) {
-		
 		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ANNOTEA_OBJECTS);
 		for (var i = 0; i < filters.length; i++) {
 			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter);
@@ -696,16 +678,18 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 						resultCallback('success', resp);
 					}
 					
-				} catch (e ) {
+				} catch (e) {
 					lore.debug.anno(e,e);
 				}
 			},
 			failure: function(resp, opt){
 				try {
 					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
-					
-				if ( resultCallback) resultCallback('fail', resp);
-				} catch (e ) {
+                    this.fireEvent('servererror', 'search', resp);
+				    if (resultCallback) {
+                        resultCallback('fail', resp);
+                    }
+				} catch (e) {
 					lore.debug.anno(e,e);
 				}
 			},

@@ -375,7 +375,7 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 	var oldurl = lore.anno.ui.currentURL + '';
 	lore.anno.ui.currentURL = contextURL;
 	// only run when annotations are visibile and initialized
-	if (!lore.anno.ui.initialized ||	!lore.anno.ui.lorevisible)
+	if (!lore.anno.ui.initialized || !lore.anno.ui.lorevisible)
 			return;
 		
 	var initialLoad = oldurl == lore.anno.ui.currentURL;
@@ -638,12 +638,12 @@ lore.anno.ui.handleCommittedAnnotation = function(action, anno) {
     lore.debug.anno(action + 'd ' + anno.data.title, anno);
 }
 
-lore.anno.ui.handleServerError = function(action, request) {
+lore.anno.ui.handleServerError = function(action, response) {
 	lore.anno.ui.loreError('Unable to ' + action + ' annotation');
-	lore.debug.anno('Unable to ' + action + ' annotation', {request:request,headers:request.getAllResponseHeaders()});
+	lore.debug.anno('Unable to ' + action + ' annotation', {response:response,headers:response.getAllResponseHeaders()});
     
-    if (request.status == 401) { // Unauthorized
-        var challenge = request.getResponseHeader('WWW-Authenticate');
+    if (response.status == 401) { // Unauthorized
+        var challenge = response.getResponseHeader('WWW-Authenticate');
         lore.debug.anno('Required auth: ' + challenge, challenge);
         
         var res = challenge.match(/Redirect\s+(.+)/);
@@ -701,7 +701,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function() {
 			&& (lore.anno.ui.findNode(anno.data.id, lore.anno.ui.treeroot) == null);
 		
 		
-		lore.anno.annoMan.updateAnnotation(anno, lore.anno.ui.currentURL, refresh);
+		lore.anno.annoMan.persistAnnotation(anno, lore.anno.ui.currentURL, refresh);
 		lore.anno.ui.page.setCurrentAnno();
 	} 
 	catch (e) {
