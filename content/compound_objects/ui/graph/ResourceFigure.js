@@ -26,6 +26,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	this.cornerWidth = 15;
 	this.cornerHeight = 14.5;
 	this.originalHeight = -1;
+	this.abstractPreview = false;
 	this.scrollx = 0;
 	this.scrolly = 0;
 	this.metadataproperties = initprops || {}
@@ -72,6 +73,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.top_left.style.top = "0px";
 		this.top_left.style.fontSize = "2px";
 		this.top_right = document.createElement("div");
+		this.top_right.title = "Collapse/expand preview";
 		this.top_right.style.position = "absolute";
 		this.top_right.style.width = this.cornerWidth + "px";
 		this.top_right.style.height = this.cornerHeight + "px";
@@ -195,6 +197,13 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	},
 	setAbstract: function(abs) {
 		this.header.title = abs;
+		if (this.abstractPreview) {
+			if (abs && abs !=""){
+				this.iframearea.innerHTML = "<div class='nodeabstract'>" + abs + "</div>";
+			} else {
+				this.iframearea.innerHTML = "<div class='nodeabstract'>(No abstract)</div>";
+			}
+		}
 	},
 	/**
 	 * Set the URL of the resource represented by this figure
@@ -224,7 +233,9 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		} else {
 			this.hasPreview = true;
 		}
-		if (rdftype && rdftype.match("ResourceMap")) {
+		if (this.abstractPreview){
+			this.iframearea.innerHTML = "<div class='nodeabstract'>" + (this.metadataproperties["dcterms:abstract_0"] || "(No abstract)") + "</div>";
+		} else if (rdftype && rdftype.match("ResourceMap")) {
 			this.iframearea.innerHTML = "<div class='orelink' id='"
 					+ this.id
 					+ "-data'><a href='#' onclick=\"lore.ore.controller.loadCompoundObjectFromURL('"
@@ -304,7 +315,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 				if (domObj) {
 					this.iframearea.removeChild(domObj);
 				}
-
 				if (!this.isCollapsed()) {
 					this.createPreview(displayUrl);
 				}
@@ -726,7 +736,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		if (this.iframe) {
 			menu.appendMenuItem(new draw2d.MenuItem("Reset preview",
 					"../../skin/icons/arrow_refresh.png", function() {
-						if (thisfig.iframe) {
+						if (thisfig.iframe && !this.abstractPreview) {
 							thisfig.iframe.contentWindow.location.href = thisfig.iframe
 									.getAttribute("src");
 						}
@@ -776,6 +786,17 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 					Ext.getCmp("newss").setActiveItem(thisfig.url + "_"
 							+ lore.ore.cache.getLoadedCompoundObjectUri());
 				}));
+		menu.appendMenuItem(new draw2d.MenuItem("Toggle abstract preview",
+				null, function() {
+				if (thisfig.abstractPreview){
+					thisfig.abstractPreview = false;
+					thisfig.showContent();
+				} else {
+					thisfig.abstractPreview = true;
+					thisfig.showContent();
+				}
+			}
+		));
 		return menu;
 	},
 
