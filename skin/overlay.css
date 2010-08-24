@@ -94,7 +94,7 @@
 #import-export, #import-export-anno {
 	list-style-image: url(chrome://lore/skin/icons/table_refresh.png);
 }
-#text-mining {
+#co-find {
 	list-style-image: url(chrome://lore/skin/icons/page_white_magnify.png);
 }
 #show-prefs, #show-prefs2 {
