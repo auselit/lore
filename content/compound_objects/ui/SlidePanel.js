@@ -64,39 +64,39 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         
         // ordering: description, abstract, rights, then all other props, then rels
         currentProp = res.properties.data[dc+"description"];
-        lore.debug.ore("displayProperties",this);
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
         currentProp = res.properties.data[dcterms+"abstract"];  	
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
         currentProp = res.properties.data[dc+"rights"];
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
-        lore.debug.ore("res properties are",res.properties.data);
-        for (var p in res.properties.data){
-        	lore.debug.ore("processing " + p);
-            if (!(p in skipProps)) {
-                var valArray = res.properties.data[p];
-                for (var i = 0; i < valArray.length; i++){
-                	var theProp = valArray[i];
-                    if ("layout" != theProp.prefix){
-                        if (theProp.value.toString().match("^http://") == "http://") {
-                            // Link to resource
-                            relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
-                            relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
-                            // lookup title
-                            var propR = (container? container.getAggregatedResource(theProp.value): false);
-                            if (propR) {
-                                relhtml += propR.data.properties.getTitle() || theProp.value;
-                            } else {
-                                relhtml += theProp.value;
-                            }
-                            relhtml += "</a></p>";
+        try{
+        var sortedProps = res.properties.getSortedArray(skipProps);
+	 	for (var k =0; k < sortedProps.length; k++) {
+	 		var valArray = sortedProps[k];
+            for (var i = 0; i < valArray.length; i++){
+            	var theProp = valArray[i];
+                if ("layout" != theProp.prefix){
+                    if (theProp.value.toString().match("^http://") == "http://") {
+                        // Link to resource
+                        relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
+                        relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
+                        // lookup title
+                        var propR = (container? container.getAggregatedResource(theProp.value): false);
+                        if (propR) {
+                            relhtml += propR.data.properties.getTitle() || theProp.value;
                         } else {
-                            // Display value as property
-                            prophtml += this.propTemplate.apply(theProp);
-                        }  
-                    }
+                            relhtml += theProp.value;
+                        }
+                        relhtml += "</a></p>";
+                    } else {
+                        // Display value as property
+                        prophtml += this.propTemplate.apply(theProp);
+                    }  
                 }
             }
+        }
+        } catch (e){
+        	lore.debug.ore("problem",e);
         }
         return prophtml + relhtml + "</div>";
       } catch (e){
