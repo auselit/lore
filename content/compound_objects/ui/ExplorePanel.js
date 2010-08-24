@@ -304,11 +304,16 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     },
     /** Handle context menu for nodes in visualisation: allow deletion/expansion of each node */
     onNodeMenu: function(fdcontroller,e){  
+    	try{	
         if (!this.nodemenu) {
+        	
             var nodemenu = new Ext.menu.Menu({
                 id : "explore-node-menu",
                 showSeparator: false
             });
+            this.titleItem = new Ext.menu.Item({text: "Selected node:", canActivate: false});
+            nodemenu.add(this.titleItem);
+            nodemenu.add("-");
             nodemenu.add({
                 text : "Show connections",
                 scope: fdcontroller,
@@ -347,7 +352,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             
             this.nodemenu = nodemenu;
          }
+         this.titleItem.setText(fdcontroller.clickedNode.name);
          this.nodemenu.showAt([e.pageX,e.pageY]); 
+    	} catch (e){
+    		lore.debug.ore("problem",e);
+    	}
     },
     /** Handle context menu on explore view background, providing diagram-wide options such as export to image */
     onContextMenu : function (e){ 
