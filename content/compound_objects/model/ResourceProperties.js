@@ -24,7 +24,7 @@ Ext.namespace("lore.ore.model");
 lore.ore.model.ResourceProperties = function (){
     this.data = {};
 };
-
+// TODO: consider just having array of values?
 Ext.apply(lore.ore.model.ResourceProperties.prototype, {
     /** setProperty Set a property or add if it does not exist
      * @param {Object} config The data for the property
@@ -92,5 +92,26 @@ Ext.apply(lore.ore.model.ResourceProperties.prototype, {
         if (t && t.length > 0) {
             return t[0].value;
         }
+    },
+    /** 
+     * returns the properties as a sorted array (sorted alphabetically by name)
+     * @param {Object} skipProps optional properties to not include in list (properties are uris of properties to skip with value = true)
+     */
+    getSortedArray: function (skipProps){
+    	skipProps = skipProps || {};
+    	var keys = [];
+	 	for (var p in this.data) {
+	 		if (!(p in skipProps)){
+	 			keys.push(this.data[p]);
+	 		}
+	 	}
+	 	keys.sort(function(a,b){
+	 		var aname = a[0].name.toLowerCase();
+	 		var bname = b[0].name.toLowerCase();
+	 		if (aname < bname) return -1;
+	 		if (aname > bname) return 1;
+	 		return 0;
+	 	});
+	 	return keys;
     }
 });
