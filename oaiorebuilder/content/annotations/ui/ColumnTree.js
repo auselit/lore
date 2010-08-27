@@ -283,8 +283,10 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 		}
 		
 		// Hack to bypass the default tree node model's interception of child node clicks.
-		var txt = n.text.replace(/<A /g,'<A onclick="window.open(this.href);" ');
-		
+        // FIXME: I'm not sure this is secure enough, what if an annotation already has other javascript
+        // Hopefully firefox has cleaned it already, but should probably check
+        var txt = n.text.replace(/<A /g,'<A onclick="return false;" ');
+        
 		var buf = ['<li class="x-tree-node"><div ext:tree-node-id="', n.id, 
 		'" class="x-tree-node-el x-tree-node-leaf x-unselectable ', a.cls,'" unselectable="on">',
 		 '<div class="x-tree-col" style="width:', c.width-bw,'px;">',
@@ -329,7 +331,19 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 		this.anchor = this.textNode = this.bHeaderNode.nextSibling;
 		this.bFooterNode = this.textNode.nextSibling;
 		
-	}
+	},
+    
+    // private override
+    // If a link is clicked on, open it in a new tab
+    onClick : function(event) {
+        var a = event.getTarget('a');
+        
+        if (a) {
+            lore.global.util.launchTab(a.href, window);
+        }
+        
+        lore.anno.ui.ColumnTreeNodeUI.superclass.onClick.call(this, event);
+    }
 });
 		
 
