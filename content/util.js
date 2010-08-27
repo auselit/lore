@@ -1035,7 +1035,8 @@ util = {
      * @param {Object} html
      */
     sanitizeHTML : function(html, win) {
-        var serializer = new win.XMLSerializer();
+        var serializer = Components.classes["@mozilla.org/xmlextras/xmlserializer;1"]
+            .createInstance(Components.interfaces.nsIDOMSerializer);
         
         html = html.replace(/<br>$/,'');
         
