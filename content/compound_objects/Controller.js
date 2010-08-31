@@ -231,11 +231,12 @@ Ext.apply(lore.ore.Controller.prototype, {
                                 //lore.debug.ore("processing property " + relresult.term,srcfig);
                                 //lore.debug.timeElapsed("prop");
                                 // not a node relationship, show in the property grid 
-                                srcfig.appendProperty(lore.constants.nsprefix(relresult.ns) + ":" + relresult.term, obj);
-                                if (relresult.term == "title") {
+                            	var prefix = lore.constants.nsprefix(relresult.ns);
+                                srcfig.appendProperty(prefix + ":" + relresult.term, obj);
+                                if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
                                     // TODO this should not be necessary - send props to addFigureWithOpts
                                     srcfig.setTitle(obj);
-                                } else if (relresult.term == "abstract") {
+                                } else if (prefix == "dcterms" && relresult.term == "abstract") {
                                 	srcfig.setAbstract(obj);
                                 }
                             }
