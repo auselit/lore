@@ -275,10 +275,10 @@
     background: transparent url(lib/ext3.2/resources/images/default/grid/loading.gif) no-repeat 3px 3px;
 }
 /* main tabs content styles */
-#remlistview, #remsmilview, #textmining {
+#remsmilview, #textmining {
 	padding-left: 20px;	
 }
-#remlistview table, #remsmilview div, #textmining div {
+#remsmilview div, #textmining div {
 	padding-top:20px;
 }
 #welcome * ul li, #remlistview * ul li {
@@ -629,3 +629,5 @@ div.exploretip-text {
 div.coListing:hover {
 	background-color: #eeeeee;
 }
+#remlistview .x-grid3-row-selected {background-color: yellow !important;}
+
