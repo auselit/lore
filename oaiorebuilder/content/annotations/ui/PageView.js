@@ -43,21 +43,27 @@ var relIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/
  * }
  */
 lore.anno.ui.PageView = function (config) {
-			
-			this.page = config.page;
-			this.model = config.model;
-			this.rdfaMan = config.rdfaManager;	
-			this.visible = config.visible || true;
-			this.colourLookup = new Array("#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/);
-			this.model.on('load', this.handleLoad, this);
-			this.model.on('remove', this.handleRemove, this);	
-			this.model.on('update', this.handleUpdate, this);
-			this.page.on('annochanged', this.handleAnnoChanged, this);
-			this.rdfaMan.on('rdfaloaded', this.handleRDFaLoaded, this);
-		}
+	// Config
+	this.page = config.page;
+	this.model = config.model;
+	this.rdfaMan = config.rdfaManager;	
+	this.visible = config.visible || true;
+    
+    // Handlers
+	this.model.on('load', this.handleLoad, this);
+	this.model.on('remove', this.handleRemove, this);	
+	this.model.on('update', this.handleUpdate, this);
+	this.page.on('annochanged', this.handleAnnoChanged, this);
+	this.rdfaMan.on('rdfaloaded', this.handleRDFaLoaded, this);
+}
 		
 lore.anno.ui.PageView.prototype = {
-
+    /**
+     * Default list of annotation highlight colours
+     * @type 
+     */
+    colourLookup: ["#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/],
+    
 	/**
 	 * Refresh all the annotations on the page
 	 */
@@ -82,8 +88,8 @@ lore.anno.ui.PageView.prototype = {
 				this.highlightCurrentAnnotation(newRec);
 			}
 		} else {
-            this.removeHighlightForCurrentAnnotation();
-        }
+      this.removeHighlightForCurrentAnnotation();
+    }
 	},
 	
 	/**
@@ -160,8 +166,7 @@ lore.anno.ui.PageView.prototype = {
 	 * Hide the currently selected annotation markers
 	 * @param {Object} cw Content window that this applies to (Optional)
 	 */
-	removeHighlightForCurrentAnnotation: function(cw){
-	
+	removeHighlightForCurrentAnnotation: function(cw) {
 		try {
 			if (this.page.curAnnoMarkers) {
 				for (var i = 0; i < this.page.curAnnoMarkers.length; i++) {
@@ -220,17 +225,25 @@ lore.anno.ui.PageView.prototype = {
 		var old = this.page.curImage;
 		this.page.curImage = $(img);
 		if (old && old.context != this.page.curImage.context) {
-			var inst = old.imgAreaSelectInst();
-			if (inst) {
-				inst.setOptions({
-					show: false,
-					hide: true
-				});
-				inst.update();
-			}
-			
+			this.deselectImage(old);
 		}
 	},
+  
+  /**
+   * Deselect the currently selected image
+   * @param {} img
+   */
+  deselectImage: function(img) {
+    var deselect = img || this.page.curImage;
+    var inst = deselect.imgAreaSelectInst();
+    if (inst) {
+      inst.setOptions({
+        show: false,
+        hide: true
+      });
+      inst.update();
+    }    
+  },
 	
 	/**
 	 * Get the currently selected image
@@ -238,6 +251,8 @@ lore.anno.ui.PageView.prototype = {
 	getCurSelImage: function(){
 		return this.page.curImage ? this.page.curImage.get(0) : null;
 	},
+  
+  
 	
 	
 	/**
@@ -284,6 +299,8 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Record} rec The record of the annotation to highlight
 	 * @param {Function} annoStyle a callback which is called once the dom node is created for the selection.
 	 * The dom node is passed in as a parameter to the callback.
+     * 
+     * #Private#
 	 */	
 	highlightAnnotation : function(rec, annoStyle) {
 		var markers = [];
@@ -472,8 +489,6 @@ lore.anno.ui.PageView.prototype = {
 			// causes browser timeouts for pages with large amounts of image
 	 
 			im.each(function(){
-					
-
 				// minimum area check 
 				if ( parseInt(this.offsetWidth) + parseInt(this.offsetHeight) < 64) 
 					return;				
@@ -496,6 +511,7 @@ lore.anno.ui.PageView.prototype = {
 							onSelectStart: function(){
 								var selObj = cw.getSelection();
 								selObj.removeAllRanges();
+                self.deselectImage();
 							},
 							handles: 'corners',
 							imageHeight: scale.origHeight,
@@ -740,10 +756,10 @@ lore.anno.ui.PageView.prototype = {
 					// when page has loaded perform the following
 					try {
 						t.removeHighlightForCurrentAnnotation();
-						var cw = lore.anno.ui.topView.getVariationContentWindow();
-						t.enableImageHighlighting(cw);
+						var contentWindow = lore.anno.ui.topView.getVariationContentWindow();
+						t.enableImageHighlighting(contentWindow);
 						t.highlightCurrentAnnotation(rec);
-						if (callback) callback.apply(callbackScope || this, [cw, rec]);
+						if (callback) callback.apply(callbackScope || this, [contentWindow, rec]);
 						
 					} catch(e){
 						lore.debug.anno("updateVariationSplitter-callback: " + e, e);
