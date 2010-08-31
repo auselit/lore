@@ -531,13 +531,13 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      }
         
     },
-    doCommand : function(action) {
-        if(!oThis.readOnly){
+   /* doCommand : function(action) {
+        if (!this.readOnly){
             action();
         } else {
              lore.ore.ui.vp.warning("Editor is read-only");
         }
-    },
+    },*/
     addResourceFigure: function(fig, x, y) {
         if (!this.readOnly){
             this.commandStack.execute(new draw2d.CommandAdd(this, fig, x, y));
@@ -547,73 +547,112 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         Ext.getCmp('drawingarea').focus();
     },
     /** 
-     * Construct the context menu displayed for the graph
-     * @return {draw2d.Menu} The contextmenu
+     * Construct the context menu displayed for the graphical editor
      */
-	getContextMenu: function() {
-		var menu=new draw2d.Menu();
-        var oThis = this;
-	    menu.appendMenuItem(new draw2d.MenuItem("Add current URL",
-	        "chrome://lore/skin/icons/add.png",
-	        function(x,y) {
-                // TODO: change to a local method
-	            lore.ore.controller.addResource(lore.ore.controller.currentURL);  
-	        })
-	    );
-        menu.appendMenuItem(new draw2d.MenuItem("Undo",
-            "chrome://lore/skin/icons/arrow_undo.png",
-            function(x,y){
-                    oThis.doCommand(oThis.commandStack.undo());
-            })
-        );
-        menu.appendMenuItem(new draw2d.MenuItem("Redo",
-            "chrome://lore/skin/icons/arrow_redo.png",
-            function(x,y){
-                    oThis.doCommand(oThis.commandStack.redo());
-            })
-        );
-        menu.appendMenuItem(new draw2d.MenuItem("Auto layout",
-            "chrome://lore/skin/icons/layout.png",
-            function(x,y) {
-               oThis.doCommand(oThis.doLayout());  
-            })
-        );
-        menu.appendMenuItem(new draw2d.MenuItem("Save diagram as image (PNG)",
-            "chrome://lore/skin/icons/image.png",
-            function(x,y){
-                var imgData = oThis.getAsImage();
-                if (imgData) {
-                    lore.global.util.writeURIWithSaveAs("diagram", "png", window, imgData);
-                } else {
-                    lore.ore.ui.vp.error("Unable to generate diagram image");
+	onContextMenu: function(x,y) {
+		// prevent context menu click triggering pan
+		this.dragging = false;
+		
+		if (!this.contextmenu) {
+            this.contextmenu = new Ext.menu.Menu({
+                showSeparator: false
+            });
+            this.contextmenu.add({
+                text: "Undo",
+                icon: "chrome://lore/skin/icons/arrow_undo.png",
+                scope: this,
+                handler: function(b){ 
+                	try{
+                	this.commandStack.undo();
+                	} catch (e){
+                		lore.debug.ore("problem",e);
+                	}
                 }
-            })
-        );
-	    menu.appendMenuItem(new draw2d.MenuItem("New Compound Object",
-	        "chrome://lore/skin/icons/database_add.png",
-	        function(x,y){
-	            lore.ore.controller.createCompoundObject();
-	        })
-	    );
-		menu.appendMenuItem(new draw2d.MenuItem("Save Compound Object",
-	        "chrome://lore/skin/icons/database_save.png",
-	        function(x,y){
-		       lore.ore.controller.saveCompoundObjectToRepository();
-		    })
-	    );
-	    menu.appendMenuItem(new draw2d.MenuItem("Delete Compound Object",
-	        "chrome://lore/skin/icons/database_delete.png",
-	        function(x,y){
-	            lore.ore.controller.deleteCompoundObjectFromRepository();
-	        })
-	    );
-	    menu.appendMenuItem(new draw2d.MenuItem("Open LORE preferences",
-	        "chrome://lore/skin/icons/cog.png",
-	        function(x,y){
-	            window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
-	        })
-	    );
-		return menu;
+            });
+            this.contextmenu.add({
+                text: "Redo",
+                icon: "chrome://lore/skin/icons/arrow_redo.png",
+                scope: this,
+                handler: function(b){ 
+                	 this.commandStack.redo();    	 
+                }
+            });
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+                text: "Save diagram as image (PNG)",
+                icon: "chrome://lore/skin/icons/image.png",
+                scope: this,
+                handler: function(b,e){  
+                	try{
+                	b.parentMenu.hide();
+                	var imgData = this.getAsImage();
+                    if (imgData) {
+                        lore.global.util.writeURIWithSaveAs("diagram", "png", window, imgData);
+                    } else {
+                        lore.ore.ui.vp.error("Unable to generate diagram image");
+                    }
+                	} catch(e){
+                		lore.debug.ore("problem",e);
+                	}
+                }
+            });
+            this.contextmenu.add({
+                text: "Auto layout",
+                icon: "chrome://lore/skin/icons/layout.png",
+                scope: this,
+                handler: function(evt){              	
+                	 this.doLayout();   
+                }
+            });
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+                text: "Add current URL",
+                icon: "chrome://lore/skin/icons/add.png",
+                scope: this,
+                handler: function(evt){              	
+    	            lore.ore.controller.addResource(lore.ore.controller.currentURL);  
+                }
+             });
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+                text: "New Compound Object",
+                icon: "chrome://lore/skin/icons/database_add.png",
+                scope: this,
+                handler: function(evt){              	
+                	lore.ore.controller.createCompoundObject();
+                }
+             });
+            this.contextmenu.add({
+                text: "Save Compound Object",
+                icon: "chrome://lore/skin/icons/database_save.png",
+                scope: this,
+                handler: function(evt){              	
+                	lore.ore.controller.saveCompoundObjectToRepository();
+                }
+             });
+            this.contextmenu.add({
+                text: "Delete Compound Object",
+                icon: "chrome://lore/skin/icons/database_delete.png",
+                scope: this,
+                handler: function(evt){              	
+                	lore.ore.controller.deleteCompoundObjectFromRepository();
+                }
+             });
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+                text: "Open LORE preferences",
+                icon: "chrome://lore/skin/icons/cog.png",
+                scope: this,
+                handler: function(evt){              	
+                	window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
+                }
+             });
+            
+		}
+		var absx = this.getAbsoluteX() +  x - this.getScrollLeft();
+		var absy = this.getAbsoluteY() +  y - this.getScrollTop();
+		this.contextmenu.showAt([absx, absy]);
+
 	},
     /**  Don't show snap to lines when making a connection */
     snapToHelper: function(figure,  pos){
