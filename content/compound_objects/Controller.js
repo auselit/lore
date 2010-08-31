@@ -138,6 +138,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                     .optional('?url layout:originalHeight ?oh')
                     .optional('?url layout:scrollx ?sx')
                     .optional('?url layout:scrolly ?sy')
+                    .optional('?url layout:abstractPreview ?abstractPreview')
                     .optional('?url dc:format ?format')
                     .optional('?url rdf:type ?rdftype')
                     .optional('?url dc:title ?title')

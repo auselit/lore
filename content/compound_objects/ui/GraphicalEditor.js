@@ -346,6 +346,9 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             if (opts.rdftype){
                 fig.setProperty("rdf:type_0",opts.rdftype);
             }
+            if (opts.abstractPreview == 1){
+            	fig.abstractPreview = true;
+            }
             fig.setContent(theURL);
             if (opts.batch){
                 this.coGraph.addFigure(fig, opts.x, opts.y);
