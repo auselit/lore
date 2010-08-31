@@ -714,93 +714,113 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		}
 	},
 	/**
-	 * Generate a context menu for the figure
+	 * Show a context menu for the figure
 	 * 
-	 * @return {draw2d.Menu} the context menu
 	 */
-	getContextMenu : function() {
-		var menu = new draw2d.Menu();
+	onContextMenu : function(x, y) {
 		var w = this.workflow;
-		var thisfig = this;
-		w.setCurrentSelection(thisfig);
-
-		menu.appendMenuItem(new draw2d.MenuItem("Copy URI to clipboard",
-				"../../skin/icons/page_white_paste.png", function() {
-					lore.global.util.copyToClip(thisfig.url);
-					lore.ore.ui.vp.info("URI copied to clipboard: "
-							+ thisfig.url);
-				}));
-		if (this.iframe) {
-			menu.appendMenuItem(new draw2d.MenuItem("Reset preview",
-					"../../skin/icons/arrow_refresh.png", function() {
-						if (thisfig.iframe && !this.abstractPreview) {
-							thisfig.iframe.contentWindow.location.href = thisfig.iframe
-									.getAttribute("src");
+		if (!this.contextmenu) {
+            this.contextmenu = new Ext.menu.Menu({
+                showSeparator: false
+            });
+            this.contextmenu.add({
+                text: "Copy URI to clipboard",
+                icon: "chrome://lore/skin/icons/page_white_paste.png",
+                scope: this,
+                handler: function(evt){
+                	lore.global.util.copyToClip(this.url);
+					lore.ore.ui.vp.info("URI copied to clipboard: " + this.url);
+                }
+             });
+            if (this.iframe){
+            	this.contextmenu.add({
+                    text: "Reset preview",
+                    icon: "chrome://lore/skin/icons/arrow_refresh.png",
+                    scope: this,
+                    handler: function(evt){
+                    	if (this.iframe && !this.abstractPreview) {
+							this.iframe.contentWindow.location.href = this.iframe.getAttribute("src");
 						}
-					}));
-		}
-
-		if (!this.metadataproperties["dc:format_0"].match("rdf")) {
-			menu.appendMenuItem(new draw2d.MenuItem(
-					"Open resource in separate window",
-					"../../skin/icons/page_go.png", function() {
-						lore.global.util
-								.launchWindow(thisfig.url, true, window);
-					}));
-		}
-		menu.appendMenuItem(new draw2d.MenuItem(
-				"Delete resource from Compound Object",
-				"../../skin/icons/delete.png", function() {
-					thisfig.workflow
-							.getCommandStack()
-							.execute(thisfig
-									.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
-				}));
-		/*
-		 * menu.appendMenuItem(new draw2d.MenuItem("Show in Narrative view",
-		 * null, function (){ // TODO jump to resource in summary view } ));
-		 */
-		menu.appendMenuItem(new draw2d.MenuItem("Show in Resource List",
-				"../../skin/icons/application_view_detail.png", function(){
-					Ext.getCmp("loreviews").activate("remlistview");
-					Ext.getCmp("remlistview").selectResource(thisfig.url);
-			}
-		));
-		menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view",
-				"../../skin/icons/picture_empty.png", function() {
-					// TODO: don't hardcode the slideshow id and the url for the
-					// containing compound object should come from the model
+                    }
+                 });
+            }
+            if (!this.metadataproperties["dc:format_0"].match("rdf")) {
+            	this.contextmenu.add({
+                    text: "Open resource in separate window",
+                    icon: "chrome://lore/skin/icons/page_go.png",
+                    scope: this,
+                    handler: function(evt){
+                    	lore.global.util.launchWindow(this.url, true, window);
+                    }
+                 });
+    		}
+            this.contextmenu.add({
+                text: "Delete resource from Compound Object",
+                icon: "chrome://lore/skin/icons/delete.png",
+                scope: this,
+                handler: function(evt){
+                	this.workflow.getCommandStack()
+						.execute(this.createCommand(
+								new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+                }
+            });
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+                text: "Show in Resource List",
+                icon: "chrome://lore/skin/icons/application_view_detail.png",
+                scope: this,
+                handler: function(evt){
+                	Ext.getCmp("loreviews").activate("remlistview");
+					Ext.getCmp("remlistview").selectResource(this.url);
+                }
+            });
+            this.contextmenu.add({
+                text: "Show in Slideshow view",
+                icon: "chrome://lore/skin/icons/picture_empty.png",
+                scope: this,
+                handler: function(evt){
+                	// TODO: don't hardcode the slideshow id
 					Ext.getCmp("loreviews").activate("remslideview");
-					Ext.getCmp("newss").setActiveItem(thisfig.url + "_"
-							+ lore.ore.cache.getLoadedCompoundObjectUri());
-		}));
-		menu.appendMenuItem(new draw2d.MenuItem("Show in Explore view",
-				"../../skin/icons/chart_line.png", function() {
-					Ext.getCmp("loreviews").activate("remexploreview");
-					var rdftype = thisfig.metadataproperties["rdf:type_0"];
+					Ext.getCmp("newss").setActiveItem(this.url + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
+                }
+            });
+            this.contextmenu.add({
+                text: "Show in Explore view",
+                icon: "chrome://lore/skin/icons/chart_line.png",
+                scope: this,
+                handler: function(evt){
+                	Ext.getCmp("loreviews").activate("remexploreview");
+					var rdftype = this.metadataproperties["rdf:type_0"];
 					var isCO = (rdftype && rdftype.match("ResourceMap"));
-					var title = thisfig.metadataproperties["dc:title_0"]
-							|| thisfig.metadataproperties["dcterms:title_0"];
+					var title = this.metadataproperties["dc:title_0"]
+							|| this.metadataproperties["dcterms:title_0"];
 					if (!title) {
-						title = thisfig.url;
+						title = this.url;
 					}
-					lore.ore.explorePanel.showInExploreView(thisfig.url, title,
-							isCO);
-				}));
-
-		
-		menu.appendMenuItem(new draw2d.MenuItem("Toggle abstract preview",
-				null, function() {
-				if (thisfig.abstractPreview){
-					thisfig.abstractPreview = false;
-					thisfig.showContent();
-				} else {
-					thisfig.abstractPreview = true;
-					thisfig.showContent();
-				}
-			}
-		));
-		return menu;
+					lore.ore.explorePanel.showInExploreView(this.url, title, isCO);
+                }
+            });
+            this.contextmenu.add("-");
+            this.contextmenu.add(new Ext.menu.CheckItem({
+                text: "Abstract Preview",  
+                scope: this,
+                checked: this.abstractPreview,
+                handler: function(item, evt){
+                	if (this.abstractPreview){
+    					this.abstractPreview = false;
+    					this.showContent();
+    				} else {
+    					this.abstractPreview = true;
+    					this.showContent();
+    				}
+                }
+            }));
+		}
+		var absx = w.getAbsoluteX() +  x - w.getScrollLeft();
+		var absy = w.getAbsoluteY() +  y - w.getScrollTop();
+		this.contextmenu.showAt([absx, absy]);
+		w.setCurrentSelection(this, false);
+         
 	},
 
 	/**
