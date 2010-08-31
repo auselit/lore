@@ -279,7 +279,7 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
 		var href = a.href ? a.href : Ext.isGecko ? "" : "#";
 		var linksBuf = "";
 		for (var i = 0; i < n.links.length; i++) {
-				linksBuf += "<a title=\"" + n.links[i].title + "\" href=\"#\" onclick=\"" + n.links[i].jscript + "\"><img  src='" + this.emptyIcon + "' class='x-tree-node-icon x-tree-node-inline-icon anno-view " + n.links[i].iconCls + "' /></a><span class='left-spacer4' />";
+				linksBuf += "<a title=\"" + n.links[i].title + "\" onclick=\"" + n.links[i].jscript + ";return false;\"><img  src='" + this.emptyIcon + "' class='x-tree-node-icon x-tree-node-inline-icon anno-view " + n.links[i].iconCls + "' /></a><span class='left-spacer4' />";
 		}
 		
 		// Hack to bypass the default tree node model's interception of child node clicks.
@@ -338,7 +338,8 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
     onClick : function(event) {
         var a = event.getTarget('a');
         
-        if (a) {
+        lore.debug.anno('ColumnTree.onClick()', {a:a});
+        if (a && a.href != "") {
             lore.global.util.launchTab(a.href, window);
         }
         
