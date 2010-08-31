@@ -192,7 +192,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         });
                     }
                  );   
-                 lore.debug.ore("resourceData is",resourceData);
+                 //lore.debug.ore("resourceData is",resourceData);
                  newResources.push(resourceData);
             }
         );    
@@ -200,7 +200,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         this.resumeEvents();
         this.fireEvent('loaded', this);
         this.aggregatedResourceStore.loadData(newResources);
-        lore.debug.ore("aggregated resources",this.aggregatedResourceStore);
+        //lore.debug.ore("aggregated resources",this.aggregatedResourceStore);
     },
     /** 
      * Compare with another compound object model object to determine whether they have the same properties, 
@@ -225,6 +225,12 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         }
             
         return true;
+    },
+    /** Generate an RDF query triplestore to represent the contents of this CO */
+    toDatabank : function(){
+    	var result = jQuery.rdf.databank();
+    	
+    	return result;
     },
     /**
      * Serialize to RDF/XML directly from model objects.
@@ -366,7 +372,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     var propval = this.obj.value.toString();
                     var propname = presult.term;
                     var propnsdec = ' xmlns="' + presult.ns + '"';
-                    lore.debug.ore("matched aggregation prop",this);
+                    //lore.debug.ore("matched aggregation prop",this);
                     if (this.obj.type == 'uri'){
                         rdfxml += ltsymb + propname + propnsdec + " resource='" + 
                         lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
@@ -422,7 +428,9 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
                         + ltsymb + "layout:originalHeight>" + fig.originalHeight
                         + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
-                
+                if (fig.abstractPreview) {
+                	resourcerdf += ltsymb + "layout:abstractPreview>1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
+                }
                 if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
                     resourcerdf += ltsymb + "layout:scrollx>" + objframe.scrollX
                             + ltsymb + "/" + "layout:scrollx>" + nlsymb + ltsymb
