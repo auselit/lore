@@ -3,7 +3,7 @@ pref("extensions.lore.dccreator","Anonymous");
 pref("extensions.lore.rdfrepos", "http://austlit.edu.au/openrdf-sesame/repositories/lore");
 pref("extensions.lore.rdfrepostype", "sesame");
 pref("extensions.lore.tmkey","");
-pref("extensions.lore.annoserver", "http://maenad-auselit.cloud.itee.uq.edu.au/danno/annotea");
+pref("extensions.lore.annoserver", "http://auselit.metadata.net/danno/annotea");
 pref("extensions.lore.annotationmode", false);
 pref("extensions.lore.DBG_LORE_UI", false);
 pref("extensions.lore.DBG_LORE_ANNOTATIONS", false);
