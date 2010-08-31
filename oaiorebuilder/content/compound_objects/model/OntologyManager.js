@@ -50,6 +50,8 @@ lore.ore.model.OntologyManager = function() {
     /** RDFQuery object representing current ontology */
     this.ontology = {};
     
+    this.dataTypeProps = [];
+    
 	/*
 	 * this.objectPropertiesStore = new Ext.data.JsonStore({ idProperty : "uri",
 	 * sortInfo: { field: "term" }, storeId: "objectProperties", data: [],
@@ -127,10 +129,23 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 										}
 									});
                             om.ontology = relOntology;
-							lore.debug.ore("ontology relationships are",this.ontrelationships);
+							lore.debug.ore("ontology relationships are", this.ontrelationships);
 							// TODO: #13 load datatype properties for prop grids
 							// update properties UI eg combo box in search, menu
 							// for selecting rel type
+							om.dataTypeProps = om.METADATA_PROPS.slice(0);
+							relOntology.where('?prop rdf:type <' + lore.constants.OWL_DATAPROP + '>').each(
+									function (){
+										try {
+											var relresult = lore.global.util.splitTerm(this.prop.value.toString());
+											var ns = lore.constants.nsprefix(relresult.ns);
+											om.dataTypeProps.push(ns + ":" + relresult.term);
+										} catch (e){
+											lore.debug.ore("Problem loading data props",e);
+										}
+									}
+							);
+							
 						} catch (e) {
 							lore.debug.ore("problem loading rels", e);
 						}
@@ -141,5 +156,8 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 		} catch (e) {
 			lore.debug.ore("loadOntology:", e);
 		}
+	},
+	getDataTypeProperties : function(){
+		return this.dataTypeProps;
 	}
 });
