@@ -500,11 +500,13 @@ try {
                 var mode = this.prefs.getBoolPref("annotationmode");
                 var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
                 var metadataOntologyURL = this.prefs.getCharPref("annotationMetadataOntologyURL");
-
+                var loginUrl = annoserver.replace('annotea', 'account/loggedIn.html');
+                
                 loreoverlay.annoView().setPrefs({
                     creator: dccreator,
                     url: annoserver,
                     cacheTimeout: timeout,
+                    loginUrl: loginUrl,
                     disable: disable,
                     mode: mode, 
                     high_contrast: high_contrast,

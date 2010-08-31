@@ -654,7 +654,7 @@ lore.anno.ui.handleServerError = function(action, response) {
         }
         var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
 
-        var loginUrl = res[1] + '?spring-security-redirect=http://localhost:8080/danno/account/loggedIn.html';
+        var loginUrl = res[1] + '?spring-security-redirect=' + lore.anno.prefs.loginUrl;
         lore.debug.anno('Opening login window: ' + loginUrl);
         
         var loginwindow = window.openDialog(loginUrl,'lore_login_window',winOpts);
