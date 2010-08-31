@@ -278,6 +278,11 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             this.coGraph.hideMask();
         }
    },
+   /** Select a figure without activating view or scrolling */
+   selectFigure: function(uri){
+	   var fig = this.lookupFigure(uri);
+	   this.coGraph.setCurrentSelection(fig);
+   },
    /** respond to model event: add figure to represent resource */
    onAddResource : function(res){
     
