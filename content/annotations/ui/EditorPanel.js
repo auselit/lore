@@ -225,7 +225,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						xtype: 'compositefield',
 						fieldLabel: 'Selection',
 						name: 'contextdisp',
-						id: this.genID("contextdisp"),
 						style: {
 							background: 'none',
 							'border-top': 'none',
@@ -238,7 +237,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							{
 								xtype: 'textfield',
 								name: 'contextdisptxt',
-								id: this.genID("contextdisptxt"),
 								readOnly: true,
 								flex: 1
 							}, {
@@ -251,7 +249,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					}, {
 						fieldLabel: 'Variant resource',
 						name: 'variant',
-						id: this.genID('variantfield'),
 						readOnly: true,
 						style: {
 							background: 'none',
@@ -274,7 +271,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						xtype: 'compositefield',
 						fieldLabel: 'Selection',
 						name: 'rcontextdisp',
-						id: this.genID("rcontextdisp"),
 						style: {
 							background: 'none',
 							'border': 'none',
@@ -284,7 +280,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							{
 								xtype: 'textfield',
 								name: 'rcontextdisptxt',
-								id: this.genID("rcontextdisptxt"),
 								readOnly: true,
 								flex: 1
 							}, {
@@ -506,7 +501,32 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.debug.anno(e,e);
 		}
 	},
-		
+	
+  updateSelectionField: function(contextFieldName, recUrl, recContext) {
+      var urlsAreSame = lore.global.util.urlsAreSame;
+      var ctxtFieldTxt = contextFieldName + 'txt'
+      var ctxtField = this.form.findField(ctxtFieldTxt);
+      
+      if (urlsAreSame(recUrl, lore.anno.ui.currentURL)) {
+          var selText = '';
+          try {
+              selText = lore.global.util.getSelectText(recContext, lore.global.util.getContentWindow(window).document);
+          } catch (e) {}
+      } else if ( !lore.anno.ui.topView.variationContentWindowIsVisible() ){
+          // when content is loaded in splitter, context field will be set
+          this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this);
+      }
+
+      var backgroundColour = "inherit";
+      backgroundColour = this.pageView.getCreatorColour(rec.data.creator);
+      
+      this.form.setValues([{
+          id: contextFieldName,
+          value: '"' + selText + '"'
+      }]);
+      ctxtField.getEl().setStyle("background-color", "inherit");
+  },
+  
 	/**
 	 * Load record into the editor panel
 	 * @param {Record} rec The record to load
@@ -516,7 +536,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		try {
 			// display contents of context
 			if (rec.data.context) {
-				
+// TODO: Actually use this next function
+//				this.updateSelectionField('contextdisp', rec.data.original);
 				var ctxtField = this.form.findField('contextdisptxt');
 				if (urlsAreSame(rec.data.original, lore.anno.ui.currentURL)) {
 					var selText = '';
@@ -551,11 +572,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			
 			// display contents of variant context 
 			if (rec.data.variantcontext) {
-				var vCtxtField = this.form.findField('rcontextdisptxt');
+				var ctxtField = this.form.findField('rcontextdisptxt');
 				if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
 					var selText = '';
 					try {
-						
 						selText = lore.global.util.getSelectionText(
 						rec.data.variantcontext, lore.global.util.getContentWindow(window).document)
 					} catch (e) {
@@ -568,7 +588,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					this.pageView.updateSplitter(rec, false, this.updateSplitterContextField, this); // when content is loaded in splitter
 														// context field will be set
 				}
-				vCtxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
+				ctxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 				lore.anno.ui.setVisibilityFormField(this.form,'rcontextdisp', false);
 			} else {
 				// otherwise empty
@@ -629,14 +649,14 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	
 	/**
 	 * Callback that updates the context field
-	 * @param {Object} cw
+	 * @param {Object} cw Content Window
 	 * @param {Object} rec
 	 */
 	updateSplitterContextField: function (cw, rec){
 		// determine which context field to update
 		// depending on whether it's for the original or
 		// variant context for the variation annotation
-        var urlsAreSame = lore.global.util.urlsAreSame;
+    var urlsAreSame = lore.global.util.urlsAreSame;
 		
 		var fieldId = 'rcontextdisptxt';
 		var ctx = rec.data.variantcontext;
@@ -647,12 +667,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		}
 			
 		var selText = '';
-			
+
 		try {
 			selText = lore.global.util.getSelectionText(ctx, cw.document);
 		} 
 		catch (e) {
-			lore.debug.anno(e, e);
+			lore.debug.anno("Exception getting selection text", e);
 		}
 		this.form.setValues([{
 			id: fieldId,

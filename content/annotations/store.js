@@ -20,9 +20,6 @@
  
  var EXPORTED_SYMBOLS = ['store'];
  
-// lore.debug
-Components.utils.import("resource://lore/debug.js");	
-	
  /** 
   * Store object.  Used for storing/caching objects.
   * Basically a Map that contains Maps.
