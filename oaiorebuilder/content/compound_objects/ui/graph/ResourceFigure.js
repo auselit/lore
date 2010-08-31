@@ -422,10 +422,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 						try {
 							mimetype = req.getResponseHeader('Content-Type');
 						} catch (e) {
-							lore.debug
-									.ore(
-											"ResourceFigure: exception getting mime type",
-											e);
+							lore.debug.ore("ResourceFigure: exception getting mime type", e);
 						}
 						if (!mimetype) {
 
@@ -629,7 +626,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @param {}  pval The value of the property
 	 */
 	appendProperty : function(pname, pval) {
-		lore.debug.ore("appendProperty " + this.url, this);
+		//lore.debug.ore("appendProperty " + pname + " " + this.url, [pval,this]);
 		var counter = 0;
 		var oldrdftype = this.metadataproperties["rdf:type_0"];
 		var prop = this.metadataproperties[pname + "_" + counter];
@@ -640,7 +637,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.metadataproperties[(pname + "_" + counter)] = pval;
 		// if the rdf:type has changed, regenerate preview (as it might be an
 		// annotation or compound object
-		if (oldrdftype != pval && this.hasPreview) {
+		if (pname == "rdf:type" && oldrdftype != pval && this.hasPreview) {
 			this.showContent();
 		}
 	},
@@ -763,7 +760,20 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		 * menu.appendMenuItem(new draw2d.MenuItem("Show in Narrative view",
 		 * null, function (){ // TODO jump to resource in summary view } ));
 		 */
-
+		menu.appendMenuItem(new draw2d.MenuItem("Show in Resource List",
+				"../../skin/icons/application_view_detail.png", function(){
+					Ext.getCmp("loreviews").activate("remlistview");
+					Ext.getCmp("remlistview").selectResource(thisfig.url);
+			}
+		));
+		menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view",
+				"../../skin/icons/picture_empty.png", function() {
+					// TODO: don't hardcode the slideshow id and the url for the
+					// containing compound object should come from the model
+					Ext.getCmp("loreviews").activate("remslideview");
+					Ext.getCmp("newss").setActiveItem(thisfig.url + "_"
+							+ lore.ore.cache.getLoadedCompoundObjectUri());
+		}));
 		menu.appendMenuItem(new draw2d.MenuItem("Show in Explore view",
 				"../../skin/icons/chart_line.png", function() {
 					Ext.getCmp("loreviews").activate("remexploreview");
@@ -778,14 +788,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 							isCO);
 				}));
 
-		menu.appendMenuItem(new draw2d.MenuItem("Show in Slideshow view",
-				"../../skin/icons/picture_empty.png", function() {
-					// TODO: don't hardcode the slideshow id and the url for the
-					// containing compound object should come from the model
-					Ext.getCmp("loreviews").activate("remslideview");
-					Ext.getCmp("newss").setActiveItem(thisfig.url + "_"
-							+ lore.ore.cache.getLoadedCompoundObjectUri());
-				}));
+		
 		menu.appendMenuItem(new draw2d.MenuItem("Toggle abstract preview",
 				null, function() {
 				if (thisfig.abstractPreview){
