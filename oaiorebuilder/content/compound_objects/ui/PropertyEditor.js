@@ -212,6 +212,37 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             });
         }
     },
+    makeAddPropertyMenu: function (mp){
+    	var panel = this;
+    	panel.propMenu = new Ext.menu.Menu({
+            id: panel.id + "-add-metadata"
+        });
+        panel.propMenu.panelref = panel.id;
+        for (var i = 0; i < mp.length; i++) {
+            var propname = mp[i];
+            panel.propMenu.add({
+                id: panel.id + "-add-" + propname,
+                text: propname,
+                handler: function () {
+                    try{
+                        var panel = Ext.getCmp(this.parentMenu.panelref);
+                        var pstore = panel.getStore();
+                        var counter = 0;
+                        var prop = pstore.getById(this.text + "_" + counter);
+                        while (prop) {
+                            counter = counter + 1;
+                            prop = pstore.getById(this.text + "_" + counter);
+                        }
+                        var theid = this.text + "_" + counter;
+                        pstore.loadData([{id: theid, name: this.text, value: ""}],true);
+                        
+                    } catch (ex){
+                        lore.debug.ore("exception adding prop " + this.text,ex);
+                    }
+                }
+            });
+        }
+    },
     /** Handler for plus tool button on property grids 
      * 
      * @param {} ev
@@ -219,39 +250,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} panel
      */
     addPropertyAction : function (ev, toolEl, panel) {
-        var makeAddMenu  = function(panel){
-            panel.propMenu = new Ext.menu.Menu({
-                id: panel.id + "-add-metadata"
-            });
-            panel.propMenu.panelref = panel.id;
-            var mp = lore.ore.ontologyManager.METADATA_PROPS;
-            for (var i = 0; i < mp.length; i++) {
-                var propname = mp[i];
-                panel.propMenu.add({
-                    id: panel.id + "-add-" + propname,
-                    text: propname,
-                    handler: function () {
-                        try{
-                            var panel = Ext.getCmp(this.parentMenu.panelref);
-                            var pstore = panel.getStore();
-                            var counter = 0;
-                            var prop = pstore.getById(this.text + "_" + counter);
-                            while (prop) {
-                                counter = counter + 1;
-                                prop = pstore.getById(this.text + "_" + counter);
-                            }
-                            var theid = this.text + "_" + counter;
-                            pstore.loadData([{id: theid, name: this.text, value: ""}],true);
-                            
-                        } catch (ex){
-                            lore.debug.ore("exception adding prop " + this.text,ex);
-                        }
-                    }
-                });
-            }
-        };
-        if (!panel.propMenu) {
-            makeAddMenu(panel);
+    	try{
+        if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.ontologyURL != panel.loadedOntology)) {        	
+        	panel.loadedOntology = lore.ore.ontologyManager.ontologyURL;
+        	panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties());
         }
         if (panel.id == "remgrid" || lore.ore.ui.graphicalEditor.getSelectedFigure() instanceof lore.ore.ui.graph.ResourceFigure){
             if (panel.collapsed) {
@@ -261,6 +263,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         } else {
             lore.ore.ui.vp.info("Please click on a Resource node before adding property");
         }
+    	} catch (e){
+    		lore.debug.ore("Problem in addPropertyAction",e);
+    	}
     },
     /** Handler for minus tool button on property grids
      * 
