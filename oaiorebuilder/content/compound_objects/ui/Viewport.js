@@ -235,7 +235,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         loreviews.contextmenu.add({
             text : "Show TriG",
             handler : function() {
-                lore.ore.ui.vp.openView("remtrigview", "TriG", this.updateTriGView);
+                lore.ore.ui.vp.openView("remtrigview", "TriG", this.updateTrigView);
             },
             scope: this
         });
@@ -261,7 +261,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                 'autoScroll' : true,
                 'closable' : true
             });
-            tab.on("activate", activationhandler);
+            tab.on("activate", activationhandler, this);
         }
         tab.show();
     },
