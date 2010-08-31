@@ -45,23 +45,24 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                 autoScroll : true,
                 items : [{
                             title : "Graphical Editor",
-                            tabTip: "View or edit the current compound object",
+                            tabTip: "View or edit the compound object graphically",
                             id : "drawingarea",
                             xtype : "grapheditor"
-                        }, {
-                            title : "Resources",
-                            tabTip: "View textual summary of current compound object contents",
-                            xtype : "summarypanel",
-                            id : "remlistview"
-                        }, /*{
-                            title : "Test",
+                        },{
+		                    title : "Resource List",
+		                    tabTip: "View or edit the list of resources in the compound object",
+		                    xtype : "resourcepanel",
+		                    id : "remlistview"
+		                },  {
+                            title : "Details",
+                            tabTip: "View detailed description of compound object contents including properties and relationships",
                             xtype: "narrativepanel"
                             
-                        },*/ {
+                        }, {
                             layout : 'fit',
                             id : "remslideview",
                             title : "Slideshow",
-                            tabTip: "View current compound object contents as a slideshow",
+                            tabTip: "View compound object contents as a slideshow",
                             items : [{
                                         id : 'newss',
                                         xtype : "slideshowpanel",
