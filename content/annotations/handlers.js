@@ -654,14 +654,10 @@ lore.anno.ui.handleServerError = function(action, response) {
         }
         var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
 
-        var newwindow = window.openDialog(res[1],'lore_login_window',winOpts);
+        var loginUrl = res[1] + '?spring-security-redirect=http://localhost:8080/danno/account/loggedIn.html';
+        lore.debug.anno('Opening login window: ' + loginUrl);
         
-        newwindow.addEventListener("change", function(ev){lore.debug.anno("onchange", ev);}, false);
-        newwindow.addEventListener("submit", function(ev){lore.debug.anno("onsubmit", [ev,newwindow]);}, false);
-        newwindow.addEventListener("load", function(ev){lore.debug.anno("onload", ev);}, false);
-        newwindow.addEventListener("pageshow", function(ev){lore.debug.anno("onpageshow", ev);}, false);
-        newwindow.addEventListener("unload", function(ev){lore.debug.anno("onunload", ev);}, false);
-        lore.debug.anno("created login window", newwindow);
+        var loginwindow = window.openDialog(loginUrl,'lore_login_window',winOpts);
         
     }
 }
