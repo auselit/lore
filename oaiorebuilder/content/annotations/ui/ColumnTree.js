@@ -338,7 +338,6 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
     onClick : function(event) {
         var a = event.getTarget('a');
         
-        lore.debug.anno('ColumnTree.onClick()', {a:a});
         if (a && a.href != "") {
             lore.global.util.launchTab(a.href, window);
         }
