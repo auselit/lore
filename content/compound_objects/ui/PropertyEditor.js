@@ -339,9 +339,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         if (this.id == "nodegrid"){            
             lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
         }
+        lore.ore.ui.graphicalEditor.isDirty = true;
     },
     /** update the metadataproperties recorded in the figure for that node */
     handlePropertyChange : function(args) {
+    	lore.ore.ui.graphicalEditor.isDirty = true;
         // TODO: MVC: this needs to update the model (and view needs to listen to model)
         // at present this only updates resource/rel properties - also needs to update on compound object
         try{
