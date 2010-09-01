@@ -214,6 +214,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     historyData.action = "lore.ore.controller.loadCompoundObjectFromURL(\"" + node.id + "\");";
                     historyData.icon = "chrome://lore/skin/oaioreicon-sm.png";
                     historyData.tooltip = "Load in LORE";
+                } else if (node.data["$type"] == "rectangle"){ // annotation
+                	historyData.action = "lore.global.util.launchTab(\"" + node.id + "?danno_useStylesheet=\");";
                 }
                 
                 var historyEl = Ext.getCmp("exploreHistory").body.dom;

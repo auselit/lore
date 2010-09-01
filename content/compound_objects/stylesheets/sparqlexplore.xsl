@@ -80,9 +80,16 @@
                 <xsl:otherwise>n</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+      	<xsl:variable name="isAnno">
+      		<xsl:choose>
+                <xsl:when test="key('results-key',$theuri)/sparql:binding[@name='sometype']/sparql:uri[.='http://www.w3.org/2000/10/annotation-ns#Annotation' or starts-with(.,'http://www.w3.org/2000/10/annotationType')]">y</xsl:when>
+                <xsl:otherwise>n</xsl:otherwise>
+            </xsl:choose>
+      	</xsl:variable>
       	
       	<xsl:text>{"id" : "</xsl:text><xsl:value-of select="$theuri"/>
       	<xsl:text>", "data": {</xsl:text>
+      	<xsl:if test="$isAnno = 'y'">"$height":"8", "$width":"8", "$type":"rectangle"</xsl:if>
       	<xsl:if test="$isCO = 'y'">"$dim": 6, "$color": "orange", "$type": "circle"</xsl:if>
       	<xsl:variable name="creator" select="key('results-key',$theuri)/sparql:binding[@name='creator']"/>
       	<xsl:if test="$creator">,"creator": "<xsl:value-of select="$creator/*"/>"</xsl:if>
