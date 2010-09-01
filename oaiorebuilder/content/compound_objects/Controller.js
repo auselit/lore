@@ -36,16 +36,66 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
      */
     loadCompoundObjectFromURL: function(rdfURL){
-        Ext.MessageBox.show({
-               msg: 'Loading compound object',
-               width:250,
-               defaultTextHeight: 0,
-               closable: false,
-               cls: 'co-load-msg'
-        });
-        if (lore.ore.reposAdapter){
-            lore.ore.reposAdapter.loadCompoundObject(rdfURL, this.loadCompoundObject, this.afterLoadCompoundObjectFail);
+    	try{
+            // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
+            var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            if (currentCO && currentCO.isDirty()){
+                Ext.Msg.show({
+                    title : 'Save Compound Object?',
+                    buttons : Ext.MessageBox.YESNOCANCEL,
+                    msg : 'Would you like to save the current compound object before proceeding?<br><br>Any unsaved changes will be lost if you select "No".',
+                    fn : function(btn) {
+                        if (btn === 'yes') {
+                            var currentCO = lore.ore.cache.getLoadedCompoundObject();
+                            // TODO: #56 check that the save completed successfully 
+                            var remid = currentCO.uri;
+                            // TODO: this should be handled by repository adapter
+                            var therdf = currentCO.toRDFXML(false);
+                            lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
+                                lore.ore.controller.afterSaveCompoundObject(remid);
+	                             Ext.MessageBox.show({
+	            	                    msg: 'Loading compound object',
+	            	                    width:250,
+	            	                    defaultTextHeight: 0,
+	            	                    closable: false,
+	            	                    cls: 'co-load-msg'
+	            	             });
+	            	             if (lore.ore.reposAdapter){
+	            	                 lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.controller.loadCompoundObject, lore.ore.controller.afterLoadCompoundObjectFail);
+	            	             } 
+                            });
+                            
+                        } else if (btn === 'no') {
+                        	Ext.MessageBox.show({
+        	                    msg: 'Loading compound object',
+        	                    width:250,
+        	                    defaultTextHeight: 0,
+        	                    closable: false,
+        	                    cls: 'co-load-msg'
+        	             });
+        	             if (lore.ore.reposAdapter){
+        	                 lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.controller.loadCompoundObject, lore.ore.controller.afterLoadCompoundObjectFail);
+        	             }
+                        }
+                    }
+                });
+            } else {
+	            Ext.MessageBox.show({
+	                    msg: 'Loading compound object',
+	                    width:250,
+	                    defaultTextHeight: 0,
+	                    closable: false,
+	                    cls: 'co-load-msg'
+	             });
+	             if (lore.ore.reposAdapter){
+	                 lore.ore.reposAdapter.loadCompoundObject(rdfURL, this.loadCompoundObject, this.afterLoadCompoundObjectFail);
+	             }
+            }
+    
+        } catch (e){
+            lore.debug.ore("Error in loadCompoundObjectFromURL",e);
         }
+        
     },
     /**
      * Load a compound object into LORE
@@ -320,6 +370,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         
     },
+
     /**
      * Create new Compound object
      * @param {} dontRaise
@@ -438,6 +489,7 @@ Ext.apply(lore.ore.Controller.prototype, {
       * @param {String} remid The compound object that was saved */
     afterSaveCompoundObject : function(remid){
         lore.ore.cache.setLoadedCompoundObjectIsNew(false);
+        lore.ore.ui.graphicalEditor.isDirty = false;
         var title = lore.ore.ui.grid.getPropertyValue("dc:title") 
             || lore.ore.ui.grid.getPropertyValue("dcterms:title") 
             || "Untitled";

@@ -586,13 +586,16 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         // TODO: #56 fix this method - compare state of model (uses graphical editor for now)
         // If it was a new compound object and the graphical view is either not defined 
         // or has no resources, don't consider it to be dirty
+    	if (this.properties.findProperty(lore.constants.NAMESPACES["dc"] + "creator", lore.ore.controller.defaultCreator) == -1){
+    		return false;
+    	}
         if (lore.global.util.isEmptyObject(this.loadedContent) 
             && (!lore.ore.ui.graphicalEditor || 
                 (lore.ore.ui.graphicalEditor.coGraph 
                     && lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().getSize() == 0))){
             return false;
         } else {
-            return true;
+            return lore.ore.ui.graphicalEditor.isDirty;
         }
     }
 });

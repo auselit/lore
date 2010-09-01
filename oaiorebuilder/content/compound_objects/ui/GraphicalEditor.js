@@ -29,6 +29,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
          /** Used to lookup figures by their URIs in the graphical editor */
         this.lookup = {};
         this.readOnly = false;
+        this.isDirty = false;
    },
    /** bindModel, update listeners */
    bindModel: function(co){
@@ -47,6 +48,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    /** Initialize the graphical editor */
    initGraph: function(){
     try{
+    	this.isDirty = false;
         Ext.getCmp("loreviews").activate("drawingarea");
         this.dummylayoutx = this.NODE_SPACING;
         this.dummylayouty = this.NODE_SPACING;
@@ -200,6 +202,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
      * @param {} event
      */
     stackChanged : function(event) {
+    	this.isDirty  = true;
         var details = event.getDetails();
         var comm = event.getCommand();
         var comm_fig = comm.figure;
@@ -327,6 +330,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             } catch (e) {
                 lore.debug.ore("Error getting title from history",e);
             }
+            this.isDirty = true;
         }
         if (theURL && !this.lookup[theURL]) {
             fig = new lore.ore.ui.graph.ResourceFigure(opts.props);
