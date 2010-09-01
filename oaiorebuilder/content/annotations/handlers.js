@@ -428,9 +428,14 @@ lore.anno.ui.handleLocationChange = function(contextURL) {
 		// enable highlighting for the page
 		lore.anno.ui.pageui.enableImageHighlighting();
 
-		//  load annotations for the page
-		lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
-		lore.anno.annoMan.updateAnnotationsSourceList(contextURL);
+		lore.anno.annoMan.clearAnnotationStore();
+		
+		// Do we have a valid URL to annotate
+		if (contextURL.indexOf('http') == 0) {
+			//  load annotations for the page
+			lore.anno.ui.loreInfo("Loading annotations for " + contextURL);
+			lore.anno.annoMan.updateAnnotationsSourceList(contextURL);
+		}
 	} catch(e) {
 		lore.debug.anno(e,e);
 	}
