@@ -616,6 +616,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			lore.debug.anno("Annotation server URL not set!");
 			return;
 		}
+		this.clearAnnotationStore();
 		
 		var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + lore.global.util.fixedEncodeURIComponent(theURL);
 		lore.debug.anno("Updating annotations with request URL: " + queryURL);
@@ -638,7 +639,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                     this.fireEvent('servererror', 'list', resp);
 					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
 					lore.anno.ui.loreError("Failure loading annotations for page.");
-					lore.anno.annoMan.annods.removeAll();
+
 				} catch (e ) {
 					lore.debug.anno(e,e);
 				}
