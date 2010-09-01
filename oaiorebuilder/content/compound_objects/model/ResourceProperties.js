@@ -83,6 +83,20 @@ Ext.apply(lore.ore.model.ResourceProperties.prototype, {
             return false;
         }
     },
+    /** Get index of property with particular value
+     * 
+     */
+    findProperty : function(property,value){
+    	var propValues = this.data[property];  	
+    	if (propValues && propValues.length > 0){
+    		for (var i = 0; i < propValues.length; i++){
+    			if (propValues[i].value == value){
+    				return i;
+    			}
+    		}
+    	}
+    	return -1;
+    },
      /**
      * Convenience function to get the title of this resource 
      * @return {String} The primary title, or undefined if there is no primary title
