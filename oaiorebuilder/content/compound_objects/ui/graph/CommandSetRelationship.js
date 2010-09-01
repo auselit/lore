@@ -13,7 +13,6 @@ lore.ore.ui.graph.CommandSetRelationship = function(figure, edgens, edgetype, sy
    this.oldType = figure.edgetype;
    this.newSymmetric = symmetric;
    this.oldSymmetric = figure.symmetric;
-   lore.debug.ore("CommandSetRelationship",this);
 };
 Ext.extend(lore.ore.ui.graph.CommandSetRelationship, draw2d.Command, {
    type :  "lore.ore.ui.graph.CommandSetRelationship",
