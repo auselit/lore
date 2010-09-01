@@ -77,17 +77,27 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             	var theProp = valArray[i];
                 if ("layout" != theProp.prefix){
                     if (theProp.value.toString().match("^http://") == "http://") {
+                    	// property data for related resource: for looking up title etc
+                        var propR = (container? container.getAggregatedResource(theProp.value): false);
                         // Link to resource
                         relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
-                        relhtml += "<a href='#' onclick='lore.global.util.launchTab(\"" + theProp.value + "\");'>";
-                        // lookup title
-                        var propR = (container? container.getAggregatedResource(theProp.value): false);
+                        // Open in browser link
+                        relhtml += "<a href='#' title='Show in browser' onclick='lore.global.util.launchTab(\"" 
+                        	+ theProp.value 
+                        	+ ((propR && propR.data.representsAnno) ? "?danno_useStylesheet=" : "") 
+                        	+ "\");'>";
+                        // use title when available
                         if (propR) {
                             relhtml += propR.data.properties.getTitle() || theProp.value;
                         } else {
                             relhtml += theProp.value;
                         }
-                        relhtml += "</a></p>";
+                        relhtml += "</a>";
+                        // Goto slide link
+                        relhtml += "&nbsp;<a href='#' title='Go to slide' onclick='Ext.getCmp(\"" 
+                        	+ this.ssid + "\").setActiveItem(\"" + theProp.value + "_" + container.uri+"\");'>"
+                        	+ "<img src='chrome://lore/skin/icons/picture_empty.png'></a>";
+                        relhtml += "</p>";
                     } else {
                         // Display value as property
                         prophtml += this.propTemplate.apply(theProp);
@@ -287,7 +297,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	        }   
         	slidehtml += "<p class='slideshowFooter'>Viewing "
         		+ (resourceprops.representsCO ? "nested compound object " :
-        		 "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#'>"  + resourceprops.uri + "</a>");
+        		 "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>");
             // TODO: refactor: remove hardcoding
             var container = resource.store.co;
             
