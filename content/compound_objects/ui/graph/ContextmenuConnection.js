@@ -88,15 +88,17 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
      * Construct the context menu for selecting the connection type
      * @return {}
      */
-    getContextMenu : function() {
+    onContextMenu : function(x,y) {
         try {
-    	    // use the cached menu if the relationship ontology has not changed
-    	    if (lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
-    	            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl)) {
-    	        return lore.ore.ui.graph.ContextmenuConnection.contextMenu;
-    	    } else {
-    	        lore.debug.ore("generating context menu for connection",this);
-    		    lore.ore.ui.graph.ContextmenuConnection.contextMenu=new draw2d.Menu();
+        	if (!(lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
+    	            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl))) {
+    	        
+    	    	lore.debug.ore("generating context menu for connection",this);
+        		lore.ore.ui.graph.ContextmenuConnection.contextmenu = new Ext.menu.Menu({
+                    showSeparator: false
+                });
+                var cm = lore.ore.ui.graph.ContextmenuConnection.contextmenu;
+    		    
     			// sort the menu entries alphabetically
                 var om = lore.ore.ontologyManager;
     			var keys = [];
@@ -110,13 +112,23 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     				var relnamespace=om.ontrelationships[rel]; 
     	            var symmquery = om.ontology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
     	                .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
-    		        var symm = symmquery.length > 0;
-    				var functionstr = "lore.ore.ui.graphicalEditor.getSelectedFigure().setRelationship(\"" + relnamespace + "\", \"" +  rel + "\"," + symm + ");";
-    		 		lore.ore.ui.graph.ContextmenuConnection.contextMenu.appendMenuItem(new draw2d.MenuItem(rel,null,new Function(functionstr)));
+    		        var symm = symmquery.length > 0;		
+    		 		cm.add({
+                        text: rel,          
+                        scope: {ns: relnamespace, rel:rel, symm: symm},
+                        handler: function(evt){
+                        	lore.ore.ui.graphicalEditor.getSelectedFigure().setRelationship(this.ns, this.rel, this.symm);
+                        }
+                     });
     		 	}
     	        lore.ore.ui.graph.ContextmenuConnection.loadedOntology = om.ontologyURL;
-    			return lore.ore.ui.graph.ContextmenuConnection.contextMenu;
+    			
     	    }
+        	var w = this.workflow;
+        	var absx = w.getAbsoluteX() +  x - w.getScrollLeft();
+    		var absy = w.getAbsoluteY() +  y - w.getScrollTop();
+    		lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt([absx, absy]);
+    		
         } catch (ex){ 
             lore.debug.ore("problem generating context menu for connection",ex);
             return null;
