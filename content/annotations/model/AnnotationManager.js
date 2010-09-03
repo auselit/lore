@@ -591,12 +591,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (anno.isReply) {
 			return false;
 		}
-
-		function stripFragment(url) {
-			return url.replace(/\#.*$/,'');
-		}
         
-		var currentURL = stripFragment(lore.anno.ui.currentURL);
+		var currentURL = lore.anno.ui.currentURL;
  
 		if (urlsAreSame(anno.resource, currentURL) || 
             urlsAreSame(anno.variant, currentURL) || 
