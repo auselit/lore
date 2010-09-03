@@ -82,7 +82,7 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
             } catch (e) {
                 xmlhttp = false;
             }
-    },
+    }
 /*    generateID: function(){
     	use REST api getNextPID
     }

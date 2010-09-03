@@ -99,7 +99,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                             header : 'Property Name',
                             sortable : true,
                             dataIndex : 'name',
-                            menuDisabled : true,
+                            menuDisabled : true
                  }, {
                             header : 'Value',
                             dataIndex : 'value',
