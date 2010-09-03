@@ -1176,6 +1176,8 @@ util = {
     },
     
     urlsAreSame : function(url1, url2) {
+    	var url1 = url1.replace(/\#.*$/,'');
+    	var url2 = url2.replace(/\#.*$/,'');
         return decodeURIComponent(url1) === decodeURIComponent(url2);
     }
    

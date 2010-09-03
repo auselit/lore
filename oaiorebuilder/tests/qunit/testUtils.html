@@ -37,6 +37,20 @@ test("fixedEncodeURIComponent()", function() {
 });
 
 
+test("urlsAreSame", function() {
+	var url1 = "http://www.omad.net/";
+	var url2 = "http://www.omad.net/";
+	ok(util.urlsAreSame(url1, url2), 'Urls are identical');
+
+	var url1 = "http://www.digitalhumanities.org/dhq/vol/4/1/000080/000080.html#";
+	var url2 = "http://www.digitalhumanities.org/dhq/vol/4/1/000080/000080.html";
+	ok(util.urlsAreSame(url1, url2), 'Urls differ by a hash');
+
+	var url1 = "http://www.digitalhumanities.org/dhq/vol/4/1/000080/000080.html";
+	var url2 = "http://www.digitalhumanities.org/dhq/vol/4/1/000080/000080.html#foobar";
+	ok(util.urlsAreSame(url1, url2), 'Urls differ by a hash and tag');
+});
+
   });
   </script>
   
