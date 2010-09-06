@@ -37,14 +37,12 @@
  * 
  * Trac ticket #249
  */
-Ext.override(Ext.form.HtmlEditor, {
-    execCmd : function(cmd, value){
-        var doc = this.getDoc();
-        doc.execCommand('styleWithCSS', false, false);
-        doc.execCommand(cmd, false, value === undefined ? null : value);
-        this.syncValue();
-    }
+// Runs before the existing execCmd function
+Ext.intercept(Ext.form.HtmlEditor.prototype, 'execCmd', function() {
+    var doc = this.getDoc();
+    doc.execCommand('styleWithCSS', false, false);
 });
+
 
 /**
  * EditorPanel 
