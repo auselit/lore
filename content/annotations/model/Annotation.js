@@ -174,6 +174,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
              * From Annotea created (the date and time when the annotation was created)
              */
 			this.created = lore.global.util.safeGetFirstChildValue(node);
+            
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
             /** @property modified
              * From Annotea modified (the date and time when the annotation was last modified)
@@ -194,10 +195,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 				if (node && node.length > 0) {
 					this.meta.context = lore.global.util.safeGetFirstChildValue(node);
 					
-					this.meta.context = this.meta.context.split('\n');
-					
-
-					
+					this.meta.context = this.meta.context.split('\n');	
 				}
 				//TODO: #194 - Enable code to read in semantic facts added, once changes to backend and UI have been done
 //				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'semantic-context');
@@ -275,6 +273,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 						this.variant = attr.nodeValue;
 					}
 				}
+                
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original');
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
@@ -285,11 +284,13 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 						this.original = attr.nodeValue;
 					}
 				}
+                
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original-context');
                 /** @property originalcontext
                  * For a VariationAnnotation, the context associated with the {@link #original} resource
                  */
 				this.originalcontext = lore.global.util.safeGetFirstChildValue(node);
+                
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant-context');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised-context');
@@ -298,16 +299,19 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                  * For a VariationAnnotation, the context associated with the {@link #variant} resource
                  */
 				this.variantcontext = lore.global.util.safeGetFirstChildValue(node);
+                
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-agent');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-agent');
 				}
 				this.variationagent = lore.global.util.safeGetFirstChildValue(node);
+                
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-place');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-place');
 				}
 				this.variationplace = lore.global.util.safeGetFirstChildValue(node);
+                
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-date');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-date');
