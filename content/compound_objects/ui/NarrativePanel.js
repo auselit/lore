@@ -69,8 +69,8 @@ Ext.reg('narrativepanel',lore.ore.ui.NarrativePanel);
 lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
     '<tpl for=".">',
     '<div style="width:100%">',
-        '<table style="width:100%;font-family:arial;padding-bottom;0.5em"><tr><td>',
-        '<span style="whitespace:normal;font-size:140%;font-weight:bold;color:#cc0000;">{title}<tpl if="!title">Untitled Compound Object</tpl></span></td><td style="text-align:right" width="60">',
+        '<table style="whitespace:normal;width:100%;font-family:arial;padding-bottom;0.5em"><tr><td>',
+        '<span style="font-size:140%;font-weight:bold;color:#cc0000;">{title}<tpl if="!title">Untitled Compound Object</tpl></span></td><td style="text-align:right" width="30">',
         '&nbsp;<a href="#" onclick="lore.ore.controller.exportCompoundObject(\'wordml\');">',
         '<img src="chrome://lore/skin/icons/page_white_word.png" title="Export to MS Word"></a>',
         '</td></tr></table>',
@@ -143,10 +143,10 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
     '<tpl for=".">',
     '<div id="res{#}">',
         '<div style="border-top: 1px solid rgb(220, 224, 225); margin-top: 0.5em;"> </div>',
-        '<table style="width:100%;font-family:arial;padding-bottom:0.5em"><tr><td>',
+        '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr><td>',
         '<tpl if="representsCO == true"><a title="Open in LORE" href="#" onclick="lore.ore.controller.loadCompoundObjectFromURL(\'{uri}\');"><img style="padding-right:5px" src="chrome://lore/skin/oaioreicon-sm.png"></a></tpl>',  
         '<span style="font-size:130%;font-weight:bold">{title}<tpl if="!title">Untitled Resource</tpl></span></td>',
-        '<td width="60"><a href="#" title="Show in graphical editor" onclick="lore.ore.ui.graphicalEditor.scrollToFigure(\'{uri}\');"><img src="chrome://lore/skin/icons/graph_go.png" alt="View in graphical editor"></a>',
+        '<td width="80"><a href="#" title="Show in graphical editor" onclick="lore.ore.ui.graphicalEditor.scrollToFigure(\'{uri}\');"><img src="chrome://lore/skin/icons/graph_go.png" alt="View in graphical editor"></a>',
         '&nbsp;<a href="#" title="Show in resource list" onclick="Ext.getCmp(\'loreviews\').activate(\'remlistview\');Ext.getCmp(\'remlistview\').selectResource(\'{uri}\')"><img src="chrome://lore/skin/icons/application_view_detail.png"></a>',
         '&nbsp;<a href="#" title="Show in slideshow view" onclick="Ext.getCmp(\'loreviews\').activate(\'remslideview\');Ext.getCmp(\'newss\').setActiveItem(\'{uri}_{[lore.ore.cache.getLoadedCompoundObjectUri()]}\');"><img src="chrome://lore/skin/icons/picture_empty.png" alt="View in slideshow view"></a>',
         '&nbsp;<a href="#" title="Show in explore view" onclick="Ext.getCmp(\'loreviews\').activate(\'remexploreview\');lore.ore.explorePanel.showInExploreView(\'{uri}\',\'{title}\',{representsCO});"><img src="chrome://lore/skin/icons/chart_line.png" alt="View in explore view"></a>',
@@ -206,7 +206,7 @@ lore.ore.ui.NarrativeDataView = Ext.extend(Ext.DataView, {
             tpl :  lore.ore.ui.narrativeResTemplate,
             loadingText: "Loading resource summaries...",
             singleSelect: true,
-            autoScroll: true,
+            autoScroll: false,
             itemSelector : "div.resourceSummary"
         });
         lore.ore.ui.NarrativeDataView.superclass.initComponent.call(this,arguments); 
