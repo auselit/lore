@@ -93,10 +93,12 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                             relhtml += theProp.value;
                         }
                         relhtml += "</a>";
-                        // Goto slide link
-                        relhtml += "&nbsp;<a href='#' title='Go to slide' onclick='Ext.getCmp(\"" 
-                        	+ this.ssid + "\").setActiveItem(\"" + theProp.value + "_" + container.uri+"\");'>"
-                        	+ "<img src='chrome://lore/skin/icons/picture_empty.png'></a>";
+                        if (propR){
+                        	// Goto slide link (only if resource is in same compound object)
+	                        relhtml += "&nbsp;<a href='#' title='Go to slide' onclick='Ext.getCmp(\"" 
+	                        	+ this.ssid + "\").setActiveItem(\"" + theProp.value + "_" + container.uri+"\");'>"
+	                        	+ "<img src='chrome://lore/skin/icons/picture_empty.png'></a>";
+                        }
                         relhtml += "</p>";
                     } else {
                         // Display value as property
