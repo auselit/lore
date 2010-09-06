@@ -629,5 +629,16 @@ div.exploretip-text {
 div.coListing:hover {
 	background-color: #eeeeee;
 }
+
+	
+.annoListing {
+	padding: 2px;
+    padding-bottom:3px;
+    cursor:pointer;
+    font-family: tahoma, arial, helvetica;
+}
+div.annoListing:hover {
+	background-color: #eeeeee;
+}
 #remlistview .x-grid3-row-selected {background-color: yellow !important;}
 

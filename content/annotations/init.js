@@ -225,23 +225,20 @@ lore.anno.ui.uninit = function () {
 lore.anno.ui.initGUIConfig = function(){
 	
 	/**
-	 * Helper function for construction the "Using Annotations" tab
+	 * the "Using Annotations" tab
 	 * @private
 	 */
-	var loreuiannoabout = function () { 
-		return {
-				title: "Using Annotations",
-				id: "about",
-				iconCls: "welcome-icon"};
+	var aboutPanel = {
+		title: "Using Annotations",
+		id: "about",
+		iconCls: "welcome-icon"
 	}
 
 	/**
-	 * Helper function for construting 'Annotationg Editor' panel
+	 * 'Annotation Editor' panel
 	 * @private
 	 */
-	var loreuieditor = function () {
-	
-		return {
+	var loreuieditor = {
 			xtype: 'annoeditorpanel',
 		 	region: "south",
 		 	split: true,
@@ -249,7 +246,6 @@ lore.anno.ui.initGUIConfig = function(){
 			pageView: lore.anno.ui.pageui,
 			rdfaManager: lore.anno.ui.rdfaMan,
 			model: lore.anno.annoMan.annodsunsaved,
-			metaModel: lore.anno.annoMan.annousermetads,
 			id: "annotationslistform",
 			annomode: lore.constants.ANNOMODE_NORMAL, 
 			buttonsConfig: [{
@@ -265,15 +261,13 @@ lore.anno.ui.initGUIConfig = function(){
 				id: 'updannobtn',
 				tooltip: 'Save the annotation to the repository'
 			}]
-		}
 	}
 
 	/**
-	 * Helper function for constructing the panel that contains the annotation tree view and editor
+	 * the panel that contains the annotation tree view and editor
 	 * @private
 	  */
-	var loreuiannotreeandeditor = function () {
-		return {
+	var browsePanel = {
 			title: "Browse",
 			xtype: "panel",
 			id: "treeview",
@@ -285,67 +279,57 @@ lore.anno.ui.initGUIConfig = function(){
 				model: lore.anno.annoMan.annods,
 				animate: false
 			}, 
-				loreuieditor()]
-			};
+				loreuieditor]
 	}
-
+	
 	/**
 	 * 
 	 * Helper function that constructs the 'Timeline' panel
 	 * @private
 	 */
-	var loreuiannotimeline = function ()
-	{
-		return {
-			title: "Timeline",
-			xtype: "annotimelinepanel",
-			id: "annotimeline",
-			model: lore.anno.annoMan.annods
-		}
+	var timelinePanel = {
+		title: "Timeline",
+		xtype: "annotimelinepanel",
+		id: "annotimeline",
+		model: lore.anno.annoMan.annods
 	}
 
 	/**
 	 * Helper function that constructs the 'Search' tab
 	 * @private
 	 */
-	var loreuiannosearch = function ( ) {
-		 
-		return {
-			xtype: 'annosearchpanel',
-			layout:'border',
-			id: 'searchpanel',
-			model: lore.anno.annoMan.annosearchds,
-			annoManager: lore.anno.annoMan
-		}
+	var searchPanel = {
+		xtype: 'annosearchpanel',
+		layout:'border',
+		id: 'searchpanel',
+		model: lore.anno.annoMan.annosearchds,
+		annoManager: lore.anno.annoMan
 	}
 
 	
 	try {
 		
 		lore.anno.ui.tabpanel = new Ext.TabPanel({
-                        anchor: "100% -25",
-						xtype: "tabpanel",
-	                    title: "Navigation",
-	                    id: "navigationtabs",
-	                    deferredRender: false,
-	                    activeTab: "treeview",
-	                    items: [loreuiannotreeandeditor(), loreuiannosearch(), loreuiannotimeline(), loreuiannoabout() ]
-					});
+            anchor: "100% -25",
+			xtype: "tabpanel",
+            title: "Navigation",
+            id: "navigationtabs",
+            deferredRender: false,
+            activeTab: "treeview",
+            items: [browsePanel, searchPanel, timelinePanel, aboutPanel]
+		});
 		
 		lore.anno.ui.gui_spec = {
-					layout: "anchor",
-					border: false,
-					items: [lore.anno.ui.tabpanel,
-					{
-                        anchor: "100%",
-		                height: 25,
-		                xtype: "statusbar",
-		                id: "status",
-		                defaultText: "",
-		                autoClear: 6000
-		            }]
-				
-			
+			layout: "anchor",
+			border: false,
+			items: [lore.anno.ui.tabpanel, {
+                anchor: "100%",
+                height: 25,
+                xtype: "statusbar",
+                id: "status",
+                defaultText: "",
+                autoClear: 6000
+            }]
 		};
 		
 		lore.anno.ui.main_window = new Ext.Viewport(lore.anno.ui.gui_spec);
@@ -451,31 +435,6 @@ lore.anno.ui.attachContextMenus = function () {
 	
 	// Add handler to add Context Menu for Tree Nodes when they're appended
 	lore.anno.ui.treeroot.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
-	
-	// serach grid context menu
-	var grid = lore.anno.ui.search.grid();
-	grid.contextmenu = new Ext.menu.Menu({
-						id: grid.id + "-context-menu"
-	});
-	
-	grid.contextmenu.add({
-		text: "Add as node/s in compound object editor",
-		handler: lore.anno.ui.handleAddResultsToCO,
-		scope: grid.contextmenu
-	});
-    grid.contextmenu.add({
-    	text: "View annotation/s in browser",
-		handler: lore.anno.ui.handleViewAnnotationInBrowser,
-		scope: grid.contextmenu
-		
-    });
-	grid.on('rowcontextmenu', function(scope, rowIndex, e) {
-		var selModel = grid.getSelectionModel();
-		if (!selModel.isSelected(rowIndex)) {
-			selModel.selectRow(rowIndex);
-		}
-		grid.contextmenu.showAt(e.xy);
-	});
 }
 
 /**
