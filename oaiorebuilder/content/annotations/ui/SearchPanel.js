@@ -17,6 +17,59 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
+lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
+    initComponent: function() {
+        var config = {
+            keys: [{
+                key: [10, 13],
+                fn: function() {
+                    this.searchButton.fireEvent('click');
+                },
+                scope: this
+            }],
+	        labelWidth: 80,
+	        defaultType: 'datefield',
+	        labelAlign: 'right',
+	        height: 210,
+            bodyStyle : "padding: 0 10px 4px 4px",
+	        defaults: {anchor: '100%'}
+	        ,items: [{
+	            fieldLabel : 'URL',
+	            name : 'url',
+	            xtype: 'textfield'
+	        }, {
+	            fieldLabel : 'Creator',
+	            name : 'creator',
+	            xtype: 'textfield'
+	        }, {
+	            format : "Y-m-d",
+	            fieldLabel : 'Created after',
+	            name : 'datecreatedafter'
+	        }, {
+	            format : "Y-m-d",
+	            fieldLabel : 'Created before',
+	            name : 'datecreatedbefore'
+	        }, {
+	            format : "Y-m-d",
+	            fieldLabel : 'Modified after',
+	            name : 'datemodafter'
+	        }, {
+	            format : "Y-m-d",
+	            fieldLabel : 'Modified before',
+	            name : 'datemodbefore'
+	        }, {
+                text : 'Search',
+                tooltip : 'Search the entire annotation repository',
+                ref: "searchButton",
+                xtype: 'button',
+                anchor: '80%'
+            }]
+        };
+        Ext.apply(this, Ext.apply(this.initialConfig, config));
+        lore.anno.ui.SearchForm.superclass.initComponent.call(this);
+    }
+});
+Ext.reg('annosearchform', lore.anno.ui.SearchForm);
 
 /**
  * Object that encapsulates a search screen for annotations
@@ -30,131 +83,6 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 	 * @constructor
 	 */
 	initComponent: function(){
-		var t = this;
-		var formConfig = {
-			xtype: "form",
-            bodyStyle: "padding: 3px",
-			keys: [{
-						key: [10, 13],
-						fn: function() {
-							t.getComponent("search").fireEvent('click');
-						}
-					}],
-			id : this.genID("annosearchform"),
-			region : 'north',
-			trackResetOnLoad : true,
-			autoScroll : true,
-			labelWidth : 80,
-			defaultType : 'textfield',
-			labelAlign : 'right',
-			buttonAlign : 'right',
-            split: true,
-            collapseMode: 'mini',
-			defaults : {
-				hideMode : 'display',
-				anchor : '100%'
-			},
-	
-			items : [{
-						fieldLabel : 'URL',
-						name : 'url'
-					}, {
-						fieldLabel : 'Creator',
-						name : 'creator'
-					}, {
-						xtype : 'datefield',
-						format : "Y-m-d",
-						fieldLabel : 'Created after',
-						name : 'datecreatedafter'
-					}, {
-						xtype : 'datefield',
-						format : "Y-m-d",
-						fieldLabel : 'Created before',
-						name : 'datecreatedbefore'
-					}, {
-						xtype : 'datefield',
-						format : "Y-m-d",
-						fieldLabel : 'Modified after',
-						name : 'datemodafter'
-					}, {
-						xtype : 'datefield',
-						format : "Y-m-d",
-						fieldLabel : 'Modified before',
-						name : 'datemodbefore'
-					}],
-			buttons : [{
-						text : 'Search',
-						id : this.genID('search'),
-						tooltip : 'Search the entire annotation repository'
-					}, {
-						text : 'Reset',
-						id : this.genID('resetSearch'),
-						tooltip : 'Reset search fields'
-					}]
-
-	},
-	gridConfig = { 
-			xtype: "grid",
-			title: 'Search Results',
-			id: this.genID('annosearchgrid'),
-			region: 'center',
-			store: this.model,
-			autoScroll: true,
-			viewConfig: {
-				forceFit: true
-			},
-			colModel: new Ext.grid.ColumnModel({
-				// grid columns
-				defaults: {
-					sortable: true,
-					renderer: function searchColRenderer(val, p, rec) {
-						p.attr = 'title="' + val + '"';
-						return val;
-					}
-				},
-			columns: [
-					// expander,
-				{
-					id: 'title', // id assigned so we can apply custom css (e.g. .x-grid-col-topic b { color:#333 })
-					header: "title",
-					dataIndex: 'title'
-				}, 
-				{
-					header: "type",
-					dataIndex: "type",
-					width: 32,
-					renderer: function(val, p, rec) {
-						p.attr = 'title="' + val + '"';
-						p.css = lore.anno.ui.getAnnoTypeIcon(rec.data);
-					}
-				},
-				{
-					header : "creator",
-					dataIndex : 'creator'
-				}, 
-				{
-					header : "created",
-					dataIndex : 'created'
-				}, 
-				{
-					header : 'modified',
-					dataIndex : 'modified',
-					renderer : function(val, p, rec) {
-						p.attr = 'title="' + val + '"';
-						return val ? val : "<i>not yet modified</i>";
-					}
-				},
-				{
-					header : 'annotates',
-					dataIndex : 'resource'
-				}]
-			}),
-
-			viewConfig : {
-				forceFit : true,
-				enableRowBody : true
-			}
-
 		// paging bar on the bottom
 		/*bbar: new Ext.PagingToolbar({
 		 pageSize: 25,
@@ -175,45 +103,63 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 		 }
 		 }]
 		 })*/
-		};
+
 
 		try {
-			Ext.apply(this, {
-						title : "Search",
-						layout: "border",
-						items : [formConfig, gridConfig]
-					});
+            var config = {
+                        title : "Search",
+                        layout: "border",
+                        items : [{
+                            xtype: 'annosearchform',
+                            itemId: 'mySearchForm',
+                            ref: 'searchForm',
+                            region:'north',
+						    split: true,
+						    collapseMode: 'mini'
+                          }
+                          ,{
+                            xtype: 'annodataview',
+                            itemId: 'dataview',
+                            region:'center',
+                            store: this.model
+                          }
+                        ]
+                    };
+			Ext.apply(this, Ext.apply(this.initialConfig, config));
+			lore.anno.ui.SearchPanel.superclass.initComponent.call(this);
 
-			lore.anno.ui.SearchPanel.superclass.initComponent.apply(this, arguments);
 
-			this.sform = this.getComponent("annosearchform").getForm();
+			this.searchForm.searchButton.on('click', this.handleSearchAnnotations, this);
 
-			this.sgrid = this.getComponent("annosearchgrid");
-
-			this.getComponent("search").on('click', this.handleSearchAnnotations, this);
-			this.getComponent("resetSearch").on('click', function resetSearch() {
-						this.sform.reset();
-					}, this);
+            var dataview = this.getComponent('dataview');
 			
-			this.sgrid.on('rowclick', function searchLaunchTab(grid, rowIndex, event) {
+            var contextmenu = new Ext.menu.Menu({
+                items: [{
+				    text: "Add as node/s in compound object editor",
+				    handler: lore.anno.ui.handleAddResultsToCO,
+				    scope: dataview
+                }, {
+				    text: "View annotation/s in browser",
+				    handler: lore.anno.ui.handleViewAnnotationInBrowser,
+				    scope: dataview
+                }
+            ]});
+			dataview.on('contextmenu', function(scope, rowIndex, node, e) {
+                e.preventDefault();
+                this.select(node);
+			    contextmenu.showAt(e.xy);
+			});
+			dataview.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
 				if (!event.ctrlKey && !event.shiftKey) {
-					var record = grid.getStore().getAt(rowIndex);
+					var record = this.getRecord(node);
 				
 					lore.global.util.launchTab(record.data.resource);
 				}
-			});
+			}, dataview);
 
 		} catch (e) {
 			lore.debug.anno("SearchPanel:initComponent() - " + e, e);
 		}
-	},
-
-	grid : function() {
-		return this.sgrid;
-	},
-
-	form : function() {
-		return this.sform;
 	},
 
 	/**
@@ -231,15 +177,15 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 		};
 
 		try {
-
-			var vals = this.sform.getValues();
+            var sform = this.searchForm.getForm();
+			var vals = sform.getValues();
 			var filters = [];
 			for (var e in vals) {
 				var v = vals[e];
 				// for each of the fields, determine whether they have a value
 				// supplied and add them as a search filter if they do have a value
 				if (v && e != 'url') {
-					v = this.sform.findField(e).getValue();
+					v = sform.findField(e).getValue();
 					if (e.indexOf('date') == 0) {
 						v = v.format("c");
 					}
@@ -258,27 +204,11 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 						// recalc layout
 						lore.debug.anno("result from search: " + result, resp);
 						lore.anno.ui.loreInfo("Search Finished");
-						t.sgrid.doLayout();
 					});
 		} catch (e) {
 			lore.debug.anno("error occurring performing search annotations: " + e, e);
 		}
 
-	},
-
-	/**
-	 * Generated ID for a sub-component of this component
-	 * @param id Id of sub-component
-	 */
-	genID : function(id) {
-		return this.id + "_" + id;
-	},
-	/**
-	 * Retrieve sub-component of this component
-	 * @param {Object} id Id of sub-component
-	 */
-	getComponent : function(id) {
-		return Ext.getCmp(this.genID(id));
 	}
 
 });
