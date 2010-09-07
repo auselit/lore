@@ -283,7 +283,9 @@ Ext.apply(lore.ore.Controller.prototype, {
                                 //lore.debug.timeElapsed("prop");
                                 // not a node relationship, show in the property grid 
                             	var prefix = lore.constants.nsprefix(relresult.ns);
-                                srcfig.appendProperty(prefix + ":" + relresult.term, obj);
+                            	if (!(prefix == "rdf" && relresult.term == "type")){
+                            		srcfig.appendProperty(prefix + ":" + relresult.term, obj);
+                            	}
                                 if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
                                     // TODO this should not be necessary - send props to addFigureWithOpts
                                     srcfig.setTitle(obj);
