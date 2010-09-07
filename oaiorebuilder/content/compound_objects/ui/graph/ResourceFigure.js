@@ -634,7 +634,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @param {}  pval The value of the property
 	 */
 	appendProperty : function(pname, pval) {
-		//lore.debug.ore("appendProperty " + pname + " " + this.url, [pval,this]);
 		var counter = 0;
 		var oldrdftype = this.metadataproperties["rdf:type_0"];
 		var prop = this.metadataproperties[pname + "_" + counter];
