@@ -525,9 +525,17 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
      */
 	setHighlight : function(highlight) {
 		if (highlight) {
-			this.html.style.border = "3px solid rgb(170,204,246)";
+			this.html.style.border = "1px solid yellow";
+			this.html.style.borderBottom="none";
+			this.html.style.backgroundColor = "yellow";
+			this.html.style.top = (this.y - 1) + "px";
+			this.html.style.left = (this.x - 1) + "px";
 		} else {
-			this.html.style.border = "none";
+			this.html.style.border = "none";	
+			this.html.style.backgroundColor = "transparent";
+			this.html.style.top= this.y + "px";
+			this.html.style.left= this.x + "px";
+			
 		}
 	},
 	/**
