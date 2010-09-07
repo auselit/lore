@@ -57,7 +57,7 @@ lore.ore.ui.graph.COGraph = function(id) {
         this.setPanning(true);
         // don't use move cursor for panning
         this.html.style.cursor="default";
-        this.readOnly = false;
+        
         
         // allow multiple selection
         this.multiSelection = [];
@@ -88,9 +88,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	            this.layouter.doLayout();
 	        //}
 	},
-    setReadOnly : function(readonly) {
-        this.readOnly = readonly;
-    },
+    
     /**
      * Show a message indicating the compound object is empty
      * @private
@@ -313,13 +311,13 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	onKeyDown: function(keyCode, ctrl, meta, shift) {
         var sel = this.currentSelection;
         try{
-        if (!this.readOnly){
-           /* disable until multi-selection bug is fixed */
-           /*if (shift) {
+        
+          
+          if (shift) {
             this.selecting = true;
           } else if (!this.dragging) {
             this.selecting = false;
-          } */
+          } 
     	  if((keyCode==46 || keyCode==8) && sel) {
              this.commandStack.execute(sel.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE))); 
           } else if(keyCode==90 && (ctrl || meta)) {
@@ -356,7 +354,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 }
             }
           } 
-        }
+        
         } catch (e){
             lore.debug.ore("COGraph: onKeyDown",e);
         }
@@ -389,7 +387,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     },
     /** Override onMouseUp to deal with multi-selection */
     onMouseUp: function(x, y){
-        /*if (this.selecting) {
+        if (this.selecting) {
             this.selecting = false;
             this.hideSelectionFigure();
             var diffX = x-this.mouseDownPosX;
@@ -407,7 +405,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
             }
             var selectedFigures = this.multiSelectFigures(x1, y1, x2, y2);
             lore.debug.ore("selected multiple figures",selectedFigures);
-        }*/
+        }
         
       this.dragging = false;
       /*if(this.draggingLineCommand!=null)
@@ -439,42 +437,40 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       {
         this.hideResizeHandles();
         this.setCurrentSelection(line);
-        // FIXME: can COGraphs contain lines that aren't connections? (aside from the line used to create them?
-        // you can move a line with Drag&Drop but not a connection
-        /*if(line instanceof draw2d.Line && !(line instanceof draw2d.Connection))
-        {
-           this.draggingLineCommand = line.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
-           if(this.draggingLineCommand!=null)
-              this.draggingLine = line;
-        }*/
       } else {
         this.setCurrentSelection(null);
       }
     },
-    setCurrentSelection: function(figure,multi){
-      
-      
-      if (!multi) {
-        if (figure) {
-            this.multiSelection = [figure];
-        } else {
-            this.multiSelection = [];
-        }
-        /* disable until multi selection bugs fixed */
-       /* for (var i = 0; i < this.figures.getSize(); i++) {
-            var figure = this.figures.get(i);
-            figure.setHighlight(false);
-        }*/
-        
+    setCurrentSelection: function(sel,multi){
+    	try{
+      var oldSingleSelection = this.currentSelection;
+      var oldMultiSelection = this.multiSelection;
+      if (multi){
+    	  this.multiSelection = sel
+    	  draw2d.Workflow.prototype.setCurrentSelection.call(this,null);
+      } else {
+    	   draw2d.Workflow.prototype.setCurrentSelection.call(this,sel);
+	       if (sel) {
+	            this.multiSelection = [sel];
+	       } else {
+	            this.multiSelection = [];
+	       }
       }
-      draw2d.Workflow.prototype.setCurrentSelection.call(this,figure);
-      // Always show line resize handles when connection is selected
-      if (figure && figure instanceof draw2d.Line) {
-        this.showLineResizeHandles(figure);
-      } else if (figure) {
-        this.showResizeHandles(figure);
+      // remove highlighting from previous selection
+      for (var i = 0; i < oldMultiSelection.length; i++) {
+           oldMultiSelection[i].setHighlight(false);
       }
       
+      // Always show line resize handles and highlighting when connection is selected
+      if (sel && sel instanceof draw2d.Line) {
+        this.showLineResizeHandles(sel);
+      } else if (sel instanceof lore.ore.ui.graph.ResourceFigure) {
+        this.showResizeHandles(sel);
+        sel.setHighlight(true); 
+      } 
+    	} catch (e){
+    		lore.debug.ore("problem",e);
+    	}
     },
     /** select figures within a rectangular selecton */
     multiSelectFigures: function(x,y, x2, y2){
@@ -486,14 +482,11 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
             var figx2 = figx + figure.width;
             var figy2 = figy + figure.height;
             if (x <= figx && y <= figy && x2 >= figx2 && y2 >= figy2){
-                result.push(figure);
+                result.push(figure); 
                 figure.setHighlight(true);
-            } else {
-                figure.setHighlight(false);
-            }
+            } 
         }
-        this.multiSelection = result;
-        this.setCurrentSelection(null,true);
+        this.setCurrentSelection(result,true);
     },
     /** 
      * Render the contents as an image. Renders the current window into a canvas (resizing so that
@@ -531,17 +524,11 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      }
         
     },
-   /* doCommand : function(action) {
-        if (!this.readOnly){
-            action();
-        } else {
-             lore.ore.ui.vp.warning("Editor is read-only");
-        }
-    },*/
+   
     addResourceFigure: function(fig, x, y) {
-        if (!this.readOnly){
-            this.commandStack.execute(new draw2d.CommandAdd(this, fig, x, y));
-        }
+        
+        this.commandStack.execute(new draw2d.CommandAdd(this, fig, x, y));
+        
         this.setCurrentSelection(fig);
         // FIXME: workaround to ensure keyboard events work immediately
         Ext.getCmp('drawingarea').focus();
