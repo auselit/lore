@@ -310,6 +310,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	 */
 	onKeyDown: function(keyCode, ctrl, meta, shift) {
         var sel = this.currentSelection;
+        var msel = this.multiSelection;
         try{
         
           
@@ -318,8 +319,15 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
           } else if (!this.dragging) {
             this.selecting = false;
           } 
-    	  if((keyCode==46 || keyCode==8) && sel) {
-             this.commandStack.execute(sel.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE))); 
+    	  if((keyCode==46 || keyCode==8)) {
+    		  // delete selected figure(s)
+    		  if (sel){
+    			  this.commandStack.execute(sel.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+    		  } else if (msel){
+    			  for (var i = 0; i < msel.length; i++){
+    				  this.commandStack.execute(msel[i].createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+    			  }
+    		  }
           } else if(keyCode==90 && (ctrl || meta)) {
     	     this.commandStack.undo();
           } else if(keyCode==89 && (ctrl || meta)) {
