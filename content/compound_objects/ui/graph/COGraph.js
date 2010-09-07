@@ -324,9 +324,8 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     	     this.commandStack.undo();
           } else if(keyCode==89 && (ctrl || meta)) {
     	     this.commandStack.redo();
-          } else if ((keyCode==37 || keyCode == 38 || keyCode == 39 || keyCode == 40) && this.multiSelection.length > 0){ 
+          } else if (ctrl && (keyCode==37 || keyCode == 38 || keyCode == 39 || keyCode == 40) && this.multiSelection.length > 0){ 
             // move selected figures
-            //lore.debug.ore("moving " + this.multiSelection.length + " figures");
             for (var i = 0; i < this.multiSelection.length; i++) {
                 var fig = this.multiSelection[i];
                 if (fig) {
