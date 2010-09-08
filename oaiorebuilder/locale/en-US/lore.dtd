@@ -12,6 +12,10 @@
 <!ENTITY loreToolbar.tooltip "Toggle LORE">
 <!ENTITY lore.addNodeLabel "Add Resource">
 <!ENTITY lore.addNodeTip "Add browser URL to LORE compound object">
+<!ENTITY lore.addNodeDirectlyTip "Add resource by typing or pasting URL directly">
+<!ENTITY lore.addNodeDirectlyLabel "Add resource URL directly">
+<!ENTITY lore.addFromTabsLabel "Add resources from tabs">
+<!ENTITY lore.addFromTabsTip "Select resources to add from open browser tabs">
 <!ENTITY lore.addedNodeTip "URL is in LORE compound object">
 <!ENTITY lore.layoutTip "Rearrange the resources in the compound object using automatic layout">
 <!ENTITY lore.createCOTip "Create a new compound object">
