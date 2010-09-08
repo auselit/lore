@@ -654,11 +654,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * result: Result as string ( 'success' or 'fail')
 	 * resultMsg: Result message as string 
 	 */
-	searchAnnotations : function (url, filters, resultCallback) {
-		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ANNOTEA_OBJECTS);
-		for (var i = 0; i < filters.length; i++) {
-			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter);
-		}
+	searchAnnotations : function (val, resultCallback) {
+		
+		var queryURL = this.createSearchQueryURL(val);
+
 		  
 		lore.debug.anno("Peforming search with the following request URL: " + queryURL);
 			
@@ -692,6 +691,49 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			},
 			scope:this
 		});
+	},
+	
+	createSearchQueryParams : function(vals) {
+		
+	},
+	
+	createSearchQueryURL : function(vals) {
+		var searchParams = {
+			'creator': lore.constants.DANNO_RESTRICT_CREATOR,
+			'datecreatedafter': lore.constants.DANNO_RESTRICT_AFTER_CREATED,
+			'datecreatedbefore': lore.constants.DANNO_RESTRICT_BEFORE_CREATED,
+			'datemodafter': lore.constants.DANNO_RESTRICT_AFTER_MODIFIED,
+			'datemodbefore': lore.constants.DANNO_RESTRICT_BEFORE_MODIFIED
+		};
+		
+		lore.debug.anno('createSearchQueryURL', {vals:vals});
+		
+		var filters = [];
+		for (var e in vals) {
+			var v = vals[e];
+			// for each of the fields, determine whether they have a value
+			// supplied and add them as a search filter if they do have a value
+			if (v && e != 'url') {
+				if (e.indexOf('date') == 0) {
+					v = v.format("c");
+				}
+
+				filters.push({
+							attribute : searchParams[e],
+							filter : v
+						});
+			}
+		}
+		
+		var url = vals['url'] != '' ? vals['url'] : null;
+		
+		
+		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ANNOTEA_OBJECTS);
+		for (var i = 0; i < filters.length; i++) {
+			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter);
+		}
+		
+		return queryURL;
 	},
 	
 	/**
