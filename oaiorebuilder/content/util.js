@@ -345,7 +345,7 @@ util = {
                 var io = Components.classes["@mozilla.org/network/io-service;1"]  
                      .getService(Components.interfaces.nsIIOService);  
                 var source = io.newURI(uri, "UTF8", null);  
-                var target = io.newFileURI(thefile)  
+                var target = io.newFileURI(thefile) ; 
                 var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]  
                           .createInstance(Components.interfaces.nsIWebBrowserPersist);  
     
@@ -932,7 +932,7 @@ util = {
                 } else  if (rec.id == xid) {
                     return true;
                 }
-            })
+            });
         if (ind != -1) {
             return store.getAt(ind);
         } else {
@@ -1126,7 +1126,7 @@ util = {
     	         var serializer = new win.XMLSerializer();
     	         return serializer.serializeToString(resultFrag);
     	    } else {
-    	        return resultFrag
+    	        return resultFrag;
     	    }
         } catch (e){
             debug.ui("Error transforming RDF",e);
