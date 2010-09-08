@@ -181,6 +181,8 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
              */
 			this.modified = lore.global.util.safeGetFirstChildValue(node);
 			
+			this.createdOrModified = (this.modified == '') ? this.created : this.modified;
+			
 			this.meta = { context: null, fields: []};
 			if (this.isReply) {
 				this.context = '';
