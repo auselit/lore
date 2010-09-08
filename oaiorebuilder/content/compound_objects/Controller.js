@@ -31,12 +31,27 @@ Ext.apply(lore.ore.Controller.prototype, {
     onHide: function(){
         this.active = false;
     },
+    loadCompoundObjectPromptForURL: function(){
+    	Ext.Msg.show({
+            title : 'Load from RDF/XML URL',
+            buttons : Ext.MessageBox.OKCANCEL,
+            msg : 'Please enter the URL of the compound object:',
+            scope: this,
+            fn : function(btn, theurl) {
+                if (btn == 'ok') {
+                    this.loadCompoundObjectFromURL(theurl);
+                }
+            },
+            prompt : true
+        });
+    },
     /**
      * Loads a Compound object from a RDf/XML file via URL 
      * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
      */
     loadCompoundObjectFromURL: function(rdfURL){
     	try{
+    		
             // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
             if (currentCO && currentCO.isDirty()){
@@ -301,7 +316,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 // problem still exists if a node is added that extends the boundaries
                 lore.ore.ui.graphicalEditor.coGraph.showMask();
                 lore.ore.ui.graphicalEditor.coGraph.hideMask();
-                
+                lore.ore.ui.graphicalEditor.bindModel(lore.ore.cache.getLoadedCompoundObject());
                 lore.ore.ui.vp.info("Loading compound object");
                 Ext.Msg.hide();
                 //lore.debug.timeElapsed("set loaded in cache ");
@@ -398,6 +413,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         ]  
         );
         lore.ore.ui.graphicalEditor.initGraph();
+        lore.ore.ui.graphicalEditor.bindModel(lore.ore.cache.getLoadedCompoundObject());
         Ext.getCmp('currentCOMsg').setText('New compound object');
         if (!dontRaise) {
             Ext.getCmp("propertytabs").activate("properties");
@@ -536,6 +552,20 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
     
     },
+    addResourceWithPrompt: function(){
+    	Ext.Msg.show({
+            title : 'Add resource URL',
+            buttons : Ext.MessageBox.OKCANCEL,
+            msg : 'Please enter the URL of the resource:',
+            scope: this,
+            fn : function(btn, theurl) {
+                if (btn == 'ok') {
+                    this.addResource(theurl);
+                }
+            },
+            prompt : true
+        });
+    },
     /**
      * Add a resource to the compound object
      * @param {} theURL
@@ -544,6 +574,105 @@ Ext.apply(lore.ore.Controller.prototype, {
     addResource: function(uri,props){      
         // TODO: #34 MVC:  make it add to model and get view to listen on model
         lore.ore.ui.graphicalEditor.addFigure({url:uri, props: props});
+    },
+    /** Add a bunch of resources from open browser tabs
+     * @param {} thebrowser Provided by overlay: represents the tabbed browser
+     */
+    addFromTabs: function(thebrowser) {
+    	try{
+    	var num = thebrowser.browsers.length;
+	    if (num == 0) {return;}
+	    var formitems = [{
+	    	xtype: 'label',
+	    	anchor: '100%',
+	    	text: 'Add the following resources to the Compound Object:'
+	    }];
+	    for (var i = 0; i < num; i++) {
+	        var b = thebrowser.getBrowserAtIndex(i);
+	        var burl = b.currentURI.spec;
+	        var globalHistory = Components.classes["@mozilla.org/browser/global-history;2"].
+            	getService(Components.interfaces.nsIGlobalHistory2);
+	        var title  = globalHistory.getPageTitle(b.currentURI);
+	        if (title) {
+	        	title = Ext.util.Format.ellipsis(title,100);
+	        }
+	        if (burl != "about:blank"){
+	        	formitems.push({
+	        		xtype: "checkbox",
+	        		name: burl,
+	        		boxLabel: title || burl,
+	        		checked: true,
+	        		anchor: "100%"
+	        	});
+	        }
+	    }
+	    var win = new Ext.Window({
+	        layout      : 'fit',
+	        width       : 600,
+	        height      : 300,
+	        autoScroll: true,
+	        items: formitems,
+	        title: 'Add resources from browser tabs',
+	        buttons: [{
+		        text     : 'OK',
+		        handler: function(){
+		        	win.hide();
+		        	Ext.MessageBox.show({
+	                    msg: 'Adding resources',
+	                    width:250,
+	                    defaultTextHeight: 0,
+	                    closable: false,
+	                    cls: 'co-load-msg'
+		        	});
+		        	lore.ore.ui.graphicalEditor.coGraph.commandStack.startCommandGroup();
+			        win.items.each(
+			        	 function(item, index, length){      		 
+			        		 if (index > 0 && item.getValue()){
+			        			 // add them as collapsed nodes
+			        			 lore.ore.ui.graphicalEditor.addFigure({url:item.getName(),
+			        				 oh: 170,
+			        				 w: 220,
+			        				 h: 70,
+			        				 props: {title: item.label}});
+			        			
+			        		 }	   		 
+			        });
+			        lore.ore.ui.graphicalEditor.coGraph.commandStack.endCommandGroup();
+			        Ext.MessageBox.hide();
+		            
+		        }
+	        },{
+		        text     : 'Cancel',
+		        handler  : function(){
+		            win.hide();
+		        }
+	        }, {
+	        	text : 'Select all',
+	        	handler: function(){
+	        		win.items.each(function(item,index,length){
+	        			if (index > 0){
+	        				item.setValue(true);
+	        			}
+	        		});
+	        	}
+	        }, {
+	        	text : 'Deselect all',
+	        	handler: function(){
+	        		win.items.each(function(item,index,length){
+	        			if (index > 0){
+	        				item.setValue(false);
+	        			}
+	        		});
+	        	}
+	        }]
+	    });
+	    
+	    win.show();
+	    // work around scrolling content over iframe bug by redrawing
+	    win.body.on("scroll",function(e,t,o){this.repaint();},win.body);
+    	} catch (e){
+    		lore.debug.ore("problem adding from tabs",e);
+    	}
     },
     /** Handle search */
     search : function (searchuri, searchpred, searchval){

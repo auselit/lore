@@ -324,7 +324,7 @@ try {
         },
         /** Compound Objects Toolbar button handler: Triggers loading compound object RDF from a URL **/
         loadRDFURL: function(){
-            loreoverlay.coView().loadCompoundObjectFromURL();
+            loreoverlay.coView().loadCompoundObjectPromptForURL();
         },
         
         loadAnnoRDF: function () {
@@ -423,14 +423,23 @@ try {
             loreoverlay.coView().exportCompoundObject(format);
         },
         /** Compound Object Toolbar button handler: Trigger adding the current URI to the compound object editor */
-        addGraphNode: function(){
-            loreoverlay.coView().addResource(window.content.location.href);
+        addGraphNode: function(prompt){
+        	if (prompt){
+        		loreoverlay.coView().addResourceWithPrompt();
+        	} else {
+        		loreoverlay.coView().addResource(window.content.location.href);
+        	}
             document.getElementById('ore-add-icon').hidden = true;
             document.getElementById('ore-added-icon').hidden = false;
         },
-        /*layoutGraph: function(){
-            loreoverlay.coView().doLayout();  
-        },*/
+        /** Compound Object Toolbar button handler: Batch add from open tabs */
+        addFromTabs: function(){
+        	var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+        		    .getService(Components.interfaces.nsIWindowMediator);
+        	var mainWindow = wm.getMostRecentWindow("navigator:browser");
+        	var thebrowser = mainWindow.getBrowser();
+        	loreoverlay.coView().addFromTabs(thebrowser);
+        },
         createCompoundObject: function(){
             loreoverlay.coView().createCompoundObject();  
         },

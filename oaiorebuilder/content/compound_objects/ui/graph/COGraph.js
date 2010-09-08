@@ -25,6 +25,7 @@
 lore.ore.ui.graph.COGraph = function(id) {
     draw2d.Workflow.call(this, id);
     try {
+    	this.commandStack = new lore.ore.ui.graph.CommandStack();
 	    this.layouter = new lore.ore.ui.graph.autolayout.Layouter(this);
 	    this.layouter.setPreferredEdgeLength(180);
         /* The mask element covers figures to allow mouse to move over figures during moves
@@ -84,9 +85,16 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      * Trigger automatic layout of figures
      */
 	doLayout : function() {
-	        //if (this.getDocument().getLines().getSize() > 0){
+			this.commandStack.startCommandGroup();
+	        if (this.getDocument().getLines().getSize() > 0){
 	            this.layouter.doLayout();
-	        //}
+	            // TODO: fix overlaps
+	        } else {
+	        	// TODO: use grid layout based on resource list ordering
+	        	lore.ore.ui.vp.info("Auto layout is currently only enabled for compound objects containing connections");
+	        }
+	        this.commandStack.endCommandGroup();
+	            
 	},
     
     /**
@@ -152,6 +160,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      */
     clear : function() {
         draw2d.Workflow.prototype.clear.call(this);
+        this.commandStack = new lore.ore.ui.graph.CommandStack();
         this.resizeMask();
         this.showEmptyMessage();
     },
@@ -324,9 +333,11 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     		  if (sel){
     			  this.commandStack.execute(sel.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
     		  } else if (msel){
+    			  this.commandStack.startCommandGroup();
     			  for (var i = 0; i < msel.length; i++){
     				  this.commandStack.execute(msel[i].createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
     			  }
+    			  this.commandStack.endCommandGroup();
     		  }
           } else if(keyCode==90 && (ctrl || meta)) {
     	     this.commandStack.undo();
@@ -334,6 +345,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     	     this.commandStack.redo();
           } else if (ctrl && (keyCode==37 || keyCode == 38 || keyCode == 39 || keyCode == 40) && this.multiSelection.length > 0){ 
             // move selected figures
+        	this.commandStack.startCommandGroup();
             for (var i = 0; i < this.multiSelection.length; i++) {
                 var fig = this.multiSelection[i];
                 if (fig) {
@@ -353,6 +365,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                         newX = x;
                         newY = y + 10;
                     }
+                    
                     if (newX >= 0 && newY >= 0) {
                         var comm = fig.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
                         comm.setPosition(newX, newY);
@@ -360,6 +373,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                     }
                 }
             }
+            this.commandStack.endCommandGroup();
           } 
         
         } catch (e){
