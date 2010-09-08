@@ -718,7 +718,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function() {
  */	
 lore.anno.ui.handleAddResultsToCO = function(evt){
 	try {
-		var sels = lore.anno.ui.search.grid().getSelectionModel().getSelections();
+		var sels = lore.anno.ui.search.dataView.getSelectedRecords();
             
         for (var i =0; i < sels.length; i++ ) {								
             var rec = sels[i];
@@ -727,19 +727,19 @@ lore.anno.ui.handleAddResultsToCO = function(evt){
 		}
 		
 	} catch (e ){
-		lore.debug.anno("Error adding node/s to compound editor:" + e, e);
+		lore.debug.anno("Error adding annotation/s to compound editor:" + e, e);
 	}
 }
 lore.anno.ui.handleViewAnnotationInBrowser = function(evt){
     try {
-		var sels = lore.anno.ui.search.grid().getSelectionModel().getSelections();
+		var sels = lore.anno.ui.search.dataView.getSelectedRecords();
             
         for (var i =0; i < sels.length; i++ ) {								
             var rec = sels[i];
         	lore.global.util.launchTab(rec.data.id + "?danno_useStylesheet");
         }
     } catch (e) {
-        lore.debug.anno("Error viewing node/s in browser",e);
+        lore.debug.anno("Error viewing annotation/s in browser",e);
     }
 }
 /**

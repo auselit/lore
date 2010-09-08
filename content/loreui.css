@@ -630,15 +630,39 @@ div.coListing:hover {
 	background-color: #eeeeee;
 }
 
-	
-.annoListing {
-	padding: 2px;
-    padding-bottom:3px;
-    cursor:pointer;
-    font-family: tahoma, arial, helvetica;
+/** For the Annotation Search DataView **/
+#search-view {
+	background: white;
 }
-div.annoListing:hover {
+#search-view .annoListing {
+    cursor:pointer;
+    font:11px arial,tahoma,helvetica,sans-serif;
+	padding:3px 5px 7px 5px;
+	margin: 2px;
+}
+#search-view .annoListingTitle {
+	font-weight: bold;
+}
+#search-view .annoURL, #search-view .annoListingMeta {
+	padding-left: 7px;
+	color: #51666b;
+	font-size:90%;
+}
+#search-view .annoURL {
+	color: blue;
+}
+#search-view .x-view-over {
 	background-color: #eeeeee;
 }
+#search-view .x-view-selected {
+	background-color: #dddddd;
+} 
+#search-view .annoListingMeta {
+	padding-left: 7px;
+	color: #51666b;
+	font-size:90%;
+}
+
+
 #remlistview .x-grid3-row-selected {background-color: yellow !important;}
 

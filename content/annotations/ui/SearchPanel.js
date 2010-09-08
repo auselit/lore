@@ -62,8 +62,15 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
                 tooltip : 'Search the entire annotation repository',
                 ref: "searchButton",
                 xtype: 'button',
-                anchor: '80%'
+                anchor: '40%'
             }]
+//	        , {
+//            	text : 'Copy RSS',
+//            	tooltip : 'Save this search as an RSS Feed',
+//            	ref : 'rssButton',
+//            	xtype : 'button',
+//            	anchor: '40%'
+//            }]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         lore.anno.ui.SearchForm.superclass.initComponent.call(this);
@@ -119,7 +126,9 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
                           }
                           ,{
                             xtype: 'annodataview',
+                            id: 'search-view',
                             itemId: 'dataview',
+                            ref: 'dataView',
                             region:'center',
                             store: this.model
                           }
@@ -130,6 +139,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 
 
 			this.searchForm.searchButton.on('click', this.handleSearchAnnotations, this);
+//			this.searchForm.rssButton.on('click', this.handleCopyRSS, this);
 
             var dataview = this.getComponent('dataview');
 			
@@ -146,9 +156,9 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
             ]});
 			dataview.on('contextmenu', function(scope, rowIndex, node, e) {
                 e.preventDefault();
-                this.select(node);
+                this.select(node, true);
 			    contextmenu.showAt(e.xy);
-			});
+			}, dataview);
 			dataview.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
 				if (!event.ctrlKey && !event.shiftKey) {
 					var record = this.getRecord(node);
@@ -167,39 +177,13 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 	 * forms and display results in grid
 	 */
 	handleSearchAnnotations : function() {
-
-		var searchParams = {
-			'creator': lore.constants.DANNO_RESTRICT_CREATOR,
-			'datecreatedafter': lore.constants.DANNO_RESTRICT_AFTER_CREATED,
-			'datecreatedbefore': lore.constants.DANNO_RESTRICT_BEFORE_CREATED,
-			'datemodafter': lore.constants.DANNO_RESTRICT_AFTER_MODIFIED,
-			'datemodbefore': lore.constants.DANNO_RESTRICT_BEFORE_MODIFIED
-		};
-
 		try {
             var sform = this.searchForm.getForm();
-			var vals = sform.getValues();
-			var filters = [];
-			for (var e in vals) {
-				var v = vals[e];
-				// for each of the fields, determine whether they have a value
-				// supplied and add them as a search filter if they do have a value
-				if (v && e != 'url') {
-					v = sform.findField(e).getValue();
-					if (e.indexOf('date') == 0) {
-						v = v.format("c");
-					}
+			var vals = sform.getFieldValues();
 
-					filters.push({
-								attribute : searchParams[e],
-								filter : v
-							});
-				}
-			}
-			var t = this;
 			lore.anno.ui.loreInfo("Searching...");
 			// perform search
-			this.annoManager.searchAnnotations(vals['url'] != '' ? vals['url'] : null, filters, function(result, resp) {
+			this.annoManager.searchAnnotations(vals, function(result, resp) {
 						// data store will be updated and grid will auto update, all have to do
 						// recalc layout
 						lore.debug.anno("result from search: " + result, resp);
