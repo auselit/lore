@@ -19,7 +19,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
    		    enableHdMenu: false,
             store: new Ext.data.Store({}), 
    		    ddGroup:'resgridDD',
-   		   // enableDragDrop: true, 
+   		    // enableDragDrop: true, 
    		    sm: new Ext.grid.RowSelectionModel({
 	   		    singleSelect:true,
 	   		    listeners: {
@@ -131,8 +131,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
       */
     loadContent : function (compoundObject){
         var tocsummary = "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
-        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().data;
-        allfigures.sort(lore.ore.ui.graphicalEditor.figSortingFunction);
+        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getFiguresSorted();
         for (var i = 0; i < allfigures.length; i++) {
             var fig = allfigures[i];
             if (fig instanceof lore.ore.ui.graph.ResourceFigure){

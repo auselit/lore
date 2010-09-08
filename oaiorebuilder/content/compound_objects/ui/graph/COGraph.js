@@ -27,7 +27,7 @@ lore.ore.ui.graph.COGraph = function(id) {
     try {
     	this.commandStack = new lore.ore.ui.graph.CommandStack();
 	    this.layouter = new lore.ore.ui.graph.autolayout.Layouter(this);
-	    this.layouter.setPreferredEdgeLength(180);
+	    this.layouter.setPreferredEdgeLength(160);
         /* The mask element covers figures to allow mouse to move over figures during moves
          * without interference from figure contents
          **/
@@ -82,16 +82,42 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     type : "lore.ore.ui.graph.COGraph",
 
     /** 
-     * Trigger automatic layout of figures
+     * Trigger automatic layout of figures. 
+     * 
      */
-	doLayout : function() {
+	doLayout : function(useConnections) {
 			this.commandStack.startCommandGroup();
-	        if (this.getDocument().getLines().getSize() > 0){
+	        if (useConnections && this.getDocument().getLines().getSize() > 0){
+	        	// If there are connections, use the layouter
 	            this.layouter.doLayout();
-	            // TODO: fix overlaps
+	            lore.ore.ui.vp.info("Auto layout using connections complete");
 	        } else {
-	        	// TODO: use grid layout based on resource list ordering
-	        	lore.ore.ui.vp.info("Auto layout is currently only enabled for compound objects containing connections");
+	        	try{
+		        // otherwise move resource figures closer to each other in grid pattern based on current order
+		        var ge = lore.ore.ui.graphicalEditor;
+	        	var x = ge.NODE_SPACING;
+		        var y = x;
+		        var lineHeight = 0;
+		        var allfigures = this.getFiguresSorted();
+		        for (var i = 0; i < allfigures.length; i++) {
+		            var fig = allfigures[i];
+		            var command = new draw2d.CommandMove(fig);
+		            command.setPosition(x, y);
+		            this.getCommandStack().execute(command);
+		            lineHeight = Math.max(lineHeight, fig.height);
+		            if (x > ge.ROW_WIDTH) {   	
+		                x = ge.NODE_SPACING;
+		                y = y + lineHeight + ge.NODE_SPACING;
+		                lineHeight = 0;
+		            } else {
+		                x = x + fig.width + ge.NODE_SPACING;
+		            }
+		            
+		        }
+		        lore.ore.ui.vp.info("Auto layout complete");
+	        	} catch (e){
+	        		lore.debug.ore("problem with auto layout",e);
+	        	}
 	        }
 	        this.commandStack.endCommandGroup();
 	            
@@ -609,9 +635,18 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 icon: "chrome://lore/skin/icons/layout.png",
                 scope: this,
                 handler: function(evt){              	
-                	 this.doLayout();   
+                	 this.doLayout(false);   
                 }
             });
+            this.contextmenu.add({
+                text: "Auto layout (using connections only)",
+                icon: "chrome://lore/skin/icons/layout.png",
+                scope: this,
+                handler: function(evt){              	
+                	 this.doLayout(true);   
+                }
+            });
+            
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Add current URL",
@@ -669,5 +704,19 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
             return result.getTopLeft();
         }
         return draw2d.Workflow.prototype.snapToHelper.call(this,figure,pos);
+    },
+    /** Return the figures in the graph, sorted left-right, top-bottom by x, y coordinates */
+    getFiguresSorted : function(){
+    	var allfigures = this.getDocument().getFigures().data;
+        return allfigures.sort(this.figSortingFunction);
+    },
+    /**
+     *  Sort figures according to their x and y coordinates 
+     **/
+    figSortingFunction : function(figa,figb){        
+        if (figa.y == figb.y)
+            return figa.x > figb.x;
+        else
+            return figa.y > figb.y;
     }
 });
