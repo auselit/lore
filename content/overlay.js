@@ -283,7 +283,7 @@ try {
         /** Trigger adding a node to the compound object editor from browser context menu on images */ 
         addImageMenuItemCommand: function(e){
             if (gContextMenu.onImage) {
-                var props = {"dc:source_0": gContextMenu.browser.currentURI.spec}
+                var props = {"dc:source_0": gContextMenu.browser.currentURI.spec};
                 if (gContextMenu.onLink){
                     props["dc:relation_0"] = gContextMenu.linkURL;
                 }
@@ -782,7 +782,7 @@ try {
     
     window.addEventListener("unload", function overlayonunload(){
         window.removeEventListener("unload", overlayonunload, false);
-        loreoverlay.unLoad()
+        loreoverlay.unLoad();
     }, false);
     
 } catch (e ) {

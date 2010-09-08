@@ -67,4 +67,5 @@ Firebug.LoreTracingModel = extend(Firebug.Module,
 
 Firebug.registerModule(Firebug.LoreTracingModel); 
 
-}})};
+}});
+}

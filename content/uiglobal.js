@@ -67,7 +67,7 @@
 		} catch (e3) {
 			debug.ui ("error loading ui on reset: " + e3,e3);
 		}
-	}
+	};
 	
 	ui.resetAnnotations = function ( win, instId ) {
 		 try {    
@@ -80,7 +80,7 @@
 		} catch (e3) {
 			debug.ui ("error loading ui on reset: " + e3,e3);
 		}
-	}
+	};
 	
 	ui.resetCompoundObjects = function ( win, instId ) {
 		try {
@@ -93,7 +93,7 @@
 		} catch (e3) {
 			debug.ui ("error loading ui on reset: " + e3,e3);
 		}
-	}
+	};
 	
 	ui.loadAnnotations  = function ( win, instId, reload ) {
 		var iframe1 = win.document.getElementById("annographiframe");
@@ -109,7 +109,7 @@
 		else {
 			iframe1.setAttribute("src", "chrome://lore/content/annotations/loreui_anno.html");
 		}
-	}
+	};
 	
 	ui.loadCompoundObjects = function ( win, instId, reload ) {
 		var iframe2 = win.document.getElementById("graphiframe");
@@ -124,7 +124,7 @@
 	    else {
 		    iframe2.setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
 	    }
-	}
+	};
 	/**
      * @param {} win
      * @param {} instId
@@ -133,7 +133,7 @@
 	ui.load = function (win, instId, reload) {
 		ui.loadAnnotations(win, instId, reload );
         ui.loadCompoundObjects(win, instId, reload);
-	}
+	};
 	
 	/**
 	 * Called just before the browser window is closed
@@ -149,7 +149,7 @@
 				annoView.handleSaveAllAnnotationChanges();
 			}
 		}
-	}
+	};
 	
 	/**
 	 * Called as the window is unloading, just before it disappears
@@ -162,17 +162,17 @@
 		} catch (e) {
 			debug.ui('ui.onUnLoad(window, instId)', e);
 		}
-	}
+	};
 
 	ui.setCurrentURL = function (instance,url) {
 		if ( !ui.currentURLs )
 			ui.currentURLs = {};
 		ui.currentURLs[instance] = url;
-	}
+	};
 	
 	ui.getCurrentURL = function (instance) {
 		return ui.currentURLs ? ui.currentURLs[instance]: null;
-	}
+	};
 	/**
      * @return {}
     */
@@ -183,7 +183,7 @@
             ui.genInstanceID.counter++;
         }
         return ui.genInstanceID.counter;
-    }
+    };
 	
 	/**
 	 * UI View 
@@ -207,7 +207,7 @@
 					this.events[instId] = [callback];
 				else
 					this.events[instId].push(callback);
-			}			
+			};		
 			
 			this.registerView = function(view, instId){
 				this.views[instId] = util.createWrapper(view, this.name);

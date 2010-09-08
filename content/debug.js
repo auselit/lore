@@ -138,7 +138,7 @@ debug = {
  * Allow logging to file
  */
 function MozillaFileLogger(){
-	this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService)
+	this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 	
 	var e = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
@@ -173,7 +173,7 @@ function MozillaFileLogger(){
 		                            .getService(Components.interfaces.nsIObserverService);
 		    observerService.removeObserver(this, "quit-application");
 		  }
-    }
+    };
 
 	this.exitObserver.register(this);
 			
@@ -208,7 +208,7 @@ MozillaFileLogger.prototype.destruct = function() {
 	this.console.unregisterListener(this.listener);
 	this.fstream.close();
 	this.exitObserver.unregister();
-}
+};
 
 debug.fbTrace = {};
 
