@@ -509,15 +509,13 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {} p The panel
      */
     updateContent : function (p) {
-        
+        Ext.getCmp("exploreHistory").body.update("");
         if (lore.ore.cache.getLoadedCompoundObjectIsNew()){
-            Ext.getCmp("exploreHistory").body.hide();
             Ext.getCmp("exploreinfovis").body.hide();
             try{
             this.clearExploreData();
             this.exploreLoaded = "";
-
-            lore.ore.ui.vp.info("No connections to explore: current compound object is unsaved");
+            Ext.getCmp("exploreHistory").body.update("No connections to explore from repository: current compound object is unsaved&nbsp;");
             return;
             } catch (ex){
                 lore.debug.ore("problem updating explore view",ex);
