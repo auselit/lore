@@ -70,6 +70,12 @@
           <xul:toolbarbutton style="font-weight:bolder"  label="&lore.coLabel;" tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()">
           </xul:toolbarbutton>
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/>
+          <xul:toolbarbutton type="menu" id="add-options" tooltiptext="Add resource options">
+            <xul:menupopup>
+                <xul:menuitem id="co-add-url" label="&lore.addNodeDirectlyLabel;" tooltiptext="&lore.addNodeDirectlyTip;" oncommand="loreoverlay.addGraphNode(true);"/>
+                <xul:menuitem id="co-add-batch" label="&lore.addFromTabsLabel;" tooltiptext="&lore.addFromTabsTip;" oncommand="loreoverlay.addFromTabs();"/>
+            </xul:menupopup>
+          </xul:toolbarbutton>
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="create-co" tooltiptext="&lore.createCOTip;" oncommand="loreoverlay.createCompoundObject();"/>
           <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
