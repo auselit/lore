@@ -435,15 +435,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             this.dummylayoutx = prevx + this.NODE_WIDTH + this.NODE_SPACING;
             this.dummylayouty = prevy;
         }
-    },
-    /**
-     *  Sort figures according to their x and y coordinates 
-     **/
-    figSortingFunction : function(figa,figb){        
-        if (figa.y == figb.y)
-            return figa.x > figb.x;
-        else
-            return figa.y > figb.y;
     }
+    
 });
 Ext.reg('grapheditor',lore.ore.ui.GraphicalEditor);

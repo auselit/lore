@@ -384,8 +384,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     }
                 });
         }
-        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().data;
-        allfigures.sort(lore.ore.ui.graphicalEditor.figSortingFunction);
+        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getFiguresSorted();
+        
         var resourcerdf = "";
         for (var i = 0; i < allfigures.length; i++) {
             var fig = allfigures[i];
