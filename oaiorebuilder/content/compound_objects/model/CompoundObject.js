@@ -140,7 +140,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     if (dtString == lore.constants.NAMESPACES["dcterms"] + "W3CDTF"){
                         propData.value = Date.parseDate(propval,'c');
                     } else if (dtString == lore.constants.NAMESPACES["xsd"] + "date") {
-                        propData.value = Date.parseDate(propval,'Y-m-d')
+                        propData.value = Date.parseDate(propval,'Y-m-d');
                     } 
                     // TODO: #10 handle other data types?
                 } else if (propurl == lore.constants.NAMESPACES["dcterms"] + "created" || propurl == lore.constants.NAMESPACES["dcterms"] + "modified"){

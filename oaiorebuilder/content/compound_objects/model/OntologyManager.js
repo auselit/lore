@@ -70,7 +70,7 @@ lore.ore.model.OntologyManager = function() {
 							hidden : true
 						})
 			});*/
-}
+};
 // SPARQL query to get all top level object props:
 // select ?p ?p2 where {?p a owl:ObjectProperty . OPTIONAL {?p
 // rdfs:subPropertyOf ?p2} . FILTER (!BOUND(?p2))}

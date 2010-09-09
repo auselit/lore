@@ -27,8 +27,8 @@ lore.ore.model.CompoundObjectCache = function() {
     this.loadedCompoundObject = "";
     this.loadedIsNew = true;
     /** Maximum level of nesting that the cache fetches automatically */
-    this.MAX_NESTING = 2
-}
+    this.MAX_NESTING = 2;
+};
 Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
     /**
      * Add a compound object to the cache
@@ -114,7 +114,7 @@ Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
                           nestedCO = new lore.ore.model.CompoundObject({uri: theurl});
                           nestedCO.load({format: 'application/rdf+xml', content: xhr.responseXML});
                           that.add(theurl, nestedCO);
-                          that.cacheNested(nestedCO.getInitialContent(), nestingLevel + 1)
+                          that.cacheNested(nestedCO.getInitialContent(), nestingLevel + 1);
                       }
                     } catch (e) {
                         lore.debug.ore("Problem loading nested CO into cache",e);

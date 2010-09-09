@@ -115,7 +115,7 @@ lore.ore.model.CompoundObjectListManager = function(){
                         "name" : "match"
                     }]
        })
-	}
+	};
 };
 Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
     /**
