@@ -23,7 +23,7 @@
  */
 lore.ore.ui.graph.LabelLocator = function(connection) {
     draw2d.ConnectionLocator.call(this,connection);
-}
+};
 Ext.extend(lore.ore.ui.graph.LabelLocator, draw2d.ConnectionLocator, {
     type : "lore.ore.ui.graph.LabelLocator",
     /**

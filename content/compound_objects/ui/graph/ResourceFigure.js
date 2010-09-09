@@ -29,7 +29,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	this.abstractPreview = false;
 	this.scrollx = 0;
 	this.scrolly = 0;
-	this.metadataproperties = initprops || {}
+	this.metadataproperties = initprops || {};
 	if (!this.metadataproperties["resource_0"]) {
 		this.metadataproperties["resource_0"] = "";
 	}

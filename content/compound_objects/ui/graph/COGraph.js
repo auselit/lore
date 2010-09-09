@@ -77,7 +77,7 @@ lore.ore.ui.graph.COGraph = function(id) {
     } catch (ex){
         lore.debug.ore("error setting up COGraph",ex);
     }
-}
+};
 Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     type : "lore.ore.ui.graph.COGraph",
 
@@ -383,7 +383,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                         newY = y;
                     } else if (keyCode == 38) { // up
                         newX = x;
-                        newY = y - 10
+                        newY = y - 10;
                     } else if (keyCode == 39) { // right
                         newX = x + 10;
                         newY = y;
@@ -493,7 +493,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       var oldSingleSelection = this.currentSelection;
       var oldMultiSelection = this.multiSelection;
       if (multi){
-    	  this.multiSelection = sel
+    	  this.multiSelection = sel;
     	  draw2d.Workflow.prototype.setCurrentSelection.call(this,null);
       } else {
     	   draw2d.Workflow.prototype.setCurrentSelection.call(this,sel);
