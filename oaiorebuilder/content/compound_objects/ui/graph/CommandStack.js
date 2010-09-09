@@ -4,7 +4,7 @@
  */
 lore.ore.ui.graph.CommandStack = Ext.extend(draw2d.CommandStack, {
 	constructor: function(){
-		// indicates whether command group is currently active
+		/** indicates whether command group is currently active */
 		this.inGroup = false;
 		draw2d.CommandStack.call(this);
 	},
@@ -25,8 +25,8 @@ lore.ore.ui.graph.CommandStack = Ext.extend(draw2d.CommandStack, {
 			this.execute(comm);
 		}
 	},
+	/** Override execute so that when in a group, commands aren't executed directly: they will be added to a CommandGroup */
 	execute: function(command){
-		// when in a group, don't execute commands directly: they will be added to CommandGroup
 		if (this.inGroup) {
 			this.groupCommands.push(command);
 			return;
