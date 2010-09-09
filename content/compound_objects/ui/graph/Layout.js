@@ -924,23 +924,7 @@ lore.ore.ui.graph.autolayout.Cell = Ext.extend(lore.ore.ui.graph.autolayout.Jigg
         }
     }
 });
-/**
- * 
- * @param {} scalar
- * @param {} vector
- */
-lore.ore.ui.graph.autolayout.Cell.prototype.translate = function(scalar, vector) {
-        if (!vector) {
-            scalar = vector;
-            scalar = 1;
-        }
-        for (var i = 0; i < this.dimensions; i++) {
-            var translation = scalar * vector[i];
-            this.coords[i] += translation;
-            this.min[i] += translation;
-            this.max[i] += translation;
-        }
-};
+
 Ext.apply(lore.ore.ui.graph.autolayout.Cell.prototype, {
     /**
      * 
@@ -954,6 +938,23 @@ Ext.apply(lore.ore.ui.graph.autolayout.Cell.prototype, {
         for (var i = 0; i < d; i++)
             sum += this.square(c1.coords[i] - c2.coords[i]);
         return sum;
+    },
+    /**
+     * 
+     * @param {} scalar
+     * @param {} vector
+     */
+    translate : function(scalar, vector) {
+        if (!vector) {
+            scalar = vector;
+            scalar = 1;
+        }
+        for (var i = 0; i < this.dimensions; i++) {
+            var translation = scalar * vector[i];
+            this.coords[i] += translation;
+            this.min[i] += translation;
+            this.max[i] += translation;
+        }
     },
     /**
      * 
