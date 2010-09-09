@@ -27,7 +27,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     
                 }
             ]
-        })
+        });
         lore.ore.ui.ExplorePanel.superclass.constructor.call(this, config);
         this.getComponent(0).on("resize",function(c,adjw, adjh, raww, rawh){
            try{

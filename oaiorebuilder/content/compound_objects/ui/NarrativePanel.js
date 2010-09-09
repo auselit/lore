@@ -97,7 +97,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
 	                }
 	            }
 	            return datehtml;
-	        }
+	        };
           try {
             
             var ns = lore.constants.NAMESPACES;

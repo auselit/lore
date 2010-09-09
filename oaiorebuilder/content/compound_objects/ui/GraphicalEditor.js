@@ -7,7 +7,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         config = config || {};
         config.autoHeight = true;
         config.autoWidth = true;
-        config.bodyStyle = { backgroundColor : 'transparent' }
+        config.bodyStyle = { backgroundColor : 'transparent' };
         lore.ore.ui.GraphicalEditor.superclass.constructor.call(this, config);
 
         /** Default width of new nodes in graphical editor 

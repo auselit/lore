@@ -167,7 +167,7 @@ Ext.extend(lore.ore.ui.CompoundObjectDragZone, Ext.dd.DragZone, {
                 var dragData = {
                     ddel: sourceEl,
                     draggedRecord: dataview.getRecord(sourceEl)
-                }
+                };
                 return dragData;
             }
         } catch (e){
