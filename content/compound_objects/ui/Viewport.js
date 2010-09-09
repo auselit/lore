@@ -146,7 +146,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                         "title": "Browse",
                         tabTip: "Browse related compound objects",
                         "id": "browsePanel",
-                        autoScroll: true, 
                         tbar: {
                                 "xtype": "lore.paging",
                                 "store": "browse",
@@ -166,7 +165,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             id: "historyPanel",
                             xtype: "panel",
                             anchor: "100% 50%",
-                            autoScroll: true,
                             "tbar": {
                                 "xtype": "lore.paging",
                                 "store": "history",

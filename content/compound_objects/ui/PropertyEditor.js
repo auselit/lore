@@ -8,7 +8,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             clicksToEdit : 1,
             columnLines : true,
             autoHeight : true,
-            anchor : "100%",
+            autoWidth: true,
             collapsible : true,
             collapseFirst: false,
             animCollapse : false,
@@ -136,7 +136,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }),
             viewConfig : {
                 forceFit : true,
-                scrollOffset : 0,
                 deferEmptyText: false,
                 emptyText: "No resource selected"
             },

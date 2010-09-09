@@ -8,7 +8,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             clicksToEdit : 1,
             columnLines : true,
             autoHeight : true,
-            anchor : "100%",
+            autoWidth: true,
             minColumnWidth: 10,
             collapsible : true,
             collapseFirst: false,
@@ -143,7 +143,6 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }),
             viewConfig : {
                 forceFit : true,
-                scrollOffset : 0,
                 deferEmptyText: false,
                 emptyText: "No relationships"
             },
