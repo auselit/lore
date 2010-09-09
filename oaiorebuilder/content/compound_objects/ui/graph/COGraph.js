@@ -101,16 +101,18 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 		        var allfigures = this.getFiguresSorted();
 		        for (var i = 0; i < allfigures.length; i++) {
 		            var fig = allfigures[i];
-		            var command = new draw2d.CommandMove(fig);
-		            command.setPosition(x, y);
-		            this.getCommandStack().execute(command);
-		            lineHeight = Math.max(lineHeight, fig.height);
-		            if (x > ge.ROW_WIDTH) {   	
-		                x = ge.NODE_SPACING;
-		                y = y + lineHeight + ge.NODE_SPACING;
-		                lineHeight = 0;
-		            } else {
-		                x = x + fig.width + ge.NODE_SPACING;
+		            if (fig && fig instanceof lore.ore.ui.graph.ResourceFigure){
+			            var command = new draw2d.CommandMove(fig);
+			            command.setPosition(x, y);
+			            this.getCommandStack().execute(command);
+			            lineHeight = Math.max(lineHeight, fig.height);
+			            if (x > ge.ROW_WIDTH) {   	
+			                x = ge.NODE_SPACING;
+			                y = y + lineHeight + ge.NODE_SPACING;
+			                lineHeight = 0;
+			            } else {
+			                x = x + fig.width + ge.NODE_SPACING;
+			            }
 		            }
 		            
 		        }
@@ -505,7 +507,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       }
       // remove highlighting from previous selection
       for (var i = 0; i < oldMultiSelection.length; i++) {
+    	  var fig = oldMultiSelection[i];
+    	  if (fig instanceof lore.ore.ui.graph.ResourceFigure){
            oldMultiSelection[i].setHighlight(false);
+      	  }
       }
       
       // Always show line resize handles and highlighting when connection is selected
