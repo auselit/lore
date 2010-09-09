@@ -31,9 +31,8 @@ var objectIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC
 var relIcon 	= "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII=";
 
 /**
- * Class which abstracts the visual operations performed on the content window and the
+ * @class lore.anno.ui.PageView Class which abstracts the visual operations performed on the content window and the  
  * window splitter used for variation annotations
- * @class lore.anno.ui.PageView
  * @param {Object} config The configuration the page view
  * config can contain: {
  * 		page: The PageData object to listen to events on
@@ -55,12 +54,11 @@ lore.anno.ui.PageView = function (config) {
 	this.model.on('update', this.handleUpdate, this);
 	this.page.on('annochanged', this.handleAnnoChanged, this);
 	this.rdfaMan.on('rdfaloaded', this.handleRDFaLoaded, this);
-}
+};
 		
 lore.anno.ui.PageView.prototype = {
     /**
-     * Default list of annotation highlight colours
-     * @type 
+     * Default list of annotation highlight colours 
      */
     colourLookup: ["#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/],
     
@@ -256,13 +254,13 @@ lore.anno.ui.PageView.prototype = {
 	
 	
 	/**
-	 * Retrieve th current selection whether that is selected text or selected part of an image
+	 * Retrieve the current selection whether that is selected text or selected part of an image
 	 */
 	getCurrentSelection: function(){
 		var selxp = lore.global.util.getXPathForSelection(window);
 		
 		if (this.page.curImage && lore.global.util.trim(selxp) == '') {
-			var sel = this.page.curImage.imgAreaSelectInst().getSelection()
+			var sel = this.page.curImage.imgAreaSelectInst().getSelection();
 			if (sel.x1 != sel.x2 && sel.y1 != sel.y2) {
 				return lore.global.util.getXPathForImageSelection(this.page.curImage.get(0), this.page.curImage.get(0).ownerDocument, sel, true);
 			}
@@ -300,7 +298,7 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Function} annoStyle a callback which is called once the dom node is created for the selection.
 	 * The dom node is passed in as a parameter to the callback.
      * 
-     * #Private#
+     * @private
 	 */	
 	highlightAnnotation : function(rec, annoStyle) {
 		var markers = [];
@@ -398,7 +396,7 @@ lore.anno.ui.PageView.prototype = {
 				}
 					
 				return domObj;
-			}
+			};
 			
 			this.model.each(function highlightAnnotations(rec){
 				if ( rec.data.context || rec.data.meta.context ) {
@@ -516,7 +514,7 @@ lore.anno.ui.PageView.prototype = {
 							handles: 'corners',
 							imageHeight: scale.origHeight,
 							imageWidth: scale.origWidth
-						})
+						});
 					} 
 					catch (e) {
 						lore.debug.anno("error initing image handler: " + e, e);
@@ -566,7 +564,7 @@ lore.anno.ui.PageView.prototype = {
 				catch (e) {
 					lore.debug.anno("error occurred during window resize handler: " + e, e);
 				}
-			}
+			};
 			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
 			lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
 			if (imgOnly) 
@@ -575,7 +573,7 @@ lore.anno.ui.PageView.prototype = {
 			self.removeResizeListeners = function() {
 				lore.global.util.getContentWindow(window).removeEventListener("resize", refreshImageMarkers, false);
 				lore.anno.ui.topView.getVariationContentWindow().removeEventListener("resize", refreshImageMarkers, false);
-			}
+			};
 			
 		} 
 		catch (e) {
@@ -587,7 +585,7 @@ lore.anno.ui.PageView.prototype = {
 		lore.debug.anno("on load image anno handler called");
 		e();
 		
-	}
+	};
 	
 	// case: dom content not loaded
 	if ( !doc.body) {
@@ -771,6 +769,6 @@ lore.anno.ui.PageView.prototype = {
 		}
 	}
 	
-}
+};
 	
 
