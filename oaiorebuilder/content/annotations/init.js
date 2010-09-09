@@ -231,7 +231,15 @@ lore.anno.ui.initGUIConfig = function(){
 	var aboutPanel = {
 		title: "Using Annotations",
 		id: "about",
-		iconCls: "welcome-icon"
+		iconCls: "welcome-icon",
+		xtype: 'container',
+		autoEl: {
+	        tag: 'iframe',
+	        style: 'border:none',
+	        src: 'chrome://lore/content/annotations/about_annotations.html',
+	        width: '100%',
+	        height: '100%'
+	    }
 	}
 
 	/**
@@ -269,7 +277,7 @@ lore.anno.ui.initGUIConfig = function(){
 	  */
 	var browsePanel = {
 			title: "Browse",
-			xtype: "panel",
+			xtype: "container",
 			id: "treeview",
 			layout: "border",
 			items: [{
@@ -355,10 +363,7 @@ lore.anno.ui.initExtComponents = function(){
 		lore.anno.ui.attachHandlers();
 			
 		lore.anno.ui.formpanel.setAnnotationFormUI(false, false );
-		
-		Ext.getCmp("about").body.update("<iframe style='border:none;' height='100%' width='100%' "
-			+ "src='chrome://lore/content/annotations/about_annotations.html'></iframe>");
-	
+
 		// tooltips		
 	    Ext.QuickTips.interceptTitles = true;
 	    Ext.QuickTips.init();
