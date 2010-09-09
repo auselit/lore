@@ -26,7 +26,7 @@ lore.ore.repos.RepositoryAdapter = function (reposURL){
     this.reposURL = reposURL;
     // prefix for identifiers is base URI (ie reposURL after http:// until next slash) plus 'rem/'
     this.idPrefix = reposURL.substring(0, reposURL.indexOf('/',7) + 1) + "rem/";
-}
+};
 Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
     /**
      * Set the access URL of the repository

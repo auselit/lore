@@ -136,7 +136,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                 }
             }
             return datehtml;
-        }
+        };
         // TODO: remove this when we use MVC properly
         if (!this.model) {
             this.model = resource;
@@ -147,19 +147,19 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
          */
         var makeTOC = function(contentResources,containerid, ssid){
             var tochtml = "";
-            tochtml += "<ul id='" + this.id + "_toc' style='text-align:left; list-style: disc inside;padding-left:6px;'>"
+            tochtml += "<ul id='" + this.id + "_toc' style='text-align:left; list-style: disc inside;padding-left:6px;'>";
             contentResources.each(function(rec){
                 var r = rec.data;
                 if (r){
                     tochtml += oThis.tocTemplate.apply({
                         id: (r.representsCO? r.uri : r.uri + "_" + containerid),
                         title: (r.properties.getTitle() || "Untitled Resource")
-                    })
+                    });
                 }
             });
             tochtml += "</ul>";
             return tochtml;
-        }
+        };
         
         
         // TODO: use Ext Template
@@ -280,7 +280,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	                previewEl = document.createElement('img');
 	                previewEl.src=resourceprops.uri;
 	                previewEl.alt = "image preview";
-	                previewEl.onclick= function(e){lore.global.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false};
+	                previewEl.onclick= function(e){lore.global.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false;};
 	                previewEl.style.maxHeight = "100%";
 	            } else if (hasPreview) {
 	                var theURL = resourceprops.uri;
