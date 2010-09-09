@@ -1,10 +1,10 @@
 if (typeof(FBL) != "undefined"){
 FBL.ns(function() { with (FBL) { 
 /**
- * @class Firebug.LoreTracingModel  Prints debug information to Firebug tracing console
+ * @class lore.LoreTracingModel  Prints debug information to Firebug tracing console
  * @extends Firebug.Module
  */
-Firebug.LoreTracingModel = extend(Firebug.Module, 
+lore.LoreTracingModel = extend(Firebug.Module, 
 { 
     /**
      * Open new FB Tracing Console window
@@ -65,7 +65,7 @@ Firebug.LoreTracingModel = extend(Firebug.Module,
 
 }); 
 
-Firebug.registerModule(Firebug.LoreTracingModel); 
+Firebug.registerModule(lore.LoreTracingModel); 
 
 }});
 }
