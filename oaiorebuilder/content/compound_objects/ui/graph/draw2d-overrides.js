@@ -61,4 +61,4 @@ draw2d.Menu.prototype.createList=function() {
          li.attachEvent("onmouseout", function(event){event.srcElement.style.backgroundColor="transparent";});
       }
   }
-}
+};

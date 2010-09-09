@@ -23,7 +23,7 @@ lore.ore.ui.graph.autolayout.JiggleObject = function() {
     this.intField = 0;
     this.objectField = null;
     this.context = null;
-}
+};
 Ext.apply(lore.ore.ui.graph.autolayout.JiggleObject.prototype, {
     /**
      * @return {}
@@ -87,7 +87,7 @@ lore.ore.ui.graph.autolayout.ForceLaw = Ext.extend(lore.ore.ui.graph.autolayout.
     constructor: function(graph) {
         lore.ore.ui.graph.autolayout.JiggleObject.call(this);
         this.graph = graph;
-        this.cap = Number.MAX_VALUE / 1000
+        this.cap = Number.MAX_VALUE / 1000;
     },
     
     /**
@@ -371,7 +371,7 @@ lore.ore.ui.graph.autolayout.ForceModel = function(graph) {
         this.preferredEdgeLength = 0;
         this.forceLaws = new draw2d.ArrayList();
         this.constraints = new draw2d.ArrayList();
-}
+};
     /**
      * 
      * @return {}
@@ -940,7 +940,7 @@ lore.ore.ui.graph.autolayout.Cell.prototype.translate = function(scalar, vector)
             this.min[i] += translation;
             this.max[i] += translation;
         }
-}
+};
 Ext.apply(lore.ore.ui.graph.autolayout.Cell.prototype, {
     /**
      * 
@@ -1108,7 +1108,7 @@ lore.ore.ui.graph.autolayout.QuadTree = Ext.extend(lore.ore.ui.graph.autolayout.
         var c = v.getCoords();
         var center = this.getCenter();
         var d = this.getDimensions();
-        var index = 0
+        var index = 0;
         var column = 1;
         for (var i = 0; i < d; i++) {
             if (c[i] > center[i]) {
@@ -1211,7 +1211,7 @@ lore.ore.ui.graph.autolayout.Vertex = Ext.extend(lore.ore.ui.graph.autolayout.Ce
     constructor: function(graph) {
         lore.ore.ui.graph.autolayout.Cell.call(this);
         this.undirectedDegree = 0;
-        this.inDegree = 0
+        this.inDegree = 0;
         this.outDegree = 0;
         this.undirectedEdges = new draw2d.ArrayList();
         this.inEdges = new draw2d.ArrayList();
@@ -1435,7 +1435,7 @@ lore.ore.ui.graph.autolayout.EdgeLabel = Ext.extend(lore.ore.ui.graph.autolayout
     constructor: function(edge, name) {
         lore.ore.ui.graph.autolayout.Cell.call(this);
         this.name = name;
-        this.setContext(e)
+        this.setContext(e);
     }, 
     /**
      * 
@@ -1724,7 +1724,7 @@ lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw = Ext.extend(lore.ore.ui.gra
                     for (var j = 0; j < d; j++) {
                         index[j] = current[j] + (temp % 3) - 1;
                         if ((index[j] < 0) || (index[j] >= gridSize[j])) {
-                            doSecondPart = false
+                            doSecondPart = false;
                             temp /= 3;
                         }
                     }
@@ -2053,7 +2053,7 @@ lore.ore.ui.graph.autolayout.StandardForceModel = function(graph, preferredEdgeL
     this.addForceLaw(springLaw);
     this.addForceLaw(vvRepulsionLaw);
     this.addConstraint(new lore.ore.ui.graph.autolayout.ProjectionConstraint(graph, 2));
-}
+};
 /**
  * @class lore.ore.ui.graph.autolayout.SteepestDescent
  * @extends lore.ore.ui.graph.autolayout.FirstOrderOptimizationProcedure
@@ -2102,7 +2102,7 @@ lore.ore.ui.graph.autolayout.Layouter = function(workflow) {
     this.barnesHut = false;
     this.theta = 0.9;
     this.iterations = 25;
-}
+};
 /** ConjugateGradients or SteepestDescent */
 lore.ore.ui.graph.autolayout.Layouter.opt = {
     CONJUGATE_GRADIENTS : lore.ore.ui.graph.autolayout.ConjugateGradients,
@@ -2120,7 +2120,7 @@ lore.ore.ui.graph.autolayout.Layouter.vvRepulsion = {
     HYBRID : lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw,
     INVERSE_SQUARE_EDGE : lore.ore.ui.graph.autolayout.InverseSquareVertexEdgeRepulsionLaw,
     INVERSE_EDGE : lore.ore.ui.graph.autolayout.InverseVertexEdgeRepulsionLaw
-}
+};
 Ext.apply(lore.ore.ui.graph.autolayout.Layouter.prototype, {
     /**
      * 
@@ -2328,7 +2328,7 @@ Ext.apply(lore.ore.ui.graph.autolayout.Layouter.prototype, {
                         var targetPort = connection.getTarget();
                         var targetFigure = targetPort.getParent();
                         var targetIndex = this.figures.indexOf(targetFigure);
-                        var to = this.vertexes.get(targetIndex)
+                        var to = this.vertexes.get(targetIndex);
                         var edge = this.graph.insertEdge(from, to, true);
                     }
                 }
