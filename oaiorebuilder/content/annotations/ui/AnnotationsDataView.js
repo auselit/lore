@@ -21,52 +21,10 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
             emptyText: 'No annotations to display'
         });
         lore.anno.ui.AnnotationsDataView.superclass.initComponent.apply(this,arguments);
-    },
-    beforeShow : function(event) {
-    	var node = this.eventModel.getNode(event);
-    	
     }
 });
 Ext.reg('annodataview', lore.anno.ui.AnnotationsDataView);
 
-
-var dragZoneOverrides = {
-	containerScroll : true,
-	scroll : false,
-	getDragData : function(evtObj) {
-		var dataView = this.dataView;
-		var sourceEl = evtObj.getTarget(dataView.itemSelector, 10);
-		
-		if (sourceEl) {
-			var selectedNodes = dataView.getSelectedNodes();
-			var dragDropEl = document.createElement('div');
-			
-			if (selectedNodes.length < 1) {
-				selectedNodes.push(sourceEl);
-			}
-			
-			Ext.each(selectedNodes, function(node) {
-				dragDropEl.appendChild(node.cloneNode(true));
-			});
-			return {
-				ddel : dragDropEl,
-				repairXY : Ext.fly(sourceEl).getXY(),
-				dragRecords : dataView.getSelectedRecords(),
-				sourceDataView : dataView
-			};
-		}
-	},
-	getRepairXY : function() {
-		return this.dragData.repairXY;
-	}
-}
-
-var AnnotationsDragZoneCfg = Ext.apply({}, {
-//    ddGroup : 'annotationsDD',
-	dataView: thedataView
-});
-
-new Ext.ddDragZone(thedataView.getEl(), AnnotationsDragZoneCfg);
 
 // lore.anno.ui.getAnnoTypeIcon(rec.data);
 // modified
