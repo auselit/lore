@@ -105,7 +105,7 @@ lore.ore.ui.initUIComponents = function() {
     var d1 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cobview'));
     var d2 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cohview'));
     var d3 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cosview'));
-}
+};
 
 /**
  * Initialise Compound Objects component of LORE
@@ -149,4 +149,4 @@ lore.ore.ui.init = function() {
 	} catch (e) {
 		lore.debug.ui("Exception in Compound Object init", e);
 	}
-}
+};

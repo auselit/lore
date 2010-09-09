@@ -38,7 +38,7 @@ try {
 	    },
 	    /* Global functions and properties  */
 	    global: {}
-	}
+	};
     /* Import modules into the lore namespace.
      * Use eval for the import statements because the YUI compressor does not allow 
      * us to call the import function directly as import is a reserved word in JavaScript.

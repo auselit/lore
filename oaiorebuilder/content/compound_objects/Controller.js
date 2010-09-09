@@ -13,7 +13,7 @@ lore.ore.Controller = function(config){
 	/** Property name displayed for the compound object identifier */
     this.REM_ID_PROP = "Compound Object ID";
 
-}
+};
 Ext.apply(lore.ore.Controller.prototype, {
 
     /** Activate Controller and trigger related compound objects to be fetched when lore Compound Objects panel is shown */
@@ -341,7 +341,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                     lore.ore.ui.topView.hideAddIcon(false);
                }
                //lore.debug.timeElapsed("done");
-               var readOnly = !remurl.match(lore.ore.reposAdapter.idPrefix)
+               var readOnly = !remurl.match(lore.ore.reposAdapter.idPrefix);
                Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50) + (readOnly? ' (read-only)' : ''),false);
             } catch (e){
                 lore.ore.ui.vp.error("Error loading compound object");
@@ -754,7 +754,9 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.ore.ui.graphicalEditor.coGraph.setReadOnly(true);
             }*/
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
-            if (currentCOMsg) {currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false)};
+            if (currentCOMsg) {
+            	currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false);
+            }
             if (currentCO.isDirty()){
                 lore.debug.ore("setRepos: dirty");
                 Ext.Msg.show({
@@ -851,7 +853,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                         url: sn.href,
                         x: Math.max(0,aEvent.layerX),
                         y: Math.max(0,aEvent.layerY)
-                    }
+                    };
                     if (sntitle){
                         figopts.props = {"dc:title_0": sntitle};
                     }

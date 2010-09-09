@@ -49,7 +49,7 @@ Ext.ux.RdfGrid = Ext.extend(Ext.grid.EditorGridPanel,{
         this.viewConfig = {
             markDirty: false,
             forceFit: true
-        }
+        };
         this.tbar = [{
             text: 'Add',
             handler: this.onAdd,

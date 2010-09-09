@@ -103,7 +103,7 @@ lore.ore.textm.processRDFa = function(tmtab) {
     } catch (ex){
         lore.debug.tm("exception processing rdfa",ex);
     }
-}
+};
 
 /**
  * Triggered when the user selects the Calais button from the toolbar: sends a
@@ -154,7 +154,7 @@ lore.ore.doTextMining = function() {
     } catch (e){
         lore.debug.tm("error in doTextMining",e);
     }
-}
+};
 lore.ore.textm.handleOpenCalaisMetadata = function(resp) {
     try{
     var res = resp.responseXML;
@@ -174,4 +174,4 @@ lore.ore.textm.handleOpenCalaisMetadata = function(resp) {
     /*
     Ext.getCmp("textmining").body.update(res + lore.ore.textm.POWEREDBY_CALAIS);
     */
-}
+};
