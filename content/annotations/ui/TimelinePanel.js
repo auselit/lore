@@ -93,9 +93,9 @@ if (typeof Timeline !== "undefined") {
 /**
  * Object that provides a timeline of the annotations
  * @class lore.anno.ui.TimelinePanel
- * @extends Ext.Panel
+ * @extends Ext.Container
  */
-lore.anno.ui.TimelinePanel = Ext.extend(Ext.Panel, {
+lore.anno.ui.TimelinePanel = Ext.extend(Ext.Container, {
 
 	/**
 	 * @constructor
