@@ -23,9 +23,13 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
    		    sm: new Ext.grid.RowSelectionModel({
 	   		    singleSelect:true,
 	   		    listeners: {
-	   		        'beforerowselect': function(sm,i,ke,row){
-	   		            sm.grid.ddText = row.data.title + " (" + row.data.uri + ")";
-	   		            lore.ore.ui.graphicalEditor.selectFigure(row.data.uri);
+	   		        'rowselect': function(sm,i,rec){    	
+	   		        	try{  		        		
+		   		            sm.grid.ddText = rec.data.title + " (" + rec.data.uri + ")";
+		   		            lore.ore.controller.updateSelection(rec.data.uri, this.grid);
+	   		        	} catch (e){
+	   		        		lore.debug.ore("problem in row select",e);
+	   		        	}
 	   		        }
 	   		    }
 	   		}),
@@ -90,8 +94,8 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 	}
             	 }
               });
+        	// TODO: remove this once MVC is working correctly
         	var sfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
-        	//lore.debug.ore("selected figure is",sfig);
         	if (sfig) {
         		p.selectResource(sfig.url);
         	}
@@ -120,8 +124,17 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     },
     selectResource: function(uri){
     	try{
-	    	var rec = this.store.findExact('uri',uri);
-	    	this.getSelectionModel().selectRow(rec);
+    		var sm = this.getSelectionModel();
+    		if (!uri){
+    			sm.clearSelections();
+    		} else {
+    			var idx = this.store.findExact('uri',uri);
+    			var rec = this.store.getAt(idx);
+    			var selrec = sm.getSelected();
+				if (rec && (selrec != rec)){
+					sm.selectRow(idx);
+				} 
+    		}
     	} catch (e){
     		lore.debug.ore("Problem selecting resource " + uri,e);
     	}

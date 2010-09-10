@@ -86,9 +86,13 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     },
     /**
      * Construct the context menu for selecting the connection type
+     * @param {int} x X position to show menu
+     * @param {int} y Y position to show menu
+     * @param {boolean} relEditor Whether this is being called from relEditor
      * @return {}
      */
-    onContextMenu : function(x,y) {
+    onContextMenu : function(x,y,relEditor) {
+    	lore.debug.ore("on context menu " + x + " " + y);
         try {
         	if (!(lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
     	            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl))) {
@@ -115,9 +119,16 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     		        var symm = symmquery.length > 0;		
     		 		cm.add({
                         text: rel,          
-                        scope: {ns: relnamespace, rel:rel, symm: symm},
+                        scope: {ns: relnamespace, rel:rel, symm: symm, relEditor: relEditor},
                         handler: function(evt){
-                        	lore.ore.ui.graphicalEditor.getSelectedFigure().setRelationship(this.ns, this.rel, this.symm);
+                        	var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
+                        	selfig.setRelationship(this.ns, this.rel, this.symm);
+                        	if (relEditor) {
+                        		var srcfig =  selfig.sourcePort.getParent();
+                        		if (srcfig){
+                        			lore.ore.ui.graphicalEditor.coGraph.setCurrentSelection(srcfig);
+                        		}
+                        	}
                         }
                      });
     		 	}
@@ -125,8 +136,14 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     			
     	    }
         	var w = this.workflow;
-        	var absx = w.getAbsoluteX() +  x - w.getScrollLeft();
-    		var absy = w.getAbsoluteY() +  y - w.getScrollTop();
+        	var absx, absy;
+        	if (!relEditor){
+        		absx = w.getAbsoluteX() +  x - w.getScrollLeft();
+        		absy = w.getAbsoluteY() +  y - w.getScrollTop();
+        	} else {
+        		absx = x;
+        		absy = y;
+        	}
     		lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt([absx, absy]);
     		
         } catch (ex){ 
