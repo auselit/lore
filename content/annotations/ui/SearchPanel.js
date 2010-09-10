@@ -162,8 +162,11 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 			dataview.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
 				if (!event.ctrlKey && !event.shiftKey) {
 					var record = this.getRecord(node);
-				
-					lore.global.util.launchTab(record.data.resource);
+					var ruri = record.data.resource;
+					if (ruri && ruri.match(lore.anno.prefs.url)){
+						ruri += "?danno_useStylesheet=";
+					}				
+					lore.global.util.launchTab(ruri);
 				}
 			}, dataview);
 
