@@ -109,6 +109,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     */
    onSelectionChanged : function(figure) {
         //lore.debug.ore("selected figure is",figure);
+	   	lore.ore.controller.updateSelection(figure, this);
         if (figure != null) {
             // raise tab first so that properties are rendered and column widths get sized correctly for resource/rels
             Ext.getCmp("propertytabs").activate("properties");
@@ -332,6 +333,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         }
         var title = opts.props["dc:title_0"] || opts.props["dcterms:title_0"];
         if (!opts.batch && !title){ 
+        	this.isDirty = true;
             // dodgy way of determining if this is a new node
             try{
             // Try getting the page title from the browser history: 
@@ -347,7 +349,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             } catch (e) {
                 lore.debug.ore("Error getting title from history",e);
             }
-            this.isDirty = true;
         }
         if (theURL && !this.lookup[theURL]) {
             fig = new lore.ore.ui.graph.ResourceFigure(opts.props);

@@ -525,14 +525,15 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     	}
     },
     /** select figures within a rectangular selecton */
-    multiSelectFigures: function(x,y, x2, y2){
+    multiSelectFigures: function(x, y, x2, y2){
+    	var leeway = 20;
         var result = [];
         for(var i=0;i <this.figures.getSize();i++){
             var figure = this.figures.get(i);
-            var figx = figure.getAbsoluteX();
-            var figy = figure.getAbsoluteY();
-            var figx2 = figx + figure.width;
-            var figy2 = figy + figure.height;
+            var figx = figure.getAbsoluteX() + leeway;
+            var figy = figure.getAbsoluteY() + leeway;
+            var figx2 = figx + figure.width - leeway;
+            var figy2 = figy + figure.height - leeway;
             if (x <= figx && y <= figy && x2 >= figx2 && y2 >= figy2){
                 result.push(figure); 
                 figure.setHighlight(true);

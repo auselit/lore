@@ -314,8 +314,8 @@ Ext.apply(lore.ore.Controller.prototype, {
                 //lore.debug.timeElapsed("hide/show mask ");
                 // FIXME: #210 Temporary workaround to set drawing area size on load
                 // problem still exists if a node is added that extends the boundaries
-                lore.ore.ui.graphicalEditor.coGraph.showMask();
-                lore.ore.ui.graphicalEditor.coGraph.hideMask();
+                lore.ore.ui.graphicalEditor.coGraph.resizeMask();
+                
                 lore.ore.ui.graphicalEditor.bindModel(lore.ore.cache.getLoadedCompoundObject());
                 lore.ore.ui.vp.info("Loading compound object");
                 Ext.Msg.hide();
@@ -551,6 +551,31 @@ Ext.apply(lore.ore.Controller.prototype, {
             lore.ore.ui.vp.error("Error saving Compound Object: " + e);
         }
     
+    },
+    /** keep selection in sync between graphical editor and resource list */
+    updateSelection: function(obj, view){
+        try{
+        // when a resource is selected: update both graphical editor and resource list views
+        // when a relationship is selected: update the graphical editor and clear selections in resource list
+        if (view instanceof lore.ore.ui.ResourceListPanel){
+            if (obj){
+                lore.ore.ui.graphicalEditor.selectFigure(obj);
+            } else {
+                // clear graphical editor selection
+                lore.debug.ore("no selection");
+            }
+        } else {
+            var resourceListView = Ext.getCmp("remlistview");
+            if (obj instanceof lore.ore.ui.graph.ResourceFigure){
+                resourceListView.selectResource(obj.url);
+            } else {
+                // could be a connection or nothing selected: clear resource list
+                resourceListView.selectResource(null);
+            }
+        }
+        } catch (e){
+            lore.debug.ore("problem in updateSelection",e);
+        }
     },
     addResourceWithPrompt: function(){
     	Ext.Msg.show({

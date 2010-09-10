@@ -128,7 +128,31 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                              // TODO: color code different ontologies?
                              metaData.attr = "title='" + record.data.relNS + record.data.relName + "'";
                              return value;
-                           }
+                           },
+                            editor: new Ext.form.TriggerField({
+                                 parentPanel: this,
+                                 editable: false,
+                                 triggerClass: 'x-form-ellipsis-trigger',
+                                 triggerConfig: {
+                                    tag : "img", 
+                                    src : Ext.BLANK_IMAGE_URL,
+                                    cls: "x-form-trigger x-form-ellipsis-trigger",
+                                    qtip: 'Set relationship'
+                                 },
+                                 onTriggerClick: function(ev) {
+                                    try {
+                                     // TODO: select line of interest first as it could be resource node (context menu requires it to be selected)
+                                     //var row = this.parentPanel.lastEdit.row;
+                                     var sel = this.parentPanel.getSelectionModel().getSelected();
+                                     var coGraph = lore.ore.ui.graphicalEditor.coGraph;
+                                     var selfig = coGraph.getLine(sel.id);
+                                     coGraph.setCurrentSelection(selfig);
+                                     selfig.onContextMenu(ev.xy[0], ev.xy[1],true);
+                                    } catch (e){
+                                        lore.debug.ore("problem in trigger click",e);
+                                    }
+                                 } 
+                           })
                  }, {
                             header : 'To',
                             dataIndex : 'toTitle',
