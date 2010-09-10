@@ -27,7 +27,8 @@
  * @include  "/oaiorebuilder/content/constants.js"
  */
 	 
-		
+
+Ext.ns('lore.anno.ui');
 		
 /**
  * Disable or enable the annotations view
@@ -374,6 +375,26 @@ lore.anno.ui.nodeIdToRecId = function(node) {
  */
 lore.anno.ui.genTreeNodeText = function(anno){
 	return lore.anno.ui.genDescription(anno, true);
+}
+
+/**
+ * Generates a series of <span>s to display the passed in comma
+ * separated list of tag references
+ */
+lore.anno.ui.genTagsHtml = function(tags) {
+    if (!tags) {
+        return '';
+    }
+    var tagsHtml = '';
+    var tags = tags.split(',');
+
+    for (var i = 0; i < tags.length; i++) {
+        var temp = lore.anno.thesaurus.getById(tags[i]);
+        if (temp) {
+            tagsHtml += '<span class="anno-tag">' + temp.data.name + '</span>';
+        }
+    }
+    return tagsHtml;
 }
 
 /**

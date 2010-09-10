@@ -662,7 +662,13 @@ div.coListing:hover {
 	color: #51666b;
 	font-size:90%;
 }
-
+.anno-tag {
+	background-color: #E7E7E7;
+	border-color: #D7D7D7;
+	margin: 2px;
+	padding: 2px 10px;
+	-moz-border-radius: 5px;
+}
 
 #remlistview .x-grid3-row-selected {background-color: yellow !important;}
 
