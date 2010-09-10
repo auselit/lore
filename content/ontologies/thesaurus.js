@@ -9671,3 +9671,9 @@ lore.anno.thesaurus = [
 ["http://austlit.edu.au/run?ex=ShowThes&tid=J%23-A","thryptomenes"],
 ["http://austlit.edu.au/run?ex=ShowThes&tid=J%236m","thumbsucking"]
 ];
+lore.anno.thesaurus = new Ext.ux.data.PagingArrayStore ({
+    fields: ['id', 'name'],
+    data: lore.anno.thesaurus,
+    idIndex: 0,
+    lastOptions: {params: {start:0,limit:10}}
+});

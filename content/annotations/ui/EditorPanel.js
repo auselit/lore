@@ -318,11 +318,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						resizable: true,
 						name: 'tags',
                         pageSize: 10,
-						store: new Ext.ux.data.PagingArrayStore ({
-							fields: ['id', 'name'],
-							data: lore.anno.thesaurus,
-                            lastOptions: {params: {start:0,limit:10}}
-						}),
+						store: lore.anno.thesaurus,
+						removeValuesFromStore: false,
 						mode: 'local',
 						displayField: 'name',
 						valueField: 'id',
