@@ -237,7 +237,11 @@ util = {
      * @return {String} the formatted date
      */
     longDate : function ( adate, dateObj ) {
-        return dateObj.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
+    	if (adate instanceof Date){
+    		return adate.format("D, d M Y H:i:s \\G\\M\\T O");
+    	} else {
+    		return dateObj.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
+    	}
     },
     /**
      * Format a date (short format)
@@ -246,7 +250,11 @@ util = {
      * @return {String}
      */
     shortDate : function (adate, dateObj ) {
-        return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
+    	if (adate instanceof Date){
+    		return adate.format("d M Y H:i:s");
+    	} else {
+    		return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
+    	}
     },
 	
 	/**
