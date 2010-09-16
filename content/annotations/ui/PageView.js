@@ -233,6 +233,7 @@ lore.anno.ui.PageView.prototype = {
    */
   deselectImage: function(img) {
     var deselect = img || this.page.curImage;
+    if (!deselect) return;
     var inst = deselect.imgAreaSelectInst();
     if (inst) {
       inst.setOptions({
@@ -502,14 +503,15 @@ lore.anno.ui.PageView.prototype = {
 						// attach image area select handle for image			
 						$(this).imgAreaSelect({
 							onSelectEnd: function(img, sel){
-								if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) 
+								if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) {
 									return;
+								}
 								self.setCurSelImage(img);
 							},
 							onSelectStart: function(){
 								var selObj = cw.getSelection();
 								selObj.removeAllRanges();
-                self.deselectImage();
+								//self.deselectImage();		
 							},
 							handles: 'corners',
 							imageHeight: scale.origHeight,
