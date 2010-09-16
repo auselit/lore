@@ -210,7 +210,7 @@
 			};		
 			
 			this.registerView = function(view, instId){
-				this.views[instId] = util.createWrapper(view, this.name);
+				this.views[instId] = view;
 				var e = this.events[instId];
 				if ( e && e.length > 0) {
 					for ( var i =0; i < e.length; i++) {
