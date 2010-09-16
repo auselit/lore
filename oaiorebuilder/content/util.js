@@ -65,32 +65,6 @@ util = {
         return true;
     },
     
-	/**
-	 * Dynamically create a wrapper around an object and return
-	 * the wrapper object. The wrapper object currently only
-	 * exposes the original object's functions
-     * @param {Object} srcObj The original object to wrap
-     * @param {String} name Currently not used
-     * @param {Object} pre Currently not used
-     * @param {Object} post Currently not used
-     * @return {Object} The wrapper
-	 */
-	createWrapper: function(srcObj, name, pre, post) {
-		var wrapper = { _real: srcObj, _pre: pre, _post: post};
-		for ( x in srcObj) {
-			if ( typeof(srcObj[x]) == 'function' ) {
-				wrapper[x] = eval('function(){'+
-					// would need to chain argument values for _pre
-					// if (this._pre) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }} 
-					//'debug.ui("' + name + '.' + x + ' args:" + arguments, arguments);' +
-					'return this._real["' + x + '"].apply(this._real,arguments);' +
-					// // if (this._post) { for ( var i =0; i < this._pre.length; i++) { this._pre[i].apply(this._real, arguments); }}
-					// would need to chain return values for _post
-						'}');
-			}
-		}
-		return wrapper;
-	},
 	
 	ELFHash: function(str) {
      var hash = 0;
