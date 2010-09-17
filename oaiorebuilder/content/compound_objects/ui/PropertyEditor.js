@@ -14,6 +14,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             animCollapse : false,
             /** Pop up editor for property value */
             propEditorWindow: new Ext.Window({ 
+            	propEditor: this,
                 modal: true,
                 closable: false,
                 layout: 'fit',
@@ -21,11 +22,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 focus: function() {
                     this.getComponent(0).focus();
                 },
-                editField: function(tfield,row){
+                editField: function(tfield,rownum){
                     try {
-                        lore.debug.ore("editField",[tfield,row]);
+                        lore.debug.ore("editField",[tfield,rownum]);
                         this.triggerField = tfield;
-                        this.activeRow = row;
+                        this.activeRow = rownum;
                         var val = tfield.getValue();
                         this.getComponent(0).setValue(val? val : '');
                         this.show(); 
@@ -33,6 +34,16 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     } catch (e){
                         lore.debug.ore("problem in editField",e);
                     }
+                },
+                onShow: function(){
+                	var rec = this.propEditor.store.getAt(this.activeRow);       	
+                	var ccbuttons = this.getBottomToolbar().getComponent(0);
+                	if (rec.data.name == "dc:rights"){
+                		ccbuttons.show();
+                	} else {		         		
+                		ccbuttons.hide();        		
+                	}
+                	Ext.Window.prototype.onShow.call(this);
                 },
                 items: [
                     {
@@ -44,6 +55,78 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }
                 ],
                 bbar: [
+                    {
+                    	xtype: 'buttongroup',           	
+                    	columns: 3,
+                    	items: [
+		                    {
+		                    	xtype: 'button',                 	
+		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+		                    	icon: 'chrome://lore/skin/icons/cc/by.png',
+		                    	tooltip: 'Set to Creative Commons Attribution licence',
+		                    	scope: this,
+		                    	handler: function(){
+		                    		this.propEditorWindow.getComponent(0)
+		                    			.setValue("http://creativecommons.org/licenses/by/3.0/au/");
+		                    	}
+		                    },
+		                    {
+		                    	xtype: 'button',
+		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+		                    	icon: 'chrome://lore/skin/icons/cc/bysa.png',
+		                    	tooltip: 'Set to Creative Commons Attribution Share Alike licence',
+		                    	scope: this,
+		                    	handler: function(){
+		                    		this.propEditorWindow.getComponent(0)
+		                    			.setValue("http://creativecommons.org/licenses/by-sa/3.0/au/");
+		                    	}
+		                    },
+		                    {
+		                    	xtype: 'button',
+		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+		                    	icon: 'chrome://lore/skin/icons/cc/bync.png',
+		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial licence',
+		                    	scope: this,
+		                    	handler: function(){
+		                    		this.propEditorWindow.getComponent(0)
+		                    			.setValue("http://creativecommons.org/licenses/by-nc/3.0/au/");
+		                    	}   	
+		                    },
+		                    {
+		                    	xtype: 'button',
+		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+		                    	icon: 'chrome://lore/skin/icons/cc/bynd.png',
+		                    	tooltip: 'Set to Creative Commons Attribution No Derivative Works licence',
+		                    	scope: this,
+		                    	handler: function(){
+		                    		this.propEditorWindow.getComponent(0)
+		                    			.setValue("http://creativecommons.org/licenses/by-nd/3.0/au/");
+		                    	}
+		                    },
+		                    {
+		                    	xtype: 'button',
+		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+		                    	icon: 'chrome://lore/skin/icons/cc/byncsa.png',
+		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike Works licence',
+		                    	scope: this,
+		                    	handler: function(){
+		                    		this.propEditorWindow.getComponent(0)
+		                    			.setValue("http://creativecommons.org/licenses/by-nc-sa/3.0/au/");
+		                    	}
+		                    },
+		                    {
+		                    	xtype: 'button',                    	
+		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+		                    	icon: 'chrome://lore/skin/icons/cc/byncnd.png',
+		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial No Derivatives licence',
+		                    	scope: this,
+		                    	handler: function(){
+		                    		this.propEditorWindow.getComponent(0)
+		                    			.setValue("http://creativecommons.org/licenses/by-nc-nd/3.0/au/");
+		                    	}
+		                    }
+		                ]
+                    },
                     '->',
                     {
                         xtype: 'button',
@@ -58,7 +141,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 this.startEditing(w.activeRow,1);
                                 w.triggerField.setValue(ta.getRawValue());
                                 this.stopEditing();
-                                
                                 w.hide();
                             } catch (e){
                                 lore.debug.ore("problem in update",e);
