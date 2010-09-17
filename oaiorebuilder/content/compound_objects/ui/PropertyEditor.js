@@ -107,7 +107,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
 		                    	icon: 'chrome://lore/skin/icons/cc/byncsa.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike Works licence',
+		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike licence',
 		                    	scope: this,
 		                    	handler: function(){
 		                    		this.propEditorWindow.getComponent(0)
