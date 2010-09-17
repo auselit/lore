@@ -206,11 +206,10 @@ lore.anno.ui.genTagList = function(annodata){
 			if (thetag.indexOf('http://') == 0) {
 				try {
 					var tagname = thetag;
-					lore.anno.ui.formpanel.getComponent('tagselector').store.findBy(function(rec){
-						if (rec.data.id == thetag) {
-							tagname = rec.data.name;
-						}
-					});
+					var rec = lore.anno.thesaurus.getById(thetag)
+					if (temp){
+						tagname = rec.data.name;
+					}
 					bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
 				} 
 				catch (e) {
