@@ -82,7 +82,6 @@ lore.ore.ui.initUIComponents = function() {
     var sidetabs = Ext.getCmp("propertytabs");
     // Fix collapsing
     sidetabs.on('beforecollapse', function(p) {
-                lore.debug.ore("beforecollapse");
                 try {
                     p.body.setStyle('display', 'none');
                 } catch (e) {
