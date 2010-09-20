@@ -251,7 +251,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             try{
             
                 if (propval && propval != '') {
-                    if (propval.match("http:") || propval.match("mailto:")){
+                    if (propval.match("^http://") == "http://"){
                         // this is a resource
                         result = ltsymb + propname + " resource='" + 
                         lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
@@ -405,7 +405,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             }
                             // why not using serialize_property function here?
                             //if (tagname == "rdf:type"){ // resource
-                            if (mpropval.match("http:") || mpropval.match("mailto:")){
+                            if (mpropval.match("^http://") == "http://"){
                                 resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
                                     + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;")) 
                                     +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
