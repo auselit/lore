@@ -104,7 +104,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 							var relOntology = jQuery.rdf({
 								databank : db
 							});
-							lore.debug.ore("loading relationships from " + onturl,relOntology);
+							//lore.debug.ore("loading relationships from " + onturl,relOntology);
 							// RDF properties
 							relOntology.where('?prop rdf:type <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property>')
 									.each(function() {
@@ -124,12 +124,11 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 											om.ontrelationships[relresult.term] = relresult.ns;
 
 										} catch (e) {
-											lore.debug.ore(
-													"problem loading rels", e);
+											lore.debug.ore("problem loading rels", e);
 										}
 									});
                             om.ontology = relOntology;
-							lore.debug.ore("ontology relationships are", this.ontrelationships);
+							//lore.debug.ore("ontology relationships are", this.ontrelationships);
 							// TODO: #13 load datatype properties for prop grids
 							// update properties UI eg combo box in search, menu
 							// for selecting rel type

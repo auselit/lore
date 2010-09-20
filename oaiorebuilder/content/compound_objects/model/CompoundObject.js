@@ -288,7 +288,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         // Load existing aggregation id if any from original RDF
         var describedaggre = "#aggregation";
         var loadedRDF = this.loadedContent;
-        lore.debug.ore("loadedRDF is",loadedRDF);
+        //lore.debug.ore("loadedRDF is",loadedRDF);
         var existingAggre = !lore.global.util.isEmptyObject(loadedRDF);
         if (existingAggre) {
             var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
