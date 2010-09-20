@@ -129,7 +129,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 var theid = propname + "_" + counter;
                 pstore.loadData([{id: theid, name: propname, value: propval}],true);
             };
-            lore.debug.startTiming();
+            //lore.debug.startTiming();
             var showInHistory = false;
             
                 // reset the graphical view
@@ -159,7 +159,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                    aggreurl = res.aggre.value.toString();
                    var tmpCO = new lore.ore.model.CompoundObject();
                    tmpCO.load({format: 'application/rdf+xml',content:rdfDoc}); 
-                   lore.debug.ore("CO model is ",tmpCO);
+                   //lore.debug.ore("CO model is ",tmpCO);
                    //lore.debug.timeElapsed("Loaded model");
                     //lore.debug.ore("CO model is same as self? " + Ext.ux.util.Object.compare(tmpCO,tmpCO2),tmpCO2);
                
@@ -169,12 +169,12 @@ Ext.apply(lore.ore.Controller.prototype, {
                 }  else {
                     lore.ore.ui.vp.warning("No compound object found");
                     lore.debug.ore("no remurl found in RDF",loadedRDF);
-                    lore.debug.ore("the input rdf was",rdf); 
+                    //lore.debug.ore("the input rdf was",rdf); 
                 }
                 // TODO: listen to model object
                 //lore.debug.timeElapsed("loading into grid ");
                 
-               lore.debug.ore("controller rem id prop is " + lore.ore.controller.REM_ID_PROP);
+               //lore.debug.ore("controller rem id prop is " + lore.ore.controller.REM_ID_PROP);
                 lore.ore.ui.grid.store.loadData([
                     {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: remurl}
                 ]);
@@ -266,8 +266,8 @@ Ext.apply(lore.ore.Controller.prototype, {
                                                 '%3C', '<').replace('%3F', '>')));
                             }*/
                             if (tgtfig && (srcfig != tgtfig)) { // this is a connection
-                                lore.debug.ore("processing connection " + relresult.term,[tgtfig, srcfig]);
-                                lore.debug.timeElapsed("connection 1");
+                                //lore.debug.ore("processing connection " + relresult.term,[tgtfig, srcfig]);
+                                //lore.debug.timeElapsed("connection 1");
                                 try {
                                 var c = new lore.ore.ui.graph.ContextmenuConnection();
                                 //lore.debug.timeElapsed("connection 2");
@@ -783,7 +783,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             	currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false);
             }
             if (currentCO.isDirty()){
-                lore.debug.ore("setRepos: dirty");
+                //lore.debug.ore("setRepos: dirty");
                 Ext.Msg.show({
                     title : 'Save Compound Object?',
                     buttons : Ext.MessageBox.YESNO,
@@ -806,7 +806,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.ore.ui.graphicalEditor.coGraph.setReadOnly(false);
             }*/
             if (currentCOMsg) {currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50),false);}
-            lore.debug.ore("setrepos: not different");
+            //lore.debug.ore("setrepos: not different");
         }
         if (rdfrepostype == 'sesame'){
             /** Adapter used to access the repository */
@@ -818,7 +818,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         if (isEmpty) {
                 // empty compound object, reset it to get a new id
-                lore.debug.ore("setrepos: empty");
+                //lore.debug.ore("setrepos: empty");
                 this.newCO(true);
         }
         // Reload history so that compound objects from other repositories are marked as read-only
@@ -868,7 +868,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Triggered by user dragging and dropping a URL from the main browser and dropping anywhere on the Compound Objects UI */
     onDropURL: function(sn, aEvent){
         try{
-        lore.debug.ore("onDropURL",sn);
+        //lore.debug.ore("onDropURL",sn);
         // If sourceNode is not null, then the drop was from inside the application
         // add to compound object if it is a link or image
         if (sn){
