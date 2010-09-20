@@ -63,66 +63,66 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    	xtype: 'button',                 	
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
 		                    	icon: 'chrome://lore/skin/icons/cc/by.png',
-		                    	tooltip: 'Set to Creative Commons Attribution licence',
+		                    	tooltip: 'Set to Creative Commons Attribution license',
 		                    	scope: this,
 		                    	handler: function(){
 		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("http://creativecommons.org/licenses/by/3.0/au/");
+		                    			.setValue("This work by is licensed under a Creative Commons Attribution 3.0 Australia License. http://creativecommons.org/licenses/by/3.0/au/");
 		                    	}
 		                    },
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
 		                    	icon: 'chrome://lore/skin/icons/cc/bysa.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Share Alike licence',
+		                    	tooltip: 'Set to Creative Commons Attribution Share Alike license',
 		                    	scope: this,
 		                    	handler: function(){
 		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("http://creativecommons.org/licenses/by-sa/3.0/au/");
+		                    			.setValue("This work is licensed under a Creative Commons Attribution Share Alike 3.0 Australia. License http://creativecommons.org/licenses/by-sa/3.0/au/");
 		                    	}
 		                    },
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
 		                    	icon: 'chrome://lore/skin/icons/cc/bync.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial licence',
+		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial license',
 		                    	scope: this,
 		                    	handler: function(){
 		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("http://creativecommons.org/licenses/by-nc/3.0/au/");
+		                    			.setValue("This work is licensed under a Creative Commons Attribution Noncommercial 3.0 Australia License. http://creativecommons.org/licenses/by-nc/3.0/au/");
 		                    	}   	
 		                    },
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
 		                    	icon: 'chrome://lore/skin/icons/cc/bynd.png',
-		                    	tooltip: 'Set to Creative Commons Attribution No Derivative Works licence',
+		                    	tooltip: 'Set to Creative Commons Attribution No Derivative Works license',
 		                    	scope: this,
 		                    	handler: function(){
 		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("http://creativecommons.org/licenses/by-nd/3.0/au/");
+		                    			.setValue("This work is licensed under a Creative Commons Attribution No Derivative Works 3.0 Australia License. http://creativecommons.org/licenses/by-nd/3.0/au/");
 		                    	}
 		                    },
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
 		                    	icon: 'chrome://lore/skin/icons/cc/byncsa.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike licence',
+		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike license',
 		                    	scope: this,
 		                    	handler: function(){
 		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("http://creativecommons.org/licenses/by-nc-sa/3.0/au/");
+		                    			.setValue("This work is licensed under a Creative Commons Attribution Noncommercial Share Alike 3.0 Australia License. http://creativecommons.org/licenses/by-nc-sa/3.0/au/");
 		                    	}
 		                    },
 		                    {
 		                    	xtype: 'button',                    	
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
 		                    	icon: 'chrome://lore/skin/icons/cc/byncnd.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial No Derivatives licence',
+		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial No Derivatives license',
 		                    	scope: this,
 		                    	handler: function(){
 		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("http://creativecommons.org/licenses/by-nc-nd/3.0/au/");
+		                    			.setValue("This work is licensed under a Creative Commons Attribution Noncommercial No Derivative Works 3.0 Australia License. http://creativecommons.org/licenses/by-nc-nd/3.0/au/");
 		                    	}
 		                    }
 		                ]
