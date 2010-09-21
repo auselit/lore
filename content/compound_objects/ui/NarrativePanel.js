@@ -53,10 +53,10 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
             this.getComponent(1).bindStore(currentCO.aggregatedResourceStore);
             this.loaded = currentREM;
         }*/
-            this.getComponent(1).bindStore(tmpCO.aggregatedResourceStore);
-        currentCO.representsCO = false;
-        currentCO.title = currentCO.properties.getTitle();
-        this.getComponent(0).body.update(lore.ore.ui.narrativeCOTemplate.apply([currentCO]));
+        this.getComponent(1).bindStore(tmpCO.aggregatedResourceStore);
+        tmpCO.representsCO = false;
+        tmpCO.title = tmpCO.properties.getTitle();
+        this.getComponent(0).body.update(lore.ore.ui.narrativeCOTemplate.apply([tmpCO]));
         Ext.Msg.hide();
         } catch(e){
         	lore.debug.ore("problem",e);
