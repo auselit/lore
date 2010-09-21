@@ -207,7 +207,7 @@ lore.anno.ui.genTagList = function(annodata){
 				try {
 					var tagname = thetag;
 					var rec = lore.anno.thesaurus.getById(thetag)
-					if (temp){
+					if (rec){
 						tagname = rec.data.name;
 					}
 					bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
