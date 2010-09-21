@@ -428,8 +428,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 
 							mimetype = "text/html";
 						}
-						lore.debug.ore("mimetype is " + mimetype, [req,
-										req.getAllResponseHeaders()]);
+						//lore.debug.ore("mimetype is " + mimetype, [req, req.getAllResponseHeaders()]);
 						thisobj.metadataproperties["dc:format_0"] = mimetype;
 						thisobj.showContent();
 					}

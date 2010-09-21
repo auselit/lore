@@ -453,7 +453,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 y1 = this.mouseDownPosY; y2 = y;
             }
             var selectedFigures = this.multiSelectFigures(x1, y1, x2, y2);
-            lore.debug.ore("selected multiple figures",selectedFigures);
+            //lore.debug.ore("selected multiple figures",selectedFigures);
         }
         
       this.dragging = false;
