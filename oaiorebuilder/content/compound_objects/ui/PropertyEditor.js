@@ -24,7 +24,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 },
                 editField: function(tfield,rownum){
                     try {
-                        lore.debug.ore("editField",[tfield,rownum]);
+                        //lore.debug.ore("editField",[tfield,rownum]);
                         this.triggerField = tfield;
                         this.activeRow = rownum;
                         var val = tfield.getValue();
@@ -357,7 +357,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     removePropertyAction: function (ev, toolEl, panel) { 
         try {
         var om = lore.ore.ontologyManager;
-        lore.debug.ore("remove Property was triggered",ev);
+        //lore.debug.ore("remove Property was triggered",ev);
         var sel = panel.getSelectionModel().getSelected();
         // don't allow delete when panel is collapsed (user can't see what is selected)
         if (panel.collapsed) {
@@ -431,7 +431,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             if (this.id == "nodegrid"){
                 var theval;
                 var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
-                lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
+                //lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
                 if (selfig instanceof lore.ore.ui.graph.ContextmenuConnection){
                     if (args.record.data.name == 'relationship'){ 
                         selfig.setRelationship(

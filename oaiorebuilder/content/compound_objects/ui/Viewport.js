@@ -111,7 +111,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             xtype : "tabpanel",
             // Override collapse behaviour to improve UI responsiveness
             onCollapseClick: function(e,args,arg2,arg3,arg4){
-                lore.debug.ore("oncollapse click",this);
                 var activetab = Ext.getCmp("loreviews").getActiveTab();
                 activetab.hide();
                 Ext.layout.BorderLayout.SplitRegion.prototype.onCollapseClick.apply(this,arguments);
