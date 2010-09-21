@@ -21,7 +21,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 animateTarget: 'properties',
                 editField: function(tfield,row){
                     try {
-                        lore.debug.ore("editRel",[tfield,row]);
+                        //lore.debug.ore("editRel",[tfield,row]);
                         this.triggerField = tfield;
                         this.activeRow = row;
                         var val = tfield.getValue();
@@ -230,7 +230,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     removeRelationshipAction: function (ev, toolEl, panel) { 
       try {    
         var sel = panel.getSelectionModel().getSelected();
-        lore.debug.ore("selection is",sel);
+        //lore.debug.ore("selection is",sel);
         // don't allow delete when panel is collapsed (user can't see what is selected)
         if (panel.collapsed) {
             lore.ore.ui.vp.info("Please expand the panel and select the relationship to remove");
