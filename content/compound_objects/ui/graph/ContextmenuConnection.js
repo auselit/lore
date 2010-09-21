@@ -92,12 +92,12 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
      * @return {}
      */
     onContextMenu : function(x,y,relEditor) {
-    	lore.debug.ore("on context menu " + x + " " + y);
+    	//lore.debug.ore("on context menu " + x + " " + y);
         try {
         	if (!(lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
     	            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl))) {
     	        
-    	    	lore.debug.ore("generating context menu for connection",this);
+    	    	//lore.debug.ore("generating context menu for connection",this);
         		lore.ore.ui.graph.ContextmenuConnection.contextmenu = new Ext.menu.Menu({
                     showSeparator: false
                 });
