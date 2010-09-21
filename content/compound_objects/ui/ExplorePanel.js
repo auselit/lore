@@ -324,16 +324,15 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     lore.ore.explorePanel.fd.controller.requestGraph(node); 
                 }
             });
-            /*nodemenu.add({
+            nodemenu.add({
                text: "Show in browser",
                scope: fdcontroller,
                handler: function(evt) {
                     var node = this.clickedNode;
-                    // TODO: need to unescape node.id first
-                    // also disable this option if it's a compound object: provide option to open in LORE instead
-                    lore.global.util.launchTab(node.id, window);
+                    // TODO: disable this option if it's a compound object: provide option to open in LORE instead
+                    lore.global.util.launchTab(Ext.util.Format.htmlDecode(node.id), window);
                }
-            });*/
+            });
             nodemenu.add({
                 text : "Remove from visualisation",
                 scope: fdcontroller,
