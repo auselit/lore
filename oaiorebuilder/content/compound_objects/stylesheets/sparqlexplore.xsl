@@ -55,10 +55,19 @@
       </xsl:choose>
       <xsl:text>"}, "adjacencies": [</xsl:text>
       <xsl:for-each select="sparql:result">
+      <!--  the query should always return somerel except when finding compound objects that aggregate this -->
+      <xsl:variable name="therel">
+	      <xsl:choose>
+	      	<xsl:when test="sparql:binding[@name='somerel']">
+	      		<xsl:value-of select="sparql:binding[@name='somerel']/sparql:uri"/>
+	      	</xsl:when>
+	      	<xsl:otherwise>http://www.openarchives.org/ore/terms/isAggregatedBy</xsl:otherwise>
+	      </xsl:choose>
+      </xsl:variable>
       <xsl:text>{"nodeTo":"</xsl:text>
       <xsl:value-of select="sparql:binding[@name='something']/sparql:uri"/>
       <xsl:text>","data":{"rel":"</xsl:text>
-      <xsl:value-of select="sparql:binding[@name='somerel']/sparql:uri"/>
+      <xsl:value-of select="$therel"/>
       <xsl:text>"}}</xsl:text>
       <xsl:if test="position()!=last()">
       	<xsl:text>,</xsl:text>
