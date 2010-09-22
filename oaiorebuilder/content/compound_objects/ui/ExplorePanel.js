@@ -52,10 +52,14 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         lore.ore.explorePanel = this;
         this.previewCanvas = document.createElement("canvas");
         this.colorKey = {
-                    "http://purl.org/dc/elements/1.1/relation": "#E3E851",
-                    "http://www.openarchives.org/ore/terms/aggregates": "#EEEEEE"
+		 	"http://www.openarchives.org/ore/terms/aggregates": "#EEEEEE",
+		 	"http://www.openarchives.org/ore/terms/isAggregatedBy": "#808080",
+            "http://purl.org/dc/elements/1.1/relation": "#E3E851"
+                   
         },
-        this.ckTemplate = new Ext.Template("<li style='line-height:1.3em; padding:3px;'>&nbsp;<span style='border:1px solid black;background-color:{color};'>&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;{rel}</li>",
+        this.hideUnconnected = false,
+        this.filterRels = {},
+        this.ckTemplate = new Ext.Template("<span style='font-size:smaller;border:0.5px solid black;background-color:{color};'>&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;{rel}",
             {compiled: true}
         );
         this.historyTemplate = new Ext.Template(
@@ -63,14 +67,102 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             {compiled: true}
         );
         this.colorKeyWin = new Ext.Window({ 
-                closable: true,
+                closable: false,
+                layout: 'anchor',
                 closeAction: 'hide',
                 animateTarget: 'remexploreview',
                 width: 400,
                 height: 200,
                 autoScroll: true,
-                title: "Explore View Color Key",
-                html: "Color Key"
+                title: "Explore View Options",
+                items: [
+                   {
+                	   xtype: 'fieldset',
+                	   title: 'Relationships',
+                	   defaultType: 'checkbox',
+                	   id: 'epRels',
+                	   defaults: {
+                		   hideLabel: true
+                		   
+                	   },
+                	   anchor: "-20"
+                   },
+                   {
+                	   xtype: 'fieldset',
+                	   title: 'View options',
+                	   defaultType: 'checkbox',
+                	   defaults: {
+                		   hideLabel: true
+                	   },
+                	   anchor: "-20",
+                	   items: [
+		                   {     	   
+		                	   name: 'hideLabels',
+		                	   id: 'epHideLabels',
+		                	   boxLabel: 'Hide resource labels',
+		                	   checked: false
+		                   },
+		                   {	                	  
+		                	   name: 'hideUnconnected',
+		                	   id: 'epHideUnconnected',
+		                	   boxLabel: 'Hide resources connected by hidden relationships',
+		                	   checked: lore.ore.explorePanel.hideUnconnected
+		                   }
+	                   ]
+                   }
+                ],
+                bbar: [
+                   '->',
+                   {
+                	 xtype: 'button',
+                	 text: 'OK',
+                	 tooltip: 'Apply and close',
+                	 handler: function(b, e){
+                		 try{
+	                		 var ep = lore.ore.explorePanel;
+	                		 ep.colorKeyWin.hide();
+	                		 
+	                		 // iterate over rels and update filterRels
+	                		 Ext.getCmp('epRels').items.each(function(item, index, length){
+	                			 if (index != 0){
+	                				 ep.filterRels[item.getName()] = item.getValue();
+	                			 }
+	                		 });
+	                		 // onBeforePlotLine will be called which updates adjacency alphas: this is inefficient
+	                		 ep.fd.fx.plot();
+	                		 
+	                		 // update view options
+	                		 var hideLabels = Ext.getCmp('epHideLabels').getValue();
+	                		 if (ep.hideLabels != hideLabels){
+	                			 ep.fd.labels.hideLabels(hideLabels);
+	                			 ep.hideLabels = hideLabels;
+	                		 }
+	                		 
+	                		 // Hide unconnected always called because hidden connections may have changed
+	                		 var hideUnconnected = Ext.getCmp('epHideUnconnected').getValue();
+	                		 ep.hideUnconnected = hideUnconnected;
+	                		 ep.hideUnconnectedNodes();
+	                		 
+                		 } catch (e){
+                			 lore.debug.ore("problem applying explore view options",e);
+                		 }
+                	 }
+                   } ,
+                   {
+                	   xtype: 'button',
+                	   text: 'Reset',
+                	   tooltip: 'Reset to default values',
+                	   handler: function(b,e){
+                		   Ext.getCmp('epRels').items.each(function(item, index, length){
+	                			 if (index != 0){
+	                				 item.setValue(false);
+	                			 }
+                		   });
+                		   Ext.getCmp('epHideLabels').setValue(false);
+                		   Ext.getCmp('epHideUnconnected').setValue(false);
+                	   }
+                   }
+                ]
         });
    },
    /** Set up the visualisation */
@@ -94,7 +186,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             },
             Edge: {
                 overridable: true,
-                //type: 'arrow', #302: wait until JIT fixes redraw bug to enable
+                //type: 'arrow', #302: wait until JIT fixes redraw bug to enable: arrows are also wrong
                 lineWidth: 3,
                 color: "#DDDDDD"
            },
@@ -104,7 +196,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
               offsetX: 3,
               offsetY: 3,
               onShow: function(tip, node) {
-                if (!lore.ore.explorePanel.hideLabels) {
+                if (!lore.ore.explorePanel.hideLabels || (node.data['$alpha'] == 0)) {
                     tip.innerHTML = "";
                 } else {
                     var tiptext = "<div class=\"exploretip-title\">" + node.name + "</div><div class=\"exploretip-text\">";
@@ -135,7 +227,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     var rel = false;
                     if (color != '#000000') {
                         if (color == '#DDDDDD') {
-                            rel = 'Unspecified relationship'; // default edge color is #DDDDDD
+                            rel = 'Unspecified relationship'; // should not happen, but default edge color is #DDDDDD
                         } else {
                             var cKey = ep.colorKey;
                             for (c in cKey){
@@ -150,7 +242,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         tt.showAt(e.pageX, e.pageY);
                         // showAt doesn't seem to be setting position properly
                         tt.setPagePosition(e.pageX, e.pageY);   
-                        tt.update("<ul>" + ep.ckTemplate.apply({rel: rel, color: color}) + "</ul>");
+                        tt.update(ep.ckTemplate.apply({rel: rel, color: color}));
                     } else {
                         // hide color info
                         lore.ore.explorePanel.edgeToolTip.hide();        
@@ -233,6 +325,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         hideLabels: true,
                         onAfterCompute: function(){
                             lore.ore.ui.vp.info("Explore view updated");
+                            lore.ore.explorePanel.hideUnconnectedNodes();
                             lore.ore.explorePanel.fd.labels.hideLabels(lore.ore.explorePanel.hideLabels);
                         }
                     });
@@ -293,6 +386,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         }
                        adj.data["$color"] = newColor;
                    }
+                   if (lore.ore.explorePanel.filterRels[rel]){
+                       adj.setData('alpha', 0, 'current');       
+                   } else {
+                	   adj.setData('alpha',1,'current');
+                   }
             }
             
         });
@@ -334,7 +432,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                }
             });
             nodemenu.add({
-                text : "Remove from visualisation",
+                text : "Hide this resource and connections",
                 scope: fdcontroller,
                 handler : function(evt) {
                     var node = this.clickedNode;
@@ -398,43 +496,24 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 }
              });
              this.contextmenu.add({
-                text: "Show color key",
+                text: "Show color key and options",
                 scope: this,
                 handler: function(evt){
-                    try{
-                    var colorKeyHTML = "";
+                    var relFieldSet = this.colorKeyWin.getComponent(0);
+                    relFieldSet.removeAll();
+                    relFieldSet.add({xtype:'label', text: 'Hide:'});
                     for (c in this.colorKey) { 
-                        colorKeyHTML += this.ckTemplate.apply({rel: c, color: this.colorKey[c]});
-                    }
-                    
+                        var colorKeyHTML = this.ckTemplate.apply({rel: c, color: this.colorKey[c]});
+                        relFieldSet.add({
+                           name: c,
+                     	   boxLabel: "&nbsp;&nbsp;" + colorKeyHTML,
+                    	   checked: lore.ore.explorePanel.filterRels[c]
+                        });
+                    }                    
                     this.colorKeyWin.show();
-                    this.colorKeyWin.body.update("<ul>" + colorKeyHTML + "</ul>");
-                    } catch (e) {
-                        lore.debug.ore("Problem showing color key",e);
-                    }
                 }
              });
-             this.contextmenu.add({
-                // TODO: tooltips for when labels are hidden, provide another option to expand graph
-                    text: "Hide Labels",
-                    scope: this,
-                    handler: function (){
-                     try{
-                       this.fd.labels.hideLabels(true);
-                       this.hideLabels = true;
-                     } catch (e){
-                            lore.debug.ore("problem hiding labels",e);
-                     }
-                    }
-             });
-             this.contextmenu.add({
-                    text: "Show Labels",
-                    scope: this,
-                    handler: function (){
-                        this.fd.labels.hideLabels(false);
-                        this.hideLabels = false;
-                    }
-             });
+                      
              this.contextmenu.add({
                     text: "Zoom out",
                     scope: this,
@@ -548,6 +627,30 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             this.fd.graph.empty();
         }
     },
+    hideUnconnectedNodes: function(){
+    	try{
+    		if (this.hideUnconnected){
+		    	this.fd.graph.eachNode(function(node){
+		    		var alpha = 0;
+		    		node.eachAdjacency(function(adj){	    			
+		    			if (adj.data["$alpha"] != 0){
+		    				alpha = 1;
+		    			}
+		    		});
+		    		node.setData('alpha', alpha, 'current');  
+		    	});
+    		
+    		} else {
+    			this.fd.graph.eachNode(function(node){
+    				node.setData('alpha',1,'current');
+    			});
+    		}
+    		this.fd.fx.plot();
+    	} catch (e){
+    		lore.debug.ore("problem in hideUnconnectedNodes",e);
+    	}
+    },
+    
     /** Initialize the explore view to display resources from the repository related to a compound object
      * @param {URI} id The URI of the compound object
      * @param {String} title Label to display for the compound object
@@ -570,7 +673,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                       ep.fd.animate({
                         modes: ['linear'],
                         duration: 1000
-                      });    
+                      });
+                      ep.hideUnconnectedNodes();
                       // intial adjustment to bring into view
                       var canv = ep.fd.canvas;
                       if (canv.translateOffsetX == 0){
