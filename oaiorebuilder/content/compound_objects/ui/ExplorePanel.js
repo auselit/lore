@@ -6,6 +6,8 @@
 lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{ 
    constructor: function (config){ 
         this.hideLabels = false;
+        this.hideUnconnected = false,
+        this.filterRels = {},
         this.edgeToolTip = new Ext.ToolTip({plain:true, showDelay: 100, title: 'Relationship type:'});
         Ext.apply(config, {
             layout: "border",
@@ -57,8 +59,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             "http://purl.org/dc/elements/1.1/relation": "#E3E851"
                    
         },
-        this.hideUnconnected = false,
-        this.filterRels = {},
+
         this.ckTemplate = new Ext.Template("<span style='font-size:smaller;border:0.5px solid black;background-color:{color};'>&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;{rel}",
             {compiled: true}
         );
@@ -71,7 +72,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 layout: 'anchor',
                 closeAction: 'hide',
                 animateTarget: 'remexploreview',
-                width: 400,
+                width: 450,
                 height: 200,
                 autoScroll: true,
                 title: "Explore View Options",
@@ -267,12 +268,13 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
               },
               onRightClick: function(node, eventInfo, e){
                     this.clickedNode = node;
+                    var ep = lore.ore.explorePanel;
                     if (node) {
-                        lore.ore.explorePanel.onNode = true;
-                        lore.ore.explorePanel.onNodeMenu(this,e);
+                        ep.onNode = true;
+                        ep.onNodeMenu(this,e);
                         return false;
                     } else {
-                        lore.ore.explorePanel.onNode = false;
+                        ep.onNode = false;
                     }
               }
             },
