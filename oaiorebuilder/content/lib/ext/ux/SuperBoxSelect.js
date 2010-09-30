@@ -271,7 +271,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
     		var params = q.split(this.queryValuesDelimiter);
     		Ext.each(params,function(p){
     			this.remoteLookup.remove(p);
-    			var rec = this.findRecord(this.valueField,p);
+    			var rec = this.findInStore(p);
     			if(rec){
     				this.addRecord(rec);
     			}
@@ -1114,7 +1114,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         }
         
         //use existing record if found
-        var record = this.findRecord(this.valueField, val);
+        var record = this.findInStore(val);
         if (record) {
             this.addRecord(record);
             return;
@@ -1216,9 +1216,15 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         return this;
     },
     findInStore : function(val){
-        var index = this.store.find(this.valueField, val);
+        // Use the extra functions on the modified PagingStore if they exist.
+        // Necessary to work correctly with a PagingStore
+        var index = this.store.findUnfiltered ?
+                    this.store.findUnfiltered(this.valueField, val) :
+                    this.store.find(this.valueField, val);
         if(index > -1){
-            return this.store.getAt(index);
+            return this.store.getAtUnfiltered ?
+                    this.store.getAtUnfiltered(index) :
+                    this.store.getAt(index);
         }
         return false;
     },
@@ -1259,7 +1265,6 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
     },
     // private
     initValue : function(){
- 
         Ext.ux.form.SuperBoxSelect.superclass.initValue.call(this);
         if(this.mode === 'remote') {
         	this.setOriginal = true;
@@ -1291,7 +1296,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         }
         
         Ext.each(values,function(val){
-            var record = this.findRecord(this.valueField, val);
+            var record = this.findInStore(val);
             if(record){
                 this.addRecord(record);
             }else if(this.mode === 'remote'){
@@ -1321,7 +1326,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         
         if(this.allowAddNewData && this.mode === 'remote'){ // no need to query
             Ext.each(data, function(d){
-            	var r = this.findRecord(this.valueField, d[this.valueField]) || this.createRecord(d);
+            	var r = this.findInStore(d[this.valueField]) || this.createRecord(d);
                 this.addRecord(r);
             },this);
             return;
