@@ -406,6 +406,31 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.data.Store, {
             this.allData = allData;
             this.data = data;
         }
+    },
+    /*
+     * Extra functions added by Damien, 29/09/2010.
+     * Allows the SuperBoxSelect widget (also modified), to work correctly with a paging store.
+     * Previously, it was unable to re-load any tags that were past the first page of the store.
+     */
+    /**
+     * Find the index of a Record in the store, ignoring any filtering or paging.
+     * @param {String} fieldName The name of the Record field to test.
+     * @param {String/RegExp} value Either a string that the field value
+     * @return {Number} the index of the Record or -1 if not found.
+     */
+    findUnfiltered: function(property, value){
+        var fn = this.createFilterFn(property, value, false, true); // full case sensitive match
+        var data = this.snapshot || this.allData || this.data;
+        return fn ? data.findIndexBy(fn, null, 0) : -1;
+    },
+    /**
+     * Get the Record at the specified index, ignores any filtering or paging in the store.
+     * @param {Number} index The index of the Record to find
+     * @return {Ext.data.Record} The Record at the passed index. Returns undefined if not found.
+     */
+    getAtUnfiltered: function(index) {
+        var data = this.snapshot || this.allData || this.data;
+        return data.itemAt(index);
     }
     // *** end ***
 });
