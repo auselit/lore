@@ -421,7 +421,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
             lore.anno.ui.AnnoColumnTree.superclass.initComponent.apply(this, arguments);
             
             this.addEvents("sortchange");
-            this.addTreeSorter('created', 'asc');
+            this.addTreeSorter('created', 'desc');
             this.sorttypecombo.on("select", this.handleSortTypeChange, this);
             
             
