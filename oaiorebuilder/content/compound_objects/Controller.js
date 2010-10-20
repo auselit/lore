@@ -596,9 +596,10 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} theURL
      * @param {} props
      */
-    addResource: function(uri,props){      
+    addResource: function(uri,props){ 
         // TODO: #34 MVC:  make it add to model and get view to listen on model
-        lore.ore.ui.graphicalEditor.addFigure({url:uri, props: props});
+        var normalizedUri = lore.global.util.normalizeUrlEncoding(uri);
+        lore.ore.ui.graphicalEditor.addFigure({url:normalizedUri, props: props});
     },
     /** Add a bunch of resources from open browser tabs
      * @param {} thebrowser Provided by overlay: represents the tabbed browser
