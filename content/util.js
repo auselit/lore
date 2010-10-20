@@ -1145,7 +1145,8 @@ util = {
     makeURI: function(aURL, aOriginCharset, aBaseURI) {  
         var ioService = Components.classes["@mozilla.org/network/io-service;1"]  
                             .getService(Components.interfaces.nsIIOService);  
-        return ioService.newURI(aURL, aOriginCharset, aBaseURI);  
+        var uri = ioService.newURI(aURL, aOriginCharset, aBaseURI);
+        return uri.QueryInterface(Components.interfaces.nsIURL);
     },
     expandXML: function (e) {
         if (e.parentNode.className != 'expander-closed') {
@@ -1156,7 +1157,20 @@ util = {
             e.className = 'expander-display-open';
         }
     },
-    
+    /** Normalize character encoding to uppercase in URL (specifically to deal with AustLit urls ) */
+    normalizeUrlEncoding: function(url) {
+    	if (url){
+    		var thesplit = url.toString().split('%');
+            var newurl = thesplit[0];
+            if (thesplit.length > 1){
+                for (var j = 1; j < thesplit.length; j++){
+                    var str = thesplit[j];
+                    newurl += "%" + str.substr(0,2).toUpperCase() + str.substr(2);
+                }
+            }
+            return newurl;
+    	}
+    },
     urlsAreSame : function(url1, url2) {
     	var url1 = url1.replace(/\#.*$/,'');
     	var url2 = url2.replace(/\#.*$/,'');
