@@ -141,7 +141,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
 );
 lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(  
     '<tpl for=".">',
-    '<div id="res{#}">',
+    '<div id="{uri}">',
         '<div style="border-top: 1px solid rgb(220, 224, 225); margin-top: 0.5em;"> </div>',
         '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr><td>',
         '<tpl if="representsCO == true"><a title="Open in LORE" href="#" onclick="lore.ore.controller.loadCompoundObjectFromURL(\'{uri}\');"><img style="padding-right:5px" src="chrome://lore/skin/oaioreicon-sm.png"></a></tpl>',  
@@ -159,6 +159,7 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
     '</tpl>',
     {
         propTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span>{value}</p>'),
+        relTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><a href="#{value}"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span></a><a href="#" title="Show {url} in browser" onclick="lore.global.util.launchTab(\'{url}\')">{title}</a></p>'),
         /** Custom function to display properties because XTemplate doesn't support wildcard for iterating over object properties 
          *  @param {lore.ore.model.ResourceProperties} o
          */
@@ -179,8 +180,21 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
                     var prop = propArray[i];
                     // don't include layout props
                     if(prop.prefix != "layout"){
-                        // TODO: look up title for rels
-                        res += this.propTpl.apply(prop);
+                        // look up title for rels
+                        if (prop.value.toString().match("^http://") == "http://") {
+	                        // property data for related resource: for looking up title etc
+	                        var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
+                            if (propR) {
+                                prop.title = propR.data.properties.getTitle() || prop.value;
+                                prop.url = propR.data.representsAnno ? prop.value + "?danno_useStylesheet=" : prop.value;
+	                        } else {
+	                            prop.title = prop.value;
+                                prop.url = prop.value;
+	                        }
+                            res += this.relTpl.apply(prop);
+                        } else {
+                            res += this.propTpl.apply(prop);
+                        }
                     }
                 }
             }   
