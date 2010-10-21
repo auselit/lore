@@ -206,7 +206,7 @@ lore.anno.ui.genTagList = function(annodata){
 			if (thetag.indexOf('http://') == 0) {
 				try {
 					var tagname = thetag;
-					var rec = lore.anno.thesaurus.getById(thetag)
+					var rec = lore.anno.thesaurus.getById(thetag);
 					if (rec){
 						tagname = rec.data.name;
 					}
