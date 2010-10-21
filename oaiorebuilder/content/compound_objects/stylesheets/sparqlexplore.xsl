@@ -98,7 +98,8 @@
       	
       	<xsl:text>{"id" : "</xsl:text><xsl:value-of select="$theuri"/>
       	<xsl:text>", "data": {</xsl:text>
-      	<xsl:if test="$isAnno = 'y'">"$height":"8", "$width":"8", "$type":"rectangle"</xsl:if>
+      	<!-- xsl:if test="$isAnno = 'y'">"$height":"8", "$width":"8", "$type":"rectangle"</xsl:if-->
+      	<xsl:if test="$isAnno = 'y'">"anno":true</xsl:if>
       	<xsl:if test="$isCO = 'y'">"$dim": 6, "$color": "orange", "$type": "circle"</xsl:if>
       	<xsl:variable name="creator" select="key('results-key',$theuri)/sparql:binding[@name='creator']"/>
       	<xsl:if test="$creator">,"creator": "<xsl:value-of select="$creator/*"/>"</xsl:if>
@@ -120,7 +121,7 @@
       	<xsl:text>], "name": "</xsl:text>
       	<xsl:choose>
       		<xsl:when test="key('results-key',$theuri)/sparql:binding[@name='sometitle']">
-      			<xsl:value-of select="key('results-key',$theuri)/sparql:binding[@name='sometitle']/sparql:literal"/>
+      			<xsl:value-of select="translate(key('results-key',$theuri)/sparql:binding[@name='sometitle']/sparql:literal,'-',' ')"/>
       		</xsl:when>
       		<xsl:otherwise>
       		    <xsl:choose>
