@@ -309,7 +309,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             }
             slidehtml += "<br>";
             if (container && container.uri.match(lore.ore.cache.getLoadedCompoundObjectUri())){
-                slidehtml += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + resourceprops.uri +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
+                slidehtml += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + resourceprops.uri +"\");'><img src='chrome://lore/skin/icons/layout.png' alt='View in graphical editor'></a>";
                 slidehtml += " <a href='#' title='Show in details view' onclick='Ext.getCmp(\"loreviews\").activate(\"remdetailsview\");Ext.getCmp(\"remdetailsview\").scrollToResource(\"" + resourceprops.uri + "\")'><img src='chrome://lore/skin/icons/application_view_detail.png'></a>";
                 slidehtml += " <a href='#' title='Show in resource list' onclick='Ext.getCmp(\"loreviews\").activate(\"remlistview\");Ext.getCmp(\"remlistview\").selectResource(\"" + resourceprops.uri + "\")'><img src='chrome://lore/skin/icons/application_view_list.png'></a>";
             }   

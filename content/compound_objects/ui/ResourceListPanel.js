@@ -161,7 +161,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 tocsummary += Ext.util.Format.htmlEncode(title) + ": &lt;"
                 + (!isCompObject?"<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" 
                 + figurl + "</a>" : figurl) + "&gt;";
-                tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
+                tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/layout.png' alt='View in graphical editor'></a>";
                 tocsummary += " <a href='#' title='Show in slideshow view' onclick='Ext.getCmp(\"loreviews\").activate(\"remslideview\");Ext.getCmp(\"newss\").setActiveItem(\"" + figurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri() + "\");'><img src='chrome://lore/skin/icons/picture_empty.png' alt='View in slideshow view'></a>";
                 tocsummary += " <a href='#' title='Show in explore view' onclick='try{Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + figurl + "\",\"" + title.replace(/'/g,'\\\'') + "\"," + isCompObject+ ");}catch(e){lore.debug.ore(\"problem\",e);}'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
                 tocsummary += "</li>";
