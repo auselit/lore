@@ -773,11 +773,20 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Show in Resource List",
-                icon: "chrome://lore/skin/icons/application_view_detail.png",
+                icon: "chrome://lore/skin/icons/application_view_list.png",
                 scope: this,
                 handler: function(evt){
                 	Ext.getCmp("loreviews").activate("remlistview");
 					Ext.getCmp("remlistview").selectResource(this.url);
+                }
+            });
+            this.contextmenu.add({
+                text: "Show in Details view",
+                icon: "chrome://lore/skin/icons/application_view_detail.png",
+                scope: this,
+                handler: function(evt){
+                	Ext.getCmp("loreviews").activate("remdetailsview");
+                	Ext.getCmp("remdetailsview").scrollToResource(this.url);				
                 }
             });
             this.contextmenu.add({
