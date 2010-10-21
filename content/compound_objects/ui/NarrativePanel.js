@@ -17,7 +17,7 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
                     xtype: "panel", // For Compound object properties
                     border: false
                 },
-                {xtype: "narrativedataview"}]
+                {xtype: "narrativedataview", selectedClass: 'detailsselected'}]
         });
       lore.ore.ui.NarrativePanel.superclass.initComponent.call(this);
       this.on("activate", this.updateBinding);
@@ -61,6 +61,18 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
         } catch(e){
         	lore.debug.ore("problem",e);
         	Ext.Msg.hide();
+        }
+    },
+    scrollToResource: function(id){
+        try{
+            var dv = this.getComponent(1);
+            if (dv){
+	            var node = Ext.get(id);
+                node.scrollIntoView(this.body, false);
+                dv.select(id);
+            }
+        } catch (e){
+            lore.debug.ore("problem",e);
         }
     }
 });
@@ -147,7 +159,7 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
         '<tpl if="representsCO == true"><a title="Open in LORE" href="#" onclick="lore.ore.controller.loadCompoundObjectFromURL(\'{uri}\');"><img style="padding-right:5px" src="chrome://lore/skin/oaioreicon-sm.png"></a></tpl>',  
         '<span style="font-size:130%;font-weight:bold">{title}<tpl if="!title">Untitled Resource</tpl></span></td>',
         '<td width="80"><a href="#" title="Show in graphical editor" onclick="lore.ore.ui.graphicalEditor.scrollToFigure(\'{uri}\');"><img src="chrome://lore/skin/icons/graph_go.png" alt="View in graphical editor"></a>',
-        '&nbsp;<a href="#" title="Show in resource list" onclick="Ext.getCmp(\'loreviews\').activate(\'remlistview\');Ext.getCmp(\'remlistview\').selectResource(\'{uri}\')"><img src="chrome://lore/skin/icons/application_view_detail.png"></a>',
+        '&nbsp;<a href="#" title="Show in resource list" onclick="Ext.getCmp(\'loreviews\').activate(\'remlistview\');Ext.getCmp(\'remlistview\').selectResource(\'{uri}\')"><img src="chrome://lore/skin/icons/application_view_list.png"></a>',
         '&nbsp;<a href="#" title="Show in slideshow view" onclick="Ext.getCmp(\'loreviews\').activate(\'remslideview\');Ext.getCmp(\'newss\').setActiveItem(\'{uri}_{[lore.ore.cache.getLoadedCompoundObjectUri()]}\');"><img src="chrome://lore/skin/icons/picture_empty.png" alt="View in slideshow view"></a>',
         '&nbsp;<a href="#" title="Show in explore view" onclick="Ext.getCmp(\'loreviews\').activate(\'remexploreview\');lore.ore.explorePanel.showInExploreView(\'{uri}\',\'{title}\',{representsCO});"><img src="chrome://lore/skin/icons/chart_line.png" alt="View in explore view"></a>',
         '</td></tr></table>',
@@ -159,7 +171,7 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
     '</tpl>',
     {
         propTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span>{value}</p>'),
-        relTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><a href="#{value}"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span></a><a href="#" title="Show {url} in browser" onclick="lore.global.util.launchTab(\'{url}\')">{title}</a></p>'),
+        relTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><a href="#" onclick="Ext.getCmp(\'remdetailsview\').scrollToResource(\'{value}\')"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span></a><a href="#" title="Show {url} in browser" onclick="lore.global.util.launchTab(\'{url}\')">{title}</a></p>'),
         /** Custom function to display properties because XTemplate doesn't support wildcard for iterating over object properties 
          *  @param {lore.ore.model.ResourceProperties} o
          */
