@@ -297,20 +297,23 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	                previewEl.style.zIndex = "-9001";
 	            } 
 	        }   
-        	slidehtml += "<p class='slideshowFooter'>Viewing "
+        	slidehtml += "<p class='slideshowFooter'>";
+        	var container = resource.store.co;
+        	
+        	slidehtml += "Viewing "
         		+ (resourceprops.representsCO ? "nested compound object " :
         		 "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>");
-            // TODO: refactor: remove hardcoding
-            var container = resource.store.co;
-            
-            if (container && container.uri.match(lore.ore.cache.getLoadedCompoundObjectUri())){
-                slidehtml += " &nbsp;&nbsp;<a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + resourceprops.uri +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
-                slidehtml += " <a href='#' title='Show in resource list' onclick='Ext.getCmp(\"loreviews\").activate(\"remlistview\");Ext.getCmp(\"remlistview\").selectResource(\"" + resourceprops.uri + "\")'><img src='chrome://lore/skin/icons/application_view_detail.png'></a>";
-            }   
-            slidehtml += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + resourceprops.uri + "\",\"" + title + "\",false);'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
+        	// TODO: refactor: remove hardcoding
             if (container){
                 slidehtml += " &nbsp; from &nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + container.uri + "\");'>" + (container.properties.getTitle() || container.uri) + "</a>"; 
             }
+            slidehtml += "<br>";
+            if (container && container.uri.match(lore.ore.cache.getLoadedCompoundObjectUri())){
+                slidehtml += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + resourceprops.uri +"\");'><img src='chrome://lore/skin/icons/graph_go.png' alt='View in graphical editor'></a>";
+                slidehtml += " <a href='#' title='Show in details view' onclick='Ext.getCmp(\"loreviews\").activate(\"remdetailsview\");Ext.getCmp(\"remdetailsview\").scrollToResource(\"" + resourceprops.uri + "\")'><img src='chrome://lore/skin/icons/application_view_detail.png'></a>";
+                slidehtml += " <a href='#' title='Show in resource list' onclick='Ext.getCmp(\"loreviews\").activate(\"remlistview\");Ext.getCmp(\"remlistview\").selectResource(\"" + resourceprops.uri + "\")'><img src='chrome://lore/skin/icons/application_view_list.png'></a>";
+            }   
+            slidehtml += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + resourceprops.uri + "\",\"" + title + "\",false);'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
             
             slidehtml += "</p>";
         }
