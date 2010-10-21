@@ -47,21 +47,25 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             title : "Graphical Editor",
                             tabTip: "View or edit the compound object graphically",
                             id : "drawingarea",
-                            xtype : "grapheditor"
+                            xtype : "grapheditor",
+                            iconCls: "graph-icon"
                         },{
 		                    title : "Resource List",
 		                    tabTip: "View or edit the list of resources in the compound object",
 		                    xtype : "resourcepanel",
-		                    id : "remlistview"
+		                    id : "remlistview",
+		                    iconCls: "list-icon"
 		                },  {
                             title : "Details",
+                            id: "remdetailsview",
                             tabTip: "View detailed description of compound object contents including properties and relationships",
-                            xtype: "narrativepanel"
-                            
+                            xtype: "narrativepanel",
+                            iconCls: "detail-icon"
                         }, {
                             layout : 'fit',
                             id : "remslideview",
                             title : "Slideshow",
+                            iconCls: "slide-icon",
                             tabTip: "View compound object contents as a slideshow",
                             items : [{
                                         id : 'newss',
@@ -72,7 +76,8 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             title : "Explore",
                             tabTip: "Discover related resources from the repository",
                             id : "remexploreview",
-                            xtype : "explorepanel"
+                            xtype : "explorepanel",
+                            iconCls: "explore-icon"
                     }   , {
                             title : "Using Compound Objects",
                             tabTip: "View LORE documentation",
