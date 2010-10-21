@@ -275,6 +275,7 @@
     background: transparent url(lib/ext3.2/resources/images/default/grid/loading.gif) no-repeat 3px 3px;
 }
 /* main tabs content styles */
+
 #remsmilview, #textmining {
 	padding-left: 20px;	
 }
@@ -289,6 +290,21 @@
 
 .welcome-icon {
     background-image: url(../skin/icons/information.png) !important;
+}
+.graph-icon {
+	background-image: url(../skin/icons/layout.png) !important; 
+}
+.list-icon {
+	background-image: url(../skin/icons/application_view_list.png) !important; 
+}
+.detail-icon {
+	background-image: url(../skin/icons/application_view_detail.png) !important; 
+}
+.slide-icon {
+	background-image: url(../skin/icons/picture_empty.png) !important; 
+}
+.explore-icon {
+	background-image: url(../skin/icons/chart_line.png) !important; 
 }
 #drawingarea {
 	position:relative;
@@ -426,7 +442,9 @@
 	font-size:smaller;
 	padding: 5px;
 }
-
+.detailsselected {
+	background-color: yellow;
+}
 /* Compound object explore view */
 .node {
 	font-size:0.6em;
@@ -489,7 +507,7 @@ div.exploretip-text {
 	font-size:95%;color:#465458;padding-top:1em;line-height:1.2em
 }
 .slideshowFooter {
-	font-size:70%;padding-top:1em;color:#465458;padding-left:3px;
+	font-size:70%;padding-top:0.5em;color:#465458;padding-left:3px;
 }
 .left-spacer4 {
 	padding-left: 4px;
