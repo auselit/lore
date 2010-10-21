@@ -249,12 +249,11 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         var serialize_property = function(propname, propval, ltsymb, nlsymb) {
             var result = "";
             try{
-            
                 if (propval && propval != '') {
                     if (propval.match("^http://") == "http://"){
                         // this is a resource
                         result = ltsymb + propname + " resource='" + 
-                        lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
+                        lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(propval.toString())).replace(/&/g,'&amp;')
                         + "'/>" + nlsymb;
                     } else {
                         // literal
@@ -390,7 +389,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         for (var i = 0; i < allfigures.length; i++) {
             var fig = allfigures[i];
             if (fig instanceof lore.ore.ui.graph.ResourceFigure){
-                var figurl = lore.global.util.escapeHTML(lore.global.util.preEncode(fig.url.toString()));
+                var figurl = lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(fig.url.toString())).replace(/&/g,'&amp;');
                 rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                         + fullclosetag;
                 // create RDF for resources in aggregation
@@ -407,7 +406,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             //if (tagname == "rdf:type"){ // resource
                             if (mpropval.match("^http://") == "http://"){
                                 resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
-                                    + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;")) 
+                                    + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(mpropval)).replace(/&/g,'&amp;') 
                                     +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
                             } else { // properties that have literal values
                             resourcerdf += ltsymb + rdfdescabout + figurl + closetag
@@ -445,10 +444,10 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     var outgoingconnections = ports.get(p).getConnections();
                     for (var j = 0; j < outgoingconnections.getSize(); j++) {
                         var theconnector = outgoingconnections.get(j);
-                        if (figurl == lore.global.util.escapeHTML(theconnector.sourcePort.parentNode.url)){
+                        if (figurl == lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(theconnector.sourcePort.parentNode.url)).replace(/&/g,'&amp;')){
                            var relpred = theconnector.edgetype;
                            var relns = theconnector.edgens;
-                           var relobj = lore.global.util.escapeHTML(theconnector.targetPort.parentNode.url);
+                           var relobj = lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(theconnector.targetPort.parentNode.url)).replace(/&/g,'&amp;');
                            resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
                                 + relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
                                 + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
