@@ -185,6 +185,14 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                type: "square",
                color: "#DDDDDD"
             },
+            NodeStyles: {  
+                enable: true,  
+                type: 'Native',  
+                stylesHover: {  
+                  dim: 15 
+                },  
+                duration: 300  
+            },
             Edge: {
                 overridable: true,
                 //type: 'arrow', #302: wait until JIT fixes redraw bug to enable: arrows are also wrong
@@ -215,6 +223,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             Events: {
               enable: true,
               type: 'Native',
+              /*onClick: function(node, eventInfo, e){
+                    lore.ore.explorePanel.fd.controller.requestGraph(node);
+              },*/
               onMouseMove: function(node,eventInfo,e){
                 try{
                 if (!node){
@@ -227,9 +238,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     var color = '#' + new draw2d.Color(data[0], data[1], data[2]).hex();
                     var rel = false;
                     if (color != '#000000') {
-                        if (color == '#DDDDDD') {
-                            rel = 'Unspecified relationship'; // should not happen, but default edge color is #DDDDDD
-                        } else {
+                        //if (color == '#DDDDDD') {
+                        //    rel = 'Unspecified relationship'; // should not happen, but default edge color is #DDDDDD
+                        //} else {
                             var cKey = ep.colorKey;
                             for (c in cKey){
                                 if (cKey[c] == color) {
@@ -237,7 +248,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                                     break;
                                 }
                             }
-                        }
+                        //}
                     }
                     if (rel) {
                         tt.showAt(e.pageX, e.pageY);
@@ -254,7 +265,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 }
               },
               //Change cursor style when hovering a node
-              onMouseEnter: function() {
+              onMouseEnter: function(node) {
+                //lore.debug.ore("node hover",node);
                 lore.ore.explorePanel.fd.canvas.getElement().style.cursor = 'move';
               },
               onMouseLeave: function() {
@@ -589,14 +601,14 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {} p The panel
      */
     updateContent : function (p) {
-        Ext.getCmp("exploreHistory").body.update("");
+        
         if (lore.ore.cache.getLoadedCompoundObjectIsNew()){
             Ext.getCmp("exploreinfovis").body.hide();
             try{
-            this.clearExploreData();
-            this.exploreLoaded = "";
-            Ext.getCmp("exploreHistory").body.update("No connections to explore from repository: current compound object is unsaved&nbsp;");
-            return;
+	            this.clearExploreData();
+	            this.exploreLoaded = "";
+	            Ext.getCmp("exploreHistory").body.update("No connections to explore from repository: current compound object is unsaved&nbsp;");
+	            return;
             } catch (ex){
                 lore.debug.ore("problem updating explore view",ex);
             }
@@ -605,6 +617,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         if (this.exploreLoaded !== currentREM) {
             this.exploreLoaded = currentREM;
             Ext.getCmp("exploreinfovis").body.hide();
+            Ext.getCmp("exploreHistory").body.update("");
             this.showInExploreView(currentREM, lore.ore.ui.grid.getPropertyValue("dc:title"), true);
         }
 
