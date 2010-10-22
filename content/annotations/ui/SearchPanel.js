@@ -58,19 +58,23 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
 	            fieldLabel : 'Modified before',
 	            name : 'datemodbefore'
 	        }, {
-                text : 'Search',
-                tooltip : 'Search the entire annotation repository',
-                ref: "searchButton",
-                xtype: 'button',
-                anchor: '40%'
-            }]
-//	        , {
-//            	text : 'Copy RSS',
-//            	tooltip : 'Save this search as an RSS Feed',
-//            	ref : 'rssButton',
-//            	xtype : 'button',
-//            	anchor: '40%'
-//            }]
+	            xtype: 'container',
+	            layout: 'hbox', // or maybe column
+	            layoutConfig : { padding: "0 5" },
+	            items: [{
+                    text : 'Search',
+                    tooltip : 'Search the entire annotation repository',
+                    ref: "../searchButton",
+                    xtype: 'button',
+                    flex: 1
+                }, {
+                	text : 'Copy RSS',
+                	tooltip : 'Save this search as an RSS Feed',
+                	ref : '../rssButton',
+                	xtype : 'button',
+                	flex: 1
+                }]
+	        }]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         lore.anno.ui.SearchForm.superclass.initComponent.call(this);

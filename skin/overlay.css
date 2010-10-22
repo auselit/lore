@@ -60,6 +60,12 @@
 #layout-co {
 	list-style-image: url(chrome://lore/skin/icons/layout.png);
 }
+#auth-status-icon {
+	list-style-image: url(chrome://lore/skin/icons/cross.png);
+}
+#auth-status-icon.signed-in {
+	list-style-image: url(chrome://lore/skin/icons/tick.png);
+}
 #add-annotation {
 	list-style-image: url(chrome://lore/skin/icons/comment_add.png);
 }

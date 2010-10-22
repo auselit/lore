@@ -31,12 +31,14 @@
         <xul:grippy />
       </xul:splitter>
 	    
-      <xul:vbox flex="0" id = "oobAnnoContentBox" collapsed="true" persist = "width">
+      <xul:vbox flex="0" id = "oobAnnoContentBox" collapsed="true" persist="width">
 	    	
         <xul:toolbox>
 		    	
           <xul:toolbar id="anno-toolbar">
             <xul:toolbarbutton style="font-weight:bolder" label="&lore.annoLabel;"  tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()" />
+            <xul:toolbarbutton id="auth-status-icon" tooltiptext="&lore.authStatusTip;" oncommand="loreoverlay.loginAnnotations();"/>
+            <xul:toolbarseparator />
             <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
             <xul:toolbarbutton id="remove-annotation" tooltiptext="&lore.removeAnnotationTip;" oncommand="loreoverlay.removeAnnotation();" />
             <xul:toolbarbutton id="edit-annotation" tooltiptext="&lore.editAnnotationTip;" oncommand="loreoverlay.editAnnotation();" />

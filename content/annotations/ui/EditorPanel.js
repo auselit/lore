@@ -60,16 +60,15 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	 */
 	genForm: function () {
 		return {
-				
-			 	title: "Editor",
-			 	layout: 'border',
+				title: "Editor",
+				layout: 'border',
 				items: [{
-			 		region: "center",
-		 			xtype: 'fieldset',
-		 			layout: 'form',
-		 			autoScroll: true,
-		 			id: this.genID('annotationsform'),
-		 			labelWidth: 85,
+					region: "center",
+					xtype: 'fieldset',
+					layout: 'form',
+					autoScroll: true,
+					id: this.genID('annotationsform'),
+					labelWidth: 85,
 					defaultType: 'textfield',
 					buttonAlign: 'right',
 					style: 'border:none; margin-left:10px;margin-top:10px;',
@@ -89,7 +88,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							}
 						}
 					},
-						
+
 					items: [{
 						xtype: "combo",
 						id: this.genID("typecombo"),
@@ -100,7 +99,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							fields: ['typename', 'qtype'],
 							data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ], 
 							['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"],
-							['Metadata',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#MetadataAnnotation" ]]
+							['Austlit Metadata',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#MetadataAnnotation" ]]
 						}),
 						valueField: 'qtype',
 						displayField: 'typename',
@@ -119,13 +118,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						name: 'creator',
 						allowBlank: false,
 						id: this.genID("creator")
-						
 					}, {
 						fieldLabel: 'References',
 						name: 'references',
 						id: this.genID("references")
-					},
-					{
+					}, {
 						xtype: "combo",
 						id: this.genID("importance"),
 						fieldLabel: 'Importance',
@@ -142,18 +139,15 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						forceSelection: true,
 						mode: 'local',
 						selectOnFocus: true
-					},
-					{
+					}, {
 						fieldLabel: 'Variation Agent',
 						name: 'variationagent',
 						id: this.genID("variationagent"),
-						
 						hideParent: true
 					}, {
 						fieldLabel: 'Variation Place',
 						name: 'variationplace',
 						id: this.genID("variationplace"),
-						
 						hideParent: true
 					}, {
 						fieldLabel: 'Variation Date',
@@ -181,8 +175,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							border: 'none',
 							'font-size': '90%'
 						}
-						//labelStyle: 'font-size:90%;'
-					
 					}, {
 						fieldLabel: 'Context',
 						name: 'context',
@@ -195,8 +187,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							padding: 0,
 							margin: 0
 						}
-					},  
-					 {
+					}, {
 						fieldLabel: 'Original resource',
 						name: 'original',
 						id: this.genID('originalfield'),
@@ -353,15 +344,14 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					}],
 					buttons: this.buttonsConfig ? this.buttonsConfig : []
 				}]
-				
 			};
 	},
-	
+
 	/**
 	 * Construct a new instance of the Editor Panel
 	 */
 	initComponent: function(){
-	  	try {
+		try {
 			Ext.apply ( this, this.genForm());
 			lore.anno.ui.EditorPanel.superclass.initComponent.apply(this, arguments);
 			this.form = this.getForm();
@@ -375,7 +365,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			this.metaUserGrid.getStore().on('remove', this.updateRecMetaFields, this);
 			// Add hack to stop this field being flagged as dirty because
 			// originalValue is XML and the value field is converted to HTML
-			 
+
 			this.getComponent("body").on("push", function(field, html) {
 				field.originalValue = field.getValue();
 			});
@@ -383,7 +373,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.debug.anno("EditorPanel:initComponent() - " + e, e);
 		}
 	},
-	
+
 	/**
 	 * Set the preferences object to listen to event update for
 	 * @param {Object} prefObj
@@ -391,10 +381,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	setPreferences: function(prefObj ) {
 		this.prefs = prefObj;
 		this.annomode = this.prefs.mode;
-        this.metadataOntologyURL = this.prefs.metadataOntologyURL;
+		this.metadataOntologyURL = this.prefs.metadataOntologyURL;
 		this.prefs.on('prefs_changed', this.handlePrefsChanged, this);
 	},
-	
+
 	/**
 	 * Return the form object
 	 * @return The form object
@@ -402,15 +392,15 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	form: function () {
 		return this.form;
 	},
-	
+
 	/**
 	 * Determine whether any field is modified on form
-	 * @return {Boolean} 
+	 * @return {Boolean}
 	 */
 	isDirty: function () {
 		return lore.anno.ui.isFormDirty(this.form);
 	},
-	
+
 	/**
 	 * Update the annotation xpath context
 	 * @param {Object} btn Not currently used
@@ -420,25 +410,24 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		try {
 			lore.anno.ui.updateAnnoFromForm();
 			var editedRec = this.getRec();
-			
-			
+
 			lore.debug.anno('handleUpdateAnnotationContext', {tthis:this,editedRec:editedRec});
-			
+
 			// get text selection, and update the appropriate fields
 			var currentCtxt = this.pageView.getCurrentSelection();
-			
+
 			editedRec.beginEdit();
 			editedRec.set('context', currentCtxt);
 			editedRec.set('resource', lore.anno.ui.currentURL);
 			editedRec.endEdit();
-			
+
 			this.pageView.highlightCurrentAnnotation(editedRec);
-		} 
+		}
 		catch (ex) {
 			lore.debug.anno("Exception updating anno context", ex);
 		}
 	},
-		
+
 	/**
 	 * Update the variation annotation xpath context
 	 * @param {Object} btn Not currently used
@@ -460,7 +449,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.debug.anno("Exception updating anno variant context", ex);
 		}
 	},
-		
+
 	/**
 	 * Update the semantic selection
 	 */
@@ -470,25 +459,25 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 
 			// load RDFa for page
 		 	this.rdfaManager.load(lore.global.util.getContentWindow(window));
-			
+
             var panel = this;
-            
+ 
 			// callback, when a triple is chosen. Update field with supplied triple.
 			var setFormField = function (isObject, triple) {
 				lore.anno.ui.updateAnnoFromForm();
 				var editedRec = panel.getRec();
-				
+
 				lore.debug.anno('handleChangeMetaSelection callback', {editedRec:editedRec});
 				editedRec.beginEdit();
-				
+
 				// TODO: check that the triple.property is rdf:type
 				editedRec.set("semanticEntity", triple.subject.value.toString());
 				editedRec.set("semanticEntityType", triple.object.value.toString());
 				var metaselection = lore.global.util.getMetaSelection(triple);
 				editedRec.set("context", metaselection.xp);
-				
+
 				editedRec.endEdit();
-				
+
 			}
 			// show the triples on the page
 		 	this.pageView.toggleTripleMarkers(setFormField);
@@ -496,12 +485,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.debug.anno(e,e);
 		}
 	},
-	
+
   updateSelectionField: function(contextFieldName, recUrl, recContext) {
       var urlsAreSame = lore.global.util.urlsAreSame;
       var ctxtFieldTxt = contextFieldName + 'txt'
       var ctxtField = this.form.findField(ctxtFieldTxt);
-      
+
       if (urlsAreSame(recUrl, lore.anno.ui.currentURL)) {
           var selText = '';
           try {
@@ -514,14 +503,14 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 
       var backgroundColour = "inherit";
       backgroundColour = this.pageView.getCreatorColour(rec.data.creator);
-      
+
       this.form.setValues([{
           id: contextFieldName,
           value: '"' + selText + '"'
       }]);
       ctxtField.getEl().setStyle("background-color", "inherit");
   },
-  
+
 	/**
 	 * Load record into the editor panel
 	 * @param {Record} rec The record to load
@@ -541,7 +530,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							rec.data.context, lore.global.util.getContentWindow(window).document)
 					} catch (e) {
 					}
-					
+
 					this.form.setValues([{
 						id: 'contextdisptxt',
 						value: '"' + selText + '"'
@@ -553,7 +542,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 
 				ctxtField.getEl().setStyle("background-color", this.pageView.getCreatorColour(rec.data.creator));
 				lore.anno.ui.setVisibilityFormField(this.form,'contextdisp', false);
-				
+
 			} else {
 				// otherwise display empty
 				var ctxtField = this.form.findField('contextdisptxt');
@@ -563,9 +552,9 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				}]);
 				ctxtField.getEl().setStyle("background-color", "inherit");
 			}
-			
-			
-			// display contents of variant context 
+
+
+			// display contents of variant context
 			if (rec.data.variantcontext) {
 				var ctxtField = this.form.findField('rcontextdisptxt');
 				if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
@@ -594,12 +583,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				}]);
 				ctxtField.getEl().setStyle("background-color", "inherit");
 			}
-			
+
 			var meta = rec.get('meta');
 			if (meta) {
 				this.metaUserGrid.getStore().loadData(meta);
 			}
-		
+
 			var semEntityField = this.form.findField('semanticEntity');
 			if (rec.get('semanticEntityType')) {
 
@@ -611,7 +600,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				semEntityField.getEl().setStyle("background-color", "inherit");
 			}
 			var val = rec.data.resource;
-				
+
 			if (rec.data.isReply) {
 				// update fields for annotations that are replies
 				var prec = lore.global.util.findRecordById(this.model, rec.data.about);
@@ -620,11 +609,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					if (!prec.data.isNew()) {
 						val += " ( " + rec.data.about + " )";
 					}
-				} else 
+				} else {
 					val = '';
+                                }
 			}
 			this.form.setValues([{ id: 'res', value: val }]);
-			
+
 			// hide context field if it is a reply
 			if (rec.data.isReply) {
 				this.form.findField('contextdisp').hide();
@@ -641,7 +631,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.debug.anno("Error display annotation: " + e, e);
 		}
 	},
-	
+
 	/**
 	 * Callback that updates the context field
 	 * @param {Object} cw Content Window
@@ -652,20 +642,20 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		// depending on whether it's for the original or
 		// variant context for the variation annotation
     var urlsAreSame = lore.global.util.urlsAreSame;
-		
+
 		var fieldId = 'rcontextdisptxt';
 		var ctx = rec.data.variantcontext;
-		
+
 		if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
 			fieldId = 'contextdisptxt';
 			ctx = rec.data.context;
 		}
-			
+
 		var selText = '';
 
 		try {
 			selText = lore.global.util.getSelectionText(ctx, cw.document);
-		} 
+		}
 		catch (e) {
 			lore.debug.anno("Exception getting selection text", e);
 		}
@@ -674,18 +664,18 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			value: '"' + selText + '"'
 		}]);
 	},
-	
+
 	/**
-	 * Show the annotation editor. 
+	 * Show the annotation editor.
 	 * @param {Record} rec  The record containing the annotation to show in the editor
 	 * @param {Boolean} loadOnly (Optional) Load the annotation data into form fields but don't show editor. Defaults to false.
 	 */
 	show: function(rec){
 		this.load(rec);
 		lore.anno.ui.EditorPanel.superclass.show.apply(this, arguments);
-		
+
 	},
-	
+
 	/**
 	 * When the record is updated, update the editor
 	 * @param {Object} store	 The data store
@@ -700,27 +690,27 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				{store:store,rec:rec,operation:operation});
 		}
 	},
-	
+
 	/**
 	 * Update the form when the annotation type changes
 	 * @param {Combo} combo The Combo field that has changed
 	 */
 	handleAnnotationTypeChange: function(combo){
 		var theVal = combo.getValue();
-		
+
 		if (theVal === 'Variation'){
 			this.setAnnotationFormUI(true, false);
-		} else if ( theVal === 'Metadata') {
+		} else if ( theVal === 'Austlit Metadata') {
 			this.setAnnotationFormUI(false, true);
 		} else if (theVal === 'Question' ||  theVal === 'Comment' || theVal === 'Explanation' ) {
 			this.setAnnotationFormUI(false, false);
 		}
-        
-        if (theVal !== 'Metadata') {
+
+        if (theVal !== 'Austlit Metadata') {
             this.pageView.turnOffPageTripleMarkers()
         }
 	},
-	
+
 	/**
 	 * When the preferences changes, update editor UI
 	 * @param {Object} args
@@ -731,18 +721,18 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 				this.showScholarlyFields(args.mode === lore.constants.ANNOMODE_SCHOLARLY);
 
         this.metadataOntologyURL = args.metadataOntologyURL;
-		
+
 		this.annomode = args.mode;
 	},
-	
-	
+
+
 	/**
 	 * Show or hide the Scholarly Annotation fields
 	 * @param {Boolean} show true to show the fields, false to hide them
-	 */		
+	 */
 	showScholarlyFields: function(/*boolean*/show) {
 		var scholarlyFields = ['importance', 'references'];
-		
+
 		if (show) {
 			lore.anno.ui.showFormFields(this.form, scholarlyFields);
 			// TODO: only necessary until Ext 3.2.1
@@ -751,11 +741,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.anno.ui.hideFormFields(this.form, scholarlyFields);
 		}
 	},
-	
-	
-	
+
+
+
 	/**
-	 * Show hide fields  
+	 * Show hide fields
 	 * @param {Boolean} variation Specify changes to UI for variation
 	 * @param {Boolean} rdfa Specify changes to UI for rdfa
 	 */
@@ -765,10 +755,10 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		var variationFields = ['original', 'variant', 'rcontextdisp', 'variationagent', 'variationplace', 'variationdate'];
 		var rdfaFields = ['semanticselection'];
 		var nonRdfaFields = ['body'];
-		
+
 		// hide/show fields depending on whether annotation is a scholarly annotation or not
 		this.showScholarlyFields(this.annomode !== lore.constants.ANNOMODE_NORMAL);
-		
+
 		// variation
 		if (variation) {
 			lore.anno.ui.hideFormFields(this.form, nonVariationFields);
@@ -777,7 +767,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.anno.ui.hideFormFields(this.form, variationFields);
 			lore.anno.ui.showFormFields(this.form, nonVariationFields);
 		}
-		
+
 		// rdfa
 		if (rdfa) {
 			lore.anno.ui.hideFormFields(this.form, nonRdfaFields);
@@ -796,7 +786,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	}
 	},
 
-	
+
 	 /**
 	* Generated ID for a sub-component of this component
 	* @param id Id of sub-component
@@ -804,7 +794,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	getComponent: function ( id ) {
 		return Ext.getCmp( this.genID(id));
 	},
-	
+
 	/**
 	 * Copy the data in the MetaData Grid into the Record
 	 * @param {} metaStore The Store object from the Metadata Grid
@@ -818,12 +808,12 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		this.rec.set('meta', metaProps);
 		this.rec.store.resumeEvents();
 	},
-	
+
 	resetPanel: function() {
 		this.form.reset();
 		this.metaUserGrid.reset();
 	},
-	
+
 	/**
 	 * Retrieve sub-component of this component
 	 * @param {Object} id Id of sub-component
@@ -831,15 +821,15 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	genID: function (id) {
 		return this.id + "_" + id;
 	},
-	
+
 	getRec: function() {
 		return this.rec;
 	},
-	
+
 	clearPanel: function() {
 		this.rec = null;
 	}
-		
+
 });
 
 // register the component with Ext

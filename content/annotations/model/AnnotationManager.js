@@ -223,7 +223,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			bodyLoaded: true
 		});
 		
-		if ( callback)	callback(anno);
+		if (callback)	callback(anno);
 		
 		lore.debug.anno('AM.addAnnotation()', {currentContext:currentContext,anno:anno});
 			
