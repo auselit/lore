@@ -234,7 +234,6 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
      * @param {Object} txtfield
      */
     onTextChange : function( txtfield) {
-        lore.debug.anno('onTextChange', {tthis:this,txtfield:txtfield});
         if (this.rendered){
             this.textNode.innerHTML = txtfield.text;
             this.titleNode.innerHTML = txtfield.title;
@@ -649,7 +648,6 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
             var info = ' ';
             info = ui.genAnnotationCaption(rec.data, 'by c, d r')
             
-            lore.debug.anno('handleUpdate()' + rec.data.title +' '+ operation, {tthis:this,rec:rec,operation:operation});
             node.setText(rec.data.title, info, ui.genTagsHtml(rec.data.tags), ui.genTreeNodeText(rec.data));
 
         } 
