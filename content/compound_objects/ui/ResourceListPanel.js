@@ -44,7 +44,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     	
     	lore.ore.ui.ResourceListPanel.superclass.initComponent.call(this);
     	this.on("activate", this.updateContent);  		     	    		   
-
+    	this.on("rowcontextmenu", this.showContextMenu,this);
     	} catch (e){
     		lore.debug.ore("problem",e);
     	}
@@ -121,6 +121,65 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
         } catch (e){
             lore.debug.ore("problem showing resource list",e);
         }
+    },
+    showContextMenu: function(grid, rowIndex, e){
+    	try{
+    	this.tmpurl = this.store.getAt(rowIndex).data.uri;
+    	if (!this.contextmenu) {
+            this.contextmenu = new Ext.menu.Menu({
+                id : this.id + "-context-menu",
+                showSeparator: false
+            });
+            this.contextmenu.add({
+                text: "Show in Graphical Editor",
+                icon: "chrome://lore/skin/icons/layout.png",
+                scope: this,
+                handler: function(evt){
+                	lore.ore.ui.graphicalEditor.scrollToFigure(this.tmpurl);			
+                }
+            });
+            this.contextmenu.add({
+                text: "Show in Details view",
+                icon: "chrome://lore/skin/icons/application_view_detail.png",
+                scope: this,
+                handler: function(evt){
+                	Ext.getCmp("loreviews").activate("remdetailsview");
+                	Ext.getCmp("remdetailsview").scrollToResource(this.tmpurl);				
+                }
+            });
+            this.contextmenu.add({
+                text: "Show in Slideshow view",
+                icon: "chrome://lore/skin/icons/picture_empty.png",
+                scope: this,
+                handler: function(evt){
+                	// TODO: don't hardcode the slideshow id
+					Ext.getCmp("loreviews").activate("remslideview");
+					Ext.getCmp("newss").setActiveItem(this.tmpurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
+                }
+            });
+            this.contextmenu.add({
+                text: "Show in Explore view",
+                icon: "chrome://lore/skin/icons/chart_line.png",
+                scope: this,
+                handler: function(evt){
+                	Ext.getCmp("loreviews").activate("remexploreview");
+                    var title = this.tmpurl;
+                    var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(this.tmpurl);
+                    if (propR) {
+                        title = propR.data.properties.getTitle() || title;
+                    }
+                    var isCO = propR.representsCO;
+					
+					lore.ore.explorePanel.showInExploreView(this.tmpurl, title, isCO);
+                }
+            });
+    	}
+    	this.contextmenu.showAt(e.xy);
+        e.stopEvent();
+        return false;
+    	} catch (ex){
+    		lore.debug.ore("problem",ex);
+    	}
     },
     selectResource: function(uri){
     	try{
