@@ -349,14 +349,7 @@ try {
         find: function(){
         	document.getElementById("graphiframe").contentWindow.find("",false, false, true, false, true, true);        	
         },
-       /* doTextMining: function(){
-            lore.debug.ore("dotextmining");
-            try{
-            loreoverlay.coView().doTextMining();
-            } catch (e){
-                lore.debug.ore("failed",e);
-            }
-        },*/
+
         /** Annotations Toolbar button handler: Trigger adding an annotation */
         addAnnotation: function(){
             try {
@@ -374,6 +367,9 @@ try {
             }catch (e ) {
                 lore.debug.ui("updateAnnotationSel: " + e, e);
             }
+        },
+        loginAnnotations: function () {
+            loreoverlay.annoView().handleLoginAnnotations();
         },
         /** Annotations Toolbar button handler: Trigger removing an annotation */
         removeAnnotation: function() {
@@ -773,6 +769,19 @@ try {
         variationContentWindowIsVisible: function () {
             return document.getElementById("oobAnnoVarContentBox").getAttribute("collapsed") == "false";
             
+        },
+        
+        setAnnotationsSignedIn: function() {
+            lore.debug.anno("setAnnotationsSignedIn()");
+            var authStatusIcon = document.getElementById("auth-status-icon");
+            authStatusIcon.className = 'signed-in';
+            authStatusIcon.tooltipText = "Signed in to Annotation Server";
+        },
+        
+        setAnnotationsSignedOut: function() {
+            var authStatusIcon = document.getElementById("auth-status-icon");
+            authStatusIcon.className = '';
+            authStatusIcon.tooltipText = "Signed Out";
         }
         
     };
