@@ -69,7 +69,6 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
      * as an annotator.
      */
     isAuthenticated : function(callback) {
-        lore.debug.anno("isAuthenticated()", callback);
         Ext.Ajax.request({
            url: this.EMMET_URL,
            success: this.checkAuthentication,
@@ -102,11 +101,9 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
     // private
     checkAuthentication : function(xhr, options) {
         var jsObject = Ext.decode(xhr.responseText);
-        lore.debug.anno("checkAuthentication",options);
         var authorities = jsObject.userAuthentication.principal.authorities;
         var authorised = this.hasAuthority(authorities, this.ANNOTATOR_AUTHORITY);
 
-        lore.debug.anno("checkAuthentication authorised: " + authorised);
         if (authorised) {
             this.fireEvent('signedin');
             if (typeof options.callIfAuthorised == 'function') {
@@ -118,8 +115,6 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
                 options.callIfNotAuthorised();
             }
         }
-
-        lore.debug.anno('authorised: ' + authorised);
     },
 
     // private
@@ -164,7 +159,6 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
 
     //private
     popupLoginWindow : function(callback) {
-        lore.debug.anno('displayLoginWindow() url: ' + this.LOGIN_URL);
         var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
         var loginwindow = window.openDialog("chrome://lore/content/loginWindow.xul", 'lore_login_window', winOpts,
                                             {initURL: this.LOGIN_URL,
@@ -172,11 +166,9 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
 
         var t = this;
         loginwindow.addEventListener("close", function() {
-                lore.debug.anno('Login window closed');
                 t.isAuthenticated(callback);
         }, false);
         loginwindow.addEventListener('DOMWindowClose', function() {
-                lore.debug.anno('DOMWindowClose of login window');
                 t.isAuthenticated(callback);
         }, false);
     }
