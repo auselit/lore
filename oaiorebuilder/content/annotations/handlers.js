@@ -133,6 +133,7 @@ lore.anno.ui.showSplitter = function (rec) {
     } else if (typeof(rec) == 'string') {
         rec = lore.anno.annoMan.findStoredRecById(rec);
     }
+    var editor = lore.anno.ui.formpanel;
     lore.anno.ui.pageui.updateSplitter(rec, true, editor.updateSplitterContextField, lore.anno.ui.formpanel);
 }
 
