@@ -1136,7 +1136,7 @@ util = {
         for (var i = 0; i < badchars.length; i++) {
             var once = encodeURIComponent(badchars[i]);
             var twice = encodeURIComponent(once);
-            uri = uri.replace(once, twice);
+            uri = uri.replace(new RegExp(once, 'g'), twice);
         }
     	return uri;
         //encodeURIComponent(str).replace(/%5B/ig, '%255B').replace(/%5D/ig, '%255D');
