@@ -45,6 +45,23 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	this.setTitle((title ? title : 'Resource'));
 	this.setAbstract(abs);
 	this.hasPreview = false;
+	// use Ext ToolTip instead of title attribute to prevent hiding of abstract after 5 seconds on FF 3.5 and below
+	this.tip = new Ext.ToolTip({
+		resourceFig: this,
+		target: this.header, 
+		renderTo: document.body,
+		dismissDelay: 0, 
+		listeners: {
+			beforeshow: function (tip){			
+				var abs = tip.resourceFig.metadataproperties["dcterms:abstract_0"];
+				if (abs){
+					tip.body.dom.innerHTML = abs;
+				} else {
+					return false;
+				}
+			}
+		}
+	});
 };
 Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	type : "lore.ore.ui.graph.ResourceFigure",
@@ -196,7 +213,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		
 	},
 	setAbstract: function(abs) {
-		this.header.title = abs;
 		if (this.abstractPreview) {
 			if (abs && abs !=""){
 				this.iframearea.innerHTML = "<div class='nodeabstract'>" + abs + "</div>";
