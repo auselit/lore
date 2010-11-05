@@ -83,5 +83,9 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
         // TODO: #125 should use a persistent identifier service to request an identifier
         // TODO: check that this id hasn't been used before
         return this.idPrefix + draw2d.UUID.create();
+    },
+    /** Create JSON with related resources for explore view */
+    getExploreData : function(uri,title,isCompoundObject) {
+    	throw "Method not implemented";
     }
 });
