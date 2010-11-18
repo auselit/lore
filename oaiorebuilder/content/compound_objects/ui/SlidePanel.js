@@ -313,7 +313,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                 slidehtml += " <a href='#' title='Show in details view' onclick='Ext.getCmp(\"loreviews\").activate(\"remdetailsview\");Ext.getCmp(\"remdetailsview\").scrollToResource(\"" + resourceprops.uri + "\")'><img src='chrome://lore/skin/icons/application_view_detail.png'></a>";
                 slidehtml += " <a href='#' title='Show in resource list' onclick='Ext.getCmp(\"loreviews\").activate(\"remlistview\");Ext.getCmp(\"remlistview\").selectResource(\"" + resourceprops.uri + "\")'><img src='chrome://lore/skin/icons/application_view_list.png'></a>";
             }   
-            slidehtml += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + resourceprops.uri + "\",\"" + title + "\",false);'><img src='chrome://lore/skin/icons/chart_line.png' alt='View in explore view'></a>";
+            slidehtml += " <a href='#' title='Show in explore view' onclick='Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + resourceprops.uri + "\",\"" + title + "\",false);'><img src='chrome://lore/skin/icons/network.png' alt='View in explore view'></a>";
             
             slidehtml += "</p>";
         }
