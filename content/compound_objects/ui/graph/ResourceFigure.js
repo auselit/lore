@@ -817,7 +817,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
             });
             this.contextmenu.add({
                 text: "Show in Explore view",
-                icon: "chrome://lore/skin/icons/chart_line.png",
+                icon: "chrome://lore/skin/icons/network.png",
                 scope: this,
                 handler: function(evt){
                 	Ext.getCmp("loreviews").activate("remexploreview");
