@@ -618,10 +618,8 @@ XPointerCreator.prototype.create_child_XPointer = function(node) {
      *************/
 
     // if we can grab an ID, return that instead of full XPath
-    if ( node.hasAttribute &&
-         node.hasAttribute("id") &&
-         node.getAttribute("id") != "") {
-	return 'id("' + node.getAttribute("id") + '")';
+    if ( node.hasAttribute && node.hasAttribute("id") && node.getAttribute("id") != "") {
+        return 'id("' + node.getAttribute("id") + '")';
     }
 
     /* otherwise, do: */
@@ -638,8 +636,13 @@ XPointerCreator.prototype.create_child_XPointer = function(node) {
     {
       node = node.parentNode;
     }
-    // loop until we reach top level
+    // loop until we reach top level, or a node with an ID.
     while (node.parentNode) {
+        
+        // Addition from Dannolib, 
+        if (node.hasAttribute && node.hasAttribute("id") && node.getAttribute("id") != "") {
+           return 'id("' + node.getAttribute("id") + '")' + result;
+        }
 	
 	parent = node.parentNode;     // the parent of our current node
 	children = parent.childNodes; // the children of that parent, including our node
