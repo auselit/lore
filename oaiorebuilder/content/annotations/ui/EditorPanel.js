@@ -444,8 +444,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			editedRec.set('variant', lore.anno.ui.currentURL);
 			editedRec.set('variantcontext', currentCtxt);
 			editedRec.endEdit();
-		} 
-		catch (ex) {
+		} catch (ex) {
 			lore.debug.anno("Exception updating anno variant context", ex);
 		}
 	},

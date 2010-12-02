@@ -27,54 +27,54 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
                 },
                 scope: this
             }],
-	        labelWidth: 80,
-	        defaultType: 'datefield',
-	        labelAlign: 'right',
-	        height: 210,
-            bodyStyle : "padding: 0 10px 4px 4px",
-	        defaults: {anchor: '100%'}
-	        ,items: [{
-	            fieldLabel : 'URL',
-	            name : 'url',
-	            xtype: 'textfield'
-	        }, {
-	            fieldLabel : 'Creator',
-	            name : 'creator',
-	            xtype: 'textfield'
-	        }, {
-	            format : "Y-m-d",
-	            fieldLabel : 'Created after',
-	            name : 'datecreatedafter'
-	        }, {
-	            format : "Y-m-d",
-	            fieldLabel : 'Created before',
-	            name : 'datecreatedbefore'
-	        }, {
-	            format : "Y-m-d",
-	            fieldLabel : 'Modified after',
-	            name : 'datemodafter'
-	        }, {
-	            format : "Y-m-d",
-	            fieldLabel : 'Modified before',
-	            name : 'datemodbefore'
-	        }, {
-	            xtype: 'container',
-	            layout: 'hbox', // or maybe column
-	            layoutConfig : { padding: "0 5" },
-	            items: [{
-                    text : 'Search',
-                    tooltip : 'Search the entire annotation repository',
-                    ref: "../searchButton",
-                    xtype: 'button',
-                    flex: 1
-                }, {
-                	text : 'Copy RSS',
-                	tooltip : 'Save this search as an RSS Feed',
-                	ref : '../rssButton',
-                	xtype : 'button',
-                	flex: 1
-                }]
-	        }]
+            labelWidth: 80,
+            defaultType: 'datefield',
+            labelAlign: 'right',
+            height: 210,
+                bodyStyle : "padding: 0 10px 4px 4px",
+            defaults: {anchor: '100%'}
+            ,items: [{
+                fieldLabel : 'URL',
+                name : 'url',
+                xtype: 'textfield'
+            }, {
+                fieldLabel : 'Creator',
+                name : 'creator',
+                xtype: 'textfield'
+            }, {
+                format : "Y-m-d",
+                fieldLabel : 'Created after',
+                name : 'datecreatedafter'
+            }, {
+                format : "Y-m-d",
+                fieldLabel : 'Created before',
+                name : 'datecreatedbefore'
+            }, {
+                format : "Y-m-d",
+                fieldLabel : 'Modified after',
+                name : 'datemodafter'
+            }, {
+                format : "Y-m-d",
+                fieldLabel : 'Modified before',
+                name : 'datemodbefore'
+            }, {
+                xtype: 'container',
+                layout: 'hbox', // or maybe column
+                layoutConfig : { padding: "0 5" },
+                items: [{
+                        text : 'Search',
+                        tooltip : 'Search the entire annotation repository',
+                        ref: "../searchButton",
+                        xtype: 'button',
+                        flex: 1
+                    }, {
+                            text : 'Copy RSS',
+                            tooltip : 'Save this search as an RSS Feed',
+                            ref : '../rssButton',
+                            xtype : 'button',
+                            flex: 1
+                    }]
+            }]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
         lore.anno.ui.SearchForm.superclass.initComponent.call(this);
@@ -89,34 +89,34 @@ Ext.reg('annosearchform', lore.anno.ui.SearchForm);
  */
 lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 
-	/**
-	 * Load configuration options and generate search GUI
-	 * @constructor
-	 */
-	initComponent: function(){
-		// paging bar on the bottom
-		/*bbar: new Ext.PagingToolbar({
-		 pageSize: 25,
-		 store: store,
-		 displayInfo: true,
-		 displayMsg: 'Displaying topics {0} - {1} of {2}',
-		 emptyMsg: "No topics to display",
-		 items:[
-		 '-', {
-		 pressed: true,
-		 enableToggle:true,
-		 text: 'Show Preview',
-		 cls: 'x-btn-text-icon details',
-		 toggleHandler: function(btn, pressed){
-		 var view = grid.getView();
-		 view.showPreview = pressed;
-		 view.refresh();
-		 }
-		 }]
-		 })*/
+    /**
+     * Load configuration options and generate search GUI
+     * @constructor
+     */
+    initComponent: function(){
+        // paging bar on the bottom
+        /*bbar: new Ext.PagingToolbar({
+         pageSize: 25,
+         store: store,
+         displayInfo: true,
+         displayMsg: 'Displaying topics {0} - {1} of {2}',
+         emptyMsg: "No topics to display",
+         items:[
+         '-', {
+         pressed: true,
+         enableToggle:true,
+         text: 'Show Preview',
+         cls: 'x-btn-text-icon details',
+         toggleHandler: function(btn, pressed){
+         var view = grid.getView();
+         view.showPreview = pressed;
+         view.refresh();
+         }
+         }]
+         })*/
 
 
-		try {
+            try {
             var config = {
                         title : "Search",
                         layout: "border",
@@ -125,8 +125,8 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
                             itemId: 'mySearchForm',
                             ref: 'searchForm',
                             region:'north',
-						    split: true,
-						    collapseMode: 'mini'
+                            split: true,
+                            collapseMode: 'mini'
                           }
                           ,{
                             xtype: 'annodataview',
@@ -138,69 +138,69 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
                           }
                         ]
                     };
-			Ext.apply(this, Ext.apply(this.initialConfig, config));
-			lore.anno.ui.SearchPanel.superclass.initComponent.call(this);
+            Ext.apply(this, Ext.apply(this.initialConfig, config));
+            lore.anno.ui.SearchPanel.superclass.initComponent.call(this);
 
 
-			this.searchForm.searchButton.on('click', this.handleSearchAnnotations, this);
-//			this.searchForm.rssButton.on('click', this.handleCopyRSS, this);
+            this.searchForm.searchButton.on('click', this.handleSearchAnnotations, this);
+//            this.searchForm.rssButton.on('click', this.handleCopyRSS, this);
 
             var dataview = this.getComponent('dataview');
-			
+            
             var contextmenu = new Ext.menu.Menu({
                 items: [{
-				    text: "Add as node/s in compound object editor",
-				    handler: lore.anno.ui.handleAddResultsToCO,
-				    scope: dataview
+                    text: "Add as node/s in compound object editor",
+                    handler: lore.anno.ui.handleAddResultsToCO,
+                    scope: dataview
                 }, {
-				    text: "View annotation/s in browser",
-				    handler: lore.anno.ui.handleViewAnnotationInBrowser,
-				    scope: dataview
+                    text: "View annotation/s in browser",
+                    handler: lore.anno.ui.handleViewAnnotationInBrowser,
+                    scope: dataview
                 }
             ]});
-			dataview.on('contextmenu', function(scope, rowIndex, node, e) {
+            dataview.on('contextmenu', function(scope, rowIndex, node, e) {
                 e.preventDefault();
                 this.select(node, true);
-			    contextmenu.showAt(e.xy);
-			}, dataview);
-			dataview.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
-				if (!event.ctrlKey && !event.shiftKey) {
-					var record = this.getRecord(node);
-					var ruri = record.data.resource;
-					if (ruri && ruri.match(lore.anno.prefs.url)){
-						ruri += "?danno_useStylesheet=";
-					}				
-					lore.global.util.launchTab(ruri);
-				}
-			}, dataview);
+                contextmenu.showAt(e.xy);
+            }, dataview);
+            dataview.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
+                if (!event.ctrlKey && !event.shiftKey) {
+                        var record = this.getRecord(node);
+                        var ruri = record.data.resource;
+                        if (ruri && ruri.match(lore.anno.prefs.url)){
+                                ruri += "?danno_useStylesheet=";
+                        }                
+                        lore.global.util.launchTab(ruri);
+                }
+            }, dataview);
 
-		} catch (e) {
-			lore.debug.anno("SearchPanel:initComponent() - " + e, e);
-		}
-	},
+            } catch (e) {
+                    lore.debug.anno("SearchPanel:initComponent() - " + e, e);
+            }
+    },
 
-	/**
-	 * Search the annotation respository for the given filters on the search
-	 * forms and display results in grid
-	 */
-	handleSearchAnnotations : function() {
-		try {
-            var sform = this.searchForm.getForm();
-			var vals = sform.getFieldValues();
+    /**
+     * Search the annotation respository for the given filters on the search
+     * forms and display results in grid
+     */
+    handleSearchAnnotations : function() {
+            try {
+                var sform = this.searchForm.getForm();
+                var vals = sform.getFieldValues();
 
-			lore.anno.ui.loreInfo("Searching...");
-			// perform search
-			this.annoManager.searchAnnotations(vals, function(result, resp) {
-						// data store will be updated and grid will auto update, all have to do
-						// recalc layout
-						lore.debug.anno("result from search: " + result, resp);
-						lore.anno.ui.loreInfo("Search Finished");
-					});
-		} catch (e) {
-			lore.debug.anno("error occurring performing search annotations: " + e, e);
-		}
+                lore.anno.ui.loreInfo("Searching...");
+                // perform search
+                this.annoManager.searchAnnotations(vals, function(result, resp) {
+                        // data store will be updated and grid will auto update, all have to do
+                        // recalc layout
+                        lore.debug.anno("result from search: " + result, resp);
+                        lore.anno.ui.loreInfo("Search Finished");
+                });
+            } catch (e) {
+                    lore.debug.anno("error occurring performing search annotations: " + e, e);
+            }
 
-	}
+    }
 
 });
 

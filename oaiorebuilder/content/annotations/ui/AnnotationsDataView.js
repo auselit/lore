@@ -7,8 +7,9 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
                     '<div class="annoListingTitle">{title}</div>',
                     '<div class="annoURL">{resource}</div>',
                     '<div class="annoListingMeta">{creator}',
-                        ', created {[lore.global.util.shortDate(values.created,Date)]}',
-                        '<tpl if="typeof modified != \'undefined\' && modified != null && modified != \'\'">, last modified {[lore.global.util.shortDate(values.modified,Date)]}</tpl>',
+//                        ', created {[lore.global.util.shortDate(values.created,Date)]}',
+                        ', created {created:date("M j, Y")}',
+//                        '<tpl if="typeof modified != \'undefined\' && modified != null && modified != \'\'">, last modified {[lore.global.util.shortDate(values.modified,Date)]}</tpl>',
                     '</div>',
                 '</div>',
                 '</tpl>'
