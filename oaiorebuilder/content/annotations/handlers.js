@@ -190,7 +190,7 @@ lore.anno.ui.updateAnnoFromForm = function () {
         }
     }
 
-    if (unsavedRec) form.updateRecord(unsavedRec); // update from form
+    form.updateRecord(unsavedRec); // update from form
 }
 
 /*
@@ -377,7 +377,7 @@ lore.anno.ui.handleLocationChange = function (contextURL) {
     // only run when annotations are visibile and initialized
     if (!lore.anno.ui.initialized || !lore.anno.ui.lorevisible) return;
 
-    var initialLoad = oldurl == lore.anno.ui.currentURL;
+    var initialLoad = (oldurl == lore.anno.ui.currentURL);
 
     lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
 
