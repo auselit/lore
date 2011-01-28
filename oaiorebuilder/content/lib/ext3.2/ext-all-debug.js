@@ -704,7 +704,7 @@ Ext.Template.prototype = {
                 
         eval("this.compiled = function(values){ return " + (Ext.isGecko ? "'" : "['") +
              me.html.replace(/\\/g, '\\\\').replace(/(\r\n|\n)/g, '\\n').replace(/'/g, "\\'").replace(this.re, fn) +
-             (Ext.isGecko ?  "';};" : "'].join('');};"));
+             (Ext.isGecko ?  "';};" : "'].join('');};"));  // Used internally with templates, not vulnerable to injections
         return me;
     },
 
@@ -914,7 +914,7 @@ var t = new Ext.Template(
             body.push("'].join('');};");
             body = body.join('');
         }
-        eval(body);
+        eval(body);   // Used internally with templates, not vulnerable to injections
         return me;
     },
     
@@ -1429,7 +1429,7 @@ Ext.DomQuery = function(){
             fn[fn.length] = "return nodup(n);\n}";
 	    
 	    // eval fn and return it
-            eval(fn.join(""));
+            eval(fn.join("")); // Used internally with DomQuery, not vulnerable to injections
             return f;
         },
 
@@ -4949,7 +4949,7 @@ Ext.Element.addMethods({
                     if(window.execScript) {
                        window.execScript(match[2]);
                     } else {
-                       window.eval(match[2]);
+                       window.eval(match[2]);   // Used internally with templates, not vulnerable to injections
                     }
                 }
             }
@@ -12685,9 +12685,9 @@ Ext.util.Format = function(){
             if(arguments.length > 2){
                 var args = Array.prototype.slice.call(arguments, 2);
                 args.unshift(value);
-                return eval(fn).apply(window, args);
+                return eval(fn).apply(window, args);   // Used internally with templates, not vulnerable to injections
             }else{
-                return eval(fn).call(window, value);
+                return eval(fn).call(window, value);   // Used internally with templates, not vulnerable to injections
             }
         },
 
@@ -13333,7 +13333,7 @@ Ext.extend(Ext.XTemplate, Ext.Template, {
             body.push("'].join('');};");
             body = body.join('');
         }
-        eval(body);
+        eval(body);   // Used internally with templates, not vulnerable to injections
         return this;
     },
 
@@ -52510,7 +52510,7 @@ new Ext.tree.TreePanel({
             attr.loader = this;
         }
         if(Ext.isString(attr.uiProvider)){
-           attr.uiProvider = this.uiProviders[attr.uiProvider] || eval(attr.uiProvider);
+           attr.uiProvider = this.uiProviders[attr.uiProvider] || eval(attr.uiProvider);   // Used internally with templates, not vulnerable to injections
         }
         if(attr.nodeType){
             return new Ext.tree.TreePanel.nodeTypes[attr.nodeType](attr);
