@@ -85,7 +85,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             autoWidth : true,
                             autoScroll : true,
                             iconCls : "welcome-icon",
-                            html : "<iframe style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
+                            html : "<iframe type='content' style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
 
                         }]
             }]
