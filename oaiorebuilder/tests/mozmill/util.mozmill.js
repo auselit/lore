@@ -43,7 +43,7 @@ var testNormalize = function(){
 };
 
 var testSanitizeHTML = function (){
-  var input ="<p style='color:red'>This is some html with <a onclick='1+2==3' href='http://www.google.com'>a link</a> and<script type='text/javascript'>eval('foo=2;');</script> a script</p>";
+  var input ="<p style='color:red'>This is some html with <a onclick='1+2==3' href='http://www.google.com'>a link</a> and<script type='text/javascript'>alert('hello');</script> a script</p>";
   // Firefox 3.5.x
   //var expect = "<P>This is some html with <A href=\"http://www.google.com\">a link</A> and a script</P>";
   // Firefox 3.6
