@@ -612,7 +612,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
     
         /**
          * Notification function  called when a remove operation occurs in the store.
-         * Removes a node from the tree and the timeline.
+         * Removes a node from the tree.
          * @param {Store} store The data store that performed the notification
          * @param {Record} rec  The record for the annotation that has been removed
          * @param {Integer} index Not used

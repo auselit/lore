@@ -27,7 +27,6 @@
  * @include  "/oaiorebuilder/content/annotations/ui/EditorPanel.js"
  * @include  "/oaiorebuilder/content/annotations/ui/PageView.js"
  * @include  "/oaiorebuilder/content/annotations/ui/SearchPanel.js"
- * @include  "/oaiorebuilder/content/annotations/ui/TimelinePanel.js"
  * @include  "/oaiorebuilder/content/annotations/handlers.js"
  * @include  "/oaiorebuilder/content/uiglobal.js"
  * @include  "/oaiorebuilder/content/debug.js"
@@ -155,6 +154,7 @@ lore.anno.ui.init = function () {
 
         lore.anno.ui.topView.on('location_changed', lore.anno.ui.handleLocationChange);
         lore.anno.ui.topView.on('location_refresh', lore.anno.ui.handleContentPageRefresh);
+        lore.anno.ui.topView.on('tab_changed', lore.anno.ui.handleTabChange);
 
         lore.anno.ui.lorevisible = lore.anno.ui.topView.annotationsVisible();
         lore.global.ui.annotationView.registerView(lore.anno.ui, window.instanceId);
@@ -290,18 +290,6 @@ lore.anno.ui.initGUIConfig = function () {
     }
 
     /**
-     *
-     * Helper function that constructs the 'Timeline' panel
-     * @private
-     */
-    var timelinePanel = {
-        title: "Timeline",
-        xtype: "annotimelinepanel",
-        id: "annotimeline",
-        model: lore.anno.annoMan.annods
-    }
-
-    /**
      * Helper function that constructs the 'Search' tab
      * @private
      */
@@ -323,7 +311,7 @@ lore.anno.ui.initGUIConfig = function () {
             id: "navigationtabs",
             deferredRender: false,
             activeTab: "treeview",
-            items: [browsePanel, searchPanel, timelinePanel, aboutPanel]
+            items: [browsePanel, searchPanel, aboutPanel]
         });
 
         lore.anno.ui.gui_spec = {
@@ -371,7 +359,6 @@ lore.anno.ui.initExtComponents = function () {
             dismissDelay: 0
         });
 
-        lore.anno.ui.timeline.initTimeline();
         lore.anno.ui.formpanel.setPreferences(lore.anno.prefs);
 
     } catch (e) {
