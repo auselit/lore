@@ -231,47 +231,52 @@ util = {
     	}
     },
 	
-	/**
-	 * Retrieve an instance of the nsiLocalFile interface, initializing it with the
-	 * path supplied if it is supplied.
-	 * @param {String} fileBase (optional) File path
-	 * @return {nsiLocalFile} file object
-	 */
-	getFile: function (fileBase) {
-        var file = Components.classes["@mozilla.org/file/local;1"]
-            .createInstance(Components.interfaces.nsILocalFile);
-			if ( fileBase)
-    			file.initWithPath(fileBase);
-		return file;
-	},
+    /**
+     * Retrieve an instance of the nsiLocalFile interface, initializing it with the
+     * path supplied if it is supplied.
+     * @param {String} fileBase (optional) File path
+     * @return {nsiLocalFile} file object
+     */
+    getFile: function (fileBase) {
+    var file = Components.classes["@mozilla.org/file/local;1"]
+	.createInstance(Components.interfaces.nsILocalFile);
+		    if ( fileBase)
+		    file.initWithPath(fileBase);
+	    return file;
+    },
 	
     /**
-     * Write content to a file 
+     * Write content to a file
+     *
+     * THIS FUNCTION MAY NOT WORK, NOT TESTED
+     *
+     * It used to contain an insecure privilege escalation that was removed
+     * Jan 2011, it's not currently used anywhere. May not even have been
+     * required. - Damien
+     * 
      * @param {String} content
      * @param {nsiLocalFile} file The file to write to
      * @return {String} The path to the file as a string
      */
     writeFile : function(content, file ,theWindow){
-            try {
-                theWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-               
-                if(!file.exists()) 
-                {
-                    file.create( Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 420);
-                }
-                var stream = Components.classes["@mozilla.org/network/file-output-stream;1"]
-                    .createInstance(Components.interfaces.nsIFileOutputStream);
-                stream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
-                stream.write(content, content.length);
-                stream.close();
-               
-				return file.path;
-            } catch (e) {
-                debug.ui("Unable to write to file: " + fileName, e);
-                throw new Error("Unable to write to file" + e.toString());
-            }
+	try {
+	    if(!file.exists()) 
+	    {
+		file.create( Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 420);
+	    }
+	    var stream = Components.classes["@mozilla.org/network/file-output-stream;1"]
+		.createInstance(Components.interfaces.nsIFileOutputStream);
+	    stream.init(file, 0x02 | 0x08 | 0x20, 0666, 0); // wronly | create | truncate
+	    stream.write(content, content.length);
+	    stream.close();
+	   
+	    return file.path;
+	} catch (e) {
+	    debug.ui("Unable to write to file: " + fileName, e);
+	    throw new Error("Unable to write to file" + e.toString());
+	}
     },
-	/**
+    /**
      * Prompts user to choose a file to save to (creating it if it does not exist)
      * @param {} title
      * @param {} defExtension
