@@ -9855,6 +9855,7 @@ draw2d.XMLDeserializer.fromXML = function(node, _4d75) {
 			break;
 	}
 	_4d76 = _4d76.replace("@NAMESPACE" + "@", "");
+	// Next line modified by Damien in Jan2011 to remove use of eval
 	var obj = new window[_4d76]();
 	if (_4d75 != undefined && obj.setModelParent != undefined) {
 		obj.setModelParent(_4d75);
