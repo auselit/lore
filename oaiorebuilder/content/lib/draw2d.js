@@ -9830,49 +9830,47 @@ draw2d.XMLSerializer.getTypeName = function(obj) {
 draw2d.XMLDeserializer = function() {
 	alert("do not init this class. Use the static methods instead");
 };
-// Commented out by Damien, Jan 2011, to remove the usage of eval()
-// This function isn't used anywhere in LORE
-//draw2d.XMLDeserializer.fromXML = function(node, _4d75) {
-//	var _4d76 = "" + node.getAttributes().getNamedItem("type").getNodeValue();
-//	var value = node.getNodeValue();
-//	switch (_4d76) {
-//		case "int" :
-//			return parseInt("" + node.getChildNodes().item(0).getNodeValue());
-//		case "string" :
-//		case "String" :
-//			return "" + node.getChildNodes().item(0).getNodeValue();
-//		case "Number" :
-//		case "number" :
-//			return parseFloat("" + node.getChildNodes().item(0).getNodeValue());
-//		case "Boolean" :
-//		case "boolean" :
-//		case "bool" :
-//			return parseBool("" + node.getChildNodes().item(0).getNodeValue());
-//		case "dateTime" :
-//		case "Date" :
-//		case "date" :
-//			return new Date("" + node.getChildNodes().item(0).getNodeValue());
-//		case "float" :
-//			return parseFloat("" + node.getChildNodes().item(0).getNodeValue());
-//			break;
-//	}
-//	_4d76 = _4d76.replace("@NAMESPACE" + "@", "");
-//	var obj = eval("new " + _4d76 + "()");
-//	if (_4d75 != undefined && obj.setModelParent != undefined) {
-//		obj.setModelParent(_4d75);
-//	}
-//	var _4d79 = node.getChildNodes();
-//	for (var i = 0; i < _4d79.length; i++) {
-//		var child = _4d79.item(i);
-//		var _4d7c = child.getNodeName();
-//		if (obj instanceof Array) {
-//			_4d7c = parseInt(_4d7c.replace("index", ""));
-//		}
-//		obj[_4d7c] = draw2d.XMLDeserializer.fromXML(child,
-//				obj instanceof draw2d.AbstractObjectModel ? obj : _4d75);
-//	}
-//	return obj;
-//};
+draw2d.XMLDeserializer.fromXML = function(node, _4d75) {
+	var _4d76 = "" + node.getAttributes().getNamedItem("type").getNodeValue();
+	var value = node.getNodeValue();
+	switch (_4d76) {
+		case "int" :
+			return parseInt("" + node.getChildNodes().item(0).getNodeValue());
+		case "string" :
+		case "String" :
+			return "" + node.getChildNodes().item(0).getNodeValue();
+		case "Number" :
+		case "number" :
+			return parseFloat("" + node.getChildNodes().item(0).getNodeValue());
+		case "Boolean" :
+		case "boolean" :
+		case "bool" :
+			return parseBool("" + node.getChildNodes().item(0).getNodeValue());
+		case "dateTime" :
+		case "Date" :
+		case "date" :
+			return new Date("" + node.getChildNodes().item(0).getNodeValue());
+		case "float" :
+			return parseFloat("" + node.getChildNodes().item(0).getNodeValue());
+			break;
+	}
+	_4d76 = _4d76.replace("@NAMESPACE" + "@", "");
+	var obj = new window[_4d76]();
+	if (_4d75 != undefined && obj.setModelParent != undefined) {
+		obj.setModelParent(_4d75);
+	}
+	var _4d79 = node.getChildNodes();
+	for (var i = 0; i < _4d79.length; i++) {
+		var child = _4d79.item(i);
+		var _4d7c = child.getNodeName();
+		if (obj instanceof Array) {
+			_4d7c = parseInt(_4d7c.replace("index", ""));
+		}
+		obj[_4d7c] = draw2d.XMLDeserializer.fromXML(child,
+				obj instanceof draw2d.AbstractObjectModel ? obj : _4d75);
+	}
+	return obj;
+};
 draw2d.EditPolicy = function(_5a2d) {
 	this.policy = _5a2d;
 };
