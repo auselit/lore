@@ -60,6 +60,7 @@
           </xul:toolbar>
         </xul:toolbox>
         <!-- This iframe represents our main annotation GUI, which is implemented in HTML + Javascript, loaded from a local file via a chrome URI. Initially empty (about:blank), the contents are loaded in uiglobal.js -->
+        <!-- All web content displayed within the UI is sanitized or wrapped in iframes with type='content' see createXULIFrame in util.js -->
         <xul:iframe type="chrome" tooltip="aHTMLTooltip" flex="1" width="100%" height="100%" src="about:blank" name="annographiframe" id="annographiframe"/> 
       </xul:vbox>
     </xul:tabbrowser>
@@ -104,6 +105,7 @@
       </xul:toolbox>
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
       <!-- This iframe represents our main compound objects GUI, which is implemented as HTML + Javascript, loaded from a local file via a chrome URI. Initially empty (about:blank), the contents are loaded in uiglobal.js -->
+      <!-- All web content displayed within the UI is sanitized or wrapped in iframes with type='content' see createXULIFrame in util.js -->
       <xul:iframe  type="chrome" tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
     
