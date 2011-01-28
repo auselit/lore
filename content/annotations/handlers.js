@@ -26,7 +26,6 @@
  * @include  "/oaiorebuilder/content/annotations/ui/EditorPanel.js"
  * @include  "/oaiorebuilder/content/annotations/ui/ColumnTree.js"
  * @include  "/oaiorebuilder/content/annotations/ui/SearchPanel.js"
- * @include  "/oaiorebuilder/content/annotations/ui/TimelinePanel.js"
  * @include  "/oaiorebuilder/content/annotations/model/Preferences.js"
  * @include  "/oaiorebuilder/content/debug.js"
  * @include  "/oaiorebuilder/content/util.js"
@@ -44,6 +43,7 @@
  */
 lore.anno.ui.show = function () {
     lore.anno.ui.lorevisible = true;
+    lore.debug.anno("handlers.js: lore.anno.ui.show");
 
     if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' && lore.anno.ui.currentURL != '' && (!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
         lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
@@ -231,14 +231,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function (tree, parent, childNode, 
             var rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
             var isNew = (rec === null || rec.data.isNew());
             if (!isNew) {
-                // only saved annotations should be in timeline or able to be replied to
-                node.contextmenu.add({
-                    text: "Show in Timeline",
-                    handler: function (evt) {
-                        lore.anno.ui.timeline.showAnnoInTimeline(node.id);
-                    },
-                    id: 'timelineshow_' + node.id
-                });
+                // only saved annotations should be able to be replied to
                 node.contextmenu.add({
                     text: "Reply to annotation",
                     handler: function (evt) {
@@ -318,11 +311,6 @@ lore.anno.ui.handleAttachNodeLinks = function (tree, thus, n, index) {
             title: 'View annotation body in a new window',
             iconCls: 'anno-icon-launchWindow',
             jscript: "lore.global.util.launchWindow('" + anno.bodyURL + "',false, window);"
-        },
-        {
-            title: 'View annotation in the timeline',
-            iconCls: 'anno-icon-timeline',
-            jscript: "lore.anno.ui.timeline.showAnnoInTimeline('" + anno.id + "');"
         }];
 
         if (lore.global.util.splitTerm(anno.type).term == 'VariationAnnotation') {
@@ -364,6 +352,13 @@ lore.anno.ui.handleTreeNodeSelection = function (node, event) {
     lore.anno.ui.page.setCurrentAnno(rec);
 
     Ext.getCmp("treeview").doLayout();
+}
+
+lore.anno.ui.handleTabChange = function(browser) {
+    lore.debug.anno("handers.js: handleTabChange()", {browser:browser});
+    // changed tab, no active annotation
+    var currentURL = browser.currentURI.spec;
+    lore.anno.ui.handleLocationChange(currentURL);
 }
 
 /**
@@ -764,22 +759,12 @@ lore.anno.ui.handleToggleAllAnnotations = function () {
 
 
 /**
- * Reply to an annotation. Add the reply to the local store.
- * @param {Object} arg (Optional) The parent annotation. A string containing the annotation id or if not supplied defaults
- * to the currently selected annotation
+ * Reply to the currently selected annotation. Add the reply to the local store.
  */
 lore.anno.ui.handleReplyToAnnotation = function (arg) {
     try {
-        var rec;
-        if (!arg) { // request comes from toolbar
-            rec = lore.anno.ui.page.getCurrentAnno();
-            if (!rec) return;
-        } else if (typeof(arg) == 'string') {
-            // user has come from an info bubble pop-up in timeline
-            lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
-            rec = lore.anno.annoMan.findStoredRecById(arg);
-            if (rec) lore.anno.ui.page.setCurrentAnno(rec);
-        }
+        var rec = lore.anno.ui.page.getCurrentAnno();
+
         if (!rec) {
             lore.debug.anno("Couldn't find record to reply to: " + arg, arg);
             return;
@@ -802,32 +787,8 @@ lore.anno.ui.handleReplyToAnnotation = function (arg) {
 
 
 /**
- * When the edit link from the timeline popup is clicked, load the supplied annotation into the form editor and show it.
- *
- * @param {String} id The id of the annotation to load in the form editor
- */
-lore.anno.ui.handleEditTimeline = function (id) {
-    try {
-        lore.anno.ui.updateAnnoFromForm();
-        var rec = lore.anno.annoMan.findStoredRecById(id);
-//BAM
-        lore.anno.am.runWithAuthorisation(function () {
-            // the user has come here from an info bubble pop-up.
-            lore.anno.ui.timeline.timeline.getBand(0).closeBubble();
-            lore.anno.ui.tabpanel.activate('treeview');
-
-            lore.anno.ui.handleAddAnnotation(rec);
-        });
-    } catch (e) {
-        lore.debug.anno(e, e);
-    }
-}
-
-
-/**
  * When the edit button from the toolbar is clicked, load the current annotation into the form editor and show it.
  */
-
 lore.anno.ui.handleEdit = function () {
     try {
         lore.anno.ui.updateAnnoFromForm();
