@@ -247,7 +247,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
 	        
             lore.debug.ore("json is",serializer.serializeToString(thefrag));
-	        eval ("json = " + serializer.serializeToString(thefrag));
+	    json = serializer.serializeToString(thefrag);
             return json;
 	    } catch (ex){
 	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);
