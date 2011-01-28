@@ -18374,7 +18374,7 @@ Ext.Ajax.request({
     },
     // process the response object to add it to the TabPanel:
     success: function(xhr) {
-        var newComponent = eval(xhr.responseText); // see discussion below
+//        var newComponent = eval(xhr.responseText); // see discussion below
         myTabPanel.add(newComponent); // add the component to the TabPanel
         myTabPanel.setActiveTab(newComponent);
     },
