@@ -106,6 +106,8 @@
 		if (reload) {
 			win.annographiframe.location.reload(true);
 		} else {
+			// This iframe displays the UI for the extension eg the graphical user interface, implemented in html and needs to have type=chrome
+			// All web content displayed within the UI is sanitized or wrapped in iframes with type='content' see createXULIFrame in util.js
 			iframe1.setAttribute("src", "chrome://lore/content/annotations/loreui_anno.html");
 		}
 	};
@@ -120,6 +122,8 @@
             if (reload) {
                 win.graphiframe.location.reload(true);
             } else {
+            	// This iframe displays the UI for the extension eg the graphical user interface, implemented in html and needs to have type=chrome
+    			// All web content displayed within the UI is sanitized or wrapped in iframes with type='content' see createXULIFrame in util.js
                 iframe2.setAttribute("src", "chrome://lore/content/compound_objects/loreui_ore.html");
             }
 	};
