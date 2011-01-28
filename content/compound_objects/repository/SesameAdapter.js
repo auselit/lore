@@ -220,7 +220,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 		    var queryURL = this.reposURL
 		            + "?queryLn=sparql&query=" 
 		            + thequery;
-		    var json;
+		    var jsonobj;
             var xsltproc = new XSLTProcessor();
             var xhr = new XMLHttpRequest();                
             xhr.overrideMimeType('text/xml');
@@ -246,9 +246,9 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
             lore.debug.ore("sparql result is",serializer.serializeToString(rdfDoc));
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
 	        
-            lore.debug.ore("json is",serializer.serializeToString(thefrag));
-	    json = serializer.serializeToString(thefrag);
-            return json;
+            //lore.debug.ore("json is",serializer.serializeToString(thefrag));
+            jsonobj = Ext.decode(serializer.serializeToString(thefrag));
+            return jsonobj;
 	    } catch (ex){
 	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);
 	    } 
