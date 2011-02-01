@@ -647,7 +647,9 @@ div.exploretip-text {
 div.coListing:hover {
 	background-color: #eeeeee;
 }
-
+.x-edit-pt {
+	background-image: url(../skin/icons/toolbox_pencil.png) !important;
+}
 /** For the Annotation Search DataView **/
 #search-view {
 	background: white;
