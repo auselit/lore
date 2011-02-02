@@ -480,6 +480,17 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         } else {
             return "";
         }
+    },
+    /** Set property value in grid by name (Temporary: should be using model instead)
+     * @param {} propname The name of the property to set
+     * @param {} val The value of the property to set
+     */
+    setPropertyValue : function(propname, val){
+    	var proprecidx = this.store.find("name",propname);
+    	if (proprecidx != -1){
+			this.store.getAt(proprecidx).set("value", val);
+			this.store.commitChanges();
+    	}
     }
 });
 /* Old code:
