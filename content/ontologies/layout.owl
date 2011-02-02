@@ -20,49 +20,58 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about=""/>
+
+
+    <owl:ObjectProperty rdf:about="#next">
+    	<rdf:type rdf:resource="&owl;FunctionalProperty"/>
+    </owl:ObjectProperty>
+
+    <owl:DatatypeProperty rdf:about="#abstractPreview">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
     
+    <owl:DatatypeProperty rdf:about="#first">
+    	<rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
     
 
     <owl:DatatypeProperty rdf:about="#height">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
     
-
     <owl:DatatypeProperty rdf:about="#originalHeight">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
     
 
     <owl:DatatypeProperty rdf:about="#scrollx">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
     
-
-
     <owl:DatatypeProperty rdf:about="#scrolly">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
     
 
     <owl:DatatypeProperty rdf:about="#width">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
     
-
     <owl:DatatypeProperty rdf:about="#x">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
     
-
 
     <owl:DatatypeProperty rdf:about="#y">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-    </owl:DatatypeProperty>
-    
-    <owl:DatatypeProperty rdf:about="#abstractPreview">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
 </rdf:RDF>
-
-
-
