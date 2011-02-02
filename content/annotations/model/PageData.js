@@ -36,7 +36,14 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
     constructor: function (config){
 		this.model = config.model;
 		this.clear();
-		this.addEvents("annochanged");
+		this.addEvents(
+			/**
+			 * @event annochanged
+			 * Fires when the selected annotation changes
+			 * @param {Annotation} old annotation
+			 * @param {Annotation} new annotation
+			 */
+			'annochanged');
 	},
 		
 	/**

@@ -33,7 +33,12 @@ lore.anno.ui.RDFaManager = Ext.extend(Ext.util.Observable, {
 	 */
 	constructor:function (config) {
 		this.page = config.page;
-		this.addEvents('rdfaloaded');
+		this.addEvents(
+			/**
+			 * @event rdfaloaded
+			 * Fires when the RDFa for the page is finished loading.
+			 */
+			'rdfaloaded');
 	},
 
 	/**
