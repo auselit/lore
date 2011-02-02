@@ -91,7 +91,7 @@ lore.anno.ui.PageView.prototype = {
 	},
 	
 	/**
-	 * Refresh annotations currently highlighted when new annotaiotns
+	 * Refresh annotations currently highlighted when new annotations
 	 * are loaded
 	 * @param {Object} store
 	 * @param {Object} records

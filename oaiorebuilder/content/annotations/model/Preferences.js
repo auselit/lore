@@ -31,7 +31,13 @@ lore.anno.Preferences = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} config Can contain the prefsObj which points to object that generates 'annoprefs_changed' events
 	 */
 	constructor: function (config) {
-		this.addEvents('prefs_changed');
+		this.addEvents(
+			/**
+			 * @event prefs_changed
+			 * Fires when one of the preferences changes
+			 * @param {Preferences} this
+			 */
+			'prefs_changed');
 		this.setPrefs(config);
 	},
 	

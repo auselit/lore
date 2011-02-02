@@ -25,8 +25,18 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
     ANNOTATOR_AUTHORITY: 'ROLE_ANNOTATOR',
 
     constructor: function(config) {
-        this.addEvents('signedin');
-        this.addEvents('signedout');
+        this.addEvents(
+			/**
+			 * @event signedin
+			 * Fires when the user has successfully signed into the annotation
+			 * server.
+			 */
+			'signedin',
+            /**
+			 * @event signedin
+			 * Fires when the user has signed out from the annotation server.
+			 */
+			'signedout');
         this.prefs = config.prefs;
 
         // Find Emmet URLs

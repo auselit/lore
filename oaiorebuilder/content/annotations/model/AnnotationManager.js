@@ -1,19 +1,19 @@
 /*
  * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
- * 
+ *
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
  * project.
- * 
+ *
  * LORE is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,7 +26,7 @@
  * @include  "/oaiorebuilder/content/constants.js"
  */
 
-/** 
+/**
  * AnnotationManager
  * Contains operations that are performed on annotations and the data stores
  * for the annotations.
@@ -37,34 +37,38 @@
 lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	/**
 	 * Intialize the 'model', the store which holds the working copies
-	 * of annotations for a given page.  
+	 * of annotations for a given page.
 	 * @param {String} theURL  (Currently not utilized)The URL for which to create the store
 	 */
 	constructor: function (config) {
 
-		this.addEvents({
-			"annotationsloaded" : true,
-			'load': true,
-			'remove': true,
-			'update': true
-		});
-		
+		this.addEvents(
+            /**
+			 * @event annochanged
+			 * Fires when some annotations have been loaded
+			 * @param {int} number of annotations loaded
+			 */
+			'annotationsloaded',
+			'load',
+			'remove',
+			'update');
+
 		// Copy configured listeners into *this* object so that the base class's
 		// constructor will add them.
 		this.listeners = config.listeners;
-	
+
 		// Call our superclass constructor to complete construction process.
 		lore.anno.AnnotationManager.superclass.constructor.call(this, config)
-	
+
 		var fields = [
-					{name: 'created'}, 
-					{name: 'creator'}, 
-					{name: 'title'}, 
+					{name: 'created'},
+					{name: 'creator'},
+					{name: 'title'},
 					{name: 'body'},
-					{name: 'bodyLoaded'},  
+					{name: 'bodyLoaded'},
 					{name: 'modified'},
 					{name: 'createdOrModified'},
-					{name: 'type'}, 
+					{name: 'type'},
 					{name: 'lang'},
                     {name: 'resource'},
                     {name: 'id'},
@@ -85,13 +89,14 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					{name: 'isNew'},
 					{name: 'hasChildren'},
 					{name: 'semanticEntity'},
-					{name: 'semanticEntityType'}
+					{name: 'semanticEntityType'},
+					{name: 'privateAnno'}
                         ];
-						
+
 		/** @property annods
          * @type Ext.data.JsonStore
          * The annotation store
-		 */								
+		 */
 		this.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({	fields: fields,
 									data: {}
@@ -99,36 +104,36 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		this.annodsunsaved =  new Ext.data.JsonStore({	fields: fields,
 									data: {}
 								});
-								
+
 		/**
-         * @property 
+         * @property
          * @type Ext.data.JsonStore
          * The annotation search data store
 		 */
 		this.annosearchds =  new Ext.data.JsonStore({
 									fields: fields
 								});
-		
+
 		var mfields = [  {name: 'type'}, {name: 'prop'}, {name: 'value'}];
 		/**
-         * @property 
+         * @property
          * @type Ext.data.JsonStore
          * The annotation metadata data store
 		 */
 		this.annousermetads =  new Ext.data.JsonStore( {
 			fields: mfields,
-			data: {} 
-		})	
-		
-		// model event handlers						
+			data: {}
+		})
+
+		// model event handlers
 		this.annods.on("load",  this.onDSLoad);
 		this.annods.on("remove", this.onDSRemove);
-		
+
 		this.serializer = new lore.anno.RDFAnnotationSerializer();
 		this.prefs = config.prefs;
-	}, 
-		
-	 
+	},
+
+
 	/**
      * Update annotations that are parents of replies by creating a map of children replies and count of local and overall replies {@link #annods} loads
      * @param {} store
@@ -137,19 +142,19 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	onDSLoad : function(store, records, options) {
 		for( var i =0; i < records.length;i++) {
-			
+
 				// recursively update the parent/s of a reply, incrementing
-				// their reply counts 
+				// their reply counts
 				var incParentReplies = function(rec, countonly){
-					if ( !rec.data.isReply  ) 
+					if ( !rec.data.isReply  )
 						return;
 					var prec = lore.global.util.findRecordById(store, rec.data.about);
-					
+
 					if ( !prec) {
 						lore.debug.anno("Couldn't find parent to update replies list. Bad");
 						return;
 					}
-					
+
 					if (!countonly) {
 						prec.data.replies.map[rec.data.id] = rec;
 						prec.data.replies.localcount++;
@@ -158,7 +163,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					store.fireEvent("update", store, prec, Ext.data.Record.EDIT);
 					incParentReplies(prec, true);
 				};
-			
+
 			if ( !records[i].data.replies )
 				records[i].data.replies = { count:0, localcount:0, map:{}};
 			incParentReplies(records[i]);
@@ -174,27 +179,27 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var decParentReplies = function (rec, countonly) {
 			if ( !rec.data.isReply)
 				return;
-			
+
 			var prec = lore.global.util.findRecordById(store, rec.data.about);
 			if ( !prec)
 				return;
-			
+
 			if (!countonly) {
 				prec.data.replies.map[rec.data.id] = null;
 				prec.data.replies.localcount--;
 			}
 			prec.data.replies.count--;
-			
+
 			store.fireEvent("update", store, prec, Ext.data.Record.EDIT);
 			decParentReplies(prec, true);
-			
+
 		};
 		decParentReplies(record);
 	},
-	
-	
-	
-		
+
+
+
+
 	/**
 	 * Add an annotation to the local store. This does not add the annotation
 	 * to the remote repository
@@ -205,7 +210,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	addAnnotation : function(currentContext, currentURL, callback, parent){
 		var anno = new lore.anno.Annotation();
-		
+
 		anno.load({
 			resource: (parent ? parent.data.resource: currentURL),
 			about: (parent ? parent.data.id: null),
@@ -222,48 +227,48 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			isReply: (parent ? true: null),
 			bodyLoaded: true
 		});
-		
+
 		if (callback)	callback(anno);
-		
+
 		lore.debug.anno('AM.addAnnotation()', {currentContext:currentContext,anno:anno});
-			
-		this.annodsunsaved.loadData([anno], true); 
+
+		this.annodsunsaved.loadData([anno], true);
 		return lore.global.util.findRecordById(this.annodsunsaved, anno.id);
 	},
-	
+
 	/**
 	 * Create or update the annotations in the remote repository.
-	 * These actions are performed for all annotations that are flagged as 'dirty'. 
+	 * These actions are performed for all annotations that are flagged as 'dirty'.
 	 * @param {String} currentURL The URL of the page where the annotations are situated
 	 * @param {Function} resultCallback A callback function that is used by the function to output success or failure
 	 * The callback should support the following parameters
 	 * rec: The record that was updated
 	 * action: Action performed on the record ('create' or 'update')
-	 * result: Result as a string ('success' or 'fail') 
-	 * resultMsg: Result message 
+	 * result: Result as a string ('success' or 'fail')
+	 * resultMsg: Result message
 	 */
 	persistAllAnnotations: function (currentURL) {
-		
+
 		var modified = [];
-		this.annodsunsaved.each( function (rec) { 
+		this.annodsunsaved.each( function (rec) {
 			if ( rec.dirty || rec.data.isNew() ) {
 				modified.push(rec);
 			}
 		});
-		
+
 		var resultCounter = 0;
 		var t = this;
 		var callback = function () {
 			resultCounter++;
-            
+
 			if (resultCounter == modified.length) {
-				// once all annotations have been updated, refresh  
+				// once all annotations have been updated, refresh
 				lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
 				t.updateAnnotationsSourceList(currentURL);
 			}
 		}
-			
-		
+
+
 		for ( var i =0; i < modified.length; i++ ) {
 			this.sendUpdateRequest(modified[i], callback);
 		}
@@ -272,7 +277,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Send an annotation update to server
 	 * @param {Object} anno The annotation
 	 * @param {Object} resultCallback Callback when update finishes
-     * 
+     *
      * #private#
 	 */
 	sendUpdateRequest : function(annoRec, resultCallback){
@@ -282,10 +287,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
         if (!resultCallback) {
             resultCallback = function(){};
         }
-		
+
 		var annoRDF = this.serializer.serialize([annoRec.data], this.annods);
         var t = this;
-		
+
 		var xhr = new XMLHttpRequest();
 		if (annoRec.data.isNew()) {
 			lore.debug.anno("creating new annotation")
@@ -314,7 +319,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                         t.fireEvent('servererror', action, xhr);
                     }
                 }
-                
+
             } catch(e ) {
                 lore.debug.anno("error sending annotation to server: ", e);
             }
@@ -323,10 +328,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
         lore.debug.anno("RDF of annotation", annoRDF);
 		this.annodsunsaved.remove(annoRec);
 	},
-		
-	
+
+
 	/**
-	 * Create or update the annotation in the remote repository 
+	 * Create or update the annotation in the remote repository
 	 * @param {Object} anno The annotation to update/create
 	 * @param {String} currentURL The URL of the page where the annotation is situated
 	 * @param {Boolean} refresh Explicity states whether to re-read the list of annotations after update or use cached entries
@@ -340,30 +345,30 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                     t.updateAnnotationsSourceList(currentURL);
             }
 		}
-						
+
 		this.sendUpdateRequest(annoRec, callback);
 
 	},
-	
+
 	/**
 	 * Delete an annotation on the local store and on the remote repository if it exists there
 	 * @param {Object} anno The annotation to delete
 	 * @param {Object} resultCallback A callback function that is used by the function to output success or failure
 	 * The callback should support the following parameters
-	 * result: Result as a string ('success' or 'fail') 
-	 * resultMsg: Result message 
+	 * result: Result as a string ('success' or 'fail')
+	 * resultMsg: Result message
 	 */
-	
+
 	deleteAnnotation: function(anno) {
 		// remove the annotation from the server
-		
+
 		if ( anno.data.hasChildren()) {
             lore.anno.ui.loreError("Annotation not deleted. Delete replies first.");
 			return;
 		}
-		
+
 		var existsInBackend = !anno.data.isNew();
-		
+
 
 		this.annodsunsaved.remove(anno);
 		if (existsInBackend) {
@@ -373,10 +378,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				success: function(resp){
                     this.annods.remove(anno);
 					lore.debug.anno("Deletion success: " + resp );
-					
+
 					lore.anno.ui.loreInfo('Annotation deleted');
 				},
-                
+
 				failure: function(resp, opts){
 					lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
                     this.fireEvent('servererror', 'delete', resp);
@@ -387,8 +392,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			});
 		}
 	},
-	
-	
+
+
 	/**
 	 * Creates an array of Annotations from a list of RDF nodes in ascending date
 	 * created order - unchanged from dannotate.js
@@ -400,14 +405,14 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	createAnnotationsFromRDF : function(xmldoc, bodyEmbedded){
 		var nodeList = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
-		
+
 		var tmp = [];
 		for (var j = 0; j < nodeList.length; j++) {
 			try {
 				var tmpAnno = new lore.anno.Annotation(nodeList[j], xmldoc, bodyEmbedded);
-				if (tmpAnno && tmpAnno.id) 
-					tmp.push(tmpAnno); 
-			} 
+				if (tmpAnno && tmpAnno.id)
+					tmp.push(tmpAnno);
+			}
 			catch (ex) {
 				lore.debug.anno("Exception processing annotations", ex);
 			}
@@ -416,8 +421,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return (a.created > b.created ? 1 : -1);
 		});
 	},
-	
-	
+
+
 	/**
 	 * Get annotation body value. modified from dannotate.js getAjaxRespSync
 	 *
@@ -429,9 +434,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var uri = anno.bodyURL;
 		if ( !uri)
 			return;
-		
+
 		var req = null;
-		
+
 		var handleResponse = function() {
 			try {
 				if (req.status != 200) {
@@ -439,7 +444,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					throw new Error('Synchronous AJAX request status error.\n  URI: ' + hst +
 					'\n  Status: ' + req.status);
 				}
-				
+
 				var rtype = req.getResponseHeader('Content-Type');
 				if (rtype == null) {
 					var txt = req.responseText;
@@ -451,11 +456,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 							doc = parser.parseFromString(txt, 'application/xml');
 						}
 					}
-					
+
 					if (doc != null) {
 						return doc;
 					}
-					else 
+					else
 						if (txt != null) {
 							return txt;
 						}
@@ -481,7 +486,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				} else {
 					bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
 				}
-				
+
 				if (bodyText) {
 					return lore.global.util.sanitizeHTML(bodyText, window);
 				}
@@ -492,10 +497,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			}
 			return "";
 		}
-		
+
 		try {
 			req = new XMLHttpRequest();
-			
+
 			req.onreadystatechange = function(){
 				try {
 					if (req.readyState == 4) {
@@ -510,15 +515,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			req.setRequestHeader('User-Agent', 'XMLHttpRequest');
 			req.setRequestHeader('Content-Type', 'application/text');
 			req.send(null);
-		} 
+		}
 		catch (ex) {
 			lore.debug.anno("Error in AJAX request: " + uri, {ex: ex});
 			return null;
 		}
 	},
-	
+
 	/**
-	 * Get annotation body value asynchronously. 
+	 * Get annotation body value asynchronously.
 	 *
 	 * @param {String} uri Fully formed request against Danno annotation server
 	 * @param {window} The window object
@@ -528,13 +533,13 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var tthis = this;
 		this.getBodyContent(anno, window, function callback(anno, body) {
 			try {
-				// check for location change while loading occurred 
+				// check for location change while loading occurred
 				if (tthis.locationChanged(anno))
 					return;
-					
+
 				var r = lore.global.util.findRecordById(tthis.annods, anno.id);
-				
-				
+
+
 				if (r) {
 					if (r.get('type') && r.get('type').indexOf('#MetadataAnnotation') > -1) {
 						tthis.parseMetaBody(r, body);
@@ -545,36 +550,36 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				} else {
 					lore.debug.anno("getBodyContentAsync: record not found", anno);
 				}
-			} 
+			}
 			catch (e) {
 				lore.debug.anno(e, e)
 			}
-			
+
 			lore.debug.timeElapsed("End getBodyContentAsync() callback");
 		});
 	},
-	
+
 	parseMetaBody: function(anno, rdfBody) {
 		var node = rdfBody.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
-		
+
 		var meta = [];
 		anno.beginEdit();
 		if (node && node.length > 0) {
 			var semanticEntity = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'about');
 			anno.set('semanticEntity', semanticEntity);
-			
+
 			var children = node[0].children;
-			
+
 			for (var i = 0; i < children.length; i++) {
 				var metaObj = {};
-					
+
 //				metaObj.name = children[i].namespaceURI + children[i].localName;
 				metaObj.name = children[i].localName;
 				metaObj.value = children[i].textContent;
-				
+
 				if (metaObj.name === 'type') {
 					anno.set('semanticEntityType', children[i].attributes[0].value);
-				} else {					
+				} else {
 					meta.push(metaObj);
 				}
 			}
@@ -582,8 +587,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		anno.set('meta', meta);
 		anno.endEdit();
 	},
-	
-	
+
+
 	locationChanged: function(anno) {
         var urlsAreSame = lore.global.util.urlsAreSame;
 		if (!anno) {
@@ -592,17 +597,17 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (anno.isReply) {
 			return false;
 		}
-        
+
 		var currentURL = lore.anno.ui.currentURL;
- 
-		if (urlsAreSame(anno.resource, currentURL) || 
-            urlsAreSame(anno.variant, currentURL) || 
+
+		if (urlsAreSame(anno.resource, currentURL) ||
+            urlsAreSame(anno.variant, currentURL) ||
             urlsAreSame(anno.original, currentURL)) {
 			return false;
 		}
 		return true;
 	},
-	
+
 	/**
 	 * Updates the annotations store with updated values for the
 	 * annotations for the specified URL from the annotation server
@@ -614,10 +619,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return;
 		}
 		this.clearAnnotationStore();
-		
+
 		var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + lore.global.util.fixedEncodeURIComponent(theURL);
 		lore.debug.anno("Updating annotations with request URL: " + queryURL);
-		
+
 		Ext.Ajax.request({
 			url: queryURL,
 			method: "GET",
@@ -644,24 +649,24 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			scope:this
 		});
 	},
-	
+
 	/**
 	 * Search for annotations given the search parameters and update data searching data store
 	 * @param {String} url Specific URL to filter on. Can be NULL if all URLs should be searched.
 	 * @param {Object} filters An array of objects. The objects should have an 'attribute' and 'filter' attribute, where
-	 * 'attribute' is the name of the search parameter and 'filter' is the value to search on. 
+	 * 'attribute' is the name of the search parameter and 'filter' is the value to search on.
 	 * @param {Function} resultCallback Callback function used to output success or failure.
 	 * The function must support the following parameters:
 	 * result: Result as string ( 'success' or 'fail')
-	 * resultMsg: Result message as string 
+	 * resultMsg: Result message as string
 	 */
 	searchAnnotations : function (val, resultCallback) {
-		
+
 		var queryURL = this.createSearchQueryURL(val);
 
-		  
+
 		lore.debug.anno("Peforming search with the following request URL: " + queryURL);
-			
+
 		Ext.Ajax.request({
 			url: queryURL,
 			method: "GET",
@@ -670,11 +675,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				try {
 					var annos = this.createAnnotationsFromRDF(resp.responseXML);
 					this.annosearchds.loadData(annos);
-						
+
 					if (resultCallback) {
 						resultCallback('success', resp);
 					}
-					
+
 				} catch (e) {
 					lore.debug.anno(e,e);
 				}
@@ -693,11 +698,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			scope:this
 		});
 	},
-	
+
 	createSearchQueryParams : function(vals) {
-		
+
 	},
-	
+
 	createSearchQueryURL : function(vals) {
 		var searchParams = {
 			'creator': lore.constants.DANNO_RESTRICT_CREATOR,
@@ -706,9 +711,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			'datemodafter': lore.constants.DANNO_RESTRICT_AFTER_MODIFIED,
 			'datemodbefore': lore.constants.DANNO_RESTRICT_BEFORE_MODIFIED
 		};
-		
+
 		lore.debug.anno('createSearchQueryURL', {vals:vals});
-		
+
 		var filters = [];
 		for (var e in vals) {
 			var v = vals[e];
@@ -725,27 +730,27 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 						});
 			}
 		}
-		
+
 		var url = vals['url'] != '' ? vals['url'] : null;
-		
-		
+
+
 		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ANNOTEA_OBJECTS);
 		for (var i = 0; i < filters.length; i++) {
 			queryURL += '&'+filters[i].attribute+'=' + encodeURIComponent(filters[i].filter);
 		}
-		
+
 		return queryURL;
 	},
-	
+
 	/**
 	 * Clear the annotation store
 	 */
 	clearAnnotationStore : function() {
 		this.annods.removeAll();
 	},
-	
+
 	/**
-	 * Load annotation data into the current data store  
+	 * Load annotation data into the current data store
 	 * @param {Array} annotations
 	 */
 	loadAnnotation: function (annotations) {
@@ -753,15 +758,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return;
 		if (!annotations.length)
 			annotations = [annotations];
-			
+
 		var firstAnno = annotations[0];
-		
+
 		// find a leaf node
 		while(firstAnno && firstAnno.isReply ) {
 			firstAnno = lore.global.util.findRecordById(this.annods, firstAnno.resource).data;
 		}
 
-		// check that they haven't switched tabs since data was loaded from server, if not load into datastore		
+		// check that they haven't switched tabs since data was loaded from server, if not load into datastore
 		if (this.locationChanged(firstAnno)) {
 			lore.debug.anno("loadAnnotation says switched tabs", {annotation:firstAnno,currentURL:lore.anno.ui.currentURL});
 		} else {
@@ -769,7 +774,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		}
 	},
 
-	
+
 	/**
 	 * Handler function that's called when annotation information is successfully
 	 * returned from the server. Loads the annotations into the data store and loads
@@ -779,44 +784,44 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	handleAnnotationsLoaded : function(resp){
 		var resultNodes = {};
 		var xmldoc = resp.responseXML;
-		
+
 		if (xmldoc) {
 			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
-		
+
 		}
 		lore.debug.anno('handleAnnotationsLoaded()', {xml: xmldoc});
-		
+
 		this.clearAnnotationStore();
-				
+
 		if (resultNodes.length > 0) {
 			var annotations = this.createAnnotationsFromRDF(xmldoc);
 
-			
+
 			lore.debug.anno('handleAnnotationsLoaded() loaded annotations', {annotations:annotations});
 			// cater for tab change while annotations were downloaded from server
 			if (this.locationChanged(anno)) {
 			 	lore.debug.anno("Apparently, tab changed while annotations were downloading", {annotations:annotations});
 				return;
 			}
-			
+
 			for (var i = 0; i < annotations.length; i++) {
 				try {
 					this.getBodyContentAsync(annotations[i], window);
-				} 
+				}
 				catch (e) {
 					lore.debug.anno('error loading body content: ' + e, e);
 				}
 			}
-			
+
 			this.loadAnnotation(annotations);
-							
-			
+
+
 			// get annotation replies
 			for (var i = 0; i < annotations.length; i++) {
 				var anno = annotations[i];
 				var annoID = anno.id;
 				var annoType = anno.type;
-				
+
 
 				Ext.Ajax.request({
 					disableCaching: false, // without this the request was failing
@@ -829,12 +834,12 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					scope:this
 				});
 			}
-			
+
 			this.fireEvent("annotationsloaded", annotations.length);
 		}
-		
+
 	},
-	
+
 	/**
 	 * Handler function that is called when for each annotation that has replies.
 	 * The replies are loaded into the data store
@@ -848,7 +853,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 			if (!isLeaf) {
 				var replies = this.createAnnotationsFromRDF(xmldoc);
-				
+
 				for ( var i=0; i< replies.length; i++) {
 					this.getBodyContentAsync(replies[i], window);
 				}
@@ -858,32 +863,32 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			lore.debug.anno(e,e);
 		}
 	},
-	
+
 	/**
 	 * For all top level annotations on a page ( those that are not replies), that are not variation annotations
 	 * generated RDF and transform it using the stylesheet supplied
 	 * @param {String} stylesheetURL The url of the stylesheet to use for transforming the RDF into another format
 	 * @param {Object} params Parameters to supply
 	 * @param {Boolean} serialize Specify whether the output will be serialized to a string. Defaults to a document fragment.
-	 * @return {Object} If serialize was supplied as true, then resulting XML will be returned as a string otherwise as a document fragment  
+	 * @return {Object} If serialize was supplied as true, then resulting XML will be returned as a string otherwise as a document fragment
 	 */
 	transformRDF: function(stylesheetURL, params, serialize){
-		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
+		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  &&
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
-				
-		return lore.global.util.transformRDF(stylesheetURL, this.serializer.serialize(annos, this.annods, true), 
-											params, window, serialize) 
+
+		return lore.global.util.transformRDF(stylesheetURL, this.serializer.serialize(annos, this.annods, true),
+											params, window, serialize)
 	},
-	
+
 	/** Generate a Word document from the top-level, non-variation annotations on the page
 	 * @param domNode HTML node to serialize
 	 * @return {String} The annotated page returned as String containing WordML XML.
 	 */
 	createAnnoWord: function(domNode){
 		/* TODO: #117 - Further implementation required
-		 
+
 		var serializer= new XMLSerializer();
-		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  && 
+		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  &&
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
 		var theRDF = this.serializer.serialize(annos, this.annods, true);
 
@@ -891,17 +896,17 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		var html = serializer.serializeToString(domNode);
 		html = lore.global.util.sanitizeHTML(html, window);
 		html = theRDF + "\n" + html;
-		
+
 		// For testing...
 		//lore.global.util.writeFile(html, "c:\\", "test.txt", window);
 		//return this.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
-				
+
 		return lore.global.util.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", html, {}, window, true) */
 	},
-	
+
 	/**
 	 * Serialize the annotations into an OAC RDF format
-	 * 
+	 *
 	 * @param {} annos the list of annotations to serialize
 	 * @param {} store the data store they're contained within
 	 * @param {Boolean} showDates whether to save the annotation dates
@@ -909,12 +914,12 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	createAnnoOAC: function (annos, store, showDates) {
 		var oacSerializer = new lore.anno.OACAnnotationSerializer();
-		
-		return oacSerializer.serialize(annos, store, showDates);		
+
+		return oacSerializer.serialize(annos, store, showDates);
 	},
-	
+
 	/**
-	 * Serialize the current annotations on the page into the given format. 
+	 * Serialize the current annotations on the page into the given format.
 	 * @param {String} format The format to serialize the annotations in. 'wordml' or 'rdf'.
 	 * @return {String} Returns the serialized annotations in the new format
 	 */
@@ -930,10 +935,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return null;
 		}
 	},
-	
+
 	/**
 	 * Start editing a record.
-	 * 
+	 *
 	 * Always edit in the 'unsaved' store, either get the appropriate record from there
 	 * or copy into it and use the copy.
 	 */
@@ -941,21 +946,21 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (rec.store === this.annodsunsaved) {
 			return rec;
 		}
-		
+
 		// if in unedited store, move to editing store, then return
 		if (rec.store === this.annods) {
 			var unsaved = this.findUnsavedRecById(rec.data.id);
 			if (!unsaved) {
 				var clone = shallowClone(rec);
 				this.annodsunsaved.loadData([clone], true);
-				
+
 				unsaved = lore.global.util.findRecordById(this.annodsunsaved, rec.data.id);
 			}
 			return unsaved;
 		} else {
 			lore.debug.anno("ERROR: The rec wasn't in either store!", rec);
 		}
-		
+
 		function shallowClone(obj) {
 			var clone = {};
 			for (var e in obj.data) {
@@ -964,7 +969,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return clone;
 		}
 	},
-	
+
 	updateStoredRec: function(unsavedRec) {
 		var storedRec = this.findStoredRecById(unsavedRec.data.id)
 		if (storedRec) {
@@ -972,22 +977,20 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			this.annods.addSorted(unsavedRec.copy());
 		}
 	},
-	
+
 	findRecById : function (id) {
 		return this.findStoredRecById(id) || this.findUnsavedRecById(id);
 	},
-	
+
 	findUnsavedRecById : function (id) {
 		return lore.global.util.findRecordById(this.annodsunsaved, id);
 	},
-	
+
 	findStoredRecById : function (id) {
 		return lore.global.util.findRecordById(this.annods, id);
 	},
-	
+
 	numUnsavedAnnotations: function() {
 		return this.annodsunsaved.getCount();
 	}
 });
-	
-
