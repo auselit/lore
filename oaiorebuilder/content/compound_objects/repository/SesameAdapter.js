@@ -126,12 +126,20 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	},
 	saveCompoundObject : function (remid,therdf,callback){
         // TODO: first check that the compound object hasn't changed on the server
+		Ext.Msg.show({
+	           msg: 'Saving Compound Object to repository...',
+	           width:250,
+	           defaultTextHeight: 0,
+	           closable: false,
+	           cls: 'co-load-msg'
+	       });
 	    try {                  
 	       var xmlhttp2 = new XMLHttpRequest();
 	       xmlhttp2.open("PUT",
 	           this.reposURL + "/statements?context=<" + remid + ">", true);
 	       xmlhttp2.onreadystatechange = function() {
 	            if (xmlhttp2.readyState == 4) {
+	            	Ext.Msg.hide();
 	                if (xmlhttp2.status == 204) {
 	                    lore.debug.ore("sesame: RDF saved",xmlhttp2);
 	                    lore.ore.ui.vp.info("Compound object " + remid + " saved");
