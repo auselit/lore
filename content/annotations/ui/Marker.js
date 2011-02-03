@@ -221,7 +221,7 @@ lore.anno.ui.Marker.prototype = {
 			boundryCheck: true,
 			position: 'cursor',
 			onetip: true,		// custom config which specifies only one tip can show at a time
-			closeIcon: closeIcon,  // close button
+			closeIcon: lore.constants.icons.closeIcon,  // close button
             extraStyles: {
                 opacity  : "1",
                 backgroundColor : "#fcfcfc",
