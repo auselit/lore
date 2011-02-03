@@ -26,7 +26,7 @@
  * {
  * 	xpointer: The xpointer pointing to the image region or area of text to be highlighted
  *  borderWidth: The width of the border used for highlighting 
- *  target: The target document the xpointer applies to. Defaults to the current content window (tab).
+ *  target: The target document (ContentWindow) the xpointer applies to. Defaults to the current content window (tab).
  */
 	
 lore.anno.ui.Marker = function(args){
@@ -37,7 +37,7 @@ lore.anno.ui.Marker = function(args){
 	this.bw = args.borderWidth || 2;
 	this.page = args.page;
 }
-	
+
 lore.anno.ui.Marker.prototype = {
 	/**
 	* Highlight the marker  
@@ -145,6 +145,8 @@ lore.anno.ui.Marker.prototype = {
 	 */			
 	hide : function(){
 		try {
+            this.disableTip();
+			
 			if (this.data && (this.data.image || this.data.nodes)) {
 				// for each of the dom nodes, set display to none
 				// and then to remove from DOM.
@@ -168,8 +170,6 @@ lore.anno.ui.Marker.prototype = {
                 }
 			}
 			this.visible = false;
-            
-            this.disableTip();            
 		} catch (e){
 			lore.debug.anno("lore.anno.ui.Marker.hide()",e);
 		}
