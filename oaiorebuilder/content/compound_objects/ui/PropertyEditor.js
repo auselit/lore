@@ -181,16 +181,17 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             colModel : new Ext.grid.ColumnModel({
                 columns : [{
                             header : 'Property Name',
-                            sortable : true,
+                            sortable : false,
                             dataIndex : 'name',
                             menuDisabled : true,
-                            width: 70
+                            width: 70,
+                            renderer: this.renderFunction,
                  }, {
                             header : 'Value',
                             dataIndex : 'value',
                             menuDisabled : true,
-                            
-                           editor: new Ext.form.TriggerField({
+                            renderer: this.renderFunction, // in PropertyEditor
+                            editor: new Ext.form.TriggerField({
                                  propertyEditor: this,
                                  triggerClass: 'x-form-ellipsis-trigger',
                                  triggerConfig: {
@@ -275,10 +276,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
            
             this.on("afteredit", function(e) {
                 try{
-                    
-                
                  // update the CO title in the dataview
-                   
                   if (e.record.id == "dc:title_0") {
                     lore.ore.coListManager.updateCompoundObject(
                         lore.ore.cache.getLoadedCompoundObjectUri(),
@@ -292,6 +290,23 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 }
             });
         }
+    },
+    /** Grey out rows that are not editable by the user */
+	renderFunction: function(val, cell, rec){
+    	lore.debug.ore("renderer " + val, [cell, rec]);
+    	if (rec && rec.data && 
+    			(rec.data.id == "dc:format_0" 
+    				|| rec.data.id == "rdf:type_0"
+    			    || rec.data.id == "rdf:about_0" 
+    			    || (this.id != 'nodegrid' 
+    			    		&& (rec.data.id == "dcterms:modified_0" ||
+    			    		rec.data.id == "dcterms:created_0"))
+    			    )){
+    		
+    		return '<span style="color:grey;">' + val + "</span>"
+    	} else {
+    		return val;
+    	}
     },
     makeAddPropertyMenu: function (mp){
     	var panel = this;
