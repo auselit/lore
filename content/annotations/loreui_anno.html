@@ -54,15 +54,15 @@
 		     * Use eval for the import statements because the YUI compressor does not allow 
 		     * us to call the import function directly as import is a reserved word in JavaScript.
 		     */
-		    Components.utils.import("resource://lore/constants.js", lore);
-		    Components.utils.import("resource://lore/util.js", lore.global);
-		    Components.utils.import("resource://lore/debug.js", lore);
+		    Components.utils["import"]("resource://lore/constants.js", lore);
+		    Components.utils["import"]("resource://lore/util.js", lore.global);
+		    Components.utils["import"]("resource://lore/debug.js", lore);
 		    
 		    // Load and cache global ui functions
-		    Components.utils.import("resource://lore/uiglobal.js", lore.global);
+		    Components.utils["import"]("resource://lore/uiglobal.js", lore.global);
 		    
 		    // lore.store
-		    Components.utils.import("resource://lore/annotations/store.js", lore.global);
+		    Components.utils["import"]("resource://lore/annotations/store.js", lore.global);
 		} catch (e) {
 		    alert(e + " " + e.stack);
 		}
@@ -80,6 +80,7 @@
 	<script type="text/javascript" src="ui/EditorPanel.js"></script>
 	<script type="text/javascript" src="ui/AnnotationsDataView.js"></script>	
 	<script type="text/javascript" src="ui/SearchPanel.js"></script>
+	<script type="text/javascript" src="ui/Sidebar.js"></script>
 	<script type="text/javascript" src="AuthManager.js"></script>
 	
 	<script type="text/javascript" src="handlers.js"></script>
