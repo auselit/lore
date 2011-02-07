@@ -25,8 +25,10 @@
  */
 
 /**
- * @class lore.anno.ui.PageView Class which abstracts the visual operations performed on the content window and the  
- * window splitter used for variation annotations
+ * @class lore.anno.ui.PageView Class which abstracts the visual operations
+ * performed on the content window and the window splitter used for variation
+ * annotations
+ * 
  * @param {Object} config The configuration the page view
  * config can contain: {
  * 		page: The PageData object to listen to events on
@@ -54,7 +56,11 @@ lore.anno.ui.PageView.prototype = {
     /**
      * Default list of annotation highlight colours 
      */
-    colourLookup: ["#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000", /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080", "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF", "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF", /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/],
+    colourLookup: ["#00FF00", "#FFFF00", "#00FFFF", "#FF00FF", "#FF8000",
+				   /*"#80FF00",*/ "#00FF80", "#0080FF", "#8000FF", "#FF0080",
+				   "#FFC000", "#C0FF00", "#00FFC0", "#00C0FF", "#C000FF",
+				   "#FF00C0", "#FF4000", /*"#40FF00", "#00FF40",*/ "#0040FF",
+				   /*"#4000FF",*/ "#FF0040", "#0000FF" /*, "#FF0000",*/],
     
 	/**
 	 * Refresh all the annotations on the page
@@ -80,8 +86,8 @@ lore.anno.ui.PageView.prototype = {
 				this.highlightCurrentAnnotation(newRec);
 			}
 		} else {
-      this.removeHighlightForCurrentAnnotation();
-    }
+			this.removeHighlightForCurrentAnnotation();
+		}
 	},
 	
 	/**
@@ -170,18 +176,17 @@ lore.anno.ui.PageView.prototype = {
 							this.page.curAnnoMarkers.splice(i, 1);
 							i--;
 						}
-					}
-					else {
+					} else {
 						// remove marker
 						m.hide();
 						delete m;
 					}
 				}
-				if (!cw) 
+				if (!cw) {
 					this.page.curAnnoMarkers = [];
+				}
 			}
-		} 
-		catch (ex) {
+		} catch (ex) {
 			lore.debug.anno("hide marker failure: " + ex, ex);
 		}
 	},
@@ -199,8 +204,7 @@ lore.anno.ui.PageView.prototype = {
 		if (!colour) {
 			if (this.page.colourCount < this.colourLookup.length) {
 				colour = this.colourLookup[this.page.colourCount++];
-			}
-			else {
+			} else {
 				// back up
 				colour = lore.global.util.generateColour(196, 196, 196, 240, 240, 240);
 			}
@@ -221,22 +225,22 @@ lore.anno.ui.PageView.prototype = {
 		}
 	},
   
-  /**
-   * Deselect the currently selected image
-   * @param {} img
-   */
-  deselectImage: function(img) {
-    var deselect = img || this.page.curImage;
-    if (!deselect) return;
-    var inst = deselect.imgAreaSelectInst();
-    if (inst) {
-      inst.setOptions({
-        show: false,
-        hide: true
-      });
-      inst.update();
-    }    
-  },
+	/**
+	 * Deselect the currently selected image
+	 * @param {} img
+	 */
+	deselectImage: function(img) {
+		var deselect = img || this.page.curImage;
+		if (!deselect) return;
+		var inst = deselect.imgAreaSelectInst();
+		if (inst) {
+			inst.setOptions({
+			  show: false,
+			  hide: true
+			});
+			inst.update();
+		}    
+	},
 	
 	/**
 	 * Get the currently selected image
@@ -245,9 +249,7 @@ lore.anno.ui.PageView.prototype = {
 		return this.page.curImage ? this.page.curImage.get(0) : null;
 	},
   
-  
-	
-	
+
 	/**
 	 * Retrieve the current selection whether that is selected text or selected part of an image
 	 */
@@ -278,7 +280,6 @@ lore.anno.ui.PageView.prototype = {
 					hide: true
 				});
 				inst.update();
-				
 			}
 			this.page.curAnnoMarkers = this.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
 		} catch (e) {
@@ -300,55 +301,63 @@ lore.anno.ui.PageView.prototype = {
 		
         var urlsAreSame = lore.global.util.urlsAreSame;
         
+		try {
 		// regular non variant case for highlighting
 		if (rec.data.context && urlsAreSame(rec.data.resource, lore.anno.ui.currentURL) &&
 			rec.data.type!= lore.constants.NAMESPACES["vanno"] + "VariationAnnotation")  {
-				try {
-					markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
-				} 
-				catch (e) {
-					lore.debug.anno(e, e);
-				}
+				markers.push(
+					new lore.anno.ui.Marker({
+						xpointer:rec.data.context,
+						page: this.page
+					}));
+
 		} else 	{
-		
 			if (urlsAreSame(rec.data.original, lore.anno.ui.currentURL)) {
 				try {
-					if ( rec.data.context) markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
-				} 
-				catch (e) {
+					if (rec.data.context) {
+						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
+					}
+				} catch (e) {
 					lore.debug.anno("Error highlighting variation context: " + e, e);
 				}
 				var cw = lore.anno.ui.topView.getVariationContentWindow();
-				if (rec.data.variantcontext && lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.variant) {
-					try {
-						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, target:cw.document, page: this.page }));
-					} 
-					catch (e) {
-						lore.debug.anno(e, e);
-					}
-					
+				if (rec.data.variantcontext
+					&& lore.anno.ui.topView.variationContentWindowIsVisible()
+					&& cw.location == rec.data.variant) {
+					markers.push(
+						new lore.anno.ui.Marker({
+							xpointer:rec.data.variantcontext,
+							target:cw.document,
+							page: this.page }));
 				}
 			}
+			
 			if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
 				try {
-					if ( rec.data.variantcontext )
-						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.variantcontext, page: this.page }));
-				} 
-				catch (e) {
-					lore.debug.anno("Error highlighting variation context: " + e, e);
-				}
-				var cw = lore.anno.ui.topView.getVariationContentWindow();
-				if (rec.data.context && lore.anno.ui.topView.variationContentWindowIsVisible() && cw.location == rec.data.original) {
-					try {
-						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, target:cw.document, page: this.page }));
-					} 
-					catch (e) {
-						lore.debug.anno("Error highlighting variation context: " + e, e);
+					if ( rec.data.variantcontext ) {
+						markers.push(
+							new lore.anno.ui.Marker({
+								xpointer:rec.data.variantcontext,
+								page: this.page }));
 					}
+					var cw = lore.anno.ui.topView.getVariationContentWindow();
+					if (rec.data.context
+						&& lore.anno.ui.topView.variationContentWindowIsVisible()
+						&& cw.location == rec.data.original) {
+						markers.push(
+							new lore.anno.ui.Marker(
+								{xpointer:rec.data.context,
+								target:cw.document,
+								page: this.page }));
+					}
+				} catch (e) {
+					lore.debug.anno("Error highlighting variation context: " + e, e);
 				}
 			}
 		}
-		
+		} catch (e) {
+			lore.debug.anno(e, e);
+		}
 		// get colour of highlight and show marker, and generate tooltip
 		var cc = this.getCreatorColour(rec.data.creator);
 		for ( var i=0; i < markers.length;i++) {
