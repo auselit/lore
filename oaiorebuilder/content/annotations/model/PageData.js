@@ -85,6 +85,8 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} url  The URL
 	 */
 	load : function(url){
+        // loading a new page, no active annotation
+        this.setCurrentAnno();
 		
 		var ds = lore.global.store.get(lore.constants.HIGHLIGHT_STORE, url);
 		if (ds) {

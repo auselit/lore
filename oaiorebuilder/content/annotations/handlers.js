@@ -34,9 +34,9 @@
  */
 
 
-
-/* Methods called by the topView (overlay.js) */
-
+//////////////////////////////////////////////////////////////////////
+/* Methods called by the topView (overlay.js, firefoxOverlay.xul) */
+//////////////////////////////////////////////////////////////////////
 /**
  * Show the annotations view. Notify of location change
  * if it happened and show page elements
@@ -45,7 +45,7 @@ lore.anno.ui.show = function () {
     lore.anno.ui.lorevisible = true;
     lore.debug.anno("handlers.js: lore.anno.ui.show");
 
-    if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' && lore.anno.ui.currentURL != '' && (!lore.anno.ui.loadedURL || lore.anno.ui.currentURL != lore.anno.ui.loadedURL)) {
+    if (lore.anno.ui.currentURL && lore.anno.ui.currentURL != 'about:blank' && lore.anno.ui.currentURL != '') {
         lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
     }
     lore.anno.ui.pageui.setContentsVisible(true);
@@ -155,9 +155,21 @@ lore.anno.ui.handleUpdateVariationAnnotationContext = function () {
     Ext.getCmp("treeview").doLayout();
 }
 
+lore.anno.ui.setPrefs = function (args) {
+    lore.anno.prefs.setPrefs(args);
+}
 
+/**
+ * From the XUL Overlay login/status button
+ */
+lore.anno.ui.handleLoginAnnotations = function() {
+    lore.anno.am.displayLoginWindow();
+    lore.debug.anno("handleLoginAnnotations()");
+}
+
+//////////////////////////////////////////////////////////////////////
 /* Form Editor Methods */
-
+//////////////////////////////////////////////////////////////////////
 /**
  * Hide the annotation editor
  */
@@ -355,10 +367,9 @@ lore.anno.ui.handleTreeNodeSelection = function (node, event) {
 }
 
 lore.anno.ui.handleTabChange = function(browser) {
-    lore.debug.anno("handers.js: handleTabChange()", {browser:browser});
-    // changed tab, no active annotation
     var currentURL = browser.currentURI.spec;
-    lore.anno.ui.handleLocationChange(currentURL);
+
+    lore.anno.ui.page.load(currentURL);
 }
 
 /**
@@ -372,54 +383,19 @@ lore.anno.ui.handleLocationChange = function (contextURL) {
     // only run when annotations are visibile and initialized
     if (!lore.anno.ui.initialized || !lore.anno.ui.lorevisible) return;
 
-    var initialLoad = (oldurl == lore.anno.ui.currentURL);
-
     lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
-
-    if (!initialLoad) {
-        try {
-            // store current page data, save current annotation data
-            lore.anno.ui.page.store(oldurl);
-            lore.anno.ui.updateAnnoFromForm();
-
-            // tag any unsaved annotations
-            lore.anno.annoMan.annodsunsaved.each(function (rec) {
-                try {
-                    var node = lore.anno.ui.findNode(rec.data.id + "-unsaved", lore.anno.ui.treeunsaved);
-                    if (!node) {
-                        lore.debug.anno("modified/new annotation not found in unsaved tree. This is incorrect. " + rec.data.id, rec.data);
-                        return;
-                    }
-
-                    var label = ' ';
-                    if (!lore.global.util.urlsAreSame(rec.data.resource, lore.anno.ui.currentURL)) {
-                        label = "Unsaved annotation from " + rec.data.resource;
-                    }
-                    node.setText(rec.data.title, label, null, lore.anno.ui.genTreeNodeText(rec.data));
-                } catch (e) {
-                    lore.debug.anno(e, e);
-                }
-            });
-
-            // loaded a new page, no active annotation
-            lore.anno.ui.page.setCurrentAnno();
-
-
-            // load new URL's page info
-            lore.anno.ui.page.load(contextURL);
-        } catch (e) {
-            lore.debug.anno(e, e);
-        }
-
-    } else {
-        if (lore.anno.ui.page) {
-            lore.anno.ui.page.clear();
-        } else {
-            lore.anno.ui.initPage(lore.anno.annoMan.annods);
-        }
-    }
-
+    
     try {
+        // store current page data, save current annotation data
+        lore.anno.ui.page.store(oldurl);
+        lore.anno.ui.updateAnnoFromForm();
+
+        // tag any unsaved annotations
+        lore.anno.ui.tagUnsavedAnnotations();
+
+        // load new URL's page info
+        lore.anno.ui.page.load(contextURL);
+
         // enable highlighting for the page
         lore.anno.ui.pageui.enableImageHighlighting();
 
@@ -434,9 +410,33 @@ lore.anno.ui.handleLocationChange = function (contextURL) {
     } catch (e) {
         lore.debug.anno(e, e);
     }
-
-    lore.anno.ui.loadedURL = contextURL;
 }
+
+/**
+ * Update the label on any unsaved annotations, to indicate they are for
+ * a different page.
+ */
+lore.anno.ui.tagUnsavedAnnotations = function () {
+    lore.anno.annoMan.annodsunsaved.each(function (rec) {
+        try {
+            var node = lore.anno.ui.findNode(rec.data.id + "-unsaved", lore.anno.ui.treeunsaved);
+            if (!node) {
+                lore.debug.anno("modified/new annotation not found in unsaved "
+                        + "tree. This is incorrect. " + rec.data.id, rec.data);
+                return;
+            }
+
+            var label = ' ';
+            if (!lore.global.util.urlsAreSame(rec.data.resource, lore.anno.ui.currentURL)) {
+                label = "Unsaved annotation from " + rec.data.resource;
+            }
+            node.setText(rec.data.title, label, null, lore.anno.ui.genTreeNodeText(rec.data));
+        } catch (e) {
+            lore.debug.anno(e, e);
+        }
+    });
+}
+
 
 lore.anno.ui.handleAnnotationsLoaded = function (numLoaded) {
     if (numLoaded > 0) {
@@ -444,23 +444,17 @@ lore.anno.ui.handleAnnotationsLoaded = function (numLoaded) {
     }
 }
 
-lore.anno.ui.setPrefs = function (args) {
-    lore.anno.prefs.setPrefs(args);
-}
-
 /**
  * When the page is refreshed, clear page data, re-enable highlighting
  * and clear the currently selected annotation
  */
 lore.anno.ui.handleContentPageRefresh = function () {
-    lore.debug.anno("page refreshed");
+    lore.debug.anno("Page refreshed");
 
     try {
-        if (lore.anno.ui.page) lore.anno.ui.page.clear();
-        else lore.anno.ui.initPage(lore.anno.annoMan.annods);
-
-        lore.anno.ui.pageui.enableImageHighlighting();
         lore.anno.ui.page.setCurrentAnno();
+        lore.anno.ui.page.clear();
+        lore.anno.ui.pageui.enableImageHighlighting();
         Ext.getCmp("annosourcestree").getSelectionModel().clearSelections();
     } catch (e) {
         lore.debug.anno("refreshPage(): " + e, e);
@@ -868,14 +862,6 @@ lore.anno.ui.handleCancelEditing = function () {
     lore.anno.ui.pageui.turnOffPageTripleMarkers();
     lore.anno.ui.hideAnnotationEditor();
     return;
-}
-
-/**
- * From the XUL Overlay login/status button
- */
-lore.anno.ui.handleLoginAnnotations = function() {
-    lore.anno.am.displayLoginWindow();
-    lore.debug.anno("handleLoginAnnotations()");
 }
 
 
