@@ -181,15 +181,16 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             colModel : new Ext.grid.ColumnModel({
                 columns : [{
                             header : 'Property Name',
-                            sortable : false,
                             dataIndex : 'name',
                             menuDisabled : true,
                             width: 70,
+                            scope: this,
                             renderer: this.renderFunction,
                  }, {
                             header : 'Value',
                             dataIndex : 'value',
                             menuDisabled : true,
+                            scope: this,
                             renderer: this.renderFunction, // in PropertyEditor
                             editor: new Ext.form.TriggerField({
                                  propertyEditor: this,
@@ -303,9 +304,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     			    		rec.data.id == "dcterms:created_0"))
     			    )){
     		
-    		return '<span style="color:grey;">' + val + "</span>"
+    		return '<span title="' + val + '" style="color:grey;">' + val + '</span>';
     	} else {
-    		return val;
+    		return '<span title="' + val + '">' + val + '</span>';
     	}
     },
     makeAddPropertyMenu: function (mp){
