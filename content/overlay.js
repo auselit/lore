@@ -72,7 +72,7 @@ try {
                     if ( lore.global.ui.compoundObjectView.loaded(loreoverlay.instId)) {
                         lore.global.ui.setCurrentURL(loreoverlay.instId, updateURI);
                         co.handleLocationChange(updateURI);
-                        loreoverlay.fireEvent("location_changed", [updateURI]); 
+                        loreoverlay.fireEvent("location_changed", [updateURI]);
                     }
                 } catch(e) {
                     alert("loreoverlay.onLocationChange: " + e + " " +  e.stack);
@@ -127,12 +127,15 @@ try {
                 
                 this.initialized = true;
                 this.strings = document.getElementById("lore-strings");
-                this.addEvents(["location_changed", "location_refresh"]);
+                this.addEvents(["location_changed", "location_refresh", "tab_changed"]);
                 lore.global.ui.load(window, this.instId);
                 
                 var self = this;
                 window.addEventListener("dragover", function(ev){self.onDragOver(ev);}, true);
                 window.addEventListener("dragdrop", function(ev){self.onDragDrop(ev);}, true);
+                
+                var container = gBrowser.tabContainer;
+                container.addEventListener("TabSelect", this.onTabSelected, false);
             } 
             catch (e) {
                 alert("loreoverlay.onLoad: " + e + "\n" + e.stack);
@@ -151,6 +154,14 @@ try {
             } catch(e) {
                 lore.debug.ui("loreoverlay.onClose: " + e);
             }
+        },
+        
+        /**
+         *
+         */
+        onTabSelected: function(event) {
+            var browser = gBrowser.selectedBrowser;
+            loreoverlay.fireEvent("tab_changed", [browser]);
         },
         
         /** 
