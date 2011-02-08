@@ -110,20 +110,26 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
 
     // private
     checkAuthentication : function(xhr, options) {
-        var jsObject = Ext.decode(xhr.responseText);
-        var authorities = jsObject.userAuthentication.principal.authorities;
-        var authorised = this.hasAuthority(authorities, this.ANNOTATOR_AUTHORITY);
+    	try {
+    		var principal = Ext.decode(xhr.responseText).userAuthentication.principal;
+            lore.debug.anno("checkAuthentication: ", principal);
+            var authorities = principal.authorities;
+            var authorised = this.hasAuthority(authorities, this.ANNOTATOR_AUTHORITY);
 
-        if (authorised) {
-            this.fireEvent('signedin');
-            if (typeof options.callIfAuthorised == 'function') {
-                options.callIfAuthorised();
+            if (authorised) {
+                this.fireEvent('signedin', jsObject.userAuthentication.principal.userName);
+                if (typeof options.callIfAuthorised == 'function') {
+                    options.callIfAuthorised();
+                }
+                return;
             }
-        } else {
-            this.fireEvent('signedout');
-            if (typeof options.callIfNotAuthorised == 'function') {
-                options.callIfNotAuthorised();
-            }
+    	} catch (e) {
+    		lore.debug.anno("AuthManager.js:checkAuthentication failed", e);
+    	}
+
+        this.fireEvent('signedout');
+        if (typeof options.callIfNotAuthorised == 'function') {
+            options.callIfNotAuthorised();
         }
     },
 
@@ -181,5 +187,14 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
         loginwindow.addEventListener('DOMWindowClose', function() {
                 t.isAuthenticated(callback);
         }, false);
+    },
+    
+    logout : function() {
+        Ext.Ajax.request({
+            url: this.LOGOUT_URL,
+            success: this.isAuthenticated,
+            method: 'GET',
+            scope: this
+         });
     }
 });
