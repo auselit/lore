@@ -583,7 +583,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         this.commandStack.execute(new draw2d.CommandAdd(this, fig, x, y));
         
         this.setCurrentSelection(fig);
-        // FIXME: workaround to ensure keyboard events work immediately
+        // workaround to ensure keyboard events work immediately
         Ext.getCmp('drawingarea').focus();
     },
     /** 
