@@ -170,22 +170,15 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		draw2d.Node.prototype.setDimension.call(this, w, h);
 		if (this.top_left) {
 			this.top_right.style.left = (this.width - this.cornerWidth) + "px";
-			this.bottom_right.style.left = (this.width - this.cornerWidth)
-					+ "px";
-			this.bottom_right.style.top = (this.height - this.cornerHeight)
-					+ "px";
-			this.bottom_left.style.top = (this.height - this.cornerHeight)
-					+ "px";
+			this.bottom_right.style.left = (this.width - this.cornerWidth) + "px";
+			this.bottom_right.style.top = (this.height - this.cornerHeight) + "px";
+			this.bottom_left.style.top = (this.height - this.cornerHeight) + "px";
 			this.textarea.style.width = (this.width - 2) + "px";
 			this.iframearea.style.width = (this.width - 2) + "px";
-			this.textarea.style.height = (this.height - this.cornerHeight * 2)
-					+ "px";
-			this.iframearea.style.height = (this.height - this.cornerHeight * 2 - 21)
-					+ "px";
-			this.header.style.width = (this.width - this.cornerWidth * 2)
-					+ "px";
-			this.footer.style.width = (this.width - this.cornerWidth * 2)
-					+ "px";
+			this.textarea.style.height = (this.height - this.cornerHeight * 2) + "px";
+			this.iframearea.style.height = (this.height - this.cornerHeight * 2 - 21) + "px";
+			this.header.style.width = (this.width - this.cornerWidth * 2) + "px";
+			this.footer.style.width = (this.width - this.cornerWidth * 2) + "px";
 			this.footer.style.top = (this.height - this.cornerHeight) + "px";
 			this.createPlusMinusIcon();
 		}
@@ -809,8 +802,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                 text: "Show in Slideshow view",
                 icon: "chrome://lore/skin/icons/picture_empty.png",
                 scope: this,
-                handler: function(evt){
-                	// TODO: don't hardcode the slideshow id
+                handler: function(evt){    	
 					Ext.getCmp("loreviews").activate("remslideview");
 					Ext.getCmp("newss").setActiveItem(this.url + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
                 }
