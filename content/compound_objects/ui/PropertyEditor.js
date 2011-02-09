@@ -294,7 +294,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     },
     /** Grey out rows that are not editable by the user */
 	renderFunction: function(val, cell, rec){
-    	lore.debug.ore("renderer " + val, [cell, rec]);
     	if (rec && rec.data && 
     			(rec.data.id == "dc:format_0" 
     				|| rec.data.id == "rdf:type_0"
