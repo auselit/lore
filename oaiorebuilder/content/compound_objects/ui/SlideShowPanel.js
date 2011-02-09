@@ -11,7 +11,13 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     bodyStyle: 'padding:3px',
     defaults: {
         border:false
-    },      
+    },   
+    /** jump to slide for a resource from the current compound object */
+    showResource: function(uri){
+    	Ext.getCmp("loreviews").activate(this.id);
+    	// The id of the active item has the containing compound object appended
+    	this.setActiveItem(uri + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
+    },
     /** 
      * Sets the slide to be displayed in the slideshow
      * @param {} i Number or id of the item to make active
