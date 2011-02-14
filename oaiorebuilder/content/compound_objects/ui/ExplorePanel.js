@@ -665,13 +665,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     		lore.debug.ore("problem in hideUnconnectedNodes",e);
     	}
     },
-    
     /** Initialize the explore view to display resources from the repository related to a compound object
      * @param {URI} id The URI of the compound object
      * @param {String} title Label to display for the compound object
      */
     showInExploreView : function (id, title, isCompoundObject){
-            //lore.debug.ore("ExplorePanel: show in explore view " + title);
+    		Ext.getCmp("loreviews").activate(this.id);
             try{
             this.clearExploreData();
             lore.ore.ui.vp.progress("Retrieving data for explore view");
