@@ -229,6 +229,9 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.setResourceURL(theurl);
 		this.setMimeType(theurl);
 	},
+	setModel : function(modelObj){
+		this.model = modelObj;
+	},
 	/**
 	 * Loads the content URL into the preview area
 	 */
@@ -782,7 +785,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Show in Resource List",
-                icon: "chrome://lore/skin/icons/application_view_list.png",
+                icon: "chrome://lore/skin/icons/table_edit.png",
                 scope: this,
                 handler: function(evt){
                 	Ext.getCmp("loreviews").activate("remlistview");
