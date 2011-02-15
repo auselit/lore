@@ -638,7 +638,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
             });
             this.contextmenu.add({
                 text: "Auto layout",
-                icon: "chrome://lore/skin/icons/graph_go.png",
+                icon: "chrome://lore/skin/icons/layout.png",
                 scope: this,
                 handler: function(evt){              	
                 	 this.doLayout(false);   
