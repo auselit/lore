@@ -382,6 +382,9 @@ try {
         loginAnnotations: function () {
             loreoverlay.annoView().handleLoginAnnotations();
         },
+        logoutAnnotations: function () {
+        	loreoverlay.annoView().handleLogoutAnnotations();
+        },
         /** Annotations Toolbar button handler: Trigger removing an annotation */
         removeAnnotation: function() {
             try {
@@ -782,17 +785,23 @@ try {
             
         },
         
-        setAnnotationsSignedIn: function() {
+        setAnnotationsSignedIn: function(username) {
             lore.debug.anno("setAnnotationsSignedIn()");
             var authStatusIcon = document.getElementById("auth-status-icon");
             authStatusIcon.className = 'signed-in';
-            authStatusIcon.tooltipText = "Signed in to Annotation Server";
+            authStatusIcon.tooltipText = "Signed in to Annotation Server as " + username;
+            var authButton = document.getElementById("auth-signout");
+            authButton.label = "Sign Out " + username;
+            authButton.hidden = false;
+            document.getElementById("auth-signin").hidden = true;
         },
         
         setAnnotationsSignedOut: function() {
             var authStatusIcon = document.getElementById("auth-status-icon");
             authStatusIcon.className = '';
             authStatusIcon.tooltipText = "Signed Out";
+            document.getElementById("auth-signout").hidden = true;
+            document.getElementById("auth-signin").hidden = false;
         }
         
     };

@@ -1,19 +1,19 @@
 /*
  * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
- * 
+ *
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
  * project.
- * 
+ *
  * LORE is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,14 +27,14 @@
 
 /*
  * A contentEditable in firefox defaults to applying formatting as css.
- * 
+ *
  * This causes troubles when annotations are saved and reloaded, since
  * the css is stripped out for security reasons.
- * 
+ *
  * The Ext HtmlEditor control is supposed to change this 'styleWithCSS'
  * setting, but for some reason it wasn't sticking. This override applies
  * the setting before each command is executed on the contentEditable.
- * 
+ *
  * Trac ticket #249
  */
 // Runs before the existing execCmd function
@@ -45,7 +45,7 @@ Ext.intercept(Ext.form.HtmlEditor.prototype, 'execCmd', function() {
 
 
 /**
- * EditorPanel 
+ * EditorPanel
  * Extends a regular Ext Form Panel adding a host of components
  * and default behaviours for editing annotations
  * @class lore.anno.ui.EditorPanel
@@ -97,7 +97,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						hiddenName: 'type',
 						store: new Ext.data.SimpleStore({
 							fields: ['typename', 'qtype'],
-							data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ], 
+							data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ],
 							['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"],
 							['Austlit Metadata',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#MetadataAnnotation" ]]
 						}),
@@ -341,7 +341,11 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						xtype: "annopropertyeditor",
 						anchor: '-30',
 						hidden: true
-					}],
+					}, {
+                        fieldLabel: 'Private',
+                        xtype: 'checkbox',
+                        name: 'privateAnno'
+                    }],
 					buttons: this.buttonsConfig ? this.buttonsConfig : []
 				}]
 			};
@@ -460,7 +464,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		 	this.rdfaManager.load(lore.global.util.getContentWindow(window));
 
             var panel = this;
- 
+
 			// callback, when a triple is chosen. Update field with supplied triple.
 			var setFormField = function (isObject, triple) {
 				lore.anno.ui.updateAnnoFromForm();
@@ -625,7 +629,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 
 			this.rec = rec;
 			this.form.loadRecord(rec);
-		} 
+		}
 		catch (e) {
 			lore.debug.anno("Error display annotation: " + e, e);
 		}
@@ -678,7 +682,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	/**
 	 * When the record is updated, update the editor
 	 * @param {Object} store	 The data store
-	 * @param {Object} rec		 The record 
+	 * @param {Object} rec		 The record
 	 * @param {Object} operation The operation performed
 	 */
 	handleRecordUpdate: function (store, rec, operation ) {
@@ -715,8 +719,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	 * @param {Object} args
 	 */
 	handlePrefsChanged: function(args) {
-		// update scholarly fields 
-		if (this.isVisible()) 
+		// update scholarly fields
+		if (this.isVisible())
 				this.showScholarlyFields(args.mode === lore.constants.ANNOMODE_SCHOLARLY);
 
         this.metadataOntologyURL = args.metadataOntologyURL;

@@ -27,13 +27,14 @@
         <checkbox label="&filelogging.label;" preference="filelogging_pref" />
     </groupbox>
   </prefpane>
-  
+
   <prefpane image="chrome://lore/skin/icons/wrench_orange.png" id="anno-prefs" label="&anno.label;" style="width:350px">
     <preferences>
       <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
       <preference id="annocachetimeout_pref" name="extensions.lore.annocache_timeout" type = "int" />
       <preference id="annotation_mode" name="extensions.lore.annotationmode" type="bool" />
       <preference id="annometa_onturl_pref" name="extensions.lore.annotationMetadataOntologyURL" type="unichar"/>
+      <preference id="annocreateprivate_pref" name="extensions.lore.createprivateannotations" type="boolean" />
     </preferences>
         <label control="text_annometaonturl">&annometaontology.label;</label>
         <textbox id="text_annometaonturl" preference="annometa_onturl_pref"/>
@@ -43,6 +44,7 @@
         </groupbox>
         <label control="text_annocachetimeout">&annocachetimeout.label;</label><textbox id="text_annocachetimeout" preference="annocachetimeout_pref" />
         <checkbox label="&annotation_mode.label;" preference="annotation_mode" />
+        <checkbox label="&annotation_create_private.label;" preference="annocreateprivate_pref" />
   </prefpane>
   <prefpane image="chrome://lore/skin/icons/wrench_orange.png" id="co-prefs" label="&co.label;" style="width:350px">
      <preferences>
@@ -68,7 +70,7 @@
       </radiogroup>
      </groupbox>
   </prefpane>
-  
+
   <prefpane image="chrome://lore/skin/icons/wrench_orange.png" id="tm-pref" label="&tm.label;" style="width:350px">
     <preferences>
       <preference id="tmkey_pref" name="extensions.lore.tmkey" type="unichar" />

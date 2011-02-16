@@ -1,19 +1,19 @@
 /*
  * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
- * 
+ *
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
  * project.
- * 
+ *
  * LORE is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,7 +27,7 @@
  */
 lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 	// adapated from Danno Client code dannotate.js
-		
+
 		/**
 		 * Load annotation configuration items and generate id for annotation
 		 * @param {Object} config
@@ -36,19 +36,19 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			Ext.apply(this, config);
 			this.id  = "#new" + Math.uuid();
 		},
-		
+
 		/**
 		 * If rdf property supplied read in RDF and convert to name value pairs as properties
 		 * of class
 		 * @constructor
 		 * @param {String} rdf The RDF
 		 * @param {XMlDoc} xmldoc The complete document, used for grabbing unnamed RDF sets
-		 * @param {Boolean} bodyEmbedded Whether the body value is embedded in the RDF or simply a URL to the body 
+		 * @param {Boolean} bodyEmbedded Whether the body value is embedded in the RDF or simply a URL to the body
 		 */
 		constructor: function(rdf, xmldoc, bodyEmbedded){
-		
+
 		if (!rdf)
-			return; 
+			return;
 		var tmp;
 		var node;
 		var attr;
@@ -72,7 +72,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			}
 			var isReply = false;
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'type');
-			
+
 			for (var i = 0; i < node.length; i++) {
 				attr = node[i].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 				if (attr) {
@@ -84,30 +84,30 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                      */
 					this.type = tmp;
 				}
-				else 
+				else
 					if (tmp.indexOf(lore.constants.NAMESPACES["annoreply"]) == 0) {
 						this.type = tmp;
 					}
-					else 
+					else
 						if (tmp.indexOf(lore.constants.NAMESPACES["vanno"]) == 0) {
 							this.type = tmp;
 						}
-						else 
+						else
 							if (tmp.indexOf(lore.constants.NAMESPACES["thread"]) == 0) {
 								isReply = true;
 							}
-				
+
 			}
             /** @property isReply
              * @type boolean
              * Indicates whether this is a reply type of Annotation
              */
 			this.isReply = isReply;
-			
+
 			if (!this.isReply) {
-				// resource is a url	
+				// resource is a url
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'annotates');
-				
+
 				attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 				if (attr) {
                     /** @property resource
@@ -118,11 +118,11 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 				this.about = null;
 			}
 			else {
-				
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'root');
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-					
+
 					if (attr) {
 						this.resource = attr.nodeValue;
 					}
@@ -138,9 +138,9 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 					}
 				}
 			}
-			
+
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'body');
-			
+
 			if (!bodyEmbedded) {
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
@@ -154,7 +154,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			} else {
 				var node = node[0].getElementsByTagName('body');
 				if ( node[0]) {
-					 
+
 					var serializer = new XMLSerializer();
 					var bodyText = serializer.serializeToString(node[0]);
                     /** @property body
@@ -174,15 +174,23 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
              * From Annotea created (the date and time when the annotation was created)
              */
 			this.created = lore.global.util.safeGetFirstChildValue(node);
-            
+
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
             /** @property modified
              * From Annotea modified (the date and time when the annotation was last modified)
              */
 			this.modified = lore.global.util.safeGetFirstChildValue(node);
-			
+
 			this.createdOrModified = (this.modified == '') ? this.created : this.modified;
-			
+
+
+            /**
+             * @property privateAnno
+             * Is this annotation 'private', ie, only visible to the current user
+             */
+            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES['vanno'], 'private');
+            this.privateAnno = lore.global.util.safeGetFirstChildValue(node) === 'true';
+
 			this.meta = { context: null, fields: []};
 			if (this.isReply) {
 				this.context = '';
@@ -192,49 +200,49 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                  * From Annotea context
                  */
 				this.context = lore.global.util.normalizeXPointer(lore.global.util.safeGetFirstChildValue(node));
-				
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
 				if (node && node.length > 0) {
 					this.meta.context = lore.global.util.safeGetFirstChildValue(node);
-					
-					this.meta.context = this.meta.context.split('\n');	
+
+					this.meta.context = this.meta.context.split('\n');
 				}
 				//TODO: #194 - Enable code to read in semantic facts added, once changes to backend and UI have been done
 //				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'semantic-context');
 //				if (node && node.length > 0) {
 //					this.semantictriple = {};
-//					
+//
 //					var node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'subject');
 //					this.semantictriple.subject = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
-//					
+//
 //					node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'predicate');
 //					this.semantictriple.property = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
-//					
+//
 //					node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'object');
 //					this.semantictriple.object = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
 //				}
-				
+
 			}
-			
-						
+
+
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'creator');
             /** @property creator
              * dc:creator of the annotation
              */
 			this.creator = lore.global.util.safeGetFirstChildValue(node, 'anon');
-			
+
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'title');
             /** @property title
              * dc:title of the annotation
              */
 			this.title = lore.global.util.safeGetFirstChildValue(node);
-			
+
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'language');
             /** @property lang
              * dc:lang of the annotation
              */
 			this.lang = lore.global.util.safeGetFirstChildValue(node);
-			
+
 			// get tags
 			this.tags = "";
 			node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'tag');
@@ -251,7 +259,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 					Ext.getCmp('tagselector').fireEvent('newitem', Ext.getCmp('tagselector'), tagval);
 				}
 				if (tagval) {
-					if (j > 0) 
+					if (j > 0)
 						this.tags += ",";
                         /** @property tags
                          * Tags attached to the annotation
@@ -259,7 +267,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 					this.tags += tagval;
 				}
 			}
-			
+
 			// Additional fields for variation annotations only
 			if (this.type.match(lore.constants.NAMESPACES["vanno"])) {
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant');
@@ -275,7 +283,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 						this.variant = attr.nodeValue;
 					}
 				}
-                
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original');
 				if (node[0]) {
 					attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
@@ -286,13 +294,13 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 						this.original = attr.nodeValue;
 					}
 				}
-                
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original-context');
                 /** @property originalcontext
                  * For a VariationAnnotation, the context associated with the {@link #original} resource
                  */
 				this.originalcontext = lore.global.util.safeGetFirstChildValue(node);
-                
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant-context');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised-context');
@@ -301,19 +309,19 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                  * For a VariationAnnotation, the context associated with the {@link #variant} resource
                  */
 				this.variantcontext = lore.global.util.safeGetFirstChildValue(node);
-                
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-agent');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-agent');
 				}
 				this.variationagent = lore.global.util.safeGetFirstChildValue(node);
-                
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-place');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-place');
 				}
 				this.variationplace = lore.global.util.safeGetFirstChildValue(node);
-                
+
 				node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-date');
 				if (node.length == 0) {
 					node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-date');
@@ -323,13 +331,13 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			if (!this.original) {
 				this.original = this.resource;
 			}
-		} 
+		}
 		catch (ex) {
 			lore.debug.anno("Error parsing RDF" +
 			(this.id ? ' for ' + this.id : ''), ex);
 		}
 	},
-	
+
     toString: function(){
             return "Annotation [" + this.id + "," +
             (this.modified ? this.modified : this.created) +
@@ -339,13 +347,13 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
     },
 	/**
 	 * Determine whether an annotation is new, and is not in the respository
-	 * @param {Object} anno An Annotation object or an Ext Record object 
-	 * @return {Boolean} 
+	 * @param {Object} anno An Annotation object or an Ext Record object
+	 * @return {Boolean}
 	 */
 	 isNew : function () {
 		return this.id.indexOf("#new") == 0;
 	},
-	
+
 	/**
 	 * Determine whether an annotation has any replies
 	 * @param {Object} anno The annotation to test against
@@ -354,7 +362,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 	 hasChildren : function () {
 		return this.replies && this.replies.count >0;
 	}
-	
+
 });
 
 /**
@@ -362,13 +370,13 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
  * @class lore.anno.RDFAnnotationSerialize
  */
 lore.anno.RDFAnnotationSerializer  = function () {
-	
+
 }
 
 lore.anno.RDFAnnotationSerializer.prototype = {
 	/**
-	 * Generate the RDF for an array of annotations  
-	 * @param {Array} annos An array of records or Annotation objects 
+	 * Generate the RDF for an array of annotations
+	 * @param {Array} annos An array of records or Annotation objects
 	 * @param {Object} storeDates (Optional) Specify whethere dates are to be stored in the RDF. Defaults to false
 	 * @return {String} The RDF that was generated
 	 */
@@ -376,27 +384,27 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 	serialize: function ( annos, store, storeDates ) {
 		if (!annos.length )
 			annos = [annos];
-		
-		
+
+
 		var rdfxml = "<?xml version=\"1.0\" ?>";
 		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '">';
-		
+
 		for (var i = 0; i < annos.length; i++) {
 			var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
 			var anno = {};
-			
+
 			for (var e in annoOrig) {
 				var val = annoOrig[e];
 				if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
 					anno[e] = val.replace(/&/g, '&amp;');
 				}
-				else 
+				else
 					anno[e] =val;
-				
+
 			}
-			
+
 			lore.debug.anno('Serializing to RDF/XML', {anno:anno});
-			
+
 			rdfxml += '<rdf:Description';
 			if (annoOrig.id && !annoOrig.isNew() ) {
 				rdfxml += ' rdf:about="' + anno.id + '"';
@@ -412,10 +420,10 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 			if (annoOrig.type) {
 				rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
 			}
-			
+
 			if (annoOrig.isReply) {
 				rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-				
+
 				var rootannonode = lore.global.util.findRecordById(store, annoOrig.about);
 				if (rootannonode) {
 					while (rootannonode.data.isReply) {
@@ -426,9 +434,9 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				else {
 					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
 				}
-				
+
 			} else {
-				
+
 				if (annoOrig.variant) {
 					rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
 					'" rdf:resource="' +
@@ -446,9 +454,9 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				}
 				// also send variant as annotates for backwards compatability with older
 				// clients
-				
+
 			}
-			
+
 			if (annoOrig.lang) {
 				rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
 				anno.lang +
@@ -479,7 +487,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.context +
 				'</context>';
 			}
-			
+
 			if (annoOrig.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
 				if (annoOrig.originalcontext) {
 					rdfxml += '<original-context xmlns="' +
@@ -533,7 +541,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 			}
 			if (annoOrig.tags) {
 				var tagsarray = anno.tags.split(',');
-				
+
 				for (var ti = 0; ti < tagsarray.length; ti++) {
 					var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
 					rdfxml += '<tag xmlns="' + lore.constants.NAMESPACES["vanno"] + '"';
@@ -545,14 +553,14 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 					}
 				}
 			}
-			
+
 			if ( annoOrig.scholarly) {
 				if ( annoOrig.scholarly.references) {
 					rdfxml += '<references xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
 					rdfxml += anno.scholarly.references;
-					rdfxml += '</references>'; 
+					rdfxml += '</references>';
 				}
-				
+
 				if ( annoOrig.scholarly.importance) {
 					rdfxml += '<importance xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
 					rdfxml += anno.scholarly.importance;
@@ -560,26 +568,31 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				}
 			}
 
+            if (annoOrig.privateAnno) {
+                rdfxml += '<private xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
+                rdfxml += 'true';
+                rdfxml += '</private>';
+            }
 //			if (annoOrig.semantictriple) {
 //				var doc = document.implementation.createDocument("","",null);
 //				var semanticContext = doc.createElementNS(lore.constants.NAMESPACES["vanno"], 'semantic-context');
 //				var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['rdf'], 'rdf:Statement');
-//				
+//
 //				var rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:subject');
 //				rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.subject);
 //				rdfStatement.appendChild(rdfEl);
-//				
+//
 //				rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:predicate');
 //				rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.property);
 //				rdfStatement.appendChild(rdfEl);
-//				
+//
 //				rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:object');
 //				rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.object);
-//				
+//
 //				semanticContext.appendChild(rdfStatement);
 //				rdfStatement.appendChild(rdfEl);
 //				doc.appendChild(semanticContext);
-//				
+//
 //				var serializer = new XMLSerializer();
 //				rdfxml += serializer.serializeToString(doc);
 //			}
@@ -589,15 +602,15 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				var doc = document.implementation.createDocument("","",null);
 				var body = doc.createElementNS(lore.constants.NAMESPACES["annotea"], 'body');
 				doc.appendChild(body);
-				
+
 				var rdfDesc = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:Description');
 				body.appendChild(rdfDesc);
-				
+
 				var node = doc.createElementNS(lore.constants.NAMESPACES["http"], 'ContentType');
 				var textNode = doc.createTextNode('application/rdf+xml');
 				node.appendChild(textNode);
 				rdfDesc.appendChild(node);
-				
+
 				body = doc.createElementNS(lore.constants.NAMESPACES["http"], 'Body');
 				body.setAttribute('rdf:parseType', 'Literal');
 				rdfDesc.appendChild(body);
@@ -607,7 +620,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				node = this.createMetaRDFBody(annoOrig);
 				node = doc.importNode(node, true);
 				body.appendChild(node);
-				
+
 				var serializer = new XMLSerializer();
 				rdfxml += serializer.serializeToString(doc);
 			} else {
@@ -616,34 +629,34 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 					'">' + this.createHtmlBodyRDF(anno.title, anno.body) + '</body>';
 				}
 			}
-			
+
 			rdfxml += '</rdf:Description>';
 		}
 		rdfxml += '</rdf:RDF>';
-		
+
 		return rdfxml;
 	},
-    
-    
-	
+
+
+
 	createMetaRDFBody: function(anno) {
 		var meta = anno.meta;
 		var metaContext = anno['semanticEntity'];
 		var metaType = anno['semanticEntityType'];
-		
+
 		var doc = document.implementation.createDocument("","",null);
-		
+
 		var node = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:RDF');
 		doc.appendChild(node);
-		
+
 		var body = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:Description');
 		body.setAttributeNS(lore.constants.NAMESPACES["rdf"], 'rdf:about', metaContext);
 		node.appendChild(body);
-		
+
 		var type = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:type');
 		type.setAttributeNS(lore.constants.NAMESPACES["rdf"], 'rdf:resource', metaType);
 		body.appendChild(type);
-		
+
 		for (var i = 0; i < meta.length; i++) {
 				var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['austlit'], meta[i].name);
 				var textNode = doc.createTextNode(meta[i].value);
@@ -653,7 +666,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 		return node;
 	},
 	/**
-	 * Generate RDF for annotation body 
+	 * Generate RDF for annotation body
 	 * @param {String} title Annotation Title
 	 * @param {String} body Annotation Body
 	 */
@@ -673,7 +686,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				'</body></html>' +
 				'</Body></rdf:Description>';
 	}
-	
+
 }
 
 /**
@@ -681,13 +694,13 @@ lore.anno.RDFAnnotationSerializer.prototype = {
  * @class lore.anno.OACAnnotationSerialize
  */
 lore.anno.OACAnnotationSerializer  = function () {
-	
+
 }
 
 lore.anno.OACAnnotationSerializer.prototype = {
 	/**
-	 * Generate the OAC RDF for an array of annotations  
-	 * @param {Array} annos An array of records or Annotation objects 
+	 * Generate the OAC RDF for an array of annotations
+	 * @param {Array} annos An array of records or Annotation objects
 	 * @param {Object} storeDates (Optional) Specify whethere dates are to be stored in the OAC RDF. Defaults to false
 	 * @return {String} The RDF that was generated
 	 */
@@ -696,25 +709,25 @@ lore.anno.OACAnnotationSerializer.prototype = {
 		if (!annos.length )
 			annos = [annos];
 		var appendxml;
-		
+
 		var rdfxml = "<?xml version=\"1.0\" ?>";
 		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '" '
 				+ ' xmlns:oac="' + lore.constants.NAMESPACES["oac"] + '">';
-		
+
 		for (var i = 0; i < annos.length; i++) {
 			var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
 			var anno = {};
-			
+
 			for (var e in annoOrig) {
 				var val = annoOrig[e];
 				if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
 					anno[e] = val.replace(/&/g, '&amp;');
 				}
-				else 
+				else
 					anno[e] =val;
-				
+
 			}
-			
+
 			appendxml = '';
 			rdfxml += '<oac:Annotation';
 			if (annoOrig.id && !annoOrig.isNew() ) {
@@ -732,11 +745,11 @@ lore.anno.OACAnnotationSerializer.prototype = {
 				rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
 			}
 			*/
-			
-			
+
+
 			if (annoOrig.isReply) {
 				rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-				
+
 				var rootannonode = lore.global.util.findRecordById(store, annoOrig.about);
 				if (rootannonode) {
 					while (rootannonode.data.isReply) {
@@ -747,15 +760,15 @@ lore.anno.OACAnnotationSerializer.prototype = {
 				else {
 					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
 				}
-				
+
 			}
-				
+
 
 			// also send variant as annotates for backwards compatability with older clients
-			
-			
+
+
 			if (annoOrig.creator) {
-				rdfxml += 
+				rdfxml +=
 				'<creator xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
 					+ '<Agent xmlns="' + lore.constants.NAMESPACES["foaf"] + '">'
 						+ '<name xmlns="' + lore.constants.NAMESPACES["foaf"] + '">'
@@ -763,7 +776,7 @@ lore.anno.OACAnnotationSerializer.prototype = {
 						+ '</name></Agent>'
 				+ '</creator>';
 			}
-			
+
 			if (annoOrig.lang) {
 				rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
 				anno.lang +
@@ -784,74 +797,74 @@ lore.anno.OACAnnotationSerializer.prototype = {
 				rdfxml += '<modified xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
 						+ anno.modified.toString() + '</modified>';
 			}
-			
-			
-			
+
+
+
 			if (annoOrig.isReply) {
 				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/repliesTo"/>';
 				rdfxml += '<oac:hasTarget rdf:resource="' + anno.about + '"/>';
-								
+
 			} else if (annoOrig.variant) {
 				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/annotates"/>';
 				rdfxml += '<oac:hasTarget xmlns="' + lore.constants.NAMESPACES["annotea"] +
 					'" rdf:resource="' +
 					anno.original + '"/>';
 				var curURN = 'urn:uuid:' + Math.uuid();
-				
+
 				rdfxml += '<oac:hasTargetContext>'
 						+ '<oac:TargetContext>'
 							+ '<oac:contextAbout rdf:resource="' + anno.original + '"/>'
 							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
 						+ '</oac:TargetContext></oac:hasTargetContext>';
-					
-				appendxml += 
+
+				appendxml +=
 					'<oac:SegmentDescription rdf:about="' + curURN + '">'
 						+ '<rdf:value>' + anno.originalcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';	
-					
-					
+					+ '</oac:SegmentDescription>';
+
+
 				rdfxml += '<oac:hasTarget xmlns="' + lore.constants.NAMESPACES["annotea"] +
 					'" rdf:resource="' +
 					anno.variant + '"/>';
-					
+
 				var curURN = 'urn:uuid:' + Math.uuid();
-				
+
 				rdfxml += '<oac:hasTargetContext>'
 						+ '<oac:TargetContext>'
 							+ '<oac:contextAbout rdf:resource="' + anno.variant + '"/>'
 							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
 						+ '</oac:TargetContext></oac:hasTargetContext>';
-					
-				appendxml += 
+
+				appendxml +=
 					'<oac:SegmentDescription rdf:about="' + curURN + '">'
 						+ '<rdf:value>' + anno.variantcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';	
+					+ '</oac:SegmentDescription>';
 			} else {
 				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/annotates"/>';
-				rdfxml += '<oac:hasTarget rdf:resource="' 
+				rdfxml += '<oac:hasTarget rdf:resource="'
 					+ anno.resource	+ '"/>';
-				
+
 				var curURN = 'urn:uuid:' + Math.uuid();
-				
+
 				rdfxml += '<oac:hasTargetContext>'
 						+ '<oac:TargetContext>'
 							+ '<oac:contextAbout rdf:resource="' + anno.resource + '"/>'
 							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
 						+ '</oac:TargetContext></oac:hasTargetContext>';
-					
-				appendxml += 
+
+				appendxml +=
 					'<oac:SegmentDescription rdf:about="' + curURN + '">'
 						+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
-					+ '</oac:SegmentDescription>';	
+					+ '</oac:SegmentDescription>';
 			}
-			
-			
-			
+
+
+
 
 			if (annoOrig.body != null) {
 				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
 				rdfxml +=
-				'<oac:hasContent>' 
+				'<oac:hasContent>'
 					+ '<oac:Note>'
 						+ '<oac:body rdf:parseType="Literal">'
 						+  anno.body
@@ -861,40 +874,40 @@ lore.anno.OACAnnotationSerializer.prototype = {
 			}
 
 			rdfxml += '</oac:Annotation>';
-			
+
 			rdfxml += appendxml;
 			if (annoOrig.variant) {
-				appendxml += 
+				appendxml +=
 					'<oac:SegmentDescription>'
 						+ '<rdf:value>' + anno.originalcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';	
-				appendxml += 
+					+ '</oac:SegmentDescription>';
+				appendxml +=
 					'<oac:SegmentDescription>'
 						+ '<rdf:value>' + anno.variantcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';	
-			} else {		
+					+ '</oac:SegmentDescription>';
+			} else {
 			}
-			
-			
+
+
 		}
 		rdfxml += '</rdf:RDF>';
-		
+
 		return rdfxml;
 	},
-	
+
 	convertImageRangeXpointerToMediaFragment: function(/*string*/xpointer) {
 		if (!lore.global.util.isXPointerImageRange(xpointer))
 			return xpointer;
-		
+
 		var decoded = lore.global.util.decodeImageRangeXPointer(xpointer);
 		var x = decoded.coords.x1,
 		    y = decoded.coords.y1,
 		    w = decoded.coords.x2 - x,
 		    h = decoded.coords.y2 - y;
-		    
-		
-		
+
+
+
 		return decoded.imgUrl + '#xywh=' + [x,y,w,h].join(',');
 	}
-	
+
 }

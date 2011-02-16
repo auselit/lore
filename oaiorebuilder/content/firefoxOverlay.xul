@@ -37,7 +37,12 @@
 		    	
           <xul:toolbar id="anno-toolbar">
             <xul:toolbarbutton style="font-weight:bolder" label="&lore.annoLabel;"  tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()" />
-            <xul:toolbarbutton id="auth-status-icon" tooltiptext="&lore.authStatusTip;" oncommand="loreoverlay.loginAnnotations();"/>
+            <xul:toolbarbutton type="menu" id="auth-status-icon" tooltiptext="&lore.authStatusTip;">
+            	<xul:menupopup>
+            		<xul:menuitem id="auth-signin" label="Sign In" oncommand="loreoverlay.loginAnnotations();"/>
+            		<xul:menuitem id="auth-signout" label="Sign Out" oncommand="loreoverlay.logoutAnnotations();" hidden="true"/>
+            	</xul:menupopup>
+            </xul:toolbarbutton>
             <xul:toolbarseparator />
             <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
             <xul:toolbarbutton id="remove-annotation" tooltiptext="&lore.removeAnnotationTip;" oncommand="loreoverlay.removeAnnotation();" />

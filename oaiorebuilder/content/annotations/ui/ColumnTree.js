@@ -230,7 +230,7 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
     focus : Ext.emptyFn,
     
     /**
-     * When text on the nodel changes update the HTML 
+     * When text on the model changes update the HTML 
      * @param {Object} txtfield
      */
     onTextChange : function( txtfield) {
@@ -299,7 +299,10 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
          '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',
              (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), '" />', 
          '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'">',
-         '<div class="x-tree-col-div-general">',  n.title, '</div>',
+         '<div class="x-tree-col-div-general">',
+         '<img src="' + this.emptyIcon + '" class="x-tree-node ', (a.privateAnno ? 'anno-icon-private' : ''), '"/>',
+         		n.title,
+         	'</div>',
          '<div class="x-tree-node-bheader x-tree-col-div-general">', (n.bheader ?  n.bheader:''),'</div>',
          '<div class="x-tree-col-text x-tree-col-div-general">',txt, '</div>',
          '<div class="x-tree-node-bfooter x-tree-col-div-general">', n.bfooter || ' ', '</div>',
@@ -334,8 +337,8 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
         this.ecNode = cs[1];
         this.iconNode = cs[2];
         this.bodyNode = cs[3];
-        this.titleNode = cs[3].firstChild;
-        this.bHeaderNode = this.titleNode.nextSibling;
+        this.titleNode = cs[3].firstChild.childNodes[1];
+        this.bHeaderNode = cs[3].childNodes[1];
         this.anchor = this.textNode = this.bHeaderNode.nextSibling;
         this.bFooterNode = this.textNode.nextSibling;
         
@@ -715,48 +718,47 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
     },
     
     handleRemove : function(store, rec, index) {
-            try {
-                var node = lore.anno.ui.findNode(rec.data.id + this.postfix, this);
-                if (node) {
-                    node.remove();
-                } else {
-                    lore.debug.anno("node not found to remove: " + rec.data.id, this);
-                }
-            } 
-            catch (e) {
-                lore.debug.ui("Error removing annotation from tree view: " + e, e);
+        try {
+            var node = lore.anno.ui.findNode(rec.data.id + this.postfix, this);
+            if (node) {
+                node.remove();
+            } else {
+                lore.debug.anno("node not found to remove: " + rec.data.id, this);
             }
-        },
-        
-        
+        } 
+        catch (e) {
+            lore.debug.ui("Error removing annotation from tree view: " + e, e);
+        }
+    },
+    
     handleUpdate : function(store, rec, operation){
-            try {
-                var ui = lore.anno.ui;
-                var node = ui.findNode(rec.data.id + this.postfix, this);
-                
-                if (!node) {
-                    return;
-                }
-                var info = ' ';
-                
-             
-                if (!lore.global.util.urlsAreSame(rec.data.resource, ui.currentURL)) {
-                    info = "Unsaved annotation from " + rec.data.resource + " ";
-                }
-                
-                if (!rec.data.isNew()) {
-                    info = info + ui.genAnnotationCaption(rec.data, 'by c, d r')
-                }
-                
-                
-                
-                node.setText(rec.data.title, info, ui.genTagsHtml(rec.data.tags), ui.genTreeNodeText(rec.data));
-                
-            } 
-            catch (e) {
-                lore.debug.ui("Error updating annotation tree view: " + e, e);
+        try {
+            var ui = lore.anno.ui;
+            var node = ui.findNode(rec.data.id + this.postfix, this);
+            
+            if (!node) {
+                return;
             }
-        },
+            var info = ' ';
+            
+         
+            if (!lore.global.util.urlsAreSame(rec.data.resource, ui.currentURL)) {
+                info = "Unsaved annotation from " + rec.data.resource + " ";
+            }
+            
+            if (!rec.data.isNew()) {
+                info = info + ui.genAnnotationCaption(rec.data, 'by c, d r')
+            }
+            
+            
+            
+            node.setText(rec.data.title, info, ui.genTagsHtml(rec.data.tags), ui.genTreeNodeText(rec.data));
+            
+        } 
+        catch (e) {
+            lore.debug.ui("Error updating annotation tree view: " + e, e);
+        }
+    },
         
     /**
      * Notification function called when a clear operation occurs in the store.
@@ -786,7 +788,6 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
    
     /**
     * Set the intial config values for text, uri etc from the model object
-   
     */
    initConfig: function(){
         try {
@@ -796,6 +797,7 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
             Ext.apply(this.config, {
                 id: anno.id + ( this.config.postfix ? this.config.postfix:''),
                 iconCls: iCls,
+                privateAnno: anno.privateAnno,
                 title: lore.anno.ui.getAnnoTitle(anno),
                 uiProvider: lore.anno.ui.ColumnTreeNodeUI,
                 nodeType: anno.type                

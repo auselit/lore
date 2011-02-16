@@ -38,6 +38,9 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
 			 */
 			'signedout');
         this.prefs = config.prefs;
+        
+        // Tracks signed in state, to prevent superfluous event firing
+        this.signedIn = false;
 
         // Find Emmet URLs
         this.prefs.on('prefs_changed', this.reloadEmmetUrls, this);
@@ -82,7 +85,7 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
         Ext.Ajax.request({
            url: this.EMMET_URL,
            success: this.checkAuthentication,
-           failure: this.fireEvent.createDelegate(this,['signedout']),
+           failure: this.fireSignedOut.createDelegate(this),
            method: 'GET',
            params: { action: 'fetchAuthentication',
                      format: 'json' },
@@ -99,7 +102,7 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
         Ext.Ajax.request({
            url: this.EMMET_URL,
            success: this.checkAuthentication,
-           failure: this.fireEvent.createDelegate(this,['signedout']),
+           failure: this.fireSignedOut.createDelegate(this),
            method: 'GET',
            params: { action: 'fetchAuthentication',
                      format: 'json' },
@@ -111,13 +114,13 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
     // private
     checkAuthentication : function(xhr, options) {
     	try {
-    		var principal = Ext.decode(xhr.responseText).userAuthentication.principal;
+            var principal = Ext.decode(xhr.responseText).userAuthentication.principal;
             lore.debug.anno("checkAuthentication: ", principal);
             var authorities = principal.authorities;
             var authorised = this.hasAuthority(authorities, this.ANNOTATOR_AUTHORITY);
 
             if (authorised) {
-                this.fireEvent('signedin', jsObject.userAuthentication.principal.userName);
+            	this.fireSignedIn(principal.userName);
                 if (typeof options.callIfAuthorised == 'function') {
                     options.callIfAuthorised();
                 }
@@ -127,7 +130,7 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
     		lore.debug.anno("AuthManager.js:checkAuthentication failed", e);
     	}
 
-        this.fireEvent('signedout');
+        this.fireSignedOut();
         if (typeof options.callIfNotAuthorised == 'function') {
             options.callIfNotAuthorised();
         }
@@ -196,5 +199,19 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
             method: 'GET',
             scope: this
          });
+    },
+    
+    fireSignedIn : function(userName) {
+    	if (!this.signedIn) {
+    		this.signedIn = true;
+    		this.fireEvent('signedin', userName);
+    	}
+    },
+    
+    fireSignedOut : function() {
+    	if (this.signedIn) {
+    		this.signedIn = false;
+    		this.fireEvent('signedout');
+    	}
     }
 });

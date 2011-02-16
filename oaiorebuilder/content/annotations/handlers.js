@@ -163,8 +163,12 @@ lore.anno.ui.setPrefs = function (args) {
  * From the XUL Overlay login/status button
  */
 lore.anno.ui.handleLoginAnnotations = function() {
-    lore.anno.am.displayLoginWindow();
     lore.debug.anno("handleLoginAnnotations()");
+    lore.anno.am.displayLoginWindow();
+}
+lore.anno.ui.handleLogoutAnnotations = function() {
+    lore.debug.anno("handleLogoutAnnotations()");
+	lore.anno.am.logout();
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -380,7 +384,7 @@ lore.anno.ui.handleTabChange = function(browser) {
 lore.anno.ui.handleLocationChange = function (contextURL) {
     var oldurl = lore.anno.ui.currentURL + '';
     lore.anno.ui.currentURL = contextURL;
-    // only run when annotations are visibile and initialized
+    // only run when annotations are visible and initialised
     if (!lore.anno.ui.initialized || !lore.anno.ui.lorevisible) return;
 
     lore.debug.anno("handleLocationChange: The uri is " + lore.anno.ui.currentURL);
@@ -410,6 +414,23 @@ lore.anno.ui.handleLocationChange = function (contextURL) {
     } catch (e) {
         lore.debug.anno(e, e);
     }
+}
+
+/**
+ * Reloads all the annotations for the current page
+ */
+lore.anno.ui.refreshAnnotations = function() {
+	lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
+}
+
+/**
+ * Checks the server for any private annotations on the current page, and 
+ * if there are any, loads them.
+ */
+lore.anno.ui.loadAnyPrivateAnnosForPage = function() {
+	lore.anno.annoMan.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (anno) {
+		return anno.privateAnno;
+	});
 }
 
 /**
@@ -515,7 +536,8 @@ lore.anno.ui.handleAddAnnotation = function (rec) {
 
 //BAM
         lore.anno.am.runWithAuthorisation(function() {
-            var newRec = lore.anno.annoMan.addAnnotation(currentContext, lore.anno.ui.currentURL, addSelectNodeHandler, rec);
+            var newRec = lore.anno.annoMan.addAnnotation(currentContext, 
+            		lore.anno.ui.currentURL, addSelectNodeHandler, rec);
 
             lore.anno.ui.selectAndShowNode(newRec);
         });
@@ -659,9 +681,6 @@ lore.anno.ui.handleServerError = function (action, response) {
                                             {initURL:loginUrl});
 
         lore.debug.anno('created loginwindow', {loginwindow:loginwindow,wind:window});
-
-
-
     }
 }
 
