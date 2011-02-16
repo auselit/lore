@@ -164,6 +164,13 @@
 	background-repeat: no-repeat;
 }
 
+.anno-icon-private {
+	background-image: url(chrome://lore/skin/icons/eye.png);
+	background-repeat: no-repeat;
+    height: 16px;
+    width: 16px;
+}
+
 
 .x-tree-node .anno-view {
 	height: 16px !important;

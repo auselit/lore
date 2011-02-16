@@ -612,13 +612,17 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * Updates the annotations store with updated values for the
 	 * annotations for the specified URL from the annotation server
 	 * @param {String} theURL The escaped URL
+	 * @param {Function} filterFunction If set, instead of reloading all the annotations,
+	 * 		merely adds the annotations matching the filter
 	 */
-	updateAnnotationsSourceList : function(theURL){
+	updateAnnotationsSourceList : function(theURL, filterFunction){
 		if (!this.prefs.url) {
 			lore.debug.anno("Annotation server URL not set!");
 			return;
 		}
-		this.clearAnnotationStore();
+		if (!filterFunction) {
+			this.clearAnnotationStore();
+		}
 
 		var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + lore.global.util.fixedEncodeURIComponent(theURL);
 		lore.debug.anno("Updating annotations with request URL: " + queryURL);
@@ -631,7 +635,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				try {
 					lore.debug.anno("Success retrieving annotations from " + opt.url, resp);
 
-					this.handleAnnotationsLoaded(resp);
+					this.handleAnnotationsLoaded(resp, filterFunction);
 				} catch (e ) {
 					lore.debug.anno(e,e);
 				}
@@ -697,10 +701,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			},
 			scope:this
 		});
-	},
-
-	createSearchQueryParams : function(vals) {
-
 	},
 
 	createSearchQueryURL : function(vals) {
@@ -780,25 +780,29 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * returned from the server. Loads the annotations into the data store and loads
 	 * the replies for annotations from the server.
 	 * @param {Object} resp Response XML from the server
+	 * @param {Function} filterFunction filters the returned annotations, and only loads
+	 * 					those matching the filter
 	 */
-	handleAnnotationsLoaded : function(resp){
+	handleAnnotationsLoaded : function(resp, filterFunction){
 		var resultNodes = {};
 		var xmldoc = resp.responseXML;
 
 		if (xmldoc) {
 			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
-
 		}
+		
 		lore.debug.anno('handleAnnotationsLoaded()', {xml: xmldoc});
-
-		this.clearAnnotationStore();
 
 		if (resultNodes.length > 0) {
 			var annotations = this.createAnnotationsFromRDF(xmldoc);
-
+			
+			if (filterFunction) {
+				annotations = annotations.filter(filterFunction);
+			}
 
 			lore.debug.anno('handleAnnotationsLoaded() loaded annotations', {annotations:annotations});
 			// cater for tab change while annotations were downloaded from server
+			// FIXME, this is broken, anno is not set here
 			if (this.locationChanged(anno)) {
 			 	lore.debug.anno("Apparently, tab changed while annotations were downloading", {annotations:annotations});
 				return;

@@ -30,3 +30,4 @@
 <!ENTITY filelogging.label "Enable logging to file" >
 <!ENTITY accessibility.label "Accessibility">
 <!ENTITY highcontrast.label "Enable high contrast" >
+<!ENTITY annotation_create_private.label "Create Private Annotations by default" >

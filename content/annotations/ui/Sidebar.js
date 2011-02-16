@@ -274,7 +274,9 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
     
         // Authentication Manager
         lore.anno.am.on('signedin', lore.anno.ui.topView.setAnnotationsSignedIn);
+        lore.anno.am.on('signedin', lore.anno.ui.loadAnyPrivateAnnosForPage);
         lore.anno.am.on('signedout', lore.anno.ui.topView.setAnnotationsSignedOut);
+        lore.anno.am.on('signedout', lore.anno.ui.refreshAnnotations);
     }
     
     
