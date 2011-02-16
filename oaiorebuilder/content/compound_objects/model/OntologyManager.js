@@ -91,8 +91,9 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 			//lore.ore.resource_metadata_props = ["rdf:type","ore:isAggregatedBy"];
 			if (onturl) {
 				var xhr = new XMLHttpRequest();
-				xhr.overrideMimeType('text/xml');
+				xhr.overrideMimeType('application/xml');
 				xhr.open("GET", onturl, true);
+				xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == 4) {
 						try {
