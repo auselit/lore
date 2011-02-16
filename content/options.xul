@@ -50,7 +50,14 @@
       <preference id="rdfrepos_pref" name="extensions.lore.rdfrepos" type="unichar"/>
       <preference id="type_pref" name="extensions.lore.rdfrepostype" type="string"/>
      </preferences>
-    <label control="text_relonturl">&relonturl.label;</label><textbox id="text_relonturl" preference="relonturl_pref"/>
+    <label control="text_relonturl">&relonturl.label;</label>
+    <menulist editable="true" id="text_relonturl" preference="relonturl_pref" oncommand="document.getElementById('text_relonturl').value = event.target.value">
+      <menupopup id="menupopup1">
+        <menuitem label="LORE default" value="chrome://lore/content/ontologies/austlitoaiore.owl"/>
+        <menuitem label="AustLit Ontology" value="chrome://lore/content/ontologies/AustLit.xml"/>
+        <menuitem label="RDA Group 1 Elements" value="chrome://lore/content/ontologies/rda.rdf"/>
+      </menupopup>
+    </menulist>
     <groupbox>
        <caption label="&repos.label;"/>
        <label control="text_rdfrepos">&rdfrepos.label;</label><textbox id="text_rdfrepos" preference="rdfrepos_pref"/>
