@@ -63,6 +63,10 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
         	Ext.Msg.hide();
         }
     },
+    showResource: function(uri){
+    	Ext.getCmp("loreviews").activate(this.id);
+    	this.scrollToResource(uri);
+    },
     scrollToResource: function(id){
         try{
             var dv = this.getComponent(1);
@@ -158,10 +162,10 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
         '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr><td>',
         '<tpl if="representsCO == true"><a title="Open in LORE" href="#" onclick="lore.ore.controller.loadCompoundObjectFromURL(\'{uri}\');"><img style="padding-right:5px" src="chrome://lore/skin/oaioreicon-sm.png"></a></tpl>',  
         '<span style="font-size:130%;font-weight:bold">{title}<tpl if="!title">Untitled Resource</tpl></span></td>',
-        '<td width="80"><a href="#" title="Show in graphical editor" onclick="lore.ore.ui.graphicalEditor.scrollToFigure(\'{uri}\');"><img src="chrome://lore/skin/icons/layout.png" alt="View in graphical editor"></a>',
-        '&nbsp;<a href="#" title="Show in resource list" onclick="Ext.getCmp(\'loreviews\').activate(\'remlistview\');Ext.getCmp(\'remlistview\').selectResource(\'{uri}\')"><img src="chrome://lore/skin/icons/application_view_list.png"></a>',
-        '&nbsp;<a href="#" title="Show in slideshow view" onclick="Ext.getCmp(\'loreviews\').activate(\'remslideview\');Ext.getCmp(\'newss\').setActiveItem(\'{uri}_{[lore.ore.cache.getLoadedCompoundObjectUri()]}\');"><img src="chrome://lore/skin/icons/picture_empty.png" alt="View in slideshow view"></a>',
-        '&nbsp;<a href="#" title="Show in explore view" onclick="Ext.getCmp(\'loreviews\').activate(\'remexploreview\');lore.ore.explorePanel.showInExploreView(\'{uri}\',\'{title}\',{representsCO});"><img src="chrome://lore/skin/icons/network.png" alt="View in explore view"></a>',
+        '<td width="80"><a href="#" title="Show in graphical editor" onclick="lore.ore.ui.graphicalEditor.showResource(\'{uri}\');"><img src="chrome://lore/skin/icons/layout_pencil.png" alt="View in graphical editor"></a>',
+        '&nbsp;<a href="#" title="Show in resource list" onclick="Ext.getCmp(\'remlistview\').showResource(\'{uri}\')"><img src="chrome://lore/skin/icons/table_edit.png"></a>',
+        '&nbsp;<a href="#" title="Show in slideshow view" onclick="Ext.getCmp(\'newss\').showResource(\'{uri}\');"><img src="chrome://lore/skin/icons/picture_empty.png" alt="View in slideshow view"></a>',
+        '&nbsp;<a href="#" title="Show in explore view" onclick="lore.ore.explorePanel.showInExploreView(\'{uri}\',\'{title}\',{representsCO});"><img src="chrome://lore/skin/icons/network.png" alt="View in explore view"></a>',
         '</td></tr></table>',
         '<tpl if="representsCO == true"><p style="font-style:italic;padding-bottom:0.5em;">{uri}</p></tpl>',
         '<tpl if="representsCO == false && representsAnno == true"><p style="font-style:italic;padding-bottom:0.5em;"><a title="Show in browser" onclick="lore.global.util.launchTab(\'{uri}?danno_useStylesheet=\')" href="#">{uri}</a></p></tpl>',
@@ -197,8 +201,8 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
 	                        // property data for related resource: for looking up title etc
 	                        var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
                             if (propR) {
-                                prop.title = propR.data.properties.getTitle() || prop.value;
-                                prop.url = propR.data.representsAnno ? prop.value + "?danno_useStylesheet=" : prop.value;
+                                prop.title = propR.properties.getTitle() || prop.value;
+                                prop.url = propR.representsAnno ? prop.value + "?danno_useStylesheet=" : prop.value;
 	                        } else {
 	                            prop.title = prop.value;
                                 prop.url = prop.value;

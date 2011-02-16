@@ -263,11 +263,16 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	                if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
 	                   lore.ore.ui.topView.hideAddIcon(true);
 	                }       
-	                
+	                this.model.addAggregatedResource(comm_fig.model);
 	           } 
 	             
 	            else if ((0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandDelete)
 	             || (0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandAdd)) {
+                    try{
+                        this.model.removeAggregatedResource(comm_fig.url);
+                    } catch (x){
+                        lore.debug.ore("problem",x);
+                    }
 	                delete this.lookup[comm_fig.url];
 	                if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
 	                       lore.ore.ui.topView.hideAddIcon(false);
@@ -281,13 +286,13 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    getSelectedFigure : function (){    
         return this.coGraph.getCurrentSelection();
    },
-   /** scroll to the figure that represents the URL
+   /** select a figure that represents a resource, scrolling it into view
      * @param {} theURL
      */
-   scrollToFigure : function(theURL) {
-        var fig = this.lookupFigure(theURL);
+   showResource : function(uri){
+        Ext.getCmp("loreviews").activate(this.id);
+        var fig = this.lookupFigure(uri);
         if (fig) {
-            Ext.getCmp("loreviews").activate(this.id);
             this.coGraph.setCurrentSelection(fig);
             fig.header.style.backgroundColor="yellow";
             setTimeout(function(theFig) {theFig.header.style.backgroundColor = "#e5e5e5";}, 3200, fig);
@@ -312,6 +317,14 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    /** load compound object from model object into graphical editor */
    loadContent: function(co){
     
+   },
+   removeFigure : function(uri){
+	    try{
+	        var fig = this.lookupFigure(uri);
+	        this.coGraph.getCommandStack().execute(fig.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+	    } catch (e){
+	        lore.debug.ore("removeFigure",e);
+	    }
    },
    /**
     * Add a figure to represent a resource to the graphical editor
@@ -359,8 +372,11 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                 fig.setDimension(opts.w, opts.h);    
             } 
             if (opts.sx && opts.sy) {
-                fig.scrollx = parseInt(opts.sx);
-                fig.scrolly = parseInt(opts.sy);
+                fig.scrollx = opts.sx;
+                fig.scrolly = opts.sy;
+            }
+            if (opts.order){
+            	fig.orderIndex = opts.order;
             }
             if (opts.format){
                 fig.setProperty("dc:format_0",opts.format);
@@ -394,18 +410,14 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                 	representsAnno: figRepresentsAnno,
                 	properties: figProps
                 });   
+                fig.setModel(this.model.getAggregatedResource(theURL));
             }
             this.lookup[theURL] = fig.getId();
-
-            Ext.getCmp("loreviews").activate(this.id);
         } else {
             lore.ore.ui.vp.warning("Resource is already in the compound object: " + theURL);
         }
         if (fig){
             this.nextXY(opts.x,opts.y);
-        }
-        if (!opts.batch){
-            this.scrollToFigure(theURL);
         }
         return fig;
     },
@@ -426,7 +438,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
      * @param {} prevy
      */
     nextXY : function(prevx, prevy) {
-        // TODO: Need a real graph layout algorithm
         this.dummylayoutprevx = prevx;
         this.dummylayoutprevy = prevy;
         if (prevx > this.ROW_WIDTH) {

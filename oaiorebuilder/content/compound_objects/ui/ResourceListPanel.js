@@ -1,125 +1,172 @@
 Ext.namespace("lore.ore.ui");
 
 /**
- * @class lore.ore.ui.SummaryPanel Display a text-based summary of the entire compound object
+ * @class lore.ore.ui.SummaryPanel Display the list of resources aggregated by the compound object and allow editing
  * @extends Ext.Panel
  */
-lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{ 
+lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     initComponent: function(){
     	try{
-    	this.defaultCM = new Ext.grid.ColumnModel([
-    	     new Ext.grid.RowNumberer(),
-  	         {header: 'Title', dataIndex: 'title'},
-  	         {header: 'URI', dataIndex:'uri'}    
-  	    ]);
-    	Ext.apply(this,{
- 		    columnLines : true,
-            autoScroll: true, 
-  		    header: false,
-   		    enableHdMenu: false,
-            store: new Ext.data.Store({}), 
-   		    ddGroup:'resgridDD',
-   		    // enableDragDrop: true, 
-   		    sm: new Ext.grid.RowSelectionModel({
-	   		    singleSelect:true,
-	   		    listeners: {
-	   		        'rowselect': function(sm,i,rec){    	
-	   		        	try{  		        		
-		   		            sm.grid.ddText = rec.data.title + " (" + rec.data.uri + ")";
-		   		            lore.ore.controller.updateSelection(rec.data.uri, this.grid);
-	   		        	} catch (e){
-	   		        		lore.debug.ore("problem in row select",e);
-	   		        	}
-	   		        }
-	   		    }
-	   		}),
-   		    viewConfig: {
-                deferEmptyText: false,
-	    		emptyText: 'Empty compound object',
-	    		
-	    		forceFit: true
-   		    }, 
-   		    colModel: this.defaultCM
- 	    });
-    	
-    	lore.ore.ui.ResourceListPanel.superclass.initComponent.call(this);
-    	this.on("activate", this.updateContent);  		     	    		   
-    	this.on("rowcontextmenu", this.showContextMenu,this);
+	    	this.defaultCM = new Ext.grid.ColumnModel([
+	    	     new Ext.grid.RowNumberer(),
+	  	         {header: 'Title', dataIndex: 'title'},
+	  	         {header: 'URI', dataIndex:'uri'}    
+	  	    ]);
+	    	Ext.apply(this,{
+	 		    columnLines : true,
+	            autoScroll: true, 
+	  		    header: false,
+	   		    enableHdMenu: false,
+	            store: new Ext.data.Store({}), 
+	   		    ddGroup:'resgridDD',
+	   		    enableDragDrop: true, 
+	   		    keys: {
+	   		    	key: [46,8],
+	   		    	scope: this,
+	   		    	fn: function(){
+	   		    		lore.debug.ore("key handler");
+	   		    		var sel = this.getSelectionModel().getSelected();
+	   		    		if (sel){
+	   		    			lore.ore.controller.removeResource(sel.data.uri);
+	   		    		} 
+	   		    	}
+	   		    },
+	   		    sm: new Ext.grid.RowSelectionModel({
+		   		    singleSelect:true,
+		   		    listeners: {
+		   		        'rowselect': function(sm,i,rec){    	
+		   		        	try{  		        		
+			   		            sm.grid.ddText = rec.data.title + " (" + rec.data.uri + ")";
+			   		            lore.ore.controller.updateSelection(rec.data.uri, this.grid);
+		   		        	} catch (e){
+		   		        		lore.debug.ore("ResourceListPanel: row select",e);
+		   		        	}
+		   		        }
+		   		    }
+		   		}),
+	   		    viewConfig: {
+	                deferEmptyText: false,
+		    		emptyText: 'Empty compound object',
+		    		forceFit: true
+	   		    }, 
+	   		    colModel: this.defaultCM
+	 	    });
+	    	
+	    	lore.ore.ui.ResourceListPanel.superclass.initComponent.call(this);
+	    	
+	    	this.on("activate", this.updateContent);  		     	    		   
+	    	this.on("rowcontextmenu", this.showContextMenu,this);
+	    	
+	    	
     	} catch (e){
-    		lore.debug.ore("problem",e);
+    		lore.debug.ore("ResourceListPanel: init",e);
     	}
     	
     	
     },
-    /** Temporary function to regenerate content each time the panel is activated 
+    /**
+     * Sets the compound object
+     * @param {} co The compound object model object
+     */
+    bindModel: function(){
+    	if (this.model) {
+            this.model.un("add", this.addResourceHandler,this);
+            this.model.un("remove", this.removeResourceHandler,this);
+        }
+    	var currentCO = lore.ore.cache.getLoadedCompoundObject();
+        var resstore = currentCO.aggregatedResourceStore;
+        this.model = resstore;
+    	this.reconfigure(resstore, this.defaultCM);
+    	// make sure all loaded resources have an order index starting from 1, no gaps, no duplicates
+    	// resources have already been sorted by the store according to their loaded order index values
+    	var orderIndex = 1;
+    	resstore.each(function (rec){
+    		rec.set('index',orderIndex++);
+    	});
+    	// listen for add/remove events to reorder resources  
+        this.model.on("add", this.addResourceHandler, this);
+        this.model.on("remove", this.removeResourceHandler, this);
+     },
+     /** Update layout order index when resources are added  */
+     addResourceHandler : function(store, records, idx){
+    	 var last = store.getTotalCount();
+		 // TODO: check that idx is correct (records should always be added at end)
+    	 for (var j = 0; j < records.length; j++){
+    		 records[j].set('index',idx + j + 1);
+    		 records[j].commit();
+    	 }
+     },
+     /** Update layout order index when a resource is removed */
+     removeResourceHandler : function(store, record, idx){   	 
+    	 var last = store.getTotalCount();
+    	 if (idx != last){ // deleted item was not last in list     	  
+             for (var j = idx; j <= (last - 1); j++){
+          	   // update the orderIndex (add one as orderIndex starts from 1 not 0)
+            	var r = store.getAt(j);
+          	   	r.set('index',j + 1);
+          	   	r.commit();   	    
+             }
+    	 }
+     },
+    /** Temporary function to update selection each time the panel is activated 
      * @param {} p The panel
      */
     updateContent : function (p) {
-        try{
-        	// TODO: check whether compound object has changed
-        	p.getSelectionModel().clearSelections();
-        	// temporarily reload entire store until MVC complete
-        	var currentCO = lore.ore.cache.getLoadedCompoundObject();
-            var currentREM = currentCO.uri;
-            var coContents = currentCO.serialize('rdfquery');
-            var tmpCO = new lore.ore.model.CompoundObject();
-            tmpCO.load({format: 'rdfquery',content: coContents});
-            
-        	//var resstore = lore.ore.cache.getLoadedCompoundObject().aggregatedResourceStore;
-            var resstore = tmpCO.aggregatedResourceStore;
-            
-        	p.reconfigure(resstore, this.defaultCM);
-        	var ddrow = new Ext.dd.DropTarget(p.getView().scroller.dom, {
-                ddGroup : 'resgridDD',             
-                copy: false,
-                notifyDrop : function(dd, e, data){
-                	try{
+    	if (!p.ddrow) {
+    		/* Supports resource re-ordering via drag and drop */
+    		p.ddrow = new Ext.dd.DropTarget(p.getView().scroller.dom, {
+	            ddGroup : 'resgridDD',             
+	            copy: false,
+	            notifyDrop : function(dd, e, data){
+	            	try{
 	                    var sm = p.getSelectionModel();
-	                    var rows = sm.getSelections();
+	                    var selrows = sm.getSelections();
 	                    if(dd.getDragData(e)) {
 	                          var cindex=dd.getDragData(e).rowIndex;
 	                          if(typeof(cindex) != "undefined") {
-	                              for(i = 0; i <  rows.length; i++) {
-	                            	  resstore.remove(resstore.getById(rows[i].id));
-	                            	  resstore.insert(cindex,rows[i]);
-	                              }
-	                              sm.clearSelections();
-	                              // force row numbering to update
-	  	  	                      p.getView().refresh();
+	                        	  //sm.clearSelections();
+	                        	  var rs = p.model;
+	                        	  // This code handles multiple rows selected
+	                        	  // but at present we only allow single selection
+	                              for(i = 0; i <  selrows.length; i++) {               	  
+	                            	  rs.remove(rs.getById(selrows[i].id));
+	                            	  rs.insert(cindex,selrows[i]);
+	                            	  // select the dragged resource
+	                            	  if (i == 0){
+	                            		  p.selectResource(selrows[i].id);
+	                            	  }
+	                              }          
+	  	  	                     var startidx = Math.min(cindex, data.rowIndex);
+	  	  	                     var endidx = Math.max (cindex, data.rowIndex);
+	  	  	                     if (startidx != endidx){      	  
+		  	  	                       for (var j = startidx; j <= endidx; j++){
+		  	  	                    	   var r = rs.getAt(j);
+		  	  	                    	   // update the orderIndex (add one as orderIndex starts from 1 not 0)
+		  	  	                    	   r.set('index',j + 1); 
+		  	  	                    	   r.commit();
+		  	  	                       }
+	  	  	                     } 
+	  	  	                     
 	                           }
 	                    }
-	                    
-                	} catch (e){
-                		lore.debug.ore("problem",e);
-                	}
-            	 }
-              });
-        	// TODO: remove this once MVC is working correctly
+	            	} catch (e){
+	            		lore.debug.ore("ResourceListPanel: notifyDrop",e);
+	            	}
+	        	 }
+	          });
+    	}
+        try{
+        	p.getSelectionModel().clearSelections();
         	var sfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
         	if (sfig) {
         		p.selectResource(sfig.url);
         	}
-        	/*
-            Ext.MessageBox.show({
-                   msg: 'Generating Summary',
-                   width:250,
-                   defaultTextHeight: 0,
-                   closable: false,
-                   cls: 'co-load-msg'
-            });
-            
-            // TODO:  should listen to model and this should not be regenerated each time
-            var currentCO = lore.ore.cache.getLoadedCompoundObject();
-            var coContents = currentCO.serialize('rdfquery');
-            // preload all nested compound objects to cache
-            lore.ore.cache.cacheNested(coContents, 0);
-            var tmpCO = new lore.ore.model.CompoundObject();
-            tmpCO.load({format: 'rdfquery',content: coContents});
-            p.loadContent(tmpCO);
-            Ext.Msg.hide();
-            */
+        	// focus on the grid view to enable key navigation/deletion to work
+        	if (p.getView().focusEl){
+        		p.getView().focusEl.focus();
+        	}
         } catch (e){
-            lore.debug.ore("problem showing resource list",e);
+            lore.debug.ore("ResourceListPanel: updateContent",e);
         }
     },
     showContextMenu: function(grid, rowIndex, e){
@@ -131,11 +178,39 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 showSeparator: false
             });
             this.contextmenu.add({
-                text: "Show in Graphical Editor",
-                icon: "chrome://lore/skin/icons/layout.png",
+                text: "Copy URI to clipboard",
+                icon: "chrome://lore/skin/icons/page_white_paste.png",
                 scope: this,
                 handler: function(evt){
-                	lore.ore.ui.graphicalEditor.scrollToFigure(this.tmpurl);			
+                	lore.global.util.copyToClip(this.tmpurl);
+					lore.ore.ui.vp.info("URI copied to clipboard: " + this.tmpurl);
+                }
+             });
+            
+        	this.contextmenu.add({
+                text: "Show in browser",
+                icon: "chrome://lore/skin/icons/page_go.png",
+                scope: this,
+                handler: function(evt){
+                	lore.global.util.launchTab(this.tmpurl, window);
+                }
+             });
+    		
+            this.contextmenu.add({
+            	text: "Delete resource from Compound Object",
+            	icon: "chrome://lore/skin/icons/delete.png",
+                scope: this,
+                handler: function(evt){
+                	lore.ore.controller.removeResource(this.tmpurl);
+                }
+            });
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+                text: "Show in Graphical Editor",
+                icon: "chrome://lore/skin/icons/layout_pencil.png",
+                scope: this,
+                handler: function(evt){
+                	lore.ore.ui.graphicalEditor.showResource(this.tmpurl);			
                 }
             });
             this.contextmenu.add({
@@ -143,18 +218,15 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 icon: "chrome://lore/skin/icons/application_view_detail.png",
                 scope: this,
                 handler: function(evt){
-                	Ext.getCmp("loreviews").activate("remdetailsview");
-                	Ext.getCmp("remdetailsview").scrollToResource(this.tmpurl);				
+                	Ext.getCmp("remdetailsview").showResource(this.tmpurl);				
                 }
             });
             this.contextmenu.add({
                 text: "Show in Slideshow view",
                 icon: "chrome://lore/skin/icons/picture_empty.png",
                 scope: this,
-                handler: function(evt){
-                	// TODO: don't hardcode the slideshow id
-					Ext.getCmp("loreviews").activate("remslideview");
-					Ext.getCmp("newss").setActiveItem(this.tmpurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
+                handler: function(evt){			
+					Ext.getCmp("newss").showResource(this.tmpurl);
                 }
             });
             this.contextmenu.add({
@@ -162,24 +234,28 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 icon: "chrome://lore/skin/icons/network.png",
                 scope: this,
                 handler: function(evt){
-                	Ext.getCmp("loreviews").activate("remexploreview");
                     var title = this.tmpurl;
                     var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(this.tmpurl);
                     if (propR) {
-                        title = propR.data.properties.getTitle() || title;
+                        title = propR.properties.getTitle() || title;
                     }
                     var isCO = propR.representsCO;
 					
 					lore.ore.explorePanel.showInExploreView(this.tmpurl, title, isCO);
                 }
             });
+            
     	}
     	this.contextmenu.showAt(e.xy);
         e.stopEvent();
         return false;
     	} catch (ex){
-    		lore.debug.ore("problem",ex);
+    		lore.debug.ore("ResourceListPanel: showContextMenu",ex);
     	}
+    },
+    showResource : function(uri){
+    	Ext.getCmp("loreviews").activate(this.id);
+    	this.selectResource(uri);
     },
     selectResource: function(uri){
     	try{
@@ -195,39 +271,8 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 				} 
     		}
     	} catch (e){
-    		lore.debug.ore("Problem selecting resource " + uri,e);
+    		lore.debug.ore("ResourceListPanel: selectResource " + uri,e);
     	}
-    },
-    // TODO: listen to model rather than updating entire view each time, replace with re-orderable tree
-    /** Displays a list of the resource URIs aggregated by the compound object 
-      */
-    loadContent : function (compoundObject){
-        var tocsummary = "<div style='padding-top:1em'><p><b>List of resources:</b></p><ul>";
-        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getFiguresSorted();
-        for (var i = 0; i < allfigures.length; i++) {
-            var fig = allfigures[i];
-            if (fig instanceof lore.ore.ui.graph.ResourceFigure){
-                var figurl = lore.global.util.escapeHTML(fig.url);
-                var title = fig.getProperty("dc:title_0") 
-                    || fig.getProperty("dcterms:title_0") 
-                    || "Untitled Resource";
-                tocsummary += "<li>";
-                
-                var isCompObject = (fig.getProperty("rdf:type_0") == lore.constants.RESOURCE_MAP);
-                if (isCompObject){
-                    tocsummary += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + figurl + "\");'><img style='padding-right:5px' src='chrome://lore/skin/oaioreicon-sm.png'></a>";
-                }
-                tocsummary += Ext.util.Format.htmlEncode(title) + ": &lt;"
-                + (!isCompObject?"<a onclick='lore.global.util.launchTab(\"" + figurl + "\");' href='#'>" 
-                + figurl + "</a>" : figurl) + "&gt;";
-                tocsummary += " <a href='#' title='Show in graphical editor' onclick='lore.ore.ui.graphicalEditor.scrollToFigure(\"" + figurl +"\");'><img src='chrome://lore/skin/icons/layout.png' alt='View in graphical editor'></a>";
-                tocsummary += " <a href='#' title='Show in slideshow view' onclick='Ext.getCmp(\"loreviews\").activate(\"remslideview\");Ext.getCmp(\"newss\").setActiveItem(\"" + figurl + "_" + lore.ore.cache.getLoadedCompoundObjectUri() + "\");'><img src='chrome://lore/skin/icons/picture_empty.png' alt='View in slideshow view'></a>";
-                tocsummary += " <a href='#' title='Show in explore view' onclick='try{Ext.getCmp(\"loreviews\").activate(\"remexploreview\");lore.ore.explorePanel.showInExploreView(\"" + figurl + "\",\"" + title.replace(/'/g,'\\\'') + "\"," + isCompObject+ ");}catch(e){lore.debug.ore(\"problem\",e);}'><img src='chrome://lore/skin/icons/network.png' alt='View in explore view'></a>";
-                tocsummary += "</li>";
-            }
-        }
-        tocsummary += "</ul></div>";
-        this.body.update(tocsummary);
     }
 });
 Ext.reg('resourcepanel',lore.ore.ui.ResourceListPanel);

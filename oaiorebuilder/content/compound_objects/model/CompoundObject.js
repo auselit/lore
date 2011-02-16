@@ -23,7 +23,8 @@ Ext.namespace("lore.ore.model");
  * Model class representing a compound object */
 lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
     constructor: function(config){
-        this.uri = "";
+        config = config || {};
+        this.uri = config.uri || "";
 	    lore.ore.model.CompoundObject.superclass.constructor.call(this, config);
         /** The compound object properties */
         this.properties = new lore.ore.model.ResourceProperties(); 
@@ -38,7 +39,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 fields: [
                     {name: 'uri', type:'string', allowBlank: false}, // aggregated resource URI
                     {name: 'title', type: 'string'}, // aggregated resource title
-                    {name: 'index', type: 'int'}, // for storing order information
+                    {name: 'index', type: 'int', defaultValue: '1000'}, // for storing order information, large default value ensures resources are initially added at the end
                     {name: 'representsCO', type: 'boolean', defaultValue: false}, // indicates if this represents a nested compound object
                     {name: 'representsAnno',type: 'boolean', defaultValue: false}, // indicates if this represents an annotation
                     {name: 'properties'} // all other properties, key is property uri, value is array of Property objects
@@ -58,7 +59,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         return this.loadedContent;  
     },
 	getAggregatedResource : function(/*String*/ aUri){
-        return this.aggregatedResourceStore.getById(aUri);
+        return this.aggregatedResourceStore.getById(aUri).data;
 	},
 	
 	/** Add a resource to the compound object
@@ -106,6 +107,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         } else if (args.format == 'rdfquery'){
             this.loadedContent = args.content;
         }
+        var newResources = [];
         if (this.loadedContent){
             var remQuery = this.loadedContent.where('?aggre rdf:type ore:Aggregation')
                 .where('?rem ore:describes ?aggre');
@@ -159,7 +161,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 }
             });
             
-        var newResources = [];
         // create a Resource object for each aggregated resource
         this.loadedContent.where('<' + this.aggregationURI  + '> ore:aggregates ?url')
             .optional('?url rdf:type ?rdftype')
@@ -172,7 +173,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	             }  else if(this.rdftype && (this.rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || this.rdftype.value.toString().match('http://www.w3.org/2001/12/replyType'))){
                     resourceData.representsAnno = true;
                  }
-                 
 	             // TODO: Load aggregated resource predicates (properties and rels)
 	             oThis.loadedContent.about('<' + resourceURL + '>')
                     .each(function() {
@@ -183,6 +183,9 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         if ((prefix == "dc" || prefix == "dcterms") && propsplit.term == "title"){
                             resourceData.title = this.value.value;
                         }
+                        if (prefix == "layout" && propsplit.term == "orderIndex") {
+                        	resourceData.index = this.value.value;
+                        } 
                         resourceData.properties.setProperty({
                            id: propurl,
                            ns: propsplit.ns,
@@ -192,15 +195,13 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         });
                     }
                  );   
-                 //lore.debug.ore("resourceData is",resourceData);
                  newResources.push(resourceData);
             }
         );    
         }
         this.resumeEvents();
         this.fireEvent('loaded', this);
-        this.aggregatedResourceStore.loadData(newResources);
-        //lore.debug.ore("aggregated resources",this.aggregatedResourceStore);
+        this.aggregatedResourceStore.loadData(newResources); 
     },
     /** 
      * Compare with another compound object model object to determine whether they have the same properties, 
@@ -226,15 +227,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             
         return true;
     },
-    /** Generate an RDF query triplestore to represent the contents of this CO */
-    toDatabank : function(){
-    	var result = jQuery.rdf.databank();
-    	
-    	return result;
-    },
     /**
-     * Serialize to RDF/XML directly from model objects.
-     * For nicer RDF/XML use serialize('rdf') (uses rdfquery).
+     * Serialize to RDF/XML using older method (eg from figures).
      * FIXME: needs to use model rather than grid/figures
      * @param {Boolean} escape Indicates whether to escape the results for rendering as HTML
      * @return {String} The RDF/XML as a string
@@ -258,8 +252,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     } else {
                         // literal
                         result = ltsymb + propname + ">"
-                        + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
-                        + ltsymb + "/" + propname + ">" + nlsymb;
+                          + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
+                          + ltsymb + "/" + propname + ">" + nlsymb;
                     }
                     
                 }
@@ -429,6 +423,11 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
                 if (fig.abstractPreview) {
                 	resourcerdf += ltsymb + "layout:abstractPreview>1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
+                }
+                
+                var figRec = this.getAggregatedResource(fig.url);
+                if (figRec && figRec.index){
+                    resourcerdf += ltsymb + "layout:orderIndex>" + figRec.index + ltsymb + "/layout:orderIndex>" + nlsymb;
                 }
                 if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
                     resourcerdf += ltsymb + "layout:scrollx>" + objframe.scrollX

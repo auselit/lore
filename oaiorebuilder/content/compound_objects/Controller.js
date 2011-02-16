@@ -112,6 +112,10 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         
     },
+    bindViews: function(co){
+    	lore.ore.ui.graphicalEditor.bindModel(co);
+        Ext.getCmp("remlistview").bindModel(co);
+    },
     /**
      * Load a compound object into LORE
      * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
@@ -189,6 +193,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                             propname = propurl;
                         }
                         if (propname != "ore:describes" && propname != "rdf:type"){
+                            //appendPropertyValue(propname, lore.global.util.sanitizeHTML(this.value.value.toString(),window), lore.ore.ui.grid);
                             appendPropertyValue(propname, this.value.value.toString(), lore.ore.ui.grid);
                         }
                     });
@@ -203,6 +208,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                     .optional('?url layout:originalHeight ?oh')
                     .optional('?url layout:scrollx ?sx')
                     .optional('?url layout:scrolly ?sy')
+                    .optional('?url layout:orderIndex ?order')
                     .optional('?url layout:abstractPreview ?abstractPreview')
                     .optional('?url dc:format ?format')
                     .optional('?url rdf:type ?rdftype')
@@ -227,7 +233,6 @@ Ext.apply(lore.ore.Controller.prototype, {
                         }
                      } 
                      fig = lore.ore.ui.graphicalEditor.addFigure(opts);
-                     
                 });
                 //lore.debug.timeElapsed("iterate over predicates to create props and rels ");
                 // iterate over all predicates to create node connections and properties
@@ -294,29 +299,30 @@ Ext.apply(lore.ore.Controller.prototype, {
                                 }
                                 
                             } else  { 
-                                //lore.debug.ore("processing property " + relresult.term,srcfig);
-                                //lore.debug.timeElapsed("prop");
                                 // not a node relationship, show in the property grid 
+                            	
+                            	// ensure property values shown in grid are safe
+                            	var propval = lore.global.util.sanitizeHTML(obj, window);
+                                    
                             	var prefix = lore.constants.nsprefix(relresult.ns);
                             	if (!(prefix == "rdf" && relresult.term == "type")){
-                            		srcfig.appendProperty(prefix + ":" + relresult.term, obj);
+                            		srcfig.appendProperty(prefix + ":" + relresult.term, propval);
                             	}
                                 if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
                                     // TODO this should not be necessary - send props to addFigureWithOpts
-                                    srcfig.setTitle(obj);
+                                    srcfig.setTitle(propval);
                                 } else if (prefix == "dcterms" && relresult.term == "abstract") {
-                                	srcfig.setAbstract(obj);
+                                	srcfig.setAbstract(propval);
                                 }
                             }
                         }
                     }
                 );
-                //lore.debug.timeElapsed("hide/show mask ");
                 // FIXME: #210 Temporary workaround to set drawing area size on load
                 // problem still exists if a node is added that extends the boundaries
                 lore.ore.ui.graphicalEditor.coGraph.resizeMask();
                 
-                lore.ore.ui.graphicalEditor.bindModel(lore.ore.cache.getLoadedCompoundObject());
+                lore.ore.controller.bindViews(lore.ore.cache.getLoadedCompoundObject());
                 lore.ore.ui.vp.info("Loading compound object");
                 Ext.Msg.hide();
                 //lore.debug.timeElapsed("set loaded in cache ");
@@ -413,7 +419,8 @@ Ext.apply(lore.ore.Controller.prototype, {
         ]  
         );
         lore.ore.ui.graphicalEditor.initGraph();
-        lore.ore.ui.graphicalEditor.bindModel(lore.ore.cache.getLoadedCompoundObject());
+        this.bindViews(lore.ore.cache.getLoadedCompoundObject())
+        
         Ext.getCmp('currentCOMsg').setText('New compound object');
         if (!dontRaise) {
             Ext.getCmp("propertytabs").activate("properties");
@@ -470,9 +477,6 @@ Ext.apply(lore.ore.Controller.prototype, {
         // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
         // update rdfquery to reflect most recent save
         var remid = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
-        var title = lore.ore.ui.grid.getPropertyValue("dc:title") 
-            || lore.ore.ui.grid.getPropertyValue("dcterms:title") 
-            || "Untitled";
         if(!remid.match(lore.ore.reposAdapter.idPrefix)){
             Ext.Msg.show({
                 title: "Save disabled",
@@ -481,17 +485,49 @@ Ext.apply(lore.ore.Controller.prototype, {
             });
             return;
         }
-        Ext.Msg.show({
-            title : 'Save RDF',
-            buttons : Ext.MessageBox.OKCANCEL,
-            msg : 'Are you sure you wish to save compound object:<br/><br/>' + title + "<br/><br/>to repository as " + remid + "?",
-            fn : function(btn, theurl) {
-                if (btn == 'ok') {
-                    var therdf = lore.ore.cache.getLoadedCompoundObject().toRDFXML(false);
-                    lore.ore.reposAdapter.saveCompoundObject(remid,therdf,lore.ore.controller.afterSaveCompoundObject);
+        
+        var title = lore.ore.ui.grid.getPropertyValue("dc:title")
+            || lore.ore.ui.grid.getPropertyValue("dcterms:title");
+        // Prompt user to enter title if untitled
+        if (!title || title.trim() == ""){  
+            Ext.Msg.show({
+                title: "Enter Title",
+                msg: "Please enter a title for the compound object:",
+                prompt: true,
+                buttons: Ext.MessageBox.OK,
+                closable: false,
+                scope: this,
+                fn: function(b, t){
+                	try{
+                	lore.debug.ore("after title entered: " + t,this);
+                    title = t || "Untitled";
+                    // TODO: update the title in the model
+                    //lore.ore.cache.getLoadedCompoundObject().properties.
+                    lore.ore.ui.grid.setPropertyValue("dc:title", title);
+                    lore.ore.coListManager.updateCompoundObject(
+                            lore.ore.cache.getLoadedCompoundObjectUri(),
+                            {title: title}
+                    );
+                    if (title) this.saveCompoundObjectToRepository();
+                	} catch (ex){
+                		lore.debug.ore("Problem setting title",ex);
+                	}
                 }
-            }
-        });
+                
+            });  
+        } else {
+        	Ext.Msg.show({
+                title : 'Save RDF',
+                buttons : Ext.MessageBox.OKCANCEL,
+                msg : 'Are you sure you wish to save compound object:<br/><br/>' + title + "<br/><br/>to repository as " + remid + "?",
+                fn : function(btn, theurl) {
+                    if (btn == 'ok') {
+                        var therdf = lore.ore.cache.getLoadedCompoundObject().toRDFXML(false);
+                        lore.ore.reposAdapter.saveCompoundObject(remid,therdf,lore.ore.controller.afterSaveCompoundObject);
+                    }
+                }
+            });
+        }
     },
     /** Recover from failure to load compound object 
      * @param {} resp
@@ -593,13 +629,35 @@ Ext.apply(lore.ore.Controller.prototype, {
     },
     /**
      * Add a resource to the compound object
-     * @param {} theURL
+     * @param {} uri
      * @param {} props
      */
     addResource: function(uri,props){ 
         // TODO: #34 MVC:  make it add to model and get view to listen on model
+    	Ext.getCmp("loreviews").activate("drawingarea");
+
+        /* TODO: allow list view to be active: bug at the moment with iframe previews
+         * var activeView = Ext.getCmp("loreviews").getActiveTab();
+        // activate one of the editors
+        if (!(activeView.id == "remlistview" || activeView.id == "drawingarea")){
+        	activeView = Ext.getCmp("remlistview");
+        	Ext.getCmp("loreviews").activate(activeView);
+        }*/
         var normalizedUri = lore.global.util.normalizeUrlEncoding(uri);
+        // temporarily update graphical editor: it should be listening on the model
         lore.ore.ui.graphicalEditor.addFigure({url:normalizedUri, props: props});
+        
+        if (!props.batch){
+            activeView.showResource(theURL);
+        }
+    },
+    /** Remove a resource from the compound object
+     * @param {} uri
+     */
+    removeResource: function(uri){
+    	lore.ore.cache.getLoadedCompoundObject().removeAggregatedResource(uri);
+    	// temporarily update graphical editor : it should be listening on the model
+    	lore.ore.ui.graphicalEditor.removeFigure(uri);
     },
     /** Add a bunch of resources from open browser tabs
      * @param {} thebrowser Provided by overlay: represents the tabbed browser
@@ -658,9 +716,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 			        			 lore.ore.ui.graphicalEditor.addFigure({url:item.getName(),
 			        				 oh: 170,
 			        				 w: 220,
-			        				 h: 70,
-			        				 props: {title: item.label}});
-			        			
+			        				 h: 70});
 			        		 }	   		 
 			        });
 			        lore.ore.ui.graphicalEditor.coGraph.commandStack.endCommandGroup();
