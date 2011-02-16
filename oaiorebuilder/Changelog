@@ -1,5 +1,22 @@
 LORE (Literature Object Re-use and Exchange)
 
+version 0.61 (15/02/2011):
+	Annotations:
+	 * Added a private annotations feature:
+	   * Use the private checkbox in the editor to mark an annotation as private (visible only when logged on with the same account)
+	   * A user preference controls whether to create private annotations by default
+	 * Indicate the account with which the user is logged in in the toolbar and provide option to logout
+	 * Fixed bug with updating annotations in response to tab switching
+
+	Compound Objects:
+	 * Support explicit ordering of resources via drag and drop in the resource list view
+	 * Bundled ontologies used to customise relationships and property editor can now be selected from drop down box in preferences
+	 * Minor UI changes based on user feedback
+
+version 0.60 (27/01/2011):
+    * Updated bundled libraries and tidied up code.
+    * Removed annotation timeline view
+
 version 0.55 (04/11/2010):
     Compound Objects:
     * Small update to resource node tooltips
