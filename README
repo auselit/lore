@@ -11,8 +11,6 @@ jit: http://thejit.org/
 
 rdfquery: http://code.google.com/p/rdfquery/
 
-Simile Timeline: http://www.simile-widgets.org/timeline/
-
 jquery, jquery imgareaselect and simpletip
 
 From DIAS-B project:
@@ -20,11 +18,9 @@ Modified version of nsXPointerServer : MPL 1.1/GPL 2.0/LGPL 2.1
 dannotate : GPL 3.0 : http://maenad.itee.uq.edu.au/dias-b/dannotate.html
 
 DISTRIBUTION
-LORE is distributed an an XPI file (Firefox extension).
+LORE is distributed an an XPI file (Firefox extension) via the Mozilla addons site:
+https://addons.mozilla.org/en-US/firefox/addon/lore/
 
-The extension can be installed into Firefox by opening the XPI via File > Open 
-or dragging the file onto the Browser.
-See http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/demos.php for video demos
 
 DEVELOPMENT
 I use eclipse with Spket IDE http://spket.com/ for development of LORE
@@ -38,6 +34,5 @@ The contents of that text file should be the location of the oaiorebuilder proje
 C:\Workspace\oaiorebuilder
 
 If you want to see LORE debug output, you'll need Firebug and Chromebug installed in your development profile.
-I'm currently using Firebug 1.6X.0a9 and Chromebug 1.6.0a9
 The X in Firebug is important - it has tracing enabled. You can get it from here:
 http://getfirebug.com/releases/firebug/
