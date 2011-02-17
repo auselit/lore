@@ -1,43 +1,14 @@
 <?xml version="1.0" ?>
 
-<project name="lore" default="dist-nojar">
+<project name="lore" default="dist">
 	<property name="src.dir" value="." />
 	<property name="dist.dir" value="dist" />
 	<property name="build.dir" value="tmpbuild" />
 	<property name="app.name" value="lore@maenad.itee.uq.edu.au" />
 	<property name="app.id" value="${app.name}" />
 
-	<target name="chrome">
-		<mkdir dir="${dist.dir}" />
-		<zip destfile="${dist.dir}/${app.name}.jar">
-			<fileset dir="${src.dir}">
-				<include name="content/**" />
-				<include name="locale/**" />
-				<include name="skin/**" />
-				<exclude name="**/.*" />
-				<exclude name="**/.svn/**" />
-			</fileset>
-		</zip>
-	</target>
-		
-	<target name="dist" depends="chrome">
-		<zip destfile="${dist.dir}/${app.name}.xpi">
-			<zipfileset file="${dist.dir}/${app.name}.jar" prefix="chrome"/>
-			<zipfileset file="${src.dir}/chrome-jar.manifest" fullpath="chrome.manifest"/>
-			<fileset dir="${src.dir}">
-				<!--include name="chrome.manifest" /-->
-				<include name="install.rdf" />
-				<include name="defaults/**" />
-				<exclude name="**/.*" />
-				<exclude name="**/.svn/**" />
-			</fileset>
-		</zip>
-	</target>
 	
-	<!--
-	  Include everything, zip it all up into an .xpi.
-	-->
-	<target name="dist-nojar" >
+	<target name="dist" >
 		<mkdir dir="${dist.dir}" />
 		<zip destfile="${dist.dir}/${app.name}.xpi">
 			<zipfileset file="${src.dir}/chrome.manifest" fullpath="chrome.manifest"/>
