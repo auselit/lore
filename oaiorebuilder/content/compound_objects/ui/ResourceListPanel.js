@@ -136,8 +136,8 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 	                            		  p.selectResource(selrows[i].id);
 	                            	  }
 	                              }          
-	  	  	                     var startidx = Math.min(cindex, data.rowIndex);
-	  	  	                     var endidx = Math.max (cindex, data.rowIndex);
+	  	  	                     var startidx = Math.min(cindex, data.rowIndex);           
+	  	  	                     var endidx = rs.getTotalCount() - 1;
 	  	  	                     if (startidx != endidx){      	  
 		  	  	                       for (var j = startidx; j <= endidx; j++){
 		  	  	                    	   var r = rs.getAt(j);
