@@ -646,7 +646,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         // temporarily update graphical editor: it should be listening on the model
         lore.ore.ui.graphicalEditor.addFigure({url:normalizedUri, props: props});
         
-        if (!props.batch){
+        if (props && !props.batch){
             activeView.showResource(theURL);
         }
     },
