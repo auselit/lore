@@ -59,7 +59,12 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         return this.loadedContent;  
     },
 	getAggregatedResource : function(/*String*/ aUri){
-        return this.aggregatedResourceStore.getById(aUri).data;
+        var res = this.aggregatedResourceStore.getById(aUri);
+        if (res) {
+            return res.data;
+        } else {
+            lore.debug.ore("CompoundObject: resource not found " + aUri);
+        }
 	},
 	
 	/** Add a resource to the compound object
