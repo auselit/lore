@@ -12,7 +12,6 @@ lore.ore.Controller = function(config){
     this.loadedURL;
 	/** Property name displayed for the compound object identifier */
     this.REM_ID_PROP = "Compound Object ID";
-
 };
 Ext.apply(lore.ore.Controller.prototype, {
 
@@ -658,6 +657,12 @@ Ext.apply(lore.ore.Controller.prototype, {
     	lore.ore.cache.getLoadedCompoundObject().removeAggregatedResource(uri);
     	// temporarily update graphical editor : it should be listening on the model
     	lore.ore.ui.graphicalEditor.removeFigure(uri);
+    },
+    /** Open all resources in current CO in browser tabs */
+    launchInTabs: function(){
+    	lore.ore.cache.getLoadedCompoundObject().aggregatedResourceStore.each(function(r){
+    		lore.global.util.launchTab(r.get('uri'), window);  		
+    	});
     },
     /** Add a bunch of resources from open browser tabs
      * @param {} thebrowser Provided by overlay: represents the tabbed browser

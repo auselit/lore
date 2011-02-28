@@ -349,8 +349,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         var sel = this.currentSelection;
         var msel = this.multiSelection;
         try{
-        
-          
+         // don't do anything if we are in a text field
+         if (this.editingText){
+        	 return;
+         }
           if (shift) {
             this.selecting = true;
           } else if (!this.dragging) {
@@ -652,7 +654,15 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 	 this.doLayout(true);   
                 }
             });
-            
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+            	text: "Launch all resources in browser",
+            	icon: "chrome://lore/skin/icons/page_go.png",
+            	scope: this,
+            	handler: function(evt){
+            		lore.ore.controller.launchInTabs();
+            	}
+            });
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Add current URL",
