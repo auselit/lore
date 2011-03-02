@@ -978,7 +978,6 @@ util = {
      * @param {} theurl
      */
     setSecureXULIFrameContent : function(iframe, theurl) {
-    
         // once the document had loaded the iframe
         // the docshell object will be created.
         // dochsell must be set before loading the page
@@ -990,9 +989,8 @@ util = {
         
         iframe.docShell.allowMetaRedirects = false;
         iframe.docShell.allowPlugins = false;
-        
         iframe.setAttribute("src",theurl);
-        
+        iframe.addEventListener("load", util.insertSecureFrameStyle, true, true);        
     },
     /**
      * @param {} win
@@ -1016,7 +1014,25 @@ util = {
         iframe.setAttribute("src", "about:blank"); // trigger onload
         return iframe;
     },
-    
+    /** 
+     * Insert stylesheet to style site previews (sandboxed iframes) 
+     * @param {Object} ev The onload event 
+     * */
+    insertSecureFrameStyle: function(ev) {
+    	try{
+	    	var doc = this.contentDocument;
+	    	var theCSS = '.flash-player, noembed, .media-player, object, embed {border: 3px solid #cc0000; padding: 4px;}' 
+	    		+ '.flash-player:before, noembed:before, .media-player:before, object:before, embed:before {font-size: 10px; font-family; Arial, sans-serif; color: #cc0000; content: \"Plugins are disabled in LORE previews. Please open resource in main browser window to view Flash or other embedded content.\" !important; } '
+	    		+ 'object[classid*=":D27CDB6E-AE6D-11cf-96B8-444553540000"],object[codebase*="swflash.cab"],object[data*=".swf"],object[type="application/x-shockwave-flash"],object[src*=".swf"],embed[type="application/x-shockwave-flash"],embed[src*=".swf"],embed[allowscriptaccess],embed[flashvars],embed[wmode]'
+	    		+ '{display:none !important;}';
+	        var styleElem = doc.createElement("style");
+	        styleElem.type = "text/css";
+	        styleElem.innerHTML = theCSS;
+	        doc.getElementsByTagName("head")[0].appendChild(styleElem); 
+    	} catch (e){
+    		debug.ui("util.insertSecureFrameStyle:",e)
+    	}
+    },
     /**
      * Basic HTML Sanitizer using Firefox's parseFragment
      * @param {Object} html
