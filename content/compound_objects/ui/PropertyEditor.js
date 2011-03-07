@@ -139,7 +139,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 var ta = w.getComponent(0);
                                 // need to start/stop editing to trigger handlePropertyChange to update model
                                 this.startEditing(w.activeRow,1);
-                                w.triggerField.setValue(ta.getRawValue());
+                                var val = ta.getRawValue();
+                                // Remove markup such as scripts from value before updating property field
+                                val = (val? lore.global.util.sanitizeHTML(val,window) : '');
+                                w.triggerField.setValue(val);
                                 this.stopEditing();
                                 w.hide();
                             } catch (e){
@@ -185,7 +188,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             menuDisabled : true,
                             width: 70,
                             scope: this,
-                            renderer: this.renderFunction,
+                            renderer: this.renderFunction
                  }, {
                             header : 'Value',
                             dataIndex : 'value',
@@ -291,6 +294,33 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 }
             });
         }
+    },
+    bindModel : function(model){
+    	// Listen to model for property changes
+    	if (this.model){
+    		this.model.un("propertyChanged",this.onModelPropertyChanged,this);
+    	}
+    	this.model = model;
+    	if (this.model){
+    		this.model.on("propertyChanged",this.onModelPropertyChanged,this);
+    	}
+    },
+    /** Update grid if property value changes in model */
+    onModelPropertyChanged: function(config, index){
+    	try{
+	    	//lore.debug.ore("model property changed",[config,index]);
+	    	if (config){
+	    		var rec = this.store.getById(config.prefix + ':' + config.name + "_" + index);
+	    		// check whether value has actually changed
+	    		if (rec && rec.value != config.value){
+	    			// update record
+	    			rec.set('value',config.value);
+	    			rec.commit();
+	    		}
+	    	}
+    	} catch (ex){
+    		lore.debug.ore("onModelPropertyChanged",ex);
+    	}
     },
     /** Grey out rows that are not editable by the user */
 	renderFunction: function(val, cell, rec){
@@ -430,17 +460,15 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             lore.ore.ui.vp.info("Please click on a property prior to selecting the help button");
         }
     },
-    // TODO: use MVC
     handlePropertyRemove : function(store, record, index){
         if (this.id == "nodegrid"){            
-            lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
+        	lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
         }
         lore.ore.ui.graphicalEditor.isDirty = true;
     },
-    /** update the metadataproperties recorded in the figure for that node */
+    /** update the properties for the selected figure */
     handlePropertyChange : function(args) {
     	lore.ore.ui.graphicalEditor.isDirty = true;
-        // TODO: MVC: this needs to update the model (and view needs to listen to model)
         // at present this only updates resource/rel properties - also needs to update on compound object
         try{
             if (this.id == "nodegrid"){
@@ -475,7 +503,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             }
                         }
                     }
-                    selfig.setProperty(args.record.id,args.value);
+                    // update figure (which in turn updates the model)
+                    // Ensure value is clean from scripts tags etc
+                    var cleanvalue = lore.global.util.sanitizeHTML(args.value,window);
+                    selfig.setProperty(args.record.id,cleanvalue);
                 }
                 lore.ore.ui.nodegrid.store.commitChanges();
             }
