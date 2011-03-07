@@ -24,8 +24,9 @@ var EXPORTED_SYMBOLS = ['constants'];
  * @singleton
  * @class lore.constants
  */
+
 constants = {
-     nsprefix : function(ns) {
+     nsprefix : function(ns, defaultNS) {
         var nssize = 0;
         for (var prefix in this.NAMESPACES) {
             if (this.NAMESPACES[prefix] == ns) {
@@ -33,8 +34,14 @@ constants = {
             }
             nssize++;
         }
+        
         // Prefix was not found: create a new one: ensure it has a unique ns prefix
-        var nprefix = "ns" + nssize;
+        var nprefix;
+        if (defaultNS && !this.NAMESPACES[defaultNS]){
+        	nprefix = defaultNS;
+        } else {
+        	nprefix = "ns" + nssize;
+        }
         this.NAMESPACES[nprefix] = ns;
         return nprefix;
     },
