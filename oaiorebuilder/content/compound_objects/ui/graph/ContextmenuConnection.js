@@ -28,9 +28,9 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     	draw2d.Connection.call(this);
     	this.lineColor = new draw2d.Color(174,174,174); // light grey
     	this.labelColor = new draw2d.Color(51,51,51); // dark grey
-        this.label = new draw2d.Label();
+        this.label = new lore.ore.ui.graph.RelationshipLabel();
         this.label.setColor(this.labelColor);
-        this.addFigure(this.label, new lore.ore.ui.graph.LabelLocator(this));
+        this.addFigure(this.label, new lore.ore.ui.graph.LabelLocator(this), true);
     	this.setRouter(new draw2d.BezierConnectionRouter());
         this.setRelationshipType("http://purl.org/dc/elements/1.1/","relation",false);
     	this.sourcePort=null;
@@ -43,7 +43,7 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
         this.setTargetDecorator(tgtArrow); 
     	this.setSourceAnchor(new draw2d.ChopboxConnectionAnchor());
     	this.setTargetAnchor(new draw2d.ChopboxConnectionAnchor());
-        this.label.html.className="ctxtConnLabel";
+        
     },
     /**
      * Return the id
@@ -66,7 +66,7 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     	this.edgetype=etype;
     	this.edgens=enamespace;
         this.symmetric = symmetric;
-    	this.label.setText(etype);
+    	this.label.setStyledText(etype);
         try {
     	    if (symmetric) {
     	        var theArrow = new draw2d.ArrowConnectionDecorator();
@@ -88,21 +88,44 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
      * Construct the context menu for selecting the connection type
      * @param {int} x X position to show menu
      * @param {int} y Y position to show menu
-     * @param {boolean} relEditor Whether this is being called from relEditor
+     * @param {boolean} external Whether this is being called by draw2d or externally (eg from rel editor)
      * @return {}
      */
-    onContextMenu : function(x,y,relEditor) {
-    	//lore.debug.ore("on context menu " + x + " " + y);
+    onContextMenu : function(x,y,external) {    	
         try {
         	if (!(lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
     	            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl))) {
-    	        
-    	    	//lore.debug.ore("generating context menu for connection",this);
         		lore.ore.ui.graph.ContextmenuConnection.contextmenu = new Ext.menu.Menu({
                     showSeparator: false
                 });
                 var cm = lore.ore.ui.graph.ContextmenuConnection.contextmenu;
-    		    
+                // Temporary toolbar to allow filtering of rels in menu, to be replaced with direct manipulation
+                cm.add(new Ext.Toolbar({
+            		items: [
+              		       {   id: 'tfilter',
+              		    	   enableKeyEvents: true,
+              		    	   xtype: 'textfield', 
+              		    	   name: 'filter', 
+              		    	   emptyText: 'Type here to filter...'} 
+              		]
+              	}));
+                Ext.getCmp('tfilter').on('keyup',function(tf, e){
+                	try{    	
+                	var filtertext = Ext.getCmp('tfilter').getRawValue();
+                	lore.ore.ui.graph.ContextmenuConnection.contextmenu.items.each(function(item, index, len){
+                		if (item.initialConfig.text){
+	                		 if (item.initialConfig.text.match(filtertext)){
+	                			item.show();
+	                		 } else {
+	                			item.hide();
+	                		 }
+                		}
+                	});
+                	lore.ore.ui.graph.ContextmenuConnection.contextmenu.doLayout();
+                	} catch (ex){
+                		lore.debug.ore("problem",ex);
+                	}
+                });
     			// sort the menu entries alphabetically
                 var om = lore.ore.ontologyManager;
     			var keys = [];
@@ -113,17 +136,20 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
                 
     		 	for (var i =0; i< keys.length; i++) {
     		 		rel = keys[i];
-    				var relnamespace=om.ontrelationships[rel]; 
+                    
+    				var relnamespace=om.ontrelationships[rel];
+                    //lore.debug.ore("looking up " + relnamespace, lore.constants.NAMESPACES);
+    				var nspfx = lore.constants.nsprefix(relnamespace);
     	            var symmquery = om.ontology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
     	                .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
     		        var symm = symmquery.length > 0;		
     		 		cm.add({
-                        text: rel,          
-                        scope: {ns: relnamespace, rel:rel, symm: symm, relEditor: relEditor},
+                        text: (nspfx? nspfx + " : " : "") + rel,          
+                        scope: {ns: relnamespace, rel:rel, symm: symm, external: external},
                         handler: function(evt){
                         	var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
                         	selfig.setRelationship(this.ns, this.rel, this.symm);
-                        	if (relEditor) {
+                        	if (external) {
                         		var srcfig =  selfig.sourcePort.getParent();
                         		if (srcfig){
                         			lore.ore.ui.graphicalEditor.coGraph.setCurrentSelection(srcfig);
@@ -137,7 +163,7 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     	    }
         	var w = this.workflow;
         	var absx, absy;
-        	if (!relEditor){
+        	if (!external){
         		absx = w.getAbsoluteX() +  x - w.getScrollLeft();
         		absy = w.getAbsoluteY() +  y - w.getScrollTop();
         	} else {
@@ -145,7 +171,6 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
         		absy = y;
         	}
     		lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt([absx, absy]);
-    		
         } catch (ex){ 
             lore.debug.ore("problem generating context menu for connection",ex);
             return null;
@@ -184,5 +209,26 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     	    lore.debug.ore("ContextMenuConnection.getEndAngle: error", e);
     	}
       return angle;
+    },
+    /** override addFigure to allow child figures to have associated events */
+    addFigure: function(figure, locator, enableMouseEvents){
+      var entry = new Object();
+      entry.figure  = figure;
+      entry.locator = locator;
+      entry.figure.parent = this;
+      this.children.add(entry);
+      if(this.graphics != null) {
+        this.paint();
+      }
+      var oThis = this;
+      var mouseDown = function() {
+        var oEvent = arguments[0] || window.event;
+        oEvent.returnValue = false;
+        oThis.getWorkflow().setCurrentSelection(oThis);
+        oThis.getWorkflow().showLineResizeHandles(oThis);
+      }
+      // select connection when child figure is selected
+      
+      figure.getHTMLElement().addEventListener("mousedown", mouseDown, (enableMouseEvents || false)); 
     }
 });
