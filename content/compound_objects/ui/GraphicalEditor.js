@@ -113,9 +113,10 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         if (figure != null) {
             // raise tab first so that properties are rendered and column widths get sized correctly for resource/rels
             Ext.getCmp("propertytabs").activate("properties");
-            
+            if (figure.model && figure.model.data && figure.model.data.properties){
+                lore.ore.ui.nodegrid.bindModel(figure.model.data.properties);
+            }
             lore.ore.ui.nodegrid.store.removeAll();
-            // resource figure
             if (figure.metadataproperties) {
                 for (p in figure.metadataproperties){
                     var pname = p;
@@ -151,10 +152,12 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                         var fromTitle = sp.getProperty("dc:title_0") || sp.url;
                         var relpred = theconnector.edgetype;
                         var relns = theconnector.edgens;
+                        var relpfx = lore.constants.nsprefix(relns);
                         relationshipsData.push({
                             id: theconnector.id, 
                             relName: relpred, 
                             relNS: relns,
+                            relPrefix: relpfx,
                             fromURI: fromURI,
                             fromTitle: fromTitle,
                             toURI: toURI, 
@@ -173,6 +176,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                    {id: figure.id, 
                     relName: figure.edgetype,
                     relNS: figure.edgens,
+                    relPrefix: lore.constants.nsprefix(figure.edgens),
                     toURI: tp.url,
                     toTitle: tp.getProperty("dc:title_0") || tp.url,
                     fromURI: sp.url,
@@ -194,8 +198,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             // Background selected: only show compound object properties
             lore.ore.ui.relsgrid.collapse();
             lore.ore.ui.grid.expand();
-            lore.ore.ui.nodegrid.collapse();
-            
+            //FIXME: gets out of sync when new node is added 
+            //lore.ore.ui.nodegrid.collapse();
         }
    },
    /**
@@ -364,7 +368,22 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             }
         }
         if (theURL && !this.lookup[theURL]) {
-            fig = new lore.ore.ui.graph.ResourceFigure(opts.props);
+            var theProps = opts.props;
+            if (opts.format){
+                theProps["dc:format_0"] = opts.format;
+            }
+            if (opts.rdftype){
+                theProps["rdf:type_0"] = opts.rdftype;
+                if (opts.rdftype == lore.constants.RESOURCE_MAP){
+                    figRepresentsCO = true;
+                } else if (opts.rdftype.match(lore.constants.NAMESPACES["annotype"]) 
+                            || opts.rdftype.match(lore.constants.NAMESPACES["vanno"]) 
+                            || opts.rdftype.match(lore.constants.NAMESPACES["annoreply"])){
+                    figRepresentsAnno = true;
+                }
+            }
+            fig = new lore.ore.ui.graph.ResourceFigure(theProps);
+            
             if (opts.oh) {
                fig.originalHeight = opts.oh;
             }
@@ -378,39 +397,30 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             if (opts.order){
             	fig.orderIndex = opts.order;
             }
-            if (opts.format){
-                fig.setProperty("dc:format_0",opts.format);
-            }
-            if (opts.rdftype){
-                fig.setProperty("rdf:type_0",opts.rdftype);
-                if (opts.rdftype == lore.constants.RESOURCE_MAP){
-                	figRepresentsCO = true;
-                } else if (opts.rdftype.match(lore.constants.NAMESPACES["annotype"]) 
-                			|| opts.rdftype.match(lore.constants.NAMESPACES["vanno"]) 
-                			|| opts.rdftype.match(lore.constants.NAMESPACES["annoreply"])){
-                	figRepresentsAnno = true;
-                }
-            }
             if (opts.abstractPreview == 1){
             	fig.abstractPreview = true;
             }
             fig.setContent(theURL);
+           
             if (opts.batch){
                 this.coGraph.addFigure(fig, opts.x, opts.y);
             } else {
-                // adds to undo stack
-                this.coGraph.addResourceFigure(fig, opts.x, opts.y);
-                // add to model                
                 var figProps = new lore.ore.model.ResourceProperties();
                 // TODO: add properties to figProps object
                 this.model.addAggregatedResource({
-                	uri: theURL,
-                	title: title,
-                	representsCO: figRepresentsCO,
-                	representsAnno: figRepresentsAnno,
-                	properties: figProps
+                        uri: theURL,
+                        title: title,
+                        representsCO: figRepresentsCO,
+                        representsAnno: figRepresentsAnno,
+                        properties: figProps
                 });   
-                fig.setModel(this.model.getAggregatedResource(theURL));
+                // adds to undo stack
+                this.coGraph.addResourceFigure(fig, opts.x, opts.y);
+               // this is a new resource: create corresponding model object               
+            }
+            var resource = this.model.getAggregatedResource(theURL);
+            if  (resource){
+                fig.setModel(resource);
             }
             this.lookup[theURL] = fig.getId();
         } else {
