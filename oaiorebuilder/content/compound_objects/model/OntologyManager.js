@@ -66,71 +66,72 @@ lore.ore.model.OntologyManager = function() {
 
 Ext.apply(lore.ore.model.OntologyManager.prototype, {
 	/** Update metadata for ontologies configured for use with LORE */
-	updateOntologiesMetadata : function(ontologies, callback, om){
+	updateOntologiesMetadata : function(ontologies, om, setCurrent){
 		try{
-		// Load metadata about ontologies from data obtained from preference
-		this.ontologyMetadata.loadData(ontologies);
-		//lore.debug.ore("ontology metadata are",this.ontologyMetadata);
-		// Check that all ontology metadata entries include the nsuri for the baseuri
-		this.ontologyMetadata.each(function(r){
-		  try{
-			var nsuri = r.get('nsuri');
-			var nspfx = r.get('nsprefix');
-            if (nsuri){
-                // make sure this namespace is in constants.NAMESPACES
-                lore.constants.nsprefix(nsuri,nspfx);
-            } else {
-                // Load ontology to get namespace uri
-				var locurl = r.get('locurl');
-				this.cacheOntology(locurl, function(ontData){
-					//lore.debug.ore("after cache ontology",ontData);
-					var baseuri;
-					if(ontData && ontData.nsuri){
-						baseuri = ontData.nsuri;
-					} else {
-						// If there was no xml:base, lookup URI or dc:identifier of OWL ontology 
-						var baseQuery = ontData.ontology
-						    .where('?ont rdf:type <http://www.w3.org/2002/07/owl#Ontology>')
-							.optional('?ont <http://purl.org/dc/elements/1.1/identifier> ?ontid');
-						var res = baseQuery.get(0);
-						if (res){
-							var baseuri = res.ont.value.toString();
-							if (!baseuri) {
-								baseuri = res.ontid.value;
+			// Load metadata about ontologies from data obtained from preference
+			this.ontologyMetadata.loadData(ontologies);
+			// Check that all ontology metadata entries include the nsuri for the baseuri
+			this.ontologyMetadata.each(function(r){
+			  try{
+				var nsuri = r.get('nsuri');
+				var nspfx = r.get('nsprefix');
+	            if (nsuri){
+	                // make sure this namespace is in constants.NAMESPACES
+	                lore.constants.nsprefix(nsuri,nspfx);
+	            } else {
+	                // Load ontology to get namespace uri
+					var locurl = r.get('locurl');
+	                if (locurl && locurl != "http://"){
+						this.cacheOntology(locurl, function(ontData){
+							var baseuri;
+							if(ontData && ontData.nsuri){
+								baseuri = ontData.nsuri;
+							} else {
+								// If there was no xml:base, lookup URI or dc:identifier of OWL ontology 
+								var baseQuery = ontData.ontology
+								    .where('?ont rdf:type <http://www.w3.org/2002/07/owl#Ontology>')
+									.optional('?ont <http://purl.org/dc/elements/1.1/identifier> ?ontid');
+								var res = baseQuery.get(0);
+								if (res){
+									var baseuri = res.ont.value.toString();
+									if (!baseuri) {
+										baseuri = res.ontid.value;
+									}
+								}
 							}
-						}
+							if (baseuri){
+								// If baseuri doesn't end in hash or slash, add hash
+								var lastChar = baseuri[baseuri.length - 1];
+		                        if (lastChar == '>'){
+		                            // remove angle brackets
+		                            baseuri = baseuri.slice(1,baseuri.length - 1);
+		                        }
+								if (!(lastChar == '#' || lastChar == '/')){
+									baseuri = baseuri + "#";
+								}
+								r.set('nsuri', baseuri);
+								// Ensure that all prefixes are included in constants.NAMESPACES
+								lore.constants.nsprefix(baseuri,nspfx);
+								// TODO: store nsuri back into preference so we don't have to look it up again
+		                        //r.nsuri = baseuri;
+							} 
+						});
 					}
-					if (baseuri){
-						// If baseuri doesn't end in hash or slash, add hash
-						var lastChar = baseuri[baseuri.length - 1];
-                        if (lastChar == '>'){
-                            // remove angle brackets
-                            baseuri = baseuri.slice(1,baseuri.length - 1);
-                        }
-						if (!(lastChar == '#' || lastChar == '/')){
-							baseuri = baseuri + "#";
-						}
-                        lore.debug.ore("baseuri " + baseuri);
-						r.set('nsuri', baseuri);
-						// Ensure that all prefixes are included in constants.NAMESPACES
-						lore.constants.nsprefix(baseuri,nspfx);
-						// TODO: store nsuri back into preference so we don't have to look it up again
-                        //r.nsuri = baseuri;
-					}
-					callback(om);
-				});
-			}
-		  } catch (ex){
-				lore.debug.ore("problem",ex);
-		  }
-		},this);
+	            }
+	            
+			  } catch (ex){
+					lore.debug.ore("problem loading ontology metadata",ex);
+			  }
+			},this);
+	        if (setCurrent){
+	              om.setCurrentOntology(om);
+	        }
 		} catch (e){
 			lore.debug.ore("updateOntologiesMetadata",e);
 		}
 	},
 	/** Load ontology terms into cache */
 	cacheOntology : function(onturl, callback){
-        //lore.debug.ore("cacheOntology " + onturl);
 		var om = this;
 		if (onturl) {
 			// Check if it is already in the cache
@@ -216,12 +217,10 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
         	lore.ore.debug("currentOntologyMetadata",current);
         	var onturlnspfx = current.get('nsprefix');
         }*/
-		//lore.debug.ore("setCurrentOntology",[om,this]);
         try{
 		om.dataTypeProps = om.METADATA_PROPS.slice(0);
 		om.cacheOntology(om.ontologyURL, function(ontData){
             try{
-            //lore.debug.ore("om is",om);
 			om.ontrelationships = ontData.relationships;
             om.ontology = ontData.ontology;
 			// TODO: merge ontData.dataTypeProps and om.dataTypeProps
@@ -243,15 +242,12 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 	loadOntology : function(onturl, ontologies) {
 		try {
 			var om = this;
-			var callback;
-			if (this.ontologyURL && this.ontologyURL == onturl){
-            	// ontology url has not changed, no need to do anything
-            	callback = function(){};
-            } else {
+			var setCurrent = false;
+			if (!(this.ontologyURL && this.ontologyURL == onturl && !isEmptyObject(this.ontology))){
+                setCurrent = true;
             	this.ontologyURL = onturl;
-            	callback = this.setCurrentOntology;
             }
-			this.updateOntologiesMetadata(ontologies, callback, om); 
+			this.updateOntologiesMetadata(ontologies, om, setCurrent); 
 		} catch (e) {
 			lore.debug.ore("loadOntology:", e);
 		}
