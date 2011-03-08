@@ -60,10 +60,10 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
     },
 	getAggregatedResource : function(/*String*/ aUri){
         var res = this.aggregatedResourceStore.getById(aUri);
-        if (res) {
-            return res.data;
+        if (res){
+            return res;
         } else {
-            lore.debug.ore("CompoundObject: resource not found " + aUri);
+            lore.debug.ore("CompoundObject: resource not found " + aUri, this.aggregatedResourceStore);
         }
 	},
 	
@@ -431,8 +431,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 }
                 
                 var figRec = this.getAggregatedResource(fig.url);
-                if (figRec && figRec.index){
-                    resourcerdf += ltsymb + "layout:orderIndex>" + figRec.index + ltsymb + "/layout:orderIndex>" + nlsymb;
+                if (figRec && figRec.get('index')){
+                    resourcerdf += ltsymb + "layout:orderIndex>" + figRec.get('index') + ltsymb + "/layout:orderIndex>" + nlsymb;
                 }
                 if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
                     resourcerdf += ltsymb + "layout:scrollx>" + objframe.scrollX
