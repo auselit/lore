@@ -29,21 +29,30 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	this.abstractPreview = false;
 	this.scrollx = 0;
 	this.scrolly = 0;
+	this.editing = false;
+	
+	// cached property values : used by graphical editor to load values into property grid
 	this.metadataproperties = initprops || {};
-	if (!this.metadataproperties["resource_0"]) {
+	
+	this.url = this.getProperty("resource_0");
+	if (!this.url) {
 		this.metadataproperties["resource_0"] = "";
+		this.url = "";
 	}
-	if (!(this.metadataproperties["dc:title_0"] || this.metadataproperties["dcterms:title_0"])) {
+
+	var title = this.getTitle();
+	if (!title) {
 		this.metadataproperties["dc:title_0"] = "";
+		title = "";
 	}
-	this.url = this.metadataproperties["resource_0"];
+	
 	draw2d.Node.call(this);
+	
+	this.createTitleField();
+	this.displayTitle((title ? title : 'Resource'));
 	this.setDimension(220, 170);
-	var title = this.metadataproperties["dc:title_0"]
-			|| this.metadataproperties["dcterms:title_0"];
-	var abs = this.metadataproperties["dcterms:abstract_0"] || "";
-	this.setTitle((title ? title : 'Resource'));
-	this.setAbstract(abs);
+	var abs = this.getProperty("dcterms:abstract_0") || "";
+	this.displayAbstract(abs);
 	this.hasPreview = false;
 	// use Ext ToolTip instead of title attribute to prevent hiding of abstract after 5 seconds on FF 3.5 and below
 	this.tip = new Ext.ToolTip({
@@ -53,7 +62,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 		dismissDelay: 0, 
 		listeners: {
 			beforeshow: function (tip){			
-				var abs = tip.resourceFig.metadataproperties["dcterms:abstract_0"];
+				var abs = tip.resourceFig.getProperty("dcterms:abstract_0");
 				if (abs){
 					tip.body.dom.innerHTML = abs;
 				} else {
@@ -62,6 +71,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 			}
 		}
 	});
+	Ext.get(this.header).on('dblclick',this.startEditing,this);
 };
 Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	type : "lore.ore.ui.graph.ResourceFigure",
@@ -112,6 +122,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.bottom_right.style.top = "0px";
 		this.bottom_right.style.fontSize = "2px";
 		this.header = document.createElement("div");
+		this.header.id = this.id + "_header";
 		this.top_left.className = "co-tl";
 		this.bottom_left.className = "co-bl";
 		this.bottom_right.className = "co-br";
@@ -148,6 +159,73 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		item.appendChild(this.bottom_right);
 		return item;
 	},
+	/** Create an editable title field */
+	createTitleField : function(){
+		this.editField = new Ext.form.TextField({
+			width: 200,
+			height: 15,
+			renderTo: this.html,
+			hidden: true,
+			style: {
+				fontSize: "11px",
+				fontFamily: "tahoma, arial, helvetica",
+				position:"absolute",
+				top: 0,
+				left: 10,
+				zIndex: "inherit"
+			}
+		});
+		
+		this.editField.on("specialkey",function(f,e){	
+    		var key = e.getKey();
+    		if (e.getKey() == e.ENTER || e.getKey() == e.ESC){
+    			// cancel edit if escape is pressed
+    			this.stopEditing(key == e.ESC);
+    		}
+	    	e.stopPropagation();
+    	},this);
+    	this.editField.on("blur",function(f,n,o){
+    			this.stopEditing();
+    	},this);
+	},
+	/** 
+     * Stop direct editing of title
+     */
+    stopEditing : function(cancel){
+    	try{
+    	if (!cancel && this.editField.isValid()){
+    		// update title
+    		var t = this.editField.getRawValue();
+    		this.setProperty("dc:title_0",t)
+    	}
+    	this.editField.hide();
+    	this.workflow.editingText = false;
+    	this.editing = false;
+    	} catch (ex){
+    		lore.debug.ore("stop editing",ex)
+    	}
+    },
+    /**
+     * Start direct editing of relationship
+     */
+    startEditing : function(){
+    	try{
+	    	if (this.editing){
+	    		return;
+	    	}
+	    	this.editing = true;
+	    	// prevent keystrokes entered into text field being interpreted by editor to move/delete nodes
+	    	this.workflow.editingText = true;
+			// hide display label
+	    	this.displayTitle("");
+	    	// display editing field with current value
+	    	this.editField.setRawValue(this.getProperty("dc:title_0"));
+	    	this.editField.show();	
+	    	this.editField.focus();   	
+    	} catch (ex){
+    		lore.debug.ore("Problem",ex);
+    	}
+    },
     /** 
      * Returns true if this figure has been collapsed
      * @return {boolean}
@@ -201,11 +279,11 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * 
 	 * @param {string} title
 	 */
-	setTitle : function(title) {
+	displayTitle : function(title) {
 		this.header.innerHTML = title;
 		
 	},
-	setAbstract: function(abs) {
+	displayAbstract: function(abs) {
 		if (this.abstractPreview) {
 			if (abs && abs !=""){
 				this.iframearea.innerHTML = "<div class='nodeabstract'>" + abs + "</div>";
@@ -237,16 +315,16 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 */
 	showContent : function() {
 		var theurl = this.url;
-		var mimetype = this.metadataproperties["dc:format_0"];
-		var rdftype = this.metadataproperties["rdf:type_0"];
+		var mimetype = this.getProperty("dc:format_0");
+		var rdftype = this.getProperty("rdf:type_0");
 		this.setIcon(theurl);
 		if (this.hasPreview) {
-			lore.debug.ore("Regenerating node preview " + this.url, this);
+			//lore.debug.ore("Regenerating node preview " + this.url, this);
 		} else {
 			this.hasPreview = true;
 		}
 		if (this.abstractPreview){
-			this.iframearea.innerHTML = "<div class='nodeabstract'>" + (this.metadataproperties["dcterms:abstract_0"] || "(No abstract)") + "</div>";
+			this.iframearea.innerHTML = "<div class='nodeabstract'>" + (this.getProperty("dcterms:abstract_0") || "(No abstract)") + "</div>";
 		} else if (rdftype && rdftype.match("ResourceMap")) {
 			this.iframearea.innerHTML = "<div class='orelink' id='"
 					+ this.id
@@ -368,6 +446,13 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 */
 	setResourceURL : function(urlparam) {
 		this.url = urlparam;
+		if (this.model) {
+			this.model.set('uri',urlparam);
+			this.model.id = urlparam;
+			this.model.commit();
+			// Force store to use new ID to index record
+			this.model.store.data.replace(urlparam,this.model);	
+		} 
 		this.metadataproperties["resource_0"] = urlparam;
 		this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='"
 				+ this.id + "-icon'>" + this.uriexpander + "<a title='"
@@ -379,8 +464,8 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * Displays an icon depending on the mimetype of the resource
 	 */
 	setIcon : function() {
-		var mimetype = this.metadataproperties["dc:format_0"]
-				? this.metadataproperties["dc:format_0"]
+		var mimetype = this.getProperty("dc:format_0")
+				? this.getProperty("dc:format_0")
 				: "text/html";
 		this.icontype = "mimeicon ";
 		if (mimetype.match("html")) {
@@ -408,18 +493,18 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @param {} theurl
 	 */
 	setMimeType : function(theurl) {
-		if (!this.metadataproperties["dc:format_0"]) {
+		if (!this.getProperty("dc:format_0")) {
 			// If we know it's an annotation or a resource map, set the mime
 			// type automatically
-			var rdftype = this.metadataproperties["rdf:type_0"];
+			var rdftype = this.getProperty("rdf:type_0");
 			if (rdftype && rdftype.match("ResourceMap")) {
-				this.metadataproperties["dc:format_0"] = "application/rdf+xml";
+				this.getProperty("dc:format_0") = "application/rdf+xml";
 				this.showContent();
 			} else if ((rdftype && (rdftype
 					.match(lore.constants.NAMESPACES["annotype"])
 					|| rdftype.match(lore.constants.NAMESPACES["vanno"]) || rdftype
 					.match(lore.constants.NAMESPACES["annoreply"])))) {
-				this.metadataproperties["dc:format_0"] = "application/xml";
+				this.setProperty("dc:format_0","application/xml");
 				this.showContent();
 			} else {
 				// Otherwise, use a HEAD request to find out the content type
@@ -441,7 +526,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 							mimetype = "text/html";
 						}
 						//lore.debug.ore("mimetype is " + mimetype, [req, req.getAllResponseHeaders()]);
-						thisobj.metadataproperties["dc:format_0"] = mimetype;
+						thisobj.setProperty("dc:format_0", mimetype);
 						thisobj.showContent();
 					}
 				};
@@ -646,13 +731,13 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 */
 	appendProperty : function(pname, pval) {
 		var counter = 0;
-		var oldrdftype = this.metadataproperties["rdf:type_0"];
-		var prop = this.metadataproperties[pname + "_" + counter];
+		var oldrdftype = this.getProperty("rdf:type_0");
+		var prop = this.getProperty(pname + "_" + counter);
 		while (prop) {
 			counter = counter + 1;
-			prop = this.metadataproperties[pname + "_" + counter];
+			prop = this.getProperty(pname + "_" + counter);
 		}
-		this.metadataproperties[(pname + "_" + counter)] = pval;
+		this.setProperty(pname + "_" + counter, pval);
 		// if the rdf:type has changed, regenerate preview (as it might be an
 		// annotation or compound object
 		if (pname == "rdf:type" && oldrdftype != pval && this.hasPreview) {
@@ -666,24 +751,49 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @param {} pval The value of the property
 	 */
 	setProperty : function(pid, pval) {
-
-		var oldval = this.metadataproperties[pid];
+		if (!this.model) {
+			lore.debug.ore("Warning: no model for fig " + this.url,this);
+		}
+		var oldval = this.getProperty(pid);
 		this.metadataproperties[pid] = pval;
 		if (pid == "resource_0" && pval != oldval) {
-			delete this.metadataproperties["dc:format_0"];
+			this.unsetProperty("dc:format_0");
 			this.setContent(pval);
-		} else if ((pid == "dc:title_0" || pid == "dcterms:title_0")
-				&& pval != oldval) {
+			// model is updated by setContent
+		} else if ((pid == "dc:title_0" || pid == "dcterms:title_0")){
+			// Always redisplay title as it may have been cleared during editing	
 			if (pval && pval != "") {
-				this.setTitle(pval);
+				this.displayTitle(pval);
 			} else {
-				this.setTitle("Resource");
+				this.displayTitle("Resource");
 			}
+			// only update model if value has changed
+			if (this.model && pval != oldval){
+				this.model.set('title',pval);
+				this.model.commit();
+			} 
 		} else if (pid == "dcterms:abstract_0" && pval != oldval){
 			if (pval){
-				this.setAbstract(pval);
+				this.displayAbstract(pval);
 			} else {
-				this.setAbstract("");
+				this.displayAbstract("");
+			}
+		}
+		//lore.debug.ore("setProperty " + pid + " " + pval,this.model);
+		// Update model
+		if (pid != "resource_0" && this.model){
+			try{
+			var pidsplit = pid.split(":");
+			var pfx = pidsplit[0];
+			pidsplit = pidsplit[1].split("_");
+			var idx = pidsplit[1];
+			var propname = pidsplit[0];
+			var ns = lore.constants.NAMESPACES[pfx];
+			var propuri = ns + propname;
+			//lore.debug.ore("Updating property " + propuri +  " " + idx, this.model);
+			this.model.get('properties').setProperty({id: propuri, ns: ns, name: propname, value: pval, prefix: pfx},idx)
+			} catch (ex){
+				lore.debug.ore("problem",ex);
 			}
 		}
 	},
@@ -697,18 +807,26 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		if (pid == "dc:title_0" || pid == "dcterms:title_0") {
 			// TODO: #2 (refactor) : store properties as arrays instead (this
 			// will leave gaps if there are lots of values for this property)
-			var existingTitle = this.metadataproperties["dc:title_0"]
-					|| this.metadataproperties["dcterms:title_0"];
+			var existingTitle = this.getProperty("dc:title_0")
+					|| this.getProperty("dcterms:title_0");
 			if (existingTitle) {
-				this.setTitle(existingTitle);
+				this.displayTitle(existingTitle);
 			} else {
-				this.setTitle("Resource");
+				this.displayTitle("Resource");
 			}
 		}
 		if (pid == "dcterms:abstract_0"){
-			this.setAbstract("");
+			this.displayAbstract("");
 		}
-
+		// Update model
+		var propData = this.expandPropAbbrev(pid);
+    	if (propData && propData.id){
+    		this.model.get('properties').removeProperty(propData.id, propData.index);
+    	}
+	},
+	/** Return the title of the figure */
+	getTitle : function(){
+		return this.getProperty("dc:title_0") || this.getProperty("dcterms:title_0");
 	},
 	/**
 	 * Get a property
@@ -762,7 +880,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                     }
                  });
             }
-            if (!this.metadataproperties["dc:format_0"].match("rdf")) {
+            if (!this.getProperty("dc:format_0").match("rdf")) {
             	this.contextmenu.add({
                     text: "Open resource in separate window",
                     icon: "chrome://lore/skin/icons/page_go.png",
@@ -816,10 +934,9 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                 scope: this,
                 handler: function(evt){
                 	Ext.getCmp("loreviews").activate("remexploreview");
-					var rdftype = this.metadataproperties["rdf:type_0"];
+					var rdftype = this.getProperty("rdf:type_0");
 					var isCO = (rdftype && rdftype.match("ResourceMap"));
-					var title = this.metadataproperties["dc:title_0"]
-							|| this.metadataproperties["dcterms:title_0"];
+					var title = this.getTitle();
 					if (!title) {
 						title = this.url;
 					}
@@ -866,5 +983,22 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		if (ctrl) {
 			this.workflow.onKeyDown(keyCode, ctrl);
 		}
-	}
+	},
+	 /** expand prop in form of dc:title_0 to propuri plus index */
+    expandPropAbbrev : function(pid){
+    	if (pid){
+    		var idx, propname;
+    		var pidsplit = pid.split(":");
+			var pfx = pidsplit[0];
+			if (pidsplit[1]){
+				pidsplit = pidsplit[1].split("_");
+				idx = pidsplit[1] || "0";
+				propname = pidsplit[0];
+			} 
+			var ns = lore.constants.NAMESPACES[pfx];
+			var propuri = ns + propname;
+			return {id: propuri, name: propname, ns: ns, prefix: pfx, index: idx};
+    	}
+    }
+	
 });
