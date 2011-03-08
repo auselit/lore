@@ -2,7 +2,7 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://lore/skin/overlay.css" type="text/css"?>
 <!DOCTYPE prefwindow SYSTEM "chrome://lore/locale/prefwindow.dtd">
-<prefwindow id="lore_preferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&prefwindow.title;">
+<prefwindow onbeforeaccept="lore.ontologyTreeView.saveOntologies();" id="lore_preferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&prefwindow.title;">
   <prefpane image="chrome://lore/skin/icons/user.png" id="general-pref" label="&general.label;" style="width:350px">
     <preferences>
       <preference id="dccreator_pref" name="extensions.lore.dccreator" type="unichar"/>
@@ -37,7 +37,9 @@
       <preference id="annocreateprivate_pref" name="extensions.lore.createprivateannotations" type="boolean" />
     </preferences>
         <label control="text_annometaonturl">&annometaontology.label;</label>
-        <textbox id="text_annometaonturl" preference="annometa_onturl_pref"/>
+        <menulist editable="true" id="text_annometaonturl" preference="annometa_onturl_pref" onpopupshowing="lore.populateOntologyMenu(document.getElementById('text_annometaonturl'));" oncommand="document.getElementById('text_annometaonturl').value = event.target.value">
+            <menupopup></menupopup>
+        </menulist>
         <groupbox>
             <caption label="&repos.label;"/>
             <label control="text_annoserver">&annoserver.label;</label><textbox id="text_annoserver" preference="annoserver_pref"/>
@@ -53,12 +55,8 @@
       <preference id="type_pref" name="extensions.lore.rdfrepostype" type="string"/>
      </preferences>
     <label control="text_relonturl">&relonturl.label;</label>
-    <menulist editable="true" id="text_relonturl" preference="relonturl_pref" oncommand="document.getElementById('text_relonturl').value = event.target.value">
-      <menupopup id="menupopup1">
-        <menuitem label="LORE default" value="chrome://lore/content/ontologies/austlitoaiore.owl"/>
-        <menuitem label="AustLit Ontology" value="chrome://lore/content/ontologies/AustLit.xml"/>
-        <menuitem label="RDA Group 1 Elements" value="chrome://lore/content/ontologies/rda.rdf"/>
-      </menupopup>
+    <menulist editable="true" id="text_relonturl" preference="relonturl_pref" onpopupshowing="lore.populateOntologyMenu(document.getElementById('text_relonturl'));" oncommand="document.getElementById('text_relonturl').value = event.target.value">
+      <menupopup></menupopup>
     </menulist>
     <groupbox>
        <caption label="&repos.label;"/>
@@ -71,13 +69,159 @@
      </groupbox>
   </prefpane>
 
-  <prefpane image="chrome://lore/skin/icons/wrench_orange.png" id="tm-pref" label="&tm.label;" style="width:350px">
+  <prefpane onpaneload="lore.ontologyTreeView.initView();" image="chrome://lore/skin/icons/wrench_orange.png" id="ont-pref" label="Ontologies" style="width:350px">
     <preferences>
-      <preference id="tmkey_pref" name="extensions.lore.tmkey" type="unichar" />
+      <preference id="relonturl_pref" name="extensions.lore.ontologies" type="unichar" />
     </preferences>
-    <label control="text_tmkey">&tmkey.label;</label><textbox id="text_tmkey" preference="tmkey_pref"/>
-    <separator class="thin"/>
-    <label>&tmkey.message;</label>
-    <text class="text-link" onclick="window.open('http://www.opencalais.com/APIkey')" value="http://www.opencalais.com/APIkey"/>
-  </prefpane>
+    <tree id="onttree" height="200" flex="1" hidecolumnpicker="false" seltype="single" editable="true" >
+          <treecols>
+	         <treecol ignoreincolumnpicker="true" id="nsprefix" label="Name" primary="true" flex="1" persist="width ordinal hidden" width="25"/>
+             <splitter class="tree-splitter"/>
+	         <treecol ignoreincolumnpicker="true" crop="start" id="locurl" label="Location" flex="1" persist="width ordinal hidden" />
+             <splitter class="tree-splitter"/>
+             <treecol id="nsuri" label="Namespace" flex="1" persist="width ordinal hidden" hidden="true"/>
+             <!--treecol id="useanno" class="treecol-image" src="chrome://lore/skin/icons/comment.png" type="checkbox" editable="true" tooltiptext="Use ontology for annotations" label="A"/>
+             <treecol id="useco" class="treecol-image" src="chrome://lore/skin/icons/oaioreicon-sm.png" type="checkbox" editable="true" tooltiptext="Use ontology for compound objects" label="CO"/-->
+          </treecols>
+         <treechildren id="rows"/>
+      </tree>
+      <toolbox>
+        <toolbar>
+            <toolbarbutton id="addont" icon="add" label="Add" oncommand="lore.ontologyTreeView.addOntology();"/>
+            <toolbarbutton id="removeont" icon="remove" label="Remove" oncommand="lore.ontologyTreeView.deleteOntology();"/>
+        </toolbar>
+      </toolbox>
+   </prefpane>
+  <script>
+<![CDATA[
+	try{
+		var lore = {};
+		Components.utils.import("resource://lore/debug.js", lore);
+		// For compatibility with FF 3.0
+		if (typeof(JSON) == "undefined") {  
+		  Components.utils.import("resource://gre/modules/JSON.jsm");
+		  JSON.parse = JSON.fromString;
+		  JSON.stringify = JSON.toString;
+		}
+		lore.ontologyTreeView = {
+		    model : [],
+		    treeBox: null,
+		    tree: null,
+		    get rowCount(){
+		        return this.model.length;
+		    },
+		    getCellText : function(row,column) { 
+		        return this.model[row][column.id]; 
+		    },
+		    setTree: function(treeBox){
+		        this.treeBox = treeBox;    
+		    },
+		    isContainer: function(row){
+		        return false; 
+		    },
+		    isEditable: function(idx, column)  {
+	            var obj = this.model[idx];
+	            return (obj.status != "default");
+	            
+		    },
+		    isSeparator: function(row){
+		        return false; 
+		    },
+		    isSorted: function(){ 
+		        return false; 
+		    },
+		    getLevel: function(row){
+		        return 0; 
+		    },
+		    getImageSrc: function(row,col){
+		        return null; 
+		    },
+		    getRowProperties: function(row,props){ 
+		    },
+		    getCellProperties: function(row,col,props){
+		        // attach 'default' property to default ontologies so they will be greyed out
+		        var obj = this.model[row];
+		        if (obj.status != "custom"){
+		            //lore.debug.ore("default cell prop",this);
+		            var atomService = Components.classes["@mozilla.org/atom-service;1"].getService(Components.interfaces.nsIAtomService);
+		            var atom = atomService.getAtom("default");
+		            props.AppendElement(atom);
+		        }
+		    },
+		    getColumnProperties: function(colid,col,props){
+		    },
+		    setCellText: function (row, col, val){
+		       var obj = this.model[row];
+		       obj[col.id] = val;
+		    }
+		};
+		
+		lore.ontologyTreeView.initView = function(){
+		    try {  
+		      var ontjson = Components.classes["@mozilla.org/preferences-service;1"]
+		        .getService(Components.interfaces.nsIPrefBranch)
+		        .getCharPref("extensions.lore.ontologies");
+		      this.model = JSON.parse(ontjson);
+		    } catch (e) {
+		      this.model = [];
+		      lore.debug.ui("init ontology tree view:",e);
+		   }
+		   this.tree = document.getElementById('onttree');
+		   this.tree.view = this;
+		};
+		
+		lore.ontologyTreeView.deleteOntology = function(){
+		   // default ontologies may not be deleted
+		   var obj = this.model[this.tree.currentIndex];
+		   if (obj.status == "custom"){
+		        this.model.splice(this.tree.currentIndex, 1);
+		        this.treeBox.rowCountChanged(this.tree.currentIndex, -1);
+		   }
+		};
+		
+		lore.ontologyTreeView.addOntology = function(){
+		   this.model[this.model.length] =  {
+		        status: "custom", 
+		        locurl:"http://", 
+		        nsprefix: "ns"
+		   };
+		   var row = this.model.length - 1;
+		   this.treeBox.rowCountChanged(row, 1);
+		   // trigger editing of inserted values
+		   this.selection.select(row);
+		   this.tree.startEditing(row, this.tree.columns[0]);
+		};
+		
+		lore.ontologyTreeView.saveOntologies = function(){
+		   var ontjson = JSON.stringify(this.model);
+		   Components.classes["@mozilla.org/preferences-service;1"]
+		    .getService(Components.interfaces.nsIPrefBranch)
+		    .setCharPref("extensions.lore.ontologies", ontjson);
+		};
+	    /** Reload drop down list from entries in ontologies tree */
+	   lore.populateOntologyMenu = function(menulist){
+	        var menu = menulist.menupopup;
+	        var items = menu.childNodes;
+	        for (var j = items.length - 1; j >= 0; j--){
+	            menu.removeChild(items[j]);
+	        }
+	        var ontologies = lore.ontologyTreeView.model;
+	        if (!ontologies){
+		        var ontjson = Components.classes["@mozilla.org/preferences-service;1"]
+		            .getService(Components.interfaces.nsIPrefBranch)
+		            .getCharPref("extensions.lore.ontologies");
+		          ontologies = JSON.parse(ontjson);
+	        }
+	        for (var i = 0; i < ontologies.length; i++){
+	            var tempItem = document.createElement("menuitem");
+	            tempItem.setAttribute("label", ontologies[i].nsprefix);
+	            tempItem.setAttribute("value", ontologies[i].locurl);
+	            menu.appendChild(tempItem);
+	        } 
+	    };
+	} catch (e){
+	    lore.debug.ui("options.xul:",e);
+	}
+]]>    
+</script>
 </prefwindow>
