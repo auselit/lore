@@ -21,11 +21,11 @@ Ext.namespace("lore.ore.model");
 /**
  * @class lore.ore.model.ResourceProperties Manage multi-valued properties for Resources
  */
-lore.ore.model.ResourceProperties = function (){
-    this.data = {};
-};
-// TODO: consider just having array of values?
-Ext.apply(lore.ore.model.ResourceProperties.prototype, {
+lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
+	constructor: function(){
+		this.data = {};
+		this.addEvents('propertyChanged');
+	},
     /** setProperty Set a property or add if it does not exist
      * @param {Object} config The data for the property
      * @cfg id The URI of the property
@@ -50,6 +50,7 @@ Ext.apply(lore.ore.model.ResourceProperties.prototype, {
                 propValArray.push(config);
             }
         }
+        this.fireEvent('propertyChanged', config, index);
     },
     /** Remove a property with a given index (if no index is supplied, 0 is assumed)
      * 
