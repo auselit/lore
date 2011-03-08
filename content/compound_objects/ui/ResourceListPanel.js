@@ -24,7 +24,6 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 	   		    	key: [46,8],
 	   		    	scope: this,
 	   		    	fn: function(){
-	   		    		lore.debug.ore("key handler");
 	   		    		var sel = this.getSelectionModel().getSelected();
 	   		    		if (sel){
 	   		    			lore.ore.controller.removeResource(sel.data.uri);
@@ -237,9 +236,9 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                     var title = this.tmpurl;
                     var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(this.tmpurl);
                     if (propR) {
-                        title = propR.properties.getTitle() || title;
+                        title = propR.get('properties').getTitle() || title;
                     }
-                    var isCO = propR.representsCO;
+                    var isCO = propR.get('representsCO');
 					
 					lore.ore.explorePanel.showInExploreView(this.tmpurl, title, isCO);
                 }
