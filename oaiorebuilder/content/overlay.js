@@ -22,6 +22,12 @@ try {
         alert("loreoverlay: Not all js modules loaded.");
     }
     
+    // consistent access to JSON across versions of FF
+    if (typeof(JSON) == "undefined") {  
+    	  Components.utils.import("resource://gre/modules/JSON.jsm");
+    	  JSON.parse = JSON.fromString;
+    	  JSON.stringify = JSON.toString;
+    }
     
     var loreoverlay = {
         /** The compound objects view */
@@ -126,7 +132,6 @@ try {
                 this.prefs.addObserver("", this, false);
                 
                 this.initialized = true;
-                this.strings = document.getElementById("lore-strings");
                 this.addEvents(["location_changed", "location_refresh", "tab_changed"]);
                 lore.global.ui.load(window, this.instId);
                 
@@ -136,6 +141,9 @@ try {
                 
                 var container = gBrowser.tabContainer;
                 container.addEventListener("TabSelect", this.onTabSelected, false);
+                
+                
+                
             } 
             catch (e) {
                 alert("loreoverlay.onLoad: " + e + "\n" + e.stack);
@@ -492,7 +500,10 @@ try {
                 var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
                 var tmkey = this.prefs.getCharPref("tmkey");
-                
+                var ontologies = this.prefs.getCharPref("ontologies");
+                if (ontologies){
+                	ontologies = JSON.parse(ontologies);
+                } 
                 loreoverlay.coView().handlePreferencesChanged({
                     creator: dccreator,
                     relonturl: relonturl,
@@ -501,7 +512,8 @@ try {
                     annoserver: annoserver,
                     disable: disable_co,
                     tmkey: tmkey,
-                    high_contrast: high_contrast
+                    high_contrast: high_contrast,
+                    ontologies: ontologies
                 });
                 if(!ignoreDisable){
                     this.setCompoundObjectsVisibility(!disable_co);
