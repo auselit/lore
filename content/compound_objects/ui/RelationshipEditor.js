@@ -83,6 +83,8 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }, {
                         name: 'relNS'
                     }, {
+                    	name: 'relPrefix'
+                    }, {
                         name : 'fromURI'
                     }, {
                         name: 'fromTitle',
@@ -195,7 +197,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             "<p style='font-size:110%;'><b>From resource:</b> {fromTitle} <span style='font-size:90%'>({fromURI})</span></p>",
             "<p style='padding-top:1em;padding-bottom:1em;font-size:110%;'><b>Relationship:</b> {relName}</p>",
             "<p style='font-size:110%;'><b>To resource:</b> {toTitle} <span style='font-size:90%'>({toURI})</span></p>",
-            "<p style='padding-top:3em'>This relationship is from the following ontology: {relNS}</p>"
+            "<p style='padding-top:3em'>This relationship is from: {relPrefix} ({relNS})</p>"
             ],
             {compiled: true}
         );
