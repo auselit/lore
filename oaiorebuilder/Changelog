@@ -1,5 +1,16 @@
 LORE (Literature Object Re-use and Exchange)
 
+version 0.62 (08/03/2011):
+    * Added ontology pane to preferences to make it easier to configure custom ontologies
+
+    Compound Objects:
+     * Added menu item in graphical editor to launch all resources in browser
+     * Display a message indicating that plugins are blocked when Flash content is detected in previews in slideshow and graphical editor
+     * Strip out undesirable tags from property values (e.g. don't allow script tags to be entered)
+     * Fixed bug with resource reordering after resource URL is updated manually that was causing problems with RDF/XML generation
+     * Added a filter field in relationships menu to make it easier to find ontology terms. The menu is now also triggered by double clicking on the relationship name. 
+     * Allow resource titles to be edited directly in graphical editor by double clicking on the title label.
+
 version 0.61 (15/02/2011):
 	Annotations:
 	 * Added a private annotations feature:
