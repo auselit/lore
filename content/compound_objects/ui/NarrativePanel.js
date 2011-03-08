@@ -201,8 +201,8 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
 	                        // property data for related resource: for looking up title etc
 	                        var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
                             if (propR) {
-                                prop.title = propR.properties.getTitle() || prop.value;
-                                prop.url = propR.representsAnno ? prop.value + "?danno_useStylesheet=" : prop.value;
+                                prop.title = propR.get('properties').getTitle() || prop.value;
+                                prop.url = propR.get('representsAnno') ? prop.value + "?danno_useStylesheet=" : prop.value;
 	                        } else {
 	                            prop.title = prop.value;
                                 prop.url = prop.value;
