@@ -174,10 +174,8 @@ Ext.apply(lore.ore.Controller.prototype, {
                     lore.debug.ore("no remurl found in RDF",loadedRDF);
                     //lore.debug.ore("the input rdf was",rdf); 
                 }
-                // TODO: listen to model object
-                //lore.debug.timeElapsed("loading into grid ");
+                lore.ore.controller.bindViews(lore.ore.cache.getLoadedCompoundObject());
                 
-               //lore.debug.ore("controller rem id prop is " + lore.ore.controller.REM_ID_PROP);
                 lore.ore.ui.grid.store.loadData([
                     {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: remurl}
                 ]);
@@ -309,9 +307,9 @@ Ext.apply(lore.ore.Controller.prototype, {
                             	}
                                 if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
                                     // TODO this should not be necessary - send props to addFigureWithOpts
-                                    srcfig.setTitle(propval);
+                                    srcfig.displayTitle(propval);
                                 } else if (prefix == "dcterms" && relresult.term == "abstract") {
-                                	srcfig.setAbstract(propval);
+                                	srcfig.displayAbstract(propval);
                                 }
                             }
                         }
@@ -320,8 +318,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 // FIXME: #210 Temporary workaround to set drawing area size on load
                 // problem still exists if a node is added that extends the boundaries
                 lore.ore.ui.graphicalEditor.coGraph.resizeMask();
-                
-                lore.ore.controller.bindViews(lore.ore.cache.getLoadedCompoundObject());
+
                 lore.ore.ui.vp.info("Loading compound object");
                 Ext.Msg.hide();
                 //lore.debug.timeElapsed("set loaded in cache ");
@@ -356,7 +353,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             }
     },
     /** Prompt whether to save the current compound object, then calls newCO to create new compound object */
-    createCompoundObject: function(dontRaise){
+    createCompoundObject: function(dontRaise, callback){
         try{
             // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -375,16 +372,25 @@ Ext.apply(lore.ore.Controller.prototype, {
                             var therdf = currentCO.toRDFXML(false);
                             lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
                                 lore.ore.controller.afterSaveCompoundObject(remid);
-                                lore.ore.controller.newCO(dontRaise);  
+                                lore.ore.controller.newCO(dontRaise);
+                                if (callback) {
+                                    callback();
+                                }
                             });
                             
                         } else if (btn === 'no') {
                             lore.ore.controller.newCO(dontRaise);
+                            if (callback){
+                                callback();
+                            }
                         }
                     }
                 });
             } else {
                 this.newCO(dontRaise);
+                if (callback){
+                    callback();
+                }
             }
     
         } catch (e){
@@ -392,7 +398,6 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         
     },
-
     /**
      * Create new Compound object
      * @param {} dontRaise
@@ -796,7 +801,7 @@ Ext.apply(lore.ore.Controller.prototype, {
           this.defaultCreator = prefs.creator;
           var om = lore.ore.ontologyManager;
           if (om){
-            om.loadOntology(prefs.relonturl);
+            om.loadOntology(prefs.relonturl, prefs.ontologies);
           } 
           //Disabled for now
           //lore.ore.textm.tmkey = prefs.tmkey;
