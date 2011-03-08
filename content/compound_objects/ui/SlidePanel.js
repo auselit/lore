@@ -84,11 +84,11 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                         // Open in browser link
                         relhtml += "<a href='#' title='Show in browser' onclick='lore.global.util.launchTab(\"" 
                         	+ theProp.value 
-                        	+ ((propR && propR.representsAnno) ? "?danno_useStylesheet=" : "") 
+                        	+ ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
                         	+ "\");'>";
                         // use title when available
                         if (propR) {
-                            relhtml += propR.properties.getTitle() || theProp.value;
+                            relhtml += propR.get('properties').getTitle() || theProp.value;
                         } else {
                             relhtml += theProp.value;
                         }
