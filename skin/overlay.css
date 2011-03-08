@@ -109,3 +109,15 @@
 .text-link {
 	margin-left: 5px;
 }
+
+/* For ontologies table in pref dialog */
+treechildren::-moz-tree-checkbox {
+  list-style-image: none;
+}
+treechildren::-moz-tree-checkbox(checked){
+  list-style-image: url("chrome://global/skin/checkbox/cbox-check.gif");
+}
+treechildren::-moz-tree-cell-text(default){
+	color: gray;
+}
+
