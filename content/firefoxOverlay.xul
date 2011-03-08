@@ -7,13 +7,6 @@
   <xul:script type="application/x-javascript" src="overlay.js"/>
   <xul:script type="application/x-javascript" src="tracing.js"/>
 
-  <xul:stringbundleset id="stringbundleset">
-    <xul:stringbundle id="lore-strings" src="chrome://lore/locale/lore.properties"/>
-  </xul:stringbundleset>
-
-
-
-    
   <xul:vbox id="appcontent">
     <xul:tabbrowser id="content" flex="3" orient="horizontal" >
       <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" collapsed = "true" />
