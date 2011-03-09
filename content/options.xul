@@ -162,12 +162,20 @@
 		        .getService(Components.interfaces.nsIPrefBranch)
 		        .getCharPref("extensions.lore.ontologies");
 		      this.model = JSON.parse(ontjson);
+              this.instantApply = (Components.classes["@mozilla.org/preferences-service;1"]
+                .getService(Components.interfaces.nsIPrefService)
+                .getBranch("browser.preferences.")
+                .getBoolPref("instantApply"));
 		    } catch (e) {
 		      this.model = [];
 		      lore.debug.ui("init ontology tree view:",e);
 		   }
 		   this.tree = document.getElementById('onttree');
 		   this.tree.view = this;
+           // save ontologies when tree loses focus if instant apply preference is set (e.g. on Mac)
+           if (this.instantApply){
+                this.tree.addEventListener("blur", this.saveOntologies, true);
+           }
 		};
 		
 		lore.ontologyTreeView.deleteOntology = function(){
@@ -193,7 +201,12 @@
 		};
 		
 		lore.ontologyTreeView.saveOntologies = function(){
-		   var ontjson = JSON.stringify(this.model);
+           var model = this.model;
+           if (!model) {
+                model = lore.ontologyTreeView.model;
+           }
+		   var ontjson = JSON.stringify(model);
+           //lore.debug.ui("save ontologies",[model,ontjson]);
 		   Components.classes["@mozilla.org/preferences-service;1"]
 		    .getService(Components.interfaces.nsIPrefBranch)
 		    .setCharPref("extensions.lore.ontologies", ontjson);
