@@ -6,4 +6,5 @@ locale	lore	en-US	 locale/en-US/
 skin	lore	classic/1.0	 skin/
 overlay	chrome://browser/content/browser.xul	chrome://lore/content/firefoxOverlay.xul
 style	chrome://global/content/customizeToolbar.xul	chrome://lore/skin/overlay.css
-
+style   chrome://global/content/customizeToolbar.xul chrome://lore/skin/mac/overlay.css os=Darwin
+style   chrome://lore/content/firefoxOverlay.xul chrome://lore/skin/mac/overlay.css os=Darwin

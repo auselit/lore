@@ -1,0 +1,9 @@
+#oobAnnoCloseButton {
+	list-style-image: url("chrome://global/skin/icons/closetab.png") !important;
+}
+#oobAnnoCloseButton:hover {
+	-moz-image-region: auto;
+}
+#oobAnnoCloseButton:hover:active {
+	-moz-image-region: auto;
+}
