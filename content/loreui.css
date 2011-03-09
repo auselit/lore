@@ -410,37 +410,6 @@
 
 .x-combo-list, .x-combo-list-inner {min-width:200px;}
 
-/* Annotation timeline styles */
-#annotimeline{
-	height:100%;
-	width:100%;
-	overflow-x:scroll; overflow-y:scroll;
-}
-.timeline-copyright {
-	display:none;
-}
-.timeline-event-icon img {
-	margin-left: -5px;
-}
-.timeline-event-bubble-body {
-	max-height:140px;
-	overflow:auto;
-}
-.timeline-event-bubble-body * ul, #annotationsummary * ul {
-	list-style-position:inside;
-	list-style-type: disc;
-}
-.timeline-event-bubble-body * ol, #annotationsummary * ol {
-	list-style-position:inside;
-	list-style-type:decimal;
-}
-.timeline-event-bubble-body * a, #annotationsummary * a {
-	color: #2c5798;
-	text-decoration: underline;
-}
-.timeline-link {
-	color:orange;font-size:smaller
-}
 .anno-caption {
 	font-size:small;
 	color:#51666b;
@@ -698,4 +667,9 @@ div.coListing:hover {
 }
 
 #remlistview .x-grid3-row-selected {background-color: yellow !important;}
-
+.x-tree-col-div-general * ol {
+	list-style:decimal !important;
+}
+.x-tree-col-div-general * ul {
+	list-style:disc !important;
+}
