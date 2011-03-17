@@ -3,6 +3,11 @@
  * From http://code.google.com/p/ext-ux-htmleditor-plugins/ (MIT License)
  * Modified by Anna to be compatible with Ext 2.2.x
  * Also to add button to insert image
+ * 
+ * Damien (17/03/2011):
+ * Added a font colour button, since the built in one also adds a 
+ * background highlight colour button, which doesn't work if CSS styling
+ * is turned off.
  */
 Ext.ns('Ext.ux.form.HtmlEditor');
 
@@ -106,4 +111,37 @@ Ext.ux.form.HtmlEditor.Img = Ext.extend(Ext.util.Observable, {
             lore.debug.ui("problem in insertImg",ex);
         }
     }
+});
+
+Ext.ux.form.HtmlEditor.ForegroundFontButton = Ext.extend(Ext.util.Observable, {
+    init: function(cmp){
+        this.cmp = cmp;
+        this.cmp.on('render', this.onRender, this);
+    },
+    onRender: function() {
+    	var cmp = this.cmp;
+    	var btn = this.cmp.getToolbar().addButton({
+            itemId:'forecolor',
+            cls:'x-btn-icon',
+            iconCls: 'x-edit-forecolor',
+            clickEvent:'mousedown',
+//            tooltip: tipsEnabled ? editor.buttonTips.forecolor || undefined : undefined,
+            tabIndex:-1,
+            menu : new Ext.menu.ColorMenu({
+                allowReselect: true,
+                focus: Ext.emptyFn,
+                value:'000000',
+                plain:true,
+                listeners: {
+                    scope: this,
+                    select: function(cp, color){
+                        this.cmp.execCmd('forecolor', Ext.isWebKit || Ext.isIE ? '#'+color : color);
+                        this.cmp.deferFocus();
+                    }
+                },
+                clickEvent:'mousedown'
+            })
+    	});
+    }
+    
 });
