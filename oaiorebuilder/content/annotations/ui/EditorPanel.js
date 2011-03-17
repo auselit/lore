@@ -328,12 +328,14 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					}, {
 						fieldLabel: 'Body',
 						xtype: 'htmleditor',
-						plugins: [new Ext.ux.form.HtmlEditor.Img()],
+						plugins: [new Ext.ux.form.HtmlEditor.Img(),
+						          new Ext.ux.form.HtmlEditor.ForegroundFontButton()],
 						name: 'body',
 						id: this.genID('body'),
 						enableFont: false,
 						enableColors: false,
-						enableSourceEdit: false,
+						enableAlignments: false,
+						enableSourceEdit: true,
 						anchor: '-30 65%'
 					}, {
 						id: this.genID('metausergrid'),
