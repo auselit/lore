@@ -61,10 +61,9 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
     },
     /**
      * Creates (or replaces) a compound object in the sesame repository
-     * @param {String} remid The id of the compound object
-     * @param {String} therdf The content of the compound obect as RDF/XML
+     * @param {CompoundObject} theco The compound object model
      */
-    saveCompoundObject : function (remid,therdf){
+    saveCompoundObject : function (theco){
         throw "Method not implemented";
     },
     /**

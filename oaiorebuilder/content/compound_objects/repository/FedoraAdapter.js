@@ -46,12 +46,14 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                     }
                 }); 
     },
-    saveCompoundObject : function (coid,thexml,callback){
+    saveCompoundObject : function (theco,callback){
         // /objects/ [{pid}| new] ? [label] [format] [encoding] [namespace] [ownerId] [logMessage] [ignoreMime]
     
         // creates a new compound object
         // TODO: allow modification of existing
         // FIXME:
+        var coid = theco.uri;
+        var thexml = theco.toRDFXML(false);
         var foxml = lore.ore.createFOXML();
         //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri() ).term;
         lore.debug.ore("saving foxml to fedora",foxml);
