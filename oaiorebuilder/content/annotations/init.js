@@ -38,15 +38,6 @@
  * @class lore.anno.ui
  */
 
-/**
- * @property extension
- * Reference to the Extension
- */
-lore.anno.ui.extension = Components.classes["@mozilla.org/extensions/manager;1"]
-                            .getService(Components.interfaces.nsIExtensionManager)
-                            .getInstallLocation(lore.constants.EXTENSION_ID)
-                            .getItemLocation(lore.constants.EXTENSION_ID);
-
 
 /*
  * Namespace Globals
