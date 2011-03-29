@@ -20,8 +20,10 @@
 <!ENTITY lore.layoutTip "Rearrange the resources in the compound object using automatic layout">
 <!ENTITY lore.createCOTip "Create a new compound object">
 <!ENTITY lore.saveMoreTip "Import/Export compound object as file">
-<!ENTITY lore.saveFileLabel "Export to RDF/XML">
+<!ENTITY lore.saveAnnotationsLabel "Export to Annotea RDF/XML">
+<!ENTITY lore.saveAnnotationsTip "Export annotations to an RDF/XML file">
 <!ENTITY lore.exportOACFileLabel "Export to OAC RDF/XML">
+<!ENTITY lore.saveFileLabel "Export to RDF/XML">
 <!ENTITY lore.saveFileTip "Export compound object as an RDF/XML file">
 <!ENTITY lore.loadRDFLabel "Import from RDF/XML file">
 <!ENTITY lore.loadRDFTip "Import a compound object from a RDF/XML file">
