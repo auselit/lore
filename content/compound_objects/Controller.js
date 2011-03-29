@@ -62,10 +62,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                         if (btn === 'yes') {
                             var currentCO = lore.ore.cache.getLoadedCompoundObject();
                             // TODO: #56 check that the save completed successfully 
-                            var remid = currentCO.uri;
-                            // TODO: this should be handled by repository adapter
-                            var therdf = currentCO.toRDFXML(false);
-                            lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
+                            lore.ore.reposAdapter.saveCompoundObject(currentCO,function(remid){
                                 lore.ore.controller.afterSaveCompoundObject(remid);
 	                             Ext.MessageBox.show({
 	            	                    msg: 'Loading compound object',
@@ -367,10 +364,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                         if (btn === 'yes') {
                             var currentCO = lore.ore.cache.getLoadedCompoundObject();
                             // TODO: #56 check that the save completed successfully before calling newCO
-                            var remid = currentCO.uri;
-                            // TODO: this should be handled by repository adapter
-                            var therdf = currentCO.toRDFXML(false);
-                            lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
+                            lore.ore.reposAdapter.saveCompoundObject(currentCO,function(remid){
                                 lore.ore.controller.afterSaveCompoundObject(remid);
                                 lore.ore.controller.newCO(dontRaise);
                                 if (callback) {
@@ -526,8 +520,8 @@ Ext.apply(lore.ore.Controller.prototype, {
                 msg : 'Are you sure you wish to save compound object:<br/><br/>' + title + "<br/><br/>to repository as " + remid + "?",
                 fn : function(btn, theurl) {
                     if (btn == 'ok') {
-                        var therdf = lore.ore.cache.getLoadedCompoundObject().toRDFXML(false);
-                        lore.ore.reposAdapter.saveCompoundObject(remid,therdf,lore.ore.controller.afterSaveCompoundObject);
+                        var currentCO = lore.ore.cache.getLoadedCompoundObject();
+                        lore.ore.reposAdapter.saveCompoundObject(currentCO,lore.ore.controller.afterSaveCompoundObject);
                     }
                 }
             });
@@ -858,11 +852,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                     fn : function(btn, theurl) {
                         if (btn == 'yes') {
                             // TODO: #56 check that the save completed successfully?
-                            var remid = currentCO.uri;
-                            var therdf = currentCO.toRDFXML(false);
-                            lore.ore.reposAdapter.saveCompoundObject(remid,therdf,function(){
-                                lore.ore.controller.afterSaveCompoundObject(remid);
-                            });
+                            lore.ore.reposAdapter.saveCompoundObject(currentCO,lore.ore.controller.afterSaveCompoundObject);
                         }  
                     }
                 });
@@ -878,9 +868,11 @@ Ext.apply(lore.ore.Controller.prototype, {
         if (rdfrepostype == 'sesame'){
             /** Adapter used to access the repository */
             lore.ore.reposAdapter = new lore.ore.repos.SesameAdapter(rdfrepos);
+        } else if (rdfrepostype == 'lorestore') {
+            lore.ore.reposAdapter = new lore.ore.repos.RestAdapter(rdfrepos);
         } else if (rdfrepostype == 'fedora'){
             lore.ore.reposAdapter = new lore.ore.repos.FedoraAdapter(rdfrepos);
-        }else {
+        } else {
             lore.ore.ui.vp.warning("Not yet implemented: change your repository type preference");
         }
         if (isEmpty) {

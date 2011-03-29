@@ -124,8 +124,10 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	            failure: failcallback
 	        }); 
 	},
-	saveCompoundObject : function (remid,therdf,callback){
+	saveCompoundObject : function (theco,callback){
         // TODO: first check that the compound object hasn't changed on the server
+        var remid = theco.uri;
+        var therdf = theco.toRDFXML(false);
 		Ext.Msg.show({
 	           msg: 'Saving Compound Object to repository...',
 	           width:250,
