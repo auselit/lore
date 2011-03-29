@@ -18,6 +18,7 @@
 <!ENTITY rdfrepostype.label "Repository Type">
 <!ENTITY sesame.label "Sesame">
 <!ENTITY fedora.label "Fedora">
+<!ENTITY lorestore.label "LoreStore">
 <!ENTITY relontprefix.accesskey "P">
 <!ENTITY dccreator.label "Creator (your name):">
 <!ENTITY dccreator.accesskey "C">
