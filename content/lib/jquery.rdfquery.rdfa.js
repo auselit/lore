@@ -4074,6 +4074,13 @@
         $.extend(this, $.typedValue(value, xsdNs + 'double'));
       } else {
         m = literalRegex.exec(value);
+        if (m == null){
+            // modified for LORE: try escaping double quotes in content
+            if (value.length > 0){
+                var newval  = "\"" +  value.substring(1, value.length - 1).replace(/"/g,"\\\"") + "\"";
+                m = literalRegex.exec(newval);                
+            }
+        }
         if (m !== null) {
           this.value = (m[2] || m[4]).replace(/\\"/g, '"');
           if (m[9]) {
