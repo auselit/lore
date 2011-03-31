@@ -92,11 +92,23 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                         
 					    if (result.length > 0){
 	                        // add the results to the model
-					        var coList = [result.length];
+					        var coList = [];
+                            var processed = {};
 					        for (var i = 0; i < result.length; i++) {
 					            var theobj = sa.parseCOFromXML(result[i]);
-					            if (matchval) {theobj.searchval = matchval;}
-					            coList[i] = theobj; 
+                                // deal with duplicate results (often because of multiple creators)
+                                var resultIndex = processed[theobj.uri];
+                                var existing = theobj; 
+                                if (resultIndex >= 0){
+                                    existing = coList[resultIndex];
+                                    if (existing && !existing.creator.match(theobj.creator)){
+                                        existing.creator = existing.creator + " &amp; " + theobj.creator;
+                                    }
+                                } else {
+                                   if (matchval) {theobj.searchval = matchval;}
+                                   coList.push(theobj);
+                                   processed[theobj.uri] = coList.length - 1; 
+                                }    
 					        }
 					        lore.ore.coListManager.add(coList,listname);
 					    } 
