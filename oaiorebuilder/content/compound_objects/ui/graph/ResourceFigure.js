@@ -498,7 +498,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			// type automatically
 			var rdftype = this.getProperty("rdf:type_0");
 			if (rdftype && rdftype.match("ResourceMap")) {
-				this.getProperty("dc:format_0") = "application/rdf+xml";
+				this.setProperty("dc:format_0", "application/rdf+xml");
 				this.showContent();
 			} else if ((rdftype && (rdftype
 					.match(lore.constants.NAMESPACES["annotype"])
