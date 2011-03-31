@@ -1,0 +1,20 @@
+.menu-scroll-bottom{
+    background-image:url(../../ext3.2/resources/images/default/layout/mini-bottom.gif);
+    background-repeat:no-repeat;
+    background-position:center;
+    height:12px;
+    cursor:pointer
+}
+.menu-scroll-top{
+    background-image:url(../../ext3.2/resources/images/default/layout/mini-top.gif);
+    background-repeat:no-repeat;
+    background-position:center;
+    height:12px;
+    cursor:pointer
+}
+.x-menu-list{
+    overflow:hidden;
+}
+.menu-scroll-over {
+    height:10px;
+}
