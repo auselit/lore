@@ -465,7 +465,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         rdfxml += ltsymb + "/rdf:RDF>";
         return rdfxml;
         } catch (ex){
-            lore.debug.ore("exception in toRDFXML",ex);
+            lore.debug.ore("toRDFXML",ex);
         }
     },
     /** Generate FOXML for this compound object. 
@@ -476,7 +476,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             return this.transform("chrome://lore/content/compound_objects/stylesheets/foxml.xsl",params,true);     
         } catch (e) {
             lore.ore.ui.vp.warning("Unable to generate FOXML");
-            lore.debug.ore("Unable to generate FOXML: ",e);
+            lore.debug.ore("Unable to generate FOXML",e);
             return null;
         }
     },
@@ -502,8 +502,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
      * @return {} The file name of the wrapper file
      */
     generateSMIL : function() {
-        // FIXME: generate data uris or move into util : model should not be accessing filesystem
-        try {
+       // FIXME: generate data uris or move into util : model should not be accessing filesystem
+       /* try {
             var extension = lore.global.util.getExtension();
             var result = this.transform("chrome://lore/content/compound_objects/stylesheets/smil_view.xsl",{},true);
             var file = lore.global.util.getFile(extension.path);
@@ -525,7 +525,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
     
         } catch (e) {
             lore.ore.ui.vp.warning("Unable to generate SMIL: " + e.toString());
-        }
+        }*/
     },
     /** Serialize to a variety of formats 
      * @param {} format Can be foxml, wordml, trig, rdfquery, json or rdf
