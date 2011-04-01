@@ -64,12 +64,12 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                xmlhttp2.onreadystatechange = function() {
                     if (xmlhttp2.readyState == 4) {
                         if (xmlhttp2.status == 201) {
-                            lore.debug.ore("fedora: Compound object saved",xmlhttp2);
+                            //lore.debug.ore("fedora: Compound object saved",xmlhttp2);
                             lore.ore.ui.vp.info("Compound object " + remid + " saved");
                             callback(remid);
                         } else {
                             lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp2.responseText);
-                            lore.debug.ore("Unable to save to repository",xmlhttp2);
+                            lore.debug.ore("Unable to save to repository: " + xmlhttp2.responseText, xmlhttp2);
                             Ext.Msg.show({
                                 title : 'Problem saving RDF',
                                 buttons : Ext.MessageBox.OKCANCEL,

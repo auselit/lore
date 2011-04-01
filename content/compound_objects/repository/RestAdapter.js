@@ -148,7 +148,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	        xmlhttp.setRequestHeader("Content-Type", "application/rdf+xml");
 	        xmlhttp.send(therdf); 
 	    } catch (e) {
-	        lore.debug.ore("lorestore: problem saving compound object.", e);
+	        lore.debug.ore("lorestore: problem saving compound object", e);
 	    }
 	},
 	loadNew : function(oldURI, newURI) {
@@ -212,14 +212,14 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	        xhr.send(null);
 	        var rdfDoc = xhr.responseXML;
             var serializer = new XMLSerializer();
-            lore.debug.ore("sparql result is",serializer.serializeToString(rdfDoc));
+            //lore.debug.ore("sparql explore result",serializer.serializeToString(rdfDoc));
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
 	        
             //lore.debug.ore("json is",serializer.serializeToString(thefrag));
             jsonobj = Ext.decode(serializer.serializeToString(thefrag));
             return jsonobj;
 	    } catch (ex){
-	        lore.debug.ore("RestAdapter.getExploreData: ",ex);
+	        lore.debug.ore("RestAdapter.getExploreData",ex);
 	    } 
     },
     

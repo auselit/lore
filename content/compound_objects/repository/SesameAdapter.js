@@ -160,7 +160,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                         callback(remid);
 	                } else {
 	                    lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp2.responseText);
-                        lore.debug.ore("Unable to save to repository",xmlhttp2);
+                        lore.debug.ore("Unable to save to repository: " + xmlhttp2.responseText,xmlhttp2);
 	                    Ext.Msg.show({
 	                        title : 'Problem saving RDF',
 	                        buttons : Ext.MessageBox.OKCANCEL,
@@ -265,7 +265,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	        xhr.send(null);
 	        var rdfDoc = xhr.responseXML;
             var serializer = new XMLSerializer();
-            lore.debug.ore("sparql result is",serializer.serializeToString(rdfDoc));
+            lore.debug.ore("sparql explore result",serializer.serializeToString(rdfDoc));
 	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
 	        
             //lore.debug.ore("json is",serializer.serializeToString(thefrag));
