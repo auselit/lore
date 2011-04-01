@@ -238,7 +238,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	                	try{
 	                		this.model.removeAggregatedResource(comm_fig.url);
 	                	} catch (x){
-	                		lore.debug.ore("problem",x);
+	                		lore.debug.ore("problem removing aggregated resource",x);
 	                	}
 	                    delete this.lookup[comm_fig.url];
 	                    if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
@@ -275,7 +275,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     try{
                         this.model.removeAggregatedResource(comm_fig.url);
                     } catch (x){
-                        lore.debug.ore("problem",x);
+                        lore.debug.ore("problem removing aggregated resource",x);
                     }
 	                delete this.lookup[comm_fig.url];
 	                if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
