@@ -107,7 +107,6 @@ lore.anno.ui.init = (function() {
    
            // Create Authentication Manager
            lore.anno.am = new lore.anno.AuthManager({prefs: lore.anno.prefs});
-           lore.debug.anno("Annotation init");
    
            lore.anno.prefs.on('prefs_changed', lore.anno.ui.handlePrefsChange);
    
@@ -138,7 +137,7 @@ lore.anno.ui.init = (function() {
            }
    
        } catch (e) {
-           lore.debug.ui("Except in anno init ! " + e, e);
+           lore.debug.ui("Except in anno init", e);
        }
    }
     

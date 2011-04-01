@@ -284,7 +284,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function (tree, parent, childNode, 
                                 "rdf:type_0": rec.data.type
                             });
                         } catch (e) {
-                            lore.debug.anno("Error adding node to compound editor:" + e, e);
+                            lore.debug.anno("Error adding node to compound editor", e);
                         }
                     }
                 });
@@ -338,7 +338,7 @@ lore.anno.ui.handleAttachNodeLinks = function (tree, thus, n, index) {
         }
         n.links = nodeLinks;
     } catch (e) {
-        lore.debug.anno('append: ' + e, e);
+        lore.debug.anno('append', e);
     }
 }
 
@@ -412,7 +412,7 @@ lore.anno.ui.handleLocationChange = function (contextURL) {
             lore.anno.annoMan.updateAnnotationsSourceList(contextURL);
         }
     } catch (e) {
-        lore.debug.anno(e, e);
+        lore.debug.anno("handleLocationChange", e);
     }
 }
 
@@ -453,7 +453,7 @@ lore.anno.ui.tagUnsavedAnnotations = function () {
             }
             node.setText(rec.data.title, label, null, lore.anno.ui.genTreeNodeText(rec.data));
         } catch (e) {
-            lore.debug.anno(e, e);
+            lore.debug.anno("tagUnsavedAnnotations", e);
         }
     });
 }
@@ -478,7 +478,7 @@ lore.anno.ui.handleContentPageRefresh = function () {
         lore.anno.ui.pageui.enableImageHighlighting();
         Ext.getCmp("annosourcestree").getSelectionModel().clearSelections();
     } catch (e) {
-        lore.debug.anno("refreshPage(): " + e, e);
+        lore.debug.anno("refreshPage()", e);
     }
 }
 
@@ -530,7 +530,7 @@ lore.anno.ui.handleAddAnnotation = function (rec) {
                     lore.anno.ui.treeunsaved.un('append', selectNode);
                 });
             } catch (e) {
-                lore.debug.anno(e, e);
+                lore.debug.anno("addSelectNodeHandler", e);
             }
         }
 
@@ -542,7 +542,7 @@ lore.anno.ui.handleAddAnnotation = function (rec) {
             lore.anno.ui.selectAndShowNode(newRec);
         });
     } catch (e) {
-        lore.debug.anno(e, e);
+        lore.debug.anno("handleAddAnnotation", e);
     }
 }
 
@@ -644,7 +644,7 @@ lore.anno.ui.handleSaveAllAnnotationChanges = function (uri) {
 
     }
     catch (e) {
-        lore.debug.anno(e, e);
+        lore.debug.anno("handleSaveAllAnnotationChanges", e);
     }
 }
 
@@ -726,7 +726,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function () {
         lore.anno.ui.page.setCurrentAnno();
     }
     catch (e) {
-        lore.debug.anno("Error updating saving annotation: " + e, e);
+        lore.debug.anno("Error updating saving annotation", e);
     }
 }
 
@@ -748,7 +748,7 @@ lore.anno.ui.handleAddResultsToCO = function (evt) {
         }
 
     } catch (e) {
-        lore.debug.anno("Error adding annotation/s to compound editor:" + e, e);
+        lore.debug.anno("Error adding annotation/s to compound editor", e);
     }
 }
 lore.anno.ui.handleViewAnnotationInBrowser = function (evt) {
@@ -794,7 +794,7 @@ lore.anno.ui.handleReplyToAnnotation = function (arg) {
             lore.anno.ui.handleAddAnnotation(rec);
         });
     } catch (e) {
-        lore.debug.anno(e, e);
+        lore.debug.anno("handleReplyToAnnotation", e);
     }
 }
 
@@ -813,7 +813,7 @@ lore.anno.ui.handleEdit = function () {
             lore.anno.ui.selectAndShowNode(rec);
         });
     } catch (e) {
-        lore.debug.anno(e, e);
+        lore.debug.anno("handleEdit", e);
     }
 }
 
@@ -836,7 +836,7 @@ lore.anno.ui.handleEditTreeNode = function (node) {
             lore.anno.ui.selectAndShowNode(rec);
         });
     } catch (e) {
-        lore.debug.anno(e, e);
+        lore.debug.anno("handleEditTreeNode", e);
     }
 }
 
@@ -861,7 +861,7 @@ lore.anno.ui.handleSerialize = function (format) {
         }, window);
         if (fobj) lore.anno.ui.loreInfo("Annotations exported to " + fobj.fname);
     } catch (e) {
-        lore.debug.anno("Error exporting annotations: " + e, e);
+        lore.debug.anno("Error exporting annotations", e);
         lore.anno.ui.loreError("Error exporting annotations: " + e);
     }
 }
