@@ -175,7 +175,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
             }, dataview);
 
             } catch (e) {
-                    lore.debug.anno("SearchPanel:initComponent() - " + e, e);
+                    lore.debug.anno("SearchPanel:initComponent" , e);
             }
     },
 
@@ -197,7 +197,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
                         lore.anno.ui.loreInfo("Search Finished");
                 });
             } catch (e) {
-                    lore.debug.anno("error occurring performing search annotations: " + e, e);
+                    lore.debug.anno("error occurring performing search annotations", e);
             }
 
     }
