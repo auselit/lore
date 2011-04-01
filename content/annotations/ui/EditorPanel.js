@@ -417,7 +417,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			lore.anno.ui.updateAnnoFromForm();
 			var editedRec = this.getRec();
 
-			lore.debug.anno('handleUpdateAnnotationContext', {tthis:this,editedRec:editedRec});
+			//lore.debug.anno('handleUpdateAnnotationContext', {tthis:this,editedRec:editedRec});
 
 			// get text selection, and update the appropriate fields
 			var currentCtxt = this.pageView.getCurrentSelection();

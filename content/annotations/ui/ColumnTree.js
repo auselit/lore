@@ -141,7 +141,7 @@ lore.anno.ui.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
                 
             
         } catch(e){
-            lore.debug.anno(e,e);
+            lore.debug.anno("ColumnTree.onResize",e);
         }
         
     }
@@ -448,7 +448,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
             
             this.fireEvent("sortchange", this, this.getRootNode().firstChild);
         } catch (e ) {
-            lore.debug.anno("Error occurred changing sort type: " + e,e);
+            lore.debug.anno("Error occurred changing sort type",e);
         }
         
     },
@@ -479,7 +479,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
                         return r.data[ts.sortField] || r.data.created;
                     }
                 } catch (e) {
-                    lore.debug.anno(e, e);
+                    lore.debug.anno("ColumnTree.addTreeSorter", e);
                 }
                 return "";
             }
