@@ -62,7 +62,7 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 			metaSelections: this.metaSelections.slice()
 		};
 		
-		lore.debug.anno("PageData.store()", {updated_ds:update_ds});
+		//lore.debug.anno("PageData.store()", {updated_ds:update_ds});
 		lore.global.store.set(lore.constants.HIGHLIGHT_STORE, update_ds, url);
 	},
 	
