@@ -46,7 +46,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     canv.getPos(true);
               }
            } catch (e){
-              lore.debug.ore("ExplorePanel:",e);
+              lore.debug.ore("ExplorePanel",e);
            }
         },this);
         this.on("activate", this.updateContent);
@@ -468,7 +468,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
          this.titleItem.setText(Ext.util.Format.ellipsis(fdcontroller.clickedNode.name,30));
          this.nodemenu.showAt([e.pageX,e.pageY]); 
     	} catch (e){
-    		lore.debug.ore("problem",e);
+    		lore.debug.ore("problem with explore context menu",e);
     	}
     },
     /** Handle context menu on explore view background, providing diagram-wide options such as export to image */
@@ -593,7 +593,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         lore.ore.ui.vp.info("Image ready");
         return imgData;
      } catch (e) {
-        lore.debug.ore("ExplorePanel.getAsImage: ",e);
+        lore.debug.ore("ExplorePanel.getAsImage",e);
      }
         
     },
