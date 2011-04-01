@@ -106,6 +106,9 @@
 #show-prefs, #show-prefs2 {
 	list-style-image: url(chrome://lore/skin/icons/cog.png);
 }
+#report-problem, #report-problem2 {
+	list-style-image: url(chrome://lore/skin/icons/mail-exclamation.png);
+}
 .text-link {
 	margin-left: 5px;
 }
