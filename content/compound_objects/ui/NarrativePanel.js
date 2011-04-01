@@ -59,7 +59,7 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
         this.getComponent(0).body.update(lore.ore.ui.narrativeCOTemplate.apply([tmpCO]));
         Ext.Msg.hide();
         } catch(e){
-        	lore.debug.ore("problem",e);
+        	lore.debug.ore("problem in updateBinding",e);
         	Ext.Msg.hide();
         }
     },
@@ -76,7 +76,7 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
                 dv.select(id);
             }
         } catch (e){
-            lore.debug.ore("problem",e);
+            lore.debug.ore("scrollToResource",e);
         }
     }
 });
@@ -150,7 +150,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
             }   
             return res;
           } catch (ex){
-            lore.debug.ore("problem",ex);
+            lore.debug.ore("problem with template",ex);
           }
         }
     }
@@ -216,7 +216,7 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
             }   
             return res;
           } catch (ex){
-                lore.debug.ore("problem",ex);
+                lore.debug.ore("problem with template",ex);
           }
         }
     }
