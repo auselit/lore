@@ -123,7 +123,7 @@ lore.anno.ui.PageView.prototype = {
 			this.removeHighlightForCurrentAnnotation();
 		} 
 		catch (e) {
-			lore.debug.anno("PageView:handleUpdate() - " + e, e);
+			lore.debug.anno("PageView:handleUpdate", e);
 		}
 	},
 	
@@ -156,7 +156,7 @@ lore.anno.ui.PageView.prototype = {
 				}
 			}
 		} catch (e) {
-			lore.debug.anno("setContentsVisible(): " + e, e);
+			lore.debug.anno("setContentsVisible", e);
 		}
 	},
 	
@@ -187,7 +187,7 @@ lore.anno.ui.PageView.prototype = {
 				}
 			}
 		} catch (ex) {
-			lore.debug.anno("hide marker failure: " + ex, ex);
+			lore.debug.anno("hide marker failure", ex);
 		}
 	},
 	
@@ -283,7 +283,8 @@ lore.anno.ui.PageView.prototype = {
 			}
 			this.page.curAnnoMarkers = this.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
 		} catch (e) {
-            lore.debug.anno("Error highlighting (in highlightCurrentAnnotation)", {rec:rec,e:e});
+            lore.debug.anno("highlightCurrentAnnotation", e);
+            lore.debug.anno("Error highlighting (record)", rec);
 			lore.anno.ui.loreError('Unable to highlight. Page has been modified.');
 		}
 	},
@@ -318,7 +319,7 @@ lore.anno.ui.PageView.prototype = {
 						markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
 					}
 				} catch (e) {
-					lore.debug.anno("Error highlighting variation context: " + e, e);
+					lore.debug.anno("Error highlighting variation context", e);
 				}
 				var cw = lore.anno.ui.topView.getVariationContentWindow();
 				if (rec.data.variantcontext
@@ -351,12 +352,12 @@ lore.anno.ui.PageView.prototype = {
 								page: this.page }));
 					}
 				} catch (e) {
-					lore.debug.anno("Error highlighting variation context: " + e, e);
+					lore.debug.anno("Error highlighting variation context", e);
 				}
 			}
 		}
 		} catch (e) {
-			lore.debug.anno(e, e);
+			lore.debug.anno("highlightAnnotation", e);
 		}
 		// get colour of highlight and show marker, and generate tooltip
 		var cc = this.getCreatorColour(rec.data.creator);
@@ -420,7 +421,8 @@ lore.anno.ui.PageView.prototype = {
 						}
 					} 
 					catch (ex) {
-						lore.debug.anno("Error during highlight all: " + ex, rec);
+						lore.debug.anno("Error during highlight all", ex);
+                        lore.debug.anno("Error highlighting all (record)", rec);
 					}
 				}
 				
@@ -436,7 +438,8 @@ lore.anno.ui.PageView.prototype = {
 					delete m;
 				} 
 				catch (ex) {
-					lore.debug.anno("Error unhighlighting: " + ex, this.page.multiSelAnno[i]);
+					lore.debug.anno("Error unhighlighting",ex);
+                    lore.debug.anno("Error unhighlighting (selection)",this.page.multiSelAnno[i])
 				}
 				
 			}
@@ -522,7 +525,7 @@ lore.anno.ui.PageView.prototype = {
 						});
 					} 
 					catch (e) {
-						lore.debug.anno("error initing image handler: " + e, e);
+						lore.debug.anno("error initing image handler", e);
 					}
 				});
 				
@@ -548,7 +551,8 @@ lore.anno.ui.PageView.prototype = {
 						} catch (e ) {
 							//#146 On the failure of one marker this would break the resizing of
 							// all other markers
-							lore.debug.anno('refreshImageMarkers: ' + e, {err:e, marker:m});
+							lore.debug.anno('refreshImageMarkers error', e);
+                            lore.debug.anno("refreshImageMarkers (marker)", m);
 						}
 					}
 					
@@ -567,7 +571,7 @@ lore.anno.ui.PageView.prototype = {
 					});
 				} 
 				catch (e) {
-					lore.debug.anno("error occurred during window resize handler: " + e, e);
+					lore.debug.anno("error occurred during window resize handler", e);
 				}
 			};
 			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
@@ -582,7 +586,7 @@ lore.anno.ui.PageView.prototype = {
 			
 		} 
 		catch (e) {
-			lore.debug.anno("error occurred enabling image highlighting: " + e, e);
+			lore.debug.anno("error occurred enabling image highlighting", e);
 		}
 	};
 	var ol = function(){
@@ -638,7 +642,7 @@ lore.anno.ui.PageView.prototype = {
 				lore.global.util.removeNodePreserveChildren(n, lore.global.util.getContentWindow(window));
 			} 
 			catch (e) {
-				lore.debug.anno('error removing node for meta selection: ' + e, e);
+				lore.debug.anno('error removing node for meta selection', e);
 			}
 		}
 		this.page.metaSelections = [];
@@ -712,7 +716,7 @@ lore.anno.ui.PageView.prototype = {
 					callback(isObject, triple);
 				
 				} catch (e ) {
-					lore.debug.anno(e,e);
+					lore.debug.anno("turnOnPageTripleMarkers",e);
 				}
 				
 				t.turnOffPageTripleMarkers();
@@ -766,12 +770,12 @@ lore.anno.ui.PageView.prototype = {
 						if (callback) callback.apply(callbackScope || this, [contentWindow, rec]);
 						
 					} catch(e){
-						lore.debug.anno("updateVariationSplitter-callback: " + e, e);
+						lore.debug.anno("updateVariationSplitter-callback", e);
 					}
 				});
 			}
 		} catch (e ) {
-			lore.debug.anno(e, e);
+			lore.debug.anno("updateSplitter", e);
 		}
 	}
 	
