@@ -108,7 +108,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             }
         }
         } catch (e){
-        	lore.debug.ore("problem",e);
+        	lore.debug.ore("problem displaying properties",e);
         }
         return prophtml + relhtml + "</div>";
       } catch (e){
