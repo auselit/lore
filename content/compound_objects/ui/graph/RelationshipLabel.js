@@ -86,7 +86,7 @@ Ext.extend(lore.ore.ui.graph.RelationshipLabel, draw2d.Label, {
     			this.stopEditing();
     	},this);
     	} catch (ex){
-    		lore.debug.ore("Problem",ex);
+    		lore.debug.ore("createEditElement",ex);
     	}
     },
     /** 
@@ -128,7 +128,7 @@ Ext.extend(lore.ore.ui.graph.RelationshipLabel, draw2d.Label, {
     	this.editField.focus();
     	//this.editField.expand();
     	} catch (ex){
-    		lore.debug.ore("Problem",ex);
+    		lore.debug.ore("startEditing",ex);
     	}
     },
     showMenu : function(ev){
