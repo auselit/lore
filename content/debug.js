@@ -48,11 +48,23 @@ debug = {
 	 * @param {Object} obj An object to attach
 	 */
 	mozConsole : function (module, message, obj) {
-		if (debug.moz) {
-			// TODO: Send a more details message object via other console logging function
-			debug.moz.console.logStringMessage(module + message + (obj ? (" " + obj):''));
-			if ( obj instanceof Error)
+        var cons = (debug.moz? debug.moz.console : this.console);
+		if (cons) {
+            // print details of exceptions to console
+            var consoleMsg = module + " : " + new Date().toLocaleTimeString() + " : " + message;
+            if (obj && obj.name){
+                consoleMsg += ": " + obj.name;
+            }
+            if (obj && obj.message){
+                consoleMsg += ": " + obj.message;
+            }
+            if (obj && obj.fileName && obj.lineNumber){
+                consoleMsg += " (" + obj.fileName + " line " + obj.lineNumber + ")";
+            }
+            cons.logStringMessage(consoleMsg);
+			if ( obj instanceof Error){
 				Components.utils.reportError(obj);
+            }
 		}
 	},
 	/**
@@ -128,8 +140,36 @@ debug = {
 			var elapsed = Date.now() - debug.starttime;
 			debug.fbTrace.sysout(" Elapsed: " + elapsed + "ms " + message, obj);
 		}
-	}
-	
+	},
+    getRecentLog : function(){
+    	if (this.listener){
+        	return this.listener.recentLog;
+        }
+    },
+    initRecentLog: function(){
+        this.console = Components.classes["@mozilla.org/consoleservice;1"]
+        .getService(Components.interfaces.nsIConsoleService);
+        // keep track of most recent contents of log
+	    this.listener = {
+	        recentLog : "",
+	        observe: function(aMessage){
+                var content = aMessage.message;
+                if (content && content.indexOf('LORE') == 0){
+                    // truncate
+	               this.recentLog = content + "%0A" 
+                    + (this.recentLog.length > 1200? this.recentLog.substring(0,1200) : this.recentLog);              
+                }
+	        },
+	        QueryInterface: function(iid){
+	            if (!iid.equals(Components.interfaces.nsIConsoleListener) &&
+	            !iid.equals(Components.interfaces.nsISupports)) {
+	                throw Components.results.NS_ERROR_NO_INTERFACE;
+	            }
+	            return this;
+	        }
+	    },
+	    this.console.registerListener(this.listener);
+    }
     /** @property fbTrace
      * Instance of Firebug Tracer */
 };
@@ -139,7 +179,7 @@ debug = {
  */
 function MozillaFileLogger(){
 	this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-	
+	// TODO: update for Firefox 4
 	var e = Components.classes["@mozilla.org/extensions/manager;1"]
 		.getService(Components.interfaces.nsIExtensionManager)
 		.getInstallLocation(constants.EXTENSION_ID)
