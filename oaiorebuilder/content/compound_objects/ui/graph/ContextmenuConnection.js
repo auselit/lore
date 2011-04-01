@@ -123,7 +123,7 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
                 	});
                 	lore.ore.ui.graph.ContextmenuConnection.contextmenu.doLayout();
                 	} catch (ex){
-                		lore.debug.ore("problem",ex);
+                		lore.debug.ore("problem filtering rel menu",ex);
                 	}
                 });
     			// sort the menu entries alphabetically
@@ -206,7 +206,7 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
              }
     	  }
         } catch (e) {
-    	    lore.debug.ore("ContextMenuConnection.getEndAngle: error", e);
+    	    lore.debug.ore("ContextMenuConnection.getEndAngle", e);
     	}
       return angle;
     },
