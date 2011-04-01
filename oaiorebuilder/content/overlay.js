@@ -22,6 +22,8 @@ try {
         alert("loreoverlay: Not all js modules loaded.");
     }
     
+    lore.debug.initRecentLog();
+    
     // consistent access to JSON across versions of FF
     if (typeof(JSON) == "undefined") {  
     	  Components.utils.import("resource://gre/modules/JSON.jsm");
@@ -160,7 +162,7 @@ try {
             try {
                 lore.global.ui.onClose(this, loreoverlay.instId);
             } catch(e) {
-                lore.debug.ui("loreoverlay.onClose: " + e);
+                lore.debug.ui("loreoverlay.onClose",e);
             }
         },
         
@@ -189,7 +191,7 @@ try {
                 this.loadCompoundObjectPrefs();
                 this.loadAnnotationPrefs();
             } catch (e ) {
-                lore.debug.ui("Error updating preferences on prefs change: " + e, e);
+                lore.debug.ui("Error updating preferences on prefs change", e);
             }
             
         },
@@ -283,7 +285,7 @@ try {
                     gContextMenu.showItem('oaioresep', false);
                 }
             } catch (e) {
-                lore.debug.ui(e);
+                lore.debug.ui("loreoverlay.onMenuPopup",e);
             }
         },
         
@@ -296,7 +298,7 @@ try {
             try {
                 loreoverlay.annoView().handleBeginImageSelection(document.popupNode);
             } catch (e ) {
-                lore.debug.ui("image selection failed: " + e, e);
+                lore.debug.ui("image selection failed", e);
             }
         },
         /** Trigger adding a node to the compound object editor from browser context menu on images */ 
@@ -338,7 +340,7 @@ try {
                    this.setCompoundObjectsVisibility(true); 
                 }
             } catch (e ) {
-                lore.debug.ui("loreoverlay.toggleBar: " + e + " " +  e.stack);
+                lore.debug.ui("loreoverlay.toggleBar",e);
             }
         },
         /** Compound Objects Toolbar button handler: Triggers loading compound object RDF from a URL **/
@@ -374,7 +376,7 @@ try {
             try {
                 loreoverlay.annoView().handleAddAnnotation();
             }catch (e ) {
-                lore.debug.ui("loreoverlay.addAnnotation: " + e) ;
+                lore.debug.ui("loreoverlay.addAnnotation",e) ;
             }
         },
         updateAnnotationSel: function (type) {
@@ -384,7 +386,7 @@ try {
                 else 
                     loreoverlay.annoView().handleUpdateAnnotationContext();
             }catch (e ) {
-                lore.debug.ui("updateAnnotationSel: " + e, e);
+                lore.debug.ui("updateAnnotationSel", e);
             }
         },
         loginAnnotations: function () {
@@ -393,12 +395,33 @@ try {
         logoutAnnotations: function () {
         	loreoverlay.annoView().handleLogoutAnnotations();
         },
+        loginCompoundObjects: function (){
+            
+        },
+        logoutCompoundObject: function (){
+            
+        },
+        reportProblem: function(){
+          // TODO: update for FF 4
+          var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
+            .getService(Components.interfaces.nsIExtensionManager);
+          var version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
+          var url = "mailto:lore@aus-e-lit.net?subject=Problem%20with%20LORE%20" + version
+            + "&Body=Please describe the problem in as much detail as possible, " 
+            + "including URLs for the web resources you were working with when the problem occurred:%0A%0A%0A%0A"
+            + "Recent activity (this information may assist the developers to diagnose the problem): %0A"
+            + lore.debug.getRecentLog();
+          document
+            .getElementById("content")
+            .webNavigation
+            .loadURI(url, 0, null, null, null);  
+        },
         /** Annotations Toolbar button handler: Trigger removing an annotation */
         removeAnnotation: function() {
             try {
                 loreoverlay.annoView().handleDeleteAnnotation();
             } catch (e) {
-                lore.debug.ui("loreoverlay.removeAnnotation: " + e + " " +  e.stack);
+                lore.debug.ui("loreoverlay.removeAnnotation",e);
             }
         },
         /** Annotations Toolbar button handler: Trigger editing an annoation */
@@ -566,7 +589,7 @@ try {
                     }
                 }
             } catch (e ) {
-                lore.debug.ui("loreoverlay.fireEvent: " + e + " " + e.stackTrace);
+                lore.debug.ui("loreoverlay.fireEvent",e);
             }
         },
         
@@ -666,7 +689,7 @@ try {
                             callBack();
                             iframe.removeEventListener("load", variationCallback, true);
                         } catch (e ) {
-                            lore.debug.anno("Error updateVariationSplitter callback: " +e, e);
+                            lore.debug.anno("Error updateVariationSplitter callback", e);
                         }
                         
                     }, true);
@@ -676,7 +699,7 @@ try {
                 // as it's not updated by users action within the iframe
                 iframe.contentWindow.location = url;
             } catch ( e ) {
-                lore.debug.anno(e,e);
+                lore.debug.anno("loreoverlay.updateVariationSplitter",e);
             }
         },
         /**
@@ -693,7 +716,7 @@ try {
                     document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
                 }
             } catch(e) {
-                lore.debug.anno("hideVariationSplitter(): " +e, e);
+                lore.debug.anno("hideVariationSplitter", e);
             }
         },
         hideAddIcon: function(hideAdd){
@@ -770,7 +793,7 @@ try {
                     loreoverlay.coView().onShow();
                 }else {
                     lore.global.ui.compoundObjectView.onload(this.instId, function () {
-                        lore.debug.ui("Compount Objects: Delayed loreOpen running...");
+                        lore.debug.ore("Compound Objects: Delayed loreOpen running...");
                         loreoverlay.coView().onShow();
                     });
                 }
@@ -798,7 +821,7 @@ try {
         },
         
         setAnnotationsSignedIn: function(username) {
-            lore.debug.anno("setAnnotationsSignedIn()");
+            //lore.debug.anno("setAnnotationsSignedIn()");
             var authStatusIcon = document.getElementById("auth-status-icon");
             authStatusIcon.className = 'signed-in';
             authStatusIcon.tooltipText = "Signed in to Annotation Server as " + username;
