@@ -223,7 +223,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	    	this.editField.show();	
 	    	this.editField.focus();   	
     	} catch (ex){
-    		lore.debug.ore("Problem",ex);
+    		lore.debug.ore("startEditing",ex);
     	}
     },
     /** 
@@ -409,7 +409,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 					this.createPreview(displayUrl);
 				}
 			} catch (e) {
-				lore.debug.ore("ResourceFigure: iframe(general): " + e, e);
+				lore.debug.ore("ResourceFigure: iframe(general)", e);
 			}
 		}
 	},
@@ -793,7 +793,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			//lore.debug.ore("Updating property " + propuri +  " " + idx, this.model);
 			this.model.get('properties').setProperty({id: propuri, ns: ns, name: propname, value: pval, prefix: pfx},idx)
 			} catch (ex){
-				lore.debug.ore("problem",ex);
+				lore.debug.ore("problem in setProperty",ex);
 			}
 		}
 	},
