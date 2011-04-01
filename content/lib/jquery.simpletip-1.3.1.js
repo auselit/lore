@@ -179,7 +179,7 @@ var curtip;
             conf.onShow.call(self);
             
             } catch (ex) {
-                lore.debug.anno(ex, ex);
+                lore.debug.anno("simpletip", ex);
             }
             return self;
          },
