@@ -135,7 +135,7 @@ lore.anno.ui.Marker.prototype = {
 						this.styleCallback(this.type, this.data.nodes[0]);
 			}
 		}catch (e ) {
-			lore.debug.anno(e,e);
+			lore.debug.anno("Marker update",e);
 		}
 	},
 			
