@@ -249,7 +249,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
             }
 			this.updateOntologiesMetadata(ontologies, om, setCurrent); 
 		} catch (e) {
-			lore.debug.ore("loadOntology:", e);
+			lore.debug.ore("loadOntology", e);
 		}
 	},
 	getDataTypeProperties : function(){
