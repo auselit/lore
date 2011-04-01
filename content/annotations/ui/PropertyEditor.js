@@ -29,7 +29,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                         this.show(); 
                         this.focus();
                     } catch (e){
-                        lore.debug.anno("problem in editField",e);
+                        lore.debug.anno("editField",e);
                     }
                 },
                 items: [
@@ -59,7 +59,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                                 
                                 w.hide();
                             } catch (e){
-                                lore.debug.anno("problem in update",e);
+                                lore.debug.anno("update",e);
                             }
                         }
                     },
@@ -73,7 +73,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                                 var w = this.propEditorWindow;
                                 w.hide();
                             } catch (e){
-                                lore.debug.anno("problem in cancel",e);
+                                lore.debug.anno("cancel",e);
                             }
                         }
                     }
@@ -120,7 +120,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                                      this.propertyEditor.stopEditing();
                                      this.propertyEditor.propEditorWindow.editField(this,row);
                                     } catch (e){
-                                        lore.debug.anno("problem in trigger click",e);
+                                        lore.debug.anno("trigger click",e);
                                     }
                                  } 
                            })
@@ -163,7 +163,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
             
 			this.propertiesList = [];
 		} catch (e) {
-			lore.debug.anno("PropertyEditor:initComponent() - " + e, e);
+			lore.debug.anno("PropertyEditor:initComponent", e);
 		}
 	},
 	
