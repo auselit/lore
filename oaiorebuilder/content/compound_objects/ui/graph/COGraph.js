@@ -523,7 +523,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         sel.setHighlight(true); 
       } 
     	} catch (e){
-    		lore.debug.ore("problem",e);
+    		lore.debug.ore("problem showing resize handles",e);
     	}
     },
     /** select figures within a rectangular selecton */
@@ -575,7 +575,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         //lore.global.util.launchTab(imgData);
         return imgData;
      } catch (e) {
-        lore.debug.ore("getAsImage: ",e);
+        lore.debug.ore("getAsImage",e);
      }
         
     },
@@ -607,7 +607,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 	try{
                 	this.commandStack.undo();
                 	} catch (e){
-                		lore.debug.ore("problem",e);
+                		lore.debug.ore("problem with undo",e);
                 	}
                 }
             });
@@ -634,7 +634,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                         lore.ore.ui.vp.error("Unable to generate diagram image");
                     }
                 	} catch(e){
-                		lore.debug.ore("problem",e);
+                		lore.debug.ore("unable to generate diagram image",e);
                 	}
                 }
             });
