@@ -282,7 +282,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                                     c.setRelationshipType(relresult.ns, relresult.term);
                                     //lore.debug.timeElapsed("connection 7");
                                     coGraph.addFigure(c);
-                                    lore.debug.timeElapsed("connection 8");
+                                    //lore.debug.timeElapsed("connection 8");
                                 }
                                 else {
                                     throw "source or target port not defined";
@@ -319,11 +319,9 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.ore.ui.vp.info("Loading compound object");
                 Ext.Msg.hide();
                 //lore.debug.timeElapsed("set loaded in cache ");
-                try{
-                    lore.ore.cache.setLoadedCompoundObjectUri(remurl);
-                } catch (e){
-                    lore.debug.ore("problem",e);
-                }
+                
+                lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+                
                 //lore.ore.populateResourceDetailsCombo();
                //lore.debug.timeElapsed("show in history");
                if (showInHistory){
@@ -581,7 +579,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.ore.ui.vp.info("Successfully saved Compound Object data to " +fObj.fname);
             }                                           
         } catch (e) {
-            lore.debug.ore("Error saving Compound Objects data: " + e,e );
+            lore.debug.ore("Error saving Compound Objects data",e );
             lore.ore.ui.vp.error("Error saving Compound Object: " + e);
         }
     
