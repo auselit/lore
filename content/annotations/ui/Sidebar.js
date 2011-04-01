@@ -184,7 +184,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             lore.anno.ui.formpanel.setPreferences(lore.anno.prefs);
     
         } catch (e) {
-            lore.debug.ui("Errors during initExtComponents: " + e, e);
+            lore.debug.ui("Errors during initExtComponents", e);
         }
     },
        /*
@@ -238,7 +238,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                         Ext.getCmp("remrdfview").body.update(lore.global.util.escapeHTML(lore.anno.serialize("rdf")));
                     });
                 } catch (e) {
-                    lore.debug.anno("Error generating RDF view: " + e, e);
+                    lore.debug.anno("Error generating RDF view", e);
                 }
             }
         });
