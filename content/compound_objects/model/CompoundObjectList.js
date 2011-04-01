@@ -53,6 +53,5 @@ lore.ore.model.CompoundObjectList = Ext.extend(Ext.ux.data.PagingJsonStore, {
                     }]
        });
        lore.ore.model.CompoundObjectList.superclass.constructor.call(this,this.config);
-       //lore.debug.ore("CompoundObjectList " + this.storeId,this);
     }
 });
