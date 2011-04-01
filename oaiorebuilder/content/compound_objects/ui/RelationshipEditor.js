@@ -273,7 +273,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             lore.ore.ui.vp.info("Please click on a relationship prior to selecting the help button");
         }
         } catch (e){
-            lore.debug.ore("problem",e);
+            lore.debug.ore("helpRelationshipAction",e);
         }
     }
  
