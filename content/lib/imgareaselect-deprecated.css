@@ -34,3 +34,8 @@
 	opacity: 0;
 	filter: alpha(opacity=0);
 }
+
+.loreAnnoTip img {
+	max-width: 256px;
+	height:auto
+}
