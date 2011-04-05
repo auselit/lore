@@ -67,12 +67,6 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
                         ref: "../searchButton",
                         xtype: 'button',
                         flex: 1
-                    }, {
-                            text : 'Copy RSS',
-                            tooltip : 'Save this search as an RSS Feed',
-                            ref : '../rssButton',
-                            xtype : 'button',
-                            flex: 1
                     }]
             }]
         };
@@ -143,7 +137,6 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
 
 
             this.searchForm.searchButton.on('click', this.handleSearchAnnotations, this);
-//            this.searchForm.rssButton.on('click', this.handleCopyRSS, this);
 
             var dataview = this.getComponent('dataview');
             
