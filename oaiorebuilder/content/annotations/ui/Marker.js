@@ -197,7 +197,7 @@ lore.anno.ui.Marker.prototype = {
 				+ annodata.title + "</strong></div><div style='color:#51666b;padding:3px'>" 
 				+ lore.global.util.splitTerm(annodata.type).term + " by "
 				+ annodata.creator;
-			desc += "<div style='margin:4px;max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
+			desc += "<div class='loreAnnoTip' style='margin:4px;max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
 			desc += lore.anno.ui.genDescription(annodata, true);
 			desc += "<br>" + lore.anno.ui.genTagList(annodata);
 			desc += '</div>';

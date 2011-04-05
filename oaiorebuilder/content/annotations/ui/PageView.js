@@ -454,14 +454,14 @@ lore.anno.ui.PageView.prototype = {
 	 * @param {Window} contentWindow The content window the enablement applies to
 	 */
 	enableImageHighlighting : function(contentWindow){
-
+    
 		var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
 		var doc = cw.document;
 		var imgOnly = doc.contentType.indexOf("image") == 0;
 		
 		var self = this;
 		
-		var e = function(){
+		var enableFunc = function(){
 		try {
 			var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
 			var doc = cw.document;
@@ -524,17 +524,17 @@ lore.anno.ui.PageView.prototype = {
 							imageWidth: scale.origWidth
 						});
 					} 
-					catch (e) {
-						lore.debug.anno("error initing image handler", e);
+					catch (ex) {
+						lore.debug.anno("error initing image handler", ex);
 					}
 				});
 				
 			});
 	 					
-			var e = lore.global.util.domCreate('span', doc);
-			e.id = 'lore_image_highlighting_inserted';
-			e.style.display = "none";
-			$('body', doc).append(e);
+			var spanEl = lore.global.util.domCreate('span', doc);
+			spanEl.id = 'lore_image_highlighting_inserted';
+			spanEl.style.display = "none";
+			$('body', doc).append(spanEl);
 			
 			lore.debug.anno("image selection enabled for the page");
 			
@@ -548,10 +548,10 @@ lore.anno.ui.PageView.prototype = {
 							if (m.isImageMarker() && (m.target == d)) {
 								m.update();
 							}
-						} catch (e ) {
+						} catch (ex ) {
 							//#146 On the failure of one marker this would break the resizing of
 							// all other markers
-							lore.debug.anno('refreshImageMarkers error', e);
+							lore.debug.anno('refreshImageMarkers error', ex);
                             lore.debug.anno("refreshImageMarkers (marker)", m);
 						}
 					}
@@ -570,8 +570,8 @@ lore.anno.ui.PageView.prototype = {
 						}
 					});
 				} 
-				catch (e) {
-					lore.debug.anno("error occurred during window resize handler", e);
+				catch (ex) {
+					lore.debug.anno("error occurred during window resize handler", ex);
 				}
 			};
 			lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
@@ -585,14 +585,14 @@ lore.anno.ui.PageView.prototype = {
 			};
 			
 		} 
-		catch (e) {
-			lore.debug.anno("error occurred enabling image highlighting", e);
+		catch (ex) {
+			lore.debug.anno("error occurred enabling image highlighting", ex);
 		}
 	};
 	var ol = function(){
 		cw.removeEventListener("load", ol, true);
 		lore.debug.anno("on load image anno handler called");
-		e();
+		enableFunc();
 		
 	};
 	
@@ -606,19 +606,21 @@ lore.anno.ui.PageView.prototype = {
 
 	if (im.size() > 0) {
 		var contentLoaded = true;
-		if ( imgOnly)
+		if ( imgOnly){
 			contentLoaded = im.get(0).offsetWidth != 0;
-		else 
+        } else{ 
 			im.each(function () {
 					contentLoaded = contentLoaded && this.offsetWidth != null;  
-					
-			});
-			
-	 	if (!contentLoaded)  // case: dom content loaded, images aren't
+		     });
+        }
+		if (!contentLoaded){  // case: dom content loaded, images aren't
 			cw.addEventListener("load", ol, true);
-		else 			// case: page already loaded (i.e switching between preloaded tabs)
-			e(); 
-	}
+        } else { 			// case: page already loaded (i.e switching between preloaded tabs)
+			enableFunc();
+        }
+	} else { // inject the imgareaselect css anyway because we also use it for tooltips
+        lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
+    }
 },
 
 	/**
