@@ -149,7 +149,18 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                     xtype: "statusbar",
                     id: "status",
                     defaultText: "",
-                    autoClear: 6000
+                    autoClear: 6000,
+                    items: [
+		                {
+		                    xtype:'button',
+		                    id:'feedButton', 
+		                    icon: "chrome://lore/skin/icons/feed.png",
+                            //tooltip: "RSS feed for annotations matching current page / search",
+                            handler: this.annotationManager.getFeedURL,
+                            scope: this.annotationManager
+		                },
+		                ' '
+		            ]
                 }]
             };
     

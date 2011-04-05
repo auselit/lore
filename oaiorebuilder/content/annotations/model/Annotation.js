@@ -26,17 +26,16 @@
  * @param {boolean} bodyEmbedded Optional parameter specifying RDF was loaded from file
  */
 lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
-	// adapated from Danno Client code dannotate.js
-
-		/**
-		 * Load annotation configuration items and generate id for annotation
-		 * @param {Object} config
-		 */
-		load: function (config ) {
-			Ext.apply(this, config);
-			this.id  = "#new" + Math.uuid();
-		},
-
+        constructor: function(config){
+            Ext.apply(this,config);
+            if (!this.id){
+                this.id = "#new" + Math.uuid();
+            }
+            this.createdOrModified = (!this.modified || this.modified == '') ? this.created : this.modified;
+            if (this.type.match(lore.constants.NAMESPACES["vanno"]) && !this.original) {
+                this.original = this.resource;
+            }
+        },
 		/**
 		 * If rdf property supplied read in RDF and convert to name value pairs as properties
 		 * of class
@@ -45,8 +44,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 		 * @param {XMlDoc} xmldoc The complete document, used for grabbing unnamed RDF sets
 		 * @param {Boolean} bodyEmbedded Whether the body value is embedded in the RDF or simply a URL to the body
 		 */
-		constructor: function(rdf, xmldoc, bodyEmbedded){
-
+		loadFromXML: function(rdf, xmldoc, bodyEmbedded){
 		if (!rdf)
 			return;
 		var tmp;
@@ -333,7 +331,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 			}
 		}
 		catch (ex) {
-			lore.debug.anno("Error parsing RDF" +
+			lore.debug.anno("Error parsing RDF " +
 			(this.id ? ' for ' + this.id : ''), ex);
 		}
 	},
@@ -403,7 +401,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 
 			}
 
-			lore.debug.anno('Serializing to RDF/XML', {anno:anno});
+			//lore.debug.anno('Serializing annotation to RDF/XML', {anno:anno});
 
 			rdfxml += '<rdf:Description';
 			if (annoOrig.id && !annoOrig.isNew() ) {
@@ -699,201 +697,141 @@ lore.anno.OACAnnotationSerializer  = function () {
 
 lore.anno.OACAnnotationSerializer.prototype = {
 	/**
-	 * Generate the OAC RDF for an array of annotations
-	 * @param {Array} annos An array of records or Annotation objects
-	 * @param {Object} storeDates (Optional) Specify whethere dates are to be stored in the OAC RDF. Defaults to false
-	 * @return {String} The RDF that was generated
+     * Generate OAC RDF using rdfquery to serialize
+     * @param {Array} annos An array of records or Annotation objects
+     * @param {Object} storeDates (Optional) Specify whethere dates are to be stored in the OAC RDF. Defaults to false
+     * @return {String} The RDF that was generated
 	 */
-
-	serialize : function ( annos, store, storeDates ) {
-		if (!annos.length )
-			annos = [annos];
-		var appendxml;
-
-		var rdfxml = "<?xml version=\"1.0\" ?>";
-		rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '" '
-				+ ' xmlns:oac="' + lore.constants.NAMESPACES["oac"] + '">';
-
-		for (var i = 0; i < annos.length; i++) {
-			var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
-			var anno = {};
-
-			for (var e in annoOrig) {
-				var val = annoOrig[e];
-				if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
-					anno[e] = val.replace(/&/g, '&amp;');
-				}
-				else
-					anno[e] =val;
-
-			}
-
-			appendxml = '';
-			rdfxml += '<oac:Annotation';
-			if (annoOrig.id && !annoOrig.isNew() ) {
-				rdfxml += ' rdf:about="' + anno.id + '"';
-			}
-			rdfxml += ">";
-/*			if (annoOrig.isReply) {
-				rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
-			}
-			else {
-				rdfxml += '<rdf:type rdf:resource="' + lore.constants.NAMESPACES["annotea"] +
-				'Annotation"/>';
-			}
-			if (annoOrig.type) {
-				rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
-			}
-			*/
-
-
-			if (annoOrig.isReply) {
-				rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-
-				var rootannonode = lore.global.util.findRecordById(store, annoOrig.about);
-				if (rootannonode) {
-					while (rootannonode.data.isReply) {
-						rootannonode = lore.global.util.findRecordById(store, rootannonode.data.about);
-					}
-					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id.replace(/&/g,'&amp;') + '"/>';
-				}
-				else {
-					rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-				}
-
-			}
-
-
-			// also send variant as annotates for backwards compatability with older clients
-
-
-			if (annoOrig.creator) {
-				rdfxml +=
-				'<creator xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
-					+ '<Agent xmlns="' + lore.constants.NAMESPACES["foaf"] + '">'
-						+ '<name xmlns="' + lore.constants.NAMESPACES["foaf"] + '">'
-							+ lore.global.util.trim(anno.creator)
-						+ '</name></Agent>'
-				+ '</creator>';
-			}
-
-			if (annoOrig.lang) {
-				rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-				anno.lang +
-				'</language>';
-			}
-			if (annoOrig.title) {
-				rdfxml += '<title xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' + anno.title +
-				'</title>';
-			}
-			if (!annoOrig.created) {
-				anno.created = new Date();
-			}
-			if (storeDates) {
-				// TODO: #48 - store as dates not strings
-				rdfxml += '<created xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
-						+ anno.created.toString() + '</created>';
-				anno.modified = new Date();
-				rdfxml += '<modified xmlns="' + lore.constants.NAMESPACES["dcterms"] + '">'
-						+ anno.modified.toString() + '</modified>';
-			}
-
-
-
-			if (annoOrig.isReply) {
-				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/repliesTo"/>';
-				rdfxml += '<oac:hasTarget rdf:resource="' + anno.about + '"/>';
-
-			} else if (annoOrig.variant) {
-				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/annotates"/>';
-				rdfxml += '<oac:hasTarget xmlns="' + lore.constants.NAMESPACES["annotea"] +
-					'" rdf:resource="' +
-					anno.original + '"/>';
-				var curURN = 'urn:uuid:' + Math.uuid();
-
-				rdfxml += '<oac:hasTargetContext>'
-						+ '<oac:TargetContext>'
-							+ '<oac:contextAbout rdf:resource="' + anno.original + '"/>'
-							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
-						+ '</oac:TargetContext></oac:hasTargetContext>';
-
-				appendxml +=
-					'<oac:SegmentDescription rdf:about="' + curURN + '">'
-						+ '<rdf:value>' + anno.originalcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';
-
-
-				rdfxml += '<oac:hasTarget xmlns="' + lore.constants.NAMESPACES["annotea"] +
-					'" rdf:resource="' +
-					anno.variant + '"/>';
-
-				var curURN = 'urn:uuid:' + Math.uuid();
-
-				rdfxml += '<oac:hasTargetContext>'
-						+ '<oac:TargetContext>'
-							+ '<oac:contextAbout rdf:resource="' + anno.variant + '"/>'
-							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
-						+ '</oac:TargetContext></oac:hasTargetContext>';
-
-				appendxml +=
-					'<oac:SegmentDescription rdf:about="' + curURN + '">'
-						+ '<rdf:value>' + anno.variantcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';
-			} else {
-				rdfxml += '<oac:hasPredicate rdf:resource="http://www.openannotation.org/ns/annotates"/>';
-				rdfxml += '<oac:hasTarget rdf:resource="'
-					+ anno.resource	+ '"/>';
-
-				var curURN = 'urn:uuid:' + Math.uuid();
-
-				rdfxml += '<oac:hasTargetContext>'
-						+ '<oac:TargetContext>'
-							+ '<oac:contextAbout rdf:resource="' + anno.resource + '"/>'
-							+ '<oac:hasSegmentDescription rdf:resource="' + curURN + '"/>'
-						+ '</oac:TargetContext></oac:hasTargetContext>';
-
-				appendxml +=
-					'<oac:SegmentDescription rdf:about="' + curURN + '">'
-						+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
-					+ '</oac:SegmentDescription>';
-			}
-
-
-
-
-			if (annoOrig.body != null) {
-				anno.body = lore.global.util.sanitizeHTML(anno.body, window);
-				rdfxml +=
-				'<oac:hasContent>'
-					+ '<oac:Note>'
-						+ '<oac:body rdf:parseType="Literal">'
-						+  anno.body
-						+ '</oac:body>'
-					+ '</oac:Note>'
-				+ '</oac:hasContent>';
-			}
-
-			rdfxml += '</oac:Annotation>';
-
-			rdfxml += appendxml;
-			if (annoOrig.variant) {
-				appendxml +=
-					'<oac:SegmentDescription>'
-						+ '<rdf:value>' + anno.originalcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';
-				appendxml +=
-					'<oac:SegmentDescription>'
-						+ '<rdf:value>' + anno.variantcontext + '</rdf:value>'
-					+ '</oac:SegmentDescription>';
-			} else {
-			}
-
-
-		}
-		rdfxml += '</rdf:RDF>';
-
-		return rdfxml;
-	},
+    serialize : function (annos, store, storeDates ) {
+        var genTarget = function(target, context){
+            if (context){
+	            var hashloc = context.indexOf('#');
+	            if (hashloc == 0){ // context starts with hash, assume fragment identifier
+	                rdfdb.add(annoid + " oac:hasTarget <" + target + context + ">");
+	            } else if (hashloc > 0){ // context contains hash, assume targetURL + fragment identifier
+	                rdfdb.add(annoid + " oac:hasTarget <" + context + ">");
+	            } else { 
+                    // TODO: check if context contains an xpointer
+                    if (context.match("xpointer").index == 0){
+                        rdfdb.add(annoid + " oac:hasTarget <" + target + "#" + context + ">");
+                    } else {
+		                // generate a ConstrainedTarget and constraint with content as text
+		                var ctuuid = "<urn:uuid:" + Math.uuid() + ">"; // constrained target
+		                var cuuid = "<urn:uuid:" + Math.uuid() + ">"; // constraint
+		                rdfdb.add(annoid + " oac:hasTarget " + ctuuid)
+		                .add(ctuuid + " oac:constrains <" + target + ">")
+		                .add(ctuuid + " a oac:ConstrainedTarget")
+		                .add(ctuuid + " oac:constrainedBy " + cuuid)
+		                .add(cuuid + " a oac:Constraint")
+		                .prefix('cnt', 'http://www.w3.org/2008/content#')
+		                .add(cuuid + " a cnt:ContentAsText")
+		                .add(cuuid + " cnt:chars \"" + context + "\"")
+		                .add(cuuid + " cnt:characterEncoding \"utf-8\"");
+                    }
+	            }
+            } else if (target){
+                // no annotea context, use resource url directly for target
+                rdfdb.add(annoid + " oac:hasTarget <" + target + ">");
+            }
+        };
+        
+        if (!annos.length ) {
+            annos = [annos];
+        }
+        var rdfdb = jQuery.rdf.databank();
+        for (ns in lore.constants.NAMESPACES){
+            rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
+        }
+        for (var i = 0; i < annos.length; i++) {
+            var anno =  annos[i].data || annos[i]; // an array of records or anno objects
+            var annoid = anno.id;
+            if (annoid && !anno.isNew() ) {
+                annoid = "<" + annoid + ">";
+            } else {
+                // no id, generate a unique blank node
+                annoid = "_:anno" + Math.uuid();
+            }
+            if (!anno.privateAnno){ // don't export private annotations to OAC
+	            if (anno.isReply) {
+	                rdfdb.add(annoid + " a oac:Reply");
+	            } else {
+	                rdfdb.add(annoid + " a oac:Annotation");
+	            }
+	            if (anno.bodyURL){
+	                // For a metadata annotation this will be an RDF document, for others it will be html
+	                rdfdb.add(annoid + " oac:hasBody <" + anno.bodyURL + ">");
+	            }
+	            if (!anno.variant){
+	                genTarget(anno.resource, anno.context); 
+	            } else { 
+	                // Variation Annotation (other variation metadata will be in compound body resource)
+	                genTarget(anno.original, anno.originalcontext);
+	                genTarget(anno.variant, anno.variantcontext);
+	            }
+	            if (anno.meta && anno.meta.context){
+	                // metadata annotation, another constraint for entity
+                    
+	            }
+	            // At present attach tags as another body: eventually we may wish to use a structured/compound body with both tags and html/text body
+	            var tagsarray = anno.tags.split(',');
+	            if (tagsarray.length > 0 && tagsarray[0] != ""){
+	                var buuid = "<urn:uuid:" + Math.uuid() + ">"; // tag body
+	                var tagsrdfxml = '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] 
+	                    + '" xmlns:vanno="' + lore.constants.NAMESPACES["vanno"] + '">'
+	                    + '<rdf:Description about="' + anno.resource + '">';
+		            for (var ti = 0; ti < tagsarray.length; ti++) {
+		                var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
+	                    tagsrdfxml += '<vanno:tag';
+	                    if (thetag.indexOf("http://") == 0) { // uri
+	                        tagsrdfxml += ' resource="' + thetag + '"/>';
+	                    }
+	                    else { // literal
+	                        tagsrdfxml += '>' + thetag + '</tag>';
+	                    }  
+		            }
+	                tagsrdfxml += "</rdf:Description></rdf:RDF>";
+	                // store tags in structured (RDF/XML) body
+	                rdfdb.prefix('cnt', 'http://www.w3.org/2008/content#')
+	                    .add(annoid + " oac:hasBody " + buuid)
+	                    .add(buuid + " a cnt:ContentAsXML")
+	                    .add(buuid + " cnt:version \"1.0\"")
+	                    .add(buuid + " cnt:declaredEncoding \"UTF-8\"")
+	                    .add(buuid + " cnt:standalone \"yes\"")
+	                    .add(buuid + " cnt:rest \"" + tagsrdfxml + "\"");
+	                
+	            }
+	            // Annotation properties
+	            if (anno.creator) {
+	                var agentid = anno.agentId? "<" + anno.agentId + ">" : ("_:user" + Math.uuid()); // TODO: get user id from original annotation
+	                rdfdb.add(annoid + " dcterms:creator " + agentid)
+	                .add(agentid + " a foaf:Agent")
+	                .add(agentid + " foaf:name \"" + lore.global.util.trim(anno.creator) + "\"");
+	            }
+	            if (anno.lang) {
+	                rdfdb.add(annoid + " dc:language \"" +  anno.lang +"\"");
+	            }
+	            if (anno.title) {
+	                rdfdb.add(annoid + " dc:title \"" + anno.title +"\"");
+	            }
+	            if (!anno.created) {
+	                anno.created = new Date();
+	            }
+	            if (!anno.modified){
+	                    anno.modified = anno.created;
+	            }
+	            if (storeDates) {
+	                // TODO: #48 - store as dates not strings
+	                rdfdb.add(annoid + " dcterms:created \"" + anno.created.toString() + "\"");
+	                rdfdb.add(annoid + " dcterms:modified \"" + anno.modified.toString() + "\"");
+	            }
+            }
+        };
+        //lore.debug.anno("oac serialize to databank", rdfdb);
+        //+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
+            
+        return rdfdb.dump({format:'application/rdf+xml',serialize:true});
+    },
+    
 
 	convertImageRangeXpointerToMediaFragment: function(/*string*/xpointer) {
 		if (!lore.global.util.isXPointerImageRange(xpointer))
