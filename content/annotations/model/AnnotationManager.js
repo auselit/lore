@@ -90,8 +90,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					{name: 'hasChildren'},
 					{name: 'semanticEntity'},
 					{name: 'semanticEntityType'},
-					{name: 'privateAnno'}
-                        ];
+					{name: 'privateAnno'}, 
+                    {name: 'agentId'},
+                    {name: 'compoundBody'}
+        ];
 
 		/** @property annods
          * @type Ext.data.JsonStore
@@ -209,9 +211,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Object} parent (Optional) The parent of this annotation
 	 */
 	addAnnotation : function(currentContext, currentURL, callback, parent){
-		var anno = new lore.anno.Annotation();
-
-		anno.load({
+		var anno = new lore.anno.Annotation({
 			resource: (parent ? parent.data.resource: currentURL),
 			about: (parent ? parent.data.id: null),
 			original: currentURL,
@@ -321,7 +321,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                 }
 
             } catch(e ) {
-                lore.debug.anno("error sending annotation to server: ", e);
+                lore.debug.anno("error sending annotation to server", e);
             }
         };
         xhr.send(annoRDF);
@@ -393,7 +393,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		}
 	},
 
-
 	/**
 	 * Creates an array of Annotations from a list of RDF nodes in ascending date
 	 * created order - unchanged from dannotate.js
@@ -404,19 +403,95 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @return {Array} ordered array of Annotations
 	 */
 	createAnnotationsFromRDF : function(xmldoc, bodyEmbedded){
-		var nodeList = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
-
-		var tmp = [];
-		for (var j = 0; j < nodeList.length; j++) {
-			try {
-				var tmpAnno = new lore.anno.Annotation(nodeList[j], xmldoc, bodyEmbedded);
-				if (tmpAnno && tmpAnno.id)
-					tmp.push(tmpAnno);
-			}
-			catch (ex) {
-				lore.debug.anno("Exception processing annotations", ex);
-			}
-		}
+        processRDFProperties = function(anno, isReply){
+	         var annoterm = anno.toString(); // with < > for query
+             var annoconfig = {
+                    id: anno.value.toString(), // without < >
+                    isReply : isReply
+             };
+	         var aboutanno = rdfobj
+	            .where(annoterm + " dc:creator ?creator")
+	            .optional(annoterm + " dc:language ?lang")
+	            .optional(annoterm + " dc:title ?title")
+	            .optional(annoterm + " annotea:annotates ?resource") 
+	            .optional(annoterm + " thread:inReplyTo ?about") // replies only
+	            .optional(annoterm + " thread:root ?root") // replies only
+	            .optional(annoterm + " annotea:created ?created")
+	            .optional(annoterm + " annotea:modified ?modified")
+	            .optional(annoterm + " annotea:context ?context")
+	            .optional(annoterm + " vanno:original ?original")
+	            .optional(annoterm + " vanno:variant ?variant")
+	            .optional(annoterm + " vanno:original-context ?originalcontext")
+	            .optional(annoterm + " vanno:variant-context ?variantcontext")
+	            .optional(annoterm + " vanno:variation-agent ?variationagent")
+	            .optional(annoterm + " vanno:variation-date ?variationdate")
+	            .optional(annoterm + " vanno:variation-place ?variationplace")
+	            .optional(annoterm + " annotea:body ?bodyURL")
+                .optional(annoterm + " vanno:private ?privateAnno")
+                .optional(annoterm + " vanno:meta-context ?metacontext")
+                .optional(annoterm + " danno:owner ?agentId")
+	            .get(0); // only process first match - ignores duplicate values for title, creator etc
+	         // Look for types that aren't annotea:Annotation
+             var annotype = rdfobj
+                .where(annoterm + " a ?type")
+                .filter(function(){
+                    return this.type.value.toString().indexOf(lore.constants.NAMESPACES["annotea"]) != 0;
+                }).get(0);
+             if (annotype){
+                annoconfig.type = annotype.type.value.toString();  
+             }
+	          // copy query result values into annoconfig
+	         for (p in aboutanno){
+	            if ("root" == p){ // for replies, we store the root as resource
+	                annoconfig.resource = aboutanno.root.value.toString();   
+	            } else if ("privateAnno" == p){
+                    annoconfig.privateAnno = (aboutanno.privateAnno.value == "true"); 
+                } else if ("metacontext" == p){
+                    annoconfig.meta = { context: aboutanno.metacontext.value.toString().split('\n'), fields: []}; 
+                } else if(isReply && "context" ==p){
+                    annoconfig.context = ''; // LORE ignores context for replies
+                } else {
+	                annoconfig[p] = aboutanno[p].value.toString();
+	            }
+	         }
+             // Process tags
+             annoconfig.tags = "";
+             rdfobj
+                .where(annoterm + " vanno:tag ?tag").each(function(i){;
+                   var tagval = this.tag.value.toString();
+                   if (this.tag.type == "Literal"){
+                      // freeform tag (not uri), make sure it is in tag list
+                      Ext.getCmp('tagselector').fireEvent('newitem', Ext.getCmp('tagselector'), tagval);
+                   }
+                   if (i > 0){
+                      annoconfig.tags += ",";
+                   }
+                   annoconfig.tags += tagval;
+             });
+             //lore.debug.anno("annoconfig is",annoconfig);
+	         return annoconfig;
+	    };
+        var tmp = [];
+        var rdfdb = jQuery.rdf.databank();
+        for (ns in lore.constants.NAMESPACES){
+            rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
+        }
+        rdfdb.load(xmldoc); 
+        var rdfobj = jQuery.rdf({databank: rdfdb});
+        // Create an annotation object for every annotation (and reply) matched in the RDF 
+        var annoquery = rdfobj.where('?anno a annotea:Annotation');
+        annoquery.each(function(){
+              var annoconfig = processRDFProperties(this.anno, false);
+              var tmpAnno = new lore.anno.Annotation(annoconfig);
+              tmp.push(tmpAnno);
+        });
+        // Danno replies are not of type Annotation
+        var replyquery = rdfobj.where('?anno a thread:Reply');
+        replyquery.each(function(){
+              var annoconfig = processRDFProperties(this.anno, true);
+              var tmpAnno = new lore.anno.Annotation(annoconfig);
+              tmp.push(tmpAnno);
+        });
 		return tmp.length == 1 ? tmp : tmp.sort(function(a, b){
 			return (a.created > b.created ? 1 : -1);
 		});
@@ -493,7 +568,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
 				return "";
 			} catch (e ) {
-				lore.debug.anno("handleResponse: " + e, e);
+				lore.debug.anno("handleResponse", e);
 			}
 			return "";
 		}
@@ -508,7 +583,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 						callback(anno, body);
 					}
 				} catch (e ) {
-					lore.debug.anno(e,e);
+					lore.debug.anno("Problem getting annotation body",e);
 				}
 			};
 			req.open("GET",uri);
@@ -517,7 +592,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			req.send(null);
 		}
 		catch (ex) {
-			lore.debug.anno("Error in AJAX request: " + uri, {ex: ex});
+			lore.debug.anno("Error in AJAX request: " + uri, ex);
 			return null;
 		}
 	},
@@ -552,7 +627,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
 			}
 			catch (e) {
-				lore.debug.anno(e, e)
+				lore.debug.anno("getBodyContentAsync", e)
 			}
 
 			lore.debug.timeElapsed("End getBodyContentAsync() callback");
@@ -637,7 +712,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 					this.handleAnnotationsLoaded(resp, filterFunction);
 				} catch (e ) {
-					lore.debug.anno(e,e);
+					lore.debug.anno("Error getting annotations",e);
 				}
 			},
 			failure: function(resp, opt){
@@ -647,7 +722,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					lore.anno.ui.loreError("Failure loading annotations for page.");
 
 				} catch (e ) {
-					lore.debug.anno(e,e);
+					lore.debug.anno("Error on failure loading annotations",e);
 				}
 			},
 			scope:this
@@ -685,7 +760,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					}
 
 				} catch (e) {
-					lore.debug.anno(e,e);
+					lore.debug.anno("Error searching annotations",e);
 				}
 			},
 			failure: function(resp, opt){
@@ -696,7 +771,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                         resultCallback('fail', resp);
                     }
 				} catch (e) {
-					lore.debug.anno(e,e);
+					lore.debug.anno("Error on failure searching annotations",e);
 				}
 			},
 			scope:this
@@ -731,7 +806,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			}
 		}
 
-		var url = vals['url'] != '' ? vals['url'] : null;
+		var url = vals['url'] != '' ? encodeURIComponent(vals['url']) : null;
 
 
 		var queryURL = this.prefs.url + (url ? (lore.constants.ANNOTEA_ANNOTATES + url): lore.constants.DANNO_ANNOTEA_OBJECTS);
@@ -791,7 +866,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			resultNodes = xmldoc.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], "Description");
 		}
 		
-		lore.debug.anno('handleAnnotationsLoaded()', {xml: xmldoc});
+		//lore.debug.anno('handleAnnotationsLoaded()', {xml: xmldoc});
 
 		if (resultNodes.length > 0) {
 			var annotations = this.createAnnotationsFromRDF(xmldoc);
@@ -800,7 +875,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				annotations = annotations.filter(filterFunction);
 			}
 
-			lore.debug.anno('handleAnnotationsLoaded() loaded annotations', {annotations:annotations});
+			lore.debug.anno('handleAnnotationsLoaded() loaded ' + annotations.length + ' annotations', {annotations:annotations});
 			// cater for tab change while annotations were downloaded from server
 			// FIXME, this is broken, anno is not set here
 			if (this.locationChanged(anno)) {
@@ -813,7 +888,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					this.getBodyContentAsync(annotations[i], window);
 				}
 				catch (e) {
-					lore.debug.anno('error loading body content: ' + e, e);
+					lore.debug.anno('error loading body content', e);
 				}
 			}
 
@@ -864,10 +939,26 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				this.loadAnnotation(replies);
 			}
 		} catch (e ) {
-			lore.debug.anno(e,e);
+			lore.debug.anno("handleAnnotationRepliesLoaded",e);
 		}
 	},
-
+    getFeedURL: function(){
+        try{
+	        var activetab = Ext.getCmp("navigationtabs").getActiveTab();
+	        var queryURL = "";
+	        if (activetab && activetab.id == "searchpanel"){ 
+	            // if search tab is active, use search panel values to construct feed
+	            var vals = activetab.searchForm.getForm().getFieldValues();
+	            // TODO : update createSearchQueryURL with param to control whether to generate rss url
+	            queryURL = this.createSearchQueryURL(vals).replace("/annotea","/rss")  
+	        } else { // feed for browse results
+	           queryURL =  this.createSearchQueryURL({url: lore.anno.ui.currentURL}).replace("/annotea","/rss");
+	        }
+	        lore.global.util.launchTab(queryURL,window);
+        } catch (e){
+            lore.debug.anno("Problem creating feed url",e);
+        }
+    },
 	/**
 	 * For all top level annotations on a page ( those that are not replies), that are not variation annotations
 	 * generated RDF and transform it using the stylesheet supplied
