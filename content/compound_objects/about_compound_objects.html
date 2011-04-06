@@ -4,12 +4,13 @@
 			body {color: #51666b;}
 			h1 {font-size: 120%}
 			h2 {font-size: 110%; padding-top:10px;clear:both;}
-			p {margin:0; margin-bottom: 10px;}
-			div {padding:0;margin:0}
+			p {margin:0; margin-bottom: 10px;line-height: 1.5em}
+			div {padding:0;margin:0;line-height: 1.5em}
 			a:hover {text-decoration: underline;}
 			a {color: #2c5798 !important;}
 			ul {padding-left:0px}
 			ul li {
+				line-height: 1.5em;
 				padding-left:0.5em;
 				list-style-position: inside;
 				list-style-type: square;
@@ -18,12 +19,27 @@
 				padding-left: 1.5em;
 			}
 			.fig {float:right;margin-right:5px;margin-left:5px;}
-			
+			.helpinst {
+				border:1px solid #eeeeee;
+				font-family: monospace;
+				padding:3px;
+				white-space: nowrap;
+			}
+			.helpinst img {
+				vertical-align:middle;
+			}
+			/* For image map */
+	
 		</style>
+		<script type="text/javascript">
+			var lore = {global:{}};
+			Components.utils.import("resource://lore/util.js", lore.global);
+		</script>
 		<title>LORE</title>
 		</head>
 	<body>
-		<h1>LORE: Literature Object Re-use and Exchange: Compound Objects</h1>
+		<h1><a href="#" onclick="lore.global.util.launchTab('chrome://lore/content/compound_objects/about_compound_objects.html',window);" title="Open in browser"><img alt="Open in browser" style="border:none;" src="chrome://lore/skin/icons/page_go.png"></a>&nbsp;LORE: Literature Object Re-use and Exchange: Compound Objects</h1>
+		
 		<p>LORE aims to support the digital practice of researchers and teachers of literary cultures through <b>compound object authoring</b>, allowing them to:</p>
 				<ul>
 					<li><a href="#gather"><b>Gather</b></a> web resources and organise and tag them, describe links between them and make notes about them using a graphical editor.</li>
@@ -35,81 +51,118 @@
 		
         <p><b>Note</b>: Similarly to browser favourites or bookmarks, LORE only stores links to the online materials that you include in compound objects - it does not take copies of those materials. We suggest that you select resources hosted at reliable institutions or archives to avoid broken links within your compound objects, and that you use persistent URIs for each resource (such as DOIs) where available.</p>
 
-        <h2>Preferences</h2>
+		<h2>LORE Graphical User Interface Overview</h2>
+		<p>Hover over the image of LORE's graphical user interface for a brief description of each feature. Click to jump to the relevant section of this manual.</p>
+		<div style="text-align:center; width:660px; margin-left:auto; margin-right:auto;">
+		<img id="guimapimg" src="chrome://lore/skin/help-rem.jpg" usemap="#guimap" border="0" width="660" height="303" alt="" />
+		<map id="guimap" name="guimap">
+		<area shape="rect" coords="85,0,117,20" href="#gather" alt="Add a resource to the current compound object" title="Add a resource to the current compound object"    />
+		<area shape="rect" coords="2,18,45,38" href="#browse" alt="Browse related compound objects" title="Browse related compound objects"    />
+		<area shape="rect" coords="459,19,512,38" href="#explore" alt="Explore View" title="Discover related resources via the Explore View"    />
+		<area shape="rect" coords="400,19,456,38" href="#slideshow" alt="Slideshow View" title="Present the current compound object via the Slideshow View"    />
+		<area shape="rect" coords="350,19,401,38" href="#details" alt="Details View" title="Details View: text-based view of all resources and associated properties and relationships"    />
+		<area shape="rect" coords="277,19,350,38" href="#resourcelist" alt="Resource List" title="List and organise resources via the Resource List"    />
+		<area shape="poly" coords="190,22,275,22,275,40,655,42,656,264,190,265," href="#graphicaleditor" alt="Graphical Editor" title="Edit or view a compound object in the Graphical Editor"   />
+		<area shape="rect" coords="45,19,83,37" href="#history" alt="History: list recently viewed or edited compound objects" title="History: lists recently viewed or edited compound objects"    />
+		<area shape="rect" coords="84,19,122,37" href="#search" alt="Search for compound objects" title="Search for compound objects"    />
+		<area shape="rect" coords="235,1,273,19" href="#troubleshooting" alt="Troubleshooting" title="Troubleshooting and reporting problems"    />
+		<area shape="rect" coords="137,0,156,18" href="#save" alt="Save the compound object" title="Save the compound object to the repository"    />
+		<area shape="rect" coords="174,0,198,19" href="#importexport" alt="Import/Export" title="Import or Export the compound objects to alternate formats"    />
+		<area shape="rect" coords="118,1,137,19" href="#new" alt="Create new compound object" title="Create a new compound object"    />
+		<area shape="rect" coords="157,1,174,18" href="#delete" alt="Delete the current compound object" title="Delete the current compound object from the repository"    />
+		<area shape="rect" coords="199,1,216,18" href="#find" alt="Find text within the current view" title="Find text within the current view"    />
+		<area shape="rect" coords="217,2,234,19" href="#prefs" alt="Preferences" title="View or modify LORE Preferences"    />
+		<area shape="rect" coords="513,19,614,38" href="#help" alt="Help" title="View this manual"    />
+		<area shape="poly" coords="125,22,186,22,186,266,3,265,5,40,127,41," href="#properties" alt="View or edit properties and relationships" title="View or edit properties and relationships"   />
+		<area shape="rect" coords="0,283,655,298" href="#statusbar" alt="Hide or show LORE via the status bar icon" title="Activate LORE via the status bar icon"    />
+		<area shape="rect" coords="0,268,655,283" href="#messages" alt="Messages and the name of the current compound object are displayed here" title="Messages and the name of the current compound object are displayed here"    />
+		</map>
+		</div>
 		
-		<p>You can configure LORE's features via the preferences. Select <img src="chrome://lore/skin/icons/cog.png" alt="View or edit LORE preferences" title="View or edit LORE preferences"> from the toolbar to show the preferences window. You can also access the preferences when LORE is hidden via the Options button in the Firefox Add-Ons window. Select Tools > Add-Ons from the browser menu to display the Add-Ons window, then select LORE from the list of Add-Ons to access LORE's Options button.</p>
+        <h3 id="prefs">Preferences</h3>
+		
+		<p>You can configure LORE's features via the preferences window. Select <span class='helpinst'><img src="chrome://lore/skin/icons/cog.png" alt="View or edit LORE preferences" title="View or edit LORE preferences"> View or edit LORE preferences</span> from the toolbar to show the preferences window. You can also access the preferences when LORE is hidden via the Options button in the Firefox Add-Ons window. Select <span class="helpinst">Tools > Add-Ons</span> from the browser menu to display the Add-Ons window, then select LORE from the list of Add-Ons to access LORE's Options button.</p>
 		<p>You can enter your name (used to identify you as the creator of compound objects), and enable or disable LORE's features via the General preferences. Expert users have the option to configure more specific details for each service. For example, you can change the location of the compound objects repository or specify an ontology describing alternate relationship types to relate resources within compound objects.</p>
 		
-        <h3>Hiding/Showing LORE</h3>
-        <p>LORE can be toggled between hidden and visible, so that it does not take up space on screen while you browse. To hide or show LORE, click on the icon in the status bar, or select Tools > LORE from the browser menu.
+        <h3 id="statusbar">Hiding/Showing LORE</h3>
+        <p>LORE can be toggled between hidden and visible, so that it does not take up space on screen while you browse. To hide or show LORE, click on the <img alt="LORE icon" src="chrome://lore/skin/oaioreicon-sm.png"> icon in the add-on or status bar, or select <span class="helpinst">Tools > LORE</span> from the browser menu.
         </p>
 
-        <h3>Compound object editor</h3>
+        <h3 id="graphicaleditor">Graphical editor</h3>
         <p>
-            The compound object editor can be used to view, edit or create a compound object.
+            You can view, edit or create a new compound object using the <span class="helpinst"><img alt="Graphical Editor" src="chrome://lore/skin/icons/layout_pencil.png"> Graphical Editor</span>.
         </p>
-
+		<p id="messages">The name of the compound object you are viewing or editing is displayed in the bottom-right corner of LORE's interface. Messages indicating the status of actions such as adding a resource or saving the compound object appear in the space to the left of the compound object name.</p>
         <h4>Viewing or Editing existing compound objects</h4>
         <p>While you are browsing, any compound objects associated with the page that you are currently viewing in the browser will be displayed in the panel to the left of the editor area. You can click on these to load the compound object in the editor for viewing or editing.</p>
         <h4>Creating a compound object</h4>
-        <p>By default, LORE starts with a new compound object so you can start adding resources straight away. If you have been browsing existing compound objects and wish to start editing a new compound object, select <img src="chrome://lore/skin/icons/database_add.png" alt="Create a new compound object" title="Create"> from the toolbar.</p>
+        <p id="new">By default, LORE starts with a new compound object so you can start adding resources straight away. If you have been browsing existing compound objects and wish to start editing a new compound object, select <span class="helpinst"><img src="chrome://lore/skin/icons/database_add.png" alt="Create a new compound object"> Create a new compound object</span> from the toolbar.</p>
 
         <h4 id="gather">Gather resources into a compound object</h4>
         <p>LORE offers several ways to add resources to the compound object that is open in the editor:</p>
         <ul>
-        <li>Address bar button: You can add the page that you are currently viewing in the browser to the compound object by selecting <img src="chrome://lore/skin/icons/ore_add.png" alt="Add" title="Add browser URL to LORE compound object"/> displayed next to the URL in the address bar. You can add resources to the compound object in this way even if LORE is hidden. If the current page is in the compound object that is open in LORE's editor, the icon will display as <img src="chrome://lore/skin/icons/ore_added.png" alt="Added" title=""/>, and clicking on this icon will unhide LORE.</li>
-        <li>Browser context menus: To add links or images that are displayed on the current page, right-click on the link or image and select 'Add linked resource to ORE object' or 'Add image to ORE object'. These menus will add the resources to the compound object even when LORE is hidden. You can also drag and drop contained links directly into the LORE editor using your mouse, when LORE is visible.</li>
-        <li>Toolbar button: When LORE is visible, you can also add the page that you are currently viewing in the browser to the compound object by selecting <img src="chrome://lore/skin/icons/add.png" alt="Add" title="Add"/> from LORE's toolbar.</li> 
+        <li>Address bar button: You can add the page that you are currently viewing in the browser to the compound object by selecting <span class="helpinst"><img src="chrome://lore/skin/icons/ore_add.png" alt="Add" title="Add browser URL to LORE compound object"/> Add browser URL to LORE compound object</span>, displayed next to the URL in the address bar. You can add resources to the compound object in this way even if LORE is hidden. If the current page is in the compound object that is open in LORE's graphical editor, the icon will display as <img src="chrome://lore/skin/icons/ore_added.png" alt="Added" title=""/>, and clicking on this icon will unhide LORE.</li>
+        <li>Browser context menus: To add links or images that are displayed on the current page, right-click on the link or image and select <span class="helpinst">Add linked resource to ORE object</span> or <span class="helpinst">Add image to ORE object</span>. These menus will add the resources to the compound object even when LORE is hidden. You can also drag and drop contained links directly into the LORE editor using your mouse, when LORE is visible.</li>
+        <li>Toolbar button: When LORE is visible, you can also add the page that you are currently viewing in the browser to the compound object by selecting <span class="helpinst"><img src="chrome://lore/skin/icons/add.png" alt="Add" title="Add"/> Add browser URL to LORE Compound Object</span> from LORE's toolbar. The drop-down menu to the right of the button provides additional options for adding resources including entering a URL manually or selecting a number of resources from open browser tabs.</li> 
         </ul>
         
         <p>Once you have added a resource, it will appear as a resource node in the graphical editor. Use the minus (or plus) icon in the top-right of the node to collapse and expand the node preview. You can also reposition nodes using the mouse or resize them by clicking on a node and then dragging the resize handles.</p> 
         
-        <p>If you wish to delete a resource node, select it and press the delete or backspace key, or right-click on the node and select 'Delete' from the context menu.  You can undo your actions within the editor using Control-Z (Command-Z on Mac) or right-click anywhere in the background of the editor to select Undo from the context menu. To redo an undone action, use Control-Y (Command-Y on Mac) or select Redo from the editor context menu.</p>
+        <p>If you wish to delete a resource node, select it and press the delete or backspace key, or right-click on the node and select <span class="helpinst"><img src="chrome://lore/skin/icons/delete.png" alt="Delete"> Delete resource from Compound Object</span> from the context menu. The resource context menu also contains entries to view the resource in other views. Checking the <span class="helpinst">Abstract Preview</span> checkbox will display the resource's abstract property within the resource node instead of a preview of the resource contents.</p>
+		<p>You can undo your actions within the editor using Control-Z (&#x2318;-Z on Mac) or right-click anywhere in the background of the editor and select <span class="helpinst"><img alt="Undo" src="chrome://lore/skin/icons/arrow_undo.png"> Undo</span> from the context menu. To redo an undone action, use Control-Y (&#x2318;-Y on Mac) or select <span class="helpinst"><img alt="Redo" src="chrome://lore/skin/icons/arrow_redo.png"> Redo</span> from the context menu. The graphical editor's context menu provides options for automatic layout of the resources in the compound object and to save a snapshot of the current layout to an image file.</p>
         
-		<p>You can hold down control and use the arrow keys to move selected figures. Hold down shift and drag around a group of figures to select multiple figures to be moved or deleted.</p>
+		<p>You can hold down control and use the arrow keys to move selected figures. Hold down shift and use the mouse to drag a box around a group of figures to select multiple figures to be moved or deleted.</p>
 	
-        <h4>Resource properties and relationships</h4>
-        <p>To create a connection indicating a relationship between two resources, click and drag from a connection point on the first resource node, to a connection point on the second node. Right-click the connection to select the relationship type from the context menu. The relationship types in the menu are configured from the ontology specified in the preferences. You can delete a connection by selecting it with the mouse and then pressing delete or backspace on the keyboard.</p>
-        <p>Click on a node or connection to display its properties in the 'Resource/Relationship' property panel to the left of the editor. Properties such as title and format will be created automatically using information provided by the browser. You can edit or delete these values or add properties to record additional information about the resource. Properties can be edited by clicking on the value displayed next to the property name in the property panel. You can add additional properties from the menu that displays when you click on the plus icon shown above the list of properties. To remove a property, first select it and then click on the minus button (this action cannot be undone).</p>
+        <h4 id="properties">Resource properties and relationships</h4>
+        <p>To create a connection indicating a relationship between two resources, click and drag from a connection point on the first resource node, to a connection point on the second node. Right-click or double click on the connection to select the relationship type from the context menu. The relationship types in the menu are configured from the ontology specified in the preferences. You can delete a connection by selecting it with the mouse and then pressing delete or backspace on the keyboard. You can also delete relationships via the Properties sidebar.</p>
+        <p>Click on a node or connection to display its properties in the Properties panel to the left of the editor. Properties such as title and format will be created automatically using information provided by the browser. You can edit or delete these values or add properties to record additional information about the resource. Properties can be edited by clicking on the value displayed next to the property name in the property panel, entering a new value and then pressing enter. Click on <span class="helpinst"><img alt="ellipsis" style="background:url(chrome://lore/skin/icons/ellipsis-trigger-grey.gif) 1px 0 ; width:18px;height:22px;" src="chrome://lore/skin/blank.png"> Edit this value in a popup window</span> to open a larger editor. You can add properties by clicking on the plus icon shown above the list of properties and selecting the property to add from the menu. To remove a property or relationship, first select it and then click on the minus button (this action cannot be undone).</p>
         
         <h4>Compound object properties</h4>
-        <p>The properties for the compound object as a whole are displayed above the Resource/Relationship properties. You can add properties such as an abstract or description to describe the collection of resources that you have gathered.</p>
+        <p>The properties that apply to the entire compound object are displayed above the Resource properties. You can add properties such as an abstract or description to describe the collection of resources that you have gathered.</p>
         
+		<h4 id="resourcelist">Resource List</h4>
+		<p>The <span class="helpinst"><img alt="Resource List" src="chrome://lore/skin/icons/table_edit.png"> Resource List</span> provides an alternate to the graphical editor for organising the resources that are aggregated by the current compound object. You can re-order the resource list by drag and drop. Click on a resource within the list to display or edit the associated properties and relationships in the Properties Sidebar. Right-click on a resource to display a menu of additional actions.</p>
+           
         <h4 id="save">Publish: Saving to the repository</h4>
-        <p>When you are ready to publish your compound object, select save <img src="chrome://lore/skin/icons/database_save.png" alt="Save" title="Save"> from the toolbar. This will save the compound object to the repository. </p>
-        <p>If you wish to delete a compound object permanently, select delete <img src="chrome://lore/skin/icons/database_delete.png" alt="Delete" title="Delete"> from the toolbar. This action cannot be undone.</p>
+        <p>When you are ready to publish your compound object, select <span class="helpinst"><img src="chrome://lore/skin/icons/database_save.png" alt="Save" title="Save"> Save</span> from the toolbar. This will save the compound object to the repository. </p>
+        <p id="delete">If you wish to delete a compound object permanently, select <span class="helpinst"><img src="chrome://lore/skin/icons/database_delete.png" alt="Delete" title="Delete"> Delete</span> from the toolbar. This action cannot be undone.</p>
 
         
 		<h3>Other views of compound objects</h3>
-        <p>In addition to the graphical editor, LORE provides the following views to help you to discover and present compound objects:</p>
+        <p>In addition to the graphical editor and resource list, LORE provides the following views to help you to discover and present compound objects:</p>
+		
         <p id="present">Present:</p>
-        <ul>
-            <li>The <b>Resources</b> view lists the resources that are aggregated by the compound object that is currently loaded in the editor. You can export the information from this view to a MS Word document by selecting the <img src="chrome://lore/skin/icons/page_white_word.png" alt="Word" title="Word"> icon at the top right of the view.</li>
-            <li>The <b>Slideshow</b> view displays a slide for each resource showing a preview of the resource and a summary of properties attached to that resource. Selecting the play button will start the slideshow, which will automatically loop through the slides, displaying each for a few seconds. When the slideshow is paused, you can use the forward and back buttons to navigate between slides.</li>
+		<ul>
+			 <li id="details">The <span class="helpinst"><img src="chrome://lore/skin/icons/application_view_detail.png" alt="Details"> Details</span> view displays all of the aggregated resources and their properties and relationships. You can export the information from this view to a MS Word document by selecting the <img src="chrome://lore/skin/icons/page_white_word.png" alt="Word" title="Word"> icon at the top right of the view. You can use the icons next to each resource to show the resource in other views. To search over the contents of this or any other view, use the <span id="find" class="helpinst"><img src="chrome://lore/skin/icons/page_white_magnify.png" alt="Find"> Find</span> toolbar button</li>
+        	<li id="slideshow">The <span class="helpinst"><img src="chrome://lore/skin/icons/picture_empty.png" alt="Slideshow"> Slideshow</span> view displays a slide for each resource showing a preview of the resource and a summary of properties and relationships attached to that resource. Selecting the play button will start the slideshow, which will automatically loop through the slides, displaying each for a few seconds. When the slideshow is paused, you can use the forward and back buttons to navigate between slides.</li>
         </ul>
         <p id="discover">Discover:</p>
         <ul>
-            <li>Related compound objects: While you are browsing, any compound objects from the repository that contain the page being viewed in the browser are shown in the Related Compound Objects list to the left of the editor. Compound objects that you have viewed previously are shown in the Recently Viewed Compound Objects list to allow you to return to compound objects that you have discovered in previous sessions.</li>
-            <li>Search: The search panel can be accessed by clicking on the Search tab in the left-hand panel. The keyword search performs a case-insensitive search across all values from the repository, while advanced search allows you to narrow the search to specific properties or resources. There is an implicit AND between search terms, use double quotes for phrase search.</li>
-            <li>The <b>Explore</b> view allows you to navigate visually through the relationships between resources and compound objects from the repository. 
+            <li id="browse"><b>Browse</b>: While you are browsing, any compound objects from the repository that contain the page being viewed in the browser are shown in the Browse sidebar to the left of the editor. Click on a compound object from the list to load it in LORE. </li>
+			<li id="history"><b>History</b>: Compound objects that you have viewed previously are shown under the History tab, allowing you to return to compound objects that you have discovered in previous sessions.</li>
+            <li id="search"><b>Search</b>: The search panel can be accessed by clicking on the Search tab in the left-hand panel. The keyword search performs a case-insensitive search across all values from the repository, while advanced search allows you to narrow the search to specific properties or resources. There is an implicit AND between search terms. Use double quotes for phrase search.</li>
+		</ul>
+		<p>You can drag a compound object from the browse, history or search sidebar onto the graphical editor to add it to the current compound object. This allows compound objects to be grouped or referenced by another compound object.</p>           
+		<p id="explore">The <span class="helpinst"><img src="chrome://lore/skin/icons/network.png" alt="Explore"> Explore</span> view allows you to navigate visually through the relationships between resources and compound objects from the repository. 
             <ul>
                 <li>The red square indicates where you started exploring, and orange circles represent compound objects.</li>
                 <li>By default, the view starts from the currently loaded compound object, displaying connections to each of the resources that it aggregates. Clicking on any of the nodes in the visualisation will cause the visualisation to be re-centered around that node and relationships between that node and other compound objects or resources to be added to the visualisation. Right-clicking any node within the compound object editor gives you the option to reset the visualisation starting with that resource. You can also reset the view back to the default by selecting the 'Reset visualisation' link at the bottom-left.</li>
-                <li>The nodes that you have visited while exploring are shown along the top of the view, with the most recent appearing at the left. You can open web resources that you have visited in the browser by clicking on <img src="chrome://lore/skin/icons/page_go.png" alt="Show in browser" title="Show in browser">, displayed to the left of each node title, or by clicking on <img src="chrome://lore/skin/oaioreicon-sm.png" alt="Load in LORE" title="Load in LORE"> to open a compound object in LORE.</li>   
+                <li>The nodes that you have visited while exploring are shown along the top of the view, with the most recent appearing at the left. You can open web resources that you have visited in the browser by clicking on <span class="helpinst"><img src="chrome://lore/skin/icons/page_go.png" alt="Show in browser" title="Show in browser"> Show in browser</span>, displayed to the left of each node title, or by clicking on <span class="helpinst"><img src="chrome://lore/skin/oaioreicon-sm.png" alt="Load in LORE" title="Load in LORE"> Load in LORE</span> to open a compound object in LORE.</li>   
                 <li>Note: The explore view only shows relationships that have been saved to the repository. If you have not loaded a compound object, or if you have not yet saved your new compound object, this view will not display anything useful.</li>     
             </ul>
-            </li>
-        </ul>
+        </p>
  
-        <p>Additional specialised views may be enabled in your copy of LORE: These can be selected from the context menu which is displayed when you right-click any of the existing view tabs.</p>
+        <p>Additional views may be enabled in your copy of LORE: These can be selected from the context menu which is displayed when you right-click any of the existing view tabs.</p>
         
-        <h3>Import/Export</h3>
-        <p>You can save a backup of your compound objects to a RDF/XML file on your computer by selecting the 'Export to RDF/XML' option from the drop down menu next to the save icon. You can open the RDF/XML files saved from LORE using 'Import from RDF/XML file' in the same menu. Additional export and import options are available from this menu for advanced users.</p>
+        <h3 id="importexport">Import/Export</h3>
+        <p>You can export a copy of your compound objects to a RDF/XML file on your computer by selecting the <span class="helpinst">Export to RDF/XML</span> option from the <span class="helpinst"><img  alt="Import/Export" src="chrome://lore/skin/icons/table_refresh.png"> Import/Export</span> menu. You can open the RDF/XML files saved from LORE using <span class="helpinst">Import from RDF/XML file</span> in the same menu. Additional export and import options are available from this menu for other applications.</p>
         
-        <h3>Troubleshooting</h3>
-        As LORE is currently being developed, sometimes display glitches will occur. If LORE starts behaving strangely, you can reset it to its initial state by selecting <img src="chrome://lore/skin/icons/arrow_refresh.png" alt="Reset UI" title="Reset"> or restarting your browser. If problems persist, please contact us.
-		
-		<p style='clear:both;font-size:smaller; border-top: 1px solid #dce0e1;padding-top:0.5em'>For more information about LORE, please see the 
+        <h3 id="troubleshooting">Troubleshooting</h3>
+        <p>If LORE starts behaving strangely, you can reset it to its initial state by selecting <span class="helpinst"><img src="chrome://lore/skin/icons/arrow_refresh.png" alt="Reset UI"> Reset LORE UI</span> from the toolbar or by restarting your browser. If problems persist, please contact us.</p>
+		<p>You can report a problem immediately after it occurs via the <span class="helpinst"><img alt="Report a Problem" src="chrome://lore/skin/icons/mail-exclamation.png"> Report a Problem</span> toolbar button. This will create a new email through your email application, prefilled with information that may asist the developers to resolve the problem. You can edit or add to this information before sending the report to us.</p>
+		<p id="help">This manual can be viewed under the <span class="helpinst"><img src="chrome://lore/skin/icons/information.png" alt="Help">Using Compound Objects</span> tab in LORE or in the browser: <a href="#" onclick="lore.global.util.launchTab('chrome://lore/content/compound_objects/about_compound_objects.html', window);" title="Open this page in browser"><img alt="Open in browser" style="border:none;" src="chrome://lore/skin/icons/page_go.png"></a></p>
+		<p style='clear:both;font-size:smaller; border-top: 1px solid #dce0e1;padding-top:0.5em'>
+		For more information about LORE, please see the 
 		<a target='_blank' href='http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/'>Aus-e-Lit</a> project page</p>
 		      
         <!--h2 id="tm">Text-mining</h2>
@@ -120,6 +173,8 @@
         </div>
         <div class="fig">
         <img src="chrome://lore/skin/help-text-mining.jpg">
-        </div-->
+        </div-->       
+		
+		
 	</body>
 </html>
