@@ -743,7 +743,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
             
          
             if (!lore.global.util.urlsAreSame(rec.data.resource, ui.currentURL)) {
-                info = "Unsaved annotation from " + rec.data.resource + " ";
+                info = "Unsaved annotation on " + rec.data.resource + " ";
             }
             
             if (!rec.data.isNew()) {
