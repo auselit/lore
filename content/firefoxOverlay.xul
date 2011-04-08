@@ -39,7 +39,6 @@
             <xul:toolbarseparator />
             <xul:toolbarbutton id="add-annotation" tooltiptext="&lore.addAnnotationTip;"  oncommand="loreoverlay.addAnnotation();"/>
             <xul:toolbarbutton id="remove-annotation" tooltiptext="&lore.removeAnnotationTip;" oncommand="loreoverlay.removeAnnotation();" />
-            <xul:toolbarbutton id="edit-annotation" tooltiptext="&lore.editAnnotationTip;" oncommand="loreoverlay.editAnnotation();" />
             <xul:toolbarbutton id="reply-annotation" tooltiptext="&lore.replyAnnotationTip;" oncommand="loreoverlay.replyToAnnotation();" />
             <xul:toolbarbutton id="show-annotations" tooltiptext="&lore.showAnnotationsTip;"  oncommand="loreoverlay.showAnnotations();"/>
             <xul:toolbarseparator id ="annsep2" />
