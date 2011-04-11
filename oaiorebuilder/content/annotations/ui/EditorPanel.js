@@ -152,7 +152,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					}, {
 						fieldLabel: 'Variation Date',
 						name: 'variationdate',
-						id: this.genID("varitiondate"),
+						id: this.genID("variationdate"),
 						hideParent: true
 					}, {
 						fieldLabel: 'ID',
@@ -238,6 +238,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					}, {
 						fieldLabel: 'Variant resource',
 						name: 'variant',
+                        id: this.genID("variantfield"),
 						readOnly: true,
 						style: {
 							background: 'none',
@@ -375,11 +376,18 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 			this.getComponent("body").on("push", function(field, html) {
 				field.originalValue = field.getValue();
 			});
+            this.getComponent("variantfield").on("focus", this.showInVariantWindow, this);
+            this.getComponent("originalfield").on("focus", this.showInVariantWindow, this);
 		} catch(e){
 			lore.debug.anno("EditorPanel:initComponent() - " + e, e);
 		}
 	},
-
+    showInVariantWindow: function(){
+      var rec = this.getRec();
+      // show the variation window if user clicks on variant resource field
+      lore.global.util.launchTab(rec.data.original); 
+      lore.anno.ui.showSplitter(rec);  
+    },
 	/**
 	 * Set the preferences object to listen to event update for
 	 * @param {Object} prefObj
