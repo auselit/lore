@@ -130,8 +130,7 @@ try {
                 
                 this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
                 this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
-                this.loadGlobalPrefs();
-                this.prefs.addObserver("", this, false);
+                this.loadGlobalPrefs();  
                 
                 this.initialized = true;
                 this.addEvents(["location_changed", "location_refresh", "tab_changed"]);
@@ -144,8 +143,16 @@ try {
                 var container = gBrowser.tabContainer;
                 container.addEventListener("TabSelect", this.onTabSelected, false);
                 
-                
-                
+                var splashVersion = this.prefs.getCharPref("splashVersion");
+                var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
+                    .getService(Components.interfaces.nsIExtensionManager);
+                var version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
+                if (version != splashVersion){
+                    // show info page for LORE
+                    lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/lore.php",window);
+                    this.prefs.setCharPref("splashVersion",version);
+                }
+                this.prefs.addObserver("", this, false);
             } 
             catch (e) {
                 alert("loreoverlay.onLoad: " + e + "\n" + e.stack);
@@ -841,7 +848,8 @@ try {
         
     };
     window.addEventListener("load", function(e){
-        loreoverlay.onLoad(e);
+        // delay onload for better browser responsiveness
+        window.setTimeout(function(){loreoverlay.onLoad(e);},200);
     }, false);
     
     window.addEventListener("unload", function overlayonunload(){
