@@ -292,24 +292,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             var taEl = this.getComponent(0).getEl();
             taEl.on("scroll",function(e,t,o){this.repaint();},taEl);
         }, this.propEditorWindow, {single:true});
-        
-        if (this.id != "nodegrid"){
-            this.on("afteredit", function(e) {
-                try{
-                 // update the CO title in the dataview
-                  if (e.record.id == "dc:title_0") {
-                    lore.ore.coListManager.updateCompoundObject(
-                        lore.ore.cache.getLoadedCompoundObjectUri(),
-                        {title: e.value}
-                    );
-                  }
-                // commit the change to the datastore
-                this.store.commitChanges();
-                } catch (e){
-                    lore.debug.ore("problem",e);
-                }
-            });
-        }
     },
     bindModel : function(model){
     	// Listen to model for property changes
@@ -525,9 +507,22 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     selfig.setProperty(args.record.id,cleanvalue);
                 }
                 lore.ore.ui.nodegrid.store.commitChanges();
+            } else {
+                 // update the CO title in the dataview
+                  if (args.record.id == "dc:title_0") {
+                    lore.ore.coListManager.updateCompoundObject(
+                        lore.ore.cache.getLoadedCompoundObjectUri(),
+                        {title: args.value}
+                    );
+                    // update the name of the compound object in the bottom right
+                    var readOnly = !lore.ore.cache.getLoadedCompoundObjectUri().match(lore.ore.reposAdapter.idPrefix);
+                    Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(args.value, 50) + (readOnly? ' (read-only)' : ''),false);
+                  }
+                // commit the change to the datastore
+                this.store.commitChanges();       
             }
         } catch (e){
-            lore.debug.ore("error handling node property change",e);
+            lore.debug.ore("error handling property change",e);
         }
     },
     /** Looks up property value from a grid by name
