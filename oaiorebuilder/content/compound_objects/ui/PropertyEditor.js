@@ -182,6 +182,23 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 ]
             }),
             colModel : new Ext.grid.ColumnModel({
+                propEditor: this, // reference to PropertyEditor object
+                isCellEditable: function(col, row) {
+                    try {
+	                    var g = this.propEditor;
+					    var record = g.store.getAt(row);
+	                    // TODO: use MVC, store read only status of properties in model rather than hardcoding this?
+	                    if (((g.id == "nodegrid") && (record.id == "dc:format_0" || record.id == "rdf:type_0")) 
+	                        || ((g.id != "nodegrid") && (record.id == "dcterms:modified_0"
+	                        || record.id == "dcterms:created_0"
+	                        || record.id == "rdf:about_0"))){
+						      return false;
+						} 
+                    } catch (ex){
+                        lore.debug.ore("Error in isCellEditable",ex);
+                    }
+				    return Ext.grid.ColumnModel.prototype.isCellEditable.call(this, col, row);
+				},
                 columns : [{
                             header : 'Property Name',
                             dataIndex : 'name',
@@ -196,7 +213,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             scope: this,
                             renderer: this.renderFunction, // in PropertyEditor
                             editor: new Ext.form.TriggerField({
-                                 propertyEditor: this,
+                                 propertyEditor: this, // reference to PropertyEditor object
                                  triggerClass: 'x-form-ellipsis-trigger',
                                  triggerConfig: {
                                     tag : "img", 
@@ -219,7 +236,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 ]
             }),
             sm : new Ext.grid.RowSelectionModel({
-                        singleSelect : true
+                singleSelect : true  
             }),
             viewConfig : {
                 forceFit : true,
@@ -252,6 +269,20 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             p.body.setStyle('display','block');
         });
 
+        this.on('rowcontextmenu',function(g,i,e){
+            g.getSelectionModel().selectRow(i);
+            var cmodel = g.getColumnModel();
+            if (cmodel.isCellEditable(1,i)){
+	            var tfield = g.getColumnModel().getCellEditor(1,i);
+	            // call startEditing + stopEditing (ensures value is updated into triggerfield)
+	            this.startEditing(i,1);
+	            this.stopEditing();
+	            // open the popup editor
+	            g.propEditorWindow.editField(tfield,i);
+            } else {
+                 lore.ore.ui.vp.info("Property value is not editable");
+            }
+        });
         // Set up listeners
         this.on("afteredit", this.handlePropertyChange,this);
         this.store.on("remove", this.handlePropertyRemove,this);
@@ -262,25 +293,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             taEl.on("scroll",function(e,t,o){this.repaint();},taEl);
         }, this.propEditorWindow, {single:true});
         
-        // TODO: use MVC, store read only status of properties in model rather than hardcoding this?
-        if (this.id == "nodegrid"){
-            this.on("beforeedit", function(e) {
-                    // don't allow generated format or type field to be edited
-                    if (e.record.id == "dc:format_0" || e.record.id == "rdf:type_0") {
-                        e.cancel = true;
-                    }
-                    
-            });
-        } else {
-            this.on("beforeedit", function(e) {
-                // don't allow these fields to be edited
-                if (e.record.id == "dcterms:modified_0"
-                        || e.record.id == "dcterms:created_0"
-                        || e.record.id == "rdf:about_0") {
-                    e.cancel = true;
-                }
-            });
-           
+        if (this.id != "nodegrid"){
             this.on("afteredit", function(e) {
                 try{
                  // update the CO title in the dataview
