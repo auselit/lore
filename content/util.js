@@ -46,6 +46,7 @@ m_xps = new XPointerService();
 util = {
     /** return a reference to the extension */
     getExtension: function(){
+        // TODO: update for FF 4
         return Components.classes["@mozilla.org/extensions/manager;1"]
                 .getService(Components.interfaces.nsIExtensionManager)
                 .getInstallLocation(lore.constants.EXTENSION_ID)
@@ -1008,7 +1009,7 @@ util = {
                         extraFunc();
                     }
                 } catch (e ) {
-                    debug.ore("iframe(onload): " + e, e);
+                    debug.ui("iframe(onload): " + e, e);
                 }
             }, true);
         iframe.setAttribute("src", "about:blank"); // trigger onload
@@ -1037,20 +1038,42 @@ util = {
      * Basic HTML Sanitizer using Firefox's parseFragment
      * @param {Object} html
      */
-    sanitizeHTML : function(html, win) {
-        var serializer = Components.classes["@mozilla.org/xmlextras/xmlserializer;1"]
-            .createInstance(Components.interfaces.nsIDOMSerializer);
-        
-        html = html.replace(/<br>$/,'');
-        
-        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
-            .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
-            .parseFragment(html, false, null, win.document.body);
-        if (fragment) {
-            var buf = serializer.serializeToString(fragment);
-            // remove garbage
-            return buf.replace(/[\x80-\xff|\u0080-\uFFFF]*/g, '');
-        } else {
+    sanitizeHTML : function(html, win, asHTML) {
+        try{
+	        var serializer = Components.classes["@mozilla.org/xmlextras/xmlserializer;1"]
+	            .createInstance(Components.interfaces.nsIDOMSerializer);
+	        
+	        html = html.replace(/<br>$/,'');
+	        
+	        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
+	            .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
+	            .parseFragment(html, false, null, win.document.body);
+	        
+	        if (fragment) {
+	            if (asHTML){ 
+	                // copy fragment to element and get innerHTML to serialize to plain HTML
+		            var doc = win.document;
+		            var divEl = doc.getElementById('sanitize');
+		            if (!divEl){
+		                divEl = doc.createElement("div");
+		                divEl.setAttribute("id","sanitize");
+		                divEl.style.display = "none";
+		            }
+		            divEl.appendChild(fragment);
+		            var serializedContent = divEl.innerHTML;
+		            divEl.removeChild(divEl.firstChild);
+		            return serializedContent;
+	            } else {
+	                // use XML Serializer to serialize fragment to XML
+		            var buf = serializer.serializeToString(fragment);
+		            // remove garbage
+		            return buf.replace(/[\x80-\xff|\u0080-\uFFFF]*/g, '');
+	            }
+	        } else {
+	            return "";
+	        }
+        } catch (ex){
+            debug.ui("Problem sanitizing html",ex);
             return "";
         }
         
