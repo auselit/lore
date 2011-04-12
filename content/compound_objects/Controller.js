@@ -296,7 +296,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                                 // not a node relationship, show in the property grid 
                             	
                             	// ensure property values shown in grid are safe
-                            	var propval = lore.global.util.sanitizeHTML(obj, window);
+                            	var propval = lore.global.util.sanitizeHTML(obj, window, true);
                                     
                             	var prefix = lore.constants.nsprefix(relresult.ns);
                             	if (!(prefix == "rdf" && relresult.term == "type")){
