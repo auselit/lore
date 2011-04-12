@@ -336,7 +336,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						enableFont: false,
 						enableColors: false,
 						enableAlignments: false,
-						enableSourceEdit: true,
+						enableSourceEdit: false,
 						anchor: '-30 65%'
 					}, {
 						id: this.genID('metausergrid'),
