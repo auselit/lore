@@ -168,7 +168,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						fieldLabel: 'Annotates',
 						name: 'res',
 						id: this.genID("res"),
-						readOnly: true,
+						disabled: true,
+						disabledClass: '',
 						hideParent: true,
 						style: {
 							background: 'none',
@@ -226,6 +227,8 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 							{
 								xtype: 'textfield',
 								name: 'contextdisptxt',
+								disabled: true,
+								disabledClass: '',
 								readOnly: true,
 								flex: 1
 							}, {
@@ -681,12 +684,17 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 	/**
 	 * Show the annotation editor.
 	 * @param {Record} rec  The record containing the annotation to show in the editor
-	 * @param {Boolean} loadOnly (Optional) Load the annotation data into form fields but don't show editor. Defaults to false.
+	 * @param {Boolean} showOnly (Optional) Disallow saving.
 	 */
-	show: function(rec){
+	show: function(rec, showOnly){
+		var saveBtn = Ext.getCmp('updannobtn');
+		if (showOnly) {
+			saveBtn.disable();
+		} else {
+			saveBtn.enable();
+		}
 		this.load(rec);
-		lore.anno.ui.EditorPanel.superclass.show.apply(this, arguments);
-
+		lore.anno.ui.EditorPanel.superclass.show.apply(this);
 	},
 
 	/**

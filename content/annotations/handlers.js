@@ -104,8 +104,9 @@ lore.anno.ui.findNode = function (id, tree) {
 /**
  * Make node visible and selected in tree panel and show the editor panel
  * @param {Object} rec
+ * @param {boolean} showOnly Disallow saving
  */
-lore.anno.ui.selectAndShowNode = function (rec) {
+lore.anno.ui.selectAndShowNode = function (rec, showOnly) {
     var node = lore.anno.ui.findNode(rec.data.id);
 
     // RESET THE FORM
@@ -113,7 +114,7 @@ lore.anno.ui.selectAndShowNode = function (rec) {
 
     lore.anno.ui.page.setCurrentAnno(rec);
     if (node) {
-        lore.anno.ui.formpanel.show(rec);
+        lore.anno.ui.formpanel.show(rec, showOnly);
         node.ensureVisible();
         node.select();
     }
@@ -534,7 +535,6 @@ lore.anno.ui.handleAddAnnotation = function (rec) {
             }
         };
 
-//BAM
         lore.anno.am.runWithAuthorisation(function() {
             var newRec = lore.anno.annoMan.addAnnotation(currentContext, 
             		lore.anno.ui.currentURL, addSelectNodeHandler, rec);
@@ -582,7 +582,6 @@ lore.anno.ui.handleDeleteAnnotation = function (node) {
         return;
     }
 
-//BAM
     lore.anno.am.runWithAuthorisation(function (principal) {
     	if (principal.primaryUri === rec.data.agentId) {
     		Ext.MessageBox.show({
@@ -793,7 +792,6 @@ lore.anno.ui.handleReplyToAnnotation = function (arg) {
             return;
         }
 
-//BAM
         lore.anno.am.runWithAuthorisation(function () {
             lore.anno.ui.tabpanel.activate('treeview');
             lore.anno.ui.handleAddAnnotation(rec);
@@ -812,13 +810,14 @@ lore.anno.ui.handleEdit = function () {
         lore.anno.ui.updateAnnoFromForm();
         var rec = lore.anno.ui.page.getCurrentAnno();
         if (!rec) return;
-//BAM
+
         lore.anno.am.runWithAuthorisation(function (principal) {
         	if (principal.primaryUri === rec.data.agentId) {
         		rec = lore.anno.annoMan.editRec(rec);
         		lore.anno.ui.selectAndShowNode(rec);
         	} else {
-                lore.anno.ui.loreWarning('Annotation belongs to another user, cannot edit.');
+        		lore.anno.ui.loreWarning('Annotation belongs to another user, saving disabled.');
+        		lore.anno.ui.selectAndShowNode(rec, true);
         	}
         });
     } catch (e) {
@@ -839,13 +838,14 @@ lore.anno.ui.handleEditTreeNode = function (node) {
         } else {
             rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
         }
-//BAM
+
         lore.anno.am.runWithAuthorisation(function (principal) {
         	if (principal.primaryUri === rec.data.agentId) {
         		rec = lore.anno.annoMan.editRec(rec);
         		lore.anno.ui.selectAndShowNode(rec);
         	} else {
-                lore.anno.ui.loreWarning('Annotation belongs to another user, cannot edit.');
+        		lore.anno.ui.loreWarning('Annotation belongs to another user, saving disabled.');
+        		lore.anno.ui.selectAndShowNode(rec, true);
         	}
         });
     } catch (e) {
