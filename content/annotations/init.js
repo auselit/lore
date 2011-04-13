@@ -139,7 +139,7 @@ lore.anno.ui.init = (function() {
        } catch (e) {
            lore.debug.ui("Except in anno init", e);
        }
-   }
+   };
     
     /*
      * Construct the GUI
@@ -184,7 +184,7 @@ lore.anno.ui.uninit = function () {
     if (lore.anno.ui.pageui.removeResizeListeners) {
         lore.anno.ui.pageui.removeResizeListeners();
     }
-}
+};
 
 
 

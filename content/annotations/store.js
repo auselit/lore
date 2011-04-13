@@ -58,7 +58,7 @@
 	 get : function (datastoreName,  uid) {
 	 	var datastores = store.datastores;
 		if ( uid ) {
-			datastores = store.uidcache[uid]
+			datastores = store.uidcache[uid];
 		}
 
 		if (datastores) {
@@ -129,4 +129,4 @@
 	 	if ( store.uidcache[uid])
 			(store.uidcache[uid])[datastoreName] = null;
 	 }
- }
+ };

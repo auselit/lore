@@ -491,7 +491,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 
 				editedRec.endEdit();
 
-			}
+			};
 			// show the triples on the page
 		 	this.pageView.toggleTripleMarkers(setFormField);
 		} catch (e) {
@@ -501,7 +501,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 
   updateSelectionField: function(contextFieldName, recUrl, recContext) {
       var urlsAreSame = lore.global.util.urlsAreSame;
-      var ctxtFieldTxt = contextFieldName + 'txt'
+      var ctxtFieldTxt = contextFieldName + 'txt';
       var ctxtField = this.form.findField(ctxtFieldTxt);
 
       if (urlsAreSame(recUrl, lore.anno.ui.currentURL)) {
@@ -540,7 +540,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					var selText = '';
 					try {
 						selText = lore.global.util.getSelectionText(
-							rec.data.context, lore.global.util.getContentWindow(window).document)
+							rec.data.context, lore.global.util.getContentWindow(window).document);
 					} catch (e) {
 					}
 
@@ -574,7 +574,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 					var selText = '';
 					try {
 						selText = lore.global.util.getSelectionText(
-						rec.data.variantcontext, lore.global.util.getContentWindow(window).document)
+						rec.data.variantcontext, lore.global.util.getContentWindow(window).document);
 					} catch (e) {
 					}
 					this.form.setValues([{
@@ -720,7 +720,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 		}
 
         if (theVal !== 'Austlit Metadata') {
-            this.pageView.turnOffPageTripleMarkers()
+            this.pageView.turnOffPageTripleMarkers();
         }
 	},
 

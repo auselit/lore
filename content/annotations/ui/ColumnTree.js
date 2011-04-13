@@ -134,7 +134,7 @@ lore.anno.ui.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
                             f(n[i]);
                         }
                     }
-                }
+                };
                  
                 f(this.getRootNode());
                 
@@ -161,7 +161,7 @@ lore.anno.ui.ColumnTreeNode = function(attributes){
     this.nodeType = attributes.nodeType;
     
     lore.anno.ui.ColumnTreeNode.superclass.constructor.call(this, attributes);
-}
+};
     
 /**
  * ColumnTreeNode extends regular treenode and provides
@@ -444,7 +444,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
             this.treesorter = {
                 sortField : rec.data.type,
                 direction  : rec.data.direction
-            }
+            };
             
             this.fireEvent("sortchange", this, this.getRootNode().firstChild);
         } catch (e ) {
@@ -466,7 +466,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
           var ts = this.treesorter = {
                 sortField: field,
                 direction: direction
-            }
+            };
             
             var tree = this;
             
@@ -482,7 +482,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
                     lore.debug.anno("ColumnTree.addTreeSorter", e);
                 }
                 return "";
-            }
+            };
             
             // compare two nodes and return positive depending on node1's value compared to node2's
             var sortFn = function(n1, n2){
@@ -517,13 +517,13 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
             var doSort = function(node){
                ts = this.treesorter;
                node.sort(sortFn);
-            }
+            };
             
             var updateSort  = function(tree, node){
                 if(node.childrenRendered){
                     doSort.defer(1, this, [node]);
                 }
-            }
+            };
             this.on("beforechildrenrendered", doSort, this);
                this.on("append", updateSort, this);
             this.on("insert", updateSort, this);
@@ -590,7 +590,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
                 try {
                     var n = new lore.anno.ui.AnnoColumnTreeNode({
                         anno: anno
-                    })
+                    });
                         
                     var parent = null;
                     if (anno.isReply) 
@@ -649,7 +649,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
             }
 
             var info = ' ';
-            info = ui.genAnnotationCaption(rec.data, 'by c, d r')
+            info = ui.genAnnotationCaption(rec.data, 'by c, d r');
             
             node.setText(rec.data.title, info, ui.genTagsHtml(rec.data.tags), ui.genTreeNodeText(rec.data));
 
@@ -708,7 +708,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
                 var n = new lore.anno.ui.AnnoColumnTreeNode({
                     anno: rec.data,
                     postfix: this.postfix
-                })
+                });
                 this.appendChild(n);
                 
             }
@@ -747,7 +747,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
             }
             
             if (!rec.data.isNew()) {
-                info = info + ui.genAnnotationCaption(rec.data, 'by c, d r')
+                info = info + ui.genAnnotationCaption(rec.data, 'by c, d r');
             }
             
             

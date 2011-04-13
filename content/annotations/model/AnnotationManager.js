@@ -58,7 +58,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		this.listeners = config.listeners;
 
 		// Call our superclass constructor to complete construction process.
-		lore.anno.AnnotationManager.superclass.constructor.call(this, config)
+		lore.anno.AnnotationManager.superclass.constructor.call(this, config);
 
 		var fields = [
 					{name: 'created'},
@@ -125,7 +125,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		this.annousermetads =  new Ext.data.JsonStore( {
 			fields: mfields,
 			data: {}
-		})
+		});
 
 		// model event handlers
 		this.annods.on("load",  this.onDSLoad);
@@ -266,7 +266,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
 				t.updateAnnotationsSourceList(currentURL);
 			}
-		}
+		};
 
 
 		for ( var i =0; i < modified.length; i++ ) {
@@ -293,7 +293,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 		var xhr = new XMLHttpRequest();
 		if (annoRec.data.isNew()) {
-			lore.debug.anno("creating new annotation")
+			lore.debug.anno("creating new annotation");
 			// create new annotation
             var action = 'create';
             var successfulStatus = 201;
@@ -302,7 +302,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			xhr.setRequestHeader('Content-Length', annoRDF.length);
 
 		} else {
-			lore.debug.anno("updating existing annotation")
+			lore.debug.anno("updating existing annotation");
 			// Update the annotation on the server via HTTP PUT
             var action = 'create';
             var successfulStatus = 200;
@@ -344,7 +344,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                     lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
                     t.updateAnnotationsSourceList(currentURL);
             }
-		}
+		};
 
 		this.sendUpdateRequest(annoRec, callback);
 
@@ -571,7 +571,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				lore.debug.anno("handleResponse", e);
 			}
 			return "";
-		}
+		};
 
 		try {
 			req = new XMLHttpRequest();
@@ -627,7 +627,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
 			}
 			catch (e) {
-				lore.debug.anno("getBodyContentAsync", e)
+				lore.debug.anno("getBodyContentAsync", e);
 			}
 
 			lore.debug.timeElapsed("End getBodyContentAsync() callback");
@@ -950,7 +950,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	            // if search tab is active, use search panel values to construct feed
 	            var vals = activetab.searchForm.getForm().getFieldValues();
 	            // TODO : update createSearchQueryURL with param to control whether to generate rss url
-	            queryURL = this.createSearchQueryURL(vals).replace("/annotea","/rss")  
+	            queryURL = this.createSearchQueryURL(vals).replace("/annotea","/rss");  
 	        } else { // feed for browse results
 	           queryURL =  this.createSearchQueryURL({url: lore.anno.ui.currentURL}).replace("/annotea","/rss");
 	        }
@@ -972,7 +972,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
 
 		return lore.global.util.transformRDF(stylesheetURL, this.serializer.serialize(annos, this.annods, true),
-											params, window, serialize)
+											params, window, serialize);
 	},
 
 	/** Generate a Word document from the top-level, non-variation annotations on the page
@@ -1066,7 +1066,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	},
 
 	updateStoredRec: function(unsavedRec) {
-		var storedRec = this.findStoredRecById(unsavedRec.data.id)
+		var storedRec = this.findStoredRecById(unsavedRec.data.id);
 		if (storedRec) {
 			this.annods.remove(storedRec);
 			this.annods.addSorted(unsavedRec.copy());
