@@ -35,7 +35,9 @@ Ext.ux.form.HtmlEditor.MidasCommand = Ext.extend(Ext.util.Observable, {
         this.cmp.getToolbar().addButton(midasCmdButtons);
     }
 });
-
+/**
+ * Image button for Annotation editor toolbar
+ */
 Ext.ux.form.HtmlEditor.Img = Ext.extend(Ext.util.Observable, {
     init: function(cmp){
         this.cmp = cmp;
@@ -112,7 +114,11 @@ Ext.ux.form.HtmlEditor.Img = Ext.extend(Ext.util.Observable, {
         }
     }
 });
-
+/**
+ * ForegroundFont button for Annotation Editor font color
+ * @class Ext.ux.form.HtmlEditor.ForegroundFontButton
+ * @extends Ext.util.Observable
+ */
 Ext.ux.form.HtmlEditor.ForegroundFontButton = Ext.extend(Ext.util.Observable, {
     init: function(cmp){
         this.cmp = cmp;
