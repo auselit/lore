@@ -66,7 +66,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                 width: '100%',
                 height: '100%'
             }
-        }
+        };
     
         /*
          * 'Annotation Editor' panel
@@ -96,7 +96,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                 id: 'updannobtn',
                 tooltip: 'Save the annotation to the repository'
             }]
-        }
+        };
     
         /*
          * the panel that contains the annotation tree view and editor
@@ -114,7 +114,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                 animate: false
             },
             loreuieditor]
-        }
+        };
     
         /*
          * Helper function that constructs the 'Search' tab
@@ -125,7 +125,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             id: 'searchpanel',
             model: this.annotationManager.annosearchds,
             annoManager: this.annotationManager
-        }
+        };
     
     
         try {

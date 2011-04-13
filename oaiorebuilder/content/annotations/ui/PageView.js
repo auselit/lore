@@ -439,7 +439,7 @@ lore.anno.ui.PageView.prototype = {
 				} 
 				catch (ex) {
 					lore.debug.anno("Error unhighlighting",ex);
-                    lore.debug.anno("Error unhighlighting (selection)",this.page.multiSelAnno[i])
+                    lore.debug.anno("Error unhighlighting (selection)",this.page.multiSelAnno[i]);
 				}
 				
 			}

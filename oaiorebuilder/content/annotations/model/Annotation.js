@@ -369,7 +369,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
  */
 lore.anno.RDFAnnotationSerializer  = function () {
 
-}
+};
 
 lore.anno.RDFAnnotationSerializer.prototype = {
 	/**
@@ -685,7 +685,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
 				'</Body></rdf:Description>';
 	}
 
-}
+};
 
 /**
  * Class that serializes Annotation object/s as OAC RDF
@@ -693,7 +693,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
  */
 lore.anno.OACAnnotationSerializer  = function () {
 
-}
+};
 
 lore.anno.OACAnnotationSerializer.prototype = {
 	/**
@@ -848,4 +848,4 @@ lore.anno.OACAnnotationSerializer.prototype = {
 		return decoded.imgUrl + '#xywh=' + [x,y,w,h].join(',');
 	}
 
-}
+};

@@ -36,7 +36,7 @@ lore.anno.ui.Marker = function(args){
 	this.visible = false;
 	this.bw = args.borderWidth || 2;
 	this.page = args.page;
-}
+};
 
 lore.anno.ui.Marker.prototype = {
 	/**
@@ -58,7 +58,7 @@ lore.anno.ui.Marker.prototype = {
 			var doc = this.target;
 			// add span to doc body
 			var _div = $(lore.global.util.domCreate('span', doc));
-			var _parent = $('body',doc)
+			var _parent = $('body',doc);
 			_parent.append(_div);
 			this.data.nodes = [_div.get(0)];
 			this.update(); 
@@ -69,7 +69,7 @@ lore.anno.ui.Marker.prototype = {
 			var stylin = function(domNode){
 					domNode.style.backgroundColor = colour || "yellow";
 					if (styleCallback) styleCallback(type, domNode);
-				}
+				};
 				
 			if (!this.data || !this.data.nodes) {
 				// get range from xpath
@@ -249,4 +249,4 @@ lore.anno.ui.Marker.prototype = {
         return this.type === 'plain';
     }
 		
-}
+};

@@ -45,7 +45,7 @@ lore.anno.ui.disableUIFeatures = function(opts){
 	else {
 		lore.anno.ui.topView.setAnnotationsVisibility(!opts.disable);
 	}
-}
+};
 
 
 /** Helper function to create a view displayed in a closeable tab */
@@ -61,7 +61,7 @@ lore.anno.ui.openView = function(/*String*/panelid,/*String*/ paneltitle,/*funct
 		tab.on("activate", activationhandler);
 	}
 	tab.show();
-}
+};
 		
 /**
  * Output a message to notification window
@@ -106,7 +106,7 @@ lore.anno.ui.loreMsg = function(message, iconCls){
 	} catch (e) {
 		lore.debug.anno("loreMsg",e);
 	}
-}
+};
 		
 /**
  * Output a notification to notification window
@@ -115,7 +115,7 @@ lore.anno.ui.loreMsg = function(message, iconCls){
 lore.anno.ui.loreInfo = function(message){
 	lore.anno.ui.loreMsg(message, 'info-icon');
 	lore.global.ui.loreInfo(message);
-}
+};
 
 /**
  * Output a error message to notification window
@@ -125,7 +125,7 @@ lore.anno.ui.loreError = function(message){
 	lore.anno.ui.loreMsg(message, 'error-icon');
 	lore.global.ui.loreError(message);
 	
-}
+};
 
 /**
  * Output a warning to notification window
@@ -134,7 +134,7 @@ lore.anno.ui.loreError = function(message){
 lore.anno.ui.loreWarning = function(message){
 	lore.anno.ui.loreMsg(message, 'warning-icon');
 	lore.global.ui.loreWarning(message);
-}
+};
 		
 		
 /**
@@ -159,7 +159,7 @@ lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
 				buf += lore.global.util.splitTerm(anno.type).term;
 				break;
 			case 'c':
-				buf += anno.creator
+				buf += anno.creator;
 				break;
 			case 'd':
 				buf += lore.global.util.shortDate(anno.created, Date);
@@ -189,7 +189,7 @@ lore.anno.ui.genAnnotationCaption = function(anno, formatStr){
 	}
 	
 	return buf;
-}
+};
 		
 /**
  * Generate HTML formatted tag list
@@ -223,7 +223,7 @@ lore.anno.ui.genTagList = function(annodata){
 		bodyText += "</span>";
 	}
 	return bodyText;
-}
+};
 		
 /**
  * Retrieve the annotation title
@@ -236,7 +236,7 @@ lore.anno.ui.getAnnoTitle = function(anno){
 		title = "Untitled";
 	}
 	return title;
-}
+};
 
 /**
  * Retrieve the icon for the annotation depending on it's type
@@ -253,7 +253,7 @@ lore.anno.ui.getAnnoTypeIcon = function(anno){
 	};
 	
 	return icons[aType] || 'anno-icon';
-}
+};
 		
 /**
  * Show/hide a field on a form
@@ -275,7 +275,7 @@ lore.anno.ui.setVisibilityFormField = function(form, fieldName, hide){
 			cont.setDisplayed(true);
 		}
 	}
-}
+};
 
 /**
  * Hide list of form fields
@@ -286,7 +286,7 @@ lore.anno.ui.hideFormFields = function(form, fieldNameArr){
 	for (var i = 0; i < fieldNameArr.length; i++) {
 		lore.anno.ui.setVisibilityFormField(form, fieldNameArr[i], true);
 	}
-}
+};
 
 /**
  * Show list of form fields
@@ -297,7 +297,7 @@ lore.anno.ui.showFormFields = function(form, fieldNameArr){
 	for (var i = 0; i < fieldNameArr.length; i++) {
 		lore.anno.ui.setVisibilityFormField(form,fieldNameArr[i], false);
 	}
-}
+};
 
 /**
  * Determine whether any field has been modified on the form
@@ -318,7 +318,7 @@ lore.anno.ui.isFormDirty = function(form ) {
 	 
 	 //lore.debug.anno("The dirty items are: " + dirtyList.join());
 	 return isDirty;
- }
+ };
 		
 		
 /**
@@ -358,7 +358,7 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
 	
 	
 	return res;
-}
+};
 
 /**
  * Convert a tree node id to it's corresponding record id
@@ -366,7 +366,7 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
  */
 lore.anno.ui.nodeIdToRecId = function(node) {
 	return node.id.replace("-unsaved", "");
-}
+};
 		
 /**
  * Generate the tree node text
@@ -374,7 +374,7 @@ lore.anno.ui.nodeIdToRecId = function(node) {
  */
 lore.anno.ui.genTreeNodeText = function(anno){
 	return lore.anno.ui.genDescription(anno, true);
-}
+};
 
 /**
  * Generates a series of <span>s to display the passed in comma
@@ -394,7 +394,7 @@ lore.anno.ui.genTagsHtml = function(tags) {
         }
     }
     return tagsHtml;
-}
+};
 
 /**
  * Detemerine whether the triple object supplied is a relationship
@@ -423,7 +423,7 @@ lore.anno.ui.isHumanReadableTriple = function( triple) {
 		}
 	} 
 	return false;
-}
+};
 
 /**
  * Retrieve the term from the URI 
@@ -431,14 +431,14 @@ lore.anno.ui.isHumanReadableTriple = function( triple) {
  * @return {String}
  */
 lore.anno.ui.tripleURIToString = function ( prop) {
-			prop = prop.toString();
-			if ( prop.indexOf('#')!=-1)
-				prop = prop.substring(prop.indexOf("#") + 1, prop.length - 1);
-			else if ( prop.lastIndexOf("/")!=-1) {
-				prop = prop.substring(prop.lastIndexOf("/")+1, prop.length -1);
-			}
-			return prop;
-		}
+	prop = prop.toString();
+	if ( prop.indexOf('#')!=-1)
+		prop = prop.substring(prop.indexOf("#") + 1, prop.length - 1);
+	else if ( prop.lastIndexOf("/")!=-1) {
+		prop = prop.substring(prop.lastIndexOf("/")+1, prop.length -1);
+	}
+	return prop;
+};
 		
 /*
  * Not currently used 
@@ -478,7 +478,7 @@ lore.anno.ui.setCurAnnoStyle = function(type, domObj){
 		domObj.style.borderStyle = 'solid';
 	}
 	return domObj;
-}
+};
 
 /**
  * Update the image scale information if necessary
@@ -497,7 +497,7 @@ lore.anno.ui.updateImageData = function (img, doc) {
 						_img.data("scale", scale);
 					}
 	return scale;
-}
+};
 
 /**
  * Scale the image co-ordinates
@@ -519,7 +519,7 @@ lore.anno.ui.scaleImageCoords = function (img, coords, doc) {
 		sx: scale.x,
 		sy: scale.y
 	};
-}
+};
 
 /**
  * Calculate the image's absolute position on the page
@@ -548,4 +548,4 @@ lore.anno.ui.calcImageOffsets = function(img, doc){
 		left: (imgOfs.left - parOfs.left),
 		top: (imgOfs.top - parOfs.top)
 	};
-}
+};
