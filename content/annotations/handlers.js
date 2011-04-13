@@ -583,17 +583,21 @@ lore.anno.ui.handleDeleteAnnotation = function (node) {
     }
 
 //BAM
-    lore.anno.am.runWithAuthorisation(function () {
-        Ext.MessageBox.show({
-            title: 'Delete annotation',
-            msg: msg,
-            buttons: Ext.MessageBox.YESNO,
-            fn: function (btn) {
-                if (btn == 'yes')
-                    lore.anno.ui.handleDeleteAnnotation2(rec);
-            },
-            icon: Ext.Msg.QUESTION
-        });
+    lore.anno.am.runWithAuthorisation(function (principal) {
+    	if (principal.primaryUri === rec.data.agentId) {
+    		Ext.MessageBox.show({
+    			title: 'Delete annotation',
+    			msg: msg,
+    			buttons: Ext.MessageBox.YESNO,
+    			fn: function (btn) {
+    				if (btn == 'yes')
+    					lore.anno.ui.handleDeleteAnnotation2(rec);
+    			},
+    			icon: Ext.Msg.QUESTION
+    		});
+    	} else {
+            lore.anno.ui.loreWarning('Annotation belongs to another user, cannot delete.');
+    	}
     });
 };
 
@@ -809,9 +813,13 @@ lore.anno.ui.handleEdit = function () {
         var rec = lore.anno.ui.page.getCurrentAnno();
         if (!rec) return;
 //BAM
-        lore.anno.am.runWithAuthorisation(function () {
-            rec = lore.anno.annoMan.editRec(rec);
-            lore.anno.ui.selectAndShowNode(rec);
+        lore.anno.am.runWithAuthorisation(function (principal) {
+        	if (principal.primaryUri === rec.data.agentId) {
+        		rec = lore.anno.annoMan.editRec(rec);
+        		lore.anno.ui.selectAndShowNode(rec);
+        	} else {
+                lore.anno.ui.loreWarning('Annotation belongs to another user, cannot edit.');
+        	}
         });
     } catch (e) {
         lore.debug.anno("handleEdit", e);
@@ -832,9 +840,13 @@ lore.anno.ui.handleEditTreeNode = function (node) {
             rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
         }
 //BAM
-        lore.anno.am.runWithAuthorisation(function () {
-            rec = lore.anno.annoMan.editRec(rec);
-            lore.anno.ui.selectAndShowNode(rec);
+        lore.anno.am.runWithAuthorisation(function (principal) {
+        	if (principal.primaryUri === rec.data.agentId) {
+        		rec = lore.anno.annoMan.editRec(rec);
+        		lore.anno.ui.selectAndShowNode(rec);
+        	} else {
+                lore.anno.ui.loreWarning('Annotation belongs to another user, cannot edit.');
+        	}
         });
     } catch (e) {
         lore.debug.anno("handleEditTreeNode", e);
