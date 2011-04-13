@@ -122,7 +122,7 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
             if (authorised) {
             	this.fireSignedIn(principal.userName);
                 if (typeof options.callIfAuthorised == 'function') {
-                    options.callIfAuthorised();
+                    options.callIfAuthorised(principal);
                 }
                 return;
             }
@@ -156,9 +156,9 @@ lore.anno.AuthManager = Ext.extend(Ext.util.Observable, {
      */
     runWithAuthorisation : function(callback) {
         var t = this;
-        this.isAuthenticated(function() {
+        this.isAuthenticated(function(principal) {
             if (typeof callback == 'function') {
-                callback();
+                callback(principal);
             }
         });
         this.ifNotAuthenticated(function() {
