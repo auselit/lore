@@ -49,7 +49,7 @@ lore.anno.ui.show = function () {
         lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
     }
     lore.anno.ui.pageui.setContentsVisible(true);
-}
+};
 
 /**
  * Hide the annotations view
@@ -57,14 +57,14 @@ lore.anno.ui.show = function () {
 lore.anno.ui.hide = function () {
     lore.anno.ui.lorevisible = false;
     lore.anno.ui.pageui.setContentsVisible(false);
-}
+};
 
 /**
  * Hide the variation splitter window
  */
 lore.anno.ui.hideVariationSplitter = function () {
     lore.anno.ui.pageui.removeHighlightForCurrentAnnotation(lore.anno.ui.topView.getVariationContentWindow());
-}
+};
 
 /**
  * Detemerine whether any annotations are modified
@@ -72,20 +72,20 @@ lore.anno.ui.hideVariationSplitter = function () {
 lore.anno.ui.hasModifiedAnnotations = function () {
     lore.anno.ui.updateAnnoFromForm();
     return lore.anno.annoMan.numUnsavedAnnotations() > 0;
-}
+};
 /**
  * Get the currently selected image
  */
 lore.anno.ui.getCurSelImage = function () {
     return lore.anno.ui.pageui.getCurSelImage();
-}
+};
 
 /**
  * Get the currently edited annotation
  */
 lore.anno.ui.getCurrentEditedAnno = function () {
     return lore.anno.ui.formpanel.getRec();
-}
+};
 
 /**
  * Find a node with the given id
@@ -99,7 +99,7 @@ lore.anno.ui.findNode = function (id, tree) {
     var n = lore.global.util.findChildRecursively(lore.anno.ui.treeunsaved, 'id', id + "-unsaved");
     if (!n) n = lore.global.util.findChildRecursively(lore.anno.ui.treeroot, 'id', id);
     return n;
-}
+};
 
 /**
  * Make node visible and selected in tree panel and show the editor panel
@@ -120,7 +120,7 @@ lore.anno.ui.selectAndShowNode = function (rec) {
     // Necessary due to a bug in Ext related to drawing text fields
     // Should be fixed in Ext 3.2.1
     Ext.getCmp("treeview").doLayout();
-}
+};
 
 /**
  * Show the variation splitter for the current/supplied annotation
@@ -135,7 +135,7 @@ lore.anno.ui.showSplitter = function (rec) {
     }
     var editor = lore.anno.ui.formpanel;
     lore.anno.ui.pageui.updateSplitter(rec, true, editor.updateSplitterContextField, lore.anno.ui.formpanel);
-}
+};
 
 /**
  * Update the annotation context in the editor panel
@@ -144,7 +144,7 @@ lore.anno.ui.handleUpdateAnnotationContext = function () {
     lore.anno.ui.formpanel.handleUpdateAnnotationContext();
     lore.anno.ui.show();
     Ext.getCmp("treeview").doLayout();
-}
+};
 
 /**
  * Update the variation annotation context in the editor panel
@@ -153,11 +153,11 @@ lore.anno.ui.handleUpdateVariationAnnotationContext = function () {
     lore.anno.ui.formpanel.handleUpdateVariationAnnotationContext(lore.anno.ui.formpanel);
     lore.anno.ui.show();
     Ext.getCmp("treeview").doLayout();
-}
+};
 
 lore.anno.ui.setPrefs = function (args) {
     lore.anno.prefs.setPrefs(args);
-}
+};
 
 /**
  * From the XUL Overlay login/status button
@@ -165,11 +165,11 @@ lore.anno.ui.setPrefs = function (args) {
 lore.anno.ui.handleLoginAnnotations = function() {
     lore.debug.anno("handleLoginAnnotations()");
     lore.anno.am.displayLoginWindow();
-}
+};
 lore.anno.ui.handleLogoutAnnotations = function() {
     lore.debug.anno("handleLogoutAnnotations()");
 	lore.anno.am.logout();
-}
+};
 
 //////////////////////////////////////////////////////////////////////
 /* Form Editor Methods */
@@ -183,7 +183,7 @@ lore.anno.ui.hideAnnotationEditor = function () {
         Ext.getCmp("treeview").doLayout();
     }
     lore.anno.ui.formpanel.clearPanel();
-}
+};
 
 /**
  * Update the annotation object to use the values from the
@@ -207,7 +207,7 @@ lore.anno.ui.updateAnnoFromForm = function () {
     }
 
     form.updateRecord(unsavedRec); // update from form
-}
+};
 
 /*
  * Event Handlers
@@ -223,7 +223,7 @@ lore.anno.ui.handlePrefsChange = function (args) {
         disable: args.disable
     });
     lore.global.util.setHighContrast(window, args.high_contrast);
-}
+};
 
 /**
  * Attach context menu to a node and, attach events to menu items when tree node is added
@@ -310,7 +310,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function (tree, parent, childNode, 
         });
         node.contextmenu.showAt(e.xy);
     });
-}
+};
 
 /**
  * Attach links in the 'Views' column for a tree node
@@ -340,7 +340,7 @@ lore.anno.ui.handleAttachNodeLinks = function (tree, thus, n, index) {
     } catch (e) {
         lore.debug.anno('append', e);
     }
-}
+};
 
 /**
  * When an annotation is selected in the tree this function is called. The annotation
@@ -368,13 +368,13 @@ lore.anno.ui.handleTreeNodeSelection = function (node, event) {
     lore.anno.ui.page.setCurrentAnno(rec);
 
     Ext.getCmp("treeview").doLayout();
-}
+};
 
 lore.anno.ui.handleTabChange = function(browser) {
     var currentURL = browser.currentURI.spec;
 
     lore.anno.ui.page.load(currentURL);
-}
+};
 
 /**
  * Notification function called when a change in location is detected in the currently
@@ -414,14 +414,14 @@ lore.anno.ui.handleLocationChange = function (contextURL) {
     } catch (e) {
         lore.debug.anno("handleLocationChange", e);
     }
-}
+};
 
 /**
  * Reloads all the annotations for the current page
  */
 lore.anno.ui.refreshAnnotations = function() {
 	lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
-}
+};
 
 /**
  * Checks the server for any private annotations on the current page, and 
@@ -431,7 +431,7 @@ lore.anno.ui.loadAnyPrivateAnnosForPage = function() {
 	lore.anno.annoMan.updateAnnotationsSourceList(lore.anno.ui.currentURL, function (anno) {
 		return anno.privateAnno;
 	});
-}
+};
 
 /**
  * Update the label on any unsaved annotations, to indicate they are for
@@ -456,14 +456,14 @@ lore.anno.ui.tagUnsavedAnnotations = function () {
             lore.debug.anno("tagUnsavedAnnotations", e);
         }
     });
-}
+};
 
 
 lore.anno.ui.handleAnnotationsLoaded = function (numLoaded) {
     if (numLoaded > 0) {
         lore.anno.ui.tabpanel.activate('treeview');
     }
-}
+};
 
 /**
  * When the page is refreshed, clear page data, re-enable highlighting
@@ -480,7 +480,7 @@ lore.anno.ui.handleContentPageRefresh = function () {
     } catch (e) {
         lore.debug.anno("refreshPage()", e);
     }
-}
+};
 
 
 /*
@@ -523,7 +523,7 @@ lore.anno.ui.handleAddAnnotation = function (rec) {
 
                     if (lore.anno.ui.nodeIdToRecId(node) == anno.id) {
                         window.setTimeout(function () {
-                            node.ensureVisible()
+                            node.ensureVisible();
                             node.select();
                         }, 100);
                     }
@@ -532,7 +532,7 @@ lore.anno.ui.handleAddAnnotation = function (rec) {
             } catch (e) {
                 lore.debug.anno("addSelectNodeHandler", e);
             }
-        }
+        };
 
 //BAM
         lore.anno.am.runWithAuthorisation(function() {
@@ -544,7 +544,7 @@ lore.anno.ui.handleAddAnnotation = function (rec) {
     } catch (e) {
         lore.debug.anno("handleAddAnnotation", e);
     }
-}
+};
 
 /**
  * Delete the currently selected annotation, requesting confirmation from user
@@ -595,7 +595,7 @@ lore.anno.ui.handleDeleteAnnotation = function (node) {
             icon: Ext.Msg.QUESTION
         });
     });
-}
+};
 
 /**
  * Delete currently selected annotation
@@ -625,7 +625,7 @@ lore.anno.ui.handleDeleteAnnotation2 = function (rec) {
         lore.debug.anno("Exception when deleting annotation", ex);
         lore.anno.ui.loreWarning("Unable to delete annotation");
     }
-}
+};
 
 
 /**
@@ -646,13 +646,13 @@ lore.anno.ui.handleSaveAllAnnotationChanges = function (uri) {
     catch (e) {
         lore.debug.anno("handleSaveAllAnnotationChanges", e);
     }
-}
+};
 
 lore.anno.ui.handleCommittedAnnotation = function (action, anno) {
     lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
     lore.anno.ui.hideAnnotationEditor();
     lore.debug.anno(action + 'd ' + anno.data.title, anno);
-}
+};
 
 lore.anno.ui.handleServerError = function (action, response) {
     lore.anno.ui.loreError('Unable to ' + action + ' annotation');
@@ -668,7 +668,7 @@ lore.anno.ui.handleServerError = function (action, response) {
         var res = challenge.match(/Redirect\s+(.+)/);
 
         if (!res) {
-            lore.debug.anno("Cannot handle authentication request: " + challenge)
+            lore.debug.anno("Cannot handle authentication request: " + challenge);
             return;
         }
         var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
@@ -682,7 +682,7 @@ lore.anno.ui.handleServerError = function (action, response) {
 
         lore.debug.anno('created loginwindow', {loginwindow:loginwindow,wind:window});
     }
-}
+};
 
 /**
  * Save the currently selected annotation
@@ -728,7 +728,7 @@ lore.anno.ui.handleSaveAnnotationChanges = function () {
     catch (e) {
         lore.debug.anno("Error updating saving annotation", e);
     }
-}
+};
 
 
 
@@ -750,7 +750,8 @@ lore.anno.ui.handleAddResultsToCO = function (evt) {
     } catch (e) {
         lore.debug.anno("Error adding annotation/s to compound editor", e);
     }
-}
+};
+
 lore.anno.ui.handleViewAnnotationInBrowser = function (evt) {
     try {
         var sels = lore.anno.ui.search.dataView.getSelectedRecords();
@@ -762,13 +763,13 @@ lore.anno.ui.handleViewAnnotationInBrowser = function (evt) {
     } catch (e) {
         lore.debug.anno("Error viewing annotation/s in browser", e);
     }
-}
+};
 /**
  * Toggle on and off the annotation highlighting for all annotations
  */
 lore.anno.ui.handleToggleAllAnnotations = function () {
     lore.anno.ui.pageui.toggleAllAnnotations();
-}
+};
 
 
 /**
@@ -796,7 +797,7 @@ lore.anno.ui.handleReplyToAnnotation = function (arg) {
     } catch (e) {
         lore.debug.anno("handleReplyToAnnotation", e);
     }
-}
+};
 
 
 /**
@@ -815,7 +816,7 @@ lore.anno.ui.handleEdit = function () {
     } catch (e) {
         lore.debug.anno("handleEdit", e);
     }
-}
+};
 
 /**
  * When the a node in the tree view is double clicked, load the annotation in the form editor and show the editor.
@@ -838,7 +839,7 @@ lore.anno.ui.handleEditTreeNode = function (node) {
     } catch (e) {
         lore.debug.anno("handleEditTreeNode", e);
     }
-}
+};
 
 /**
  * Serialize the annotations on the page into the supplied format to a file.  Opens a save as
@@ -850,7 +851,7 @@ lore.anno.ui.handleSerialize = function (format) {
         "rdf": "xml",
         "wordml": "xml",
         "oac": "xml"
-    }
+    };
     if (!format) {
         format = "rdf";
     }
@@ -864,7 +865,7 @@ lore.anno.ui.handleSerialize = function (format) {
         lore.debug.anno("Error exporting annotations", e);
         lore.anno.ui.loreError("Error exporting annotations: " + e);
     }
-}
+};
 
 /**
  * When the 'Hide Editor' button is clicked, update the annotation from the form, then hide the editor.
@@ -872,7 +873,7 @@ lore.anno.ui.handleSerialize = function (format) {
 lore.anno.ui.handleHideAnnotationEditor = function () {
     lore.anno.ui.updateAnnoFromForm();
     lore.anno.ui.hideAnnotationEditor();
-}
+};
 
 lore.anno.ui.handleCancelEditing = function () {
     var rec = lore.anno.ui.formpanel.getRec();
@@ -881,6 +882,6 @@ lore.anno.ui.handleCancelEditing = function () {
     lore.anno.ui.pageui.turnOffPageTripleMarkers();
     lore.anno.ui.hideAnnotationEditor();
     return;
-}
+};
 
 
