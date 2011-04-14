@@ -812,7 +812,7 @@ lore.anno.ui.handleEdit = function () {
         if (!rec) return;
 
         lore.anno.am.runWithAuthorisation(function (principal) {
-        	if (principal.primaryUri === rec.data.agentId) {
+        	if (principal.primaryUri === rec.data.agentId || !rec.data.agentId) {
         		rec = lore.anno.annoMan.editRec(rec);
         		lore.anno.ui.selectAndShowNode(rec);
         	} else {
@@ -840,7 +840,7 @@ lore.anno.ui.handleEditTreeNode = function (node) {
         }
 
         lore.anno.am.runWithAuthorisation(function (principal) {
-        	if (principal.primaryUri === rec.data.agentId) {
+        	if (principal.primaryUri === rec.data.agentId || !rec.data.agentId) {
         		rec = lore.anno.annoMan.editRec(rec);
         		lore.anno.ui.selectAndShowNode(rec);
         	} else {
