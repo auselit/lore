@@ -143,7 +143,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 var dt = this.value.datatype;
                 if (dt){
                     var dtString = dt.toString();
-                    propData.valueType = dtString;
+                    propData.type = dtString;
                     if (dtString == lore.constants.NAMESPACES["dcterms"] + "W3CDTF"){
                         propData.value = Date.parseDate(propval,'c');
                     } else if (dtString == lore.constants.NAMESPACES["xsd"] + "date") {
@@ -191,11 +191,22 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         if (prefix == "layout" && propsplit.term == "orderIndex") {
                         	resourceData.index = this.value.value;
                         } 
+
+                        
+                        var theval = this.value.value;
+                        // TODO: handle bnode values
+                       /* if (this.value.type == "bnode"){
+                            lore.debug.ore("looking up bnode " + this.value.value)
+                            oThis.loadedContent.about(this.value.value).each(function(){
+                                lore.debug.ore("matched bnode",this);
+                            });
+                            theval = "";
+                        } */
                         resourceData.properties.setProperty({
                            id: propurl,
                            ns: propsplit.ns,
                            name: propsplit.term,
-                           value: this.value.value,
+                           value: theval,
                            prefix: prefix
                         });
                     }
@@ -245,7 +256,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
          * than symbol nlsymb New line symbol returns The RDF/XML representation of
          * the property
          */
-        var serialize_property = function(propname, propval, ltsymb, nlsymb) {
+        var serialize_property = function(propname, propval, proptype, ltsymb, nlsymb) {
             var result = "";
             try{
                 if (propval && propval != '') {
@@ -256,7 +267,11 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         + "'/>" + nlsymb;
                     } else {
                         // literal
-                        result = ltsymb + propname + ">"
+                        result = ltsymb + propname;
+                        if (proptype && proptype == "html"){
+                            result += " rdf:datatype=\"" + lore.constants.NAMESPACES["layout"]+ "escapedHTMLFragment\""
+                        }
+                        result += ">"
                           + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
                           + ltsymb + "/" + propname + ">" + nlsymb;
                     }
@@ -338,8 +353,9 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         // serialize compound object properties
         lore.ore.ui.grid.store.each(function (rec){
            var propname = rec.id.substring(0,rec.id.indexOf("_"));
+           var proptype = rec.get("type");
            if (propname != 'dcterms:modified' && propname != 'dcterms:created' && propname != 'rdf:about'){
-            rdfxml += serialize_property(propname, rec.data.value, ltsymb, nlsymb);
+            rdfxml += serialize_property(propname, rec.data.value, proptype, ltsymb, nlsymb);
            }
         });
         rdfxml += ltsymb + rdfdescclose + nlsymb;
@@ -408,8 +424,19 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                                     + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(mpropval)).replace(/&/g,'&amp;') 
                                     +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
                             } else { // properties that have literal values
+                            // TODO: add rdf:datatype
+                            
                             resourcerdf += ltsymb + rdfdescabout + figurl + closetag
-                                    + ltsymb + tagname + ">" + lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;")) + ltsymb + "/"
+                                    + ltsymb + tagname;
+                            var ptype = fig.getPropertyType(mprop);
+                            var propval;
+                            if (ptype && ptype == "html"){
+                                resourcerdf += " rdf:datatype=\"" + lore.constants.NAMESPACES["layout"] + "escapedHTMLFragment\"";
+                                propval = lore.global.util.escapeHTML(mpropval); // quotes are already escaped in html
+                            } else {
+                                propval = lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;"))
+                            }
+                            resourcerdf += ">" + propval + ltsymb + "/"
                                     + tagname + ">" + nlsymb + ltsymb + rdfdescclose + nlsymb;
                             }
                         }
@@ -417,27 +444,30 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 }
                 /* persist node layout */
         
-                var objframe = window.frames[fig.url + "-data"];
+                var objframe = window.top.frames[fig.url + "-data"];
+                //lore.debug.ore("window.top.frames",window.top.frames)
+                
                 resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
-                        + "layout:x>" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb
-                        + ltsymb + "layout:y>" + fig.y + ltsymb + "/" + "layout:y>"
-                        + nlsymb + ltsymb + "layout:width>" + fig.width + ltsymb + "/"
-                        + "layout:width>" + nlsymb + ltsymb + "layout:height>"
+                        + "layout:x rdf:datatype=\"xsd:int\">" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb
+                        + ltsymb + "layout:y rdf:datatype=\"xsd:int\">" + fig.y + ltsymb + "/" + "layout:y>"
+                        + nlsymb + ltsymb + "layout:width rdf:datatype=\"xsd:int\">" + fig.width + ltsymb + "/"
+                        + "layout:width>" + nlsymb + ltsymb + "layout:height rdf:datatype=\"xsd:int\">"
                         + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
-                        + ltsymb + "layout:originalHeight>" + fig.originalHeight
+                        + ltsymb + "layout:originalHeight rdf:datatype=\"xsd:int\">" + fig.originalHeight
                         + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
                 if (fig.abstractPreview) {
-                	resourcerdf += ltsymb + "layout:abstractPreview>1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
+                	resourcerdf += ltsymb + "layout:abstractPreview rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
                 }
                 
                 var figRec = this.getAggregatedResource(fig.url);
                 if (figRec && figRec.get('index')){
-                    resourcerdf += ltsymb + "layout:orderIndex>" + figRec.get('index') + ltsymb + "/layout:orderIndex>" + nlsymb;
+                    resourcerdf += ltsymb + "layout:orderIndex rdf:datatype=\"xsd:int\">" + figRec.get('index') + ltsymb + "/layout:orderIndex>" + nlsymb;
                 }
+                //lore.debug.ore("objframe " + fig.url , objframe);
                 if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
-                    resourcerdf += ltsymb + "layout:scrollx>" + objframe.scrollX
+                    resourcerdf += ltsymb + "layout:scrollx rdf:datatype=\"xsd:int\">" + objframe.scrollX
                             + ltsymb + "/" + "layout:scrollx>" + nlsymb + ltsymb
-                            + "layout:scrolly>" + objframe.scrollY + ltsymb + "/"
+                            + "layout:scrolly rdf:datatype=\"xsd:int\">" + objframe.scrollY + ltsymb + "/"
                             + "layout:scrolly>" + nlsymb;
                 }
                 resourcerdf += ltsymb + rdfdescclose + nlsymb;

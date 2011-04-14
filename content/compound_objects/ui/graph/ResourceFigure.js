@@ -728,8 +728,9 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * 
 	 * @param {} pname The name of the property to append eg dc:title
 	 * @param {}  pval The value of the property
+	 * @param {} ptype optional property type
 	 */
-	appendProperty : function(pname, pval) {
+	appendProperty : function(pname, pval,ptype) {
 		var counter = 0;
 		var oldrdftype = this.getProperty("rdf:type_0");
 		var prop = this.getProperty(pname + "_" + counter);
@@ -737,7 +738,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			counter = counter + 1;
 			prop = this.getProperty(pname + "_" + counter);
 		}
-		this.setProperty(pname + "_" + counter, pval);
+		this.setProperty(pname + "_" + counter, pval,ptype);
 		// if the rdf:type has changed, regenerate preview (as it might be an
 		// annotation or compound object
 		if (pname == "rdf:type" && oldrdftype != pval && this.hasPreview) {
@@ -749,8 +750,10 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * 
 	 * @param {}  pid The id of the metadataproperty eg dc:title_0
 	 * @param {} pval The value of the property
+     * @param {} type Optional datatype for the property eg string
 	 */
-	setProperty : function(pid, pval) {
+	setProperty : function(pid, pval,type) {
+        //lore.debug.ore("setProperty " + pid + " " + pval + " " + type);
 		if (!this.model) {
 			lore.debug.ore("Warning: no model for fig " + this.url,this);
 		}
@@ -791,11 +794,22 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			var ns = lore.constants.NAMESPACES[pfx];
 			var propuri = ns + propname;
 			//lore.debug.ore("Updating property " + propuri +  " " + idx, this.model);
-			this.model.get('properties').setProperty({id: propuri, ns: ns, name: propname, value: pval, prefix: pfx},idx)
+            var propData = {
+                id: propuri, 
+                ns: ns, 
+                name: propname, 
+                value: pval, 
+                prefix: pfx
+            };
+            if (type){
+                propData.type = type;
+            }
+			this.model.get('properties').setProperty(propData,idx)
 			} catch (ex){
 				lore.debug.ore("problem in setProperty",ex);
 			}
 		}
+        
 	},
 	/**
 	 * Unset (remove) a property by id
@@ -837,6 +851,15 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	getProperty : function(pid) {
 		return this.metadataproperties[pid];
 	},
+    getPropertyType : function(pid){
+        try{
+	        var propData = this.expandPropAbbrev(pid);
+	        return this.model.get('properties').getProperty(propData.id, propData.index).type;
+        } catch (ex){
+            lore.debug.ore("Problem in getPropertyType",ex);
+            return "plainstring";
+        }
+    },
 	/**
 	 * Generate the markup for the plus/minus icon used to toggle the preview area
 	 * 

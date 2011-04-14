@@ -1,3 +1,8 @@
+/** Override to prevent using inline styles, which are stripped out by the sanitization process */
+Ext.intercept(Ext.form.HtmlEditor.prototype, 'execCmd', function() {
+    var doc = this.getDoc();
+    doc.execCommand('styleWithCSS', false, false);
+});
 /** 
  * @class lore.ore.ui.PropertyEditor Grid-based editor for Compound object or resource properties and relationships
  * @extends Ext.grid.EditorGridPanel
@@ -12,7 +17,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             collapsible : true,
             collapseFirst: false,
             animCollapse : false,
-            /** Pop up editor for property value */
+            /** Pop-up editor for property values */
             propEditorWindow: new Ext.Window({ 
             	propEditor: this,
                 modal: true,
@@ -24,7 +29,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 },
                 editField: function(tfield,rownum){
                     try {
-                        //lore.debug.ore("editField",[tfield,rownum]);
                         this.triggerField = tfield;
                         this.activeRow = rownum;
                         var val = tfield.getValue();
@@ -43,15 +47,20 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 	} else {		         		
                 		ccbuttons.hide();        		
                 	}
+                    this.getComponent(0).show(); // force htmleditor handler to display or hide formatting toolbar
                 	Ext.Window.prototype.onShow.call(this);
                 },
                 items: [
                     {
-                        xtype: 'textarea',
-                        validateOnBlur: false,
+                        xtype: 'htmleditor',
+                        propEditor: this,
+                        plugins: [new Ext.ux.form.HtmlEditor.ToggleFormatting()],
                         width: 400,
-                        grow: false,
-                        height: 150
+                        height: 150,
+                        enableColors: false,
+                        enableFont: false,
+                        enableLinks: false,
+                        enableSourceEdit: false
                     }
                 ],
                 bbar: [
@@ -141,9 +150,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 this.startEditing(w.activeRow,1);
                                 var val = ta.getRawValue();
                                 // Remove markup such as scripts from value before updating property field
-                                val = (val? lore.global.util.sanitizeHTML(val,window) : '');
+                                val = (val? lore.global.util.sanitizeHTML(val,window,true) : '');
                                 w.triggerField.setValue(val);
                                 this.stopEditing();
+                                this.updateFormattingStatus(w.activeRow, true);
                                 w.hide();
                             } catch (e){
                                 lore.debug.ore("problem in update",e);
@@ -158,6 +168,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         handler: function(btn, ev){
                             try{
                                 var w = this.propEditorWindow;
+                                this.updateFormattingStatus(w.activeRow, false);
                                 w.hide();
                             } catch (e){
                                 lore.debug.ore("problem in cancel",e);
@@ -178,6 +189,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }, {
                         name : 'value',
                         type : 'auto'
+                    }, {
+                        name: 'type',
+                        type: 'string',
+                        defaultValue: 'plainstring'
                     }
                 ]
             }),
@@ -273,6 +288,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             g.getSelectionModel().selectRow(i);
             var cmodel = g.getColumnModel();
             if (cmodel.isCellEditable(1,i)){
+                // The property value field is field number 1, i is the current row index
 	            var tfield = g.getColumnModel().getCellEditor(1,i);
 	            // call startEditing + stopEditing (ensures value is updated into triggerfield)
 	            this.startEditing(i,1);
@@ -293,6 +309,77 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             taEl.on("scroll",function(e,t,o){this.repaint();},taEl);
         }, this.propEditorWindow, {single:true});
     },
+    /** Check whether the formatting toolbar should be enabled for this type: currently only enabled for strings or html */
+    checkFormattingAllowed : function(){  
+        try{
+            if (this.store){
+                var currentRec = this.store.getAt(this.lastEdit.row);
+                if (currentRec){
+                    var currentType = currentRec.get("type");
+                    if (!currentType || currentType == "string" || currentType == "html" || currentType == "string-pending" || currentType == "html-pending"){
+                        return true;
+                    }
+                }
+            }
+        } catch (ex){
+            lore.debug.ore("Problem in checkFormattingAllowed",ex)
+        }
+        return false;
+    },
+    /** enable formatting for the currently selected property */
+    setFormattingEnabled : function(enable){
+        try{
+            if (this.store){
+		        var currentRec = this.store.getAt(this.lastEdit.row);
+		        if (currentRec){
+                    var currentType = currentRec.get("type");
+                    if (enable && (!currentType || currentType == "string" || currentType == "string-pending")){
+                      // We only allow html formatting if the original type was string 
+                      // (as opposed to plainstring for properties like creator, title that should not have formatting)
+                      // "pending" is appended to type so we can tell whether the format was changed: 
+                      // this change of type will be reverted if editing is cancelled, pending is removed if changes are saved
+		              currentRec.set("type","html-pending");
+                      return true;
+                    } else if (!enable && (!currentType || currentType == "html" || currentType == "html-pending")){
+                        currentRec.set("type","string-pending");
+                        return true;
+                    } 
+		        }
+            } 
+        } catch (ex){
+            lore.debug.ore("Problem in setFormattingEnabled",ex)
+        }
+        // Return false to indicate nothing happened or formatting is not allowed (e.g. original type was not string)
+        return false;
+    },
+    /** disable formatting for the currently selected property */
+    getFormattingEnabled : function(){ 
+        try{
+        var currentRec = this.store.getAt(this.lastEdit.row);
+        if (currentRec && currentRec.get("type") == "html" || currentRec.get("type") == "html-pending"){ 
+            return true;
+        } else {
+            return false;
+        }
+        } catch (ex){
+            lore.debug.ore("Problem in getFormattingEnabled",ex);
+        }
+    },
+    /** Finalise format of field upon update or cancel */
+    updateFormattingStatus: function (row, accept){
+        var currentRec = this.store.getAt(row);
+        if (currentRec){
+            var formatType = currentRec.get("type");
+            if (formatType.match("pending")){
+                // only change the type if it has been changed during this edit (i.e. has pending in type name)
+                var newType = "string";
+                if ((formatType == "html-pending" && accept) ||  (formatType == "string-pending" && !accept)){
+                    newType = "html";
+                }
+                currentRec.set("type",newType);
+            }
+        }
+    },
     bindModel : function(model){
     	// Listen to model for property changes
     	if (this.model){
@@ -306,7 +393,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     /** Update grid if property value changes in model */
     onModelPropertyChanged: function(config, index){
     	try{
-	    	//lore.debug.ore("model property changed",[config,index]);
 	    	if (config){
 	    		var rec = this.store.getById(config.prefix + ':' + config.name + "_" + index);
 	    		// check whether value has actually changed
@@ -322,6 +408,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     },
     /** Grey out rows that are not editable by the user */
 	renderFunction: function(val, cell, rec){
+        // Escape double quotes for display in tooltips 
+        var escVal = (val.replace) ? val.replace(/"/g,"&quot;"): val;
     	if (rec && rec.data && 
     			(rec.data.id == "dc:format_0" 
     				|| rec.data.id == "rdf:type_0"
@@ -331,10 +419,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     			    		rec.data.id == "dcterms:created_0"))
     			    )){
     		
-    		return '<span title="' + val + '" style="color:grey;">' + val + '</span>';
+    		return '<span title="' + escVal + '" style="color:grey;">' + val + '</span>';
     	} else {
-    		return '<span title="' + val + '">' + val + '</span>';
+    		return '<span title="' + escVal + '">' + val + '</span>';
     	}
+        return val;
     },
     makeAddPropertyMenu: function (mp){
     	var panel = this;
@@ -358,7 +447,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             prop = pstore.getById(this.text + "_" + counter);
                         }
                         var theid = this.text + "_" + counter;
-                        pstore.loadData([{id: theid, name: this.text, value: ""}],true);
+                        var ptype = (this.text == "dcterms:abstract" || this.text == "dc:description")? "string" : "plainstring";
+                        pstore.loadData([{id: theid, name: this.text, value: "", type: ptype}],true);
                         
                     } catch (ex){
                         lore.debug.ore("exception adding prop " + this.text,ex);
@@ -400,7 +490,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     removePropertyAction: function (ev, toolEl, panel) { 
         try {
         var om = lore.ore.ontologyManager;
-        //lore.debug.ore("remove Property was triggered",ev);
         var sel = panel.getSelectionModel().getSelected();
         // don't allow delete when panel is collapsed (user can't see what is selected)
         if (panel.collapsed) {
@@ -503,8 +592,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }
                     // update figure (which in turn updates the model)
                     // Ensure value is clean from scripts tags etc
-                    var cleanvalue = lore.global.util.sanitizeHTML(args.value,window);
-                    selfig.setProperty(args.record.id,cleanvalue);
+                    var cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true);
+                    selfig.setProperty(args.record.id,cleanvalue,args.record.data.type);
                 }
                 lore.ore.ui.nodegrid.store.commitChanges();
             } else {
@@ -549,15 +638,125 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 			this.store.commitChanges();
     	}
     }
+
 });
-/* Old code:
-lore.ore.handleNodePropertyAdd = function(store, records, index){
-    lore.debug.ore("added property " + record.id,record);
-    // user should only be editing a single record at a time
-    // TODO: handle case where node has one record and is selected (triggering add record for existing value)
-    if (records.length == 1){
-        lore.ore.ui.graphicalEditor.getSelectedFigure().setProperty(records[0].id,records[0].data.value);
-    }
-};
-*/
+
 Ext.reg('propertyeditor',lore.ore.ui.PropertyEditor);
+
+/**
+ * ToggleFormatting used by Compound Objects Property Editor
+ */
+Ext.ux.form.HtmlEditor.ToggleFormatting = Ext.extend(Ext.util.Observable, {
+    init: function(cmp){
+        this.cmp = cmp;
+        this.cmp.on('render', this.onRender, this); 
+        this.cmp.on('beforeshow', this.onShow, this);
+    },
+    /** Determine whether formatting toolbar should be shown for this property */
+    onShow: function(){
+        var allowed = this.cmp.propEditor.checkFormattingAllowed();
+        if (!allowed){
+            // disable formatting button
+            Ext.getCmp("enableFormatToolbar").hide();
+        } else {
+            // enable formatting button
+            Ext.getCmp("enableFormatToolbar").show();
+        }
+        var enabled = this.cmp.propEditor.getFormattingEnabled();
+        this.toggleToolbar(!enabled);
+        // set button state (and suppress event)
+        Ext.getCmp("enableFormatToolbar").toggle(enabled,true);
+    },
+    /**
+     * Set up button to toggle formatting toolbar on or off
+     * It is hidden by default to discourage use of formatting by most users
+     */
+    onRender: function() {
+        var cmp = this.cmp;
+        cmp.getToolbar().add('->');
+        var btn = cmp.getToolbar().addButton({
+          pressed: false,
+          id: 'enableFormatToolbar',
+          iconCls: 'x-edit-pt',
+          handler: function(t) {
+            try{  
+              var pressed = t.pressed;
+              t.toggle(!pressed);
+              var fe = this.cmp.propEditor.setFormattingEnabled(!this.cmp.propEditor.getFormattingEnabled());
+              if (!fe){
+                // set formatting failed, reset the button and toolbar
+                t.toggle(pressed,true); 
+                this.toggleToolbar(!pressed);
+              }
+            } catch (ex){
+                lore.debug.ore("Problem in onRender",ex);
+            }
+          },
+          scope: this,
+          tooltip: 'Enable formatted text'
+        });
+        btn.on('toggle', this.onToggle, this);
+    },
+    /** 
+     * Show or display the toolbar items for formatting
+     * @param {} disable
+     */
+    toggleToolbar : function(disable){
+        var tb = this.cmp.getToolbar();
+        tb.items.each(function(i){
+              if ((i instanceof Ext.Button 
+                      || i instanceof Ext.Toolbar.Separator)
+                      && i.iconCls != 'x-edit-pt'){
+                  if (disable) {
+                      i.hide();
+                  } else {
+                      i.show();
+                  }
+              }
+          });
+    },
+    /**
+     * Respond to formatting toolbar button being pressed: hide or show the toolbar
+     * If the property had formatting, warn the user that it will be removed
+     * @param {} b
+     * @param {} pressed
+     */
+    onToggle: function(b, pressed){
+         
+          if (b.iconCls != 'x-edit-pt'){
+              return;
+          }
+          var disable = this.cmp.propEditor.getFormattingEnabled();
+          var tooltip = (disable? "Enable text formatting toolbar" : "Hide toolbar and remove formatting");
+          b.setTooltip(tooltip);
+          try{
+              if (disable){
+                  Ext.Msg.show({
+                      title : 'Remove formatting',
+                        buttons : Ext.MessageBox.OKCANCEL,
+                        msg : 'Disabling the formatting toolbar will remove all formatting from the text. Are you sure you wish to continue?',
+                        scope: this,
+                        fn : function(btn) {
+                            if (btn == 'ok') {
+                              var doc = this.cmp.getDoc();
+                              doc.execCommand('selectAll',false, null); 
+                              var content = doc.getSelection();
+                              // strip out html tags by converting selection to string
+                              doc.execCommand('insertHTML',false, content.toString());
+                              this.cmp.syncValue();
+                              this.toggleToolbar(disable);
+                            } else {
+                                // cancel: force toolbar to show (and suppress event)
+                                b.toggle(true, true);
+                                this.cmp.propEditor.setFormattingEnabled(!this.cmp.propEditor.getFormattingEnabled());
+                            }
+                        }
+                  });
+              } else {
+                  this.toggleToolbar(disable);
+              }
+          } catch (ex){
+              lore.debug.ore("Problem removing formatting",ex);
+          } 
+    }
+});

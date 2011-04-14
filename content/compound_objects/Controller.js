@@ -118,7 +118,7 @@ Ext.apply(lore.ore.Controller.prototype, {
      */
     loadCompoundObject: function(rdf){
         try {
-           var appendPropertyValue = function(propname, propval, grid){
+           var appendPropertyValue = function(propname, propval, proptype, grid){
                 var pstore = grid.store;
                 var counter = 0;
                 var prop = pstore.getById(propname + "_" + counter);
@@ -127,7 +127,24 @@ Ext.apply(lore.ore.Controller.prototype, {
                     prop = pstore.getById(propname + "_" + counter);
                 }
                 var theid = propname + "_" + counter;
-                pstore.loadData([{id: theid, name: propname, value: propval}],true);
+                pstore.loadData([{id: theid, name: propname, value: propval, type: proptype}],true);
+            };
+            var getDatatype = function(propname, propvalue){
+              
+              var dtype = propvalue.datatype;
+              //lore.debug.ore("getdatatype " + propname + " is " + dtype,propvalue);
+              if (dtype && dtype._string == "http://purl.org/dc/terms/W3CDTF"){
+                dtype = "date";
+              } else if (dtype && dtype == lore.constants.NAMESPACES["layout"]+"escapedHTMLFragment"){
+                dtype = "html";
+              } else {
+                dtype = "plainstring";
+                // Allow formatting for some fields
+                if (propname == "dcterms:abstract" || propname == "dc:description"){
+                    dtype = "string";
+                }
+              }
+              return dtype;
             };
             //lore.debug.startTiming();
             var showInHistory = false;
@@ -174,7 +191,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.ore.controller.bindViews(lore.ore.cache.getLoadedCompoundObject());
                 
                 lore.ore.ui.grid.store.loadData([
-                    {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: remurl}
+                    {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: remurl, type: "uri"}
                 ]);
                 loadedRDF.about('<' + remurl + '>')
                     .each(function(){
@@ -187,8 +204,9 @@ Ext.apply(lore.ore.Controller.prototype, {
                             propname = propurl;
                         }
                         if (propname != "ore:describes" && propname != "rdf:type"){
-                            //appendPropertyValue(propname, lore.global.util.sanitizeHTML(this.value.value.toString(),window), lore.ore.ui.grid);
-                            appendPropertyValue(propname, this.value.value.toString(), lore.ore.ui.grid);
+                            // TODO: get type from ontology or datatype
+                            var dtype = getDatatype(propname,this.value);
+                            appendPropertyValue(propname, this.value.value.toString(), dtype, lore.ore.ui.grid);
                         }
                     });
          
@@ -296,11 +314,12 @@ Ext.apply(lore.ore.Controller.prototype, {
                                 // not a node relationship, show in the property grid 
                             	
                             	// ensure property values shown in grid are safe
+                                var prefix = lore.constants.nsprefix(relresult.ns);
+                                var propname = prefix + ":" + relresult.term;
                             	var propval = lore.global.util.sanitizeHTML(obj, window, true);
-                                    
-                            	var prefix = lore.constants.nsprefix(relresult.ns);
+                                var proptype = getDatatype(propname,this.obj);
                             	if (!(prefix == "rdf" && relresult.term == "type")){
-                            		srcfig.appendProperty(prefix + ":" + relresult.term, propval);
+                            		srcfig.appendProperty(propname, propval, proptype);
                             	}
                                 if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
                                     // TODO this should not be necessary - send props to addFigureWithOpts
@@ -407,11 +426,11 @@ Ext.apply(lore.ore.Controller.prototype, {
         lore.ore.cache.setLoadedCompoundObjectIsNew(true);
         lore.ore.ui.grid.store.loadData(
         [
-            {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: currentREM},
-            {id: "dc:creator_0", name: "dc:creator", value: lore.ore.controller.defaultCreator},
-            {id: "dcterms:modified_0", name: "dcterms:modified", value: cDate},
-            {id:"dcterms:created_0", name:"dcterms:created",value: cDate},
-            {id: "dc:title_0", name: "dc:title", value: ""}
+            {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: currentREM, type: "uri"},
+            {id: "dc:creator_0", name: "dc:creator", value: lore.ore.controller.defaultCreator, type: "uri"},
+            {id: "dcterms:modified_0", name: "dcterms:modified", value: cDate, type: "date"},
+            {id:"dcterms:created_0", name:"dcterms:created",value: cDate, type: "date"},
+            {id: "dc:title_0", name: "dc:title", value: "", type: "plainstring"}
         ]  
         );
         lore.ore.ui.graphicalEditor.initGraph();
@@ -495,7 +514,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 scope: this,
                 fn: function(b, t){
                 	try{
-                	lore.debug.ore("after title entered: " + t,this);
+                	//lore.debug.ore("after title entered: " + t,this);
                     title = t || "Untitled";
                     // TODO: update the title in the model
                     //lore.ore.cache.getLoadedCompoundObject().properties.
