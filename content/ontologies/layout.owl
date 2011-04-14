@@ -21,7 +21,10 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about=""/>
 
-
+    <rdfs:Datatype rdf:about="#escapedHTMLFragment">
+    	<rdfs:label>Datatype for formatted properties : a string that represents a fragment of escaped html</rdfs:label>
+    </rdfs:Datatype>
+    
     <owl:ObjectProperty rdf:about="#next">
     	<rdf:type rdf:resource="&owl;FunctionalProperty"/>
     </owl:ObjectProperty>
