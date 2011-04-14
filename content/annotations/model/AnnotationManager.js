@@ -450,6 +450,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                     annoconfig.meta = { context: aboutanno.metacontext.value.toString().split('\n'), fields: []}; 
                 } else if(isReply && "context" ==p){
                     annoconfig.context = ''; // LORE ignores context for replies
+                } else if ("context" == p) {
+                    annoconfig[p] = lore.global.util.normalizeXPointer(aboutanno[p].value.toString());
                 } else {
 	                annoconfig[p] = aboutanno[p].value.toString();
 	            }
