@@ -1,5 +1,25 @@
 LORE (Literature Object Re-use and Exchange)
 
+version 0.63
+  * An info page is now displayed in the web browser immediately after installation/update
+  * Manuals under 'Using Annotations' and 'Using Compound Objects' have been updated
+  * Added report a problem button to toolbar: use this button to report a problem via email immediately after it occurs
+  Compound Objects:
+   * Added a formatting toolbar for abstracts and description properties
+   * Mouse scroll wheel can now be used to move within menus e.g. for selecting relationships
+   * Right-click on a property in the property panel as a shortcut to launch the editor window
+   * Fixed bug with drag and drop from browse/search/history into editor
+   * Multiple creators are now displayed in browse/search/history results
+    Annotations:
+   * Editor now enforces that annotations cannot be modified by users other than the owner. 
+     This only applies to annotations created since the user accounts system was introduced.
+   * Fixed bug with bullets in bodies not appearing in browse view
+   * Fixed problem with variation window close button on Mac
+   * Added links to variant/original resource in annotation editor: click on the URL to view them in the browser
+   * New font color formatting toolbar button added to annotation body editor
+   * Added RSS button for annotation feeds based on current search/browse view
+   * Images in hover tips are now scaled
+   
 version 0.62 (08/03/2011):
     * Added ontology pane to preferences to make it easier to configure custom ontologies
 
