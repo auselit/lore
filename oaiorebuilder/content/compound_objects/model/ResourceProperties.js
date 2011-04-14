@@ -33,7 +33,7 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
        @cfg name The name of the property (usually the term part of the property)
        @cfg value The value of the property
        @cfg prefix The namespace prefix eg dc
-       @cfg valueType The datatype of the value
+       @cfg type The datatype of the value
        @param {int} index Optional index of existing property to update
      */
     setProperty: function(config, index){

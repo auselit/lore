@@ -117,6 +117,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                 lore.ore.ui.nodegrid.bindModel(figure.model.data.properties);
             }
             lore.ore.ui.nodegrid.store.removeAll();
+            // TODO: use figure.model here instead of metadataproperties: this should be part of the bindModel call above
             if (figure.metadataproperties) {
                 for (p in figure.metadataproperties){
                     var pname = p;
@@ -124,7 +125,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     if (pidx != -1){
                         pname = p.substring(0,pidx);
                     } 
-                    lore.ore.ui.nodegrid.store.loadData([{id: p, name: pname, value: figure.metadataproperties[p]}],true);
+                    var ptype = figure.getPropertyType(p);
+                    lore.ore.ui.nodegrid.store.loadData([{id: p, name: pname, value: figure.metadataproperties[p], type: ptype}],true);
                 }
                 // get connections
                 var relationshipsData = [];
