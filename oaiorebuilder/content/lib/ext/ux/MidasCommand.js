@@ -26,7 +26,7 @@ Ext.ux.form.HtmlEditor.MidasCommand = Ext.extend(Ext.util.Observable, {
                         this.cmp.relayCmd(b.cmd);
                     },
                     scope: this,
-                    tooltip: b.title
+                    tooltip: b.tooltip
                 });
             }else{
                 midasCmdButtons.push(new Ext.Toolbar.Separator());
@@ -34,6 +34,26 @@ Ext.ux.form.HtmlEditor.MidasCommand = Ext.extend(Ext.util.Observable, {
         }, this);
         this.cmp.getToolbar().addButton(midasCmdButtons);
     }
+});
+Ext.ux.form.HtmlEditor.IndentOutdent = Ext.extend(Ext.ux.form.HtmlEditor.MidasCommand, {
+    // private
+    midasBtns: ['|', {
+        cmd: 'indent',
+        tooltip: {
+            title: 'Indent Text',
+            text: 'Increase indent level'
+        },
+       
+        overflowText: 'Indent Text'
+    }, {
+        cmd: 'outdent',
+        tooltip: {
+            title: 'Outdent Text',
+            text: 'Decrease indent level'
+        },
+        
+        overflowText: 'Outdent Text'
+    }]
 });
 /**
  * Image button for Annotation editor toolbar

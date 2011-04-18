@@ -54,7 +54,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     {
                         xtype: 'htmleditor',
                         propEditor: this,
-                        plugins: [new Ext.ux.form.HtmlEditor.ToggleFormatting()],
+                        plugins: [ new Ext.ux.form.HtmlEditor.IndentOutdent(), new Ext.ux.form.HtmlEditor.ToggleFormatting()],
                         width: 400,
                         height: 150,
                         enableColors: false,
@@ -693,7 +693,10 @@ Ext.ux.form.HtmlEditor.ToggleFormatting = Ext.extend(Ext.util.Observable, {
             }
           },
           scope: this,
-          tooltip: 'Enable formatted text'
+          tooltip: {
+            title:'Formatting toolbar',
+            text: 'Toggle text formatting on or off'
+          }
         });
         btn.on('toggle', this.onToggle, this);
     },
@@ -727,8 +730,8 @@ Ext.ux.form.HtmlEditor.ToggleFormatting = Ext.extend(Ext.util.Observable, {
               return;
           }
           var disable = this.cmp.propEditor.getFormattingEnabled();
-          var tooltip = (disable? "Enable text formatting toolbar" : "Hide toolbar and remove formatting");
-          b.setTooltip(tooltip);
+          //var tooltip = (disable? "Enable text formatting toolbar" : "Hide toolbar and remove formatting");
+          //b.setTooltip(tooltip);
           try{
               if (disable){
                   Ext.Msg.show({
