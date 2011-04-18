@@ -321,12 +321,12 @@ Ext.apply(lore.ore.Controller.prototype, {
                             	if (!(prefix == "rdf" && relresult.term == "type")){
                             		srcfig.appendProperty(propname, propval, proptype);
                             	}
-                                if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
+                                /*if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
                                     // TODO this should not be necessary - send props to addFigureWithOpts
                                     srcfig.displayTitle(propval);
                                 } else if (prefix == "dcterms" && relresult.term == "abstract") {
                                 	srcfig.displayAbstract(propval);
-                                }
+                                }*/
                             }
                         }
                     }
