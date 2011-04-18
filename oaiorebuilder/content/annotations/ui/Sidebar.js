@@ -271,7 +271,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
     
         // Tree node is clicked/double clicked
         Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleTreeNodeSelection);
-        Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEditTreeNode);
+        Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEdit);
     
         // editor handlers
         Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.handleHideAnnotationEditor);

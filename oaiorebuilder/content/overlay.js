@@ -431,10 +431,6 @@ try {
                 lore.debug.ui("loreoverlay.removeAnnotation",e);
             }
         },
-        /** Annotations Toolbar button handler: Trigger editing an annoation */
-        editAnnotation: function () {
-            loreoverlay.annoView().handleEdit();
-        },
         /** Annotations Toolbar button handler: Triger replying to an annotation */
         replyToAnnotation: function () {
             loreoverlay.annoView().handleReplyToAnnotation();
