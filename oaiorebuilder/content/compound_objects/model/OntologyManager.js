@@ -28,7 +28,7 @@ lore.ore.model.OntologyManager = function() {
         "dcterms:created", "dcterms:modified",
         "dc:identifier", "dc:language",
         "dc:publisher", "dc:rights", "dc:source",
-        "dc:subject", "dc:title"];
+        "dc:subject", "dc:title", "dc:type"];
     /** Properties that are mandatory for compound objects
      *  @const */
     this.CO_REQUIRED = ["dc:creator","dcterms:created",
@@ -51,7 +51,7 @@ lore.ore.model.OntologyManager = function() {
     this.ontology = {};
     
     this.dataTypeProps = [];
-    
+
     // metadata for ontologies from preferences
     this.ontologyMetadata = new Ext.data.JsonStore ({
     	fields: ['nsprefix', 'nsuri', 'locurl', 'useco', 'useanno'],
@@ -254,5 +254,25 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 	},
 	getDataTypeProperties : function(){
 		return this.dataTypeProps;
-	}
+	},
+    /** return the values from the current type vocabulary as array of [id,displayName] values */
+    getDCTypeVocab : function(){
+       if (!this.dctypeVocab){
+	        // TODO: allow customisable type vocab and load from ontology file.
+	        // At present we use DCMIType only (hardcoded below)
+	        this.dctypeVocab = [
+		       ['http://purl.org/dc/dcmitype/Collection','Collection'],
+		       ['http://purl.org/dc/dcmitype/Dataset', 'Dataset'],
+	           ['http://purl.org/dc/dcmitype/Event','Event'],
+	           ['http://purl.org/dc/dcmitype/Image', 'Image'],
+	           ['http://purl.org/dc/dcmitype/InteractiveResource','InteractiveResource'],
+	           ['http://purl.org/dc/dcmitype/Service','Service'],
+	           ['http://purl.org/dc/dcmitype/Software','Software'],
+	           ['http://purl.org/dc/dcmitype/Sound','Sound'],
+	           ['http://purl.org/dc/dcmitype/Text','Text'],
+	           ['http://purl.org/dc/dcmitype/PhysicalObject', 'PhysicalObject']
+	       ];
+       }
+       return this.dctypeVocab;
+    }
 });

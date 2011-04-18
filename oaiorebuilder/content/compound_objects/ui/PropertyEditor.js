@@ -17,6 +17,24 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             collapsible : true,
             collapseFirst: false,
             animCollapse : false,
+            /** Drop down editor for fixed values */
+            dropDownEditor: new Ext.grid.GridEditor(new Ext.form.ComboBox({
+                typeAhead: true,
+                editable: true,
+                triggerAction: 'all',
+                mode: 'local',
+                store: new Ext.data.ArrayStore({
+                    idIndex: 0,
+                    fields: ['id','displayName'],
+                    // data is loaded by the columnmodel in getCellEditor
+                    data: [] 
+                }),
+                valueField: 'id',
+                displayField: 'displayName',
+                listeners: {
+                    'select': function(combo, rec, i){lore.debug.ore("selected combobox",[combo,rec,i]);}
+                }
+            })),
             /** Pop-up editor for property values */
             propEditorWindow: new Ext.Window({ 
             	propEditor: this,
@@ -42,7 +60,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 onShow: function(){
                 	var rec = this.propEditor.store.getAt(this.activeRow);       	
                 	var ccbuttons = this.getBottomToolbar().getComponent(0);
-                	if (rec.data.name == "dc:rights"){
+                	if (rec.get("name") == "dc:rights"){
                 		ccbuttons.show();
                 	} else {		         		
                 		ccbuttons.hide();        		
@@ -215,6 +233,26 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }
 				    return Ext.grid.ColumnModel.prototype.isCellEditable.call(this, col, row);
 				},
+                // override to allow different editors for specific properties/datatypes
+                getCellEditor: function(colIndex, rowIndex){
+                   try{
+	                  if (colIndex == 1){
+		                  var currentRec = this.propEditor.store.getAt(rowIndex);
+		                  if (currentRec && currentRec.get("name") == "dc:type"){
+	                        // dc:type uses a controlled vocabulary: provide a drop down list
+                            this.propEditor.dropDownEditor.field.store.loadData(
+                                lore.ore.ontologyManager.getDCTypeVocab()
+                            );
+	                        return this.propEditor.dropDownEditor;
+	                      }
+                          // TODO: look at datatype and return date editor, boolean editor etc
+	                  }
+                   } catch (ex){
+                    lore.debug.ore("Problem in getCellEditor",ex);
+                   }
+                   // For everything else, use the default Trigger Editor (with popup option)
+                   return Ext.grid.ColumnModel.prototype.getCellEditor.call(this,colIndex, rowIndex);
+                },
                 columns : [{
                             header : 'Property Name',
                             dataIndex : 'name',
