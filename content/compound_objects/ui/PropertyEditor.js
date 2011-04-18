@@ -152,8 +152,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 // Remove markup such as scripts from value before updating property field
                                 val = (val? lore.global.util.sanitizeHTML(val,window,true) : '');
                                 w.triggerField.setValue(val);
-                                this.stopEditing();
+                                // Call update formatting status before stopEditing to ensure type is finalised before value is saved back to model
                                 this.updateFormattingStatus(w.activeRow, true);
+                                this.stopEditing();
                                 w.hide();
                             } catch (e){
                                 lore.debug.ore("problem in update",e);
