@@ -423,6 +423,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             var resource = this.model.getAggregatedResource(theURL);
             if  (resource){
                 fig.setModel(resource);
+            } else {
+                lore.debug.ore("Model not found for " + theURL,fig);
             }
             this.lookup[theURL] = fig.getId();
         } else {
