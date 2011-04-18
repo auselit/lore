@@ -512,17 +512,17 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 				req.open('HEAD', theurl, true);
 				var thisobj = this;
 				req.onreadystatechange = function() {
-					// TODO: if the HEAD request returns an error, do a get
-					// instead
 					if (req.readyState == 4) {
-						var mimetype;
-						try {
-							mimetype = req.getResponseHeader('Content-Type');
-						} catch (e) {
-							lore.debug.ore("ResourceFigure: exception getting mime type", e);
-						}
+                        var mimetype;
+                        if (req.status == 200){
+							try {
+								mimetype = req.getResponseHeader('Content-Type');
+							} catch (e) {
+								lore.debug.ore("ResourceFigure: exception getting mime type", e);
+						    }
+                        }
+                        // default
 						if (!mimetype) {
-
 							mimetype = "text/html";
 						}
 						//lore.debug.ore("mimetype is " + mimetype, [req, req.getAllResponseHeaders()]);
