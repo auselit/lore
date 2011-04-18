@@ -99,6 +99,22 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
      * content eg XML object
      */
     load : function (args) {
+        var getDatatype = function(propurl, theType){
+              var dtype = theType;
+              //lore.debug.ore("getdatatype " + propname + " is " + dtype,propvalue);
+              if (dtype && dtype._string == "http://purl.org/dc/terms/W3CDTF"){
+                dtype = "date";
+              } else if (dtype && dtype == lore.constants.NAMESPACES["layout"]+"escapedHTMLFragment"){
+                dtype = "html";
+              } else {
+                dtype = "plainstring";
+                // Allow formatting for some fields
+                if (propurl == lore.constants.NAMESPACES["dcterms"] + "abstract" || propurl == lore.constants.NAMESPACES["dc"] + "description"){
+                    dtype = "string";
+                }
+              }
+              return dtype;
+          };
         var oThis = this;
         this.suspendEvents();
         // Load from RDF/XML
@@ -143,7 +159,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 var dt = this.value.datatype;
                 if (dt){
                     var dtString = dt.toString();
-                    propData.type = dtString;
+                    propData.type = getDatatype(propurl, dtString);
                     if (dtString == lore.constants.NAMESPACES["dcterms"] + "W3CDTF"){
                         propData.value = Date.parseDate(propval,'c');
                     } else if (dtString == lore.constants.NAMESPACES["xsd"] + "date") {
@@ -202,12 +218,14 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             });
                             theval = "";
                         } */
+                        
                         resourceData.properties.setProperty({
                            id: propurl,
                            ns: propsplit.ns,
                            name: propsplit.term,
                            value: theval,
-                           prefix: prefix
+                           prefix: prefix,
+                           type: getDatatype(propurl,this.value.datatype)
                         });
                     }
                  );   
@@ -424,8 +442,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                                     + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(mpropval)).replace(/&/g,'&amp;') 
                                     +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
                             } else { // properties that have literal values
-                            // TODO: add rdf:datatype
-                            
                             resourcerdf += ltsymb + rdfdescabout + figurl + closetag
                                     + ltsymb + tagname;
                             var ptype = fig.getPropertyType(mprop);
