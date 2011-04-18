@@ -854,11 +854,19 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
     getPropertyType : function(pid){
         try{
 	        var propData = this.expandPropAbbrev(pid);
-	        return this.model.get('properties').getProperty(propData.id, propData.index).type;
+            if (this.model){
+                var ptype = this.model.get('properties').getProperty(propData.id, propData.index).type;     
+                if (ptype){
+                    return ptype;
+                } 
+            } else {
+                lore.debug.ore("getPropertyType: no model for fig " + this.url + " " + pid,this);
+            }
         } catch (ex){
             lore.debug.ore("Problem in getPropertyType",ex);
-            return "plainstring";
+        
         }
+        return "plainstring";
     },
 	/**
 	 * Generate the markup for the plus/minus icon used to toggle the preview area
