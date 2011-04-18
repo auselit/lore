@@ -239,6 +239,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function (tree, parent, childNode, 
 
     childNode.on('contextmenu', function (node, e) {
         node.select();
+        
 
         if (!node.contextmenu) {
             node.contextmenu = new Ext.menu.Menu({
@@ -252,7 +253,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function (tree, parent, childNode, 
                 node.contextmenu.add({
                     text: "Reply to annotation",
                     handler: function (evt) {
-                        lore.anno.ui.handleReplyToAnnotation(node.id);
+                        lore.anno.ui.handleReplyToAnnotation(node);
                     },
                     id: 'reply_' + node.id
                 });
@@ -261,7 +262,7 @@ lore.anno.ui.handleAttachAnnoCtxMenuEvents = function (tree, parent, childNode, 
             node.contextmenu.add({
                 text: "Edit annotation",
                 handler: function (evt) {
-                    lore.anno.ui.handleEditTreeNode(node);
+                    lore.anno.ui.handleEdit(node);
                 },
                 id: 'edit_' + node.id
             });
@@ -778,9 +779,13 @@ lore.anno.ui.handleToggleAllAnnotations = function () {
 /**
  * Reply to the currently selected annotation. Add the reply to the local store.
  */
-lore.anno.ui.handleReplyToAnnotation = function (arg) {
+lore.anno.ui.handleReplyToAnnotation = function (node) {
     try {
         var rec = lore.anno.ui.page.getCurrentAnno();
+
+        if (!rec) {
+        	rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
+        }
 
         if (!rec) {
             lore.debug.anno("Couldn't find record to reply to: " + arg, arg);
@@ -803,13 +808,22 @@ lore.anno.ui.handleReplyToAnnotation = function (arg) {
 
 
 /**
- * When the edit button from the toolbar is clicked, load the current annotation into the form editor and show it.
+ * When the a node in the tree view is double clicked, load the annotation in the form editor and show the editor. 
+ * 
+ * @param {Object} node  The tree node
  */
-lore.anno.ui.handleEdit = function () {
+lore.anno.ui.handleEdit = function (node) {
     try {
+        var rec;
+
         lore.anno.ui.updateAnnoFromForm();
-        var rec = lore.anno.ui.page.getCurrentAnno();
-        if (!rec) return;
+
+        if (node.isAncestor(lore.anno.ui.treeunsaved)) {
+            rec = lore.anno.annoMan.findUnsavedRecById(lore.anno.ui.nodeIdToRecId(node));
+        } else {
+            rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
+        }
+
 
         lore.anno.am.runWithAuthorisation(function (principal) {
         	if (principal.primaryUri === rec.data.agentId || !rec.data.agentId) {
@@ -822,34 +836,6 @@ lore.anno.ui.handleEdit = function () {
         });
     } catch (e) {
         lore.debug.anno("handleEdit", e);
-    }
-};
-
-/**
- * When the a node in the tree view is double clicked, load the annotation in the form editor and show the editor.
- * @param {Object} node  The tree node
- */
-lore.anno.ui.handleEditTreeNode = function (node) {
-    try {
-        var rec;
-
-        if (node.isAncestor(lore.anno.ui.treeunsaved)) {
-            rec = lore.anno.annoMan.findUnsavedRecById(lore.anno.ui.nodeIdToRecId(node));
-        } else {
-            rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
-        }
-
-        lore.anno.am.runWithAuthorisation(function (principal) {
-        	if (principal.primaryUri === rec.data.agentId || !rec.data.agentId) {
-        		rec = lore.anno.annoMan.editRec(rec);
-        		lore.anno.ui.selectAndShowNode(rec);
-        	} else {
-        		lore.anno.ui.loreWarning('Annotation belongs to another user, saving disabled.');
-        		lore.anno.ui.selectAndShowNode(rec, true);
-        	}
-        });
-    } catch (e) {
-        lore.debug.anno("handleEditTreeNode", e);
     }
 };
 
