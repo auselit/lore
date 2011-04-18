@@ -30,10 +30,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     data: [] 
                 }),
                 valueField: 'id',
-                displayField: 'displayName',
-                listeners: {
-                    'select': function(combo, rec, i){lore.debug.ore("selected combobox",[combo,rec,i]);}
-                }
+                displayField: 'displayName'
             })),
             /** Pop-up editor for property values */
             propEditorWindow: new Ext.Window({ 
@@ -506,7 +503,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     	try{
         if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.ontologyURL != panel.loadedOntology)) {        	
         	panel.loadedOntology = lore.ore.ontologyManager.ontologyURL;
-        	panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties());
+        	panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties(panel.id == "remgrid"));
         }
         if (panel.id == "remgrid" || lore.ore.ui.graphicalEditor.getSelectedFigure() instanceof lore.ore.ui.graph.ResourceFigure){
             if (panel.collapsed) {

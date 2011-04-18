@@ -23,10 +23,8 @@ lore.ore.model.OntologyManager = function() {
     /** Default list of properties that can be specified for compound objects or resources 
     * @const */
     this.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
-        "dc:contributor", "dc:coverage", "dc:description",
-        //"dc:format", "dcterms:hasFormat", 
-        "dcterms:created", "dcterms:modified",
-        "dc:identifier", "dc:language",
+        "dc:contributor", "dc:coverage", "dcterms:created", "dc:description",
+        "dc:identifier", "dc:language", "dcterms:modified",
         "dc:publisher", "dc:rights", "dc:source",
         "dc:subject", "dc:title", "dc:type"];
     /** Properties that are mandatory for compound objects
@@ -252,8 +250,13 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 			lore.debug.ore("loadOntology", e);
 		}
 	},
-	getDataTypeProperties : function(){
-		return this.dataTypeProps;
+	getDataTypeProperties : function(forCompoundObject){
+        if (!forCompoundObject){
+            return this.dataTypeProps;    
+        } else {
+            return this.dataTypeProps.filter(function(e,i,a){return !(e == "dc:type" || e == "dcterms:modified" || e == "dcterms:created")});
+        }
+		
 	},
     /** return the values from the current type vocabulary as array of [id,displayName] values */
     getDCTypeVocab : function(){
