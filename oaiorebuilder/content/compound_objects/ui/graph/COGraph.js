@@ -492,6 +492,15 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         this.setCurrentSelection(null);
       }
     },
+    getCurrentSelection: function(){
+      if (this.currentSelection){
+        return this.currentSelection;
+      } else if (this.multiSelection && this.multiSelection.length > 0){
+        return this.multiSelection[0]
+      } else {
+        return null;
+      }
+    },
     setCurrentSelection: function(sel,multi){
     	try{
       var oldSingleSelection = this.currentSelection;
