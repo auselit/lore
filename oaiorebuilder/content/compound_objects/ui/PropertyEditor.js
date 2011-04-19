@@ -3,6 +3,7 @@ Ext.intercept(Ext.form.HtmlEditor.prototype, 'execCmd', function() {
     var doc = this.getDoc();
     doc.execCommand('styleWithCSS', false, false);
 });
+
 /** 
  * @class lore.ore.ui.PropertyEditor Grid-based editor for Compound object or resource properties and relationships
  * @extends Ext.grid.EditorGridPanel
@@ -17,6 +18,33 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             collapsible : true,
             collapseFirst: false,
             animCollapse : false,
+            tagEditor: new Ext.grid.GridEditor(new Ext.ux.form.SuperBoxSelect({
+                allowBlank: true,
+                editable: true,
+                msgTarget: 'under',
+                allowAddNewData: true,
+                fieldLabel: 'Tags',
+                emptyText: 'Type or select tags',
+                resizable: true,
+                name: 'tags',
+                pageSize: 10,
+                store: lore.anno.thesaurus,
+                removeValuesFromStore: false,
+                mode: 'local',
+                displayField: 'name',
+                valueField: 'id',
+                extraItemCls: 'x-tag',
+                listeners: {
+                    newitem: function(bs, v){
+                        v = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
+                        var newObj = {
+                            id: v,
+                            name: v
+                        };
+                        bs.addItem(newObj);
+                    }
+                }  
+            })),
             /** Drop down editor for fixed values */
             dropDownEditor: new Ext.grid.GridEditor(new Ext.form.ComboBox({
                 typeAhead: true,
@@ -222,7 +250,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 	                    if (((g.id == "nodegrid") && (record.id == "dc:format_0" || record.id == "rdf:type_0")) 
 	                        || ((g.id != "nodegrid") && (record.id == "dcterms:modified_0"
 	                        || record.id == "dcterms:created_0"
-	                        || record.id == "rdf:about_0"))){
+	                        || record.id == "rdf:about_0" || record.id == "lorestore:user_0"))){
 						      return false;
 						} 
                     } catch (ex){
@@ -241,8 +269,18 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 lore.ore.ontologyManager.getDCTypeVocab()
                             );
 	                        return this.propEditor.dropDownEditor;
-	                      }
+	                      } 
+                         /* else if (currentRec && currentRec.get("name") == "dc:subject"){
+                            return this.propEditor.tagEditor;
+                          }
+                         */
                           // TODO: look at datatype and return date editor, boolean editor etc
+                          /* Fix RDF/XML generation directly from dates before enabling
+                          else if (currentRec && currentRec.get("type") == "date"){
+                            return this.propEditor.dateEditor;
+                          }
+                          */
+                          
 	                  }
                    } catch (ex){
                     lore.debug.ore("Problem in getCellEditor",ex);
@@ -447,7 +485,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         // Escape double quotes for display in tooltips 
         var escVal = (val.replace) ? val.replace(/"/g,"&quot;"): val;
     	if (rec && rec.data && 
-    			(rec.data.id == "dc:format_0" 
+    			(rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
     				|| rec.data.id == "rdf:type_0"
     			    || rec.data.id == "rdf:about_0" 
     			    || (this.id != 'nodegrid' 
@@ -484,6 +522,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         }
                         var theid = this.text + "_" + counter;
                         var ptype = (this.text == "dcterms:abstract" || this.text == "dc:description")? "string" : "plainstring";
+                        if (this.text == "dcterms:created" || this.text == "dcterms:modified"){
+                            ptype = "date";
+                        }
                         pstore.loadData([{id: theid, name: this.text, value: "", type: ptype}],true);
                         
                     } catch (ex){
@@ -628,7 +669,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }
                     // update figure (which in turn updates the model)
                     // Ensure value is clean from scripts tags etc
-                    var cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true);
+                    var cleanvalue;
+                    if (args.record.get("type") == "date" || args.record.get("type") == "uri"){
+                        cleanvalue = args.value;
+                    } else {
+                        cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true);
+                    }
                     selfig.setProperty(args.record.id,cleanvalue,args.record.data.type);
                 }
                 lore.ore.ui.nodegrid.store.commitChanges();
