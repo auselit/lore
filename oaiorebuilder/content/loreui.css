@@ -100,6 +100,41 @@
 .audioicon {
 	list-style-image: url(chrome://lore/skin/icons/page_sound.gif);
 }
+.xmlicon {
+	list-style-image: url(chrome://lore/skin/icons/page_code.png);
+	padding-top:2px;
+}
+.dataseticon {
+	list-style-image: url(chrome://lore/skin/icons/database_table.png);
+	padding-top:2px;
+}
+.collectionicon {
+	list-style-image: url(chrome://lore/skin/icons/page_white_stack.png);
+	padding-top:2px;
+}
+.texticon{
+	list-style-image: url(chrome://lore/skin/icons/page_white_text.png);
+	padding-top:2px;
+}
+.objicon {
+	list-style-image: url(chrome://lore/skin/icons/chair.png);
+	padding-top:2px;
+}
+.softwareicon {
+	list-style-image: url(chrome://lore/skin/icons/application.png);
+}
+.serviceicon {
+	list-style-image: url(chrome://lore/skin/icons/server-network.png);
+	padding-top:2px;
+}
+.interactiveicon {
+	list-style-image: url(chrome://lore/skin/icons/map_cursor.png);
+	padding-top:2px;
+}
+.eventicon {
+	list-style-image: url(chrome://lore/skin/icons/alarm-clock-select.png);
+	padding-top:2px;
+}
 .oreicon {
 	list-style-image: url(chrome://lore/skin/icons/oaioreicon-sm.png); 
 	padding-top:2px;
