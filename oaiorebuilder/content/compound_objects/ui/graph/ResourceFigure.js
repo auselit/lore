@@ -122,7 +122,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.bottom_right.style.top = "0px";
 		this.bottom_right.style.fontSize = "2px";
 		this.header = document.createElement("div");
-		this.header.id = this.id + "_header";
+		this.header.id = 'a' + this.id + "_header";
 		this.top_left.className = "co-tl";
 		this.bottom_left.className = "co-bl";
 		this.bottom_right.className = "co-br";
@@ -317,7 +317,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		var theurl = this.url;
 		var mimetype = this.getProperty("dc:format_0");
 		var rdftype = this.getProperty("rdf:type_0");
-		this.setIcon(theurl);
 		if (this.hasPreview) {
 			//lore.debug.ore("Regenerating node preview " + this.url, this);
 		} else {
@@ -326,17 +325,15 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		if (this.abstractPreview){
 			this.iframearea.innerHTML = "<div class='nodeabstract'>" + (this.getProperty("dcterms:abstract_0") || "(No abstract)") + "</div>";
 		} else if (rdftype && rdftype.match("ResourceMap")) {
-			this.iframearea.innerHTML = "<div class='orelink' id='"
+			this.iframearea.innerHTML = "<div class='orelink' id='a"
 					+ this.id
 					+ "-data'><a href='#' onclick=\"lore.ore.controller.loadCompoundObjectFromURL('"
 					+ theurl
 					+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
 
-			this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='"
-					+ theurl
-					+ "' class='mimeicon oreicon'>"
+			this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='Compound Object' class='mimeicon oreicon'>"
 					+ this.uriexpander
-					+ "<a onclick='lore.ore.controller.loadCompoundObjectFromURL(\""
+					+ "<a title='" + theurl + "' onclick='lore.ore.controller.loadCompoundObjectFromURL(\""
 					+ theurl + "\");' href='#'>" + theurl + "</a></li></ul>";
 		} else if (mimetype && mimetype.match("rdf")) {
 			this.iframearea.innerHTML = "<p style='padding-top:20px;text-align:center;'>RDF document (no preview available)</p>";
@@ -362,7 +359,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			if (!this.isCollapsed()) {
 				this.createPreview(displayUrl);
 			}
-			this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='"
+			this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='a"
 					+ this.id + "-icon'>" + this.uriexpander + "<a title='"
 					+ theurl + "' onclick='lore.global.util.launchTab(\""
 					+ displayUrl + "\",window);' href='#'>" + theurl
@@ -377,9 +374,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 						.match("video"))) {
 			// use object tag to preview videos as plugins are disabled in
 			// secure iframe
-			// TODO: check if it is from a trusted source eg youtube, google
-			// video,
-			// otherwise create link to watch in browser frame
 			this.iframearea.innerHTML = "<object name='"
 					+ theurl
 					+ "-data' id='"
@@ -412,6 +406,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 				lore.debug.ore("ResourceFigure: iframe(general)", e);
 			}
 		}
+        this.setIcon();
 	},
 	/**
 	 * Creates a secure iframe to be used to display the content URL
@@ -454,7 +449,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			this.model.store.data.replace(urlparam,this.model);	
 		} 
 		this.metadataproperties["resource_0"] = urlparam;
-		this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='"
+		this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='a"
 				+ this.id + "-icon'>" + this.uriexpander + "<a title='"
 				+ urlparam + "' onclick='lore.global.util.launchTab(\""
 				+ urlparam + "\",window);' href='#'>" + urlparam
@@ -463,28 +458,58 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	/**
 	 * Displays an icon depending on the mimetype of the resource
 	 */
-	setIcon : function() {
-		var mimetype = this.getProperty("dc:format_0")
-				? this.getProperty("dc:format_0")
-				: "text/html";
-		this.icontype = "mimeicon ";
-		if (mimetype.match("html")) {
-			this.icontype += "htmlicon";
-		} else if (mimetype.match("image")) {
-			this.icontype += "imageicon";
-		} else if (mimetype.match("audio")) {
-			this.icontype += "audioicon";
-		} else if (mimetype.match("video") || mimetype.match("flash")) {
-			this.icontype += "videoicon";
-		} else if (mimetype.match("pdf")) {
-			this.icontype += "pdficon";
-		} else {
-			this.icontype += "pageicon";
-		}
-		var icon = document.getElementById(this.id + '-icon');
+	setIcon : function(overrideType) { 
+        var typeTitle = overrideType;
+        if (overrideType){
+            // use override type instead of mimetype
+            if (overrideType.match("Image")){
+                this.icontype = "imageicon";
+            } else if (overrideType.match("Sound")){
+                this.icontype = "audioicon";
+            } else if (overrideType.match("PhysicalObject")){
+                this.icontype = "objicon";
+            } else if (overrideType.match("Text")){
+                this.icontype = "texticon";
+            } else if (overrideType.match("Software")){
+                this.icontype = "softwareicon";
+            } else if (overrideType.match("Service")){
+                this.icontype = "serviceicon";
+            } else if (overrideType.match("InteractiveResource")){
+                this.icontype = "interactiveicon";
+            } else if (overrideType.match("Event")){
+                this.icontype = "eventicon";
+            } else if (overrideType.match("Collection")){
+                this.icontype = "collectionicon";
+            } else if (overrideType.match("Dataset")){
+                this.icontype = "dataseticon";
+            } else {
+                this.icontype = "pageicon";
+            }
+        } else {
+            var mimetype = this.getProperty("dc:format_0")
+                ? this.getProperty("dc:format_0")
+                : "text/html";
+            typeTitle = mimetype;
+			if (mimetype.match("html")) {
+				this.icontype = "htmlicon";
+			} else if (mimetype.match("image")) {
+				this.icontype = "imageicon";
+			} else if (mimetype.match("audio")) {
+				this.icontype = "audioicon";
+			} else if (mimetype.match("video") || mimetype.match("flash")) {
+				this.icontype = "videoicon";
+			} else if (mimetype.match("pdf")) {
+				this.icontype = "pdficon";
+            } else if (mimetype.match('xml')){
+                this.icontype = "xmlicon";
+			} else {
+				this.icontype = "pageicon";
+			}
+        }
+        var icon = $('#a' + this.id + "-icon" ,this.metadataarea);
 		if (icon) {
-			icon.className = this.icontype;
-		}
+           icon.removeClass().addClass('mimeicon').addClass(this.icontype).attr('title',typeTitle);
+		} 
 	},
 	/**
 	 * Determine the mime type of the resource and use to populate dc:format
@@ -781,7 +806,10 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			} else {
 				this.displayAbstract("");
 			}
-		}
+		} else if (pid == "dc:type_0"){
+           // override icon
+           this.setIcon(pval);
+        }
 		//lore.debug.ore("setProperty " + pid + " " + pval,this.model);
 		// Update model
 		if (pid != "resource_0" && this.model){
@@ -793,7 +821,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			var propname = pidsplit[0];
 			var ns = lore.constants.NAMESPACES[pfx];
 			var propuri = ns + propname;
-			//lore.debug.ore("Updating property " + propuri +  " " + idx, this.model);
             var propData = {
                 id: propuri, 
                 ns: ns, 
@@ -819,8 +846,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	unsetProperty : function(pid) {
 		delete this.metadataproperties[pid];
 		if (pid == "dc:title_0" || pid == "dcterms:title_0") {
-			// TODO: #2 (refactor) : store properties as arrays instead (this
-			// will leave gaps if there are lots of values for this property)
 			var existingTitle = this.getProperty("dc:title_0")
 					|| this.getProperty("dcterms:title_0");
 			if (existingTitle) {
@@ -832,6 +857,9 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		if (pid == "dcterms:abstract_0"){
 			this.displayAbstract("");
 		}
+        if (pid == "dc:type_0"){
+            this.setIcon();
+        }
 		// Update model
 		var propData = this.expandPropAbbrev(pid);
     	if (propData && propData.id){
