@@ -27,7 +27,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	// Override the idPrefix property with a different URL
 	constructor : function(reposURL) {
 		lore.ore.repos.RestAdapter.superclass.constructor.call(this, reposURL);
-	    this.idPrefix = reposURL.substring(0, reposURL.indexOf('/',7) + 1) + "ore/";
+	    this.idPrefix = reposURL;
 	    this.unsavedSuffix = "#unsaved";
 	},
     getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
@@ -41,15 +41,18 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	       var queryURL = "";
 	       if (isSearchQuery){
 		        queryURL = this.reposURL
-		        	+ "?refersTo=" + escapedURL
-		        	+ "&matchpred=" + matchpred
-		        	+ "&matchval=" + matchval;
+		        	+ "?matchval=" + matchval;
+		        if (escapedURL && escapedURL != "")
+		        	queryURL += "&refersTo=" + escapedURL;
+		        if (matchpred && matchpred != "")
+		        	queryURL += "&matchpred=" + matchpred;
 	       } else {
 		       queryURL = this.reposURL
 		            + "?refersTo=" + escapedURL;
 	       }
 	        
 	        var req = new XMLHttpRequest();
+	        lore.debug.ore("RestAdapater.getCompoundObjects", {queryURL:queryURL});
 	        req.open('GET', queryURL, true);
 	        req.onreadystatechange = function(aEvt) {
 	            if (req.readyState == 4) {
