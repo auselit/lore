@@ -75,7 +75,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	 		var valArray = sortedProps[k];
             for (var i = 0; i < valArray.length; i++){
             	var theProp = valArray[i];
-                if ("layout" != theProp.prefix){
+                if ("layout" != theProp.prefix && "lorestore" != theProp.prefix){
                     if (theProp.value.toString().match("^http://") == "http://") {
                     	// property data for related resource: for looking up title etc
                         var propR = (container? container.getAggregatedResource(theProp.value): false);

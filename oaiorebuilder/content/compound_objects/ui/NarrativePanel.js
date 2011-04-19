@@ -143,6 +143,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
             skipProps[dc+"creator"] = true;
             skipProps[dc+"title"]=true;
             skipProps[ns["rdf"]+"type"]=true;
+            skipProps[ns["lorestore"]+"user"]=true;
             
             var sortedProps = o.getSortedArray(skipProps);
             for (var k = 0; k < sortedProps.length; k ++){
