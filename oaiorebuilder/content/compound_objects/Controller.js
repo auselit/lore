@@ -370,7 +370,6 @@ Ext.apply(lore.ore.Controller.prototype, {
     },
     /** Get a class for resource type */
     lookupIcon: function(type, userDefined){
-        lore.debug.ore("lookupIcon",type);
        var iconCls = "pageicon";
        if (!type){
             return iconCls;
