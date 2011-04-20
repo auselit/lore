@@ -28,7 +28,7 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
     updateBinding : function (p) {
         try{
         var currentCO = lore.ore.cache.getLoadedCompoundObject();
-        var currentREM = currentCO.uri;
+        
         Ext.MessageBox.show({
                msg: 'Generating Summary',
                width:250,
@@ -71,9 +71,9 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
         try{
             var dv = this.getComponent(1);
             if (dv){
-	            var node = Ext.get(id);
+	            var node = Ext.get('s' + id);
                 node.scrollIntoView(this.body, false);
-                dv.select(id);
+                dv.select('s' + id);
             }
         } catch (e){
             lore.debug.ore("scrollToResource",e);
@@ -158,7 +158,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
 );
 lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(  
     '<tpl for=".">',
-    '<div id="{uri}">',
+    '<div id="s{uri}">',
         '<div style="border-top: 1px solid rgb(220, 224, 225); margin-top: 0.5em;"> </div>',
         '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr><td>',
         '<span style="font-size:130%;font-weight:bold">{title}<tpl if="!title">Untitled Resource</tpl></span></td>',
