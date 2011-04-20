@@ -191,6 +191,10 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
      * @cfg {String} valueDelimiter The delimiter to use when joining and splitting value arrays and strings.
      */
     valueDelimiter: ',',
+    // Override assertValue to allow this to be used as grid editor
+    assertValue:function(){
+    // override  
+    },
     initComponent:function() {
        Ext.apply(this, {
             items           : new Ext.util.MixedCollection(false),
