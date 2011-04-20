@@ -460,51 +460,20 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 */
 	setIcon : function(overrideType) { 
         var typeTitle = overrideType;
-        if (overrideType){
-            // use override type instead of mimetype
-            if (overrideType.match("Image")){
-                this.icontype = "imageicon";
-            } else if (overrideType.match("Sound")){
-                this.icontype = "audioicon";
-            } else if (overrideType.match("PhysicalObject")){
-                this.icontype = "objicon";
-            } else if (overrideType.match("Text")){
-                this.icontype = "texticon";
-            } else if (overrideType.match("Software")){
-                this.icontype = "softwareicon";
-            } else if (overrideType.match("Service")){
-                this.icontype = "serviceicon";
-            } else if (overrideType.match("InteractiveResource")){
-                this.icontype = "interactiveicon";
-            } else if (overrideType.match("Event")){
-                this.icontype = "eventicon";
-            } else if (overrideType.match("Collection")){
-                this.icontype = "collectionicon";
-            } else if (overrideType.match("Dataset")){
-                this.icontype = "dataseticon";
-            } else {
-                this.icontype = "pageicon";
-            }
+        var rdftype = this.getProperty("rdf:type_0");
+        if (rdftype && (rdftype.match(lore.constants.NAMESPACES["annotype"])
+                        || rdftype.match(lore.constants.NAMESPACES["vanno"]) 
+                        || rdftype.match(lore.constants.NAMESPACES["annoreply"]))){
+            this.icontype = "annoicon";
+            typeTitle = "Annotation";
+        } else if (overrideType){
+            this.icontype = lore.ore.controller.lookupIcon(overrideType,true);
         } else {
             var mimetype = this.getProperty("dc:format_0")
                 ? this.getProperty("dc:format_0")
                 : "text/html";
             typeTitle = mimetype;
-			if (mimetype.match("html")) {
-				this.icontype = "htmlicon";
-			} else if (mimetype.match("image")) {
-				this.icontype = "imageicon";
-			} else if (mimetype.match("audio")) {
-				this.icontype = "audioicon";
-			} else if (mimetype.match("video") || mimetype.match("flash")) {
-				this.icontype = "videoicon";
-			} else if (mimetype.match("pdf")) {
-				this.icontype = "pdficon";
-            } else if (mimetype.match('xml')){
-                this.icontype = "xmlicon";
-			} else {
-				this.icontype = "pageicon";
-			}
+            this.icontype = lore.ore.controller.lookupIcon(mimetype,false);
         }
         var icon = $('#a' + this.id + "-icon" ,this.metadataarea);
 		if (icon) {
