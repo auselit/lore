@@ -52,7 +52,9 @@
 .x-date-picker {
 	width: 200px;
 }		
-
+.welcome-icon {
+    background-image: url(chrome://lore/skin/icons/information.png) !important;
+}
 
 /* Tree styles */
 /* suppress icons for top level tree nodes */
