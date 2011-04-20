@@ -1113,7 +1113,7 @@ util = {
            var t = link.getAttribute("title");
 	       if (link.getAttribute("rel").indexOf("style") != -1 && t)
 	       {
-              var isHC = (t == 'highContrastExt' || t == 'highContrast');
+              var isHC = (t == 'highContrastExt' || t == 'highContrast' || t == 'highContrastUI');
               if (isHC && activate) {
                  link.disabled = false;
               } else if (isHC && !activate) {
