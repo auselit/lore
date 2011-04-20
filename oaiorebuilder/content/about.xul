@@ -18,7 +18,9 @@ search annotations and compound objects.</description>
   <text class="text-link" onclick="window.open('http://itee.uq.edu.au/~eresearch/projects/aus-e-lit')" value="http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/"/>
   <separator class="thin"/>
   <text value="Credits" style="font-weight: bold;"/>
-  <text style='font-size:smaller' value="Icons used under a Creative Commons licence: http://famfamfam.com/lab/icons/silk"/>
+  <text style='font-size:smaller' value="Icons used under a Creative Commons licence:"/>
+  <text class="text-link" onclick="window.open('http://famfamfam.com/lab/icons/silk')" style='font-size:smaller' value="Silk : http://famfamfam.com/lab/icons/silk"/>
+  <text class="text-link" onclick="window.open('http://p.yusukekamiyamane.com/')" style="font-size:smaller" value="Fugue : http://p.yusukekamiyamane.com/"/>
 </vbox>
 </groupbox>
 </dialog>
