@@ -18,26 +18,6 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* tool bar styles */
-.tb-new-obj {
-    background-image: url(../skin/icons/oaioreicon-sm.png) !important;
-    width: 15px
-}
-.tb-option {
-    background-image: url(../skin/icons/cog.png) !important;
-    width: 15px
-}
-.tb-view-detail {
-    background-image: url(../skin/icons/application_view_detail.png) !important;
-    width: 15px
-}
-.horizontal-line {
-	width:100%; 
-	height:2px; 
-	font-size:10%; 
-	line-height:2px; 
-	border-bottom: 1.5px solid #363636;
-}
 
 /* for status pop-up */
 .ext-mb-icon, .ext-mb-content, .ext-mb-text, .ext-mb-fix-cursor,.ext-mb-input,.ext-mb-textarea {
@@ -47,7 +27,6 @@
 .x-window-dlg .ext-mb-text {
 	font-size:10px;	
 }
-
 
 .textfield {
 	padding:1px; 
@@ -74,109 +53,13 @@
 	width: 200px;
 }		
 
-/* mimetype icons for node views */
-.mimeicon {
-	list-style-position:inside;
-}
-.mimeicon a {
-	position:relative;
-	top:-4px;
-}
-.pageicon {
-	list-style-image: url(chrome://lore/skin/icons/page.gif);
-}
-.imageicon {
-	list-style-image: url(chrome://lore/skin/icons/image.png);
-}
-.htmlicon {
-	list-style-image: url(chrome://lore/skin/icons/page_html.gif);
-}
-.videoicon {
-	list-style-image: url(chrome://lore/skin/icons/film.png);
-}
-.pdficon {
-	list-style-image: url(chrome://lore/skin/icons/file_acrobat.gif);
-}
-.audioicon {
-	list-style-image: url(chrome://lore/skin/icons/page_sound.gif);
-}
-.xmlicon {
-	list-style-image: url(chrome://lore/skin/icons/page_code.png);
-	padding-top:2px;
-}
-.dataseticon {
-	list-style-image: url(chrome://lore/skin/icons/database_table.png);
-	padding-top:2px;
-}
-.collectionicon {
-	list-style-image: url(chrome://lore/skin/icons/page_white_stack.png);
-	padding-top:2px;
-}
-.texticon{
-	list-style-image: url(chrome://lore/skin/icons/page_white_text.png);
-	padding-top:2px;
-}
-.objicon {
-	list-style-image: url(chrome://lore/skin/icons/chair.png);
-	padding-top:2px;
-}
-.softwareicon {
-	list-style-image: url(chrome://lore/skin/icons/application.png);
-}
-.serviceicon {
-	list-style-image: url(chrome://lore/skin/icons/server-network.png);
-	padding-top:2px;
-}
-.interactiveicon {
-	list-style-image: url(chrome://lore/skin/icons/map_cursor.png);
-	padding-top:2px;
-}
-.eventicon {
-	list-style-image: url(chrome://lore/skin/icons/alarm-clock-select.png);
-	padding-top:2px;
-}
-.oreicon {
-	list-style-image: url(chrome://lore/skin/icons/oaioreicon-sm.png); 
-	padding-top:2px;
-}
-.rdficon {
-	background-image: url(chrome://lore/skin/icons/rdf.png) !important;	
-}
 
-/* Allow uri of nodes to be expanded */
-.hideuri {
-    -moz-transform: rotate(-90deg);
-}
-.hideuribox {
-	white-space: pre;
-}
-.nodeabstract {
-	height:95%;padding:4px;overflow:auto;
-}
-/* Source tree styles */
-
+/* Tree styles */
 /* suppress icons for top level tree nodes */
 .tree-anno, .tree-ore {
     display:none;
 }
-.rel-to {
-	background-image: url(chrome://lore/skin/icons/arrow_left.png);
-	background-repeat:no-repeat;
-}
-.rel-from {
-	background-image: url(chrome://lore/skin/icons/arrow_right.png);
-	background-repeat:no-repeat;
-}
-.rel-with {
-    background-image: url(chrome://lore/skin/icons/arrow_both.png);
-    background-repeat:no-repeat;
-}
-.oreresult {
-	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png) !important;
-}
-.ro-oreresult {
-    background-image: url(chrome://lore/skin/icons/oaioreicon-grey.png) !important; 
-}
+
 .x-tree-node .anno-icon, .anno-icon {
 	background-image: url(chrome://lore/skin/icons/comment.png);
 	background-repeat: no-repeat;
@@ -230,9 +113,6 @@
 	background-image: url(chrome://lore/skin/icons/chart_line.png) !important;
 }
 
-/*.x-tree-selected .anno-icon-launchWindow, .x-tree-selected .anno-icon-splitter {
-	display: inline !important;
-}*/
 
 .x-tree-node a, .anno-search {
 	color:blue !important;
@@ -240,7 +120,7 @@
 	
 }
 
-/* #90 */
+/* #90 visibility bug in sidebar*/
 .x-tree-node-ct {
 	visibility: inherit !important;
 }
@@ -249,57 +129,15 @@
 	color:blue;
 	text-decoration:underline;
 }
-#propertytabs * .x-tree-node a:hover {
-    text-decoration:none;
-    color:black;
-}
-.add-icon {
-	background-image: url(chrome://lore/skin/icons/add.png);
-}
-.delete-icon {
-    background-image: url(chrome://lore/skin/icons/database_delete.png);
-}
-.edit-icon {
-    background-image: url(chrome://lore/skin/icons/pencil.png);
-}
+
 .underlined {
-	
 	padding-bottom: 2px;
 	display:block;
 	width: 100%;
 	border-bottom: 1px solid #51666b;
 }
-.orelink {
-	font-style:italic; 
-	color: #51666b; 
-	padding:10px;	
-}
 
-.status-bubble-icon {
-	width:16px;
-	height:20px;
-	display:inline-block;
-	padding-right:4px;
-	
-	
-}
-.status-bubble-msg {
-	display:inline-block;	
-	text-indent:0;
-	white-space:normal;
-	
-}
 /* status bar/pop-up styles */
-.status-bubble-icon .info-icon {
-	background:  url(../skin/icons/information.png) no-repeat;
-}
-.status-bubble-icon .warning-icon {
-	background: transparent url(../skin/icons/warning.png) no-repeat;
-}
-.status-bubble-icon .error-icon {
-	background: transparent url(../skin/icons/error.png) no-repeat;
-}
-
 .info-icon {
 	padding-left: 25px !important;
 	background: transparent url(../skin/icons/information.png) no-repeat 3px 3px;
@@ -316,115 +154,16 @@
     padding-left: 25px !important;
     background: transparent url(lib/ext3.2/resources/images/default/grid/loading.gif) no-repeat 3px 3px;
 }
-/* main tabs content styles */
-
-#remsmilview, #textmining {
-	padding-left: 20px;	
-}
-#remsmilview div, #textmining div {
-	padding-top:20px;
-}
-#welcome * ul li, #remlistview * ul li {
-	margin-left:10px;
-	list-style-position: inside;
-	list-style-type: square;
-}
-
-.welcome-icon {
-    background-image: url(../skin/icons/information.png) !important;
-}
-.graph-icon {
-	background-image: url(../skin/icons/layout_pencil.png) !important; 
-}
-.list-icon {
-	background-image: url(../skin/icons/table_edit.png) !important; 
-}
-.detail-icon {
-	background-image: url(../skin/icons/application_view_detail.png) !important; 
-}
-.slide-icon {
-	background-image: url(../skin/icons/picture_empty.png) !important; 
-}
-.explore-icon {
-	background-image: url(../skin/icons/network.png) !important; 
-}
-#drawingarea {
-	position:relative;
-	background-position: center !important;
-}
-.ctxtConnLabel {
-	color: #51666b !important;
-	font-size:100% !important;
-}
-.co-uri {
-	padding-left: 3px;
-	color: #333333;
-	border-bottom: 1px solid #aeaeae;
-    overflow: hidden;
-}
-.co-header {
-	background-color: #e5e5e5;
-	color: #333333;
-	border-top: 1px solid #aeaeae;
-	font-size: 11px;
-	text-align: center;
-	font-family: tahoma, arial, helvetica;
-}
-.co-preview {
-	background-color: white;
-	border-top: 1px solid #aeaeae;
-	border-left: 1px solid #aeaeae;
-	border-right: 1px solid #aeaeae;
-	overflow: hidden;
-	font-size: 9pt;
-}
-.co-footer {
-	background-color: white;
-	border-bottom: 1px solid #aeaeae;
-	font-size: 2px;
-}
-.co-tl {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left;
-}
-.co-bl {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left;
-}
-.co-br {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom right;
-}
-.co-tr-minus {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right;
-}
-.co-tr-plus {
-	background: url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right;
-}
-#remrdfview, #remfoxmlview, #remtrigview {
- 	color: #51666b;
- 	font-family: courier monospace;
- 	font-size: 70%;
-}
-#welcome * a, #remsmilview * a, #remlistview * a, #textmining * a {
-	color: #2c5798 !important;
-}
-#textmining * a {
-	font-size:smaller;
-}
-#welcome * a:hover, #remsmilview * a:hover, #remlistview * a:hover {
-	text-decoration: underline;
-}
-#welcome iframe {border:none;}
 
 .annoreadonly {
 	border: 0;
 	background-color: red;
-	
 }
 
 /* Annotation editor styles */
 .annochanged {
 	background-color: #ffcccc !important;
 }
-
 
 .x-grid3-cell-inner {
 	height: 1.2em;
@@ -458,70 +197,7 @@
 .detailsselected {
 	background-color: yellow;
 }
-/* Compound object explore view */
-.node {
-	font-size:0.6em;
-	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
-	color:#51666b;
-	font-weight:normal;
-	cursor:pointer;
-	padding:2px;
-}
 
-#exploreReset {
-	z-index: 999; 
-	position: absolute; 
-	bottom: 10px; 
-	left: 10px; 
-	font-size: x-small; 
-	color: rgb(81, 102, 107);
-}
-
-#infovis {width: 100%; height:100%;}
-span.exploreclose {
-    color:white;
-}
-span.exploreclose:hover {
-    color: #FF5555;
-    font-size: 1.5em;
-    cursor: pointer;
-    font-weight: bold;
-    margin-left: 3px;
-}
-span.explorename {
-    cursor: pointer;
-    background-image: url(chrome://lore/skin/transparentwhite.png);
-}
-div.exploretip-title {
-    font-size: smaller;
-    font-weight: bold;
-}
-div.exploretip-text {
-	font-size: smaller;
-	font-weight: normal;
-	color: #51666b;
-}
-#remslideview *, #remlistview * {
-	font-family: "Helvetica","Arial",sans-serif;
-}
-.slideshowTitle {
-	color:#cc0000;font-weight:bold;font-size:120%;padding-top:0.5em;
-	padding-bottom:0.5em;border-bottom:1px solid #cc0000;
-}
-.sectionTitle {
-	font-weight:bold;font-size:120%;padding-top:0.5em;padding-bottom:0.5em; 
-	border-bottom: 1px solid #51666b
-}
-
-.slideshowProps {
-	font-size:85%;color:#465458;padding:2px;padding-top:0.5em;line-height:1.3em;
-}
-.slideshowTOC {
-	font-size:95%;color:#465458;padding-top:1em;line-height:1.2em
-}
-.slideshowFooter {
-	font-size:70%;padding-top:0.5em;color:#465458;padding-left:3px;
-}
 .left-spacer4 {
 	padding-left: 4px;
 }
@@ -620,18 +296,6 @@ div.exploretip-text {
     border-right:1px solid #d0d0d0;
 }
 
-
-.x-tree-multiline-node-expanded .x-tree-elbow-line-multiline-expanded {
-    background-image: url(chrome://lore/content/ext/resources/images/default/tree/elbow-line.gif);
-}
-        
-.x-tree-multiline-node-collapsed .x-tree-elbow-line-multiline-expanded {
-    background-image: none;
-}
-.x-tree-multiline-node-details{
-	color:#51666b;
-	font-size:90%
-}
 .x-form-field-wrap .x-form-ellipsis-trigger{
     background-image:url(chrome://lore/skin/icons/ellipsis-trigger-grey.gif);
     border-bottom-color:#b5b8c8;
@@ -641,28 +305,7 @@ div.exploretip-text {
 .x-form-text, textarea.x-form-field{
     background-image: none;
 }
-.co-load-msg .ext-mb-fix-cursor {
-	display: none !important
-}
-.co-load-msg .x-window-header {
-	height:0;
-}
 
-.coListing {
-	padding: 2px;
-    padding-bottom:3px;
-    cursor:pointer;
-}
-.coListing table {
-    font-family: tahoma, arial, helvetica;
-    font-size: smaller;
-}
-div.coListing:hover {
-	background-color: #eeeeee;
-}
-.x-edit-pt {
-	background-image: url(../skin/icons/toolbox_pencil.png) !important;
-}
 /** For the Annotation Search DataView **/
 #search-view {
 	background: white;
@@ -702,8 +345,6 @@ div.coListing:hover {
 	padding: 2px 10px;
 	-moz-border-radius: 5px;
 }
-
-#remlistview .x-grid3-row-selected {background-color: yellow !important;}
 .x-tree-col-div-general * ol {
 	list-style:decimal !important;
 }

@@ -1,93 +1,15 @@
+/* Override default styles for high-contrast theme */
 * {
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
 	color: #fffff6;
 }
-.x-tree-multiline-node-details {
-	color:#FFFFF6;
+.x-grid3-row-selected * {
+	background-color: orange !important;
 }
 .x-tab-panel-body {
 	background-color: #343843;
 }
-.orelink {
-	font-style:italic; 
-	color: #fffff6; 
-	padding:10px;	
-}
-#remsmilview * a, #remlistview * a, #textmining * a {
-	color: orange !important;
-}
-.node {
-	font-size:90%;
-	color:#fffff6;
-	font-weight:normal;
-	cursor:pointer;
-	padding:2px;
-}
-#exploreReset {
-	font-size: 90%; 
-	color: #fffff6;
-}
-#exploreHistory {
-	font-size:90%;
-	color:#fffff6;
-	background-color:#1f2730;
-}
 
-.ctxtConn div {
-	background-color: #fffff6 !important;
-}
-.port div div div {
-	background-color: orange !important;
-}
-.ctxtConn div.ctxtConnLabel {
-	color: #fffff6 !important;
-	background-color: transparent !important;
-	font-size:100% !important;
-}
-.co-uri {
-	background-color: #333333;
-	border-bottom: 1px solid #fffff6;
-	font-size: 90%;
-	padding-top:1px;
-}
-.co-header {
-	background-color: #1f2730;
-	color: #fffff6;
-	font-size: 12px;
-	border-top: 1px solid #fffff6;
-}
-.co-preview {
-	background-color: transparent;
-	border-top: 1px solid #fffff6;
-	border-left: 1px solid #fffff6;
-	border-right: 1px solid #fffff6;
-	font-size: 100%;
-}
-.co-footer {
-	background-color: #343843;
-	border-bottom: 1px solid #fffff6;
-}
-.co-tl {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat top left;
-}
-.co-bl {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat bottom left;
-}
-.co-br {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat bottom right;
-}
-.co-tr-minus {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat top right;
-}
-.co-tr-plus {
-	background: url(chrome://lore/skin/resourcenodecircleplus-hc.gif) no-repeat top right;
-}
-.slideshowTitle, .sectionTitle, .slideshowToc, .slideshowProps {
-	color: #fffff6;
-}
-.slideshowProps {
-	border-color: #fffff6;
-}
 /* Annotations */
 
 .timeline-bubble, .timeline-event-bubble-title, .timeline-event-bubble-body, .timeline-band, .x-tree-node-bheader {
@@ -112,7 +34,5 @@
 .x-tree-node a, .anno-search {
 	color: orange !important;
 }
-div.coListing:hover {
-    background-color: orange;
-}
+
 	
