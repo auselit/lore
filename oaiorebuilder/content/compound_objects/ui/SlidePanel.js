@@ -246,24 +246,18 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	            // content slide representing resource
 	            title = resourceprops.properties.getTitle() || "Untitled Resource";
 	            var format = resourceprops.properties.getProperty(dc+"format",0);
-	            
+	            var dctype = resourceprops.properties.getProperty(dc+"type",0);
 	            var hasPreview = false; // preview disabled by default as secure iframe does not allow plugins
-	            var icontype = "pageicon";
-	            if (format){
-			        if (format.value.match("html")){
-			            icontype += " htmlicon";
-	                    hasPreview = true;
-			        } else if (format.value.match("image")) {
-			            icontype += " imageicon";
-	                    hasPreview = true;
-			        } else if (format.value.match("audio")) {
-			            icontype += " audioicon";
-			        } else if (format.value.match("video") || format.value.match("flash")){
-			            icontype += " videoicon";
-			        } else if (format.value.match("pdf")) {
-			            icontype += " pdficon";
-			        } 
-	            }
+	            var icontype;
+                if (resourceprops.representsAnno){
+                    icontype = "annoicon";
+                } else {
+                    icontype = lore.ore.controller.lookupIcon((dctype? dctype: format),dctype);
+                }
+		        if (format && (format.value.match("html") || format.value.match("image"))){
+                    hasPreview = true;
+		        } 
+	            
 	            if (resourceprops.representsAnno){
 	                hasPreview = true;
 	            }

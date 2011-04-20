@@ -56,6 +56,9 @@
 	list-style-image: url(chrome://lore/skin/icons/page_code.png);
 	padding-top:2px;
 }
+.annoicon {
+	list-style-image: url(chrome://lore/skin/icons/comment.png);
+}
 .dataseticon {
 	list-style-image: url(chrome://lore/skin/icons/database_table.png);
 	padding-top:2px;
