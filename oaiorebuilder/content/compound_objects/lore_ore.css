@@ -157,9 +157,7 @@
 }
 
 /* main tabs content styles */
-.welcome-icon {
-    background-image: url(chrome://lore/skin/icons/information.png) !important;
-}
+
 .graph-icon {
 	background-image: url(chrome://lore/skin/icons/layout_pencil.png) !important; 
 }
@@ -343,7 +341,7 @@ div.coListing:hover {
 }
 /* Formatting toolbox for popup property editor */
 .x-edit-pt {
-	background-image: url(../skin/icons/toolbox_pencil.png) !important;
+	background-image: url(chrome://lore/skin/icons/toolbox_pencil.png) !important;
 }
 /* Override superbox select for property editor */
 .x-superboxselect-btns div {float: left; width: 16px; height: 16px; margin-top: 1px;}
