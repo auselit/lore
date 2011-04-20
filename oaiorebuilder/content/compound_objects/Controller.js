@@ -4,6 +4,8 @@
 lore.ore.Controller = function(config){
     /** The URL of the active tab in the main web browser */
     this.currentURL = config.currentURL || "";
+    /** AuthManager */
+    this.authManager = config.authManager || null;
     /** Indicates whether the controller is actively responding to user actions (it is not active when LORE is closed) */
     this.active = false;
     /** The name of the default creator used for new compound objects (from preferences) */
@@ -650,9 +652,9 @@ Ext.apply(lore.ore.Controller.prototype, {
     addResource: function(uri,props){ 
         // TODO: #34 MVC:  make it add to model and get view to listen on model
     	Ext.getCmp("loreviews").activate("drawingarea");
-
+        var activeView = Ext.getCmp("loreviews").getActiveTab();
         /* TODO: allow list view to be active: bug at the moment with iframe previews
-         * var activeView = Ext.getCmp("loreviews").getActiveTab();
+         * 
         // activate one of the editors
         if (!(activeView.id == "remlistview" || activeView.id == "drawingarea")){
         	activeView = Ext.getCmp("remlistview");
@@ -663,7 +665,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         lore.ore.ui.graphicalEditor.addFigure({url:normalizedUri, props: props});
         
         if (props && !props.batch){
-            activeView.showResource(theURL);
+            activeView.showResource(normalizedUri);
         }
     },
     /** Remove a resource from the compound object
@@ -814,10 +816,12 @@ Ext.apply(lore.ore.Controller.prototype, {
           if (om){
             om.loadOntology(prefs.relonturl, prefs.ontologies);
           } 
+          
           //Disabled for now
           //lore.ore.textm.tmkey = prefs.tmkey;
           this.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
           lore.global.util.setHighContrast(window, prefs.high_contrast);
+          //this.authManager.setPrefs(prefs);
       } catch (e){
         lore.debug.ore("Controller: Problem handling changed preferences",e);
       }
@@ -932,6 +936,15 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         this.loadedURL = this.currentURL; 
     },
+    /*handleLogin : function() {
+	    lore.debug.ore("Compound objects handleLogin");
+	    this.authManager.displayLoginWindow();
+    },
+    handleLogout: function() {
+	    lore.debug.ore("Compound Objects handleLogout");
+	    this.authManager.logout();
+    },
+    */
     /** Asks the model whether theURL is aggregated by the current compound object. 
      *  Used by overlay to determine whether to update the url-bar icon after user has browsed to new location
      *  @param {String} theURL 
