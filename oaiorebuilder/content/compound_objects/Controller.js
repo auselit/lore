@@ -59,7 +59,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 Ext.Msg.show({
                     title : 'Save Compound Object?',
                     buttons : Ext.MessageBox.YESNOCANCEL,
-                    msg : 'Would you like to save the current compound object before proceeding?<br><br>Any unsaved changes will be lost if you select "No".',
+                    msg : 'Would you like to save the current compound object before proceeding?',
                     fn : function(btn) {
                         if (btn === 'yes') {
                             var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -367,6 +367,58 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.debug.ore("the RDF string was",rdf);
                 lore.debug.ore("the serialized databank is",databank.dump({format:'application/rdf+xml', serialize: true}));
             }
+    },
+    /** Get a class for resource type */
+    lookupIcon: function(type, userDefined){
+        lore.debug.ore("lookupIcon",type);
+       var iconCls = "pageicon";
+       if (!type){
+            return iconCls;
+       }
+       if (type.value){
+        type = type.value.toString();
+       }
+       if (userDefined){
+	        if (type.match("Image")){
+	            iconCls = "imageicon";
+	        } else if (type.match("Sound")){
+	            iconCls = "audioicon";
+	        } else if (type.match("PhysicalObject")){
+	            iconCls = "objicon";
+	        } else if (type.match("Text")){
+	            iconCls = "texticon";
+	        } else if (type.match("Software")){
+	            iconCls = "softwareicon";
+	        } else if (type.match("Service")){
+	            iconCls = "serviceicon";
+	        } else if (type.match("InteractiveResource")){
+	            iconCls = "interactiveicon";
+	        } else if (type.match("Event")){
+	            iconCls = "eventicon";
+	        } else if (type.match("Collection")){
+	            iconCls = "collectionicon";
+	        } else if (type.match("Dataset")){
+	            iconCls = "dataseticon";
+	        }
+       } else {
+	        if (type.match("html")) {
+	                iconCls = "htmlicon";
+	        } else if (type.match("image")) {
+	            iconCls = "imageicon";
+	        } else if (type.match("audio")) {
+	            iconCls = "audioicon";
+	        } else if (type.match("video") || type.match("flash")) {
+	            iconCls = "videoicon";
+	        } else if (type.match("pdf")) {
+	            iconCls = "pdficon";
+	        } else if (type.match('xml')){
+	            iconCls = "xmlicon";
+	        } 
+       }
+       return iconCls;
+    },
+    copyCompoundObjectToNew: function(){
+        
     },
     /** Prompt whether to save the current compound object, then calls newCO to create new compound object */
     createCompoundObject: function(dontRaise, callback){
