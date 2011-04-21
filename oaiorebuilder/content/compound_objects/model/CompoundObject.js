@@ -288,7 +288,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     }
                     if (propval.match("^http://") == "http://"){
                         // this is a resource
-                        result = ltsymb + propname + " resource='" + 
+                        result = ltsymb + propname + " rdf:resource='" + 
                         lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(propval.toString())).replace(/&/g,'&amp;')
                         + "'/>" + nlsymb;
                     } else {
@@ -414,7 +414,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     var propnsdec = ' xmlns="' + presult.ns + '"';
                     //lore.debug.ore("matched aggregation prop",this);
                     if (this.obj.type == 'uri'){
-                        rdfxml += ltsymb + propname + propnsdec + " resource='" + 
+                        rdfxml += ltsymb + propname + propnsdec + " rdf:resource='" + 
                         lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
                         + "'/>" + nlsymb;
                     } else {
