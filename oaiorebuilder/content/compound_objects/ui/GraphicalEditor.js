@@ -126,7 +126,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                         pname = p.substring(0,pidx);
                     } 
                     var ptype = figure.getPropertyType(p);
-                    lore.ore.ui.nodegrid.store.loadData([{id: p, name: pname, value: figure.metadataproperties[p], type: ptype}],true);
+                    // TODO: this should be in the PropertyEditor
+                    lore.ore.ui.nodegrid.store.loadData([{id: p, name: pname, value: figure.metadataproperties[p], type: ptype}],true); 
                 }
                 // get connections
                 var relationshipsData = [];
