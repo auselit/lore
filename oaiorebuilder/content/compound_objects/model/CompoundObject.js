@@ -278,6 +278,14 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             var result = "";
             try{
                 if (propval && propval != '') {
+                    if (propname == "dc:subject" && propval.match(',')){ 
+                        // value needs to be split
+                        var vals = propval.split(",");
+                        for (var v = 0; v < vals.length; v++){
+                            result += serialize_property(propname, vals[v], proptype, ltsymb, nlsymb);
+                        }
+                        return result;
+                    }
                     if (propval.match("^http://") == "http://"){
                         // this is a resource
                         result = ltsymb + propname + " resource='" + 
@@ -368,7 +376,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     //+ lore.constants.NAMESPACES["xsd"] + 'date">'
                     + created + ltsymb + "/dcterms:created>" + nlsymb;
         }
-        // serialize compound object properties
+        // serialize remaining compound object properties
         lore.ore.ui.grid.store.each(function (rec){
            var propname = rec.id.substring(0,rec.id.indexOf("_"));
            var proptype = rec.get("type");
@@ -435,26 +443,10 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             if (midx != -1){
                                 tagname = mprop.substring(0,midx);
                             }
-                            // why not using serialize_property function here?
-                            //if (tagname == "rdf:type"){ // resource
-                            if (mpropval.match("^http://") == "http://"){
-                                resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag
-                                    + ltsymb + tagname + " rdf:resource=\"" + lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(mpropval)).replace(/&/g,'&amp;') 
-                                    +  "\"/>" + nlsymb + ltsymb + rdfdescclose + nlsymb;  
-                            } else { // properties that have literal values
-                            resourcerdf += ltsymb + rdfdescabout + figurl + closetag
-                                    + ltsymb + tagname;
                             var ptype = fig.getPropertyType(mprop);
-                            var propval;
-                            if (ptype && ptype == "html"){
-                                resourcerdf += " rdf:datatype=\"" + lore.constants.NAMESPACES["layout"] + "escapedHTMLFragment\"";
-                                propval = lore.global.util.escapeHTML(mpropval); // quotes are already escaped in html
-                            } else {
-                                propval = lore.global.util.escapeHTML(mpropval.replace(/"/g,"&quot;"))
-                            }
-                            resourcerdf += ">" + propval + ltsymb + "/"
-                                    + tagname + ">" + nlsymb + ltsymb + rdfdescclose + nlsymb;
-                            }
+                            resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag;
+                            resourcerdf += serialize_property(tagname, mpropval, ptype, ltsymb, nlsymb);
+                            resourcerdf += ltsymb + rdfdescclose + nlsymb;
                         }
                     }
                 }
