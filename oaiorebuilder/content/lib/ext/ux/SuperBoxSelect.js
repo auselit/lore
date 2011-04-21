@@ -1305,6 +1305,10 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                 this.addRecord(record);
             }else if(this.mode === 'remote'){
 				this.remoteLookup.push(val);            	
+            } else if (val && this.allowAddNewData){
+                // add item if value not in store
+                var v = val.slice(0, 1).toUpperCase() + val.slice(1).toLowerCase();
+                this.addItem({id:v,name:v});
             }
         },this);
         
