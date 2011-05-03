@@ -319,16 +319,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						displayField: 'name',
 						valueField: 'id',
 						extraItemCls: 'x-tag',
-						listeners: {
-							newitem: function(bs, v){
-								v = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
-								var newObj = {
-									id: v,
-									name: v
-								};
-								bs.addItem(newObj);
-							}
-						}
+                        styleField: 'style'
 					}, {
 						fieldLabel: 'Body',
 						xtype: 'htmleditor',

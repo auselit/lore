@@ -224,6 +224,17 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         if(this.mode === 'remote' && this.store){
         	this.store.on('load', this.onStoreLoad, this);
         }
+        this.on('newitem',function(bs, v){
+                // add user tags to store, use orange background to distinguish from pre-loaded terms
+                v = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
+                var newObj = {
+                    id: v,
+                    name: v,
+                    style: "background-color:orange"
+                };
+                bs.addItem(newObj);
+            }
+        );
     },
     onRender:function(ct, position) {
     	var h = this.hiddenName;
@@ -1147,7 +1158,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                 for(var p in s){
                     ret+= p +':'+s[p]+';';
                 }
-            }else if(typeof s == 'string'){
+            }else if(s && typeof s == 'string'){
                 ret = s + ';';
             }
             return ret;
@@ -1308,7 +1319,8 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
             } else if (val && this.allowAddNewData){
                 // add item if value not in store
                 var v = val.slice(0, 1).toUpperCase() + val.slice(1).toLowerCase();
-                this.addItem({id:v,name:v});
+                // orange background indicates it is a user-added tag
+                this.addItem({id:v,name:v, style: 'background-color:orange'});
             }
         },this);
         
@@ -1556,8 +1568,10 @@ Ext.ux.form.SuperBoxSelectItem = Ext.extend(Ext.ux.form.SuperBoxSelectItem,Ext.C
         }
         
         this.el = el = ct.createChild({ tag: 'li' }, ct.last());
-        el.addClass('x-superboxselect-item');
-        
+        el.addClass('x-superboxselect-item'); 
+        if (this.style){
+            el.applyStyles(this.style);
+        }
         var btnEl = this.owner.navigateItemsWithTab ? ( Ext.isSafari ? 'button' : 'a') : 'span';
         var itemKey = this.key;
         
