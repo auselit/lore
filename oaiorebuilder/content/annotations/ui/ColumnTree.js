@@ -300,7 +300,7 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
              (a.icon ? " x-tree-node-inline-icon" : ""), (a.iconCls ? " " + a.iconCls : ""), '" />', 
          '<div style="display:inline-block;width:', c.width-bw-(32 + n.getDepth() * 16),'">',
          '<div class="x-tree-col-div-general">',
-         '<img src="' + this.emptyIcon + '" class="x-tree-node ', (a.privateAnno ? 'anno-icon-private' : ''), '"/>',
+         '<img title="' + (a.privateAnno ? 'Private annotation' : '') + '" src="' + this.emptyIcon + '" class="x-tree-node ', (a.privateAnno ? 'anno-icon-private' : ''), '"/>',
          		n.title,
          	'</div>',
          '<div class="x-tree-node-bheader x-tree-col-div-general">', (n.bheader ?  n.bheader:''),'</div>',
