@@ -227,10 +227,13 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
         this.on('newitem',function(bs, v){
                 // add user tags to store, use orange background to distinguish from pre-loaded terms
                 v = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
+                if (v.match(',')){
+                    v = v.replace(',','');
+                }
                 var newObj = {
                     id: v,
                     name: v,
-                    style: "background-color:orange"
+                    style: 'background-color:orange'
                 };
                 bs.addItem(newObj);
             }
