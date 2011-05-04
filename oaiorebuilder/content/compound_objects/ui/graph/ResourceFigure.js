@@ -846,7 +846,17 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @return {} the property value
 	 */
 	getProperty : function(pid) {
-		return this.metadataproperties[pid];
+        // make sure that subject terms don't still have escaped ampersands in them
+        if (pid.match("dc:subject")){
+          var subj = this.metadataproperties[pid];
+          if (subj){
+             return subj.replace(/&amp;/,'&');
+          } else {
+            return subj;
+          }
+        } else {
+            return this.metadataproperties[pid];
+        }
 	},
     getPropertyType : function(pid){
         try{
