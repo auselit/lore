@@ -971,7 +971,7 @@ util = {
         iframe.setAttribute("src", "data:text/html,%3Chtml%3E%3Cbody%3E%3C/body%3E%3C/html%3E");
         iframe.setAttribute("transparent", true);
         // clicks open the resource in the main browser
-        iframe.setAttribute("onclick","var e = arguments[0];lore.global.util.launchTab(this.getAttribute('src'),window);");//e.stopPropagation();return false");
+        iframe.setAttribute("onclick","var e = arguments[0];lore.global.util.launchTab(this.getAttribute('src').replace('&printPreview=y',''),window);");
         return iframe;
     },
     /**
