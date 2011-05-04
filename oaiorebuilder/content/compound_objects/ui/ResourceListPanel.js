@@ -55,8 +55,10 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 	    	
 	    	this.on("activate", this.updateContent);  		     	    		   
 	    	this.on("rowcontextmenu", this.showContextMenu,this);
-	    	
-	    	
+            
+            // enable autoscrolling of list during drag and drop
+	    	this.on("render",function(){Ext.dd.ScrollManager.register(this.getView().getEditorParent())},this);
+	    	this.on("beforedestroy",function(){Ext.dd.ScrollManager.unregister(this.getView().getEditorParent());},this);
     	} catch (e){
     		lore.debug.ore("ResourceListPanel: init",e);
     	}
