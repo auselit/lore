@@ -34,16 +34,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 displayField: 'name',
                 valueField: 'id',
                 extraItemCls: 'x-tag',
-                listeners: {
-                    newitem: function(bs, v){
-                        v = v.slice(0, 1).toUpperCase() + v.slice(1).toLowerCase();
-                        var newObj = {
-                            id: v,
-                            name: v
-                        };
-                        bs.addItem(newObj);
-                    }
-                }  
+                styleField: 'style'
+                
             })),
             /** Drop down editor for fixed values */
             dropDownEditor: new Ext.grid.GridEditor(new Ext.form.ComboBox({
@@ -270,10 +262,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             );
 	                        return this.propEditor.dropDownEditor;
 	                      } 
-                         /* else if (currentRec && currentRec.get("name") == "dc:subject"){
+                          else if (currentRec && currentRec.get("name") == "dc:subject"){
                             return this.propEditor.tagEditor;
                           }
-                         */
+                         
                           // TODO: look at datatype and return date editor, boolean editor etc
                           /* Fix RDF/XML generation directly from dates before enabling
                           else if (currentRec && currentRec.get("type") == "date"){
@@ -294,7 +286,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             menuDisabled : true,
                             width: 70,
                             scope: this,
-                            renderer: this.renderFunction
+                            renderer: this.propNameRenderFunction
                  }, {
                             header : 'Value',
                             dataIndex : 'value',
@@ -481,9 +473,53 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     	}
     },
     /** Grey out rows that are not editable by the user */
+    propNameRenderFunction: function(val, cell, rec){
+        if (rec && rec.data && 
+                (rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
+                    || rec.data.id == "rdf:type_0"
+                    || rec.data.id == "rdf:about_0" 
+                    || (this.id != 'nodegrid' 
+                            && (rec.data.id == "dcterms:modified_0" ||
+                            rec.data.id == "dcterms:created_0"))
+                    )){
+            
+            return '<span style="color:grey;">' + val + '</span>';
+        } else {
+            return '<span>' + val + '</span>';
+        }
+        return val;
+    },
+    /** Grey out rows that are not editable by the user */
 	renderFunction: function(val, cell, rec){
+        try{
         // Escape double quotes for display in tooltips 
         var escVal = (val.replace) ? val.replace(/"/g,"&quot;"): val;
+        if (rec.get("name") == "dc:subject" && val){
+            // display tag names not uris
+            var tags = val.split(",");
+            var sbs = this.tagEditor.field;
+            var renderString = "";
+            for (var t = 0; t < tags.length; t++){
+                if (t > 0){
+                    renderString += ", ";
+                }
+	            var idx = sbs.store.findUnfiltered('id', tags[t]);//tags[t].replace(/&amp;/,'&'));
+                if (idx >= 0){
+                   var tagRec = sbs.store.getAtUnfiltered(idx);
+                   var name = tagRec.get('name');
+                   if (name){
+	                    renderString += name;
+                   } else {
+                        renderString += tags[t];
+                   }
+                } else {
+                    renderString += tags[t];
+                }
+            }
+            
+            return '<span title="' + escVal + '">' +  renderString + '</span>';
+        }
+        
     	if (rec && rec.data && 
     			(rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
     				|| rec.data.id == "rdf:type_0"
@@ -497,6 +533,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     	} else {
     		return '<span title="' + escVal + '">' + val + '</span>';
     	}
+        } catch (ex){
+            lore.debug.ore("Problem in renderFunc",ex);
+        }
         return val;
     },
     makeAddPropertyMenu: function (mp){
@@ -713,14 +752,32 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} propname The name of the property to set
      * @param {} val The value of the property to set
      */
-    setPropertyValue : function(propname, val){
-    	var proprecidx = this.store.find("name",propname);
+    setPropertyValue : function(propname, propval, pindex){
+        var proprecidx = this.store.getById(propname + "_" + pindex);
+    	//var proprecidx = this.store.find("name",propname);
     	if (proprecidx != -1){
 			this.store.getAt(proprecidx).set("value", val);
 			this.store.commitChanges();
     	}
+    },
+    appendPropertyValue : function(propname, propval, proptype){
+        var counter = 0;
+        var prop = this.store.getById(propname + "_" + counter);
+        if (prop && propname == "dc:subject"){
+            // append tag to existing dc:subject
+            var existingVal = prop.get("value");
+            prop.set("value", existingVal + "," + propval);
+            prop.commit();
+        } else {
+            // create a new property
+            while (prop) {
+                counter = counter + 1;
+                prop = this.store.getById(propname + "_" + counter);
+            }
+            var theid = propname + "_" + counter;
+            this.store.loadData([{id: theid, name: propname, value: propval, type: proptype}], true);
+        }
     }
-
 });
 
 Ext.reg('propertyeditor',lore.ore.ui.PropertyEditor);
