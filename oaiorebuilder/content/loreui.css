@@ -111,9 +111,6 @@
 	/*display:none;*/
 }
 
-.x-tree-node .anno-icon-timeline {
-	background-image: url(chrome://lore/skin/icons/chart_line.png) !important;
-}
 
 
 .x-tree-node a, .anno-search {
