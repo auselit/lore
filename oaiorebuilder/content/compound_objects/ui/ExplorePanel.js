@@ -669,7 +669,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {URI} id The URI of the compound object
      * @param {String} title Label to display for the compound object
      */
-    showInExploreView : function (id, title, isCompoundObject){
+    showInExploreView : function (id, title, isCompoundObject, dontraise){
         try{
             this.clearExploreData();
             lore.ore.ui.vp.progress("Retrieving data for explore view");
@@ -717,7 +717,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 historyEl.innerHTML = lore.ore.explorePanel.historyTemplate.apply(historyData);
 
             });  
-            Ext.getCmp("loreviews").activate(this.id);
+            if (!dontraise){
+                Ext.getCmp("loreviews").activate(this.id);
+            }
         } catch (e){
             lore.debug.ore("problem in show in explore view",e);
         }
