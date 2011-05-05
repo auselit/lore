@@ -189,6 +189,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	        };
 	        xmlhttp.send(null);
 	    } catch (e){
+            Ext.MessageBox.hide();
 	        lore.debug.ore("sesame: error deleting compound object",e);
 	    }        
 	},
