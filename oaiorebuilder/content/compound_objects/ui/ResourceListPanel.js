@@ -9,7 +9,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     	try{
 	    	this.defaultCM = new Ext.grid.ColumnModel([
 	    	     new Ext.grid.RowNumberer(),
-	  	         {header: 'Title', dataIndex: 'title'},
+	  	         {header: 'Title', dataIndex: 'title', renderer: this.titleRenderFunction},
 	  	         {header: 'URI', dataIndex:'uri'}    
 	  	    ]);
 	    	Ext.apply(this,{
@@ -64,6 +64,26 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     	}
     	
     	
+    },
+    titleRenderFunction: function(val, cell, rec){
+      var props = rec.get('properties');
+      var iconcls = "";
+      if (props){
+        if (rec.get('representsAnno')){
+            iconcls = "annoicon";
+        } else if (rec.get('representsCO')){
+            iconcls = "oreicon";
+        } else {
+            var dc = lore.constants.NAMESPACES["dc"];
+            var dctype = props.getProperty(dc+"type",0);
+            iconcls = lore.ore.controller.lookupIcon((dctype? dctype: props.getProperty(dc+"format",0)),dctype);
+        }
+      }
+      return "<ul><li" 
+        + ((iconcls && iconcls != 'pageicon')? " class='remlisticon " + iconcls + "'" : "") 
+        + "><span>" + (val? val : "Untitled Resource") + "</span></li></ul>";
+      
+            
     },
     /**
      * Sets the compound object

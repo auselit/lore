@@ -35,7 +35,8 @@
 	top:-4px;
 }
 .pageicon {
-	list-style-image: url(chrome://lore/skin/icons/page.gif);
+	/*list-style-image: url(chrome://lore/skin/icons/page.gif);*/
+	list-style-type: none;
 }
 .imageicon {
 	list-style-image: url(chrome://lore/skin/icons/image.png);
@@ -179,10 +180,18 @@
 #remsmilview div, #textmining div {
 	padding-top:20px;
 }
-#welcome * ul li, #remlistview * ul li {
+#welcome * ul li {
 	margin-left:10px;
 	list-style-position: inside;
 	list-style-type: square;
+}
+.remlisticon {
+	list-style-position: inside;
+	margin-top:-3px;
+}
+.remlisticon span {
+	position:relative;
+	top:-4px;
 }
 #propertytabs * .x-tree-node a:hover {
     text-decoration:none;
