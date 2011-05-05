@@ -86,11 +86,16 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                         	+ theProp.value 
                         	+ ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
                         	+ "\");'>";
-                        // use title when available
+                        // use title or tag name when available
+                        var displayVal = theProp.value;
+                        if (theProp.name == "subject" && theProp.prefix == "dc"){
+                            // lookup tagname
+                            displayVal = lore.ore.controller.lookupTag(theProp.value.toString());
+                        }
                         if (propR) {
-                            relhtml += propR.get('properties').getTitle() || theProp.value;
+                            relhtml += propR.get('properties').getTitle() || displayVal;
                         } else {
-                            relhtml += theProp.value;
+                            relhtml += displayVal;
                         }
                         relhtml += "</a>";
                         if (propR){
