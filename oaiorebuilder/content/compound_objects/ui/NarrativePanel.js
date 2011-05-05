@@ -97,6 +97,8 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
     '</tpl>',
     {
         propTpl: new Ext.XTemplate('<tpl for="."><p style="padding-bottom:0.3em;"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span>{value}</p></tpl>'),
+        resourcePropValueTpl: new Ext.XTemplate('<a href="#" title="Show {url} in browser" onclick="lore.global.util.launchTab(\'{url}\')">{title}</a>'),
+        
         /** Custom function to display properties because XTemplate doesn't support wildcard for iterating over object properties 
          *  @param {lore.ore.model.ResourceProperties} o
          */
@@ -135,7 +137,24 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
                 res += displayDate(o.getProperty(dcterms+"modified",0), ', last updated ');
                 res += "</p>";
             } 
-  
+            var csubject = o.data[dc+"subject"];
+            res += '<p style="padding-bottom:0.3em;"><span style="font-weight:bold">Subject:&nbsp;&nbsp;</span>';
+            if (csubject){
+                var subjects = "";
+                for (var i = 0; i < csubject.length; i++){
+                    if (i > 0){
+                        res += ", ";
+                    }
+                   var subj = csubject[i].value.toString();
+                   if (subj.match("^http://") == "http://"){
+                      res += this.resourcePropValueTpl.apply({url: subj, title:lore.ore.controller.lookupTag(subj)}); 
+                   } else {
+                      res += subj;
+                   }
+                   
+                }
+                
+            }
             var skipProps = {};
             skipProps[ns["ore"]+"describes"] = true;
             skipProps[dcterms+"created"] = true;
@@ -144,6 +163,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
             skipProps[dc+"title"]=true;
             skipProps[ns["rdf"]+"type"]=true;
             skipProps[ns["lorestore"]+"user"]=true;
+            skipProps[ns["dc"]+"subject"]=true;
             
             var sortedProps = o.getSortedArray(skipProps);
             for (var k = 0; k < sortedProps.length; k ++){
@@ -200,11 +220,15 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
                         if (prop.value.toString().match("^http://") == "http://") {
 	                        // property data for related resource: for looking up title etc
 	                        var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
+                            var displayVal = prop.value.toString();
+                            if (prop.prefix == "dc" && prop.name == "subject"){
+                                displayVal = lore.ore.controller.lookupTag(prop.value.toString());
+                            }
                             if (propR) {
-                                prop.title = propR.get('properties').getTitle() || prop.value;
+                                prop.title = propR.get('properties').getTitle() || displayVal;
                                 prop.url = propR.get('representsAnno') ? prop.value + "?danno_useStylesheet=" : prop.value;
 	                        } else {
-	                            prop.title = prop.value;
+	                            prop.title = displayVal;
                                 prop.url = prop.value;
 	                        }
                             res += this.relTpl.apply(prop);
