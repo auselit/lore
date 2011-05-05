@@ -42,20 +42,26 @@
     padding: 0 0 0 4px;*/
 	list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
 }
+#add-node {
+	list-style-image: url(chrome://lore/skin/icons/add.png);
+}
+#create-co {
+	list-style-image: url(chrome://lore/skin/icons/box-plus.png);
+	list-style-image: url(chrome://lore/skin/icons/database_add.png);
+}
 #save-rdf {
-	list-style-image: url(chrome://lore/skin/icons/database_save.png);
+	list-style-image: url(chrome://lore/skin/icons/disk.png);
 }
 #delete-rdf {
+	/*list-style-image: url(chrome://lore/skin/icons/box-minus.png);	*/
 	list-style-image: url(chrome://lore/skin/icons/database_delete.png);	
+}
+#copy-rdf {
+   /*	list-style-image: url(chrome://lore/skin/icons/box-arrow.png);	*/
+   list-style-image: url(chrome://lore/skin/icons/database_go.png);
 }
 #reset-graph {
 	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
-}
-#create-co {
-	list-style-image: url(chrome://lore/skin/icons/database_add.png);
-}
-#add-node {
-	list-style-image: url(chrome://lore/skin/icons/add.png);
 }
 #layout-co {
 	list-style-image: url(chrome://lore/skin/icons/layout.png);
@@ -91,11 +97,8 @@
 #show-annotations {
 	list-style-image: url(chrome://lore/skin/icons/comment_yellow.gif);	
 }
-#load-rdf-repos{
-	list-style-image: url(chrome://lore/skin/icons/world_go.png);
-}
 #load-rdf{
-	list-style-image: url(chrome://lore/skin/icons/application_put.png);
+	
 }
 #import-export, #import-export-anno {
 	list-style-image: url(chrome://lore/skin/icons/table_refresh.png);
