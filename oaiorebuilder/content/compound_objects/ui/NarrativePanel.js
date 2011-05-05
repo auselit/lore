@@ -138,8 +138,8 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
                 res += "</p>";
             } 
             var csubject = o.data[dc+"subject"];
-            res += '<p style="padding-bottom:0.3em;"><span style="font-weight:bold">Subject:&nbsp;&nbsp;</span>';
             if (csubject){
+                res += '<p style="padding-bottom:0.3em;"><span style="font-weight:bold">Subject:&nbsp;&nbsp;</span>';
                 var subjects = "";
                 for (var i = 0; i < csubject.length; i++){
                     if (i > 0){
@@ -153,7 +153,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
                    }
                    
                 }
-                
+                res += "</p>";
             }
             var skipProps = {};
             skipProps[ns["ore"]+"describes"] = true;
