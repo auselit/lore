@@ -120,17 +120,6 @@ Ext.apply(lore.ore.Controller.prototype, {
      */
     loadCompoundObject: function(rdf){
         try {
-           var appendPropertyValue = function(propname, propval, proptype, grid){
-                var pstore = grid.store;
-                var counter = 0;
-                var prop = pstore.getById(propname + "_" + counter);
-                while (prop) {
-                    counter = counter + 1;
-                    prop = pstore.getById(propname + "_" + counter);
-                }
-                var theid = propname + "_" + counter;
-                pstore.loadData([{id: theid, name: propname, value: propval, type: proptype}],true);
-            };
             var getDatatype = function(propname, propvalue){
               
               var dtype = propvalue.datatype;
@@ -208,7 +197,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                         if (propname != "ore:describes" && propname != "rdf:type"){
                             // TODO: get type from ontology or datatype
                             var dtype = getDatatype(propname,this.value);
-                            appendPropertyValue(propname, this.value.value.toString(), dtype, lore.ore.ui.grid);
+                            lore.ore.ui.grid.appendPropertyValue(propname, this.value.value.toString(), dtype);
                         }
                     });
          
@@ -367,6 +356,21 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.debug.ore("the RDF string was",rdf);
                 lore.debug.ore("the serialized databank is",databank.dump({format:'application/rdf+xml', serialize: true}));
             }
+    },
+    /** Lookup a label for a tag */
+    lookupTag: function(tagId){
+        lore.debug.ore("lookupTag " + tagId)
+        var store = lore.anno.thesaurus;
+        // TODO : it should not be necessary to unescape ampersands: check that model is not storing them
+        var idx = store.findUnfiltered('id', tagId.replace(/&amp;/,'&'));
+        if (idx >= 0){
+           var tagRec = store.getAtUnfiltered(idx);
+           var name = tagRec.get('name');
+           if (name){
+                return name;
+           } 
+        }
+        return tagId;
     },
     /** Get a class for resource type */
     lookupIcon: function(type, userDefined){
@@ -567,11 +571,9 @@ Ext.apply(lore.ore.Controller.prototype, {
                 scope: this,
                 fn: function(b, t){
                 	try{
-                	//lore.debug.ore("after title entered: " + t,this);
                     title = t || "Untitled";
-                    // TODO: update the title in the model
-                    //lore.ore.cache.getLoadedCompoundObject().properties.
-                    lore.ore.ui.grid.setPropertyValue("dc:title", title);
+                    lore.ore.ui.grid.setPropertyValue("dc:title", title, 0);
+                    // update the title in the model
                     lore.ore.coListManager.updateCompoundObject(
                             lore.ore.cache.getLoadedCompoundObjectUri(),
                             {title: title}
@@ -967,7 +969,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             //lore.ore.ui.searchtreeroot.setDetails([]);
         }
         if (lore.ore.explorePanel && lore.ore.cache){
-            lore.ore.explorePanel.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
+            lore.ore.explorePanel.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true, true);
         }
     },
     /** Triggered when the user navigates to a different page in the browser, or switches between tabs.
