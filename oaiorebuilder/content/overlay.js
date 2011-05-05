@@ -249,14 +249,26 @@ try {
                 loreoverlay.coView().addResource(gContextMenu.linkURL, {"dc:title_0": gContextMenu.linkText()});
             }
         },
-        /** Show a popup menu in the extension */
-        onMenuPopupExt: function(event){
+        /** Show a popup menu with cut/copy/paste in the extension */
+        beforeClipMenuPopup: function(event){
+            // only enable edit menu within editable fields
             try{
-                // var element = document.popupNode;
-                // TODO: only enable in property editor and summary view
+               var contextMenu = new nsContextMenu(this);
+               if (!contextMenu.onTextInput){
+                    event.preventDefault();
+               } 
             } catch (e){
-                lore.debug.ui("clip popup",e);
+                lore.debug.ui("clip before popup",e);
             }
+        },
+        onClipMenuPopup: function(event){
+            // TODO: disable copy & paste if text is not selected
+            // However isTextSelected always returning false for ext grid fields
+            var contextMenu = new nsContextMenu(this);
+            //var textSelected = contextMenu.isTextSelected;
+            //document.getElementById('clip-copy').disabled = !textSelected;
+            //document.getElementById('clip-cut').disabled = !textSelected;
+            //document.getElementById('clip-paste').disabled = !contextMenu.onTextInput
         },
         /** 
          * Show a context menu in the browser on images, links and background images, 
@@ -403,10 +415,10 @@ try {
         	loreoverlay.annoView().handleLogoutAnnotations();
         },
         loginCompoundObjects: function (){
-            
+            //loreoverlay.coView().handleLogin();
         },
         logoutCompoundObject: function (){
-            
+            //lore.overlay.coView().handleLogout();
         },
         reportProblem: function(){
           // TODO: update for FF 4
@@ -455,6 +467,9 @@ try {
         /** Compound Objects Toolbar button handler: Trigger saving the current compound object to the repository */
         saveRDF: function(){
             loreoverlay.coView().saveCompoundObjectToRepository();
+        },
+        copyRDF: function(){
+            loreoverlay.coView().copyCompoundObjectToNew();  
         },
         /** Compound Objects Toolbar button handler: Trigger deleting a compound object from the repository */
         deleteRDF: function(){
