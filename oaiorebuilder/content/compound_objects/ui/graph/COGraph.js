@@ -692,7 +692,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
              });
             this.contextmenu.add({
                 text: "Save Compound Object",
-                icon: "chrome://lore/skin/icons/database_save.png",
+                icon: "chrome://lore/skin/icons/disk.png",
                 scope: this,
                 handler: function(evt){              	
                 	lore.ore.controller.saveCompoundObjectToRepository();
