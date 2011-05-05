@@ -405,7 +405,8 @@ Ext.apply(lore.ore.Controller.prototype, {
 	        }
        } else {
 	        if (type.match("html")) {
-	                iconCls = "htmlicon";
+                // suppress for now: users finding html icon confusing/too similar to others
+	            // iconCls = "htmlicon";
 	        } else if (type.match("image")) {
 	            iconCls = "imageicon";
 	        } else if (type.match("audio")) {
@@ -524,6 +525,13 @@ Ext.apply(lore.ore.Controller.prototype, {
             msg : 'Are you sure you want to delete this compound object from the repository?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",
             fn : function(btn, theurl) {
                 if (btn == 'ok') {
+                    Ext.MessageBox.show({
+                        msg: 'Deleting compound object',
+                        width:250,
+                        defaultTextHeight: 0,
+                        closable: false,
+                        cls: 'co-load-msg'
+                    });
                     lore.ore.reposAdapter.deleteCompoundObject(remid,function(deletedrem){
                             try{
                             if (lore.ore.cache.getLoadedCompoundObjectUri() == deletedrem){
@@ -534,6 +542,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                             lore.ore.coListManager.remove(deletedrem);
                             lore.ore.historyManager.deleteFromHistory(deletedrem);
                             lore.ore.ui.vp.info("Compound object deleted");
+                            Ext.MessageBox.hide();
                         } catch (ex){
                             lore.debug.ore("Error after deleting compound object",ex);
                         }
