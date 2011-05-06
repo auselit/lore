@@ -520,7 +520,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       for (var i = 0; i < oldMultiSelection.length; i++) {
     	  var fig = oldMultiSelection[i];
     	  if (fig instanceof lore.ore.ui.graph.ResourceFigure){
-           oldMultiSelection[i].setHighlight(false);
+           oldMultiSelection[i].setSelected(false);
       	  }
       }
       
@@ -529,7 +529,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         this.showLineResizeHandles(sel);
       } else if (sel instanceof lore.ore.ui.graph.ResourceFigure) {
         this.showResizeHandles(sel);
-        sel.setHighlight(true); 
+        sel.setSelected(true); 
       } 
     	} catch (e){
     		lore.debug.ore("problem showing resize handles",e);
@@ -547,7 +547,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
             var figy2 = figy + figure.height - leeway;
             if (x <= figx && y <= figy && x2 >= figx2 && y2 >= figy2){
                 result.push(figure); 
-                figure.setHighlight(true);
+                figure.setSelected(true);
             } 
         }
         this.setCurrentSelection(result,true);
