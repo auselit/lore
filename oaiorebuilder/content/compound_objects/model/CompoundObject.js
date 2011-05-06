@@ -463,8 +463,12 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
                         + ltsymb + "layout:originalHeight rdf:datatype=\"xsd:int\">" + fig.originalHeight
                         + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
+                var col = fig.getHighlightColor();
+                if (col){
+                   resourcerdf += ltsymb + "layout:highlightColor rdf:datatype=\"xsd:string\">"+ col + ltsymb + "/layout:highlightColor>" + nlsymb;
+                }
                 if (fig.abstractPreview) {
-                	resourcerdf += ltsymb + "layout:abstractPreview rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
+                    resourcerdf += ltsymb + "layout:abstractPreview rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
                 }
                 
                 var figRec = this.getAggregatedResource(fig.url);
