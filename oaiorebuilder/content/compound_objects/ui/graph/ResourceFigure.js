@@ -23,6 +23,7 @@
  * @param {Object} initprops initial properties
  */
 lore.ore.ui.graph.ResourceFigure = function(initprops) {
+    this.NOHIGHLIGHT = "FFFFFF"; // white means no highlight
 	this.cornerWidth = 15;
 	this.cornerHeight = 14.5;
 	this.originalHeight = -1;
@@ -33,7 +34,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	
 	// cached property values : used by graphical editor to load values into property grid
 	this.metadataproperties = initprops || {};
-	
+	this.highlightColor = this.NOHIGHLIGHT; 
 	this.url = this.getProperty("resource_0");
 	if (!this.url) {
 		this.metadataproperties["resource_0"] = "";
@@ -49,7 +50,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	draw2d.Node.call(this);
 	
 	this.createTitleField();
-	this.displayTitle((title ? title : 'Resource'));
+	this.displayTitle((title ? title : 'Untitled Resource'));
 	this.setDimension(220, 170);
 	var abs = this.getProperty("dcterms:abstract_0") || "";
 	this.displayAbstract(abs);
@@ -292,6 +293,19 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			}
 		}
 	},
+    getHighlightColor: function(){
+      if (this.highlightColor != this.NOHIGHLIGHT){
+        return this.highlightColor;
+      }
+    },
+    setHighlightColor: function(color){
+        this.highlightColor = color;
+        if (color != this.NOHIGHLIGHT){
+            this.metadataarea.style.backgroundColor = "#" + color;
+        } else {
+            this.metadataarea.style.backgroundColor = "";
+        }
+    },
 	/**
 	 * Set the URL of the resource represented by this figure
 	 * 
@@ -613,18 +627,15 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
     /** Hide or show highlighting of node to indicate selection 
      * @param {boolean} highlight
      */
-	setHighlight : function(highlight) {
+	setSelected : function(highlight) {
 		if (highlight) {
-			this.html.style.border = "1px solid yellow";
-			this.html.style.borderBottom="none";
-			this.html.style.backgroundColor = "yellow";
-			this.html.style.top = (this.y - 1) + "px";
-			this.html.style.left = (this.x - 1) + "px";
+            this.html.style.top = (this.y - 1) + "px";
+            this.html.style.left = (this.x - 1) + "px";
+            $(this.html).addClass('highlightNode');
 		} else {
-			this.html.style.border = "none";	
-			this.html.style.backgroundColor = "transparent";
 			this.html.style.top= this.y + "px";
 			this.html.style.left= this.x + "px";
+            $(this.html).removeClass('highlightNode');
 			
 		}
 	},
@@ -996,6 +1007,32 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
     				}
                 }
             }));
+            this.contextmenu.add("-");
+            this.contextmenu.add(
+                new Ext.ColorPalette({
+                    value: this.highlightColor,
+                    style: {
+                      height: '15px',
+                      width: '130px'
+                    },
+                    colors: [this.NOHIGHLIGHT, "FFFF99","CCFFCC","DBEBFF","EFD7FF","FFE5B4","FFDBFB"],
+                    handler: function(cp,color){
+                        var propData = {
+                            id: lore.constants.NAMESPACES["layout"] + "highlightColor", 
+			                ns: lore.constants.NAMESPACES["layout"],
+			                name: "highlightColor", 
+			                value: color, 
+			                prefix: "layout"
+                        };
+                        this.model.get('properties').setProperty(propData,0);
+
+                        this.setHighlightColor(color);
+                        this.contextmenu.hide();
+                    },
+                    scope: this
+                    
+                })
+            );
 		}
 		var absx = w.getAbsoluteX() +  x - w.getScrollLeft();
 		var absy = w.getAbsoluteY() +  y - w.getScrollTop();
