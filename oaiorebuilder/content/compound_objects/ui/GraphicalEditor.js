@@ -400,6 +400,9 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             if (opts.order){
             	fig.orderIndex = opts.order;
             }
+            if (opts.hc){
+                fig.setHighlightColor(opts.hc);
+            }
             if (opts.abstractPreview == 1){
             	fig.abstractPreview = true;
             }
