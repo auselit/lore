@@ -211,6 +211,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                     .optional('?url layout:originalHeight ?oh')
                     .optional('?url layout:scrollx ?sx')
                     .optional('?url layout:scrolly ?sy')
+                    .optional('?url layout:highlightColor ?hc')
                     .optional('?url layout:orderIndex ?order')
                     .optional('?url layout:abstractPreview ?abstractPreview')
                     .optional('?url dc:format ?format')
@@ -222,7 +223,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                      var opts = {batch: true, url: resourceURL};
                      if (this.x && this.y) {
                         for (prop in this) {
-                            if (prop != 'url' && prop != 'format' && prop != 'rdftype' && prop != 'title'){
+                            if (prop != 'url' && prop != 'format' && prop != 'rdftype' && prop != 'title' && prop != 'hc'){
                                 opts[prop] = parseInt(this[prop].value);
                             } else {
                                 opts[prop] = this[prop].value.toString();
