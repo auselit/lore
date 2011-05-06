@@ -218,6 +218,11 @@
 #welcome iframe {border:none;}
 #remlistview .x-grid3-row-selected {background-color: yellow !important;}
 
+.highlightNode {
+	border: 1px solid yellow;
+	background-color: yellow;
+	border-bottom: none;
+}
 /* Compound object explore view */
 .node {
 	font-size:0.6em;

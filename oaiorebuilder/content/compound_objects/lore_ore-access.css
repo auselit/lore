@@ -29,6 +29,10 @@
 #remsmilview * a, #remlistview * a, #textmining * a {
 	color: orange !important;
 }
+.highlightNode {
+	border: 1px solid orange;
+	background-color: orange;
+}
 .node {
 	font-size:90%;
 	color:#fffff6;
@@ -70,7 +74,7 @@ span.explorename {
 	border-top: 1px solid #fffff6;
 }
 .co-preview {
-	background-color: transparent;
+	background-color: #343843;
 	border-top: 1px solid #fffff6;
 	border-left: 1px solid #fffff6;
 	border-right: 1px solid #fffff6;
