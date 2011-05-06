@@ -77,4 +77,14 @@
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:range rdf:resource="&xsd;int"/>
     </owl:DatatypeProperty>
+    
+    <owl:DatatypeProperty rdf:about="#orderIndex">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+    <owl:DatatypeProperty rdf:about="#highlightColor">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
 </rdf:RDF>
