@@ -270,7 +270,8 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	            if (!(resourceprops.uri.match("^http") == "http")){
 	                hasPreview = false;
 	            }
-	            slidehtml += "<div style='padding:2px;border-bottom: 1px solid #dce0e1;'>";
+                var highlightColor = resourceprops.properties.getProperty(lore.constants.NAMESPACES["layout"]+"highlightColor",0);
+	            slidehtml += "<div style='" + (highlightColor? "background-color:#" + highlightColor.value + ";" : "") + "padding:2px;border-bottom: 1px solid #dce0e1;'>";
 	            slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
 	            slidehtml += "</div>";
 	            slidehtml += this.displayProperties(resourceprops, resource.store.co);

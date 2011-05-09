@@ -180,7 +180,7 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
     '<tpl for=".">',
     '<div id="s{uri}">',
         '<div style="border-top: 1px solid rgb(220, 224, 225); margin-top: 0.5em;"> </div>',
-        '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr><td>',
+        '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr {[this.displayHighlightColor(values.properties)]}><td>',
         '<span style="font-size:130%;font-weight:bold">{title}<tpl if="!title">Untitled Resource</tpl></span></td>',
         '<td width="80"><a href="#" title="Show in graphical editor" onclick="lore.ore.ui.graphicalEditor.showResource(\'{uri}\');"><img src="chrome://lore/skin/icons/layout_pencil.png" alt="View in graphical editor"></a>',
         '&nbsp;<a href="#" title="Show in resource list" onclick="Ext.getCmp(\'remlistview\').showResource(\'{uri}\')"><img src="chrome://lore/skin/icons/table_edit.png"></a>',
@@ -196,6 +196,15 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
     {
         propTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span>{value}</p>'),
         relTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><a href="#" onclick="Ext.getCmp(\'remdetailsview\').scrollToResource(\'{value}\')"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span></a><a href="#" title="Show {url} in browser" onclick="lore.global.util.launchTab(\'{url}\')">{title}</a></p>'),
+        /** Convenience function to get style for highlighting resources according to highlightColor property 
+         * @param {lore.ore.model.ResourceProperties} props 
+         * */
+        displayHighlightColor: function(props){
+          var hc = props.getProperty(lore.constants.NAMESPACES["layout"]+"highlightColor");
+          if (hc){ 
+            return ' style="background-color:' + hc.value + ';"'; 
+          }
+        },
         /** Custom function to display properties because XTemplate doesn't support wildcard for iterating over object properties 
          *  @param {lore.ore.model.ResourceProperties} o
          */
