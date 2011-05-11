@@ -8,6 +8,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         config.autoHeight = true;
         config.autoWidth = true;
         config.bodyStyle = { backgroundColor : 'transparent' };
+        // add a menu button to tab  : to make it easier for Mac users to access context menu
+        config.menuHandler = "lore.ore.ui.graphicalEditor.coGraph.onContextMenu(0, 0);";
         lore.ore.ui.GraphicalEditor.superclass.constructor.call(this, config);
 
         /** Default width of new nodes in graphical editor 
@@ -30,6 +32,10 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         this.lookup = {};
         this.readOnly = false;
         this.isDirty = false;
+   },
+   initComponent: function(config){
+    lore.ore.ui.GraphicalEditor.superclass.initComponent.call(this,config); 
+    lore.debug.ore("graphical Editor initComponent",this);
    },
    /** bindModel, update listeners */
    bindModel: function(co){
@@ -466,6 +472,5 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             this.dummylayouty = prevy;
         }
     }
-    
 });
 Ext.reg('grapheditor',lore.ore.ui.GraphicalEditor);
