@@ -10,6 +10,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         this.filterRels = {},
         this.edgeToolTip = new Ext.ToolTip({plain:true, showDelay: 100, title: 'Relationship type:'});
         Ext.apply(config, {
+            menuHandler: "lore.ore.explorePanel.onTabMenu(event);",
             layout: "border",
             items: [
                 {
@@ -470,6 +471,14 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     	} catch (e){
     		lore.debug.ore("problem with explore context menu",e);
     	}
+    },
+    onTabMenu : function(e){
+        var el = Ext.get(e.explicitOriginalTarget);
+        var xy = el.getAnchorXY();
+        // adjustments to make menu appear under explore tab
+        xy[0] = xy[0] - 70; // width from menu icon to left-side of tab
+        xy[1] = xy[1] + 22; // height of tab
+        lore.ore.explorePanel.onContextMenu({xy:xy});
     },
     /** Handle context menu on explore view background, providing diagram-wide options such as export to image */
     onContextMenu : function (e){ 
