@@ -73,6 +73,7 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 		}
 	});
 	Ext.get(this.header).on('dblclick',this.startEditing,this);
+    Ext.get(this.menuIcon).on("click", this.onHeaderMenu, this);
 };
 Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	type : "lore.ore.ui.graph.ResourceFigure",
@@ -132,6 +133,15 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.header.style.top = "0px";
 		this.header.style.height = (this.cornerHeight) + "px";
 		this.header.className = "x-unselectable co-header";
+        this.menuIcon = document.createElement("div");
+        this.menuIcon.style.position = "absolute";
+        this.menuIcon.className = "x-unselectable";
+        this.menuIcon.title = "Menu";
+        this.menuIcon.style.left = "3px";
+        this.menuIcon.style.top = "0px";
+        this.menuIcon.style.height = (this.cornerHeight) + "px";
+        this.menuIcon.innerHTML = "<a class='menuIcon' href='#'><img src='chrome://lore/skin/blank.png'/></a>";
+        
 		this.footer = document.createElement("div");
 		this.footer.style.position = "absolute";
 		this.footer.style.left = this.cornerWidth + "px";
@@ -153,6 +163,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.disableTextSelection(this.textarea);
 		item.appendChild(this.top_left);
 		item.appendChild(this.header);
+        item.appendChild(this.menuIcon);
 		item.appendChild(this.top_right);
 		item.appendChild(this.textarea);
 		item.appendChild(this.bottom_left);
@@ -898,6 +909,14 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			this.top_right.className = "co-tr-plus";
 		}
 	},
+    /** Show context menu underneath menuIcon in header */
+    onHeaderMenu : function(event){ 
+        var w = this.workflow;
+        var xy = event.getXY();
+        var absx = xy[0] - w.getAbsoluteX() + w.getScrollLeft();
+        var absy = xy[1] - w.getAbsoluteY() + w.getScrollTop();
+        this.onContextMenu(absx,absy);
+    },
 	/**
 	 * Show a context menu for the figure
 	 * 
