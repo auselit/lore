@@ -63,7 +63,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
 			    },
                 /** Override to allow mouse clicks on menu button */
                 onStripMouseDown: function(e){
-                    var menu = e.getTarget('.x-tab-strip-menu', this.strip);
+                    var menu = e.getTarget('.x-tab-strip-active a.x-tab-strip-menu', this.strip);
                     if (menu || e.button !== 0){
                         // default onclick behaviour will result
                         return;
