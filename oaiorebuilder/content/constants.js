@@ -72,7 +72,8 @@ constants = {
         "owl"     : "http://www.w3.org/2002/07/owl#",
         "rdfs"    : "http://www.w3.org/2000/01/rdf-schema#",
         "austlit" : "http://austlit.edu.au/owl/austlit.owl#",
-        "danno"   : "http://metadata.net/2009/09/danno#"
+        "danno"   : "http://metadata.net/2009/09/danno#",
+        "lorestore" : "http://auselit.metadata.net/lorestore/"
     },
     
     // RDF/OWL
