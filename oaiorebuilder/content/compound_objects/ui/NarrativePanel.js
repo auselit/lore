@@ -179,8 +179,8 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
 lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(  
     '<tpl for=".">',
     '<div id="s{uri}">',
-        '<div style="border-top: 1px solid rgb(220, 224, 225); margin-top: 0.5em;"> </div>',
-        '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr {[this.displayHighlightColor(values.properties)]}><td>',
+        '<div style="line-height:0.5em;border-top: 1px solid rgb(220, 224, 225); margin-top: 0.5em;"> </div>',
+        '<table style="white-space:normal;width:100%;font-family:arial;padding-bottom:0.5em"><tr {[this.displayHighlightColor(values.properties)]}><td style="padding:4px;padding-top:6px;">',
         '<span style="font-size:130%;font-weight:bold">{title}<tpl if="!title">Untitled Resource</tpl></span></td>',
         '<td width="80"><a href="#" title="Show in graphical editor" onclick="lore.ore.ui.graphicalEditor.showResource(\'{uri}\');"><img src="chrome://lore/skin/icons/layout_pencil.png" alt="View in graphical editor"></a>',
         '&nbsp;<a href="#" title="Show in resource list" onclick="Ext.getCmp(\'remlistview\').showResource(\'{uri}\')"><img src="chrome://lore/skin/icons/table_edit.png"></a>',
