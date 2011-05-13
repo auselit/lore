@@ -101,6 +101,20 @@
 
 /* Graphical Editor styles */
 /* Allow uri of nodes to be expanded */
+.menuIcon {
+	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
+	background-position: 0 -90px;
+	opacity:.8;
+    -moz-opacity:.8;
+}
+.menuIcon:hover {
+	opacity:1;
+    -moz-opacity:1;
+}
+.menuIcon img {
+	width:15px;
+	height:15px;
+}
 .hideuri {
     -moz-transform: rotate(-90deg);
 }
@@ -361,3 +375,33 @@ div.coListing:hover {
 .x-superboxselect-btns div {float: left; width: 16px; height: 16px; margin-top: 1px;}
 .x-superboxselect-input input { border: none; outline: none; margin-top: 0px; margin-bottom: 0px;}
 .x-superboxselect li {font-size:smaller;float: left; margin: 0.5px 0.5px 1px 0.5px; padding: 0;line-height: 14px;}
+.x-tab-strip .x-tab-strip-with-menu {
+	position:relative;
+}
+.x-tab-strip-with-menu .x-tab-left {
+    padding-right:19px;
+}
+.x-tab-strip .x-tab-strip-with-menu a.x-tab-strip-menu {	
+	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
+    background-position:0 -90px;
+	opacity:.6;
+    -moz-opacity:.6;
+    background-repeat:no-repeat;
+    display:block;
+	width:15px;
+    height:15px;
+    position:absolute;
+    top:4px;
+    right:3px;
+    cursor:pointer;
+    z-index:2;
+	
+}
+.x-tab-strip .x-tab-strip-active a.x-tab-strip-menu {
+    opacity:.8;
+    -moz-opacity:.8;
+}
+.x-tab-strip .x-tab-strip-active a.x-tab-strip-menu:hover{
+    opacity:1;
+    -moz-opacity:1;
+}
