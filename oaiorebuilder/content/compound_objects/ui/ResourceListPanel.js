@@ -65,9 +65,10 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     	
     	
     },
-    titleRenderFunction: function(val, cell, rec){
+    titleRenderFunction: function(val, metaData, rec, rowIndex, colIndex, store){
       var props = rec.get('properties');
       var iconcls = "";
+      var hc = "";
       if (props){
         if (rec.get('representsAnno')){
             iconcls = "annoicon";
@@ -78,12 +79,17 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
             var dctype = props.getProperty(dc+"type",0);
             iconcls = lore.ore.controller.lookupIcon((dctype? dctype: props.getProperty(dc+"format",0)),dctype);
         }
+        var hcProp = rec.get('properties').getProperty(lore.constants.NAMESPACES["layout"] + "highlightColor",0);
+        if (hcProp){
+            hc = hcProp.value;
+            if (hc && hc!= "FFFFFF"){
+                metaData.attr = "style='background-color:#" + hc + "'";
+            } 
+        }
       }
-      return "<ul><li" 
+      return "<ul><li"   
         + ((iconcls && iconcls != 'pageicon')? " class='remlisticon " + iconcls + "'" : "") 
-        + "><span>" + (val? val : "Untitled Resource") + "</span></li></ul>";
-      
-            
+        + "><span>" + (val? val : "Untitled Resource") + "</span></li></ul>";      
     },
     /**
      * Sets the compound object
@@ -182,6 +188,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
         	if (sfig) {
         		p.selectResource(sfig.url);
         	}
+            p.getView().refresh();
         	// focus on the grid view to enable key navigation/deletion to work
         	if (p.getView().focusEl){
         		p.getView().focusEl.focus();
