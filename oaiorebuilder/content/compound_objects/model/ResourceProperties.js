@@ -42,7 +42,7 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
             propValArray = [config];
             this.data[config.id] = propValArray;
         } else {
-            if (index && index < propValArray.length){
+            if (typeof index !== "undefined" && index < propValArray.length){
                 // update existing property at index
                 propValArray[index] = config;
             } else {
