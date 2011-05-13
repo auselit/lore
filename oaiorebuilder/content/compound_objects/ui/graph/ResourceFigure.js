@@ -333,7 +333,17 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.setMimeType(theurl);
 	},
 	setModel : function(modelObj){
+        if (this.model){
+            var props = this.model.get("properties");
+            if (props){
+                props.un("propertyChanged",this.handlePropertyChanged, this);
+            }
+        }
 		this.model = modelObj;
+        var props = modelObj.get("properties");
+        if (props){
+            props.on("propertyChanged",this.handlePropertyChanged,this);
+        }
 	},
 	/**
 	 * Loads the content URL into the preview area
@@ -897,6 +907,12 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
         }
         return "plainstring";
     },
+    handlePropertyChanged: function(propData,index){
+        lore.debug.ore("Resource Figure property changed " + index,propData);
+        if (propData && propData.id == lore.constants.NAMESPACES["layout"] + "highlightColor"){
+            this.setHighlightColor(propData.value);
+        }
+    },
 	/**
 	 * Generate the markup for the plus/minus icon used to toggle the preview area
 	 * 
@@ -1029,6 +1045,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
             this.contextmenu.add("-");
             this.contextmenu.add(
                 new Ext.ColorPalette({
+                    id: this.id + "_palette",
                     value: this.highlightColor,
                     style: {
                       height: '15px',
@@ -1052,7 +1069,10 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                     
                 })
             );
-		}
+		} else {
+            var cp = Ext.getCmp(this.id + "_palette");
+            cp.select(this.highlightColor,true);
+        }
 		var absx = w.getAbsoluteX() +  x - w.getScrollLeft();
 		var absy = w.getAbsoluteY() +  y - w.getScrollTop();
 		this.contextmenu.showAt([absx, absy]);

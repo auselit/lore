@@ -199,7 +199,9 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     },
     showContextMenu: function(grid, rowIndex, e){
     	try{
-    	this.tmpurl = this.store.getAt(rowIndex).data.uri;
+        var rec = this.store.getAt(rowIndex);
+    	this.tmpurl = rec.get("uri");
+        this.tmpColor = rec.get("properties").getProperty(lore.constants.NAMESPACES["layout"] + "highlightColor",0).value;
     	if (!this.contextmenu) {
             this.contextmenu = new Ext.menu.Menu({
                 id : this.id + "-context-menu",
@@ -272,8 +274,40 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 					lore.ore.explorePanel.showInExploreView(this.tmpurl, title, isCO);
                 }
             });
+            this.contextmenu.add("-");
+            this.contextmenu.add(
+                new Ext.ColorPalette({
+                    id: this.id + "palette",
+                    //value: this.tmpColor || "FFFFFF",
+                    style: {
+                      height: '15px',
+                      width: '130px'
+                    },
+                    colors: ["FFFFFF", "FFFF99","CCFFCC","DBEBFF","EFD7FF","FFE5B4","FFDBFB"],
+                    handler: function(cp,color){
+                        var propData = {
+                            id: lore.constants.NAMESPACES["layout"] + "highlightColor", 
+                            ns: lore.constants.NAMESPACES["layout"],
+                            name: "highlightColor", 
+                            value: color, 
+                            prefix: "layout"
+                        };
+                        var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(this.tmpurl);
+                        if (propR) {
+                            propR.get('properties').setProperty(propData,0);
+                        }
+                        this.getView().refresh();
+                        this.contextmenu.hide();
+                    },
+                    scope: this
+                    
+                })
+            );
             
-    	}
+    	} else {
+            var cp = Ext.getCmp(this.id + "palette");
+            cp.select(this.tmpColor || "FFFFFF",true);
+        }
     	this.contextmenu.showAt(e.xy);
         e.stopEvent();
         return false;
