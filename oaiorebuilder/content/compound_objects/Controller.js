@@ -4,8 +4,6 @@
 lore.ore.Controller = function(config){
     /** The URL of the active tab in the main web browser */
     this.currentURL = config.currentURL || "";
-    /** AuthManager */
-    this.authManager = config.authManager || null;
     /** Indicates whether the controller is actively responding to user actions (it is not active when LORE is closed) */
     this.active = false;
     /** The name of the default creator used for new compound objects (from preferences) */
@@ -16,7 +14,13 @@ lore.ore.Controller = function(config){
     this.REM_ID_PROP = "Compound Object ID";
 };
 Ext.apply(lore.ore.Controller.prototype, {
-
+    /** Respond to authenticated events from AuthManager */
+    onAuthErrorOrCancel : function(){
+      if (Ext.MessageBox.isVisible()){
+	      lore.ore.ui.vp.error("Action cancelled");
+	      Ext.MessageBox.hide();  
+      }
+    },
     /** Activate Controller and trigger related compound objects to be fetched when lore Compound Objects panel is shown */
     onShow: function(){
         this.active = true; 
@@ -137,8 +141,7 @@ Ext.apply(lore.ore.Controller.prototype, {
               }
               return dtype;
             };
-            //lore.debug.startTiming();
-            var showInHistory = false;
+               var showInHistory = false;
             
                 // reset the graphical view
                 lore.ore.ui.graphicalEditor.initGraph();
@@ -423,7 +426,25 @@ Ext.apply(lore.ore.Controller.prototype, {
        return iconCls;
     },
     copyCompoundObjectToNew: function(){
-        
+        try {
+            lore.debug.ore("copy")
+            // check/warn/return if empty
+            
+            if (lore.ore.cache && lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent())){
+                 // this is a new unsaved compound object, no need to create a new model object, 
+                // try re-generating id in case repository has changed
+                
+            }
+            // check if pending changes /ask whether to save/yes->save/copy no->copy cancel->return
+            var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            if (currentCO && currentCO.isDirty()){
+                
+            }
+            // otherwise copy
+            
+        } catch (e){
+            lore.debug.ore("copyCompoundObjectToNew",e)
+        }
     },
     /** Prompt whether to save the current compound object, then calls newCO to create new compound object */
     createCompoundObject: function(dontRaise, callback){
@@ -523,7 +544,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         Ext.Msg.show({
             title : 'Remove Compound Object',
             buttons : Ext.MessageBox.OKCANCEL,
-            msg : 'Are you sure you want to delete this compound object from the repository?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",
+            msg : 'Are you sure you want to delete this compound object?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",
             fn : function(btn, theurl) {
                 if (btn == 'ok') {
                     Ext.MessageBox.show({
@@ -533,21 +554,30 @@ Ext.apply(lore.ore.Controller.prototype, {
                         closable: false,
                         cls: 'co-load-msg'
                     });
-                    lore.ore.reposAdapter.deleteCompoundObject(remid,function(deletedrem){
-                            try{
-                            if (lore.ore.cache.getLoadedCompoundObjectUri() == deletedrem){
-                                lore.ore.cache.setLoadedCompoundObjectUri("");
-                                lore.ore.ui.graphicalEditor.coGraph.clear();
-                                lore.ore.controller.createCompoundObject(); 
-                            }
-                            lore.ore.coListManager.remove(deletedrem);
-                            lore.ore.historyManager.deleteFromHistory(deletedrem);
-                            lore.ore.ui.vp.info("Compound object deleted");
-                            Ext.MessageBox.hide();
-                        } catch (ex){
-                            lore.debug.ore("Error after deleting compound object",ex);
-                        }
-                    });
+                    // If it is not saved, just clear the UI
+                    if (lore.ore.reposAdapter.unsavedSuffix && remid.match(lore.ore.reposAdapter.unsavedSuffix)){
+                        lore.ore.cache.setLoadedCompoundObjectUri("");
+                        lore.ore.ui.graphicalEditor.coGraph.clear();
+                        lore.ore.controller.createCompoundObject(); 
+                        lore.ore.ui.vp.info("Unsaved compound object deleted");
+                        Ext.MessageBox.hide();
+                    } else {
+	                    lore.ore.reposAdapter.deleteCompoundObject(remid,function(deletedrem){
+	                            try{
+	                            if (lore.ore.cache.getLoadedCompoundObjectUri() == deletedrem){
+	                                lore.ore.cache.setLoadedCompoundObjectUri("");
+	                                lore.ore.ui.graphicalEditor.coGraph.clear();
+	                                lore.ore.controller.createCompoundObject(); 
+	                            }
+	                            lore.ore.coListManager.remove(deletedrem);
+	                            lore.ore.historyManager.deleteFromHistory(deletedrem);
+	                            lore.ore.ui.vp.info("Compound object deleted");
+	                            Ext.MessageBox.hide();
+	                        } catch (ex){
+	                            lore.debug.ore("Error after deleting compound object",ex);
+	                        }
+	                    });
+                    }
                 }
             }
         });
@@ -875,16 +905,15 @@ Ext.apply(lore.ore.Controller.prototype, {
     handlePreferencesChanged: function(prefs){
       try{ 
           this.defaultCreator = prefs.creator;
+          this.defaultEditor = prefs.editor;
           var om = lore.ore.ontologyManager;
           if (om){
             om.loadOntology(prefs.relonturl, prefs.ontologies);
           } 
-          
           //Disabled for now
           //lore.ore.textm.tmkey = prefs.tmkey;
           this.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
           lore.global.util.setHighContrast(window, prefs.high_contrast);
-          //this.authManager.setPrefs(prefs);
       } catch (e){
         lore.debug.ore("Controller: Problem handling changed preferences",e);
       }
@@ -898,8 +927,11 @@ Ext.apply(lore.ore.Controller.prototype, {
      */
     setRepos : function(/*String*/rdfrepos, /*String*/rdfrepostype, /*String*/annoserver){
         /** The access URL of the annotation server */
-        this.annoServer = annoserver;
-        
+        this.annoServer = annoserver + "/annotea";
+        // if type is lorestore, use danno, ignoring separate rdfrepos pref
+        if (rdfrepostype == "lorestore"){
+            rdfrepos = annoserver + "/ore/";
+        }
         if (lore.ore.reposAdapter && lore.ore.reposAdapter.reposURL == rdfrepos) {
             // same access url, use existing adapter
             return;
@@ -999,15 +1031,6 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         this.loadedURL = this.currentURL; 
     },
-    /*handleLogin : function() {
-	    lore.debug.ore("Compound objects handleLogin");
-	    this.authManager.displayLoginWindow();
-    },
-    handleLogout: function() {
-	    lore.debug.ore("Compound Objects handleLogout");
-	    this.authManager.logout();
-    },
-    */
     /** Asks the model whether theURL is aggregated by the current compound object. 
      *  Used by overlay to determine whether to update the url-bar icon after user has browsed to new location
      *  @param {String} theURL 
