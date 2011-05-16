@@ -12,6 +12,8 @@ lore.ore.Controller = function(config){
     this.loadedURL;
 	/** Property name displayed for the compound object identifier */
     this.REM_ID_PROP = "Compound Object ID";
+    this.isDirty = false;
+    this.wasClean = true;
 };
 Ext.apply(lore.ore.Controller.prototype, {
     /** Respond to authenticated events from AuthManager */
@@ -19,6 +21,21 @@ Ext.apply(lore.ore.Controller.prototype, {
       if (Ext.MessageBox.isVisible()){
 	      lore.ore.ui.vp.error("Action cancelled");
 	      Ext.MessageBox.hide();  
+      }
+    },
+    setDirty: function(){
+      if(!this.isDirty){
+           this.isDirty  = true;
+           Ext.getCmp('currentCOSavedMsg').setText('*');
+      } else {
+        this.wasClean = false;
+      }
+    },
+    rollbackDirty: function(){
+      if (this.wasClean) { 
+        // TODO: step backwards in shared undo stack instead 
+        this.isDirty = false;
+        Ext.getCmp('currentCOSavedMsg').setText('');
       }
     },
     /** Activate Controller and trigger related compound objects to be fetched when lore Compound Objects panel is shown */
@@ -122,245 +139,267 @@ Ext.apply(lore.ore.Controller.prototype, {
      * Load a compound object into LORE
      * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
      */
-    loadCompoundObject: function(rdf){
-        try {
-            var getDatatype = function(propname, propvalue){
-              
-              var dtype = propvalue.datatype;
-              //lore.debug.ore("getdatatype " + propname + " is " + dtype,propvalue);
-              if (dtype && dtype._string == "http://purl.org/dc/terms/W3CDTF"){
-                dtype = "date";
-              } else if (dtype && dtype == lore.constants.NAMESPACES["layout"]+"escapedHTMLFragment"){
-                dtype = "html";
-              } else {
-                dtype = "plainstring";
-                // Allow formatting for some fields
-                if (propname == "dcterms:abstract" || propname == "dc:description"){
-                    dtype = "string";
-                }
-              }
-              return dtype;
-            };
-               var showInHistory = false;
-            
-                // reset the graphical view
-                lore.ore.ui.graphicalEditor.initGraph();
-                
-                var rdfDoc;
-                if (typeof rdf != 'object'){ 
-                   rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
-                } else {
-                    showInHistory = true;
-                    rdfDoc = rdf.responseXML;
-                }
-                //lore.debug.timeElapsed("creating databank");
-                var databank = jQuery.rdf.databank();
-                for (ns in lore.constants.NAMESPACES){
-                    databank.prefix(ns,lore.constants.NAMESPACES[ns]);
-                }
-                databank.load(rdfDoc);
-                var loadedRDF = jQuery.rdf({databank: databank});
-                // Display the properties for the compound object
-                var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
-                    .where('?rem ore:describes ?aggre');
-                var aggreurl, remurl;
-                var res = remQuery.get(0);
-                if (res){
-                   remurl = res.rem.value.toString();
-                   aggreurl = res.aggre.value.toString();
-                   var tmpCO = new lore.ore.model.CompoundObject();
-                   tmpCO.load({format: 'application/rdf+xml',content:rdfDoc}); 
-                   //lore.debug.ore("CO model is ",tmpCO);
-                   //lore.debug.timeElapsed("Loaded model");
-                    //lore.debug.ore("CO model is same as self? " + Ext.ux.util.Object.compare(tmpCO,tmpCO2),tmpCO2);
-               
-                   lore.ore.cache.add(remurl, tmpCO);
-                   lore.ore.cache.setLoadedCompoundObjectUri(remurl);
-                   lore.ore.cache.setLoadedCompoundObjectIsNew(false);
-                }  else {
-                    lore.ore.ui.vp.warning("No compound object found");
-                    lore.debug.ore("no remurl found in RDF",loadedRDF);
-                    //lore.debug.ore("the input rdf was",rdf); 
-                }
-                lore.ore.controller.bindViews(lore.ore.cache.getLoadedCompoundObject());
-                
-                lore.ore.ui.grid.store.loadData([
-                    {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: remurl, type: "uri"}
-                ]);
-                loadedRDF.about('<' + remurl + '>')
-                    .each(function(){
-                        var propurl = this.property.value.toString();
-                        var propsplit = lore.global.util.splitTerm(propurl);
-                        var propname = lore.constants.nsprefix(propsplit.ns) + ":";
-                        if (propname){
-                            propname = propname + propsplit.term;
-                        } else {
-                            propname = propurl;
-                        }
-                        if (propname != "ore:describes" && propname != "rdf:type"){
-                            // TODO: get type from ontology or datatype
-                            var dtype = getDatatype(propname,this.value);
-                            lore.ore.ui.grid.appendPropertyValue(propname, this.value.value.toString(), dtype);
-                        }
-                    });
-         
-                //lore.debug.timeElapsed("create figure for each resource ");
-                // create a node figure for each aggregated resource, restoring the layout
-                loadedRDF.where('<' + aggreurl  + '> ore:aggregates ?url')
-                    .optional('?url layout:x ?x')
-                    .optional('?url layout:y ?y')
-                    .optional('?url layout:width ?w')
-                    .optional('?url layout:height ?h')
-                    .optional('?url layout:originalHeight ?oh')
-                    .optional('?url layout:scrollx ?sx')
-                    .optional('?url layout:scrolly ?sy')
-                    .optional('?url layout:highlightColor ?hc')
-                    .optional('?url layout:orderIndex ?order')
-                    .optional('?url layout:abstractPreview ?abstractPreview')
-                    .optional('?url dc:format ?format')
-                    .optional('?url rdf:type ?rdftype')
-                    .optional('?url dc:title ?title')
-                    .each(function(){
-                     var resourceURL = this.url.value.toString(); 
-                     var fig;
-                     var opts = {batch: true, url: resourceURL};
-                     if (this.x && this.y) {
-                        for (prop in this) {
-                            if (prop != 'url' && prop != 'format' && prop != 'rdftype' && prop != 'title' && prop != 'hc'){
-                                opts[prop] = parseInt(this[prop].value);
-                            } else {
-                                opts[prop] = this[prop].value.toString();
-                            }
-                        }
-                        if (opts.x < 0){
-                            opts.x = 0;
-                        }
-                        if (opts.y < 0) {
-                            opts.y = 0;
-                        }
-                     } 
-                     fig = lore.ore.ui.graphicalEditor.addFigure(opts);
-                });
-                //lore.debug.timeElapsed("iterate over predicates to create props and rels ");
-                // iterate over all predicates to create node connections and properties
-                loadedRDF.where('?subj ?pred ?obj')
-                    .filter(function(){
-                        // filter out the layout properties and predicates about the resource map
-                        // also filter format and title properties as they have already been set
-                        if (this.pred.value.toString().match(lore.constants.NAMESPACES["layout"])
-                            || this.pred.value.toString() === (lore.constants.NAMESPACES["dc"]+ "format")
-                            || this.subj.value.toString().match(remurl)) {
-                                return false;
-                            }
-                        else {
-                            return true;
-                        }
-                    })
-                    .each(function(){  
-                        // try to find a node that this predicate applies to 
-                        var subject = this.subj.value.toString();
-                        var coGraph = lore.ore.ui.graphicalEditor.coGraph;
-                        var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
-                        if (!srcfig) {
-                            // TODO: fix this as now preEncode is called - implement unPreEncode or something
-                           srcfig = lore.ore.ui.graphicalEditor
-                            .lookupFigure(lore.global.util.unescapeHTML(subject.replace(
-                            '%3C', '<').replace('%3F', '>')));
-                        }
-                        if (srcfig) {
-                            var relresult = lore.global.util.splitTerm(this.pred.value.toString());
-        
-                            var obj = this.obj.value.toString();
-                            var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
-                            /*if (!tgtfig) {
-                                tgtfig = lore.ore.ui.graphicalEditor
-                                    .lookupFigure(lore.global.util.unescapeHTML(obj.replace(
-                                                '%3C', '<').replace('%3F', '>')));
-                            }*/
-                            if (tgtfig && (srcfig != tgtfig)) { // this is a connection
-                                //lore.debug.ore("processing connection " + relresult.term,[tgtfig, srcfig]);
-                                //lore.debug.timeElapsed("connection 1");
-                                try {
-                                var c = new lore.ore.ui.graph.ContextmenuConnection();
-                                //lore.debug.timeElapsed("connection 2");
-                                var srcPort = srcfig.getPort("output");
-                                //lore.debug.timeElapsed("connection 3");
-                                var tgtPort = tgtfig.getPort("input");
-                                //lore.debug.timeElapsed("connection 4");
-                                if (srcPort && tgtPort){
-                                    c.setSource(srcPort);
-                                   // lore.debug.timeElapsed("connection 5");
-                                    c.setTarget(tgtPort);
-                                    //lore.debug.timeElapsed("connection 6");
-                                    c.setRelationshipType(relresult.ns, relresult.term);
-                                    //lore.debug.timeElapsed("connection 7");
-                                    coGraph.addFigure(c);
-                                    //lore.debug.timeElapsed("connection 8");
-                                }
-                                else {
-                                    throw "source or target port not defined";
-                                }
-                                } catch (e) {
-                                    lore.debug.ore("problem creating connection",e);
-                                    delete c;
-                                }
-                                
-                            } else  { 
-                                // not a node relationship, show in the property grid 
-                            	
-                            	// ensure property values shown in grid are safe
-                                var prefix = lore.constants.nsprefix(relresult.ns);
-                                var propname = prefix + ":" + relresult.term;
-                            	var propval = lore.global.util.sanitizeHTML(obj, window, true);
-                                var proptype = getDatatype(propname,this.obj);
-                            	if (!(prefix == "rdf" && relresult.term == "type")){
-                            		srcfig.appendProperty(propname, propval, proptype);
-                            	}
-                                /*if ((prefix == "dc" || prefix == "dcterms") && relresult.term == "title") {
-                                    // TODO this should not be necessary - send props to addFigureWithOpts
-                                    srcfig.displayTitle(propval);
-                                } else if (prefix == "dcterms" && relresult.term == "abstract") {
-                                	srcfig.displayAbstract(propval);
-                                }*/
-                            }
-                        }
-                    }
-                );
-                // FIXME: #210 Temporary workaround to set drawing area size on load
-                // problem still exists if a node is added that extends the boundaries
-                lore.ore.ui.graphicalEditor.coGraph.resizeMask();
+    loadCompoundObject : function(rdf) {
+		try {
+			var getDatatype = function(propname, propvalue) {
+				var dtype = propvalue.datatype;
+				if (dtype && dtype._string == "http://purl.org/dc/terms/W3CDTF") {
+					dtype = "date";
+				} else if (dtype
+						&& dtype == lore.constants.NAMESPACES["layout"]
+								+ "escapedHTMLFragment") {
+					dtype = "html";
+				} else {
+					dtype = "plainstring";
+					// Allow formatting for some fields
+					if (propname == "dcterms:abstract"
+							|| propname == "dc:description") {
+						dtype = "string";
+					}
+				}
+				return dtype;
+			};
+			var showInHistory = false;
 
-                lore.ore.ui.vp.info("Loading compound object");
-                Ext.Msg.hide();
-                //lore.debug.timeElapsed("set loaded in cache ");
-                
-                lore.ore.cache.setLoadedCompoundObjectUri(remurl);
-                
-                //lore.ore.populateResourceDetailsCombo();
-               //lore.debug.timeElapsed("show in history");
-               if (showInHistory){
-                    var title = lore.ore.ui.grid.getPropertyValue("dc:title") ||
-                        lore.ore.ui.grid.getPropertyValue("dcterms:title");
-                    if (!title){
-                        title = "Untitled";
-                    }
-                    lore.ore.historyManager.addToHistory(remurl, title);  
-               }
-               if (lore.ore.ui.topView && lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]){
-                    lore.ore.ui.topView.hideAddIcon(true);
-               } else {
-                    lore.ore.ui.topView.hideAddIcon(false);
-               }
-               //lore.debug.timeElapsed("done");
-               var readOnly = !remurl.match(lore.ore.reposAdapter.idPrefix);
-               Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50) + (readOnly? ' (read-only)' : ''),false);
-            } catch (e){
-                lore.ore.ui.vp.error("Error loading compound object");
-                lore.debug.ore("exception loading RDF from string",e);
-                lore.debug.ore("the RDF string was",rdf);
-                lore.debug.ore("the serialized databank is",databank.dump({format:'application/rdf+xml', serialize: true}));
-            }
-    },
+			// reset the graphical view
+			lore.ore.ui.graphicalEditor.initGraph();
+			var rdfDoc;
+			if (typeof rdf != 'object') {
+				rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
+			} else {
+				showInHistory = true;
+				rdfDoc = rdf.responseXML;
+			}
+			// lore.debug.timeElapsed("creating databank");
+			var databank = jQuery.rdf.databank();
+			for (ns in lore.constants.NAMESPACES) {
+				databank.prefix(ns, lore.constants.NAMESPACES[ns]);
+			}
+			databank.load(rdfDoc);
+			var loadedRDF = jQuery.rdf({
+						databank : databank
+			});
+			// Display the properties for the compound object
+			var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
+					.where('?rem ore:describes ?aggre');
+			var aggreurl, remurl;
+			var res = remQuery.get(0);
+			if (res) {
+				remurl = res.rem.value.toString();
+				aggreurl = res.aggre.value.toString();
+				var tmpCO = new lore.ore.model.CompoundObject();
+				tmpCO.load({
+							format : 'application/rdf+xml',
+							content : rdfDoc
+				});
+				// lore.debug.ore("CO model is ",tmpCO);
+				// lore.debug.timeElapsed("Loaded model");
+				// lore.debug.ore("CO model is same as self? " +
+				// Ext.ux.util.Object.compare(tmpCO,tmpCO2),tmpCO2);
+
+				lore.ore.cache.add(remurl, tmpCO);
+				lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+				lore.ore.cache.setLoadedCompoundObjectIsNew(false);
+			} else {
+				lore.ore.ui.vp.warning("No compound object found");
+				lore.debug.ore("no remurl found in RDF", loadedRDF);
+				// lore.debug.ore("the input rdf was",rdf);
+			}
+			lore.ore.controller.bindViews(lore.ore.cache
+					.getLoadedCompoundObject());
+
+			lore.ore.ui.grid.store.loadData([{
+						id : "rdf:about_0",
+						name : lore.ore.controller.REM_ID_PROP,
+						value : remurl,
+						type : "uri"
+			}]);
+			loadedRDF.about('<' + remurl + '>').each(function() {
+				var propurl = this.property.value.toString();
+				var propsplit = lore.global.util.splitTerm(propurl);
+				var propname = lore.constants.nsprefix(propsplit.ns) + ":";
+				if (propname) {
+					propname = propname + propsplit.term;
+				} else {
+					propname = propurl;
+				}
+				if (propname != "ore:describes" && propname != "rdf:type") {
+					// TODO: get type from ontology or datatype
+					var dtype = getDatatype(propname, this.value);
+					lore.ore.ui.grid.appendPropertyValue(propname,
+							this.value.value.toString(), dtype);
+				}
+			});
+
+			// lore.debug.timeElapsed("create figure for each resource ");
+			// create a node figure for each aggregated resource, restoring the layout
+			loadedRDF.where('<' + aggreurl + '> ore:aggregates ?url')
+					.optional('?url layout:x ?x')
+					.optional('?url layout:y ?y')
+					.optional('?url layout:width ?w')
+					.optional('?url layout:height ?h')
+					.optional('?url layout:originalHeight ?oh')
+					.optional('?url layout:scrollx ?sx')
+					.optional('?url layout:scrolly ?sy')
+					.optional('?url layout:highlightColor ?hc')
+					.optional('?url layout:orderIndex ?order')
+					.optional('?url layout:abstractPreview ?abstractPreview')
+					.optional('?url dc:format ?format')
+					.optional('?url rdf:type ?rdftype')
+					.optional('?url dc:title ?title')
+					.each(function() {
+						var resourceURL = this.url.value.toString();
+						var fig;
+						var opts = {
+							batch : true,
+							url : resourceURL
+						};
+						if (this.x && this.y) {
+							for (prop in this) {
+								if (prop != 'url' && prop != 'format'
+										&& prop != 'rdftype' && prop != 'title'
+										&& prop != 'hc') {
+									opts[prop] = parseInt(this[prop].value);
+								} else {
+									opts[prop] = this[prop].value.toString();
+								}
+							}
+							if (opts.x < 0) {
+								opts.x = 0;
+							}
+							if (opts.y < 0) {
+								opts.y = 0;
+							}
+						}
+						fig = lore.ore.ui.graphicalEditor.addFigure(opts);
+					});
+			// lore.debug.timeElapsed("iterate over predicates to create props
+			// and rels ");
+			// iterate over all predicates to create node connections and
+			// properties
+			loadedRDF.where('?subj ?pred ?obj')
+			.filter(function() {
+				// filter out the layout properties and predicates about the
+				// resource map
+				// also filter format and title properties as they have already
+				// been set
+				if (this.pred.value.toString()
+						.match(lore.constants.NAMESPACES["layout"])
+						|| this.pred.value.toString() === (lore.constants.NAMESPACES["dc"] + "format")
+						|| this.subj.value.toString().match(remurl)) {
+					return false;
+				} else {
+					return true;
+				}
+			}).each(function() {
+				// try to find a node that this predicate applies to
+				var subject = this.subj.value.toString();
+				var coGraph = lore.ore.ui.graphicalEditor.coGraph;
+				var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
+				if (!srcfig) {
+					// TODO: fix this as now preEncode is called - implement unPreEncode or something
+					srcfig = lore.ore.ui.graphicalEditor
+							.lookupFigure(lore.global.util.unescapeHTML(subject
+									.replace('%3C', '<').replace('%3F', '>')));
+				}
+				if (srcfig) {
+					var relresult = lore.global.util.splitTerm(this.pred.value.toString());
+
+					var obj = this.obj.value.toString();
+					var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
+					/*
+					 * if (!tgtfig) { tgtfig = lore.ore.ui.graphicalEditor
+					 * .lookupFigure(lore.global.util.unescapeHTML(obj.replace(
+					 * '%3C', '<').replace('%3F', '>'))); }
+					 */
+					if (tgtfig && (srcfig != tgtfig)) { // this is a connection
+						// lore.debug.ore("processing connection " +
+						// relresult.term,[tgtfig, srcfig]);
+						// lore.debug.timeElapsed("connection 1");
+						try {
+							var c = new lore.ore.ui.graph.ContextmenuConnection();
+							// lore.debug.timeElapsed("connection 2");
+							var srcPort = srcfig.getPort("output");
+							// lore.debug.timeElapsed("connection 3");
+							var tgtPort = tgtfig.getPort("input");
+							// lore.debug.timeElapsed("connection 4");
+							if (srcPort && tgtPort) {
+								c.setSource(srcPort);
+								// lore.debug.timeElapsed("connection 5");
+								c.setTarget(tgtPort);
+								// lore.debug.timeElapsed("connection 6");
+								c.setRelationshipType(relresult.ns,
+										relresult.term);
+								// lore.debug.timeElapsed("connection 7");
+								coGraph.addFigure(c);
+								// lore.debug.timeElapsed("connection 8");
+							} else {
+								throw "source or target port not defined";
+							}
+						} catch (e) {
+							lore.debug.ore("problem creating connection", e);
+							delete c;
+						}
+
+					} else {
+						// not a node relationship, show in the property grid
+
+						// ensure property values shown in grid are safe
+						var prefix = lore.constants.nsprefix(relresult.ns);
+						var propname = prefix + ":" + relresult.term;
+						var propval = lore.global.util.sanitizeHTML(obj,
+								window, true);
+						var proptype = getDatatype(propname, this.obj);
+						if (!(prefix == "rdf" && relresult.term == "type")) {
+							srcfig.appendProperty(propname, propval, proptype);
+						}
+					}
+				}
+			});
+			// FIXME: #210 Temporary workaround to set drawing area size on load
+			// problem still exists if a node is added that extends the boundaries
+			lore.ore.ui.graphicalEditor.coGraph.resizeMask();
+
+			lore.ore.ui.vp.info("Loading compound object");
+			Ext.Msg.hide();
+			// lore.debug.timeElapsed("set loaded in cache ");
+
+			lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+
+			// lore.ore.populateResourceDetailsCombo();
+			// lore.debug.timeElapsed("show in history");
+			if (showInHistory) {
+				var title = lore.ore.ui.grid.getPropertyValue("dc:title")
+						|| lore.ore.ui.grid.getPropertyValue("dcterms:title");
+				if (!title) {
+					title = "Untitled";
+				}
+				lore.ore.historyManager.addToHistory(remurl, title);
+			}
+			if (lore.ore.ui.topView
+					&& lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]) {
+				lore.ore.ui.topView.hideAddIcon(true);
+			} else {
+				lore.ore.ui.topView.hideAddIcon(false);
+			}
+			// lore.debug.timeElapsed("done");
+			var readOnly = !remurl.match(lore.ore.reposAdapter.idPrefix);
+			Ext.getCmp('currentCOMsg').setText(
+					Ext.util.Format.ellipsis(title, 50)
+							+ (readOnly ? ' (read-only)' : ''), false);
+			Ext.getCmp("currentCOSavedMsg").setText("");
+            lore.ore.controller.isDirty = false;
+            lore.ore.controller.wasClean = true;
+		} catch (e) {
+			lore.ore.ui.vp.error("Error loading compound object");
+			lore.debug.ore("exception loading RDF from string", e);
+			lore.debug.ore("the RDF string was", rdf);
+			lore.debug.ore("the serialized databank is", databank.dump({
+								format : 'application/rdf+xml',
+								serialize : true
+			}));
+		}
+	},
     /** Lookup a label for a tag */
     lookupTag: function(tagId){
         lore.debug.ore("lookupTag " + tagId)
@@ -431,7 +470,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             // check/warn/return if empty
             
             if (lore.ore.cache && lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent())){
-                 // this is a new unsaved compound object, no need to create a new model object, 
+                 // this is a new unsaved compound object, no need to create a new model object,
                 // try re-generating id in case repository has changed
                 
             }
@@ -446,7 +485,10 @@ Ext.apply(lore.ore.Controller.prototype, {
             lore.debug.ore("copyCompoundObjectToNew",e)
         }
     },
-    /** Prompt whether to save the current compound object, then calls newCO to create new compound object */
+    /**
+	 * Prompt whether to save the current compound object, then calls newCO to
+	 * create new compound object
+	 */
     createCompoundObject: function(dontRaise, callback){
         try{
             // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
@@ -513,10 +555,13 @@ Ext.apply(lore.ore.Controller.prototype, {
             {id: "dc:title_0", name: "dc:title", value: "", type: "plainstring"}
         ]  
         );
+ 
         lore.ore.ui.graphicalEditor.initGraph();
+        this.isDirty = false;
+        this.wasClean = true;
         this.bindViews(lore.ore.cache.getLoadedCompoundObject())
-        
         Ext.getCmp('currentCOMsg').setText('New compound object');
+        Ext.getCmp('currentCOSavedMsg').setText(''); 
         if (!dontRaise) {
             Ext.getCmp("propertytabs").activate("properties");
         }
@@ -652,8 +697,10 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Add saved compound object to the model lsits
       * @param {String} remid The compound object that was saved */
     afterSaveCompoundObject : function(remid){
+        Ext.getCmp('currentCOSavedMsg').setText('');
         lore.ore.cache.setLoadedCompoundObjectIsNew(false);
-        lore.ore.ui.graphicalEditor.isDirty = false;
+        this.isDirty = false;
+        this.wasClean = true;
         var title = lore.ore.ui.grid.getPropertyValue("dc:title") 
             || lore.ore.ui.grid.getPropertyValue("dcterms:title") 
             || "Untitled";

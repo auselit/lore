@@ -149,6 +149,13 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                     id:'currentCOMsg', 
                     text: 'New compound object'
                 },
+                ' ',
+                {
+                    xtype: 'label',
+                    id:'currentCOSavedMsg',
+                    text:'',
+                    style: 'color:red'
+                },
                 ' '
             ]
         }, {

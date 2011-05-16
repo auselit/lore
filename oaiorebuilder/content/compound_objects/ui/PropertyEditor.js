@@ -667,11 +667,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         if (this.id == "nodegrid"){            
         	lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
         }
-        lore.ore.ui.graphicalEditor.isDirty = true;
+        lore.ore.controller.setDirty();
     },
     /** update the properties for the selected figure */
     handlePropertyChange : function(args) {
-    	lore.ore.ui.graphicalEditor.isDirty = true;
+    	lore.ore.controller.setDirty();
         // at present this only updates resource/rel properties - also needs to update on compound object
         try{
             if (this.id == "nodegrid"){

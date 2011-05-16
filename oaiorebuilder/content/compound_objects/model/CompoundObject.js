@@ -642,7 +642,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     && lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().getSize() == 0))){
             return false;
         } else {
-            return lore.ore.ui.graphicalEditor.isDirty;
+            return lore.ore.controller.isDirty;
         }
     }
 });

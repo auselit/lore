@@ -31,7 +31,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
          /** Used to lookup figures by their URIs in the graphical editor */
         this.lookup = {};
         this.readOnly = false;
-        this.isDirty = false;
+        
    },
    initComponent: function(config){
     lore.ore.ui.GraphicalEditor.superclass.initComponent.call(this,config); 
@@ -54,7 +54,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    /** Initialize the graphical editor */
    initGraph: function(){
     try{
-    	this.isDirty = false;
         Ext.getCmp("loreviews").activate("drawingarea");
         this.dummylayoutx = this.NODE_SPACING;
         this.dummylayouty = this.NODE_SPACING;
@@ -215,11 +214,19 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
      * Respond to move, delete, undo and redo commands in the graphical editor
      * @param {} event
      */
-    stackChanged : function(event) {
-    	this.isDirty  = true;
+    stackChanged : function(event) {           
         var details = event.getDetails(); // indicates whether post execute, undo or redo
         var comm = event.getCommand();
         var commList;
+        
+        if (0!=(details&(draw2d.CommandStack.POST_UNDO))) {
+            // command was undone, check whether dirty needs to be reverted
+            lore.ore.controller.rollbackDirty();
+        } else if (0!=(details&(draw2d.CommandStack.POST_REDO) || 0!=(details&(draw2d.CommandStack.POST_EXECUTE)))){
+            lore.debug.ore("in stack changed ",event)
+            lore.ore.controller.setDirty();
+        }
+        
         // handle a group of commands eg auto layout, multi-select delete etc
         if (comm instanceof lore.ore.ui.graph.CommandGroup){
         	commList = comm.commands;
@@ -359,7 +366,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         }
         var title = opts.props["dc:title_0"] || opts.props["dcterms:title_0"];
         if (!opts.batch && !title){ 
-        	this.isDirty = true;
             // dodgy way of determining if this is a new node
             try{
             // Try getting the page title from the browser history: 
