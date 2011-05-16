@@ -17,7 +17,6 @@
 #oobAnnoContentBox {
 	width: 35%;	
 }
-
 #oobAnnoCloseButton {
 	-moz-appearance: none;
 	-moz-image-region: rect(0px, 14px, 14px, 0px);
@@ -60,16 +59,16 @@
    /*	list-style-image: url(chrome://lore/skin/icons/box-arrow.png);	*/
    list-style-image: url(chrome://lore/skin/icons/database_go.png);
 }
-#reset-graph {
+#reset-co, #reset-anno {
 	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
 }
 #layout-co {
 	list-style-image: url(chrome://lore/skin/icons/layout.png);
 }
-#auth-status-icon {
+#auth-status-icon, #auth-status-icon-co {
 	list-style-image: url(chrome://lore/skin/icons/user_key.png);
 }
-#auth-status-icon.signed-in {
+#auth-status-icon.signed-in, #auth-status-icon-co.signed-in {
 	list-style-image: url(chrome://lore/skin/icons/tick.png);
 }
 #add-annotation {
