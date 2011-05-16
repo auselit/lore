@@ -698,6 +698,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                            lore.ore.ui.graphicalEditor.lookup[theval] = selfig.getId();
                            delete lore.ore.ui.graphicalEditor.lookup[args.originalValue];
                         }
+                        // TODO: this should be in Controller
                         if (lore.ore.ui.topView){
                             if (lore.ore.controller.currentURL == theval){
                                lore.ore.ui.topView.hideAddIcon(true);
@@ -714,6 +715,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     } else {
                         cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true);
                     }
+                    // TODO: update model not figure
                     selfig.setProperty(args.record.id,cleanvalue,args.record.data.type);
                 }
                 lore.ore.ui.nodegrid.store.commitChanges();
@@ -753,10 +755,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} val The value of the property to set
      */
     setPropertyValue : function(propname, propval, pindex){
-        var proprecidx = this.store.getById(propname + "_" + pindex);
-    	//var proprecidx = this.store.find("name",propname);
-    	if (proprecidx != -1){
-			this.store.getAt(proprecidx).set("value", val);
+        var proprec = this.store.getById(propname + "_" + pindex);
+    	if (proprec){
+			proprec.set("value", propval);
 			this.store.commitChanges();
     	}
     },
