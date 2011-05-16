@@ -180,7 +180,17 @@ try {
             var browser = gBrowser.selectedBrowser;
             loreoverlay.fireEvent("tab_changed", [browser]);
         },
-        
+        getAuthManager: function(){
+          return this.authManager;  
+        },
+        setAuthManager: function(am){
+          if (!this.authManager){
+            this.authManager = am;
+            this.authManager.on('signedin', this.setSignedIn, this);
+            this.authManager.on('signedout', this.setSignedOut, this);
+          }
+          return this.authManager;
+        },
         /** 
          * Observe if preferences have changed 
          * @param {} subject
@@ -356,7 +366,10 @@ try {
                 } else {
                    toolsMenuItem.setAttribute("checked", "true");
                    this.setAnnotationsVisibility(true);
-                   this.setCompoundObjectsVisibility(true); 
+                   this.setCompoundObjectsVisibility(true);
+                   
+                   // trigger events to be fired that will allow annotations/compound objects to update
+                   this.authManager.isAuthenticated();
                 }
             } catch (e ) {
                 lore.debug.ui("loreoverlay.toggleBar",e);
@@ -408,17 +421,15 @@ try {
                 lore.debug.ui("updateAnnotationSel", e);
             }
         },
-        loginAnnotations: function () {
-            loreoverlay.annoView().handleLoginAnnotations();
+        login: function () {
+            if (this.authManager){
+                this.authManager.displayLoginWindow();
+            }
         },
-        logoutAnnotations: function () {
-        	loreoverlay.annoView().handleLogoutAnnotations();
-        },
-        loginCompoundObjects: function (){
-            //loreoverlay.coView().handleLogin();
-        },
-        logoutCompoundObject: function (){
-            //lore.overlay.coView().handleLogout();
+        logout: function () {
+        	if (this.authManager){
+                this.authManager.logout();
+            }
         },
         reportProblem: function(){
           // TODO: update for FF 4
@@ -503,14 +514,13 @@ try {
             loreoverlay.coView().createCompoundObject();  
         },
         /** Toolbar button handler: reset the compound objects and annotations views */
-        resetGraph: function(){
+        resetUI: function(){
+            if (this.authManager){
+	            this.authManager.purgeListeners();
+	            delete this.authManager;
+            }
             lore.global.ui.reset(window, this.instId);
         },
-        
-        resetAnnos: function () {
-            lore.global.ui.resetAnnotations(window, this.instId);
-        },
-        
         /** Display the about window */
         openAbout: function(){
             window.open("chrome://lore/content/about.xul", "", "chrome,centerscreen,modal");
@@ -526,6 +536,9 @@ try {
             try {
                 var logging = this.prefs.getBoolPref("filelogging");
                 lore.debug.enableFileLogger(logging);
+                if (this.authManager){
+                    this.authManager.reloadEmmetUrls({url: this.prefs.getCharPref("annoserver")});
+                }
             } catch (ex) {
             }
         },
@@ -542,6 +555,7 @@ try {
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
                 var tmkey = this.prefs.getCharPref("tmkey");
                 var ontologies = this.prefs.getCharPref("ontologies");
+                var editor = this.prefs.getCharPref("coeditor");
                 if (ontologies){
                 	ontologies = JSON.parse(ontologies);
                 } 
@@ -554,17 +568,21 @@ try {
                     disable: disable_co,
                     tmkey: tmkey,
                     high_contrast: high_contrast,
-                    ontologies: ontologies
+                    ontologies: ontologies,
+                    editor: editor
                 });
                 if(!ignoreDisable){
                     this.setCompoundObjectsVisibility(!disable_co);
+                }
+                if (this.authManager){
+                    this.authManager.reloadEmmetUrls({url: annoserver});
                 }
             } 
         },
         
         loadAnnotationPrefs: function(){
             if (this.prefs) {
-                
+                // FIXME: should pass base URL and get annotation code to add /annotea
                 var annoserver = this.prefs.getCharPref("annoserver");
                 var dccreator = this.prefs.getCharPref("dccreator");
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
@@ -576,7 +594,7 @@ try {
                 
                 loreoverlay.annoView().setPrefs({
                     creator: dccreator,
-                    url: annoserver,
+                    url: annoserver + "/annotea",
                     cacheTimeout: timeout,
                     loginUrl: loginUrl,
                     disable: disable,
@@ -584,6 +602,9 @@ try {
                     high_contrast: high_contrast,
                     metadataOntologyURL: metadataOntologyURL
                 });
+                if (this.authManager){
+                    this.authManager.reloadEmmetUrls({url: annoserver});
+                }
             }
             else {
                 lore.debug.ui("preferences object not loaded, can't read in annotation preferences!");
@@ -837,9 +858,16 @@ try {
             return document.getElementById("oobAnnoVarContentBox").getAttribute("collapsed") == "false";
             
         },
-        
+        setSignedIn: function(username){
+            this.setAnnotationsSignedIn(username);
+            this.setCompoundObjectsSignedIn(username);
+        },
+        setSignedOut: function(){
+            this.setAnnotationsSignedOut();
+            this.setCompoundObjectsSignedOut();
+        },
         setAnnotationsSignedIn: function(username) {
-            //lore.debug.anno("setAnnotationsSignedIn()");
+            lore.debug.anno("setAnnotationsSignedIn()");
             var authStatusIcon = document.getElementById("auth-status-icon");
             authStatusIcon.className = 'signed-in';
             authStatusIcon.tooltipText = "Signed in to Annotation Server as " + username;
@@ -850,11 +878,28 @@ try {
         },
         
         setAnnotationsSignedOut: function() {
+            lore.debug.anno("setAnnotationsSignedOut()");
             var authStatusIcon = document.getElementById("auth-status-icon");
             authStatusIcon.className = '';
             authStatusIcon.tooltipText = "Signed Out";
             document.getElementById("auth-signout").hidden = true;
             document.getElementById("auth-signin").hidden = false;
+        },
+        setCompoundObjectsSignedIn: function(username) {
+            var authStatusIcon = document.getElementById("auth-status-icon-co");
+            authStatusIcon.className = 'signed-in';
+            authStatusIcon.tooltipText = "Signed in to Compound Object server as " + username;
+            var authButton = document.getElementById("auth-signout-co");
+            authButton.label = "Sign Out " + username;
+            authButton.hidden = false;
+            document.getElementById("auth-signin-co").hidden = true;
+        },
+        setCompoundObjectsSignedOut: function() {
+            var authStatusIcon = document.getElementById("auth-status-icon-co");
+            authStatusIcon.className = '';
+            authStatusIcon.tooltipText = "Signed Out";
+            document.getElementById("auth-signout-co").hidden = true;
+            document.getElementById("auth-signin-co").hidden = false;
         }
         
     };

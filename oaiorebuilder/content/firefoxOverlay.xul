@@ -32,8 +32,8 @@
             <xul:toolbarbutton style="font-weight:bolder" label="&lore.annoLabel;"  tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()" />
             <xul:toolbarbutton type="menu" id="auth-status-icon" tooltiptext="&lore.authStatusTip;">
             	<xul:menupopup>
-            		<xul:menuitem id="auth-signin" label="Sign In" oncommand="loreoverlay.loginAnnotations();"/>
-            		<xul:menuitem id="auth-signout" label="Sign Out" oncommand="loreoverlay.logoutAnnotations();" hidden="true"/>
+            		<xul:menuitem id="auth-signin" label="Sign In" oncommand="loreoverlay.login();"/>
+            		<xul:menuitem id="auth-signout" label="Sign Out" oncommand="loreoverlay.logout();" hidden="true"/>
             	</xul:menupopup>
             </xul:toolbarbutton>
             <xul:toolbarseparator />
@@ -53,7 +53,7 @@
             <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" /> 
             <xul:toolbarseparator id ="annsep3" />
             <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
-            <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetAnnos();"/>
+            <xul:toolbarbutton id="reset-anno" tooltiptext="&lore.resetUITip;"  oncommand="loreoverlay.resetUI();"/>
             <xul:toolbarbutton id="report-problem2" tooltiptext="&lore.reportProblem;" oncommand="loreoverlay.reportProblem();"/>
         
           </xul:toolbar>
@@ -72,13 +72,13 @@
         <xul:toolbar id="graph-toolbar">
           <xul:toolbarbutton style="font-weight:bolder"  label="&lore.coLabel;" tooltiptext="&lore.showAboutTip;" oncommand="loreoverlay.openAbout()"> 
           </xul:toolbarbutton>
-          <!--xul:toolbarbutton type="menu" id="auth-status-icon" tooltiptext="&lore.authCOStatusTip;">
+          <xul:toolbarbutton type="menu" id="auth-status-icon-co" tooltiptext="&lore.authCOStatusTip;">
                 <xul:menupopup>
-                    <xul:menuitem id="auth-signinCO" label="Sign In" oncommand="loreoverlay.loginCompoundObjects();"/>
-                    <xul:menuitem id="auth-signoutCO" label="Sign Out" oncommand="loreoverlay.logoutCompoundObjects();" hidden="true"/>
+                    <xul:menuitem id="auth-signin-co" label="Sign In" oncommand="loreoverlay.login();"/>
+                    <xul:menuitem id="auth-signout-co" label="Sign Out" oncommand="loreoverlay.logout();" hidden="true"/>
                 </xul:menupopup>
             </xul:toolbarbutton>
-          <xul:toolbarseparator/-->
+          <xul:toolbarseparator/>
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/>
           <xul:toolbarbutton type="menu" id="add-options" tooltiptext="Add resource options">
             <xul:menupopup>
@@ -107,7 +107,7 @@
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="co-find" tooltiptext="&lore.findTip;" oncommand="loreoverlay.find();"/>
           <xul:toolbarbutton id="show-prefs2" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
-          <xul:toolbarbutton id="reset-graph" tooltiptext="&lore.resetGraphTip;"  oncommand="loreoverlay.resetGraph();"/>
+          <xul:toolbarbutton id="reset-co" tooltiptext="&lore.resetUITip;"  oncommand="loreoverlay.resetUI();"/>
           <xul:toolbarbutton id="report-problem" tooltiptext="&lore.reportProblem;" oncommand="loreoverlay.reportProblem();"/>
         </xul:toolbar>
       </xul:toolbox>
