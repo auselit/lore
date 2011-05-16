@@ -171,6 +171,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 		  	  	                    	   // update the orderIndex (add one as orderIndex starts from 1 not 0)
 		  	  	                    	   r.set('index',j + 1); 
 		  	  	                    	   r.commit();
+                                           lore.ore.controller.setDirty();
 		  	  	                       }
 	  	  	                     } 
 	  	  	                     
