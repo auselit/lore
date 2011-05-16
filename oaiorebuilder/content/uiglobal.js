@@ -69,32 +69,6 @@
 		}
 	};
 
-	ui.resetAnnotations = function ( win, instId ) {
-        try {
-			ui.annotationView.unregisterView();
-        } catch (e2) {
-            debug.ui("error unregistering annoview: " + e2,e2);
-        }
-        try {
-			ui.loadAnnotations(win, instId, true);
-		} catch (e3) {
-			debug.ui ("error loading ui on reset: " + e3,e3);
-		}
-	};
-
-	ui.resetCompoundObjects = function ( win, instId ) {
-		try {
-			ui.compoundObjectView.unregisterView();
-        } catch (e1) {
-            debug.ui ("error unregistering coview: " + e1,e1);
-        }
-        try {
-			ui.loadCompoundObjects(win, instId, true);
-		} catch (e3) {
-			debug.ui ("error loading ui on reset: " + e3,e3);
-		}
-	};
-
 	ui.loadAnnotations  = function ( win, instId, reload ) {
 		var iframe1 = win.document.getElementById("annographiframe");
 
