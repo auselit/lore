@@ -908,7 +908,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
         return "plainstring";
     },
     handlePropertyChanged: function(propData,index){
-        lore.debug.ore("Resource Figure property changed " + index,propData);
+        //lore.debug.ore("Resource Figure property changed " + index,propData);
         if (propData && propData.id == lore.constants.NAMESPACES["layout"] + "highlightColor"){
             this.setHighlightColor(propData.value);
         }
