@@ -187,7 +187,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                     if (xmlhttp.status == 204) { // OK
                         callback(remid);
                     } else {
-                        lore.ore.ui.vp.error('Unable to delete compound object' + xmlhttp.responseText);
+                        lore.ore.ui.vp.error('Unable to delete compound object ' + xmlhttp.responseText);
                         lore.debug.ore("Unable to delete compound object", {
                             xmlhttp : xmlhttp,
                             headers : xmlhttp.getAllResponseHeaders()

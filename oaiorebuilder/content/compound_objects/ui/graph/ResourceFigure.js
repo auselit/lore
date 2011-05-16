@@ -1033,6 +1033,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                 scope: this,
                 checked: this.abstractPreview,
                 handler: function(item, evt){
+                    lore.ore.controller.setDirty();
                 	if (this.abstractPreview){
     					this.abstractPreview = false;
     					this.showContent();
@@ -1053,17 +1054,23 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                     },
                     colors: [this.NOHIGHLIGHT, "FFFF99","CCFFCC","DBEBFF","EFD7FF","FFE5B4","FFDBFB"],
                     handler: function(cp,color){
-                        var propData = {
-                            id: lore.constants.NAMESPACES["layout"] + "highlightColor", 
-			                ns: lore.constants.NAMESPACES["layout"],
-			                name: "highlightColor", 
-			                value: color, 
-			                prefix: "layout"
-                        };
-                        this.model.get('properties').setProperty(propData,0);
-
-                        this.setHighlightColor(color);
-                        this.contextmenu.hide();
+                        try{
+                            var propData = {
+                                id: lore.constants.NAMESPACES["layout"] + "highlightColor", 
+    			                ns: lore.constants.NAMESPACES["layout"],
+    			                name: "highlightColor", 
+    			                value: color, 
+    			                prefix: "layout"
+                            };
+                            if (this.highlightColor != color){
+                                this.model.get('properties').setProperty(propData,0);
+                                lore.ore.controller.setDirty();
+                                this.setHighlightColor(color);
+                            }
+                            this.contextmenu.hide();
+                        } catch (ex){
+                            lore.debug.ore("Problem setting highlight color",ex);
+                        }
                     },
                     scope: this
                     

@@ -297,6 +297,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                         if (propR) {
                             propR.get('properties').setProperty(propData,0);
                         }
+                        lore.ore.controller.setDirty();
                         this.getView().refresh();
                         this.contextmenu.hide();
                     },
