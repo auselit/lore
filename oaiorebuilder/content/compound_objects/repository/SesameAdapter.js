@@ -184,7 +184,20 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	            this.reposURL + "/statements?context=<" + remid + ">", true);  
 	        xmlhttp.onreadystatechange= function(){
 	            if (xmlhttp.readyState == 4) {
-                    callback(remid);
+                    if (xmlhttp.status == 204) { // OK
+                        callback(remid);
+                    } else {
+                        lore.ore.ui.vp.error('Unable to delete compound object' + xmlhttp.responseText);
+                        lore.debug.ore("Unable to delete compound object", {
+                            xmlhttp : xmlhttp,
+                            headers : xmlhttp.getAllResponseHeaders()
+                        });
+                        Ext.Msg.show({
+                            title : 'Problem deleting compound object',
+                            buttons : Ext.MessageBox.OKCANCEL,
+                            msg : ('There was an problem deleting the compound object: ' + xmlhttp.responseText)
+                        });
+                    }
 	            }
 	        };
 	        xmlhttp.send(null);
