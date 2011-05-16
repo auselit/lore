@@ -116,12 +116,19 @@ lore.ore.ui.init = function() {
 		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
        
         var currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
-        
-		/** Indicates whether the Compound Object UI is visible */	
+	
         lore.ore.controller = new lore.ore.Controller({
             currentURL: currentURL
         });
-		lore.global.ui.compoundObjectView.registerView(lore.ore.controller,window.instanceId);
+        lore.global.ui.compoundObjectView.registerView(lore.ore.controller,window.instanceId);
+        
+        lore.ore.am = lore.ore.ui.topView.getAuthManager();
+        if (!lore.ore.am){
+            lore.ore.am = lore.ore.ui.topView.setAuthManager(new lore.AuthManager(window));
+        }
+        
+        lore.ore.am.on('error', lore.ore.controller.onAuthErrorOrCancel);
+        lore.ore.am.on('cancel', lore.ore.controller.onAuthErrorOrCancel);
         
         lore.ore.ontologyManager = new lore.ore.model.OntologyManager();
         lore.ore.ui.topView.loadCompoundObjectPrefs(true);
