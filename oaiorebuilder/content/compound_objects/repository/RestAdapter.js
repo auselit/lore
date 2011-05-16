@@ -52,7 +52,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	       }
 	        
 	        var req = new XMLHttpRequest();
-	        lore.debug.ore("RestAdapater.getCompoundObjects", {queryURL:queryURL});
+	        lore.debug.ore("RestAdapter.getCompoundObjects", {queryURL:queryURL});
 	        req.open('GET', queryURL, true);
 	        req.onreadystatechange = function(aEvt) {
 	            if (req.readyState == 4) {
@@ -68,11 +68,22 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
                         
 					    if (result.length > 0){
 	                        // add the results to the model
-					        var coList = [result.length];
+					        var coList = [];
+                            var processed = {};
 					        for (var i = 0; i < result.length; i++) {
 					            var theobj = ra.parseCOFromXML(result[i]);
-					            if (matchval) {theobj.searchval = matchval;}
-					            coList[i] = theobj; 
+					            var resultIndex = processed[theobj.uri];
+                                var existing = theobj; 
+                                if (resultIndex >= 0){
+                                    existing = coList[resultIndex];
+                                    if (existing && !existing.creator.match(theobj.creator)){
+                                        existing.creator = existing.creator + " &amp; " + theobj.creator;
+                                    }
+                                } else {
+                                   if (matchval) {theobj.searchval = matchval;}
+                                   coList.push(theobj);
+                                   processed[theobj.uri] = coList.length - 1; 
+                                }    
 					        }
 					        lore.ore.coListManager.add(coList,listname);
 					    } 
@@ -100,10 +111,9 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	        }); 
 	},
 	saveCompoundObject : function (theco,callback){
-        // TODO: first check that the compound object hasn't changed on the server
-
         var remid = theco.uri;
         var therdf = theco.toRDFXML(false);
+        var oThis = this;
 		Ext.Msg.show({
 	           msg: 'Saving Compound Object to repository...',
 	           width:250,
@@ -112,44 +122,49 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	           cls: 'co-load-msg'
 	       });
 	    try {
-           var xmlhttp = new XMLHttpRequest();
-           
-	       if (theco.uri.indexOf(this.unsavedSuffix) > 1) { // New compound object, not in the repo yet
-	    	   lore.debug.ore("lorestore: saving new compound object", theco);
-	    	   xmlhttp.open("POST", this.reposURL);
-	    	   
-	       } else { // updating an existing compound object
-	    	   lore.debug.ore("lorestore: saving existing compound object: " + remid, theco);
-	    	   xmlhttp.open("PUT", remid);
-	       }
-	       xmlhttp.onreadystatechange = function() {
-	            if (xmlhttp.readyState == 4) {
-	            	Ext.Msg.hide();
-	                if (xmlhttp.status == 200) { // OK
-	                    lore.debug.ore("lorestore: RDF saved",xmlhttp);
-	                    lore.ore.ui.vp.info("Compound object " + remid + " saved");
-                        callback(remid);
-	                } else if (xmlhttp.status == 201) {  // Created
-	                    lore.debug.ore("lorestore: RDF saved",xmlhttp);
-	                    var location = xmlhttp.getResponseHeader("Location");
-	                    lore.debug.ore("New CO URI is: " + location);
-	                    lore.ore.ui.vp.info("Compound object " + remid + " saved");
-	                    
-	                    lore.ore.controller.loadCompoundObject(xmlhttp);
-                        callback(location);
-	                } else {
-	                    lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp.responseText);
-                        lore.debug.ore("Unable to save to repository",{xmlhttp:xmlhttp,headers:xmlhttp.getAllResponseHeaders()});
-	                    Ext.Msg.show({
-	                        title : 'Problem saving RDF',
-	                        buttons : Ext.MessageBox.OKCANCEL,
-	                        msg : ('There was an problem saving to the repository: ' + xmlhttp.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
-	                    });
-	                }
-	            }
-	        };
-	        xmlhttp.setRequestHeader("Content-Type", "application/rdf+xml");
-	        xmlhttp.send(therdf); 
+          lore.ore.am.runWithAuthorisation(function() {
+				var xmlhttp = new XMLHttpRequest();
+				if (remid.indexOf(oThis.unsavedSuffix) > 1) { 
+                    // New compound object, not in the repo yet
+					lore.debug.ore("lorestore: saving new compound object", theco);
+					xmlhttp.open("POST", oThis.reposURL);
+
+				} else { // updating an existing compound object
+					lore.debug.ore("lorestore: saving existing compound object: " + remid, theco);
+					xmlhttp.open("PUT", remid);
+				}
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == 4) {
+						Ext.Msg.hide();
+						if (xmlhttp.status == 200) { // OK
+							lore.debug.ore("lorestore: RDF saved", xmlhttp);
+							lore.ore.ui.vp.info("Compound object " + remid + " saved");
+							callback(remid);
+						} else if (xmlhttp.status == 201) { // Created
+							lore.debug.ore("lorestore: RDF saved", xmlhttp);
+							var location = xmlhttp.getResponseHeader("Location");
+							lore.debug.ore("New CO URI is: " + location);
+							lore.ore.ui.vp.info("Compound object " + remid + " saved");
+							lore.ore.controller.loadCompoundObject(xmlhttp);
+							callback(location);
+						} else {
+							lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp.responseText);
+							lore.debug.ore("Unable to save to repository", {
+										xmlhttp : xmlhttp,
+										headers : xmlhttp.getAllResponseHeaders()
+									});
+							Ext.Msg.show({
+								title : 'Problem saving compound object',
+								buttons : Ext.MessageBox.OKCANCEL,
+								msg : ('There was an problem saving to the repository: '
+										+ xmlhttp.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+							});
+						}
+					}
+				};
+				xmlhttp.setRequestHeader("Content-Type", "application/rdf+xml");
+				xmlhttp.send(therdf);
+			});
 	    } catch (e) {
 	        lore.debug.ore("lorestore: problem saving compound object", e);
 	    }
@@ -166,15 +181,32 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
         // TODO: first check that it hasn't been changed on the server
 	    lore.debug.ore("deleting from lorestore repository " + remid);
 	    try {
+          lore.ore.am.runWithAuthorisation(function() {
+            lore.debug.ore("remid is" + remid, callback);
 	        var xmlhttp = new XMLHttpRequest();
 	        xmlhttp.open("DELETE", remid, true);  
 	        xmlhttp.onreadystatechange= function(){
 	            if (xmlhttp.readyState == 4) {
-                    callback(remid);
+                    if (xmlhttp.status == 200) { // OK
+                        callback(remid);
+                    } else {
+                        lore.ore.ui.vp.error('Unable to delete compound object' + xmlhttp.responseText);
+                        lore.debug.ore("Unable to delete compound object", {
+                            xmlhttp : xmlhttp,
+                            headers : xmlhttp.getAllResponseHeaders()
+                        });
+                        Ext.Msg.show({
+                            title : 'Problem deleting compound object',
+                            buttons : Ext.MessageBox.OKCANCEL,
+                            msg : ('There was an problem deleting the compound object: ' + xmlhttp.responseText)
+                        });
+                    }
 	            }
 	        };
 	        xmlhttp.send(null);
+          });
 	    } catch (e){
+	        Ext.MessageBox.hide();
 	        lore.debug.ore("RestAdapter: error deleting compound object",e);
 	    }        
 	},
