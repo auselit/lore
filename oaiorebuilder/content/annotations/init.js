@@ -95,7 +95,12 @@ lore.anno.ui.init = (function() {
        try {
            // obtain reference to parent overlay reference
            lore.anno.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
-
+           
+           // Get reference to Authentication Manager (or create if it does not already exist)
+           lore.anno.am = lore.anno.ui.topView.getAuthManager();
+           if (!lore.anno.am){
+                lore.anno.am = lore.anno.ui.topView.setAuthManager(new lore.AuthManager());
+           }
            // set up preferences
            lore.anno.prefs = new lore.anno.Preferences({
                creator: 'Anonymous',
@@ -104,10 +109,6 @@ lore.anno.ui.init = (function() {
                disable: false,
                high_contrast: false
            });
-   
-           // Create Authentication Manager
-           lore.anno.am = new lore.anno.AuthManager({prefs: lore.anno.prefs});
-   
            lore.anno.prefs.on('prefs_changed', lore.anno.ui.handlePrefsChange);
    
            lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;

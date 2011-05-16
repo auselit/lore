@@ -160,17 +160,6 @@ lore.anno.ui.setPrefs = function (args) {
     lore.anno.prefs.setPrefs(args);
 };
 
-/**
- * From the XUL Overlay login/status button
- */
-lore.anno.ui.handleLoginAnnotations = function() {
-    lore.debug.anno("handleLoginAnnotations()");
-    lore.anno.am.displayLoginWindow();
-};
-lore.anno.ui.handleLogoutAnnotations = function() {
-    lore.debug.anno("handleLogoutAnnotations()");
-	lore.anno.am.logout();
-};
 
 //////////////////////////////////////////////////////////////////////
 /* Form Editor Methods */
@@ -422,6 +411,7 @@ lore.anno.ui.handleLocationChange = function (contextURL) {
  * Reloads all the annotations for the current page
  */
 lore.anno.ui.refreshAnnotations = function() {
+    lore.debug.anno("refresh annotations");
 	lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
 };
 
