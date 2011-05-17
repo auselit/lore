@@ -811,28 +811,27 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
            // override icon
            this.setIcon(pval);
         }
-		//lore.debug.ore("setProperty " + pid + " " + pval,this.model);
 		// Update model
-		if (pid != "resource_0" && this.model){
+		if (pid != "resource_0" && this.model && pval != oldval){
 			try{
-			var pidsplit = pid.split(":");
-			var pfx = pidsplit[0];
-			pidsplit = pidsplit[1].split("_");
-			var idx = pidsplit[1];
-			var propname = pidsplit[0];
-			var ns = lore.constants.NAMESPACES[pfx];
-			var propuri = ns + propname;
-            var propData = {
-                id: propuri, 
-                ns: ns, 
-                name: propname, 
-                value: pval, 
-                prefix: pfx
-            };
-            if (type){
-                propData.type = type;
-            }
-			this.model.get('properties').setProperty(propData,idx)
+    			var pidsplit = pid.split(":");
+    			var pfx = pidsplit[0];
+    			pidsplit = pidsplit[1].split("_");
+    			var idx = pidsplit[1];
+    			var propname = pidsplit[0];
+    			var ns = lore.constants.NAMESPACES[pfx];
+    			var propuri = ns + propname;
+                var propData = {
+                    id: propuri, 
+                    ns: ns, 
+                    name: propname, 
+                    value: pval, 
+                    prefix: pfx
+                };
+                if (type){
+                    propData.type = type;
+                }
+    			this.model.get('properties').setProperty(propData,idx)
 			} catch (ex){
 				lore.debug.ore("problem in setProperty",ex);
 			}
