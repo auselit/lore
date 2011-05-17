@@ -199,7 +199,14 @@ $.imgAreaSelect = function (img, ctx, options) {
         }
 		
     }
-
+    
+    function doUpdate(resetKeyPress) {
+        adjust();
+        update(resetKeyPress);
+        x1 = viewX(selection.x1); y1 = viewY(selection.y1);
+        x2 = viewX(selection.x2); y2 = viewY(selection.y2);
+    }
+    
     function hide($elem, fn) {
         options.fadeSpeed ? $elem.fadeOut(options.fadeSpeed, fn) : $elem.hide();
 
@@ -601,7 +608,7 @@ $.imgAreaSelect = function (img, ctx, options) {
         else if (newOptions.show && imgLoaded) {
             shown = true;
             $box.add($outer).fadeIn(options.fadeSpeed||0);
-            update();
+            doUpdate();
         }
 
         aspectRatio = (d = (options.aspectRatio || '').split(/:/))[0] / d[1];
@@ -632,16 +639,9 @@ $.imgAreaSelect = function (img, ctx, options) {
     this.getSelection = getSelection;
 
     this.setSelection = setSelection;
-
-    this.update = function doUpdate(resetKeyPress) {
-        adjust();
-        update(resetKeyPress);
-        x1 = viewX(selection.x1); y1 = viewY(selection.y1);
-        x2 = viewX(selection.x2); y2 = viewY(selection.y2);
-    };
+    
+	this.update = doUpdate;
 	
-	
-
     if ($.browser.msie)
         $img.attr('unselectable', 'on');
 
