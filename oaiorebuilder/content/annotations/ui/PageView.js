@@ -46,8 +46,7 @@ lore.anno.ui.PageView = function (config) {
     
     // Handlers
 	this.model.on('load', this.handleLoad, this);
-	this.model.on('remove', this.handleRemove, this);	
-	this.model.on('update', this.handleUpdate, this);
+	this.model.on('remove', this.handleRemove, this);
 	this.page.on('annochanged', this.handleAnnoChanged, this);
 	this.rdfaMan.on('rdfaloaded', this.handleRDFaLoaded, this);
 };
@@ -114,6 +113,7 @@ lore.anno.ui.PageView.prototype = {
 	/**
 	 * When a annotation record is updated, refresh the currently selected
 	 * highlighting
+     * Currently disabled as this is now being handled in handlers.js
 	 * @param {Object} store
 	 * @param {Object} rec
 	 * @param {Object} operation

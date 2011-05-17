@@ -49,6 +49,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			 * @param {int} number of annotations loaded
 			 */
 			'annotationsloaded',
+            'annotationrepliesloaded',
 			'load',
 			'remove',
 			'update');
@@ -338,8 +339,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	persistAnnotation: function(annoRec, currentURL, refresh){
 		var t = this;
+        delete this.justUpdated;
 		var callback = function(request, action) {
-
+            // parse response to get id of new/updated annotation
+            t.justUpdated = t.getUpdatedAnnotationURI(request);
             if (action == 'create' || refresh) {
                     lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
                     t.updateAnnotationsSourceList(currentURL);
@@ -349,7 +352,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		this.sendUpdateRequest(annoRec, callback);
 
 	},
-
+	/**
+	 * Get the of the annotation just created or updated from the response
+	 */
+    getUpdatedAnnotationURI: function(res){
+      var annos = this.createAnnotationsFromRDF(res.responseXML);
+      if (annos.length > 0){
+        return annos[0].id;
+      }
+    },
 	/**
 	 * Delete an annotation on the local store and on the remote repository if it exists there
 	 * @param {Object} anno The annotation to delete
@@ -915,7 +926,9 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					scope:this
 				});
 			}
-
+            if (this.justUpdated){
+                lore.debug.anno("updated an annotation " + this.justUpdated); 
+            }
 			this.fireEvent("annotationsloaded", annotations.length);
 		}
 
@@ -940,6 +953,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
 				this.loadAnnotation(replies);
 			}
+            this.fireEvent("annotationrepliesloaded", this.justUpdated);
 		} catch (e ) {
 			lore.debug.anno("handleAnnotationRepliesLoaded",e);
 		}

@@ -455,6 +455,40 @@ lore.anno.ui.handleAnnotationsLoaded = function (numLoaded) {
     if (numLoaded > 0) {
         lore.anno.ui.tabpanel.activate('treeview');
     }
+    // try to find annotation that was most recently created/updated and select it
+    try{
+        var justUpdated = lore.anno.annoMan.justUpdated;
+        if (justUpdated){
+            var node = lore.anno.ui.findNode(justUpdated, lore.anno.ui.treeroot);
+            if (node) {
+                delete lore.anno.annoMan.justUpdated;
+                var rec = lore.anno.annoMan.findStoredRecById(justUpdated);
+                node.ensureVisible();
+                node.select();
+                lore.anno.ui.page.setCurrentAnno(rec);
+            }
+        }
+    } catch (ex){
+        lore.debug.anno("Problem selecting updated annotation",ex);
+    }
+};
+lore.anno.ui.handleAnnotationRepliesLoaded = function(){
+    // try to find reply that was most recently created/updated and select it
+    try{
+        var justUpdated = lore.anno.annoMan.justUpdated;
+        if (justUpdated){
+            var node = lore.anno.ui.findNode(justUpdated, lore.anno.ui.treeroot);
+            if (node) {
+                delete lore.anno.annoMan.justUpdated;
+                var rec = lore.anno.annoMan.findStoredRecById(justUpdated);
+                node.ensureVisible();
+                node.select();
+                lore.anno.ui.page.setCurrentAnno(rec);
+            }
+        }
+    } catch (ex){
+        lore.debug.anno("Problem selecting updated reply",ex);
+    }
 };
 
 /**
@@ -551,6 +585,7 @@ lore.anno.ui.handleDeleteAnnotation = function (node) {
         }
     } else { // request comes from toolbar or editor delete button
         if (!lore.anno.ui.page.getCurrentAnno()) {
+            lore.anno.ui.loreWarning("Nothing selected to delete.");
             lore.debug.anno("Nothing selected to delete.");
             return;
         }
@@ -773,12 +808,13 @@ lore.anno.ui.handleReplyToAnnotation = function (node) {
     try {
         var rec = lore.anno.ui.page.getCurrentAnno();
 
-        if (!rec) {
+        if (!rec && node) {
         	rec = lore.anno.annoMan.findStoredRecById(lore.anno.ui.nodeIdToRecId(node));
         }
 
         if (!rec) {
-            lore.debug.anno("Couldn't find record to reply to: " + arg, arg);
+            lore.anno.ui.loreWarning("Nothing selected to reply to");
+            lore.debug.anno("Couldn't find record to reply to", node);
             return;
         }
 
