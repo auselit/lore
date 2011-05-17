@@ -455,7 +455,10 @@ lore.anno.ui.handleAnnotationsLoaded = function (numLoaded) {
     if (numLoaded > 0) {
         lore.anno.ui.tabpanel.activate('treeview');
     }
-    // try to find annotation that was most recently created/updated and select it
+    lore.anno.ui.selectUpdatedAnnotation();
+};
+lore.anno.ui.selectUpdatedAnnotation = function(){
+    // try to find annotation that was most recently created/updated/searched for and select it
     try{
         var justUpdated = lore.anno.annoMan.justUpdated;
         if (justUpdated){
@@ -473,22 +476,7 @@ lore.anno.ui.handleAnnotationsLoaded = function (numLoaded) {
     }
 };
 lore.anno.ui.handleAnnotationRepliesLoaded = function(){
-    // try to find reply that was most recently created/updated and select it
-    try{
-        var justUpdated = lore.anno.annoMan.justUpdated;
-        if (justUpdated){
-            var node = lore.anno.ui.findNode(justUpdated, lore.anno.ui.treeroot);
-            if (node) {
-                delete lore.anno.annoMan.justUpdated;
-                var rec = lore.anno.annoMan.findStoredRecById(justUpdated);
-                node.ensureVisible();
-                node.select();
-                lore.anno.ui.page.setCurrentAnno(rec);
-            }
-        }
-    } catch (ex){
-        lore.debug.anno("Problem selecting updated reply",ex);
-    }
+   lore.anno.ui.selectUpdatedAnnotation();
 };
 
 /**

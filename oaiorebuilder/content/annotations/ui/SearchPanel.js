@@ -162,7 +162,8 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
                         var ruri = record.data.resource;
                         if (ruri && ruri.match(lore.anno.prefs.url)){
                                 ruri += "?danno_useStylesheet=";
-                        }                
+                        }
+                        lore.anno.annoMan.justUpdated = record.id;
                         lore.global.util.launchTab(ruri);
                 }
             }, dataview);
