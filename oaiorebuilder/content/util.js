@@ -397,37 +397,6 @@ util = {
 	
 		return xp;
     },
-    
-    /**
-     * Read a file that exists in the LORE extension
-     * Path supplied is relative to <profile>/lore/
-     * @param {} path
-     */
-    readChromeFile : function(path, win) {
-          try {
-            var url = "chrome://lore/" + path;
-            var xhr = new win.XMLHttpRequest();
-            xhr.overrideMimeType('text/javascript');
-        
-            xhr.open("GET", url, false);
-            xhr.send(null);
-            return xhr.responseText;
-        } catch (e) {
-            debug.ui("Unable to read resource file: " + e.toString());
-        }
-    },
-    /** 
-     * Inject contents of local script into a document
-     * @param {} chromefile Path to chrome file
-     */
-    injectScript : function (chromefile,win) {
-        var doc = win.document;
-        var buffer = util.readChromeFile(chromefile, win);
-        var script = doc.createElement("script");
-        script.type = "text/javascript";
-        script.innerHTML = buffer;
-        doc.getElementsByTagName("head")[0].appendChild(script);   
-    },
 	/**
      * Inject contents of local stylesheet into document
      * @param {} chromefile
@@ -435,10 +404,26 @@ util = {
 	 */
 	injectCSS : function ( chromefile, win ) {
 		var doc = win.document;
-        var buffer = util.readChromeFile(chromefile, win);
-        var script = doc.createElement("style");
-        script.innerHTML = buffer;
-        doc.getElementsByTagName("head")[0].appendChild(script);   
+        var url = "chrome://lore/" + chromefile;
+        var xhr = new win.XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.onreadystatechange = function(){
+            try {
+                if (xhr.readyState == 4) {
+                    // status is probably 0 because it is loaded from chrome url,
+                    // but assume it was ok if there is a response
+                    var content = xhr.responseText;
+                    if (content){
+                        var style = doc.createElement("style");
+                        style.innerHTML = xhr.responseText;
+                        doc.getElementsByTagName("head")[0].appendChild(style);
+                    }
+                }
+            } catch (e){
+                debug.ui("Unable to inject CSS",e);
+            }
+        }
+        xhr.send(null);  
 	},
 	
     /**
