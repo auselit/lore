@@ -185,7 +185,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	        xhr.open("DELETE", remid);  
 	        xhr.onreadystatechange= function(){
 	            if (xhr.readyState == 4) {
-                    if (xhr.status == 200) { // OK
+                    if (xhr.status == 204) { // OK
                         callback(remid);
                     } else {
                         lore.ore.ui.vp.error('Unable to delete compound object' + xhr.responseText);
