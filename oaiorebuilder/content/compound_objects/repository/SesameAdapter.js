@@ -139,7 +139,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	saveCompoundObject : function (theco,callback){
         // TODO: first check that the compound object hasn't changed on the server
         var remid = theco.uri;
-        var therdf = theco.toRDFXML(false);
+        var therdf = theco.asRDFXML(false);
 		Ext.Msg.show({
 	           msg: 'Saving Compound Object to repository...',
 	           width:250,
@@ -262,6 +262,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
             xhr.overrideMimeType('text/xml');
             if (!this.exploreStylesheet){
 		        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
+                // FIXME:
 		        xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl', false);
 		        xhr.send(null);
 		        this.exploreStylesheet = xhr.responseXML;
@@ -275,6 +276,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                 xsltproc.setParameter(null,'isCompoundObject','y');
             }
 	        // get the xml
+            // FIXME:
 	        xhr.open("GET",queryURL, false);
 	        xhr.send(null);
 	        var rdfDoc = xhr.responseXML;

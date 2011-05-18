@@ -51,14 +51,13 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 		            + "?refersTo=" + escapedURL;
 	       }
 	        
-	        var req = new XMLHttpRequest();
+	        var xhr = new XMLHttpRequest();
 	        lore.debug.ore("RestAdapter.getCompoundObjects", {queryURL:queryURL});
-	        req.open('GET', queryURL, true);
-	        req.onreadystatechange = function(aEvt) {
-	            if (req.readyState == 4) {
-	                if (req.responseText && req.status != 204
-	                        && req.status < 400) {
-	                    var xmldoc = req.responseXML;
+	        xhr.open('GET', queryURL);
+	        xhr.onreadystatechange = function(aEvt) {
+	            if (xhr.readyState == 4) {
+	                if (xhr.responseText && xhr.status != 204 && xhr.status < 400) {
+	                    var xmldoc = xhr.responseXML;
 	                    var listname = (isSearchQuery? "search" : "browse");  
 					    var result = {};
 					    if (xmldoc) {
@@ -87,12 +86,12 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 					        }
 					        lore.ore.coListManager.add(coList,listname);
 					    } 
-	                } else if (req.status == 404){
-	                    lore.debug.ore("404 accessing compound object repository",req);
+	                } else if (xhr.status == 404){
+	                    lore.debug.ore("404 accessing compound object repository",xhr);
 	                }
 	            }
 	        };
-	        req.send(null);
+	        xhr.send(null);
 	    } catch (e) {
 	        lore.debug.ore("Unable to retrieve compound objects",e);
 	        lore.ore.ui.vp.warning("Unable to retrieve compound objects");
@@ -112,7 +111,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	},
 	saveCompoundObject : function (theco,callback){
         var remid = theco.uri;
-        var therdf = theco.toRDFXML(false);
+        var therdf = theco.asRDFXML(false);
         var oThis = this;
 		Ext.Msg.show({
 	           msg: 'Saving Compound Object to repository...',
@@ -123,47 +122,47 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	       });
 	    try {
           lore.ore.am.runWithAuthorisation(function() {
-				var xmlhttp = new XMLHttpRequest();
+				var xhr = new XMLHttpRequest();
 				if (remid.indexOf(oThis.unsavedSuffix) > 1) { 
                     // New compound object, not in the repo yet
 					lore.debug.ore("lorestore: saving new compound object", theco);
-					xmlhttp.open("POST", oThis.reposURL);
+					xhr.open("POST", oThis.reposURL);
 
 				} else { // updating an existing compound object
 					lore.debug.ore("lorestore: saving existing compound object: " + remid, theco);
-					xmlhttp.open("PUT", remid);
+					xhr.open("PUT", remid);
 				}
-				xmlhttp.onreadystatechange = function() {
-					if (xmlhttp.readyState == 4) {
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4) {
 						Ext.Msg.hide();
-						if (xmlhttp.status == 200) { // OK
-							lore.debug.ore("lorestore: RDF saved", xmlhttp);
+						if (xhr.status == 200) { // OK
+							lore.debug.ore("lorestore: RDF saved", xhr);
 							lore.ore.ui.vp.info("Compound object " + remid + " saved");
 							callback(remid);
-						} else if (xmlhttp.status == 201) { // Created
-							lore.debug.ore("lorestore: RDF saved", xmlhttp);
-							var location = xmlhttp.getResponseHeader("Location");
+						} else if (xhr.status == 201) { // Created
+							lore.debug.ore("lorestore: RDF saved", xhr);
+							var location = xhr.getResponseHeader("Location");
 							lore.debug.ore("New CO URI is: " + location);
 							lore.ore.ui.vp.info("Compound object " + remid + " saved");
-							lore.ore.controller.loadCompoundObject(xmlhttp);
+							lore.ore.controller.loadCompoundObject(xhr);
 							callback(location);
 						} else {
-							lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp.responseText);
+							lore.ore.ui.vp.error('Unable to save to repository' + xhr.responseText);
 							lore.debug.ore("Unable to save to repository", {
-										xmlhttp : xmlhttp,
-										headers : xmlhttp.getAllResponseHeaders()
-									});
+										xhr : xhr,
+										headers : xhr.getAllResponseHeaders()
+							});
 							Ext.Msg.show({
 								title : 'Problem saving compound object',
 								buttons : Ext.MessageBox.OKCANCEL,
 								msg : ('There was an problem saving to the repository: '
-										+ xmlhttp.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+										+ xhr.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
 							});
 						}
 					}
 				};
-				xmlhttp.setRequestHeader("Content-Type", "application/rdf+xml");
-				xmlhttp.send(therdf);
+				xhr.setRequestHeader("Content-Type", "application/rdf+xml");
+				xhr.send(therdf);
 			});
 	    } catch (e) {
 	        lore.debug.ore("lorestore: problem saving compound object", e);
@@ -182,28 +181,27 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	    lore.debug.ore("deleting from lorestore repository " + remid);
 	    try {
           lore.ore.am.runWithAuthorisation(function() {
-            lore.debug.ore("remid is" + remid, callback);
-	        var xmlhttp = new XMLHttpRequest();
-	        xmlhttp.open("DELETE", remid, true);  
-	        xmlhttp.onreadystatechange= function(){
-	            if (xmlhttp.readyState == 4) {
-                    if (xmlhttp.status == 200) { // OK
+	        var xhr = new XMLHttpRequest();
+	        xhr.open("DELETE", remid);  
+	        xhr.onreadystatechange= function(){
+	            if (xhr.readyState == 4) {
+                    if (xhr.status == 200) { // OK
                         callback(remid);
                     } else {
-                        lore.ore.ui.vp.error('Unable to delete compound object' + xmlhttp.responseText);
+                        lore.ore.ui.vp.error('Unable to delete compound object' + xhr.responseText);
                         lore.debug.ore("Unable to delete compound object", {
-                            xmlhttp : xmlhttp,
-                            headers : xmlhttp.getAllResponseHeaders()
+                            xhr : xhr,
+                            headers : xhr.getAllResponseHeaders()
                         });
                         Ext.Msg.show({
                             title : 'Problem deleting compound object',
                             buttons : Ext.MessageBox.OKCANCEL,
-                            msg : ('There was an problem deleting the compound object: ' + xmlhttp.responseText)
+                            msg : ('There was an problem deleting the compound object: ' + xhr.responseText)
                         });
                     }
 	            }
 	        };
-	        xmlhttp.send(null);
+	        xhr.send(null);
           });
 	    } catch (e){
 	        Ext.MessageBox.hide();
@@ -230,6 +228,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
             xhr.overrideMimeType('text/xml');
             if (!this.exploreStylesheet){
 		        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
+                // FIXME:
 		        xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl', false);
 		        xhr.send(null);
 		        this.exploreStylesheet = xhr.responseXML;
@@ -243,6 +242,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
                 xsltproc.setParameter(null,'isCompoundObject','y');
             }
 	        // get the xml
+            // FIXME
 	        xhr.open("GET",queryURL, false);
 	        xhr.send(null);
 	        var rdfDoc = xhr.responseXML;

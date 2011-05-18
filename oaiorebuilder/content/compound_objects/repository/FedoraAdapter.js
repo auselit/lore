@@ -52,38 +52,38 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
         // creates a new compound object
         // TODO: allow modification of existing
         // FIXME:
-        var coid = theco.uri;
-        var thexml = theco.toRDFXML(false);
+/*        var coid = theco.uri;
+        var thexml = theco.asRDFXML(false);
         var foxml = lore.ore.createFOXML();
         //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri() ).term;
         lore.debug.ore("saving foxml to fedora",foxml);
         try {                  
-               var xmlhttp2 = new XMLHttpRequest();
-               xmlhttp2.open("POST",
-                   this.reposURL + "/objects/" + remid + "?format=info:fedora/fedora-system:FOXML-1.1", true);
-               xmlhttp2.onreadystatechange = function() {
-                    if (xmlhttp2.readyState == 4) {
-                        if (xmlhttp2.status == 201) {
-                            //lore.debug.ore("fedora: Compound object saved",xmlhttp2);
+               var xhr = new XMLHttpRequest();
+               xhr.open("POST",
+                   this.reposURL + "/objects/" + remid + "?format=info:fedora/fedora-system:FOXML-1.1");
+               xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 201) {
                             lore.ore.ui.vp.info("Compound object " + remid + " saved");
                             callback(remid);
                         } else {
-                            lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp2.responseText);
-                            lore.debug.ore("Unable to save to repository: " + xmlhttp2.responseText, xmlhttp2);
+                            lore.ore.ui.vp.error('Unable to save to repository' + xhr.responseText);
+                            lore.debug.ore("Unable to save to repository: " + xhr.responseText, xhr);
                             Ext.Msg.show({
                                 title : 'Problem saving RDF',
                                 buttons : Ext.MessageBox.OKCANCEL,
-                                msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+                                msg : ('There was an problem saving to the repository: ' + xhr.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
                             });
                             
                         }
                     }
                 };
-                xmlhttp2.setRequestHeader("Content-Type", "text/xml");
-                xmlhttp2.send(foxml); 
+                xhr.setRequestHeader("Content-Type", "text/xml");
+                xhr.send(foxml); 
             } catch (e) {
-                xmlhttp = false;
+                xhr = false;
             }
+            */
     }
 /*    generateID: function(){
     	use REST api getNextPID
