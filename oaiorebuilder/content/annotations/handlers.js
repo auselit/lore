@@ -869,10 +869,18 @@ lore.anno.ui.handleSerialize = function (format) {
     }
     try {
         lore.anno.ui.updateAnnoFromForm();
-        var fobj = lore.global.util.writeFileWithSaveAs("Export Annotations (for current page) as", fileExtensions[format], function () {
-            return lore.anno.annoMan.serialize(format);
-        }, window);
-        if (fobj) lore.anno.ui.loreInfo("Annotations exported to " + fobj.fname);
+        lore.global.util.writeFileWithSaveAs("Export Annotations (for current page) as", 
+            fileExtensions[format], 
+            function (savecb) {
+                var fobj = savecb(lore.anno.annoMan.serialize(format));
+                if (fobj) {
+                    lore.anno.ui.loreInfo("Annotations exported to " + fobj.fname);
+                } else {
+                    lore.anno.ui.loreInfo("Unable to save annotations to file");
+                }
+            }, 
+            window);
+        
     } catch (e) {
         lore.debug.anno("Error exporting annotations", e);
         lore.anno.ui.loreError("Error exporting annotations: " + e);
