@@ -140,7 +140,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 			// Load the ontology
 			var xhr = new XMLHttpRequest();
 			xhr.overrideMimeType('application/xml');
-			xhr.open("GET", onturl, true);
+			xhr.open("GET", onturl);
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {

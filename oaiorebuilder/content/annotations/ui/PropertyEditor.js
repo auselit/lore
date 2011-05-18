@@ -303,7 +303,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 			lore.debug.anno("getting ontology : " + onturl);
 			var xhr = new XMLHttpRequest();
 			xhr.overrideMimeType('text/xml');
-			xhr.open("GET", onturl, true);
+			xhr.open("GET", onturl);
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
 					try {

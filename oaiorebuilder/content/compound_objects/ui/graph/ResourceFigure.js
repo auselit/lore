@@ -537,15 +537,15 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 				this.showContent();
 			} else {
 				// Otherwise, use a HEAD request to find out the content type
-				var req = new XMLHttpRequest();
-				req.open('HEAD', theurl, true);
+				var xhr = new XMLHttpRequest();
+				xhr.open('HEAD', theurl);
 				var thisobj = this;
-				req.onreadystatechange = function() {
-					if (req.readyState == 4) {
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4) {
                         var mimetype;
-                        if (req.status == 200){
+                        if (xhr.status == 200){
 							try {
-								mimetype = req.getResponseHeader('Content-Type');
+								mimetype = xhr.getResponseHeader('Content-Type');
 							} catch (e) {
 								lore.debug.ore("ResourceFigure: exception getting mime type", e);
 						    }
@@ -554,12 +554,11 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 						if (!mimetype) {
 							mimetype = "text/html";
 						}
-						//lore.debug.ore("mimetype is " + mimetype, [req, req.getAllResponseHeaders()]);
 						thisobj.setProperty("dc:format_0", mimetype);
 						thisobj.showContent();
 					}
 				};
-				req.send(null);
+				xhr.send(null);
 			}
 		} else {
 			this.showContent();
