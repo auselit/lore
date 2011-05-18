@@ -345,45 +345,45 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
     },
     /** @private Render the current compound object in TriG format in the TriG view*/
     updateTrigView: function(){
-        var trig = lore.ore.cache.getLoadedCompoundObject().toTrig();
+        var trig = lore.ore.cache.getLoadedCompoundObject().serialize('trig');
         Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;-moz-pre-wrap:true'>" 
             + Ext.util.Format.htmlEncode(trig) + "</pre>");
     },
     /** @private Render the current compound object as Fedora Object XML in the FOXML view */
     updateFOXMLView : function (){
-        var foxml = lore.ore.cache.getLoadedCompoundObject().toFOXML();
-        var foxmlString = lore.global.util.transformXML("chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl", foxml, {}, window, true);
-        if (!foxmlString){
-            foxmlString = "Unable to generate FOXML";
-        }
-        Ext.getCmp("remfoxmlview").body.update(foxmlString);
+        var foxml = lore.ore.cache.getLoadedCompoundObject().toFOXML(function(foxml){ 
+            lore.global.util.transformXML({
+                stylesheetURL: "chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl", 
+                theXML: foxml, 
+                window: window,
+                serialize: true, 
+                callback: function(foxmlString){
+                    if (!foxmlString){
+                        foxmlString = "Unable to generate FOXML";
+                    }
+                    Ext.getCmp("remfoxmlview").body.update(foxmlString);    
+                }
+            });
+        });
+        
     },
     /** @private Render the current compound object as RDF/XML in the RDF view */
     updateRDFXMLView : function() {
-        var rdfString = lore.ore.cache.getLoadedCompoundObject().transform("chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl",{},true);
-        if (!rdfString) {
-            rdfString = "Unable to generate RDF/XML";
-        }
-        Ext.getCmp("remrdfview").body.update(rdfString);
+        var rdfXML = lore.ore.cache.getLoadedCompoundObject().serialize('rdf');
+        lore.global.util.transformXML({ 
+            stylesheetURL: "chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl",
+            theXML: rdfXML,
+            window: window,
+            serialize: true,
+            callback: function(rdfString){
+                if (!rdfString) {
+                    rdfString = "Unable to generate RDF/XML";
+                }
+                Ext.getCmp("remrdfview").body.update(rdfString);
+            }
+        });
     },
-    /** @private Generate a SMIL presentation from the current compound object and display a link to launch it */
-    updateSMILView : function() {
-        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures();
-        var numfigs = allfigures.getSize();
-        var smilcontents = "<p><a title='smil test hover' href='http://www.w3.org/AudioVideo/'>SMIL</a> is the Synchronized Multimedia Integration Language.</p>";
-        if (numfigs > 0) {
-            var smilpath = lore.ore.cache.getLoadedCompoundObject().generateSMIL(); // generate the new smil file
-            // into oresmil.xsl
-            smilcontents += "<p>A SMIL slideshow has been generated from the contents of the current compound object.</p><p>"
-                    + "<a onclick='lore.global.util.launchWindow(this.href, false, window);return(false);' target='_blank' href='file://"
-                    + smilpath
-                    + "'>Click here to launch the slideshow in a new window</a><br/>";
-        } else {
-            smilcontents += "<p>Once you have added some resources to the current compound object a SMIL presentation will be available here.</p>";
-        }
-        Ext.getCmp("remsmilview").body.update(smilcontents);
-        this.info("Display a multimedia presentation generated from the compound object contents");
-    },
+    
     /** Display an error message to the user
      * @param {String} message The message to display */
     error : function(/*String*/message){
