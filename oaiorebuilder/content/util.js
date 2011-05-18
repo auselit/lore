@@ -415,7 +415,7 @@ util = {
                     var content = xhr.responseText;
                     if (content){
                         var style = doc.createElement("style");
-                        style.innerHTML = xhr.responseText;
+                        style.innerHTML = content;
                         doc.getElementsByTagName("head")[0].appendChild(style);
                     }
                 }
