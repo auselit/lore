@@ -523,22 +523,22 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if ( !uri)
 			return;
 
-		var req = null;
+		var xhr = null;
 
 		var handleResponse = function() {
 			try {
-				if (req.status != 200) {
+				if (xhr.status != 200) {
 					var hst = (uri.length < 65) ? uri : uri.substring(0, 64) + '...';
 					throw new Error('Synchronous AJAX request status error.\n  URI: ' + hst +
-					'\n  Status: ' + req.status);
+					'\n  Status: ' + xhr.status);
 				}
 
-				var rtype = req.getResponseHeader('Content-Type');
+				var rtype = xhr.getResponseHeader('Content-Type');
 				if (rtype == null) {
-					var txt = req.responseText;
+					var txt = xhr.responseText;
 					var doc = null;
 					if (txt && (txt.indexOf(':RDF') > 0)) {
-						doc = req.responseXML;
+						doc = xhr.responseXML;
 						if ((doc == null) && (typeof DOMParser != 'undefined')) {
 							var parser = new DOMParser();
 							doc = parser.parseFromString(txt, 'application/xml');
@@ -562,23 +562,23 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				var result = "";
 				var bodyText = "";
 				if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') {
-					bodyContent = req.responseXML.getElementsByTagName('body');
+					bodyContent = xhr.responseXML.getElementsByTagName('body');
 					if (bodyContent[0]) {
 						bodyText = serializer.serializeToString(bodyContent[0]);
 					}
 					else {
-						bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
+						bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(xhr.responseText)[1];
 					}
 				} else if (rtype === 'application/rdf+xml') {
-					return req.responseXML;
+					return xhr.responseXML;
 				} else {
-					bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(req.responseText)[1];
+					bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(xhr.responseText)[1];
 				}
 
 				if (bodyText) {
 					return lore.global.util.sanitizeHTML(bodyText, window);
 				}
-				lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, req);
+				lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, xhr);
 				return "";
 			} catch (e ) {
 				lore.debug.anno("handleResponse", e);
@@ -587,11 +587,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		};
 
 		try {
-			req = new XMLHttpRequest();
-
-			req.onreadystatechange = function(){
+			xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function(){
 				try {
-					if (req.readyState == 4) {
+					if (xhr.readyState == 4) {
 						var body = handleResponse();
 						callback(anno, body);
 					}
@@ -599,10 +598,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					lore.debug.anno("Problem getting annotation body",e);
 				}
 			};
-			req.open("GET",uri);
-			req.setRequestHeader('User-Agent', 'XMLHttpRequest');
-			req.setRequestHeader('Content-Type', 'application/text');
-			req.send(null);
+			xhr.open("GET",uri);
+			xhr.setRequestHeader('User-Agent', 'XMLHttpRequest');
+			xhr.setRequestHeader('Content-Type', 'application/text');
+			xhr.send(null);
 		}
 		catch (ex) {
 			lore.debug.anno("Error in AJAX request: " + uri, ex);
@@ -975,44 +974,15 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
             lore.debug.anno("Problem creating feed url",e);
         }
     },
-	/**
-	 * For all top level annotations on a page ( those that are not replies), that are not variation annotations
-	 * generated RDF and transform it using the stylesheet supplied
-	 * @param {String} stylesheetURL The url of the stylesheet to use for transforming the RDF into another format
-	 * @param {Object} params Parameters to supply
-	 * @param {Boolean} serialize Specify whether the output will be serialized to a string. Defaults to a document fragment.
-	 * @return {Object} If serialize was supplied as true, then resulting XML will be returned as a string otherwise as a document fragment
-	 */
-	transformRDF: function(stylesheetURL, params, serialize){
-		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  &&
-																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
-
-		return lore.global.util.transformRDF(stylesheetURL, this.serializer.serialize(annos, this.annods, true),
-											params, window, serialize);
-	},
+	
 
 	/** Generate a Word document from the top-level, non-variation annotations on the page
 	 * @param domNode HTML node to serialize
 	 * @return {String} The annotated page returned as String containing WordML XML.
 	 */
 	createAnnoWord: function(domNode){
-		/* TODO: #117 - Further implementation required
+		/* TODO: #117  */
 
-		var serializer= new XMLSerializer();
-		var annos = this.annods.queryBy( function (rec,id) { return !rec.data.isReply  &&
-																		 !rec.data.type.match(lore.constants.NAMESPACES["vanno"]);}).getRange();
-		var theRDF = this.serializer.serialize(annos, this.annods, true);
-
-		 //santize HTML
-		var html = serializer.serializeToString(domNode);
-		html = lore.global.util.sanitizeHTML(html, window);
-		html = theRDF + "\n" + html;
-
-		// For testing...
-		//lore.global.util.writeFile(html, "c:\\", "test.txt", window);
-		//return this.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", {}, true);
-
-		return lore.global.util.transformRDF("chrome://lore/content/annotations/stylesheets/wordml.xsl", html, {}, window, true) */
 	},
 
 	/**
