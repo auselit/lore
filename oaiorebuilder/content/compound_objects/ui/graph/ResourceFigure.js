@@ -1015,6 +1015,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                 icon: "chrome://lore/skin/icons/network.png",
                 scope: this,
                 handler: function(evt){
+                    this.contextmenu.hide();
                 	Ext.getCmp("loreviews").activate("remexploreview");
 					var rdftype = this.getProperty("rdf:type_0");
 					var isCO = (rdftype && rdftype.match("ResourceMap"));
