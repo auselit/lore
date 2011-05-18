@@ -408,8 +408,8 @@ util = {
         var xhr = new win.XMLHttpRequest();
         xhr.open("GET", url);
         xhr.onreadystatechange = function(){
-            try {
-                if (xhr.readyState == 4) {
+            if (xhr.readyState == 4) {
+                try {
                     // status is probably 0 because it is loaded from chrome url,
                     // but assume it was ok if there is a response
                     var content = xhr.responseText;
@@ -418,9 +418,9 @@ util = {
                         style.innerHTML = content;
                         doc.getElementsByTagName("head")[0].appendChild(style);
                     }
+                } catch (e){
+                    debug.ui("Unable to inject CSS",e);
                 }
-            } catch (e){
-                debug.ui("Unable to inject CSS",e);
             }
         }
         xhr.send(null);  
