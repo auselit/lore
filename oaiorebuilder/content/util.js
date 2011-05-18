@@ -247,38 +247,11 @@ util = {
     },
 	
     /**
-     * Write content to a file
-     *
-     * THIS FUNCTION MAY NOT WORK, NOT TESTED
-     *
-     * It used to contain an insecure privilege escalation that was removed
-     * Jan 2011, it's not currently used anywhere. May not even have been
-     * required. - Damien
-     * 
-     * @param {String} content
-     * @param {nsiLocalFile} file The file to write to
-     * @return {String} The path to the file as a string
-     */
-    writeFile : function(content, file ,theWindow){
-	try {
-	    if(!file.exists()) 
-	    {
-		file.create( Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 420);
-	    }
-	    var stream = Components.classes["@mozilla.org/network/file-output-stream;1"]
-		.createInstance(Components.interfaces.nsIFileOutputStream);
-	    stream.init(file, 0x02 | 0x08 | 0x20, 0666, 0); // wronly | create | truncate
-	    stream.write(content, content.length);
-	    stream.close();
-	   
-	    return file.path;
-	} catch (e) {
-	    debug.ui("Unable to write to file: " + fileName, e);
-	    throw new Error("Unable to write to file" + e.toString());
-	}
-    },
-    /**
      * Prompts user to choose a file to save to (creating it if it does not exist)
+     * The callback should expect a single arg: a function which actually performs the save, 
+     * allowing contents to be generated asynchronously e.g. via XSLT transform.
+     * The reason for the callback for this function is so that the content is only generated when required: 
+     * the save as dialog can pop up quickly, without having to generate the contents first (or at all if the action is cancelled).
      * @param {} title
      * @param {} defExtension
      * @param {} callback 
@@ -286,13 +259,8 @@ util = {
      * @return {}
 	 */
 	writeFileWithSaveAs: function (title, defExtension, callback, win) {
-        // The callback should expect a single arg: the function which actually performs the save
-        // It is provided as a callback to allow contents to be generated asynchronously e.g. via XSLT transform
-        // The reason for splitting the function like this is so that the save as dialog can pop up quickly, without having to generate
-        // the contents first. If the save action is cancelled, no need to generate the contents (which may take some time)
 			var nsIFilePicker = Components.interfaces.nsIFilePicker;
 			var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-	        
 			fp.defaultExtension = defExtension;
 	        if ("xml" == defExtension){
 	            fp.appendFilters(nsIFilePicker.filterXML); 
@@ -304,7 +272,7 @@ util = {
 			var res = fp.show();
 			if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
 				callback(
-                    // a callback which performs the save
+                    // a function which performs the save
                     function(dataStr){
         				var thefile = fp.file;
         				var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
