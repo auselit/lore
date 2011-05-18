@@ -281,11 +281,15 @@ util = {
      * Prompts user to choose a file to save to (creating it if it does not exist)
      * @param {} title
      * @param {} defExtension
-     * @param {} callback Returns a string with the contents for the file
+     * @param {} callback 
      * @param {} win
      * @return {}
 	 */
 	writeFileWithSaveAs: function (title, defExtension, callback, win) {
+        // The callback should expect a single arg: the function which actually performs the save
+        // It is provided as a callback to allow contents to be generated asynchronously e.g. via XSLT transform
+        // The reason for splitting the function like this is so that the save as dialog can pop up quickly, without having to generate
+        // the contents first. If the save action is cancelled, no need to generate the contents (which may take some time)
 			var nsIFilePicker = Components.interfaces.nsIFilePicker;
 			var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
 	        
@@ -299,15 +303,19 @@ util = {
 			fp.init(win, title, nsIFilePicker.modeSave);
 			var res = fp.show();
 			if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
-				var dataStr = callback();
-				var thefile = fp.file;
-				var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
-				fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
-				var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
-				converter.init(fostream, "UTF-8", 0, 0);
-				converter.writeString(dataStr);
-				converter.close();
-				return {fname: thefile.persistentDescriptor, data:dataStr};
+				callback(
+                    // a callback which performs the save
+                    function(dataStr){
+        				var thefile = fp.file;
+        				var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
+        				fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
+        				var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+        				converter.init(fostream, "UTF-8", 0, 0);
+        				converter.writeString(dataStr);
+        				converter.close();
+        				return {fname: thefile.persistentDescriptor, data:dataStr};
+                    }
+                );
 			}
 			return null;
 			
@@ -1107,43 +1115,54 @@ util = {
 	       }
 	     }
 	},
-	/**
+    /**
      * Transform XML to a presentation format using an XSLT stylesheet
-     * @param {} stylesheetURL
-     * @param {} theRDF
-     * @param {} params
-     * @param {} win
-     * @param {} serialize
-     * @return {}
-	 */
-	transformXML: function(stylesheetURL, theXML, params, win, serialize) {
-	   try{
-    		var xsltproc = new win.XSLTProcessor();
-    	    // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
-    	    var xhr = new win.XMLHttpRequest();
-    	    xhr.overrideMimeType('text/xml');
-    	    xhr.open("GET", stylesheetURL, false);
-    	    xhr.send(null);
-    	    var stylesheetDoc = xhr.responseXML;
-    	    xsltproc.importStylesheet(stylesheetDoc);
-    	    for (param in params){
-    	        xsltproc.setParameter(null,param,params[param]);
-    	    }
-    	    xsltproc.setParameter(null, "indent", "yes");
-    	    var parser = new win.DOMParser();
-    	    var doc = parser.parseFromString(theXML, "text/xml");
-    	    var resultFrag = xsltproc.transformToFragment(doc, win.document);
-    	    if (serialize){
-    	         var serializer = new win.XMLSerializer();
-    	         return serializer.serializeToString(resultFrag);
-    	    } else {
-    	        return resultFrag;
-    	    }
-        } catch (e){
-            debug.ui("Error transforming RDF",e);
-            return "";
-        }
-	},
+     * @param {} args
+     */
+    transformXML: function(args) {
+            var stylesheetURL = args.stylesheetURL;
+            var theXML = args.theXML;
+            var win = args.window;
+            var serialize = args.serialize; // whether or not to serialize before calling callback
+            var callback = args.callback;
+            var params = args.params; // params to pass to XSLT stylesheet
+            
+            var xsltproc = new win.XSLTProcessor();
+            // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
+            var xhr = new win.XMLHttpRequest();
+            xhr.overrideMimeType('text/xml');
+            xhr.open("GET", stylesheetURL);
+            xhr.onreadystatechange = function(){
+                if (xhr.readyState == 4) {
+                    try{
+                        var stylesheetDoc = xhr.responseXML;
+                        // status is likely to be 0 because it is loaded from chrome URL
+                        // assume request was ok if there is a response
+                        if (stylesheetDoc){
+                            xsltproc.importStylesheet(stylesheetDoc);
+                            for (param in params){
+                                xsltproc.setParameter(null,param,params[param]);
+                            }
+                            xsltproc.setParameter(null, "indent", "yes");
+                            var parser = new win.DOMParser();
+                            var doc = parser.parseFromString(theXML, "text/xml");
+                            var resultFrag = xsltproc.transformToFragment(doc, win.document);
+                            var serializer = new win.XMLSerializer();
+                            if (serialize){
+                                var result = serializer.serializeToString(resultFrag);
+                                callback(result);
+                            } else {
+                                callback(resultFrag);
+                            }
+                        }
+                    } catch (e){
+                        debug.ui("Error transforming XML",e);
+                        return "";
+                    }
+                }
+            };
+            xhr.send(null);
+    },
     copyToClip : function(aString){
         var gClipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].  
             getService(Components.interfaces.nsIClipboardHelper);  
