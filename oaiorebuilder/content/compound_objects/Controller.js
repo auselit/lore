@@ -134,6 +134,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     bindViews: function(co){
     	lore.ore.ui.graphicalEditor.bindModel(co);
         Ext.getCmp("remlistview").bindModel(co);
+        lore.ore.ui.grid.bindModel(co.properties);
     },
     /**
      * Load a compound object into LORE
@@ -466,21 +467,48 @@ Ext.apply(lore.ore.Controller.prototype, {
     },
     copyCompoundObjectToNew: function(){
         try {
-            lore.debug.ore("copy")
-            // check/warn/return if empty
-            
-            if (lore.ore.cache && lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent())){
-                 // this is a new unsaved compound object, no need to create a new model object,
-                // try re-generating id in case repository has changed
-                
-            }
-            // check if pending changes /ask whether to save/yes->save/copy no->copy cancel->return
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            var newURI = lore.ore.reposAdapter.generateID();
+            /*if (lore.ore.cache && currentCO && lore.global.util.isEmptyObject(currentCO.getInitialContent())){
+                // this is a new unsaved compound object : should probably warn the user 
+            }*/
+            // TODO: check if pending changes /ask whether to save/yes->save/copy no->copy cancel->return
             if (currentCO && currentCO.isDirty()){
                 
             }
-            // otherwise copy
+            // reuse existing model object, updating uri to new
+            currentCO.copyToNewWithUri(newURI);
+            lore.ore.cache.setLoadedCompoundObjectUri(newURI);
+            lore.ore.cache.remove(currentCO.uri);
+            lore.ore.cache.add(newURI,currentCO);
+            lore.ore.cache.setLoadedCompoundObjectIsNew(true);
             
+            // remove read-only message in case original came from another repository
+            var title = currentCO.properties.getTitle();
+            Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50),false);
+            Ext.getCmp('currentCOSavedMsg').setText('*');
+            
+            this.isDirty = true;
+            this.wasClean = false;
+            
+            // Add default creator as creator of new CO
+            var dc = lore.constants.NAMESPACES["dc"];
+            var creatorIndex = currentCO.properties.findProperty(dc + "creator", this.defaultCreator);
+            if (creatorIndex == -1) {
+                lore.debug.ore("setting creator",this)
+                currentCO.properties.setProperty({
+                       id: dc+ "creator",
+                       ns: dc,
+                       name: "creator",
+                       value: this.defaultCreator,
+                       prefix: "dc",
+                       type: "plainstring"
+                });
+            }
+            // TODO: add lore:derived_from property
+            // TODO: raise properties
+            
+            lore.ore.ui.vp.info("Contents copied to new compound object");
         } catch (e){
             lore.debug.ore("copyCompoundObjectToNew",e)
         }
@@ -555,7 +583,6 @@ Ext.apply(lore.ore.Controller.prototype, {
             {id: "dc:title_0", name: "dc:title", value: "", type: "plainstring"}
         ]  
         );
- 
         lore.ore.ui.graphicalEditor.initGraph();
         this.isDirty = false;
         this.wasClean = true;
@@ -727,18 +754,39 @@ Ext.apply(lore.ore.Controller.prototype, {
             "trig": "txt",
             "json": "txt"
         };
+        var saveContents = function(savecb, data){
+            var fObj = savecb(data);
+            if ( fObj ) {
+                lore.ore.ui.vp.info("Successfully saved Compound Object data to " + fObj.fname);
+            } else {
+                lore.ore.ui.vp.info("Unable to save Compound Object data");
+            }
+        };
         try {
             format = format || "rdf"; // default value
-            var fObj = lore.global.util.writeFileWithSaveAs("Export Compound Object as", 
-                fileExtensions[format], 
-                function(){
-                    return lore.ore.cache.getLoadedCompoundObject().serialize(format);
+            var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            lore.global.util.writeFileWithSaveAs("Export Compound Object as", 
+                fileExtensions[format],
+                // savecb callback will actually write the file
+                function(savecb){ 
+                    if (format == "wordml"){
+                      currentCO.toWord(function(data){
+                        saveContents(savecb, data);
+                      }); 
+                    } else if (format == "foxml") {
+                      currentCO.toFOXML(function(data){
+                        saveContents(savecb, data);
+                      }); 
+                    } else {
+                        // otherwise get contents via serialize
+                        saveContents(savecb, currentCO.serialize(format));
+                    }
+                    
                 },
                 window
             );
-            if ( fObj ) {
-                lore.ore.ui.vp.info("Successfully saved Compound Object data to " +fObj.fname);
-            }                                           
+                    
+                                                
         } catch (e) {
             lore.debug.ore("Error saving Compound Objects data",e );
             lore.ore.ui.vp.error("Error saving Compound Object: " + e);
