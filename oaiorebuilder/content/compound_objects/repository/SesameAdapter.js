@@ -211,9 +211,10 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
      * @param {} uri
      * @param {} title
      * @param {} isCompoundObject
+     * @param {} callback
      * @return {}
      */
-    getExploreData : function(uri,title,isCompoundObject){
+    getExploreData : function(uri,title,isCompoundObject, callback){
         var eid = uri.replace(/&amp;/g,'&').replace(/&amp;/g,'&');
         var eid2 = escape(eid);
         try {
@@ -256,37 +257,34 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 		    var queryURL = this.reposURL
 		            + "?queryLn=sparql&query=" 
 		            + thequery;
-		    var jsonobj;
-            var xsltproc = new XSLTProcessor();
-            var xhr = new XMLHttpRequest();                
-            xhr.overrideMimeType('text/xml');
-            if (!this.exploreStylesheet){
-		        // get the stylesheet - this has to be an XMLHttpRequest because Ext.Ajax.request fails on chrome urls
-                // FIXME:
-		        xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl', false);
-		        xhr.send(null);
-		        this.exploreStylesheet = xhr.responseXML;
+            if (this.exploreStylesheet){
+                var xsltproc = new XSLTProcessor();
+                var xhr = new XMLHttpRequest();                
+                xhr.overrideMimeType('text/xml');
+		        xsltproc.importStylesheet(this.exploreStylesheet);
+                xsltproc.setParameter(null,'subj',eid);
+                if (title){
+                    xsltproc.setParameter(null,'title',title);
+                }
+                if (isCompoundObject){
+                    xsltproc.setParameter(null,'isCompoundObject','y');
+                }
+                // get the sparql xml
+                xhr.open("GET",queryURL);
+                xhr.onreadystatechange= function(){
+                    if (xhr.readyState == 4) {
+                        var rdfDoc = xhr.responseXML;
+                        var serializer = new XMLSerializer();
+                        lore.debug.ore("sparql explore result",serializer.serializeToString(rdfDoc));
+                        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
+                        var jsonobj = Ext.decode(serializer.serializeToString(thefrag));
+                        callback(jsonobj);
+                    }
+                };
+                xhr.send(null); 
+            } else {
+                lore.debug.ore("Explore view stylesheet not ready",this);
             }
-	        xsltproc.importStylesheet(this.exploreStylesheet);
-	        xsltproc.setParameter(null,'subj',eid);
-	        if (title){
-	            xsltproc.setParameter(null,'title',title);
-	        }
-            if (isCompoundObject){
-                xsltproc.setParameter(null,'isCompoundObject','y');
-            }
-	        // get the xml
-            // FIXME:
-	        xhr.open("GET",queryURL, false);
-	        xhr.send(null);
-	        var rdfDoc = xhr.responseXML;
-            var serializer = new XMLSerializer();
-            lore.debug.ore("sparql explore result",serializer.serializeToString(rdfDoc));
-	        var thefrag = xsltproc.transformToFragment(rdfDoc, document);
-	        
-            //lore.debug.ore("json is",serializer.serializeToString(thefrag));
-            jsonobj = Ext.decode(serializer.serializeToString(thefrag));
-            return jsonobj;
 	    } catch (ex){
 	        lore.debug.ore("SesameAdapter.getExploreData: ",ex);
 	    } 

@@ -622,7 +622,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 lore.debug.ore("problem updating explore view",ex);
             }
         }
-        var currentREM = lore.ore.cache.getLoadedCompoundObjectUri();
+        var currentCO = lore.ore.cache.getLoadedCompoundObject();
+        var currentREM = currentCO.uri;
         if (this.exploreLoaded !== currentREM) {
             this.exploreLoaded = currentREM;
             Ext.getCmp("exploreinfovis").body.hide();
@@ -638,11 +639,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
      * @param {function} f Function to apply
      */
     loadRem : function(id, title, isCompoundObject, f){
-        // get json from sparql query
-        var json = lore.ore.reposAdapter.getExploreData(id,title,isCompoundObject);
-        if (json){
-                f(json);
-        }
+        lore.ore.reposAdapter.getExploreData(id,title,isCompoundObject,f);
     },
     clearExploreData: function(){
         if (!this.fd){
@@ -674,6 +671,13 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     		lore.debug.ore("problem in hideUnconnectedNodes",e);
     	}
     },
+    showLoadingMessage : function(show){
+        if (show){
+            Ext.getCmp("exploreinfovis").el.addClass('explore-loading');
+        } else {
+            Ext.getCmp("exploreinfovis").el.removeClass('explore-loading')
+        }
+    },
     /** Initialize the explore view to display resources from the repository related to a compound object
      * @param {URI} id The URI of the compound object
      * @param {String} title Label to display for the compound object
@@ -682,6 +686,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         try{
             this.clearExploreData();
             lore.ore.ui.vp.progress("Retrieving data for explore view");
+            this.showLoadingMessage(true);
             this.loadRem(id, title, isCompoundObject || false, function(json){
                 lore.ore.explorePanel.fd.loadJSON(json);
                 lore.ore.explorePanel.fd.computeIncremental({
@@ -690,6 +695,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     onComplete: function(){ 
                       lore.ore.ui.vp.info("Explore data loaded");
                       var ep = lore.ore.explorePanel;
+                      lore.ore.explorePanel.showLoadingMessage(false);
                       Ext.getCmp("exploreinfovis").body.show();
                       Ext.getCmp("exploreHistory").body.show();
                       ep.fd.animate({
@@ -707,7 +713,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                       }
                     }
                 });
-
+                
                 var historyData = {
                         name: Ext.util.Format.ellipsis(title,30),
                         action : "lore.global.util.launchTab(\"" + id + "\", window);",
@@ -719,12 +725,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     historyData.action = "lore.ore.controller.loadCompoundObjectFromURL(\"" + id + "\");";
                     historyData.icon = "chrome://lore/skin/oaioreicon-sm.png";
                     historyData.tooltip = "Load in LORE";
-                }
-                    
+                }   
                 var historyEl = Ext.getCmp("exploreHistory").body.dom;
                     
                 historyEl.innerHTML = lore.ore.explorePanel.historyTemplate.apply(historyData);
-
+                
             });  
             if (!dontraise){
                 Ext.getCmp("loreviews").activate(this.id);

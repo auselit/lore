@@ -26,6 +26,18 @@ lore.ore.repos.RepositoryAdapter = function (reposURL){
     this.reposURL = reposURL;
     // prefix for identifiers is base URI (ie reposURL after http:// until next slash) plus 'rem/'
     this.idPrefix = reposURL.substring(0, reposURL.indexOf('/',7) + 1) + "rem/";
+    
+    // preload explore stylesheet
+    var xhr = new XMLHttpRequest();                
+    xhr.overrideMimeType('text/xml');
+    var oThis = this;
+    xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl');
+    xhr.onreadystatechange= function(){
+        if (xhr.readyState == 4) {
+            oThis.exploreStylesheet = xhr.responseXML;
+        }
+    };
+    xhr.send(null);
 };
 Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
     /**
@@ -56,7 +68,7 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
      * Get a compound object from the repository and load it into the editor
      * @param {String} remid The identifier of the compound object to get
      */
-    loadCompoundObject : function(remid){
+    loadCompoundObject : function(remid, callback, failcallback){
         throw "Method not implemented";
     },
     /**
@@ -84,7 +96,7 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
         return this.idPrefix + draw2d.UUID.create();
     },
     /** Create JSON with related resources for explore view */
-    getExploreData : function(uri,title,isCompoundObject) {
+    getExploreData : function(uri,title,isCompoundObject, callback) {
     	throw "Method not implemented";
     }
 });
