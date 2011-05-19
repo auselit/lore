@@ -27,8 +27,6 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
      */
     updateBinding : function (p) {
         try{
-        var currentCO = lore.ore.cache.getLoadedCompoundObject();
-        
         Ext.MessageBox.show({
                msg: 'Generating Summary',
                width:250,
@@ -38,11 +36,9 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
         });
             
          // TODO:  generate tmp co until mvc fixed
-         //var currentCO = lore.ore.cache.getLoadedCompoundObject();
+         var currentCO = lore.ore.cache.getLoadedCompoundObject();
          var coContents = currentCO.serialize('rdfquery');
          
-         // preload all nested compound objects to cache
-         lore.ore.cache.cacheNested(coContents, 0);
          var tmpCO = new lore.ore.model.CompoundObject();
          tmpCO.load({format: 'rdfquery',content: coContents});
 
@@ -164,10 +160,15 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
             skipProps[ns["rdf"]+"type"]=true;
             skipProps[ns["lorestore"]+"user"]=true;
             skipProps[ns["dc"]+"subject"]=true;
+            skipProps[ns["dc"]+"format"]=true;
             
             var sortedProps = o.getSortedArray(skipProps);
             for (var k = 0; k < sortedProps.length; k ++){
-                res += this.propTpl.apply(sortedProps[k]);
+                // don't display layout props: layout props may exist at this level if the user added the CO to itself
+                var prop = sortedProps[k][0];
+                if(prop && prop.prefix != "layout"){
+                    res += this.propTpl.apply(sortedProps[k]);
+                }
             }   
             return res;
           } catch (ex){

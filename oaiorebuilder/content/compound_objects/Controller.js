@@ -363,10 +363,10 @@ Ext.apply(lore.ore.Controller.prototype, {
 
 			lore.ore.ui.vp.info("Loading compound object");
 			Ext.Msg.hide();
-			// lore.debug.timeElapsed("set loaded in cache ");
-
 			lore.ore.cache.setLoadedCompoundObjectUri(remurl);
-
+            // preload nested compound objects to cache
+            lore.ore.cache.cacheNested(loadedRDF, 0);
+            
 			// lore.ore.populateResourceDetailsCombo();
 			// lore.debug.timeElapsed("show in history");
 			if (showInHistory) {

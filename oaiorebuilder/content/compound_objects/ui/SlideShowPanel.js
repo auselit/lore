@@ -183,8 +183,6 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         // TODO: slideshow should listen to model and this should not be regenerated each time
         var currentCO = lore.ore.cache.getLoadedCompoundObject();
         var coContents = currentCO.serialize('rdfquery');
-        // preload all nested compound objects to cache
-        lore.ore.cache.cacheNested(coContents, 0);
         var tmpCO = new lore.ore.model.CompoundObject();
         tmpCO.load({format: 'rdfquery',content: coContents});
         this.loadContent(tmpCO);
