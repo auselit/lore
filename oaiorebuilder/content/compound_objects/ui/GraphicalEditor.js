@@ -382,7 +382,9 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                 lore.debug.ore("Error getting title from history",e);
             }
         }
-        if (theURL && !this.lookup[theURL]) {
+        if (theURL && theURL == lore.ore.cache.getLoadedCompoundObjectUri()){
+            lore.ore.ui.vp.warning("Cannot add compound object to itself");
+        } else if (theURL && !this.lookup[theURL]) {
             var theProps = opts.props;
             if (opts.format){
                 theProps["dc:format_0"] = opts.format;
