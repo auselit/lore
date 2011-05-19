@@ -106,15 +106,20 @@ Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
                       var theurl = this.url.value.toString();
                       var nestedCO = that.getCompoundObject(theurl);
                       if (!nestedCO){
-                          // TODO: Load these asynchronously via the repository adapter
-                          var xhr = new XMLHttpRequest();
-                          xhr.overrideMimeType('text/xml');
-                          xhr.open("GET", theurl, false);
-                          xhr.send(null);
-                          nestedCO = new lore.ore.model.CompoundObject({uri: theurl});
-                          nestedCO.load({format: 'application/rdf+xml', content: xhr.responseXML});
-                          that.add(theurl, nestedCO);
-                          that.cacheNested(nestedCO.getInitialContent(), nestingLevel + 1);
+                          var callback = function(resp, opt){
+                            try{
+                                var nestedCO = new lore.ore.model.CompoundObject({uri: opt.url});
+                                nestedCO.load({format: 'application/rdf+xml', content: resp.responseXML});
+                                that.add(opt.url, nestedCO);
+                                that.cacheNested(nestedCO.getInitialContent(), nestingLevel + 1);
+                            } catch (ex){
+                                lore.debug.ore("problem loading into cache",ex)
+                            }
+                          };
+                          var failcallback = function(resp, opt){
+                            lore.debug.ore("failed to load into cache",[resp,opt]);
+                          };
+                          lore.ore.reposAdapter.loadCompoundObject(theurl, callback, failcallback);   
                       }
                     } catch (e) {
                         lore.debug.ore("Problem loading nested CO into cache",e);
