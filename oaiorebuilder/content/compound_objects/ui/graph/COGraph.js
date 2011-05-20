@@ -683,6 +683,14 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
              });
             this.contextmenu.add("-");
             this.contextmenu.add({
+                text: "Save Compound Object",
+                icon: "chrome://lore/skin/icons/disk.png",
+                scope: this,
+                handler: function(evt){                 
+                    lore.ore.controller.saveCompoundObjectToRepository();
+                }
+             });
+            this.contextmenu.add({
                 text: "New Compound Object",
                 icon: "chrome://lore/skin/icons/database_add.png",
                 scope: this,
@@ -690,12 +698,12 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 	lore.ore.controller.createCompoundObject();
                 }
              });
-            this.contextmenu.add({
-                text: "Save Compound Object",
-                icon: "chrome://lore/skin/icons/disk.png",
+             this.contextmenu.add({
+                text: "Copy Compound Object",
+                icon: "chrome://lore/skin/icons/database_go.png",
                 scope: this,
-                handler: function(evt){              	
-                	lore.ore.controller.saveCompoundObjectToRepository();
+                handler: function(evt){                 
+                    lore.ore.controller.copyCompoundObjectToNew();
                 }
              });
             this.contextmenu.add({
