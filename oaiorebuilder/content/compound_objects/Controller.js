@@ -19,7 +19,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Respond to authenticated events from AuthManager */
     onAuthErrorOrCancel : function(){
       if (Ext.MessageBox.isVisible()){
-	      lore.ore.ui.vp.error("Action cancelled");
+	      //lore.ore.ui.vp.error("Action cancelled");
 	      Ext.MessageBox.hide();  
       }
     },
@@ -505,9 +505,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                        type: "plainstring"
                 });
             }
-            // TODO: add lore:derived_from property
-            // TODO: raise properties
-            
+            Ext.getCmp("propertytabs").activate("properties");
             lore.ore.ui.vp.info("Contents copied to new compound object");
         } catch (e){
             lore.debug.ore("copyCompoundObjectToNew",e)
@@ -840,7 +838,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     addResource: function(uri,props){ 
         // TODO: #34 MVC:  make it add to model and get view to listen on model
     	Ext.getCmp("loreviews").activate("drawingarea");
-        var activeView = Ext.getCmp("loreviews").getActiveTab();
+        //var activeView = Ext.getCmp("loreviews").getActiveTab();
         /* TODO: allow list view to be active: bug at the moment with iframe previews
          * 
         // activate one of the editors
@@ -852,8 +850,8 @@ Ext.apply(lore.ore.Controller.prototype, {
         // temporarily update graphical editor: it should be listening on the model
         lore.ore.ui.graphicalEditor.addFigure({url:normalizedUri, props: props});
         
-        if (props && !props.batch){
-            activeView.showResource(normalizedUri);
+        if (!props || (props && !props.batch)){
+            lore.ore.ui.graphicalEditor.showResource(normalizedUri);
         }
     },
     /** Remove a resource from the compound object
