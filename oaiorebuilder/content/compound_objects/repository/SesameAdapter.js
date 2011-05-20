@@ -77,7 +77,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	       }
 	        
 	        var req = new XMLHttpRequest();
-	        req.open('GET', queryURL, true);
+	        req.open('GET', queryURL);
 	        req.onreadystatechange = function(aEvt) {
 	            if (req.readyState == 4) {
 	                if (req.responseText && req.status != 204
@@ -149,8 +149,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	       });
 	    try {                  
 	       var xmlhttp2 = new XMLHttpRequest();
-	       xmlhttp2.open("PUT",
-	           this.reposURL + "/statements?context=<" + remid + ">", true);
+	       xmlhttp2.open("PUT", this.reposURL + "/statements?context=<" + remid + ">");
 	       xmlhttp2.onreadystatechange = function() {
 	            if (xmlhttp2.readyState == 4) {
 	            	Ext.Msg.hide();
@@ -180,8 +179,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	    lore.debug.ore("deleting from sesame repository " + remid);
 	    try {
 	        var xmlhttp = new XMLHttpRequest();
-	        xmlhttp.open("DELETE",
-	            this.reposURL + "/statements?context=<" + remid + ">", true);  
+	        xmlhttp.open("DELETE", this.reposURL + "/statements?context=<" + remid + ">");  
 	        xmlhttp.onreadystatechange= function(){
 	            if (xmlhttp.readyState == 4) {
                     if (xmlhttp.status == 204) { // OK
