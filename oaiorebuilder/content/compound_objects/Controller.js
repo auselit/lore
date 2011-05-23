@@ -484,7 +484,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             lore.ore.cache.setLoadedCompoundObjectIsNew(true);
             
             // remove read-only message in case original came from another repository
-            var title = currentCO.properties.getTitle();
+            var title = currentCO.properties.getTitle() || "Untitled";
             Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50),false);
             Ext.getCmp('currentCOSavedMsg').setText('*');
             
