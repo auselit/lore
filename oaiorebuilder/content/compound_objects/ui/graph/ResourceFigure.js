@@ -324,6 +324,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 */
 	setContent : function(urlparam) {
 		var theurl;
+        this.iframearea.innerHTML = "<div class='nodeabstract'>Loading...</div>";
 		if (urlparam && urlparam !== "") {
 			theurl = urlparam;
 		} else {
@@ -365,7 +366,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 					+ "-data'><a href='#' onclick=\"lore.ore.controller.loadCompoundObjectFromURL('"
 					+ theurl
 					+ "');\">Compound Object: <br><img src='../../skin/icons/action_go.gif'>&nbsp;Load in LORE</a></div>";
-
 			this.metadataarea.innerHTML = "<ul class='hideuribox'><li title='Compound Object' class='mimeicon oreicon'>"
 					+ this.uriexpander
 					+ "<a title='" + theurl + "' onclick='lore.ore.controller.loadCompoundObjectFromURL(\""
@@ -449,7 +449,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @param {string} theurl
 	 */
 	createPreview : function(theurl) {
-		var iframe;
+        var iframe;
 		if (theurl.match("^http") == "http") {
 			iframe = lore.global.util.createSecureIFrame(window.top, theurl);
 		} else {
@@ -487,7 +487,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='a"
 				+ this.id + "-icon'>" + this.uriexpander + "<a title='"
 				+ urlparam + "' onclick='lore.global.util.launchTab(\""
-				+ urlparam + "\",window);' href='#'>" + urlparam
+				+ urlparam + "\",window);' href='#'>" + lore.global.util.escapeHTML(urlparam)
 				+ "</a></li></ul>";
 	},
 	/**
@@ -884,7 +884,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
           if (subj){
              return subj.replace(/&amp;/,'&');
           } else {
-            return subj;
+             return subj;
           }
         } else {
             return this.metadataproperties[pid];
@@ -964,7 +964,8 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
                     }
                  });
             }
-            if (!this.getProperty("dc:format_0").match("rdf")) {
+            var format = this.getProperty("dc:format_0");
+            if (!format || !format.match("rdf")) {
             	this.contextmenu.add({
                     text: "Open resource in separate window",
                     icon: "chrome://lore/skin/icons/page_go.png",
