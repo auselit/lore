@@ -70,8 +70,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
      * Set the URI that identifies the compound object
      */
 	copyToNewWithUri : function(newUri){
-        lore.debug.ore("new with uri",this);
-        if (this.uri != newUri){
+        var oldUri = this.uri;
+        if (oldUri != newUri){
             // remove loaded content
             this.loadedContent = {};
             this.uri = newUri;
@@ -87,6 +87,36 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                prefix: "rdf",
                type: "uri"
             },0);
+            // reset creation and modification dates to now
+            var dcterms = lore.constants.NAMESPACES["dcterms"];
+            var created = this.properties.getProperty(dcterms + "created",0);
+            created.value = new Date();
+            this.properties.setProperty(created,0);
+            var modified = this.properties.getProperty(dcterms + "modified",0);
+            modified.value = created.value;
+            this.properties.setProperty(modified,0);
+            // add lore:id_derived_from property
+            this.properties.setProperty({
+               id: lore.constants.NAMESPACES["lore"]+ "is_derived_from",
+               ns: lore.constants.NAMESPACES["lore"],
+               name: "is_derived_from",
+               value: oldUri,
+               prefix: "lore",
+               type: "uri"
+            },0);
+            // Add default creator as creator 
+            var dc = lore.constants.NAMESPACES["dc"];
+            var creatorIndex = this.properties.findProperty(dc + "creator", lore.ore.controller.defaultCreator);
+            if (creatorIndex == -1) {
+                this.properties.setProperty({
+                       id: dc+ "creator",
+                       ns: dc,
+                       name: "creator",
+                       value: lore.ore.controller.defaultCreator,
+                       prefix: "dc",
+                       type: "plainstring"
+                });
+            }
         }
         
     },
@@ -401,7 +431,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         }
         // serialize remaining compound object properties
         lore.ore.ui.grid.store.each(function (rec){
-           var propname = rec.id.substring(0,rec.id.indexOf("_"));
+           var propname = rec.id.substring(0,rec.id.lastIndexOf("_"));
            var proptype = rec.get("type");
            if (propname != 'dcterms:modified' && propname != 'dcterms:created' && propname != 'rdf:about'){
             rdfxml += serialize_property(propname, rec.data.value, proptype, ltsymb, nlsymb);
@@ -462,7 +492,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         var mpropval = fig.metadataproperties[mprop];
                         if (mpropval && mpropval != '') {
                             var tagname = mprop;
-                            var midx = mprop.indexOf("_");
+                            var midx = mprop.lastIndexOf("_");
                             if (midx != -1){
                                 tagname = mprop.substring(0,midx);
                             }

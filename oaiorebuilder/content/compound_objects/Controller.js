@@ -490,21 +490,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             
             this.isDirty = true;
             this.wasClean = false;
-            
-            // Add default creator as creator of new CO
-            var dc = lore.constants.NAMESPACES["dc"];
-            var creatorIndex = currentCO.properties.findProperty(dc + "creator", this.defaultCreator);
-            if (creatorIndex == -1) {
-                lore.debug.ore("setting creator",this)
-                currentCO.properties.setProperty({
-                       id: dc+ "creator",
-                       ns: dc,
-                       name: "creator",
-                       value: this.defaultCreator,
-                       prefix: "dc",
-                       type: "plainstring"
-                });
-            }
+
             Ext.getCmp("propertytabs").activate("properties");
             lore.ore.ui.vp.info("Contents copied to new compound object");
         } catch (e){
