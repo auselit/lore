@@ -25,6 +25,7 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
 	constructor: function(){
 		this.data = {};
 		this.addEvents('propertyChanged');
+        this.addEvents('propertyRemoved');
 	},
     /** setProperty Set a property or add if it does not exist
      * @param {Object} config The data for the property
@@ -60,7 +61,11 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
      */
     removeProperty : function(property, index){
       index = index || 0;
+      if (index < 0){ // invalid index: do nothing
+        return this.data;
+      }
       var propValues = this.data[property];
+      var theProp = propValues[index];
       if (propValues && propValues.length > index){
         propValues.splice(index,1);
         // remove from data if there are no other values for this property
@@ -68,6 +73,7 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
             delete propValues;
         }
       }
+      this.fireEvent('propertyRemoved', theProp, index);
       return this.data;
     },
     /** Get property with given index 
@@ -78,6 +84,9 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
     getProperty : function(property, index) {
         index = index || 0;
         var propValues = this.data[property];
+        if (index < 0){ // return all values of this property for negative index
+            return propValues;
+        }
         if (propValues && propValues.length > index){
             return propValues[index];
         } else {
