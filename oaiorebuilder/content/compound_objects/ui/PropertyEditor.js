@@ -242,6 +242,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 	                    if (((g.id == "nodegrid") && (record.id == "dc:format_0" || record.id == "rdf:type_0")) 
 	                        || ((g.id != "nodegrid") && (record.id == "dcterms:modified_0"
 	                        || record.id == "dcterms:created_0"
+                            || record.id == "lore:is_derived_from_0"
 	                        || record.id == "rdf:about_0" || record.id == "lorestore:user_0"))){
 						      return false;
 						} 
@@ -331,7 +332,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }, {
                         id : 'minus',
                         qtip : 'Remove the selected property',
-                        handler : this.removePropertyAction
+                        handler : this.removePropertyAction,
+                        scope: this
                     }, {
                         id : 'help',
                         qtip : 'Display information about the selected property',
@@ -447,30 +449,68 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         }
     },
     bindModel : function(model){
+        if (this.model == model){
+            return;
+        }
     	// Listen to model for property changes
     	if (this.model){
     		this.model.un("propertyChanged",this.onModelPropertyChanged,this);
+            this.model.un("propertyRemoved",this.onModelPropertyRemoved, this);
     	}
     	this.model = model;
     	if (this.model){
     		this.model.on("propertyChanged",this.onModelPropertyChanged,this);
+            this.model.on("propertyRemoved",this.onModelPropertyRemoved,this);
     	}
     },
     /** Update grid if property value changes in model */
     onModelPropertyChanged: function(config, index){
     	try{
 	    	if (config){
-	    		var rec = this.store.getById(config.prefix + ':' + config.name + "_" + index);
+                var theid = config.prefix + ':' + config.name + "_" + index;
+	    		var rec = this.store.getById(theid);
 	    		// check whether value has actually changed
 	    		if (rec && rec.value != config.value){
 	    			// update record
 	    			rec.set('value',config.value);
 	    			rec.commit();
-	    		}
+	    		} else if (!rec){
+                    // new property value: add to grid
+                    this.store.loadData([{id: theid, name: config.prefix + ":" + config.name, value: config.value, type: config.type}],true);
+                }
 	    	}
     	} catch (ex){
     		lore.debug.ore("onModelPropertyChanged",ex);
     	}
+    },
+    onModelPropertyRemoved: function(config,index){
+        try{
+          var theid = config.prefix + ':' + config.name + "_" + index;
+          var rec = this.store.getById(theid);
+          if(rec){
+            this.store.remove(rec);
+          }
+          // renumber indexes in store
+          var propValues = this.model.getProperty(config.id,-1); // get all values
+          if (propValues){
+            var numProps = propValues.length;
+            // get previous last prop value (will be at index=length because one property has been removed)
+            var oldId = config.prefix + ":" + config.name + "_" + (propValues.length);
+            rec = this.store.getById(oldId);
+            if (rec) {
+                rec.set("id", theid);
+                rec.id = theid;
+                rec.commit();
+                // Force store to reindex with new id by adding and deleting the record
+                var recIndex = this.store.indexOf(rec);
+                this.store.remove(rec);
+                this.store.insert(recIndex, [rec]);
+            }
+          }
+        } catch (ex){
+            lore.debug.ore("onModelPropertyRemoved", ex);
+        }
+       
     },
     /** Grey out rows that are not editable by the user */
     propNameRenderFunction: function(val, cell, rec){
@@ -478,6 +518,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 (rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
                     || rec.data.id == "rdf:type_0"
                     || rec.data.id == "rdf:about_0" 
+                    || rec.data.id == "lore:is_derived_from_0"
                     || (this.id != 'nodegrid' 
                             && (rec.data.id == "dcterms:modified_0" ||
                             rec.data.id == "dcterms:created_0"))
@@ -524,6 +565,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     			(rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
     				|| rec.data.id == "rdf:type_0"
     			    || rec.data.id == "rdf:about_0" 
+                    || rec.data.id == "lore:is_derived_from_0"
     			    || (this.id != 'nodegrid' 
     			    		&& (rec.data.id == "dcterms:modified_0" ||
     			    		rec.data.id == "dcterms:created_0"))
@@ -556,6 +598,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         var counter = 0;
                         var prop = pstore.getById(this.text + "_" + counter);
                         while (prop) {
+                            if (prop && !prop.get("value")){
+                                // don't add a second blank property, highlight existing
+                                panel.getSelectionModel().selectRecords([prop]);
+                                return;
+                            }
                             counter = counter + 1;
                             prop = pstore.getById(this.text + "_" + counter);
                         }
@@ -565,7 +612,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                             ptype = "date";
                         }
                         pstore.loadData([{id: theid, name: this.text, value: "", type: ptype}],true);
-                        
                     } catch (ex){
                         lore.debug.ore("exception adding prop " + this.text,ex);
                     }
@@ -603,7 +649,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} toolEl
      * @param {} panel
      */
-    removePropertyAction: function (ev, toolEl, panel) { 
+    removePropertyAction: function (ev, toolEl, panel) {  
         try {
         var om = lore.ore.ontologyManager;
         var sel = panel.getSelectionModel().getSelected();
@@ -611,21 +657,38 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         if (panel.collapsed) {
             lore.ore.ui.vp.info("Please expand the properties panel and select the property to remove");
         } else if (sel) {
-            // TODO: #2 (refactor): should allow first to be deleted as long as another exists
-            // should also probably renumber
-                 if (sel.id.match("_0")){ // first instance of property: check if it's mandatory
-                    var propId = sel.id.substring(0,sel.id.indexOf("_0"));
-                    if ((panel.id == "remgrid" && om.CO_REQUIRED.indexOf(propId)!=-1) ||
-                        (panel.id == "nodegrid" && 
-                            (om.RES_REQUIRED.indexOf(propId) !=-1 ||
-                                om.REL_REQUIRED.indexOf(propId)!=-1))){
-                        lore.ore.ui.vp.warning("Cannot remove mandatory property: " + sel.data.name);
+            var propName = sel.get("name");
+            var selsplit = propName.split(":");
+            if (selsplit.length > 1){
+                var propId = lore.constants.NAMESPACES[selsplit[0]] + selsplit[1];
+                var propValues = this.model.getProperty(propId, -1);
+                if (!propValues){
+                    // Property hasn't been saved yet, remove from store
+                    this.store.remove(sel);
+                } else if (propValues.length == 1){ /// also check that selection is prop 0
+                    // check whether it is the only value for a mandatory property
+                    if ((panel.id == "remgrid" && om.CO_REQUIRED.indexOf(propName)!=-1) ||
+                                (panel.id == "nodegrid" && (om.RES_REQUIRED.indexOf(propName) !=-1 ||
+                                        om.REL_REQUIRED.indexOf(propName)!=-1))){
+                        lore.ore.ui.vp.warning("Cannot remove mandatory property: " + propName);          
                     } else {
-                        panel.getStore().remove(sel);
+                        this.model.removeProperty(propId, 0);
                     }
-                } else { // not the first instance of the property: always ok to delete
-                    panel.getStore().remove(sel);
+                } else {
+                    // Multiple instances of the property: always ok to delete, but may need to renumber
+                    var propIndex = sel.get("id").substring((sel.get("id").lastIndexOf("_") + 1));
+                    if (propIndex < propValues.length){
+                        this.model.removeProperty(propId, propIndex);
+                    } else {
+                        // property hasn't been saved yet, remove from store
+                        this.store.remove(sel);
+                    }
                 }
+            } else {
+                // property without namespace in name (probably Compound Object ID), don't allow delete
+                lore.ore.ui.vp.warning("Cannot remove mandatory property: " + propName);
+                
+            }
          } else {
             lore.ore.ui.vp.info("Please click on the property to remove prior to selecting the remove button");
          }
@@ -664,9 +727,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         }
     },
     handlePropertyRemove : function(store, record, index){
-        if (this.id == "nodegrid"){            
-        	lore.ore.ui.graphicalEditor.getSelectedFigure().unsetProperty(record.id);
-        }
         lore.ore.controller.setDirty();
     },
     /** update the properties for the selected figure */
@@ -716,10 +776,32 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true);
                     }
                     // TODO: update model not figure
-                    selfig.setProperty(args.record.id,cleanvalue,args.record.data.type);
+                    selfig.setProperty(args.record.id,cleanvalue,args.record.get("type"));
                 }
                 lore.ore.ui.nodegrid.store.commitChanges();
             } else {
+                // commit the change to the datastore
+                this.store.commitChanges(); 
+                // Update the model
+                var pid = args.record.get("id");
+                var pidsplit = pid.split(":");
+                var pfx = pidsplit[0];
+                pidsplit = pidsplit[1].split("_");
+                var idx = pidsplit[1];
+                var propname = pidsplit[0];
+                var ns = lore.constants.NAMESPACES[pfx];
+                var propuri = ns + propname;
+                var cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true); 
+                var propData = {
+                    id: propuri, 
+                    ns: ns, 
+                    name: propname, 
+                    value: cleanvalue, 
+                    prefix: pfx,
+                    type: args.record.get("type")
+                };
+                this.model.setProperty(propData);
+                
                  // update the CO title in the dataview
                   if (args.record.id == "dc:title_0") {
                     lore.ore.coListManager.updateCompoundObject(
@@ -730,8 +812,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     var readOnly = !lore.ore.cache.getLoadedCompoundObjectUri().match(lore.ore.reposAdapter.idPrefix);
                     Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(args.value, 50) + (readOnly? ' (read-only)' : ''),false);
                   }
-                // commit the change to the datastore
-                this.store.commitChanges();       
             }
         } catch (e){
             lore.debug.ore("error handling property change",e);
