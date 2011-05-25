@@ -66,6 +66,34 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             lore.debug.ore("CompoundObject: resource not found " + aUri, this.aggregatedResourceStore);
         }
 	},
+    initProperties : function(){
+        this.properties.setProperty({
+               id: lore.constants.NAMESPACES["rdf"]+ "about",
+               ns: lore.constants.NAMESPACES["rdf"],
+               name: "about",
+               value: this.uri,
+               prefix: "rdf",
+               type: "uri"
+        },0);
+        this.properties.setProperty({
+               id: lore.constants.NAMESPACES["dc"]+ "creator",
+               ns: lore.constants.NAMESPACES["dc"],
+               name: "creator",
+               value: lore.ore.controller.defaultCreator,
+               prefix: "dc",
+               type: "plainstring"
+        },0);
+         this.properties.setProperty({
+               id: lore.constants.NAMESPACES["dc"]+ "title",
+               ns: lore.constants.NAMESPACES["dc"],
+               name: "title",
+               value: "",
+               prefix: "dc",
+               type: "plainstring"
+        },0);   
+        // TODO: also store created and modified
+            
+    },
     /**
      * Set the URI that identifies the compound object
      */

@@ -555,18 +555,20 @@ Ext.apply(lore.ore.Controller.prototype, {
         // TODO: fix properties - use date string for now
         // TODO: should not assign an id until it has been saved
         var currentREM = lore.ore.reposAdapter.generateID();
-        lore.ore.cache.add(currentREM, new lore.ore.model.CompoundObject({uri: currentREM}));
+        var currentCO = new lore.ore.model.CompoundObject({uri: currentREM});
+        lore.ore.cache.add(currentREM, currentCO);
         lore.ore.cache.setLoadedCompoundObjectUri(currentREM);
         lore.ore.cache.setLoadedCompoundObjectIsNew(true);
         lore.ore.ui.grid.store.loadData(
         [
             {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: currentREM, type: "uri"},
-            {id: "dc:creator_0", name: "dc:creator", value: lore.ore.controller.defaultCreator, type: "uri"},
+            {id: "dc:creator_0", name: "dc:creator", value: lore.ore.controller.defaultCreator, type: "plainstring"},
             {id: "dcterms:modified_0", name: "dcterms:modified", value: cDate, type: "date"},
             {id:"dcterms:created_0", name:"dcterms:created",value: cDate, type: "date"},
             {id: "dc:title_0", name: "dc:title", value: "", type: "plainstring"}
         ]  
         );
+        currentCO.initProperties();
         lore.ore.ui.graphicalEditor.initGraph();
         this.isDirty = false;
         this.wasClean = true;
