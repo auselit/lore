@@ -38,20 +38,27 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
        @param {int} index Optional index of existing property to update
      */
     setProperty: function(config, index){
-        var propValArray = this.data[config.id];
-        if (!propValArray){
-            propValArray = [config];
-            this.data[config.id] = propValArray;
-        } else {
-            if (typeof index !== "undefined" && index < propValArray.length){
-                // update existing property at index
-                propValArray[index] = config;
+        try{ 
+            var propValArray = this.data[config.id];
+            var retIndex = 0;
+            if (!propValArray){
+                propValArray = [config];
+                this.data[config.id] = propValArray;
             } else {
-                // add new property
-                propValArray.push(config);
+                if (typeof index !== "undefined" && index < propValArray.length){
+                    // update existing property at index
+                    propValArray[index] = config;
+                    retIndex = index;
+                } else {
+                    // add new property
+                    propValArray.push(config);
+                    retIndex = propValArray.length - 1;
+                }
             }
+            this.fireEvent('propertyChanged', config, retIndex);
+        } catch (ex){
+            lore.debug.ore("setProperty",ex);
         }
-        this.fireEvent('propertyChanged', config, index);
     },
     /** Remove a property with a given index (if no index is supplied, 0 is assumed)
      * 
@@ -72,8 +79,8 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
         if (propValues.length == 0) {
             delete propValues;
         }
+        this.fireEvent('propertyRemoved', theProp, index);
       }
-      this.fireEvent('propertyRemoved', theProp, index);
       return this.data;
     },
     /** Get property with given index 
