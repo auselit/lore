@@ -338,12 +338,14 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
             var props = this.model.get("properties");
             if (props){
                 props.un("propertyChanged",this.handlePropertyChanged, this);
+                props.un("propertyRemoved", this.handlePropertyRemoved, this);
             }
         }
 		this.model = modelObj;
         var props = modelObj.get("properties");
         if (props){
             props.on("propertyChanged",this.handlePropertyChanged,this);
+            props.on("propertyRemoved", this.handlePropertyRemoved, this);
         }
 	},
 	/**
@@ -787,7 +789,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		var oldval = this.getProperty(pid);
 		this.metadataproperties[pid] = pval;
 		if (pid == "resource_0" && pval != oldval) {
-			this.unsetProperty("dc:format_0");
+			this.unsetProperty("dc:format_0", true);
 			this.setContent(pval);
 			// model is updated by setContent
 		} else if ((pid == "dc:title_0" || pid == "dcterms:title_0")){
@@ -844,7 +846,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * 
 	 * @param {} pid The id of the property eg dc:title_0
 	 */
-	unsetProperty : function(pid) {
+	unsetProperty : function(pid, updateModel) {
 		delete this.metadataproperties[pid];
 		if (pid == "dc:title_0" || pid == "dcterms:title_0") {
 			var existingTitle = this.getProperty("dc:title_0")
@@ -863,7 +865,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
         }
 		// Update model
 		var propData = this.expandPropAbbrev(pid);
-    	if (propData && propData.id){
+    	if (updateModel && propData && propData.id){
     		this.model.get('properties').removeProperty(propData.id, propData.index);
     	}
 	},
@@ -911,6 +913,11 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
         //lore.debug.ore("Resource Figure property changed " + index,propData);
         if (propData && propData.id == lore.constants.NAMESPACES["layout"] + "highlightColor"){
             this.setHighlightColor(propData.value);
+        }
+    },
+    handlePropertyRemoved: function(propData, index){
+        if (propData){
+            this.unsetProperty(propData.ns + ":" + propData.name + "_" + index, false);
         }
     },
 	/**
