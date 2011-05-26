@@ -1,0 +1,128 @@
+
+#lore-toolbar-button
+{
+  list-style-image: url("chrome://lore/skin/oaioreicon-sm.png");
+}
+#lore-toolbar-button:hover
+{
+  list-style-image: url("chrome://lore/skin/oaioreicon-sm-hlite.png");
+}
+#oobStatusBar {
+    cursor: pointer;
+}
+#loreStatusIcon {
+    list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
+}
+
+#oobAnnoContentBox {
+	width: 35%;	
+}
+#oobAnnoCloseButton {
+	-moz-appearance: none;
+	-moz-image-region: rect(0px, 14px, 14px, 0px);
+	border: 1px solid transparent;
+	list-style-image: url("chrome://global/skin/icons/close.png");
+	padding: 2px !important;
+}
+#oobAnnoCloseButton:hover {
+	-moz-image-region: rect(0px, 28px, 14px, 14px);
+}
+#oobAnnoCloseButton:hover:active {
+	-moz-image-region: rect(0px, 42px, 14px, 28px);
+}
+
+#oobAnnoVarContentLabel {
+	font-size: 110%;
+}
+
+
+#oobMenuButton {
+	/*margin: 0 4px 0 0;
+    padding: 0 0 0 4px;*/
+	list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
+}
+#add-node {
+	list-style-image: url(chrome://lore/skin/icons/add.png);
+}
+#create-co {
+	list-style-image: url(chrome://lore/skin/icons/box-plus.png);
+	list-style-image: url(chrome://lore/skin/icons/database_add.png);
+}
+#save-rdf {
+	list-style-image: url(chrome://lore/skin/icons/disk.png);
+}
+#delete-rdf {
+	/*list-style-image: url(chrome://lore/skin/icons/box-minus.png);	*/
+	list-style-image: url(chrome://lore/skin/icons/database_delete.png);	
+}
+#copy-rdf {
+   /*	list-style-image: url(chrome://lore/skin/icons/box-arrow.png);	*/
+   list-style-image: url(chrome://lore/skin/icons/database_go.png);
+}
+#reset-co, #reset-anno {
+	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
+}
+#layout-co {
+	list-style-image: url(chrome://lore/skin/icons/layout.png);
+}
+#auth-status-icon, #auth-status-icon-co {
+	list-style-image: url(chrome://lore/skin/icons/user_key.png);
+}
+#auth-status-icon.signed-in, #auth-status-icon-co.signed-in {
+	list-style-image: url(chrome://lore/skin/icons/tick.png);
+}
+#add-annotation {
+	list-style-image: url(chrome://lore/skin/icons/comment_add.png);
+}
+
+#remove-annotation {
+	list-style-image: url(chrome://lore/skin/icons/comment_delete.png);
+}
+
+#edit-annotation {
+	list-style-image: url(chrome://lore/skin/icons/comment_edit.png);
+}
+
+#reply-annotation {
+	list-style-image: url(chrome://lore/skin/icons/comments_add.png);
+}
+#save-annotation {
+	list-style-image: url(chrome://lore/skin/icons/disk.png);
+}
+
+#save-all-annotations {
+	list-style-image: url(chrome://lore/skin/icons/disk_multiple.png);
+}
+#show-annotations {
+	list-style-image: url(chrome://lore/skin/icons/comment_yellow.gif);	
+}
+#load-rdf{
+	
+}
+#import-export, #import-export-anno {
+	list-style-image: url(chrome://lore/skin/icons/table_refresh.png);
+}
+#co-find {
+	list-style-image: url(chrome://lore/skin/icons/page_white_magnify.png);
+}
+#show-prefs, #show-prefs2 {
+	list-style-image: url(chrome://lore/skin/icons/cog.png);
+}
+#report-problem, #report-problem2 {
+	list-style-image: url(chrome://lore/skin/icons/mail-exclamation.png);
+}
+.text-link {
+	margin-left: 5px;
+}
+
+/* For ontologies table in pref dialog */
+treechildren::-moz-tree-checkbox {
+  list-style-image: none;
+}
+treechildren::-moz-tree-checkbox(checked){
+  list-style-image: url("chrome://global/skin/checkbox/cbox-check.gif");
+}
+treechildren::-moz-tree-cell-text(default){
+	color: gray;
+}
+

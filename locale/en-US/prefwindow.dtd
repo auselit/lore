@@ -1,0 +1,37 @@
+<!ENTITY ui.label "User Interface">
+<!ENTITY anno.label "Annotations">
+<!ENTITY co.label "Compound Objects">
+<!ENTITY general.label "General">
+<!ENTITY repos.label "Repositories">
+<!ENTITY co.label "Compound Objects">
+<!ENTITY tm.label "Text Mining">
+<!ENTITY tmkey.label "Text mining API key:">
+<!ENTITY tmkey.message "Please visit the OpenCalais site to request an access key for the text mining service:">
+<!ENTITY annotation_mode.label "Show experimental scholarly annotation fields" >
+<!ENTITY prefwindow.title "LORE preferences">
+<!ENTITY grapheditor.label "Graphical editor">
+<!ENTITY listeditor.label "Resource List editor">
+<!ENTITY coeditor.label "Preferred editor:">
+<!ENTITY relonturl.label "Compound Object Ontology:">
+<!ENTITY relonturl.accesskey "U">
+<!ENTITY relontns.label "Relationship Ontology Namespace:">
+<!ENTITY relontns.accesskey "N">
+<!ENTITY relontprefix.label "Relationship Ontology Prefix:">
+<!ENTITY rdfrepos.label "URL:">
+<!ENTITY rdfrepostype.label "Repository Type:">
+<!ENTITY sesame.label "Sesame">
+<!ENTITY fedora.label "Fedora">
+<!ENTITY lorestore.label "LoreStore">
+<!ENTITY relontprefix.accesskey "P">
+<!ENTITY dccreator.label "Creator (your name):">
+<!ENTITY dccreator.accesskey "C">
+<!ENTITY annometaontology.label "Annotation Ontology:">
+<!ENTITY annoserver.label "Annotation Server URL:">
+<!ENTITY annocachetimeout.label "Page cache timeout" >
+<!ENTITY disable_anno.label "Disable annotation features">
+<!ENTITY disable_co.label "Disable compound object features">
+<!ENTITY debug.label "Logging" >
+<!ENTITY filelogging.label "Enable logging to file" >
+<!ENTITY accessibility.label "Accessibility">
+<!ENTITY highcontrast.label "Enable high contrast" >
+<!ENTITY annotation_create_private.label "Create private annotations by default" >

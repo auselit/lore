@@ -1,0 +1,19 @@
+/* Message colours for Firebug trace console */ 
+.DBG_LORE_UI {
+	color: green;
+}
+.DBG_LORE_ANNO {
+	color: blue;
+}
+.DBG_LORE_ORE {
+	color: orange;
+}
+.DBG_LORE_TM {
+	color: pink;
+}
+.DBG_LORE_NOTYPE {
+	color: black;
+}
+.DBG_LORE_PROFILING {
+	color: black;
+}

@@ -1,0 +1,112 @@
+<html>
+<!--
+ * Copyright (C) 2008 - 2010 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ *  
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit project.
+ *
+ * LORE is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
+-->
+    <head>
+        <!--  Ext and extensions for UI -->
+        <script type="text/javascript" src="../lib/jquery-1.3.2.js"></script>
+        <script type="text/javascript" src="../lib/ext3.2/adapter/jquery/ext-jquery-adapter.js"></script>
+        <script type="text/javascript" src="../lib/jquery.rdfquery.rdfa.js"></script>
+		<script type="text/javascript" src="../lib/jquery.simpletip-1.3.1.min.js"></script>
+        <script type="text/javascript" src="../lib/ext3.2/ext-all-debug.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/carousel.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/MultilineTreeNodeUI.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/StatusBar.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/uxvismode.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/PagingStore.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/DataView-more.js"></script>
+		<script type="text/javascript" src="../lib/ext/ux/Ext.ux.ScrollMenu.js"></script>
+		<script type="text/javascript" src="../lib/ext/ux/MidasCommand.js"></script>
+		<script type="text/javascript" src="../lib/ext/ux/SuperBoxSelect.js"></script>
+        <!-- Set up namespaces and global imports -->
+		<script type="text/javascript" src="namespaces.js"></script>
+
+        <!-- Repository access -->
+        <script type="text/javascript" src="repository/RepositoryAdapter.js"></script>
+        <script type="text/javascript" src="repository/SesameAdapter.js"></script>
+        <script type="text/javascript" src="repository/RestAdapter.js"></script>
+        <script type="text/javascript" src="repository/FedoraAdapter.js"></script>
+        <script type="text/javascript" src="../AuthManager.js"></script>
+		
+        <!-- Controller -->
+        <script type="text/javascript" src="Controller.js"></script>
+        
+        <!-- Model classes -->
+		<script type="text/javascript" src="../ontologies/thesaurus.js"></script>
+        <script type="text/javascript" src="model/ResourceProperties.js"></script>
+        <script type="text/javascript" src="model/CompoundObject.js"></script>
+        <script type="text/javascript" src="model/Relationship.js"></script>
+        <script type="text/javascript" src="model/CompoundObjectCache.js"></script>
+        <script type="text/javascript" src="model/CompoundObjectList.js"></script>
+        <script type="text/javascript" src="model/CompoundObjectListManager.js"></script>
+        <script type="text/javascript" src="model/HistoryManager.js"></script>
+        <script type="text/javascript" src="model/OntologyManager.js"></script>
+ 
+        <!-- Views / UI -->
+        <script type="text/javascript" src="ui/PagingToolbar.js"></script>
+        <script type="text/javascript" src="ui/CompoundObjectDataView.js"></script>
+        <script type="text/javascript" src="ui/GraphicalEditor.js"></script>
+		<script type="text/javascript" src="ui/PropertyEditor.js"></script>
+        <script type="text/javascript" src="ui/RelationshipEditor.js"></script>
+        <script type="text/javascript" src="ui/ResourceListPanel.js"></script>
+		<script type="text/javascript" src="ui/NarrativePanel.js"></script>
+		<script type="text/javascript" src="ui/SlidePanel.js"></script>
+        <script type="text/javascript" src="ui/SlideShowPanel.js"></script> 
+        <script type="text/javascript" src="ui/ExplorePanel.js"></script>
+        <script type="text/javascript" src="ui/Viewport.js"></script>
+        <script type="text/javascript" src="ui/SearchPanel.js"></script>
+        
+        <!-- JIT: used in Explore view -->
+        <script type="text/javascript" src="../lib/jit.js"></script>
+        
+		<!--  Draw2D and extensions: used in Graphical Editor view  -->
+        <script type="text/javascript" src='../lib/wz_jsgraphics.js'></script>
+        <script type="text/javascript" src='../lib/draw2d.js'></script>
+        <script type="text/javascript" src="ui/graph/ResizeHandle.js"></script>
+        <script type="text/javascript" src="ui/graph/ArrowConnectionDecorator.js"></script>
+		<script type="text/javascript" src="ui/graph/RelationshipLabel.js"></script>
+        <script type="text/javascript" src="ui/graph/LabelLocator.js"></script>
+		<script type="text/javascript" src="ui/graph/ContextmenuConnection.js"></script>
+        <script type="text/javascript" src="ui/graph/CommandSetRelationship.js"></script>
+		<script type="text/javascript" src="ui/graph/Port.js"></script>
+		<script type="text/javascript" src="ui/graph/ResourceFigure.js"></script>
+		<script type="text/javascript" src="ui/graph/CommandGroup.js"></script>
+		<script type="text/javascript" src="ui/graph/CommandStack.js"></script>
+		<script type="text/javascript" src="ui/graph/COGraph.js"></script>
+        <script type="text/javascript" src="ui/graph/Layout.js"></script>
+
+        
+        <!--  styles -->
+        <link rel="stylesheet" type="text/css" href="../lib/ext3.2/resources/css/ext-all.css"/>
+        <link rel="stylesheet" type="text/css" href="../lib/ext3.2/resources/css/xtheme-gray.css"/>
+        <link rel="stylesheet" type="text/css" href="../loreui.css"/>
+        <link rel="stylesheet" type="text/css" href="stylesheets/XMLPrettyPrint.css">
+        <link rel="stylesheet" type="text/css" href="../lib/ext/ux/superboxselect.css"/>
+        <link rel="stylesheet" type="text/css" href="../lib/ext/ux/carousel.css"/>	
+		<link rel="stylesheet" type="text/css" href="../lib/ext/ux/Ext.ux.ScrollMenu.css"/>
+		<link rel="stylesheet" type="text/css" href="lore_ore.css"/>
+		<link rel="alternate stylesheet" type="text/css" title="highContrastExt" disabled="true" href="../lib/ext3.2/resources/css/xtheme-access.css"/>
+        <link rel="alternate stylesheet" type="text/css" title="highContrastUI" disabled="true" href="../loreui-access.css"/>
+        <link rel="alternate stylesheet" type="text/css" title="highContrast" disabled="true" href="lore_ore-access.css"/>	
+        <title>LORE Compound Objects</title>        
+    </head>
+    <body>      		
+		<script type="text/javascript" src="init.js"></script>
+    </body>
+</html>
