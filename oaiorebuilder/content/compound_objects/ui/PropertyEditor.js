@@ -800,7 +800,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     prefix: pfx,
                     type: args.record.get("type")
                 };
-                this.model.setProperty(propData);
+                this.model.setProperty(propData,idx);
                 
                  // update the CO title in the dataview
                   if (args.record.id == "dc:title_0") {

@@ -418,7 +418,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                         prefix: pfx,
                         type: "plainstring"
                     };
-                    figProps.setProperty(propData);
+                    figProps.setProperty(propData,idx);
                 }
                 this.model.addAggregatedResource({
                         uri: theURL,
