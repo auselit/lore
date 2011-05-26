@@ -371,7 +371,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             result += " rdf:datatype=\"" + lore.constants.NAMESPACES["layout"]+ "escapedHTMLFragment\""
                         }
                         result += ">"
-                          + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
+                          + lore.global.util.escapeHTML(propval.toString().replace(/&amp;/g,'&'))
                           + ltsymb + "/" + propname + ">" + nlsymb;
                     }
                     
