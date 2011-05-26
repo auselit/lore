@@ -1,5 +1,21 @@
 LORE (Literature Object Re-use and Exchange)
-
+version 0.70
+  Preferences have been updated to point to the new annotation & compound object store.
+  
+  Compound Objects:
+  * Supports single-sign-on authentication using the same account system as for annotations
+  * dc:type supported in property editor: types can be selected from DCMI standard types
+  * New icons displayed to represent resource types (from dc:type or dc:format from mimetype)
+  * Adds the option to highlight resources in the editor using colors (choose colour from resource node context menu in the graphical editor or resource list)
+  * Now uses tagging interface for dc:subject property, allowing tags to be selected from the AustLit thesaurus. 
+  Use the 'AustLit Trail' tag to mark compound objects that will be published as trails.
+  Freetext tags can also be entered: tags from AustLit thesaurus display in blue, freetext in orange.
+  * Fixes problem with printPreview version of AustLit records being launched in browser instead of regular version.
+  * Many minor UI improvements & bug fixes, e.g. updated icons, tooltips, 
+  resource list view now auto scrolls during drag and drop, copy/cut/paste context menu enabled when editing text
+  Annotations:
+  * The default annotation server has been updated.
+  
 version 0.63
   * An info page is now displayed in the web browser immediately after installation/update
   * Manuals under 'Using Annotations' and 'Using Compound Objects' have been updated
