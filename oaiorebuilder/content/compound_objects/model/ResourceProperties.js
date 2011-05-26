@@ -77,7 +77,7 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
         propValues.splice(index,1);
         // remove from data if there are no other values for this property
         if (propValues.length == 0) {
-            delete propValues;
+            delete this.data[property];
         }
         this.fireEvent('propertyRemoved', theProp, index);
       }

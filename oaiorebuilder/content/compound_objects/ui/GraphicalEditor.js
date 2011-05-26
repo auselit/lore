@@ -399,6 +399,35 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     figRepresentsAnno = true;
                 }
             }
+            if (!opts.batch){
+                // this is a new resource: create corresponding model object 
+                var figProps = new lore.ore.model.ResourceProperties();
+                for (p in theProps){
+                    var pidsplit = p.split(":");
+                    var pfx = pidsplit[0];
+                    pidsplit = pidsplit[1].split("_");
+                    var idx = pidsplit[1];
+                    var propname = pidsplit[0];
+                    var ns = lore.constants.NAMESPACES[pfx];
+                    var propuri = ns + propname;
+                    var propData = {
+                        id: propuri, 
+                        ns: ns, 
+                        name: propname, 
+                        value: theProps[p], 
+                        prefix: pfx,
+                        type: "plainstring"
+                    };
+                    figProps.setProperty(propData);
+                }
+                this.model.addAggregatedResource({
+                        uri: theURL,
+                        title: title,
+                        representsCO: figRepresentsCO,
+                        representsAnno: figRepresentsAnno,
+                        properties: figProps
+                });   
+            }
             fig = new lore.ore.ui.graph.ResourceFigure(theProps);
             
             if (opts.oh) {
@@ -424,19 +453,9 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
            
             if (opts.batch){
                 this.coGraph.addFigure(fig, opts.x, opts.y);
-            } else {
-                var figProps = new lore.ore.model.ResourceProperties();
-                // TODO: add properties to figProps object
-                this.model.addAggregatedResource({
-                        uri: theURL,
-                        title: title,
-                        representsCO: figRepresentsCO,
-                        representsAnno: figRepresentsAnno,
-                        properties: figProps
-                });   
+            } else {   
                 // adds to undo stack
-                this.coGraph.addResourceFigure(fig, opts.x, opts.y);
-               // this is a new resource: create corresponding model object               
+                this.coGraph.addResourceFigure(fig, opts.x, opts.y);            
             }
             var resource = this.model.getAggregatedResource(theURL);
             if  (resource){
