@@ -24,12 +24,12 @@ Ext.apply(lore.ore.Controller.prototype, {
       }
     },
     setDirty: function(){
-      if(!this.isDirty){
-           this.isDirty  = true;
-           Ext.getCmp('currentCOSavedMsg').setText('*');
-      } else {
+      if (this.isDirty){
         this.wasClean = false;
       }
+      // Force isDirty to be set
+      this.isDirty  = true;
+      Ext.getCmp('currentCOSavedMsg').setText('*');
     },
     rollbackDirty: function(){
       if (this.wasClean) { 
@@ -487,7 +487,6 @@ Ext.apply(lore.ore.Controller.prototype, {
             var title = currentCO.properties.getTitle() || "Untitled";
             Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(title, 50),false);
             Ext.getCmp('currentCOSavedMsg').setText('*');
-            
             this.isDirty = true;
             this.wasClean = false;
 
@@ -710,10 +709,10 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Add saved compound object to the model lsits
       * @param {String} remid The compound object that was saved */
     afterSaveCompoundObject : function(remid){
-        Ext.getCmp('currentCOSavedMsg').setText('');
-        lore.ore.cache.setLoadedCompoundObjectIsNew(false);
         this.isDirty = false;
         this.wasClean = true;
+        Ext.getCmp('currentCOSavedMsg').setText('');
+        lore.ore.cache.setLoadedCompoundObjectIsNew(false);
         var title = lore.ore.ui.grid.getPropertyValue("dc:title") 
             || lore.ore.ui.grid.getPropertyValue("dcterms:title") 
             || "Untitled";
