@@ -346,10 +346,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     });
                     } catch (e){
                         lore.debug.ore("Problem in requestGraph loadRem",e);
+                        lore.ore.ui.vp.warning("Unable to get data for explore view");
                     }
                 });
                 } catch (e){
                     lore.debug.ore("problem in requestGraph",e);
+                    lore.ore.ui.vp.warning("Unable to get data for explore view");
                 }
             },
             onCreateLabel: function(domElement, node) {
@@ -599,7 +601,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         vp.syncSize();
         // translate jit canvas back to original position
         this.fd.canvas.translate(fdcx, fdcy);
-        lore.ore.ui.vp.info("Image ready");
+        vp.info("Image ready");
         return imgData;
      } catch (e) {
         lore.debug.ore("ExplorePanel.getAsImage",e);

@@ -254,6 +254,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	           xhr.send(null);
             } else {
                 lore.debug.ore("Explore view stylesheet not ready",this);
+                lore.ore.ui.vp.info(" ");
             }
 	    } catch (ex){
 	        lore.debug.ore("RestAdapter.getExploreData",ex);
