@@ -83,14 +83,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                prefix: "dc",
                type: "plainstring"
         },0);
-         this.properties.setProperty({
-               id: lore.constants.NAMESPACES["dc"]+ "title",
-               ns: lore.constants.NAMESPACES["dc"],
-               name: "title",
-               value: "",
-               prefix: "dc",
-               type: "plainstring"
-        },0);   
         // TODO: also store created and modified
             
     },
