@@ -1,5 +1,6 @@
 Ext.ns("lore.anno");
 lore.anno.thesaurus = [
+["http://auselit.metadata.net/lorestore/AustLitTrail", "AustLit Trail"],
 ["http://austlit.edu.au/run?ex=ShowThes&tid=J%23x(","1967 Referendum"],
 ["http://austlit.edu.au/run?ex=ShowThes&tid=JMF","21st birthdays"],
 ["http://austlit.edu.au/run?ex=ShowThes&tid=JIN","500 (Game)"],
