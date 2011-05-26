@@ -11,8 +11,10 @@ version 0.70
   Use the 'AustLit Trail' tag to mark compound objects that will be published as trails.
   Freetext tags can also be entered: tags from AustLit thesaurus display in blue, freetext in orange.
   * Fixes problem with printPreview version of AustLit records being launched in browser instead of regular version.
+  * Adds a toolbar button to allow copying the contents of a compound object to a new compound object
   * Many minor UI improvements & bug fixes, e.g. updated icons, tooltips, 
-  resource list view now auto scrolls during drag and drop, copy/cut/paste context menu enabled when editing text
+  resource list view now auto scrolls during drag and drop, copy/cut/paste context menu enabled when editing text,
+  context menus for graphical editor and resource nodes can be accessed via icons as well as right-click
   Annotations:
   * The default annotation server has been updated.
   
