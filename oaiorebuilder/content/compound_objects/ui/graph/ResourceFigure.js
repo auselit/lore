@@ -917,7 +917,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
     },
     handlePropertyRemoved: function(propData, index){
         if (propData){
-            this.unsetProperty(propData.ns + ":" + propData.name + "_" + index, false);
+            this.unsetProperty(propData.prefix + ":" + propData.name + "_" + index, false);
         }
     },
 	/**
