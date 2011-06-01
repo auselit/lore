@@ -1,0 +1,1254 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY austlitore "http://austlit.edu.au/owl/austlitore.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
+    <!ENTITY xsp "http://www.owl-ontologies.com/2005/08/07/xsp.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://austlit.edu.au/owl/austlitore.owl#"
+     xml:base="http://austlit.edu.au/owl/austlitore.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:austlitore="http://austlit.edu.au/owl/austlitore.owl#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://austlit.edu.au/owl/austlitore.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#collaborates_with -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;collaborates_with">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <owl:inverseOf rdf:resource="&austlitore;collaborates_with"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_abridged_edition -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_abridged_edition">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_edition"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_abstract -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_abstract">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_summary"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_abstract_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_adaptation -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_adaptation">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_adaptation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_agent -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_agent">
+        <rdfs:range rdf:resource="&austlitore;Agent"/>
+        <rdfs:domain rdf:resource="&austlitore;Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_annotated_edition -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_annotated_edition">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_edition"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_annotation -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_annotation">
+        <owl:inverseOf rdf:resource="&austlitore;is_annotation_on"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_appendix -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_appendix">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_supplement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_as_subject -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_as_subject">
+        <rdfs:domain rdf:resource="&austlitore;Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_audio -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_audio">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_related_resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_author -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_author">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_configuration -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_configuration">
+        <owl:inverseOf rdf:resource="&austlitore;is_reconfiguration_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_constituents -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_constituents">
+        <owl:inverseOf rdf:resource="&austlitore;is_aggregate_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_criticism -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_criticism">
+        <owl:inverseOf rdf:resource="&austlitore;is_criticism_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_custodian -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_custodian">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_owner"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_derivation -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_derivation">
+        <owl:inverseOf rdf:resource="&austlitore;is_derived_from"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&austlitore;Expression"/>
+                    <rdf:Description rdf:about="&austlitore;Manifestation"/>
+                    <rdf:Description rdf:about="&austlitore;Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&austlitore;Expression"/>
+                    <rdf:Description rdf:about="&austlitore;Manifestation"/>
+                    <rdf:Description rdf:about="&austlitore;Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_description -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_description">
+        <owl:inverseOf rdf:resource="&austlitore;is_description_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_digest -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_digest">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_summary"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_digest_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_dramatization -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_dramatization">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_adaptation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_dramatization_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_edition -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_edition">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_edition_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_editor -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_editor">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_agent"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_editor_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_excerpt -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_excerpt">
+        <owl:inverseOf rdf:resource="&austlitore;is_excerpt_from"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_part_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_expurgated_edition -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_expurgated_edition">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_edition"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_expurgated_edition_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_glossary -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_glossary">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_supplement"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_glossary_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_illustrated_edition -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_illustrated_edition">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_edition"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_illustrated_edition_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_illustrator -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_illustrator">
+        <rdfs:range rdf:resource="&austlitore;Agent"/>
+        <rdfs:domain rdf:resource="&austlitore;Work"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_image -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_image">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_related_resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_imitation -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_imitation">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_imitation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_index -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_index">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_supplement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_location -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_location"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_metadata -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_metadata">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_description"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_novelization -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_novelization">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_adaptation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_novelization_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_owner -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_owner">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_parody -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_parody">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_imitation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_parody_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_part -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_part">
+        <owl:inverseOf rdf:resource="&austlitore;is_part_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_participant -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_participant">
+        <rdfs:domain rdf:resource="&austlitore;Agent"/>
+        <rdfs:range rdf:resource="&austlitore;Event"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_participant_in"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_performance -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_performance">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_producer -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_producer">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_publisher -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_publisher">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_related_papers -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_related_papers">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_related_resource"/>
+        <owl:inverseOf rdf:resource="&austlitore;papers_relating_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_related_resource -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_related_resource">
+        <rdfs:domain rdf:resource="&austlitore;Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_representation -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_representation">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_representation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_reproduction -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_reproduction"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_review -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_review">
+        <owl:inverseOf rdf:resource="&austlitore;is_review_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_revision -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_revision">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_revision_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_screenplay -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_screenplay">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_adaptation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_sequel -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_sequel">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_sucessor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_subset -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_subset">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_part_of"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_subset_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_sucessor -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_sucessor">
+        <owl:inverseOf rdf:resource="&austlitore;is_sucessor_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_summary -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_summary"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_supplement -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_supplement">
+        <owl:inverseOf rdf:resource="&austlitore;is_supplement_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_table_of_contents -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_table_of_contents">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_summary_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_transcript -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_transcript">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_related_resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_translation -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_translation">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_translation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_translator -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_translator">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_version -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_version">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_derivation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#has_video -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;has_video">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_related_resource"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_video_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#influences -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;influences"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_abridged_edition_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_abridged_edition_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_abridged_edition"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_edition_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_abstract_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_abstract_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_summary_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_acquaintance_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_acquaintance_of">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_acquaintance_of"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_adaptation_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_adaptation_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_agent_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_agent_of">
+        <rdfs:domain rdf:resource="&austlitore;Agent"/>
+        <rdfs:range rdf:resource="&austlitore;Work"/>
+        <owl:inverseOf rdf:resource="&austlitore;has_agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_aggregate_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_aggregate_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_annotated_edition_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_annotated_edition_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_annotated_edition"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_edition_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_annotation_on -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_annotation_on"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_appendix_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_appendix_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_appendix"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_supplement_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_audio_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_audio_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_audio"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_resource_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_author_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_author_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_author"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_agent_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_coauthor_with -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_coauthor_with">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;collaborates_with"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_copy_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_copy_of">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_criticism_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_criticism_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_custodian_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_custodian_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_custodian"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_agent_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_derived_from -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_derived_from">
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&austlitore;Expression"/>
+                    <rdf:Description rdf:about="&austlitore;Manifestation"/>
+                    <rdf:Description rdf:about="&austlitore;Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&austlitore;Expression"/>
+                    <rdf:Description rdf:about="&austlitore;Manifestation"/>
+                    <rdf:Description rdf:about="&austlitore;Work"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_description_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_description_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_digest_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_digest_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_summary_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_dramatization_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_dramatization_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_adaptation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_edition_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_edition_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_editor_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_editor_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_agent_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_embodied_in -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_embodied_in">
+        <rdfs:domain rdf:resource="&austlitore;Expression"/>
+        <rdfs:range rdf:resource="&austlitore;Manifestation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_embodiment_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_embodiment_of">
+        <rdfs:range rdf:resource="&austlitore;Expression"/>
+        <rdfs:domain rdf:resource="&austlitore;Manifestation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_embodied_in"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_equivalent_to -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_equivalent_to">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_equivalent_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_excerpt_from -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_excerpt_from">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_part"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_exemplification_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_exemplification_of">
+        <rdfs:domain rdf:resource="&austlitore;Item"/>
+        <rdfs:range rdf:resource="&austlitore;Manifestation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_exemplified_by -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_exemplified_by">
+        <rdfs:range rdf:resource="&austlitore;Item"/>
+        <rdfs:domain rdf:resource="&austlitore;Manifestation"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_exemplification_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_expurgated_edition_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_expurgated_edition_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_edition_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_family_member_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_family_member_of">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_family_member_of"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_glossary_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_glossary_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_supplement_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_illustrated_edition_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_illustrated_edition_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_edition_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_illustrator_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_illustrator_of">
+        <rdfs:domain rdf:resource="&austlitore;Agent"/>
+        <rdfs:range rdf:resource="&austlitore;Work"/>
+        <owl:inverseOf rdf:resource="&austlitore;has_illustrator"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_agent_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_image_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_image_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_image"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_resource_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_imitation_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_imitation_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_index_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_index_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_index"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_supplement_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_influenced_by -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_influenced_by">
+        <owl:inverseOf rdf:resource="&austlitore;influences"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_member_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_member_of">
+        <rdfs:domain rdf:resource="&austlitore;Agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_mentor_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_mentor_of">
+        <owl:inverseOf rdf:resource="&austlitore;is_mentored_by"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_mentored_by -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_mentored_by">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_metadata_for -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_metadata_for">
+        <owl:inverseOf rdf:resource="&austlitore;has_metadata"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_description_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_novelization_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_novelization_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_adaptation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_owned_by -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_owned_by">
+        <owl:inverseOf rdf:resource="&austlitore;has_owner"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_custodian_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_parody_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_parody_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_imitation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_part_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_part_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_participant_in -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_participant_in">
+        <rdfs:range rdf:resource="&austlitore;Agent"/>
+        <rdfs:domain rdf:resource="&austlitore;Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_performance_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_performance_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_performance"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_producer_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_producer_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_producer"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_agent_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_publisher_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_publisher_of">
+        <rdfs:domain rdf:resource="&austlitore;Agent"/>
+        <owl:inverseOf rdf:resource="&austlitore;has_publisher"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_agent_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_realization_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_realization_of">
+        <rdfs:domain rdf:resource="&austlitore;Expression"/>
+        <rdfs:range rdf:resource="&austlitore;Work"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_realized_through"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_realized_through -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_realized_through">
+        <rdfs:range rdf:resource="&austlitore;Expression"/>
+        <rdfs:domain rdf:resource="&austlitore;Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_reconfiguration_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_reconfiguration_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_referenced_by -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_referenced_by">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_influenced_by"/>
+        <owl:inverseOf rdf:resource="&austlitore;references"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_related_resource_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_related_resource_of">
+        <rdfs:range rdf:resource="&austlitore;Resource"/>
+        <owl:inverseOf rdf:resource="&austlitore;has_related_resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_related_to -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_related_to">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:domain rdf:resource="&austlitore;Agent"/>
+        <rdfs:range rdf:resource="&austlitore;Agent"/>
+        <owl:inverseOf rdf:resource="&austlitore;is_related_to"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_representation_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_representation_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_reproduction_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_reproduction_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_reproduction"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_review_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_review_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_revision_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_revision_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_screenplay_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_screenplay_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_screenplay"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_adaptation_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_sequel_to -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_sequel_to">
+        <owl:inverseOf rdf:resource="&austlitore;has_sequel"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_sucessor_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_subject_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_subject_of">
+        <rdfs:range rdf:resource="&austlitore;Work"/>
+        <owl:inverseOf rdf:resource="&austlitore;has_as_subject"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_subset_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_subset_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_part"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_sucessor_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_sucessor_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_summary_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_summary_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_summary"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_supplement_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_supplement_of"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_table_of_contents_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_table_of_contents_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;has_summary"/>
+        <owl:inverseOf rdf:resource="&austlitore;has_table_of_contents"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_transcript_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_transcript_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_transcript"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_resource_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_translation_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_translation_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_translator_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_translator_of">
+        <owl:inverseOf rdf:resource="&austlitore;has_translator"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_agent_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_version_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_version_of">
+        <rdfs:domain rdf:resource="&austlitore;Work"/>
+        <owl:inverseOf rdf:resource="&austlitore;has_version"/>
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_derived_from"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#is_video_of -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;is_video_of">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_resource_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#papers_relating_to -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;papers_relating_to">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;is_related_resource_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#permission_granted_by -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;permission_granted_by">
+        <rdfs:range rdf:resource="&austlitore;Agent"/>
+        <rdfs:domain rdf:resource="&austlitore;Work"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#references -->
+
+    <owl:ObjectProperty rdf:about="&austlitore;references">
+        <rdfs:subPropertyOf rdf:resource="&austlitore;influences"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Agent -->
+
+    <owl:Class rdf:about="&austlitore;Agent"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Concept -->
+
+    <owl:Class rdf:about="&austlitore;Concept"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Event -->
+
+    <owl:Class rdf:about="&austlitore;Event"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Expression -->
+
+    <owl:Class rdf:about="&austlitore;Expression"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Item -->
+
+    <owl:Class rdf:about="&austlitore;Item"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Manifestation -->
+
+    <owl:Class rdf:about="&austlitore;Manifestation"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Place -->
+
+    <owl:Class rdf:about="&austlitore;Place"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Resource -->
+
+    <owl:Class rdf:about="&austlitore;Resource"/>
+    
+
+
+    <!-- http://austlit.edu.au/owl/austlitore.owl#Work -->
+
+    <owl:Class rdf:about="&austlitore;Work"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.2.1789) http://owlapi.sourceforge.net -->
+

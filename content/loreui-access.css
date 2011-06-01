@@ -1,0 +1,38 @@
+/* Override default styles for high-contrast theme */
+* {
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #fffff6;
+}
+.x-grid3-row-selected * {
+	background-color: orange !important;
+}
+.x-tab-panel-body {
+	background-color: #343843;
+}
+
+/* Annotations */
+
+.timeline-bubble, .timeline-event-bubble-title, .timeline-event-bubble-body, .timeline-band, .x-tree-node-bheader {
+	color: #fffff6;
+	background-color: #1f2730;
+	font: 100%;
+}
+.timeline-link {
+	font-size:100%;
+}
+
+.anno-caption, .x-tree-col-text, .x-tree-col-div-general, .x-tree-hd-text, .timeline-date-label {
+	color: #fffff6;
+	background: transparent;
+}
+.timeline-ether-bg {
+	background-color: #1f2730 !important;
+}
+.timeline-ether-highlight {
+	background-color: #617089 !important;
+}
+.x-tree-node a, .anno-search {
+	color: orange !important;
+}
+
+	

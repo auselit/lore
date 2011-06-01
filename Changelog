@@ -1,0 +1,395 @@
+LORE (Literature Object Re-use and Exchange)
+version 0.70
+  Preferences have been updated to point to the new annotation & compound object store.
+  
+  Compound Objects:
+  * Supports single-sign-on authentication using the same account system as for annotations
+  * dc:type supported in property editor: types can be selected from DCMI standard types
+  * New icons displayed to represent resource types (from dc:type or dc:format from mimetype)
+  * Adds the option to highlight resources in the editor using colors (choose colour from resource node context menu in the graphical editor or resource list)
+  * Now uses tagging interface for dc:subject property, allowing tags to be selected from the AustLit thesaurus. 
+  Use the 'AustLit Trail' tag to mark compound objects that will be published as trails.
+  Freetext tags can also be entered: tags from AustLit thesaurus display in blue, freetext in orange.
+  * Fixes problem with printPreview version of AustLit records being launched in browser instead of regular version.
+  * Adds a toolbar button to allow copying the contents of a compound object to a new compound object
+  * Many minor UI improvements & bug fixes, e.g. updated icons, tooltips, 
+  resource list view now auto scrolls during drag and drop, copy/cut/paste context menu enabled when editing text,
+  context menus for graphical editor and resource nodes can be accessed via icons as well as right-click
+  Annotations:
+  * The default annotation server has been updated.
+  
+version 0.63
+  * An info page is now displayed in the web browser immediately after installation/update
+  * Manuals under 'Using Annotations' and 'Using Compound Objects' have been updated
+  * Added report a problem button to toolbar: use this button to report a problem via email immediately after it occurs
+  Compound Objects:
+   * Added a formatting toolbar for abstracts and description properties
+   * Mouse scroll wheel can now be used to move within menus e.g. for selecting relationships
+   * Right-click on a property in the property panel as a shortcut to launch the editor window
+   * Fixed bug with drag and drop from browse/search/history into editor
+   * Multiple creators are now displayed in browse/search/history results
+    Annotations:
+   * Editor now enforces that annotations cannot be modified by users other than the owner. 
+     This only applies to annotations created since the user accounts system was introduced.
+   * Fixed bug with bullets in bodies not appearing in browse view
+   * Fixed problem with variation window close button on Mac
+   * Added links to variant/original resource in annotation editor: click on the URL to view them in the browser
+   * New font color formatting toolbar button added to annotation body editor
+   * Added RSS button for annotation feeds based on current search/browse view
+   * Images in hover tips are now scaled
+   
+version 0.62 (08/03/2011):
+    * Added ontology pane to preferences to make it easier to configure custom ontologies
+
+    Compound Objects:
+     * Added menu item in graphical editor to launch all resources in browser
+     * Display a message indicating that plugins are blocked when Flash content is detected in previews in slideshow and graphical editor
+     * Strip out undesirable tags from property values (e.g. don't allow script tags to be entered)
+     * Fixed bug with resource reordering after resource URL is updated manually that was causing problems with RDF/XML generation
+     * Added a filter field in relationships menu to make it easier to find ontology terms. The menu is now also triggered by double clicking on the relationship name. 
+     * Allow resource titles to be edited directly in graphical editor by double clicking on the title label.
+
+version 0.61 (15/02/2011):
+	Annotations:
+	 * Added a private annotations feature:
+	   * Use the private checkbox in the editor to mark an annotation as private (visible only when logged on with the same account)
+	   * A user preference controls whether to create private annotations by default
+	 * Indicate the account with which the user is logged in in the toolbar and provide option to logout
+	 * Fixed bug with updating annotations in response to tab switching
+
+	Compound Objects:
+	 * Support explicit ordering of resources via drag and drop in the resource list view
+	 * Bundled ontologies used to customise relationships and property editor can now be selected from drop down box in preferences
+	 * Minor UI changes based on user feedback
+
+version 0.60 (27/01/2011):
+    * Updated bundled libraries and tidied up code.
+    * Removed annotation timeline view
+
+version 0.55 (04/11/2010):
+    Compound Objects:
+    * Small update to resource node tooltips
+    
+    Annotations:
+    * Fix the display of Variation Annotations, that was broken in the previous
+      release.
+
+version 0.54 (22/10/2010):
+    Compound Objects:
+    * Add context menu to resource list view to allow opening resource in other
+      views
+    * Add show in details view to graphical editor node context options
+    * Added and improved icons throughout the user interface
+    * Show title for relationships in details view. Open link in browser by
+      clicking on title/url or jump to details by clicking on relationship name.
+    * Normalise URLs saved into the compound object store
+
+    Annotations:
+    * Show new annotations at the top of the browse view
+    * Improved handling of logging in to the Annotation Server
+    * Checks login before attempting any editing that requires the user to be
+      logged in
+    * Add a logged-in indicator to the annotations toolbar
+
+version 0.53 (05/10/2010):
+    * Enabled filtering in compound objects explore view. Select 'Show color key
+      and options' from the context menu to hide/show relationships.
+    * Bug fix for annotation tag display
+
+version 0.52 (20/09/2010):
+    Updated LORE so that it will work with Firefox 3.0
+    
+    Compound Objects:
+    * Added Creative Commons buttons to make it easier to attach licenses when
+      editing the dc:rights property in the popup editor window.
+
+    Annotations:
+    * Tags are now displayed in timeline and hover tips as well as browse panel.
+    * Fixed bug with image region selection when creating an image annotation.
+
+version 0.51 (12/09/2010):
+    Annotations:
+    * Fixes bug with display of Annotation search results in Firefox 3.5.x.
+
+version 0.50 (09/09/2010)
+    Compound Objects:
+    * Added Yellow border around selected resource nodes in the graphical editor
+      to make it easier to identify the selected resource
+    * Multi-selection is now supported in the graphical editor: hold down shift
+      and drag a box around nodes to select. Hold down control and use the arrow
+      keys to move all selected resource nodes at once, or hit delete to remove
+      them.
+    * Additional auto-layout option in graphical editor context menu: auto
+      layout using connections works as before (good for compound objects with a
+      lot of relationships between resources), the new 'auto layout' simply
+      realigns the resources using a grid pattern. Use them in combination for
+      improved auto layout results.
+    * Graphical editor Undo/Redo now supports complex operations (eg
+      auto-layout, deletion of multiple selection, moving multiple resource
+      nodes)
+    * New toolbar options for adding resources (in drop down menu next to add
+      button): 
+        * add URL directly allows you to type or paste the URL rather than
+          adding the address from the browser address bar: this works better for
+          persistent URLs that redirect to some other address eg handle.net or
+          doi URLs
+        * Add resources from tabs: allows you to select resources currently open
+          in browser tabs to add them at the same time.
+
+    * Fixes bug with multiple rdf:type properties being shown for nested
+      compound objects and annotations
+    * Always use styleSheet when launching aggregated annotations in browser eg
+      from slideshow (no more ugly XML)
+    * Link added to jump to slides for related resources in slideshow (only if
+      they are in the same compound object)
+    * Edit buttons in properties are now always visible, even when there is a
+      scroll bar
+
+    Annotations:
+    * Fixed highlighting of annotation contexts when URL ends with fragment
+    * Completely redesigned appearance of annotation search results
+    * Updated appearance of browse panel, tags now displayed
+
+version 0.49 (31/08/2010)
+    * General code refactoring and other minor UI changes for improved
+      usability, stability and scalability.
+
+    Compound Objects:
+    * Display of properties and relationships in details and slideshow view
+      improved: all values displayed for multi-valued properties, properties
+      have been sorted.
+    * User can choose to show abstract instead of resource preview for each
+      resource in the graphical editor : right-click on a node and check
+      'Abstract preview' from the context menu
+    * The abstract is also displayed when hovering mouse over title of resource
+      node in graphical editor
+    * Find in text function added to toolbar: for searching within text
+      displayed in views
+    * Datatype properties from the default ontology can be added to resources
+      via the property editor
+    * Split summary into resource list and details view. Resource list is a work
+      in progress: it will allow resources to be reordered in a future release.
+    * Menus in the graphical editor now have scrollers at top and bottom rather
+      than extending off screen
+    * User is now warned if they are opening another compound object without
+      saving changes that have been made to a compound object that they created 
+
+    Annotations:
+    * Links shown in annotations in browse view open in browser when clicked
+    * Improved support for login to Secure annotation server when
+      deleting/searching/browsing annotations
+    * Fixed problem with VariationWindow sometimes opening too large
+    * Fixed some problems with escaping unsafe characters in URLs
+    * Added a popup editor for annotation metadata fields
+    * Ontology for metadata annotations can now be specified in the preferences
+    * RDFa field markers now hidden : metadata annotations only enabled for
+      entities.
+    * The Annotation server has been upgraded: the default configuration has
+      been changed to reflect the new address of the server.
+
+version 0.48 (05/08/2010)
+    Compound Objects:
+    * Don't show the explore view when the current compound object is unsaved
+    * Show information about relations with hover tooltips
+    * The top of the explore panel can be resized, to allow viewing of more
+      history
+    * Minor improvement to the labels of the explore panel
+
+
+    Annotations:
+    * Fix the creation of Variation Annotations
+    * Fix the display and creation of Annotations on pages with percent
+      characters in their URLs
+    * Annotation popups are easier to read, with a larger font and extra
+      spacing.
+    * Annotation popups wait a moment before displaying, to prevent their
+      unwanted display when just moving the mouse over the page
+    * Annotation popups now hide themselves when the page changes or another
+      annotation is selected
+    * Clean up the page markers for Metadata Annotations when closing the editor
+      or switching tabs
+    * Much better highlighting of Metadata Annotations on Austlit
+
+version 0.47 (22/07/2010)
+    Compound Objects:
+    * Graphical editor now supports panning with the mouse (drag anywhere on the
+      background to move the diagram around) and shows guidelines to help align
+      layout when positioning resource nodes.
+    * Clicking inside a preview in the graphical editor or slideshow now opens
+      the resource in the main browser window.
+    * Resource properties and relationships have been split into two separate
+      panels on the properties tab so that when a resource is selected in the
+      graphical view, properties and a summary of all relationships are
+      displayed.
+    * Fixed some minor selection bugs in the graphical editor
+    * Workaround for Firefox iframe rendering bug that was causing flickering in
+      the pop up property editor.
+    * Further improvements to explore view: long titles ellided, added zoom
+      in/out options to explore view context menu (mouse scroll wheel can also
+      be used), minor fix for color coding relationships.
+    * Added pretty printing to RDF/XML and FOXML views
+
+    Annotations:
+    * URLs can be copied from editor fields for VariationAnnotations
+    * Removed alternate body field from scholarly annotations
+    * Semantic contexts for metadata annotations are now highlighted (for new
+      metadata annotations only : existing metadata annotations should be
+      updated as their contexts will be incorrect)
+
+version 0.46 (08/07/2010)
+    Improvements to compound objects explore view: 
+    * Connections between nodes are now color coded.
+    * Nodes can be dragged to reposition by dragging on the circle/square. A
+      contextmenu on each node in the explore view provides access to
+      expand/remove the node.
+    * Clicking on the node label also expands the node.
+    * Labels can be shown or hidden via a contextmenu anywhere on the background
+      of the explore view.
+    * Other options in the contextmenu include export to image, resetting the
+      visualization and viewing the color codes for the connections.
+
+    Other changes to compound objects:
+    * The title of the current compound object is now always displayed in the
+      status bar.
+    * Javascript is now allowed in previews as they are sandboxed.
+    * Plugins (eg for Flash, PDF content) in previews are still disabled.
+
+version 0.45 (04/07/2010)
+    Annotations:
+    * Improvements to Metadata (formerly known as Semantic) annotations
+    * Variation panel appearance has been improved
+    * Better handling of errors in highlighting annotation contexts
+    * Fixed field focus problems in editor
+    * URL fragments are ignored when fetching annotations for the current page
+
+    Compound objects:
+    * Recently viewed compound objects have been moved from the Browse tab to
+      the History tab
+    * Lists of compound objects in the Browse, History and Search tabs are now
+      paged and sortable, to make it easier to work with large lists
+    * In the Properties view, clicking on the ... button next to a property
+      value will pop up a larger editor to make it easier to read and edit long
+      text fields like abstracts. The property value must be clicked first
+      before the button will appear.
+
+version 0.44 (10/06/2010)
+    Compound Objects:
+    * Compound objects from other repositories are now indicated in the recently
+      viewed list using a greyed icon. Save/delete is disabled for compound
+      objects from repositories other than the default from the preferences.
+    * Added icons to jump between different views eg scroll directly to node in
+      graphical editor from the corresponding slide in the slideshow.
+    * When adding a node to the graphical editor, the editor now scrolls to the
+      position where the node was added.
+    * Undo has been improved so that adds, moves, deletes, relationship
+      connection and relationship type selection within the graphical editor are
+      undoable. Undo/redo in the graphical editor made more obvious - they are
+      available via keyboard shortcuts or using the graphical editor context
+      menu. Property changes are not yet able to be undone via the menu, but can
+      be undone while editing a property using keyboard shortcuts.
+    * Added button to reset slideshow preview (to allow return to original
+      resource after navigation within preview).
+    * Timestamps now stored for created, modified dates
+    * Explore view can be saved to image file via context menu
+    * Other minor UI changes eg additional icons etc based on user feedback
+
+    Annotations:
+    * Search UI improved: tooltips on all fields, and double clicking the result
+      row launches the annotated resource in the browser (rather than the user
+      having to click specifically on the URI ).
+    * Annotation context menu has additional action: view annotation in browser
+      (from search or browse view).
+    * Creator and title field are now required by the editor for all annotations
+    * Improvements to semantic annotations: working towards enabling attachment
+      of metadata via metadata editor, configured by a custom ontology: current
+      implementation is very experimental.
+
+version 0.43 (27/05/2010)
+    UI changes based on User Feedback
+
+    Annotations:
+    * Annotation browse tab automatically activates when annotations detected
+    * Image annotation markers thicker to make them easier to see
+    * Annotation search and editor UI improvements e.g. double-click on search
+      result rows to open in browser
+
+
+    Compound Objects:
+    * Fixed bug with nested compound objects sometimes displaying as RDF/XML
+    * Button added to allow adding current page to compound object from address
+      bar
+    * Source metadata added automatically for images added to compound object
+      via context menu
+    * Undo/Redo made more obvious in graphical editor with context menu entries
+      (previously keyboard shortcuts only)
+    * Jump to slideshow from graphical editor node via context menu
+
+version 0.421 (13/05/2010)
+    Please Note that Semantic Annotations are not working correctly in this release.
+
+    General:
+    * High contrast theme is now selectable in the preferences
+    * Some uneccessary files were removed from the distribution to make it a
+      smaller download.
+
+    Annotations:
+    * User interface improvements based on user feedback
+
+    Compound Objects:
+    * Fixed bug that was preventing external relationship ontologies from
+      loading.
+    * Improved Compound Object search so that there is now an implicit AND
+      between search terms. Use quotes for phrase searching. (Old behaviour was
+      that all searches were phrase searches).
+    * Slideshow view now displays contents from nested compound objects up to 2
+      levels deep (any deeply nested compound objects will still need to be
+      loaded separately in LORE).
+    * External web pages now appear in the slideshow preview, however for
+      security reasons the content has been sandboxed. For example Flash content
+      (such as YouTube movies) is disabled, so some pages may not display
+      correctly in the preview. For these pages we recommend clicking on the
+      resource title to launch the page in the main browser.
+
+version 0.41 (29/04/2010)
+    This release contains a number of UI improvements based on user feedback.
+
+    Annotations:
+      Annotation editor panel: 
+        * Added button to cancel edits
+        * Removed delete as this function is available from the toolbar and
+          context menu
+        * Fixed bug with formatting options (bold, italic etc) being ignored
+          introduced in recent versions of Firefox
+        * Improvements to hiding/showing fields
+        * Fix bugs causing strange behaviour when selecting annotations or
+          changing tab or page
+
+      Toolbar:
+        * Save button removed as this function is available from the editor for
+          the currently selected annotation (or use the Save all button to save
+          all modified annotations)
+      Timeline:
+        * Improvements/bug fixes
+
+    Compound objects:
+      UI changes:
+        * Single click to open compound objects (was previously double click)
+        * Nodes can be added to compound object by dragging links from browser
+          onto compound object editor
+        * Nested compound objects can be loaded by single clicking on URI
+          displayed in node
+        * Plus/minus icon accurately reflects whether node is expanded
+        * Display message to let users know when compound object is loading
+        * Don't prompt to save immediately after deleting the loaded compound
+          object
+        * Relationship labels centered
+
+      Improvements to importing/exporting RDF/XML:
+        * Fixed bug with importing external RDF containing unknown namespaces
+        * Ensure that aggregation properties are retained (even though LORE does
+          not display or allow them to be edited)
+        * NOTE: The graphical editor does not currently support reflexive
+          relationships (i.e. relationships from a node to itself), however if
+          they are present in imported RDF, they will be displayed in the
+          properties panel.
+        * RDF/XML now serialised using rdfquery

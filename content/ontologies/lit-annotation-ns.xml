@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="http://www.w3.org/2002/06/rdfs2html.xsl" type="text/xsl"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xml:base="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns">
+  	
+	<rdf:Description rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#">
+ 		<rdfs:comment>A namespace for describing annotations used in Scholarly Editing</rdfs:comment>
+ 		<rdfs:comment>Revision 0.2, 21 April 2009</rdfs:comment>
+ 		<dc:title>Aus-e-Lit Annotation Schema</dc:title>
+		<dc:subject>scholarly editing</dc:subject>
+		<dc:subject>textual transmission</dc:subject>
+		<dc:subject>literature</dc:subject>
+	</rdf:Description>
+
+  	<rdfs:Class rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#ScholarlyAnnotation">
+  		<rdfs:label xml:lang="en">ScholarlyAnnotation</rdfs:label>
+		<rdfs:comment>Records textual or explanatory notes about a text</rdfs:comment>
+		<rdfs:subClassOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#Annotation"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+ 	</rdfs:Class>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#tag">
+  		<rdfs:label xml:lang="en">tag</rdfs:label>
+  		<rdfs:comment>Tag to characterise the annotation content</rdfs:comment>
+		<rdfs:domain rdf:resource="http://www.w3.org/2000/10/annotation-ns#Annotation"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+
+	<rdfs:Class rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation">
+  		<rdfs:label xml:lang="en">VariationAnnotation</rdfs:label>
+		<rdfs:comment>Records details of variations between two versions of a text</rdfs:comment>
+		<rdfs:subClassOf rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#ScholarlyAnnotation"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+ 	</rdfs:Class>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#variation-date">
+  		<rdfs:label xml:lang="en">variation-date</rdfs:label>
+  		<rdfs:comment>The date of the original source.</rdfs:comment>
+  		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/date"/>
+		<rdfs:domain rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"/>
+ 		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#variation-place">
+  		<rdfs:label xml:lang="en">variation-place</rdfs:label>
+  		<rdfs:comment>The (spatial) location where the variation was made</rdfs:comment>
+		<rdfs:domain rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#variation-agent">
+  		<rdfs:label xml:lang="en">variation-agent</rdfs:label>
+  		<rdfs:comment>The agent who performed the variation</rdfs:comment>
+		<rdfs:domain rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#original">
+  		<rdfs:label xml:lang="en">original</rdfs:label>
+  		<rdfs:comment>Relates a VariationAnnotation to original version of the text</rdfs:comment>
+		<rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#annotates"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#variant">
+  		<rdfs:label xml:lang="en">variant</rdfs:label>
+  		<rdfs:comment>Relates a VariationAnnotation to the variant version of the text.</rdfs:comment>
+		<rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#annotates"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#original-context">
+  		<rdfs:label xml:lang="en">original-context</rdfs:label>
+  		<rdfs:comment>The context within the original version named in 'original' to which the Annotation most directly applies.</rdfs:comment>
+		<rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#context"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#variant-context">
+  		<rdfs:label xml:lang="en">variant-context</rdfs:label>
+  		<rdfs:comment>The context within the variant version named in 'variant' to which the Annotation most directly applies.</rdfs:comment>
+		<rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#context"/>
+  		<rdfs:isDefinedBy rdf:resource="http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#"/>
+	</rdf:Property>
+	
+	<!-- TODO: 
+	 agent class? - properties to represent whether author, publisher's editor, typist etc 
+     -->
+	
+</rdf:RDF>
+	

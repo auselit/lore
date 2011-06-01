@@ -1,0 +1,412 @@
+/*
+ * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ *  
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit project.
+ *
+ * LORE is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* Styles specific to compound objects */
+
+.orelink {
+	font-style:italic; 
+	color: #51666b; 
+	padding:10px;	
+}
+
+/* mimetype icons for node views */
+.mimeicon {
+	list-style-position:inside;
+}
+.mimeicon a {
+	position:relative;
+	top:-4px;
+}
+.pageicon {
+	/*list-style-image: url(chrome://lore/skin/icons/page.gif);*/
+	list-style-type: none;
+}
+.imageicon {
+	list-style-image: url(chrome://lore/skin/icons/image.png);
+}
+.htmlicon {
+	list-style-image: url(chrome://lore/skin/icons/page_html.gif);
+}
+.videoicon {
+	list-style-image: url(chrome://lore/skin/icons/film.png);
+}
+.pdficon {
+	list-style-image: url(chrome://lore/skin/icons/file_acrobat.gif);
+}
+.audioicon {
+	list-style-image: url(chrome://lore/skin/icons/page_sound.gif);
+}
+.xmlicon {
+	list-style-image: url(chrome://lore/skin/icons/page_code.png);
+	padding-top:2px;
+}
+.annoicon {
+	list-style-image: url(chrome://lore/skin/icons/comment.png);
+}
+.dataseticon {
+	list-style-image: url(chrome://lore/skin/icons/database_table.png);
+	padding-top:2px;
+}
+.collectionicon {
+	list-style-image: url(chrome://lore/skin/icons/page_white_stack.png);
+	padding-top:2px;
+}
+.texticon{
+	list-style-image: url(chrome://lore/skin/icons/page_white_text.png);
+	padding-top:2px;
+}
+.objicon {
+	list-style-image: url(chrome://lore/skin/icons/chair.png);
+	padding-top:2px;
+}
+.softwareicon {
+	list-style-image: url(chrome://lore/skin/icons/application.png);
+}
+.serviceicon {
+	list-style-image: url(chrome://lore/skin/icons/server-network.png);
+	padding-top:2px;
+}
+.interactiveicon {
+	list-style-image: url(chrome://lore/skin/icons/map_cursor.png);
+	padding-top:2px;
+}
+.eventicon {
+	list-style-image: url(chrome://lore/skin/icons/alarm-clock-select.png);
+	padding-top:2px;
+}
+.oreicon {
+	list-style-image: url(chrome://lore/skin/icons/oaioreicon-sm.png); 
+	padding-top:2px;
+}
+.rdficon {
+	background-image: url(chrome://lore/skin/icons/rdf.png) !important;	
+}
+
+/* Graphical Editor styles */
+/* Allow uri of nodes to be expanded */
+.menuIcon {
+	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
+	background-position: 0 -90px;
+	opacity:.8;
+    -moz-opacity:.8;
+}
+.menuIcon:hover {
+	opacity:1;
+    -moz-opacity:1;
+}
+.menuIcon img {
+	width:15px;
+	height:15px;
+}
+.hideuri {
+    -moz-transform: rotate(-90deg);
+}
+.hideuribox {
+	white-space: pre;
+}
+.nodeabstract {
+	height:95%;padding:4px;overflow:auto;
+}
+.co-uri {
+	padding-left: 3px;
+	color: #333333;
+	border-bottom: 1px solid #aeaeae;
+    overflow: hidden;
+}
+.co-header {
+	background-color: #e5e5e5;
+	color: #333333;
+	border-top: 1px solid #aeaeae;
+	font-size: 11px;
+	text-align: center;
+	font-family: tahoma, arial, helvetica;
+}
+.co-preview {
+	background-color: white;
+	border-top: 1px solid #aeaeae;
+	border-left: 1px solid #aeaeae;
+	border-right: 1px solid #aeaeae;
+	overflow: hidden;
+	font-size: 9pt;
+}
+.co-footer {
+	background-color: white;
+	border-bottom: 1px solid #aeaeae;
+	font-size: 2px;
+}
+.co-tl {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left;
+}
+.co-bl {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left;
+}
+.co-br {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom right;
+}
+.co-tr-minus {
+	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right;
+}
+.co-tr-plus {
+	background: url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right;
+}
+.ctxtConnLabel {
+	color: #51666b !important;
+	font-size:100% !important;
+}
+
+/* main tabs content styles */
+
+.graph-icon {
+	background-image: url(chrome://lore/skin/icons/layout_pencil.png) !important; 
+}
+.list-icon {
+	background-image: url(chrome://lore/skin/icons/table_edit.png) !important; 
+}
+.detail-icon {
+	background-image: url(chrome://lore/skin/icons/application_view_detail.png) !important; 
+}
+.slide-icon {
+	background-image: url(chrome://lore/skin/icons/picture_empty.png) !important; 
+}
+.explore-icon {
+	background-image: url(chrome://lore/skin/icons/network.png) !important; 
+}
+#remsmilview, #textmining {
+	padding-left: 20px;	
+}
+#remsmilview div, #textmining div {
+	padding-top:20px;
+}
+#welcome * ul li {
+	margin-left:10px;
+	list-style-position: inside;
+	list-style-type: square;
+}
+.remlisticon {
+	list-style-position: inside;
+	margin-top:-3px;
+}
+.remlisticon span {
+	position:relative;
+	top:-4px;
+}
+#propertytabs * .x-tree-node a:hover {
+    text-decoration:none;
+    color:black;
+}
+#drawingarea {
+	position:relative;
+	background-position: center !important;
+}
+#remrdfview, #remfoxmlview, #remtrigview {
+ 	color: #51666b;
+ 	font-family: courier monospace;
+ 	font-size: 70%;
+}
+#welcome * a, #remsmilview * a, #remlistview * a, #textmining * a {
+	color: #2c5798 !important;
+}
+#textmining * a {
+	font-size:smaller;
+}
+#welcome * a:hover, #remsmilview * a:hover, #remlistview * a:hover {
+	text-decoration: underline;
+}
+#welcome iframe {border:none;}
+#remlistview .x-grid3-row-selected {background-color: yellow !important;}
+
+.highlightNode {
+	border: 1px solid yellow;
+	background-color: yellow;
+	border-bottom: none;
+}
+/* Compound object explore view */
+.node {
+	font-size:0.6em;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color:#51666b;
+	font-weight:normal;
+	cursor:pointer;
+	padding:2px;
+}
+#exploreReset {
+	z-index: 999; 
+	position: absolute; 
+	bottom: 10px; 
+	left: 10px; 
+	font-size: x-small; 
+	color: rgb(81, 102, 107);
+}
+#infovis {width: 100%; height:100%;}
+.explore-loading{
+	background-position: center;
+	background-repeat: no-repeat;
+	background-image: url(chrome://lore/skin/icons/loading.png);
+}
+span.exploreclose {
+    color:white;
+}
+span.exploreclose:hover {
+    color: #FF5555;
+    font-size: 1.5em;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 3px;
+}
+span.explorename {
+    cursor: pointer;
+    background-image: url(chrome://lore/skin/transparentwhite.png);
+}
+div.exploretip-title {
+    font-size: smaller;
+    font-weight: bold;
+}
+div.exploretip-text {
+	font-size: smaller;
+	font-weight: normal;
+	color: #51666b;
+}
+/* Slideshow View */
+#remslideview *, #remlistview * {
+	font-family: "Helvetica","Arial",sans-serif;
+}
+.slideshowTitle {
+	color:#cc0000;font-weight:bold;font-size:120%;padding-top:0.5em;
+	padding-bottom:0.5em;border-bottom:1px solid #cc0000;
+}
+.sectionTitle {
+	font-weight:bold;font-size:120%;padding-top:0.5em;padding-bottom:0.5em; 
+	border-bottom: 1px solid #51666b
+}
+.slideshowProps {
+	font-size:85%;color:#465458;padding:2px;padding-top:0.5em;line-height:1.3em;
+}
+.slideshowTOC {
+	font-size:95%;color:#465458;padding-top:1em;line-height:1.2em
+}
+.slideshowFooter {
+	font-size:70%;padding-top:0.5em;color:#465458;padding-left:3px;
+}
+
+/* Modal message for loading, saving etc */
+.co-load-msg .ext-mb-fix-cursor {
+	display: none !important
+}
+.co-load-msg .x-window-header {
+	height:0;
+}
+
+/* Browse, History, Search listing styles */
+.coListing {
+	padding: 2px;
+    padding-bottom:3px;
+    cursor:pointer;
+}
+.coListing table {
+    font-family: tahoma, arial, helvetica;
+    font-size: smaller;
+}
+div.coListing:hover {
+	background-color: #eeeeee;
+}
+/* override multiline tree styles for listingss */
+.x-tree-multiline-node-details{
+	color:#51666b;
+	font-size:90%
+}
+.x-tree-multiline-node-expanded .x-tree-elbow-line-multiline-expanded {
+    background-image: url(chrome://lore/content/ext/resources/images/default/tree/elbow-line.gif);
+}
+        
+.x-tree-multiline-node-collapsed .x-tree-elbow-line-multiline-expanded {
+    background-image: none;
+}
+
+/* icons used to indicate co source in listings */
+.oreresult {
+	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png) !important;
+}
+.ro-oreresult {
+    background-image: url(chrome://lore/skin/icons/oaioreicon-grey.png) !important; 
+}
+
+
+/* Context menu icons for listings menu */
+.add-icon {
+	background-image: url(chrome://lore/skin/icons/add.png);
+}
+.delete-icon {
+    background-image: url(chrome://lore/skin/icons/database_delete.png);
+}
+.edit-icon {
+    background-image: url(chrome://lore/skin/icons/pencil.png);
+}
+
+/* Property panel:  relationship icons */
+.rel-to {
+	background-image: url(chrome://lore/skin/icons/arrow_left.png);
+	background-repeat:no-repeat;
+}
+.rel-from {
+	background-image: url(chrome://lore/skin/icons/arrow_right.png);
+	background-repeat:no-repeat;
+}
+.rel-with {
+    background-image: url(chrome://lore/skin/icons/arrow_both.png);
+    background-repeat:no-repeat;
+}
+/* Formatting toolbox for popup property editor */
+.x-edit-pt {
+	background-image: url(chrome://lore/skin/icons/toolbox_pencil.png) !important;
+}
+/* Override superbox select for property editor */
+.x-superboxselect-btns div {float: left; width: 16px; height: 16px; margin-top: 1px;}
+.x-superboxselect-input input { border: none; outline: none; margin-top: 0px; margin-bottom: 0px;}
+.x-superboxselect li {font-size:smaller;float: left; margin: 0.5px 0.5px 1px 0.5px; padding: 0;line-height: 14px;}
+.x-tab-strip .x-tab-strip-with-menu {
+	position:relative;
+}
+.x-tab-strip-with-menu .x-tab-left {
+    padding-right:19px;
+}
+.x-tab-strip .x-tab-strip-with-menu a.x-tab-strip-menu {	
+	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
+    background-position:0 -90px;
+	opacity:.6;
+    -moz-opacity:.6;
+    background-repeat:no-repeat;
+    display:block;
+	width:15px;
+    height:15px;
+    position:absolute;
+    top:4px;
+    right:3px;
+    cursor:pointer;
+    z-index:2;
+	
+}
+.x-tab-strip .x-tab-strip-active a.x-tab-strip-menu {
+    opacity:.8;
+    -moz-opacity:.8;
+}
+.x-tab-strip .x-tab-strip-active a.x-tab-strip-menu:hover{
+    opacity:1;
+    -moz-opacity:1;
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE window SYSTEM "chrome://lore/locale/about.dtd">
+<window title="Login Window" orient="vertical" autostretch="always" onload="onLoad();" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<script><![CDATA[
+    var gIframe, gLogger;
+    var initURL = "about:blank";
+    function onLoad() {
+        gIframe = document.getElementById("loginframe");
+        if ("arguments" in window && window.arguments.length > 0) {
+            initURL = window.arguments[0].initURL;
+            gLogger = window.arguments[0].logger;
+        }
+        gIframe.addEventListener("DOMContentLoaded", iframeDomLoad, false);
+        gIframe.addEventListener("load", iframeLoad, false);
+        gIframe.setAttribute('src', initURL);
+        
+    }
+    function iframeLoad(aEvent) {
+        if (gLogger) gLogger("iframeLoad", aEvent);
+    }
+    function iframeDomLoad(aEvent) {
+        if (gLogger) gLogger("iframeDomLoad", aEvent);
+        if (aEvent.explicitOriginalTarget.location.href.indexOf('loggedIn') > -1) {
+            gLogger("Logged In!");
+            window.setTimeout(function () {
+                    window.close();
+            }, 1000);
+        }
+            
+    }
+]]></script>
+<hbox flex="1">
+
+    <iframe id="loginframe" type="content-primary" src="about:blank" flex="1"/>
+</hbox>
+
+</window>

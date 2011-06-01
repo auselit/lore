@@ -1,0 +1,352 @@
+/*
+ * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ *  
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit project.
+ *
+ * LORE is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+/* for status pop-up */
+.ext-mb-icon, .ext-mb-content, .ext-mb-text, .ext-mb-fix-cursor,.ext-mb-input,.ext-mb-textarea {
+	background:none;
+}
+
+.x-window-dlg .ext-mb-text {
+	font-size:10px;	
+}
+
+.textfield {
+	padding:1px; 
+	padding-left:3px;
+	margin:0; 
+	height:1.8em; 
+	width:400px;
+	border: solid #363636 1px;
+}
+.button {
+	font-weight:bold; 
+	padding:0;
+	margin:0;
+	height:1.8em; 
+	border:none;
+	background:#363636;
+	color:white;
+}
+
+.x-layout-split {
+	width: 3px;
+}
+.x-date-picker {
+	width: 200px;
+}		
+.welcome-icon {
+    background-image: url(chrome://lore/skin/icons/information.png) !important;
+}
+
+/* Tree styles */
+/* suppress icons for top level tree nodes */
+.tree-anno, .tree-ore {
+    display:none;
+}
+
+.x-tree-node .anno-icon, .anno-icon {
+	background-image: url(chrome://lore/skin/icons/comment.png);
+	background-repeat: no-repeat;
+}
+.x-tree-node .anno-icon-reply, .anno-icon-reply  {
+	background-image: url(chrome://lore/skin/icons/reply.png);
+	background-repeat: no-repeat;
+}
+.x-tree-node .anno-icon-variation, .anno-icon-variation {
+	background-image: url(chrome://lore/skin/icons/variation.png) !important;
+	background-repeat: no-repeat;
+}
+.x-tree-node .anno-icon-explanation, .anno-icon-explanation {
+	background-image: url(chrome://lore/skin/icons/explanation.png);
+	background-repeat: no-repeat;
+}
+
+.x-tree-node .anno-icon-question, .anno-icon-question {
+	background-image: url(chrome://lore/skin/icons/question.png);
+	background-repeat: no-repeat;
+}
+
+.anno-icon-private {
+	background-image: url(chrome://lore/skin/icons/eye.png);
+	background-repeat: no-repeat;
+    height: 16px;
+    width: 16px;
+}
+
+
+.x-tree-node .anno-view {
+	height: 16px !important;
+}
+
+.x-tree-node-bheader, .x-tree-node-bfooter {
+	color:#888888;
+	font-size:smaller;
+	
+}
+
+.x-tree-node .anno-icon-launchWindow {
+	background-image: url(chrome://lore/skin/icons/page_go.png) !important;
+	/*display:none;*/
+}
+.x-tree-node .anno-icon-splitter {
+	background-image: url(chrome://lore/skin/icons/application_tile_horizontal.png);
+	/*display:none;*/
+}
+
+
+
+.x-tree-node a, .anno-search {
+	color:blue !important;
+	cursor: auto;
+	
+}
+
+/* #90 visibility bug in sidebar*/
+.x-tree-node-ct {
+	visibility: inherit !important;
+}
+
+.x-tree-node a:hover {
+	color:blue;
+	text-decoration:underline;
+}
+
+.underlined {
+	padding-bottom: 2px;
+	display:block;
+	width: 100%;
+	border-bottom: 1px solid #51666b;
+}
+
+/* status bar/pop-up styles */
+.info-icon {
+	padding-left: 25px !important;
+	background: transparent url(../skin/icons/information.png) no-repeat 3px 3px;
+}
+.warning-icon {
+	padding-left: 25px !important;
+	background: transparent url(../skin/icons/warning.png) no-repeat 3px 3px;
+}
+.error-icon {
+	padding-left: 25px !important;
+	background: transparent url(../skin/icons/error.png) no-repeat 3px 3px;
+}
+.loading-icon {
+    padding-left: 25px !important;
+    background: transparent url(lib/ext3.2/resources/images/default/grid/loading.gif) no-repeat 3px 3px;
+}
+
+.annoreadonly {
+	border: 0;
+	background-color: red;
+}
+
+/* Annotation editor styles */
+.annochanged {
+	background-color: #ffcccc !important;
+}
+
+.x-grid3-cell-inner {
+	height: 1.2em;
+}
+.x-edit-img {
+	background-image: url(../skin/icons/picture_add.png) !important;
+}
+.x-edit-outdent {background: url(../skin/icons/edit-outdent.png) 0 0 no-repeat !important;}
+.x-edit-indent {background: url(../skin/icons/edit-indent.png) 0 0 no-repeat !important;}
+.x-form-item {margin-bottom:2px}
+.x-hide-label {padding:0;margin:0}
+#delannobtn .x-btn-center .x-btn-text {
+	color:red;
+}
+#updctxtbtn, #addmetabtn, #remmetabtn, #chgmetactxbtn {
+    width:70px !important;
+    margin-left:auto;margin-right:13px;
+    margin-bottom:3px;margin-top:3px;
+}
+
+.x-combo-list, .x-combo-list-inner {min-width:200px;}
+
+.anno-caption {
+	font-size:small;
+	color:#51666b;
+}
+#variationdetails {
+	font-size:smaller;
+	padding: 5px;
+}
+.detailsselected {
+	background-color: yellow;
+}
+
+.left-spacer4 {
+	padding-left: 4px;
+}
+.x-column-tree .x-panel-header {
+	padding: 3px 0px 0px 0px;
+	border-bottom-width: 0px;
+}
+
+.x-column-tree .x-panel-header .x-panel-header-text {
+	margin-left: 3px
+}
+
+.x-column-tree .x-tree-node {
+    zoom:1;
+}
+.x-column-tree .x-tree-node-el {
+    /*border-bottom:1px solid #eee; borders? */
+    zoom:1;
+}
+
+.x-column-tree  .x-tree-node a {
+    line-height:18px;
+    vertical-align:middle;
+}
+.x-column-tree  .x-tree-node a span{
+	
+}
+.x-column-tree  .x-tree-node .x-tree-selected a span{
+	background:transparent;
+	color:#000;
+}
+.x-tree-col {
+	
+    float:left;
+    padding:0 1px;
+    zoom:1;
+	whitespace:normal;
+}
+
+.x-tree-col-div-general {
+	white-space: normal;
+	width: 100%;
+}
+
+.x-tree-node .x-tree-col-div-general a {
+	-moz-user-select:text !important;
+}
+
+.x-tree-col-text {
+    color:#888888;
+   
+/* overflow:hidden; 
+ * -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	*/
+	
+    padding:3px 3px 3px 5px;
+    
+	
+    font:normal 11px arial, tahoma, helvetica, sans-serif;
+}
+
+.x-tree-hd-text {
+    color:#888888;
+   
+   overflow:hidden; 
+   -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	
+    padding:3px 3px 3px 5px;
+    white-space: normal;
+	
+    font:normal 11px arial, tahoma, helvetica, sans-serif;
+}
+/*
+ * Any images displayed in the column text are shrunk to thumbnail size
+ */
+.x-tree-col-text img {
+	max-width:128px;
+    height:auto;
+}
+
+.x-tree-headers {
+	/*margin-top: 3px;*/
+	background: #f9f9f9 url(chrome://lore/content/lib/ext/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
+	cursor:default;
+    zoom:1;
+}
+
+.x-tree-hd {
+    float:left;
+    overflow:hidden;
+    border-left:1px solid #eee;
+    border-right:1px solid #d0d0d0;
+}
+
+.x-form-field-wrap .x-form-ellipsis-trigger{
+    background-image:url(chrome://lore/skin/icons/ellipsis-trigger-grey.gif);
+    border-bottom-color:#b5b8c8;
+}
+
+/* the background image was blank anyway, and made it hard to highlight a field with a colour */
+.x-form-text, textarea.x-form-field{
+    background-image: none;
+}
+
+/** For the Annotation Search DataView **/
+#search-view {
+	background: white;
+}
+#search-view .annoListing {
+    cursor:pointer;
+    font:11px arial,tahoma,helvetica,sans-serif;
+	padding:3px 5px 7px 5px;
+	margin: 2px;
+}
+#search-view .annoListingTitle {
+	font-weight: bold;
+}
+#search-view .annoURL, #search-view .annoListingMeta {
+	padding-left: 7px;
+	color: #51666b;
+	font-size:90%;
+}
+#search-view .annoURL {
+	color: blue;
+}
+#search-view .x-view-over {
+	background-color: #eeeeee;
+}
+#search-view .x-view-selected {
+	background-color: #dddddd;
+} 
+#search-view .annoListingMeta {
+	padding-left: 7px;
+	color: #51666b;
+	font-size:90%;
+}
+.anno-tag {
+	background-color: #E7E7E7;
+	border-color: #D7D7D7;
+	margin: 2px;
+	padding: 2px 10px;
+	-moz-border-radius: 5px;
+}
+.x-tree-col-div-general * ol {
+	list-style:decimal !important;
+}
+.x-tree-col-div-general * ul {
+	list-style:disc !important;
+}

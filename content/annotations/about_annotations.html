@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<style type="text/css">
+			body {color: #51666b;}
+			h1 {font-size: 120%}
+			h2 {font-size: 110%; padding-top:10px;clear:both;}
+			p {margin:0; margin-bottom: 10px;}
+			div {padding:0;margin:0}
+			a:hover {text-decoration: underline;}
+			a {color: #2c5798 !important;}
+			ul {padding-left:0px}
+			ul li {
+				padding-left:0.5em;
+				list-style-position: inside;
+				list-style-type: square;
+			}
+			ul li ul li {
+				padding-left: 1.5em;
+			}
+			.fig {float:left;margin-right:5px;margin-left:5px}
+			.figdesc {float:left;}
+			.helpinst {
+				border:1px solid #eeeeee;
+				font-family: monospace;
+				padding:3px;
+				white-space: nowrap;
+			}
+			.helpinst img {
+				vertical-align:middle;
+			}
+		</style>
+		<script type="text/javascript">
+			var lore = {global:{}};
+			Components.utils.import("resource://lore/util.js", lore.global);
+		</script>
+		<title>LORE</title>
+		</head>
+	<body>
+		<h1><a href="#" onclick="lore.global.util.launchTab('chrome://lore/content/annotations/about_annotations.html',window);" title="Open in browser"><img alt="Open in browser" style="border:none;" src="chrome://lore/skin/icons/page_go.png"></a>&nbsp;LORE: Annotations</h1>
+		<p>LORE aims to support the digital practice of researchers and teachers of literary cultures through <b>Annotations</b>, enabling them to:</p>
+			<ul><li><b>Contribute</b> comments, notes and additional information by annotating web resources.</li>
+			<li><b>Search and browse</b> annotations contributed by others.</li>
+			</ul>
+		 <p>LORE aims to enable communities of experts to collaboratively select, tag and annotate digital resources with: 
+		 keywords, notes, comments, interpretations, queries, links to related resources etc. and to share these annotations with the research community to enrich the collection and enhance discovery services.
+		</p>
+		
+		<h2>Annotation Graphical User Interface Overview</h2>
+		
+		<div style="text-align:center; width:517px; margin-left:auto; margin-right:auto;">
+		<img id="imgmap" src="chrome://lore/skin/help-anno.jpg" usemap="#annoimgmap" border="0" width="517" height="448" alt="" />
+		<map id="annoimgmap" name="annoimgmap">
+		<area shape="rect" coords="271,19,321,40" href="#search" alt="Search for annotations" title="Search for annotations"    />
+		<area shape="rect" coords="321,19,420,40" href="#help" alt="Help" title="View this manual"    />
+		<area shape="rect" coords="471,0,512,21" href="#troubleshooting" alt="Troubleshooting and reporting problems" title="Troubleshooting and reporting problems"    />
+		<area shape="rect" coords="398,0,428,21" href="#importexport" alt="Export annotations" title="Export annotations"    />
+		<area shape="rect" coords="426,0,448,21" href="#saveall" alt="Save all annotations" title="Save all annotations"    />
+		<area shape="rect" coords="448,0,470,21" href="#prefs" alt="Preferences" title="Preferences"    />
+		<area shape="rect" coords="375,0,397,21" href="#highlight" alt="Highlight all annotations" title="Highlight all annotations"    />
+		<area shape="rect" coords="320,0,342,21" href="#add" alt="Add an annotation" title="Add an annotation"    />
+		<area shape="rect" coords="340,0,358,21" href="#delete" alt="Delete an annotation" title="Delete an annotation"    />
+		<area shape="rect" coords="357,0,375,21" href="#reply" alt="Create a new reply" title="Create a new reply"    />
+		<area shape="rect" coords="288,0,318,21" href="#signin" alt="Sign in or out" title="Sign in or out"    />
+		<area shape="rect" coords="226,198,512,424" href="#editor" alt="Annotation editor" title="Annotation editor"    />
+		<area shape="rect" coords="0,0,218,443" href="#browser" alt="Annotations are highlighted in the web browser" title="Annotations are highlighted in the browser"    />
+		<area shape="rect" coords="222,424,512,443" href="#messages" alt="Messages appear here as well as a link to RSS feeds" title="Messages appear here as well as a link to RSS feeds"    />
+		<area shape="poly" coords="224,23,269,25,273,44,511,43,514,196,227,194," href="#browse" alt="View annotations on the current page" title="View annotations on the current page"   />
+		</map>
+		</div>
+            
+		<h2 id="prefs">Preferences</h2>
+		
+		<p>LORE's features can be configured via the preferences. Select the <span class="helpinst"><img alt="preferences" src="chrome://lore/skin/icons/cog.png"> View or edit LORE Preferences</span> icon from the toolbar to show the preferences window. You can enter your name (used to identify you as the creator of annotations), and enable or disable LORE's features via the General preferences. </p>
+		<p>Expert users have the option to configure the details of the Annotation service.</p>
+		
+		<h2 id="browse">Browse</h2>
+		
+		<p id="browser">The browse panel displays annotations on the page that is currently visible in the web browser. Switching between tabs or loading a new page will trigger the browse view to update. Click on an annotation in the browse panel to highlight the section of the page to which the annotation applies. The drop-down menu at the bottom of the browse view provides options for sorting the annotations by title, type, creator, date etc.</p>
+		<p>The Views column contains buttons that enable viewing of the annotation outside of the browse view. For example, the <span class="helpinst"><img src="chrome://lore/skin/icons/page_go.png" alt="View annotation"> View annotation body</span> button displays the annotation body in a new window. The <span class="helpinst"><img src="chrome://lore/skin/icons/application_tile_horizontal.png" alt="Show Variation Window"> Show Variation Window</span> button is enabled for VariationAnnotations, to display annotation targets side-by-side.</p>
+		<p id="highlight">
+			Use the <span class="helpinst"><img src="chrome://lore/skin/icons/comment_yellow.gif" alt="Highlight all"> Highlight all</span> toolbar button to highlight all parts of the current page that have been annotated. Hovering over a highlighted section of the page will pop up a window with a summary of the annotation contents. You can minimise the annotation sidebar and continue to read annotations using this feature.
+		</p>
+		
+		
+		
+		<h3 id="editor">Annotation Editor</h3>
+		<p id="signin">In order to modify or create new annotations, you will need to be signed in to the Annotation Server. 
+		You can sign in by clicking on the <span class="helpinst"><img src="chrome://lore/skin/icons/user_key.png" alt="Sign in"> Sign in</span> toolbar button,
+		 or you will be prompted to sign in when you first attempt to create, edit or delete an annotation or reply. 
+		 Once you have successfully signed in, the toolbar icon will change to <span class="helpinst"><img src="chrome://lore/skin/icons/tick.png"> Signed in</span>. When you are signed in, you can click on this toolbar button to sign out.</p>
+		<p>Once signed in, you will be able to:</p>
+		<ul>
+			<li id="add"><b>Add annotations</b>: Click on the <span class="helpinst"><img src="chrome://lore/skin/icons/comment_add.png" alt="Add"> Add</span> toolbar button to add a new annotation on the page. The new annotation will open in the Annotation Editor. If you wish to annotate a selection of a web page or image, select the region of interest using the mouse before creating the new annotation. You can also create an annotation by right-clicking a selection within the web browser and selecting <span type="helpinst">Create annotation with selection</span></li>
+			<li id="reply"><b>Reply to annotations</b>: To create a reply to an existing annotation, first select the annotation to which you want to reply in the browser view and then select the <span class="helpinst"><img src="chrome://lore/skin/icons/comments_add.png" alt="Reply"> Reply</span> toolbar button.</li>
+			<li id="delete"><b>Remove annotations</b>: To remove an annotation or reply, select the annotation (or reply) in the browse view and then click on the <span class="helpinst"><img src="chrome://lore/skin/icons/comment_delete.png" alt="Delete"> Delete</span> toolbar button. You can only delete annotations created using your user account. This action cannot be undone.</li>
+			<li><b>Edit annotations</b>: Double click on an annotation or reply within the browse view to edit it via the Annotation Editor. You will not be able to edit annotations created under another user account.</li>
+		</ul>
+		<p>These actions are also available from the context menu that is displayed when you right-click on an annotation.</p>
+		
+		<p>The annotation editor provides a form-based interface for entering annotation content. Different types of annotations allow different fields to be specified, and the editor will change the fields displayed depending on the type of annotation that you select in the <span class="helpinst">Type</span> field at the top of the form.</p>
+		<p>For all types of annotations, type, title and creator are required. The default value for creator will be filled from the user preferences. Most annotation types allow a selection of the resource to be annotated. You may select this region prior to creating the annotation, or select a new region and use the <span class="helpinst">Set</span> button to update the region targeted by the annotation.</p>
+		<p>The <span class="helpinst">Tags</span> field allows multiple tags to be attached to the annotation. To enter tags, start typing a tag and a popup menu will suggest matching tags. If none of the suggestions are suitable, you can enter your own tag and hit enter to add it to the list of tags. To remove a tag, use the cross button next to the tag text.</p>
+		<p>The content of your annotation can be entered into the <span class="helpinst">Body</span> field. Use the <span class="helpinst">Save</span> button at the bottom of the editor to save the annotation to the repository, or <span class="helpinst">Cancel</span> to discard the annotation (if it is an existing annotation that is being edited only the changes since the last save will be discarded).</p>
+		<p>Use the <span class="helpinst">Hide Editor</span> button to close the editor while editing if you wish to view other annotations before finalising and saving your annotation. Any unsaved annotations will appear in the <span class="helpinst">Unsaved Changes</span> section of the Annotation Browse panel. If you browse to other pages, your unsaved annotations and replies will remain visible in this section and you can double click on them to return to the editor to complete or cancel the edits at any time. You can use the <span id="saveall" class="helpinst"><img src="chrome://lore/skin/icons/disk_multiple.png" alt="Save all"> Save all</span> toolbar button to save all of the unsaved annotations. You will also be prompted to save any unsaved annotations when you close the web browser.
+		
+		<h2 id="search">Search</h2>
+		<p>You can search for annotations by target URL, creator or by date range in which the annotation was created or last modified. The search currently requires values to match exactly, for example, to search for annotations by a particular person, you will need to enter their full name with correct capitalisation.</p>
+		<p>Click on a listing from the search results to load the page on which the annotation appears in the web browser. Right-click on search results to display a context menu with other options, for example, to view the annotation directly in the web browser.</p>
+		<h3 id="messages">RSS</h3>
+		
+		<p>The <span class="helpinst"><img src="chrome://lore/skin/icons/feed.png" alt="RSS"> RSS feed</span> button in the bottom-right of the annotation panel will open a page in the browser containing an RSS feed of annotations. If you are viewing the browse panel, the feed will be for annotations on the page currently loaded in the browser. If you are viewing the search panel, values from the search form will be used to create the feed. You can use the Firefox web browser or an RSS client application of your choice to subscribe to these feeds so that you will be notified when new annotations are created.</p>
+		</p>
+		
+	    <h3 id="importexport">Export</h3>
+        <p>You can export a copy of your annotations to a RDF/XML file using the Annotea or Open Annotation Collaboration models by selecting from the options in the <span class="helpinst"><img  alt="Import/Export" src="chrome://lore/skin/icons/table_refresh.png"> Import/Export</span> menu.</p>
+        
+		<h3 id="troubleshooting">Troubleshooting</h3>
+        <p>If LORE starts behaving strangely, you can reset it to its initial state by selecting <span class="helpinst"><img src="chrome://lore/skin/icons/arrow_refresh.png" alt="Reset UI"> Reset LORE UI</span> from the toolbar or by restarting your browser. If problems persist, please contact us.</p>
+		<p>You can report a problem immediately after it occurs via the <span class="helpinst"><img alt="Report a Problem" src="chrome://lore/skin/icons/mail-exclamation.png"> Report a Problem</span> toolbar button. This will create a new email through your email application, prefilled with information that may asist the developers to resolve the problem. You can edit or add to this information before sending the report to us.</p>
+		<p id="help">This manual can be viewed under the <span class="helpinst"><img src="chrome://lore/skin/icons/information.png" alt="Help">Using Compound Objects</span> tab in LORE or in the browser: <a href="#" onclick="lore.global.util.launchTab('chrome://lore/content/annotations/about_annotations.html', window);" title="Open this page in browser"><img alt="Open in browser" style="border:none;" src="chrome://lore/skin/icons/page_go.png"></a></p>
+		    
+	    <p style='clear:both;font-size:smaller; border-top: 1px solid #dce0e1;padding-top:0.5em'>For more information about LORE, please see the 
+		<a target='_blank' href='http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/' onclick='parent.lore.global.util.launchTab(this.href,window);return false;'>Aus-e-Lit</a> project page</p>
+	
+	</body>
+</html>

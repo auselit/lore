@@ -1,0 +1,110 @@
+/*
+ * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Engineering, University of Queensland (www.itee.uq.edu.au).
+ *  
+ * This file is part of LORE. LORE was developed as part of the Aus-e-Lit project.
+ *
+ * LORE is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.x-tree-multiline-node-details {
+	color:#FFFFF6;
+}
+.orelink {
+	font-style:italic; 
+	color: #fffff6; 
+	padding:10px;	
+}
+#remsmilview * a, #remlistview * a, #textmining * a {
+	color: orange !important;
+}
+.highlightNode {
+	border: 1px solid orange;
+	background-color: orange;
+}
+.node {
+	font-size:90%;
+	color:#fffff6;
+	font-weight:normal;
+	cursor:pointer;
+	padding:2px;
+}
+span.explorename {
+	color: #fffff6 !important;
+	background: none;
+}
+#exploreReset {
+	font-size: 90%; 
+	color: #fffff6;
+}
+#exploreHistory {
+	font-size:90%;
+	color:#fffff6;
+	background-color:#1f2730;
+}
+.port div div div {
+	background-color: orange !important;
+}
+.ctxtConn div.ctxtConnLabel {
+	color: #fffff6 !important;
+	background-color: transparent !important;
+	font-size:100% !important;
+}
+.co-uri {
+	background-color: #333333;
+	border-bottom: 1px solid #fffff6;
+	font-size: 90%;
+	padding-top:1px;
+}
+.co-header {
+	background-color: #1f2730;
+	color: #fffff6;
+	font-size: 12px;
+	border-top: 1px solid #fffff6;
+}
+.co-preview {
+	background-color: #343843;
+	border-top: 1px solid #fffff6;
+	border-left: 1px solid #fffff6;
+	border-right: 1px solid #fffff6;
+	font-size: 100%;
+}
+.co-footer {
+	background-color: #343843;
+	border-bottom: 1px solid #fffff6;
+}
+.co-tl {
+	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat top left;
+}
+.co-bl {
+	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat bottom left;
+}
+.co-br {
+	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat bottom right;
+}
+.co-tr-minus {
+	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat top right;
+}
+.co-tr-plus {
+	background: url(chrome://lore/skin/resourcenodecircleplus-hc.gif) no-repeat top right;
+}
+.slideshowTitle, .sectionTitle, .slideshowToc, .slideshowProps {
+	color: #fffff6;
+}
+.slideshowProps {
+	border-color: #fffff6;
+}
+div.coListing:hover {
+    background-color: orange;
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE dialog SYSTEM "chrome://lore/locale/about.dtd">
+<dialog title="&about; lore" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<groupbox align="center" orient="horizontal">
+<vbox>
+  <text value="LORE" style="font-weight: bold; font-size: x-large;"/>
+  <description style="white-space: pre;">
+LORE (Literature Object Re-use and Exchange)
+enables literary scholars to author, publish and
+search annotations and compound objects.</description>
+  <!--text value="&version; 0.25"/-->
+  <separator class="thin"/>
+  <text value="&createdBy;" style="font-weight: bold;"/>
+  <text value="UQ ITEE eResearch"/>
+  <separator class="thin"/>
+  <text value="Aus-e-Lit Project:"/>
+  <text class="text-link" onclick="window.open('http://itee.uq.edu.au/~eresearch/projects/aus-e-lit')" value="http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/"/>
+  <separator class="thin"/>
+  <text value="Credits" style="font-weight: bold;"/>
+  <text style='font-size:smaller' value="Icons used under a Creative Commons licence:"/>
+  <text class="text-link" onclick="window.open('http://famfamfam.com/lab/icons/silk')" style='font-size:smaller' value="Silk : http://famfamfam.com/lab/icons/silk"/>
+  <text class="text-link" onclick="window.open('http://p.yusukekamiyamane.com/')" style="font-size:smaller" value="Fugue : http://p.yusukekamiyamane.com/"/>
+</vbox>
+</groupbox>
+</dialog>
