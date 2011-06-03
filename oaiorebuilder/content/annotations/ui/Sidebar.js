@@ -155,7 +155,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
 		                    xtype:'button',
 		                    id:'feedButton', 
 		                    icon: "chrome://lore/skin/icons/feed.png",
-                            //tooltip: "RSS feed for annotations matching current page / search",
+                            tooltip: "Show feed",
                             handler: this.annotationManager.getFeedURL,
                             scope: this.annotationManager
 		                },
