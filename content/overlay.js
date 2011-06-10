@@ -138,7 +138,6 @@ try {
                 
                 var self = this;
                 window.addEventListener("dragover", function(ev){self.onDragOver(ev);}, true);
-                window.addEventListener("dragdrop", function(ev){self.onDragDrop(ev);}, true);
                 
                 var container = gBrowser.tabContainer;
                 container.addEventListener("TabSelect", this.onTabSelected, false);

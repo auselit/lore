@@ -80,6 +80,7 @@
             </xul:toolbarbutton>
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="add-node" tooltiptext="&lore.addNodeTip;"  oncommand="loreoverlay.addGraphNode();"/>
+          <xul:toolbarbutton id="co-add-placeholder" tooltiptext="&lore.placeholderLabel;" oncommand="loreoverlay.addPlaceholder();"/>
           <xul:toolbarbutton type="menu" id="add-options" tooltiptext="Add resource options">
             <xul:menupopup>
                 <xul:menuitem id="co-add-url" label="&lore.addNodeDirectlyLabel;" tooltiptext="&lore.addNodeDirectlyTip;" oncommand="loreoverlay.addGraphNode(true);"/>
@@ -114,7 +115,7 @@
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
       <!-- This iframe represents our main compound objects GUI, which is implemented as HTML + Javascript, loaded from a local file via a chrome URI. Initially empty (about:blank), the contents are loaded in uiglobal.js -->
       <!-- All web content displayed within the UI is sanitized or wrapped in iframes with type='content' see createXULIFrame in util.js -->
-      <xul:iframe context="clipmenu" type="chrome" tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
+      <xul:iframe ondragdrop="loreoverlay.onDragDrop(event)" context="clipmenu" type="chrome" tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
     
          
