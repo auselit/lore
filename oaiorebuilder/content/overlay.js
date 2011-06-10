@@ -498,9 +498,9 @@ try {
         		loreoverlay.coView().addResourceWithPrompt();
         	} else {
         		loreoverlay.coView().addResource(window.content.location.href);
+                document.getElementById('ore-add-icon').hidden = true;
+                document.getElementById('ore-added-icon').hidden = false;
         	}
-            document.getElementById('ore-add-icon').hidden = true;
-            document.getElementById('ore-added-icon').hidden = false;
         },
         /** Compound Object Toolbar button handler: Batch add from open tabs */
         addFromTabs: function(){
@@ -509,6 +509,9 @@ try {
         	var mainWindow = wm.getMostRecentWindow("navigator:browser");
         	var thebrowser = mainWindow.getBrowser();
         	loreoverlay.coView().addFromTabs(thebrowser);
+        },
+        addPlaceholder: function(){
+          loreoverlay.coView().addPlaceholder();  
         },
         createCompoundObject: function(){
             loreoverlay.coView().createCompoundObject();  
