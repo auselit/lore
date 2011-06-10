@@ -44,6 +44,9 @@
 #add-node {
 	list-style-image: url(chrome://lore/skin/icons/add.png);
 }
+#co-add-placeholder {
+	list-style-image:url(chrome://lore/skin/icons/plus-white.png);
+}
 #create-co {
 	list-style-image: url(chrome://lore/skin/icons/box-plus.png);
 	list-style-image: url(chrome://lore/skin/icons/database_add.png);
