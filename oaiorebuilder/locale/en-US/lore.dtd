@@ -15,6 +15,7 @@
 <!ENTITY lore.addNodeDirectlyTip "Add resource by typing or pasting URL directly">
 <!ENTITY lore.addNodeDirectlyLabel "Add resource URL">
 <!ENTITY lore.addFromTabsLabel "Add resources from tabs">
+<!ENTITY lore.placeholderLabel "Add placeholder to represent a concept or thing that does not have a URI">
 <!ENTITY lore.addFromTabsTip "Select resources to add from open browser tabs">
 <!ENTITY lore.addedNodeTip "URL is in LORE compound object">
 <!ENTITY lore.layoutTip "Rearrange the resources in the compound object using automatic layout">
