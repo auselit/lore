@@ -44,14 +44,6 @@ m_xps = new XPointerService();
  * @singleton
  */
 util = {
-    /** return a reference to the extension */
-    getExtension: function(){
-        // TODO: update for FF 4
-        return Components.classes["@mozilla.org/extensions/manager;1"]
-                .getService(Components.interfaces.nsIExtensionManager)
-                .getInstallLocation(lore.constants.EXTENSION_ID)
-                .getItemLocation(lore.constants.EXTENSION_ID);
-    },
     /**
      * Determine if an object is empty (has no properties)
      * @param {Object} ob The object to check
@@ -391,6 +383,9 @@ util = {
                     var content = xhr.responseText;
                     if (content){
                         var style = doc.createElement("style");
+                        var t = doc.createAttribute("type");
+                        t.nodeValue = "text/css";
+                        style.setAttributeNode(t);
                         style.innerHTML = content;
                         doc.getElementsByTagName("head")[0].appendChild(style);
                     }
