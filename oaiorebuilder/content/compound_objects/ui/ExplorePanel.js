@@ -561,7 +561,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
              });
         }
         this.contextmenu.showAt(e.xy);
-        e.stopEvent();
+        if (e.stopEvent){
+            e.stopEvent();
+        }
         return false;
     },
     /** generate a PNG image capturing the visualisation from this view */
