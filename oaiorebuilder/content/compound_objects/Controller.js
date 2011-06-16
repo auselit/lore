@@ -968,15 +968,12 @@ Ext.apply(lore.ore.Controller.prototype, {
           //Disabled for now
           //lore.ore.textm.tmkey = prefs.tmkey;
           this.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
+          this.high_contrast = prefs.high_contrast;
           lore.global.util.setHighContrast(window, prefs.high_contrast);
           var abtframe = Ext.get("about_co");
-          if (abtframe){
+          if (abtframe && abtframe.dom && abtframe.dom.contentWindow){
             lore.global.util.setHighContrast(Ext.get("about_co").dom.contentWindow, prefs.high_contrast);
-          } else {
-            //abt.frame.on("load",)
-          }
-          
-          
+          } 
       } catch (e){
         lore.debug.ore("Controller: Problem handling changed preferences",e);
       }
