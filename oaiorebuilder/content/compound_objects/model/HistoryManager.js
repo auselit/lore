@@ -45,13 +45,14 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
 		     var theuri = Components.classes["@mozilla.org/network/io-service;1"].
 		         getService(Components.interfaces.nsIIOService).
 		         newURI(remurl, null, null);
-		     // Use Firefox annotation to mark it as a compound object
-		     this.mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
-		        title, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
+		     
 		     // Add it to browser history
 		     var visitDate = new Date();
 		     var browserHistory = this.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
 		     browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
+             // Use Firefox annotation to mark it as a compound object
+             this.mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
+                title, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
              this.listManager.add(
 	            [
 	            {
@@ -109,7 +110,9 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
                     'accessed': thedate
 		        };
 		    }
-            this.listManager.add(coList, 'history');
+            if (count > 0){
+                this.listManager.add(coList, 'history');
+            }
 		    result.root.containerOpen = false;
 		  } catch (e) {
 		    lore.debug.ore("Error retrieving history",e);
