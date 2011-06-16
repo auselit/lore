@@ -14,6 +14,7 @@ lore.ore.Controller = function(config){
     this.REM_ID_PROP = "Compound Object ID";
     this.isDirty = false;
     this.wasClean = true;
+    this.MAXSIZE = 300;
 };
 Ext.apply(lore.ore.Controller.prototype, {
     /** Respond to authenticated events from AuthManager */
@@ -134,7 +135,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     bindViews: function(co){
     	lore.ore.ui.graphicalEditor.bindModel(co);
         Ext.getCmp("remlistview").bindModel(co);
-        lore.ore.ui.grid.bindModel(co.properties);
+        lore.ore.ui.grid.bindModel(co);
     },
     /**
      * Load a compound object into LORE
@@ -193,47 +194,23 @@ Ext.apply(lore.ore.Controller.prototype, {
 							format : 'application/rdf+xml',
 							content : rdfDoc
 				});
-				// lore.debug.ore("CO model is ",tmpCO);
-				// lore.debug.timeElapsed("Loaded model");
-				// lore.debug.ore("CO model is same as self? " +
-				// Ext.ux.util.Object.compare(tmpCO,tmpCO2),tmpCO2);
-
+				
 				lore.ore.cache.add(remurl, tmpCO);
 				lore.ore.cache.setLoadedCompoundObjectUri(remurl);
 				lore.ore.cache.setLoadedCompoundObjectIsNew(false);
+                lore.ore.controller.bindViews(tmpCO);
 			} else {
 				lore.ore.ui.vp.warning("No compound object found");
 				lore.debug.ore("no remurl found in RDF", loadedRDF);
 				// lore.debug.ore("the input rdf was",rdf);
+                return;
 			}
-			lore.ore.controller.bindViews(lore.ore.cache
-					.getLoadedCompoundObject());
-
-			lore.ore.ui.grid.store.loadData([{
-						id : "rdf:about_0",
-						name : lore.ore.controller.REM_ID_PROP,
-						value : remurl,
-						type : "uri"
-			}]);
-			loadedRDF.about('<' + remurl + '>').each(function() {
-				var propurl = this.property.value.toString();
-				var propsplit = lore.global.util.splitTerm(propurl);
-				var propname = lore.constants.nsprefix(propsplit.ns) + ":";
-				if (propname) {
-					propname = propname + propsplit.term;
-				} else {
-					propname = propurl;
-				}
-				if (propname != "ore:describes" && propname != "rdf:type") {
-					// TODO: get type from ontology or datatype
-					var dtype = getDatatype(propname, this.value);
-					lore.ore.ui.grid.appendPropertyValue(propname,
-							this.value.value.toString(), dtype);
-				}
-			});
 
 			// lore.debug.timeElapsed("create figure for each resource ");
 			// create a node figure for each aggregated resource, restoring the layout
+            var counter = 0;
+            // TODO check number of resources and disable graphical editor if too big
+            var numResources = 
 			loadedRDF.where('<' + aggreurl + '> ore:aggregates ?url')
 					.optional('?url layout:x ?x')
 					.optional('?url layout:y ?y')
@@ -245,6 +222,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 					.optional('?url layout:highlightColor ?hc')
 					.optional('?url layout:orderIndex ?order')
 					.optional('?url layout:abstractPreview ?abstractPreview')
+                    .optional('?url layout:isPlaceholder ?placeholder')
 					.optional('?url dc:format ?format')
 					.optional('?url rdf:type ?rdftype')
 					.optional('?url dc:title ?title')
@@ -272,18 +250,17 @@ Ext.apply(lore.ore.Controller.prototype, {
 								opts.y = 0;
 							}
 						}
-						fig = lore.ore.ui.graphicalEditor.addFigure(opts);
+                        if (counter < lore.ore.controller.MAXSIZE){
+						 fig = lore.ore.ui.graphicalEditor.addFigure(opts);
+                        }
+                        counter++;
 					});
-			// lore.debug.timeElapsed("iterate over predicates to create props
-			// and rels ");
-			// iterate over all predicates to create node connections and
-			// properties
+
+			// iterate over all predicates to create node connection figures
 			loadedRDF.where('?subj ?pred ?obj')
 			.filter(function() {
 				// filter out the layout properties and predicates about the
-				// resource map
-				// also filter format and title properties as they have already
-				// been set
+				// resource map as well as literals
 				if (this.pred.value.toString()
 						.match(lore.constants.NAMESPACES["layout"])
 						|| this.pred.value.toString() === (lore.constants.NAMESPACES["dc"] + "format")
@@ -342,19 +319,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 							delete c;
 						}
 
-					} else {
-						// not a node relationship, show in the property grid
-
-						// ensure property values shown in grid are safe
-						var prefix = lore.constants.nsprefix(relresult.ns);
-						var propname = prefix + ":" + relresult.term;
-						var propval = lore.global.util.sanitizeHTML(obj,
-								window, true);
-						var proptype = getDatatype(propname, this.obj);
-						if (!(prefix == "rdf" && relresult.term == "type")) {
-							srcfig.appendProperty(propname, propval, proptype);
-						}
-					}
+					} 
 				}
 			});
 			// FIXME: #210 Temporary workaround to set drawing area size on load
@@ -362,6 +327,9 @@ Ext.apply(lore.ore.Controller.prototype, {
 			lore.ore.ui.graphicalEditor.coGraph.resizeMask();
 
 			lore.ore.ui.vp.info("Loading compound object");
+            if (counter > lore.ore.controller.MAXSIZE){
+                lore.ore.ui.vp.error("Compound object is too big for LORE graphical editor! " + (counter - lore.ore.controller.MAXSIZE) + " resources not shown");
+            }
 			Ext.Msg.hide();
 			lore.ore.cache.setLoadedCompoundObjectUri(remurl);
             // preload nested compound objects to cache
@@ -552,21 +520,11 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         var cDate = new Date();
         // TODO: fix properties - use date string for now
-        // TODO: should not assign an id until it has been saved
         var currentREM = lore.ore.reposAdapter.generateID();
         var currentCO = new lore.ore.model.CompoundObject({uri: currentREM});
         lore.ore.cache.add(currentREM, currentCO);
         lore.ore.cache.setLoadedCompoundObjectUri(currentREM);
         lore.ore.cache.setLoadedCompoundObjectIsNew(true);
-        lore.ore.ui.grid.store.loadData(
-        [
-            {id:"rdf:about_0", name: lore.ore.controller.REM_ID_PROP, value: currentREM, type: "uri"},
-            {id: "dc:creator_0", name: "dc:creator", value: lore.ore.controller.defaultCreator, type: "plainstring"},
-            {id: "dcterms:modified_0", name: "dcterms:modified", value: cDate, type: "date"},
-            {id:"dcterms:created_0", name:"dcterms:created",value: cDate, type: "date"},
-            {id: "dc:title_0", name: "dc:title", value: "", type: "plainstring"}
-        ]  
-        );
         currentCO.initProperties();
         lore.ore.ui.graphicalEditor.initGraph();
         this.isDirty = false;
@@ -669,8 +627,17 @@ Ext.apply(lore.ore.Controller.prototype, {
                 fn: function(b, t){
                 	try{
                     title = t || "Untitled";
-                    lore.ore.ui.grid.setPropertyValue("dc:title", title, 0);
                     // update the title in the model
+                    var currentCO = lore.ore.cache.getLoadedCompoundObject();
+                    var propData = {
+                        id: lore.constants.NAMESPACES["dc"] + "title", 
+                        ns: lore.constants.NAMESPACES["dc"], 
+                        name: "title", 
+                        value: title, 
+                        prefix: "dc",
+                        type: "plainstring"
+                    };
+                    currentCO.properties.setProperty(propData,0);
                     lore.ore.coListManager.updateCompoundObject(
                             lore.ore.cache.getLoadedCompoundObjectUri(),
                             {title: title}
@@ -792,7 +759,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             }
         } else {
             var resourceListView = Ext.getCmp("remlistview");
-            if (obj instanceof lore.ore.ui.graph.ResourceFigure){
+            if (obj instanceof lore.ore.ui.graph.ResourceFigure || obj instanceof lore.ore.ui.graph.EntityFigure){
                 resourceListView.selectResource(obj.url);
             } else {
                 // could be a connection or nothing selected: clear resource list
@@ -801,6 +768,14 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         } catch (e){
             lore.debug.ore("problem in updateSelection",e);
+        }
+    },
+    addPlaceholder: function(){
+        lore.debug.ore("add placeholder");
+        try{
+      lore.ore.ui.graphicalEditor.addFigure({url:lore.ore.reposAdapter.generatePlaceholderID(), placeholder:true, props: {"dc:title_0": "Placeholder"}});
+        } catch (ex){
+            lore.debug.ore("Problem",ex);
         }
     },
     addResourceWithPrompt: function(){
@@ -994,6 +969,14 @@ Ext.apply(lore.ore.Controller.prototype, {
           //lore.ore.textm.tmkey = prefs.tmkey;
           this.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
           lore.global.util.setHighContrast(window, prefs.high_contrast);
+          var abtframe = Ext.get("about_co");
+          if (abtframe){
+            lore.global.util.setHighContrast(Ext.get("about_co").dom.contentWindow, prefs.high_contrast);
+          } else {
+            //abt.frame.on("load",)
+          }
+          
+          
       } catch (e){
         lore.debug.ore("Controller: Problem handling changed preferences",e);
       }
@@ -1065,7 +1048,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             /** Adapter used to access the repository */
             lore.ore.reposAdapter = new lore.ore.repos.SesameAdapter(rdfrepos);
         } else if (rdfrepostype == 'lorestore') {
-            lore.ore.reposAdapter = new lore.ore.repos.RestAdapter(rdfrepos);
+            lore.ore.reposAdapter = new lore.ore.repos.RestAdapter(annoserver);
         } else if (rdfrepostype == 'fedora'){
             lore.ore.reposAdapter = new lore.ore.repos.FedoraAdapter(rdfrepos);
         } else {
