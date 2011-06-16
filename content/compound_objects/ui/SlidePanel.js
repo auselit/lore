@@ -81,11 +81,13 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                         var propR = (container? container.getAggregatedResource(theProp.value): false);
                         // Link to resource
                         relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
-                        // Open in browser link
-                        relhtml += "<a href='#' title='Show in browser' onclick='lore.global.util.launchTab(\"" 
-                        	+ theProp.value 
-                        	+ ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
-                        	+ "\");'>";
+                        // Open in browser link only for real resources, not placeholders
+                        if (!propR.get('isPlaceholder')){
+                            relhtml += "<a href='#' title='Show in browser' onclick='lore.global.util.launchTab(\"" 
+                            	+ theProp.value 
+                            	+ ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
+                            	+ "\");'>";
+                        }
                         // use title or tag name when available
                         var displayVal = theProp.value;
                         if (theProp.name == "subject" && theProp.prefix == "dc"){
@@ -97,7 +99,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                         } else {
                             relhtml += displayVal;
                         }
-                        relhtml += "</a>";
+                        if (!propR.get('isPlaceholder')){
+                            relhtml += "</a>";
+                        }
                         if (propR){
                         	// Goto slide link (only if resource is in same compound object)
 	                        relhtml += "&nbsp;<a href='#' title='Go to slide' onclick='Ext.getCmp(\"" 
@@ -272,7 +276,13 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	            }
                 var highlightColor = resourceprops.properties.getProperty(lore.constants.NAMESPACES["layout"]+"highlightColor",0);
 	            slidehtml += "<div style='" + (highlightColor? "background-color:#" + highlightColor.value + ";" : "") + "padding:2px;border-bottom: 1px solid #dce0e1;'>";
-	            slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
+                if (resourceprops.isPlaceholder){
+                    hasPreview = false;
+                    // no link for placeholder resource
+                   slidehtml += "<li class='" + icontype + "'>&nbsp;"  + title + "</li>";
+                } else {
+	               slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
+                }
 	            slidehtml += "</div>";
 	            slidehtml += this.displayProperties(resourceprops, resource.store.co);
 	            var previewEl;
@@ -301,8 +311,8 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         	var container = resource.store.co;
         	
         	slidehtml += "Viewing "
-        		+ (resourceprops.representsCO ? "nested compound object " :
-        		 "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>");
+        		+ (resourceprops.representsCO ? "nested compound object " : (resourceprops.isPlaceholder ? "a placeholder ": 
+        		 "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>"));
         	// TODO: refactor: remove hardcoding
             if (container){
                 slidehtml += " &nbsp; from &nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + container.uri + "\");'>" + (container.properties.getTitle() || container.uri) + "</a>"; 
