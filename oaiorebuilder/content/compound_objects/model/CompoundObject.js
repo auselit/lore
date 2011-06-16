@@ -42,19 +42,22 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     {name: 'index', type: 'int', defaultValue: '1000'}, // for storing order information, large default value ensures resources are initially added at the end
                     {name: 'representsCO', type: 'boolean', defaultValue: false}, // indicates if this represents a nested compound object
                     {name: 'representsAnno',type: 'boolean', defaultValue: false}, // indicates if this represents an annotation
+                    {name: 'isPlaceholder', type: 'boolean', defaultValue: false}, // indicates if this resource has a generated URI, being a placeholder for some concept/thing
                     {name: 'properties'} // all other properties, key is property uri, value is array of Property objects
                 ] 
         });
         
         this.addEvents(
-            'addAggregatedResource', 
-            'removeAggregatedResource',
             'loaded'
         );
         /** rdfquery object representing content loaded or since last save (or empty for new CO) */
         this.loadedContent = {};
         this.aggregationURI = "#aggregation";
 	},
+	/** Getter named this way to be consistent with ExtJS record API */
+    'get': function(fieldName){
+      return this[fieldName];  
+    },
     getInitialContent : function(){
         return this.loadedContent;  
     },
@@ -62,9 +65,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         var res = this.aggregatedResourceStore.getById(aUri);
         if (res){
             return res;
-        } else {
-            lore.debug.ore("CompoundObject: resource not found " + aUri, this.aggregatedResourceStore);
-        }
+        } 
 	},
     initProperties : function(){
         this.properties.setProperty({
@@ -145,9 +146,16 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	 * @return {} The aggregated resources
 	 */
 	addAggregatedResource : function(config){
-      this.aggregatedResourceStore.loadData([config],true);
-      //this.fireEvent('addAggregatedResource',config);
-	  
+      if (config instanceof Ext.data.Record){
+        var index = config.get("index");
+        if (index){
+            this.aggregatedResourceStore.insert(index - 1, [config]);
+        } else {
+            this.aggregatedResourceStore.add([config]);
+        }
+      } else {
+        this.aggregatedResourceStore.loadData([config],true);
+      }
 	},
 	
 	/** Remove a resource from the compound object
@@ -155,7 +163,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	 * @return {} The aggregated resources
 	 */
 	removeAggregatedResource : function (aUri){
-      //this.fireEvent('removeAggregatedResource',aResource);
       var rec = this.aggregatedResourceStore.getById(aUri);
       if (rec) {
         this.aggregatedResourceStore.remove(rec);
@@ -280,8 +287,9 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         if (prefix == "layout" && propsplit.term == "orderIndex") {
                         	resourceData.index = this.value.value;
                         } 
-
-                        
+                        if (prefix == "layout" && propsplit.term == "isPlaceholder") {
+                            resourceData.isPlaceholder = (this.value.value == '1');
+                        }
                         var theval = this.value.value;
                         // TODO: handle bnode values
                        /* if (this.value.type == "bnode"){
@@ -291,15 +299,18 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             });
                             theval = "";
                         } */
-                        
-                        resourceData.properties.setProperty({
-                           id: propurl,
-                           ns: propsplit.ns,
-                           name: propsplit.term,
-                           value: theval,
-                           prefix: prefix,
-                           type: getDatatype(propurl,this.value.datatype)
-                        });
+                        // Most of the layout properties only apply to a single view and are managed by that view
+                        // highlightcolor applies to all views, so we create a property for that
+                        if (prefix != "layout" || (prefix == "layout" && propsplit.term=="highlightColor")){
+                            resourceData.properties.setProperty({
+                               id: propurl,
+                               ns: propsplit.ns,
+                               name: propsplit.term,
+                               value: theval,
+                               prefix: prefix,
+                               type: getDatatype(propurl,this.value.datatype)
+                            });
+                         }
                     }
                  );   
                  newResources.push(resourceData);
@@ -500,27 +511,25 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         var allfigures = lore.ore.ui.graphicalEditor.coGraph.getFiguresSorted();
         
         var resourcerdf = "";
+        
         for (var i = 0; i < allfigures.length; i++) {
             var fig = allfigures[i];
-            if (fig instanceof lore.ore.ui.graph.ResourceFigure){
+            if (fig instanceof lore.ore.ui.graph.ResourceFigure || fig instanceof lore.ore.ui.graph.EntityFigure){
                 var figurl = lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(fig.url.toString())).replace(/&/g,'&amp;');
                 rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                         + fullclosetag;
                 // create RDF for resources in aggregation
-                for (var mprop in fig.metadataproperties) {
-                    if (mprop != 'resource_0' && !mprop.match('undefined')) {
-                        var mpropval = fig.metadataproperties[mprop];
-                        if (mpropval && mpropval != '') {
-                            var tagname = mprop;
-                            var midx = mprop.lastIndexOf("_");
-                            if (midx != -1){
-                                tagname = mprop.substring(0,midx);
-                            }
-                            var ptype = fig.getPropertyType(mprop);
-                            resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag;
-                            resourcerdf += serialize_property(tagname, mpropval, ptype, ltsymb, nlsymb);
-                            resourcerdf += ltsymb + rdfdescclose + nlsymb;
-                        }
+                var props = fig.model.get('properties').getSortedArray();
+                for (var p = 0; p < props.length; p++){
+                    lore.debug.ore("processing property",props[p]);
+                    var thePropValues = props[p];
+                    for (var pi = 0; pi < thePropValues.length; pi++){
+                        var theProp = thePropValues[pi]; 
+                        var mpropval = theProp.value.toString();
+                        var tagname = theProp.prefix + ":" + theProp.name;
+                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag;
+                        resourcerdf += serialize_property(tagname, mpropval, theProp.type, ltsymb, nlsymb);
+                        resourcerdf += ltsymb + rdfdescclose + nlsymb;
                     }
                 }
                 /* persist node layout */
@@ -536,10 +545,10 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
                         + ltsymb + "layout:originalHeight rdf:datatype=\"xsd:int\">" + fig.originalHeight
                         + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
-                var col = fig.getHighlightColor();
+                /*var col = fig.getHighlightColor();
                 if (col){
                    resourcerdf += ltsymb + "layout:highlightColor rdf:datatype=\"xsd:string\">"+ col + ltsymb + "/layout:highlightColor>" + nlsymb;
-                }
+                }*/
                 if (fig.abstractPreview) {
                     resourcerdf += ltsymb + "layout:abstractPreview rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
                 }
@@ -547,6 +556,9 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 var figRec = this.getAggregatedResource(fig.url);
                 if (figRec && figRec.get('index')){
                     resourcerdf += ltsymb + "layout:orderIndex rdf:datatype=\"xsd:int\">" + figRec.get('index') + ltsymb + "/layout:orderIndex>" + nlsymb;
+                }
+                if (fig instanceof lore.ore.ui.graph.EntityFigure){
+                    resourcerdf += ltsymb + "layout:isPlaceholder rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:isPlaceholder>";
                 }
                 //lore.debug.ore("objframe " + fig.url , objframe);
                 if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
@@ -575,6 +587,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 } 
             }
         }
+        
         rdfxml += ltsymb + rdfdescclose + nlsymb;
         rdfxml += resourcerdf;
         rdfxml += ltsymb + "/rdf:RDF>";
@@ -629,6 +642,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
      */
     serialize : function(format) {
         var rdf = this.asRDFXML(false);
+        lore.debug.ore("rdf is ",rdf);
         /*if ('rdf' == format){
             return rdf;
         }*/
@@ -636,6 +650,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         try {
             var rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
                 var databank = jQuery.rdf.databank();
+                databank.base(this.uri);
                 for (ns in lore.constants.NAMESPACES){
                     databank.prefix(ns,lore.constants.NAMESPACES[ns]);
                 }
