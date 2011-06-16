@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+body {color: white; font-size: large;}
 .x-tree-multiline-node-details {
 	color:#FFFFF6;
 }
@@ -33,6 +33,16 @@
 	border: 1px solid orange;
 	background-color: orange;
 }
+.highlightEntity {
+    display:block;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    border: 4px solid orange;
+    background-color: orange;
+    width: 100%;
+    height: 100%;
+}
+
 .node {
 	font-size:90%;
 	color:#fffff6;
@@ -73,12 +83,35 @@ span.explorename {
 	font-size: 12px;
 	border-top: 1px solid #fffff6;
 }
+.entity-header {
+    background-color:#1f2730;
+    color: #fffff6;
+	font-size: 12px;
+    text-align: center;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    -moz-border-radius-topright: 15px;
+    -moz-border-radius-topleft: 15px;
+    border: 1px solid #fffff6;
+}
 .co-preview {
 	background-color: #343843;
 	border-top: 1px solid #fffff6;
 	border-left: 1px solid #fffff6;
 	border-right: 1px solid #fffff6;
+	overflow: hidden;
 	font-size: 100%;
+
+}
+.entity-preview {
+    background-color: #343843;
+    border: 1px solid #fffff6;
+    overflow: hidden;
+    font-size: 100%;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    -moz-border-radius-bottomright: 15px;
+    -moz-border-radius-bottomleft: 15px;
 }
 .co-footer {
 	background-color: #343843;
