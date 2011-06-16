@@ -84,16 +84,18 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
             iconcls = lore.ore.controller.lookupIcon((dctype? dctype: props.getProperty(dc+"format",0)),dctype);
         }
         var hcProp = rec.get('properties').getProperty(lore.constants.NAMESPACES["layout"] + "highlightColor",0);
+        var hcClass;
         if (hcProp){
             hc = hcProp.value;
             if (hc && hc!= "FFFFFF"){
+                hcClass=" class='highlightedResource'";
                 metaData.attr = "style='background-color:#" + hc + "'";
             } 
         }
       }
       return "<ul><li"   
         + ((iconcls && iconcls != 'pageicon')? " class='remlisticon " + iconcls + "'" : "") 
-        + "><span>" + (val? val : "Untitled Resource") + "</span></li></ul>";      
+        + "><span" + (hcClass? hcClass : "") + ">" + (val? val : "Untitled Resource") + "</span></li></ul>";      
     },
     uriRenderFunction: function(val,metaData,rec,rowIndex,colIndex,store){
       var isPlaceholder = rec.get('isPlaceholder');
