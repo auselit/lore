@@ -141,3 +141,9 @@ span.explorename {
 div.coListing:hover {
     background-color: orange;
 }
+.x-tag  {
+    background-color: #343843;	
+} 
+.x-superboxselect-input-field {
+	background-color: #343843; 
+}
