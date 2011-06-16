@@ -22,7 +22,7 @@
  * @extends draw2d.Node
  * @param {Object} initprops initial properties
  */
-lore.ore.ui.graph.ResourceFigure = function(initprops) {
+lore.ore.ui.graph.ResourceFigure = function(model,url) {
     this.NOHIGHLIGHT = "FFFFFF"; // white means no highlight
 	this.cornerWidth = 15;
 	this.cornerHeight = 14.5;
@@ -31,24 +31,16 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	this.scrollx = 0;
 	this.scrolly = 0;
 	this.editing = false;
-	
-	// cached property values : used by graphical editor to load values into property grid
-	this.metadataproperties = initprops || {};
+    this.canDrag = true
 	this.highlightColor = this.NOHIGHLIGHT; 
-	this.url = this.getProperty("resource_0");
-	if (!this.url) {
-		this.metadataproperties["resource_0"] = "";
-		this.url = "";
-	}
-
-	var title = this.getTitle();
-	if (!title) {
-		this.metadataproperties["dc:title_0"] = "";
-		title = "";
-	}
-	
 	draw2d.Node.call(this);
-	
+    // Need to set model after call to superclass as it sets model property to null
+	this.setModel(model);
+    this.url = this.getProperty("resource_0");
+    var title = this.getTitle();
+    if (!title) {
+        title = "";
+    }
 	this.createTitleField();
 	this.displayTitle((title ? title : 'Untitled Resource'));
 	this.setDimension(220, 170);
@@ -74,6 +66,8 @@ lore.ore.ui.graph.ResourceFigure = function(initprops) {
 	});
 	Ext.get(this.header).on('dblclick',this.startEditing,this);
     Ext.get(this.menuIcon).on("click", this.onHeaderMenu, this);
+    Ext.get(this.top_right).on("click",this.toggle,this);
+        
 };
 Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	type : "lore.ore.ui.graph.ResourceFigure",
@@ -85,6 +79,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	createHTMLElement : function() {
 		var item = document.createElement("div");
 		item.id = this.id;
+        item.className="resource_figure";
 		item.style.position = "absolute";
 		item.style.left = this.x + "px";
 		item.style.top = this.y + "px";
@@ -334,18 +329,24 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.setMimeType(theurl);
 	},
 	setModel : function(modelObj){
-        if (this.model){
-            var props = this.model.get("properties");
-            if (props){
-                props.un("propertyChanged",this.handlePropertyChanged, this);
-                props.un("propertyRemoved", this.handlePropertyRemoved, this);
+        lore.debug.ore("setModel",modelObj)
+        try{
+            var props;
+            if (this.model){
+                props = this.model.get("properties");
+                if (props){
+                    props.un("propertyChanged",this.handlePropertyChanged, this);
+                    props.un("propertyRemoved", this.handlePropertyRemoved, this);
+                }
             }
-        }
-		this.model = modelObj;
-        var props = modelObj.get("properties");
-        if (props){
-            props.on("propertyChanged",this.handlePropertyChanged,this);
-            props.on("propertyRemoved", this.handlePropertyRemoved, this);
+    		this.model = modelObj;
+            props = modelObj.get("properties");
+            if (props){
+                props.on("propertyChanged",this.handlePropertyChanged,this);
+                props.on("propertyRemoved", this.handlePropertyRemoved, this);
+            }
+        } catch (ex){
+            lore.debug.ore("setModel:",ex);
         }
 	},
 	/**
@@ -485,7 +486,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 			// Force store to use new ID to index record
 			this.model.store.data.replace(urlparam,this.model);	
 		} 
-		this.metadataproperties["resource_0"] = urlparam;
 		this.metadataarea.innerHTML = "<ul class='hideuribox'><li id='a"
 				+ this.id + "-icon'>" + this.uriexpander + "<a title='"
 				+ urlparam + "' onclick='lore.global.util.launchTab(\""
@@ -593,28 +593,30 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @return {Boolean}
 	 */
 	onDragstart : function(x, y) {
-		var superResult = draw2d.Node.prototype.onDragstart.call(this, x, y);
-		if (!this.header) {
-			return false;
-		}
-		if (y < this.cornerHeight && x < this.width
-				&& x > (this.width - this.cornerWidth)) {
-			this.toggle();
-			return false;
-		}
-		// don't allow move by dragging within iframe or metadataarea
-		if (x < 0 || y < 0 || y >= (this.header.offsetHeight - 2)) {
-			return false;
-		}
-		this.raise();
-		if (!this.isCollapsed()) {
-			if (this.canDrag && x < parseInt(this.header.style.width)
-					&& y < parseInt(this.header.style.height)) {
-				return true;
-			}
-		} else {
-			return superResult;
-		}
+        try{
+            //lore.debug.ore("onDragstart " + x + " " + y,this);
+    		if (!this.header) {
+    			return false;
+    		}
+            var wf = this.getWorkflow();
+            var scale = wf.scale;
+            var actualX = x ;
+            var actualY = y ;
+
+            if (scale == 1.0){
+                // TODO: fix these checks so that they work with scaling : can't work out why x and y are what they are
+                // don't allow move by dragging within iframe or metadataarea or by toggle button
+                if  ((actualY < (this.cornerHeight) && actualX < (this.width)
+                    && actualX > (this.width - this.cornerWidth)) || (actualX < 0 || actualY < 0 || actualY >= (this.header.offsetHeight - 2))){
+                    return false;
+                } 
+            } 
+    		this.raise();
+            return draw2d.Node.prototype.onDragstart.call(this, x, y);
+        } catch (ex){
+            lore.debug.ore("Error in onDragstart",ex);
+            return true;
+        }
 	},
     /** Return the minimum width */
 	getMinWidth : function() {
@@ -777,21 +779,19 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	/**
 	 * Set (or add) a property with a specific id
 	 * 
-	 * @param {}  pid The id of the metadataproperty eg dc:title_0
+	 * @param {}  pid The id of the property eg dc:title_0
 	 * @param {} pval The value of the property
      * @param {} type Optional datatype for the property eg string
 	 */
 	setProperty : function(pid, pval,type) {
-        //lore.debug.ore("setProperty " + pid + " " + pval + " " + type);
 		if (!this.model) {
-			lore.debug.ore("Warning: no model for fig " + this.url,this);
+			lore.debug.ore("Error: no model for fig " + this.url,this);
 		}
 		var oldval = this.getProperty(pid);
-		this.metadataproperties[pid] = pval;
 		if (pid == "resource_0" && pval != oldval) {
 			this.unsetProperty("dc:format_0", true);
+            // model is updated by setContent
 			this.setContent(pval);
-			// model is updated by setContent
 		} else if ((pid == "dc:title_0" || pid == "dcterms:title_0")){
 			// Always redisplay title as it may have been cleared during editing	
 			if (pval && pval != "") {
@@ -814,7 +814,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
            // override icon
            this.setIcon(pval);
         }
-		// Update model
+		// Update model property
 		if (pid != "resource_0" && this.model && pval != oldval){
 			try{
     			var pidsplit = pid.split(":");
@@ -839,6 +839,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 				lore.debug.ore("problem in setProperty",ex);
 			}
 		}
+        lore.debug.ore("setProperty " + pid + " " + pval + " " + type,this.model);
         
 	},
 	/**
@@ -847,7 +848,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 	 * @param {} pid The id of the property eg dc:title_0
 	 */
 	unsetProperty : function(pid, updateModel) {
-		delete this.metadataproperties[pid];
 		if (pid == "dc:title_0" || pid == "dcterms:title_0") {
 			var existingTitle = this.getProperty("dc:title_0")
 					|| this.getProperty("dcterms:title_0");
@@ -874,22 +874,29 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		return this.getProperty("dc:title_0") || this.getProperty("dcterms:title_0");
 	},
 	/**
-	 * Get a property
+	 * Get a property value
 	 * 
 	 * @param {string}   pid Fully qualified property index eg dc:format_0
 	 * @return {} the property value
 	 */
 	getProperty : function(pid) {
-        // make sure that subject terms don't still have escaped ampersands in them
-        if (pid.match("dc:subject")){
-          var subj = this.metadataproperties[pid];
-          if (subj){
-             return subj.replace(/&amp;/,'&');
-          } else {
-             return subj;
-          }
-        } else {
-            return this.metadataproperties[pid];
+        if (!this.model){
+            lore.debug.ore("Error: no model for fig");
+            return;
+        }
+        var expandPid = this.expandPropAbbrev(pid);
+        var theProp = this.model.get('properties').getProperty(expandPid.id, expandPid.index);
+        if (theProp){
+            if (pid.match("dc:subject")){
+                // make sure that subject terms don't still have escaped ampersands in them
+                 return theProp.value.toString().replace(/&amp;/,'&');
+            } else {
+                if (theProp.value){
+                    return theProp.value.toString();
+                } else {
+                    lore.debug.ore("getProperty no value" + pid);
+                }
+            }
         }
 	},
     getPropertyType : function(pid){
