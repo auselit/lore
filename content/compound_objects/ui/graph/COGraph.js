@@ -348,13 +348,13 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	 * @param {boolean} ctrl
 	 */
 	onKeyDown: function(keyCode, ctrl, meta, shift) {
+        // don't do anything if we are editing a text field
+        if (this.editingText){
+             return;
+        }
         var sel = this.currentSelection;
         var msel = this.multiSelection;
         try{
-         // don't do anything if we are in a text field
-         if (this.editingText){
-        	 return;
-         }
           if (shift) {
             this.selecting = true;
           } else if (!this.dragging) {
@@ -693,7 +693,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 scope: this,
                 handler: function(b){ 
                     if (this.scale <  2.0) {this.scale = this.scale + 0.2};
-                    Ext.get("drawingarea").applyStyles("-moz-transform:scale(" + this.scale + ")");
+                    Ext.get("drawingarea").applyStyles("-moz-transform:scale(" + this.scale + ");-moz-transform-origin: 0 0;");
                 }
             });
              this.contextmenu.add({
