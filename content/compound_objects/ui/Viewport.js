@@ -325,6 +325,15 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         loreviews.on("contextmenu", function(tabpanel, tab, e) {
                     Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
         });
+        // make sure Using Compound Objects has correct stylesheet
+        Ext.getCmp("welcome").on("activate",
+            function(comp){
+                var aboutco= Ext.get("about_co");
+                if (aboutco && typeof lore.ore.controller.high_contrast != "undefined") {
+                    lore.global.util.setHighContrast(aboutco.dom.contentWindow, lore.ore.controller.high_contrast);
+                } 
+             }
+        );
     },
     /** @private Create a compound object view displayed in a closeable tab */
     openView : function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
