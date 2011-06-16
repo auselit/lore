@@ -58,7 +58,7 @@ span.explorename {
 	font-size: 90%; 
 	color: #fffff6;
 }
-#exploreHistory {
+.exploreHistory {
 	font-size:90%;
 	color:#fffff6;
 	background-color:#1f2730;
@@ -138,6 +138,10 @@ span.explorename {
 .slideshowProps {
 	border-color: #fffff6;
 }
+.detailText {
+    color:white;
+	font-size:90%
+}
 div.coListing:hover {
     background-color: orange;
 }
@@ -147,3 +151,8 @@ div.coListing:hover {
 .x-superboxselect-input-field {
 	background-color: #343843; 
 }
+span.highlightedResource {
+	color: black;
+	font-weight:bold;
+}
+
