@@ -9,8 +9,12 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     	try{
 	    	this.defaultCM = new Ext.grid.ColumnModel([
 	    	     new Ext.grid.RowNumberer(),
-	  	         {header: 'Title', dataIndex: 'title', renderer: this.titleRenderFunction},
-	  	         {header: 'URI', dataIndex:'uri'}    
+	  	         {
+                    header: 'Title',
+                    dataIndex: 'title',
+                    renderer: this.titleRenderFunction
+                 },
+	  	         {header: 'URI', dataIndex:'uri', renderer: this.uriRenderFunction}
 	  	    ]);
 	    	Ext.apply(this,{
 	 		    columnLines : true,
@@ -91,6 +95,14 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
         + ((iconcls && iconcls != 'pageicon')? " class='remlisticon " + iconcls + "'" : "") 
         + "><span>" + (val? val : "Untitled Resource") + "</span></li></ul>";      
     },
+    uriRenderFunction: function(val,metaData,rec,rowIndex,colIndex,store){
+      var isPlaceholder = rec.get('isPlaceholder');
+      if (isPlaceholder){
+        return "<span class='orelink'>(placeholder)</span>";
+      } else {
+        return val;
+      }
+    },
     /**
      * Sets the compound object
      * @param {} co The compound object model object
@@ -116,12 +128,28 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
      },
      /** Update layout order index when resources are added  */
      addResourceHandler : function(store, records, idx){
+        try{
     	 var last = store.getTotalCount();
-		 // TODO: check that idx is correct (records should always be added at end)
     	 for (var j = 0; j < records.length; j++){
-    		 records[j].set('index',idx + j + 1);
-    		 records[j].commit();
+             var rec = records[j];
+             var recIndex = rec.get('index');
+             if (typeof recIndex != "undefined" && recIndex != 1000){
+                // check if the record has an index, if it does, insert it there and shift other indexes
+                store.each(function (r){
+                    var oldIndex = r.get('index');
+                    if (oldIndex >= recIndex && r != rec){
+                        r.set('index', oldIndex + 1);
+                    }
+                });
+             } else {
+                // otherwise add it to the end and update record index
+                rec.set('index',idx + j + 1);
+             }
     	 }
+         store.commitChanges();
+        } catch(ex){
+            lore.debug.ore("Error in addResourceHandler:",ex);
+        }
      },
      /** Update layout order index when a resource is removed */
      removeResourceHandler : function(store, record, idx){   	 
@@ -189,6 +217,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
         	if (sfig) {
         		p.selectResource(sfig.url);
         	}
+            p.store.sort('index','ASC');
             p.getView().refresh();
         	// focus on the grid view to enable key navigation/deletion to work
         	if (p.getView().focusEl){
@@ -202,6 +231,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
     	try{
         var rec = this.store.getAt(rowIndex);
     	this.tmpurl = rec.get("uri");
+        this.tmpPlaceholder = rec.get("isPlaceholder");
         this.tmpColor = rec.get("properties").getProperty(lore.constants.NAMESPACES["layout"] + "highlightColor",0).value;
     	if (!this.contextmenu) {
             this.contextmenu = new Ext.menu.Menu({
@@ -213,8 +243,12 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 icon: "chrome://lore/skin/icons/page_white_paste.png",
                 scope: this,
                 handler: function(evt){
-                	lore.global.util.copyToClip(this.tmpurl);
-					lore.ore.ui.vp.info("URI copied to clipboard: " + this.tmpurl);
+                    if (!this.tmpPlaceholder){
+                	   lore.global.util.copyToClip(this.tmpurl);
+					   lore.ore.ui.vp.info("URI copied to clipboard: " + this.tmpurl);
+                    } else {
+                        lore.ore.ui.vp.info("Cannot copy URI for placeholder");
+                    }
                 }
              });
             
@@ -223,7 +257,11 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 icon: "chrome://lore/skin/icons/page_go.png",
                 scope: this,
                 handler: function(evt){
-                	lore.global.util.launchTab(this.tmpurl, window);
+                    if (!this.tmpPlaceholder){
+                	   lore.global.util.launchTab(this.tmpurl, window);
+                    } else {
+                        lore.ore.ui.vp.info("Cannot show placeholder in browser");
+                    }
                 }
              });
     		
