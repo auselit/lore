@@ -219,6 +219,15 @@
 .explore-icon {
 	background-image: url(chrome://lore/skin/icons/network.png) !important; 
 }
+.exploreHistory {
+    vertical-align:middle;
+	line-height: 2em;
+	width:100%;
+	text-align:right;
+	overflow:hidden;
+	font-size:smaller;
+	color:#51666b;
+}
 #remsmilview, #textmining {
 	padding-left: 20px;	
 }
@@ -369,6 +378,9 @@ div.exploretip-text {
 }
 div.coListing:hover {
 	background-color: #eeeeee;
+}
+.detailText {
+	padding-left:20px;color:#51666b;font-size:87%
 }
 /* override multiline tree styles for listingss */
 .x-tree-multiline-node-details{

@@ -26,8 +26,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     useSplitTips: true,
                     height: 28,
                     minHeight: 0,
-                    bodyStyle: "vertical-align:middle;line-height: 2em;width:100%;text-align:right;overflow:hidden;font-size:smaller;color:#51666b;"
-                    
+                    bodyCssClass: 'exploreHistory'
                 }
             ]
         });
