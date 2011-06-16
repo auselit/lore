@@ -190,13 +190,15 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
         '</td></tr></table>',
         '<tpl if="representsCO == true"><ul><li class="mimeicon oreicon" style="font-style:italic;padding-bottom:0.5em;"><a title="Open in LORE" href="#" onclick="lore.ore.controller.loadCompoundObjectFromURL(\'{uri}\');">{uri}</a></li></ul></tpl>',
         '<tpl if="representsCO == false && representsAnno == true"><ul><li class="mimeicon annoicon" style="font-style:italic;padding-bottom:0.5em;"><a title="Show in browser" onclick="lore.global.util.launchTab(\'{uri}?danno_useStylesheet=\')" href="#">{uri}</a></li></ul></tpl>',
-        '<tpl if="representsCO == false && representsAnno == false"><ul><li class="mimeicon {[lore.ore.controller.lookupIcon(values.properties.getProperty(lore.constants.NAMESPACES["dc"]+"type",0) || values.properties.getProperty(lore.constants.NAMESPACES["dc"]+"format",0), values.properties.getProperty(lore.constants.NAMESPACES["dc"]+"type",0))]}" style="font-style:italic;padding-bottom:0.5em;"><a title="Show in browser" onclick="lore.global.util.launchTab(\'{uri}\')" href="#">{uri}</a></li></ul></tpl>',
+        '<tpl if="representsCO == false && representsAnno == false && isPlaceholder == false"><ul><li class="mimeicon {[lore.ore.controller.lookupIcon(values.properties.getProperty(lore.constants.NAMESPACES["dc"]+"type",0) || values.properties.getProperty(lore.constants.NAMESPACES["dc"]+"format",0), values.properties.getProperty(lore.constants.NAMESPACES["dc"]+"type",0))]}" style="font-style:italic;padding-bottom:0.5em;"><a title="Show in browser" onclick="lore.global.util.launchTab(\'{uri}\')" href="#">{uri}</a></li></ul></tpl>',
+        '<tpl if="isPlaceholder == true"><div style="font-style:italic;padding-bottom:0.5em;">(placeholder)</div></tpl>',
         '<tpl for="properties">{[this.displayProperties(values)]}</tpl>',
     '</div>',
     '</tpl>',
     {
         propTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span>{value}</p>'),
         relTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><a href="#" onclick="Ext.getCmp(\'remdetailsview\').scrollToResource(\'{value}\')"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span></a><a href="#" title="Show {url} in browser" onclick="lore.global.util.launchTab(\'{url}\')">{title}</a></p>'),
+        pRelTpl: new Ext.XTemplate('<p style="padding-bottom:0.3em;"><a href="#" onclick="Ext.getCmp(\'remdetailsview\').scrollToResource(\'{value}\')"><span title="{id}" style="font-weight:bold">{[fm.capitalize(values.name)]}:&nbsp;&nbsp;</span></a>{title}</p>'),
         /** Convenience function to get style for highlighting resources according to highlightColor property 
          * @param {lore.ore.model.ResourceProperties} props 
          * */
@@ -241,7 +243,12 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
 	                            prop.title = displayVal;
                                 prop.url = prop.value;
 	                        }
-                            res += this.relTpl.apply(prop);
+                            if (propR && propR.get('isPlaceholder')){
+                                // we don't want a link for placeholder resources
+                                res += this.pRelTpl.apply(prop);
+                            } else {
+                                res += this.relTpl.apply(prop);
+                            }
                         } else {
                             res += this.propTpl.apply(prop);
                         }
