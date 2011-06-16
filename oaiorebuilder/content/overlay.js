@@ -143,14 +143,28 @@ try {
                 container.addEventListener("TabSelect", this.onTabSelected, false);
                 
                 var splashVersion = this.prefs.getCharPref("splashVersion");
-                var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
-                    .getService(Components.interfaces.nsIExtensionManager);
-                var version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
-                if (version != splashVersion){
-                    // show info page for LORE
-                    lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
-                    this.prefs.setCharPref("splashVersion",version);
-                }
+                try {
+                    // Firefox 4
+                    Components.utils.import("resource://gre/modules/AddonManager.jsm");
+                    AddonManager.getAddonByID("lore@maenad.itee.uq.edu.au", function(addon) {
+                    var version = addon.version;
+                    if (version != splashVersion){
+                        // show info page for LORE
+                        lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
+                        this.prefs.setCharPref("splashVersion",version);
+                    }   
+                  });
+                } catch (ex) {
+                    // Firefox 3.6 and earlier
+                    var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
+                       .getService(Components.interfaces.nsIExtensionManager);
+                    var version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
+                    if (version != splashVersion){
+                        // show info page for LORE
+                        lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
+                        this.prefs.setCharPref("splashVersion",version);
+                    }
+                } 
                 this.prefs.addObserver("", this, false);
             } 
             catch (e) {
@@ -430,11 +444,8 @@ try {
                 this.authManager.logout();
             }
         },
-        reportProblem: function(){
-          // TODO: update for FF 4
-          var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
-            .getService(Components.interfaces.nsIExtensionManager);
-          var version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
+        reportProblem: function(){          
+          var version = this.prefs.getCharPref("splashVersion");
           var url = "mailto:lore@aus-e-lit.net?subject=Problem%20with%20LORE%20" + version
             + "&Body=Please describe the problem in as much detail as possible, " 
             + "including URLs for the web resources you were working with when the problem occurred:%0A%0A%0A%0A"
