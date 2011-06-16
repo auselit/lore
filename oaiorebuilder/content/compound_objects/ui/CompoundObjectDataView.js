@@ -118,6 +118,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                  if (this.id == 'cohview'){
                     cm.add({
                        text: "Do not show in history",
+                       icon: "chrome://lore/skin/icons/cross.png",
                        iconCls: "no-icon",
                        scope: this,
                        handler: function(obj,evt) {
