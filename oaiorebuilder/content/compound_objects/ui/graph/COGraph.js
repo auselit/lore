@@ -32,6 +32,7 @@ lore.ore.ui.graph.COGraph = function(id) {
          * without interference from figure contents
          **/
 	    this.mask = document.createElement("div");
+        this.scale = 1.0;
         this.mask.style.position="absolute";
         this.mask.style.top = "0px";
         this.mask.style.left = "0px";
@@ -101,7 +102,8 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 		        var allfigures = this.getFiguresSorted();
 		        for (var i = 0; i < allfigures.length; i++) {
 		            var fig = allfigures[i];
-		            if (fig && fig instanceof lore.ore.ui.graph.ResourceFigure){
+		            if (fig && (fig instanceof lore.ore.ui.graph.ResourceFigure 
+                        || fig instanceof lore.ore.ui.graph.EntityFigure)){
 			            var command = new draw2d.CommandMove(fig);
 			            command.setPosition(x, y);
 			            this.getCommandStack().execute(command);
@@ -178,10 +180,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
         this.html.style.height = "100%";
         var newx = this.scrollArea.scrollWidth - 1;
         var newy = this.scrollArea.scrollHeight - 1;
-        this.html.style.height = newy + "px";
         this.mask.style.height = newy + "px";
-        this.html.style.width = newx + "px";
         this.mask.style.width = newx + "px";
+        this.html.style.width = newx + "px";
+        this.html.style.height = newy + "px";
     },
     /** 
      * Remove all figures and reset mask and empty message
@@ -425,7 +427,6 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       } else */
       if (this.dragging && this.selecting) {
         // show selection figure if making multiselection
-        //lore.debug.ore("selecting");
         var newX = diffX < 0? x : this.mouseDownPosX;
         var newY = diffY < 0? y : this.mouseDownPosY;
         this.showSelectionFigure(newX, newY, Math.abs(diffX), Math.abs(diffY));
@@ -455,7 +456,6 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 y1 = this.mouseDownPosY; y2 = y;
             }
             var selectedFigures = this.multiSelectFigures(x1, y1, x2, y2);
-            //lore.debug.ore("selected multiple figures",selectedFigures);
         }
         
       this.dragging = false;
@@ -470,14 +470,12 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       }*/
     },
     /** Override to prevent two selection events being fired in succession */
-    onMouseDown: function(/*:int*/ x, /*:int*/ y)
-    {
+    onMouseDown: function(/*:int*/ x, /*:int*/ y) {
       this.dragging = true;
       this.mouseDownPosX = x;
       this.mouseDownPosY = y;
 
-      if(this.toolPalette!=null && this.toolPalette.getActiveTool()!=null)
-      {
+      if(this.toolPalette!=null && this.toolPalette.getActiveTool()!=null) {
         this.toolPalette.getActiveTool().execute(x,y);
       }
 
@@ -519,7 +517,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       // remove highlighting from previous selection
       for (var i = 0; i < oldMultiSelection.length; i++) {
     	  var fig = oldMultiSelection[i];
-    	  if (fig instanceof lore.ore.ui.graph.ResourceFigure){
+    	  if (fig instanceof lore.ore.ui.graph.ResourceFigure || fig instanceof lore.ore.ui.graph.EntityFigure){
            oldMultiSelection[i].setSelected(false);
       	  }
       }
@@ -527,7 +525,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       // Always show line resize handles and highlighting when connection is selected
       if (sel && sel instanceof draw2d.Line) {
         this.showLineResizeHandles(sel);
-      } else if (sel instanceof lore.ore.ui.graph.ResourceFigure) {
+      } else if (sel instanceof lore.ore.ui.graph.ResourceFigure || sel instanceof lore.ore.ui.graph.EntityFigure) {
         this.showResizeHandles(sel);
         sel.setSelected(true); 
       } 
@@ -661,6 +659,50 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 scope: this,
                 handler: function(evt){              	
                 	 this.doLayout(true);   
+                }
+            });
+            this.contextmenu.add({
+                text: "Set resource list order from layout",
+                icon: "chrome://lore/skin/icons/table_go.png",
+                scope: this,
+                handler: function(evt){
+                    var currentCO = lore.ore.cache.getLoadedCompoundObject();
+                    var allfigures = this.getFiguresSorted();
+                    for (var i = 0; i < allfigures.length; i++) {
+                        var fig = allfigures[i];
+                        if (fig instanceof lore.ore.ui.graph.ResourceFigure || fig instanceof lore.ore.ui.graph.EntityFigure){
+                            fig.model.set("index",(i + 1));
+                            fig.model.commit();
+                        }
+                    }
+                }
+            });
+            this.contextmenu.add("-");
+            this.contextmenu.add({
+                text: "Zoom out",
+                icon: "chrome://lore/skin/icons/magnifier-zoom-out.png",
+                scope: this,
+                handler: function(b){ 
+                    if (this.scale >= 0.3) {this.scale = this.scale - 0.2};
+                    Ext.get("drawingarea").applyStyles("-moz-transform:scale(" + this.scale + "); -moz-transform-origin: 0 0");         
+                }
+            });
+            this.contextmenu.add({
+                text: "Zoom in",
+                icon: "chrome://lore/skin/icons/magnifier-zoom-in.png",
+                scope: this,
+                handler: function(b){ 
+                    if (this.scale <  2.0) {this.scale = this.scale + 0.2};
+                    Ext.get("drawingarea").applyStyles("-moz-transform:scale(" + this.scale + ")");
+                }
+            });
+             this.contextmenu.add({
+                text: "Reset Zoom",
+                icon: "chrome://lore/skin/icons/magnifier-zoom-actual.png",
+                scope: this,
+                handler: function(b){ 
+                    this.scale = 1.0;
+                    Ext.get("drawingarea").applyStyles("-moz-transform:scale(" + this.scale + ")");
                 }
             });
             this.contextmenu.add("-");
