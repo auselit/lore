@@ -131,7 +131,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             autoWidth : true,
                             autoScroll : true,
                             iconCls : "welcome-icon",
-                            html : "<iframe type='content' style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
+                            html : "<iframe id='about_co' type='content' style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
 
                         }]
             }]
@@ -219,7 +219,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                                  var queryURL = lore.ore.reposAdapter.reposURL + "feed?refersTo=" + lore.ore.controller.currentURL;
                                                  lore.global.util.launchTab(queryURL,window);
                                             } else {
-                                                lore.ore.ui.vp.info("Feeds only supported for lorestore: please update your repository preferences.");
+                                                 lore.ore.ui.vp.info("Feeds only supported for lorestore: please update your repository preferences.");
                                             }
                                            } catch (ex){
                                             lore.debug.ore("Viewport: Error launching feed",ex);
