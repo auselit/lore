@@ -138,6 +138,19 @@
 	text-align: center;
 	font-family: tahoma, arial, helvetica;
 }
+.entity-header {
+    background-color:#e5e5e5;
+    color: #333333;
+    font-size: 11px;
+	
+    text-align: center;
+    font-family: tahoma, arial, helvetica;
+	border-top-right-radius: 15px;
+	border-top-left-radius: 15px;
+    -moz-border-radius-topright: 15px;
+	-moz-border-radius-topleft: 15px;
+	border: 1px solid #aeaeae;
+}
 .co-preview {
 	background-color: white;
 	border-top: 1px solid #aeaeae;
@@ -146,6 +159,16 @@
 	overflow: hidden;
 	font-size: 9pt;
 }
+.entity-preview {
+    background-color: white;
+	border: 1px solid #aeaeae;
+    overflow: hidden;
+    font-size: 9pt;
+	border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    -moz-border-radius-bottomright: 15px;
+    -moz-border-radius-bottomleft: 15px;
+}
 .co-footer {
 	background-color: white;
 	border-bottom: 1px solid #aeaeae;
@@ -153,6 +176,14 @@
 }
 .co-tl {
 	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left;
+}
+.entity {
+	-moz-border-radius: 15px;
+    border-radius: 15px;
+	background-color: transparent;
+	padding:0px;
+	text-align: center;
+	overflow: visible;
 }
 .co-bl {
 	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left;
@@ -214,7 +245,10 @@
 #drawingarea {
 	position:relative;
 	background-position: center !important;
+	border: none;
+	margin:0px;
 }
+
 #remrdfview, #remfoxmlview, #remtrigview {
  	color: #51666b;
  	font-family: courier monospace;
@@ -237,6 +271,16 @@
 	background-color: yellow;
 	border-bottom: none;
 }
+.highlightEntity {
+	display:block;
+	-moz-border-radius: 15px;
+    border-radius: 15px;
+	border: 4px solid yellow;
+	background-color: yellow;
+	width: 100%;
+	height: 100%;
+}
+
 /* Compound object explore view */
 .node {
 	font-size:0.6em;
