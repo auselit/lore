@@ -128,11 +128,58 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             title : "Using Compound Objects",
                             tabTip: "View LORE documentation",
                             id : "welcome",
+                            scale: 1.0,
                             autoWidth : true,
                             autoScroll : true,
                             iconCls : "welcome-icon",
-                            html : "<iframe id='about_co' type='content' style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>"
-
+                            html : "<iframe id='about_co' type='content' style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>",
+                            menuHandler: "Ext.getCmp('welcome').onTabMenu(event);",
+                            onTabMenu : function(e){
+                                var el = Ext.get(e.explicitOriginalTarget);
+                                var xy = el.getAnchorXY();
+                                xy[1] = xy[1] + 22; // adjust for height of tab
+                                if (!this.contextmenu) {
+                                    this.contextmenu = new Ext.menu.Menu({
+                                        id : this.id + "-context-menu",
+                                        showSeparator: false
+                                    });
+                                   this.contextmenu.add({
+                                        text: "Zoom out",
+                                        icon: "chrome://lore/skin/icons/magnifier-zoom-out.png",
+                                        scope: this,
+                                        handler: function(b){
+                                            if (this.scale >= 0.3) {this.scale = this.scale - 0.2}; 
+                                            var body = Ext.get("about_co").dom.contentWindow.document.body
+                                            Ext.get(body).applyStyles("font-size:" + (this.scale * 100) + "%");
+                                        }
+                                    });
+                                    this.contextmenu.add({
+                                        text: "Zoom in",
+                                        icon: "chrome://lore/skin/icons/magnifier-zoom-in.png",
+                                        scope: this,
+                                        handler: function(b){ 
+                                            if (this.scale <  2.0) {this.scale = this.scale + 0.2};
+                                            var body = Ext.get("about_co").dom.contentWindow.document.body
+                                            Ext.get(body).applyStyles("font-size:" + (this.scale * 100) + "%");
+                                        }
+                                    });
+                                    this.contextmenu.add({
+                                        text: "Reset Zoom",
+                                        icon: "chrome://lore/skin/icons/magnifier-zoom-actual.png",
+                                        scope: this,
+                                        handler: function(b){
+                                            if (lore.ore.controller.high_contrast){
+                                                this.scale = 1.2;
+                                            } else {
+                                                this.scale = 1.0;
+                                            }
+                                             var body = Ext.get("about_co").dom.contentWindow.document.body
+                                             Ext.get(body).applyStyles("font-size:" + (this.scale * 100) + "%");
+                                        }
+                                    });    
+                                }
+                                this.contextmenu.showAt(xy);
+                            }
                         }]
             }]
         }, {
