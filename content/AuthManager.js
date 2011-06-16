@@ -50,11 +50,16 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
         // Tracks signed in state, to prevent superfluous event firing
         this.signedIn = false; 
     },
-    
-    reloadEmmetUrls: function(prefs) {
+    /**
+     * Load login, logout and registration urls from Emmet service
+     * @param {} prefs Preferences (must contain a url property)
+     * @param {} callback Function to call after urls have been loaded
+     */
+    reloadEmmetUrls: function(prefs, callback) {
         var emmetUrl = prefs.url + '/emmet.svc';
         lore.debug.ui("reloadEmmetUrls " + emmetUrl);
-        if (this.EMMET_URL == emmetUrl) {
+        // check whether login url is defined (if not, network may not have been enabled on load)
+        if (this.EMMET_URL == emmetUrl && this.LOGIN_URL) {
             return;
         } else {
             this.EMMET_URL = emmetUrl;
@@ -62,7 +67,9 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
 
         Ext.Ajax.request({
             url: this.EMMET_URL,
-            success: this.parseEmmetUrlsResponse,
+            success: function(response){
+                this.parseEmmetUrlsResponse(response, callback)
+            },
             method: 'GET',
             params: {action: 'fetchEmmetUrls',
                      format: 'json'},
@@ -70,8 +77,12 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
 
         });
     },
-
-    parseEmmetUrlsResponse: function(response) {
+    /**
+     * Get login, logout and registration urls from response
+     * @param {} response
+     * @param {} callback
+     */
+    parseEmmetUrlsResponse: function(response, callback) {
         var jsObject = Ext.decode(response.responseText);
         var emmetUrls = jsObject.emmetUrls;
         this.LOGOUT_URL = emmetUrls['emmet.logout.url'];
@@ -79,6 +90,14 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
         this.REGISTER_URL = emmetUrls['emmet.register.url'];
 
         this.isAuthenticated();
+        if (this.LOGIN_URL){
+            if (callback && typeof callback == 'function'){
+                callback();
+            }    
+        } else {
+            lore.debug.ui("Unable to get Emmet URLs",[this,response]);
+        }
+        
     },
 
 
@@ -86,7 +105,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
      * Run the supplied callback function if the user is currently authorised
      */
     isAuthenticated : function(callback) {
-        lore.debug.ui("isAuthenticated",this);
+        //lore.debug.ui("isAuthenticated",this);
         if (this.EMMET_URL){
 	        Ext.Ajax.request({
 	           url: this.EMMET_URL,
@@ -99,7 +118,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
 	           scope: this
 	        });
         } else {
-            lore.debug.ui("No emmet url defined!",this);
+            lore.debug.ui("isAuthenticated: No emmet url defined!",this);
         }
     },
 
@@ -107,7 +126,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
      * Run the supplied callback function if the user is *not* currently authorised
      */
     ifNotAuthenticated : function(callback) {
-        lore.debug.ui("ifNotAuthenticated",this);
+        //lore.debug.ui("ifNotAuthenticated",this);
         if (this.EMMET_URL){
 	        Ext.Ajax.request({
 	           url: this.EMMET_URL,
@@ -119,6 +138,8 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
 	           callIfNotAuthorised: callback,
 	           scope: this
 	        });
+        } else {
+             lore.debug.ui("ifNotAuthenticated: No emmet url defined!",this);
         }
     },
 
@@ -139,7 +160,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
                 return;
             }
     	} catch (e) {
-    		lore.debug.anno("AuthManager:checkAuthentication failed", e);
+    		lore.debug.ui("AuthManager:checkAuthentication failed", e);
     	}
         lore.debug.ui("User is not authorised");
         this.fireSignedOut();
@@ -190,33 +211,51 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
 
     //private
     popupLoginWindow : function(callback) {
+        var oThis = this;
+        var doPopup = function(){
+            var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
+            var loginwindow = window.openDialog("chrome://lore/content/loginWindow.xul", 'lore_login_window', winOpts,
+                                                {initURL: oThis.LOGIN_URL,
+                                                 logger: lore.debug.ui});
+    
+            loginwindow.addEventListener("close", function() {
+                    oThis.fireEvent("cancel");
+                    oThis.isAuthenticated(callback);
+            }, false);
+            loginwindow.addEventListener('DOMWindowClose', function() {
+                    oThis.fireEvent("cancel");
+                    oThis.isAuthenticated(callback);
+            }, false);
+        }
+        
         try{
-        var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
-        var loginwindow = window.openDialog("chrome://lore/content/loginWindow.xul", 'lore_login_window', winOpts,
-                                            {initURL: this.LOGIN_URL,
-                                             logger: lore.debug.ui});
-
-        var t = this;
-        loginwindow.addEventListener("close", function() {
-                t.fireEvent("cancel");
-                t.isAuthenticated(callback);
-        }, false);
-        loginwindow.addEventListener('DOMWindowClose', function() {
-                t.fireEvent("cancel");
-                t.isAuthenticated(callback);
-        }, false);
+            if (!this.LOGIN_URL){
+                // Network might not have been available when LORE was loaded: try reloading emmet urls
+                reloadEmmetUrls(this.prefs,doPopup);
+            } else {
+                doPopup();
+            }
+            
         } catch (ex){
-            lore.debug.ui("popupLoginWindow",ex);
+            lore.debug.ui("Error in popupLoginWindow",ex);
         }
     },
     
     logout : function() {
-        Ext.Ajax.request({
-            url: this.LOGOUT_URL,
-            success: this.isAuthenticated,
-            method: 'GET',
-            scope: this
-         });
+        var oThis = this;
+        var doLogout = function(){
+            Ext.Ajax.request({
+                url: oThis.LOGOUT_URL,
+                success: oThis.isAuthenticated,
+                method: 'GET',
+                scope: oThis
+             });
+        }
+        if (!this.LOGOUT_URL){
+            reloadEmmetUrls(this.prefs, doLogout);
+        } else {
+            doLogout();
+        }
     },
     
     fireSignedIn : function(userName) {
