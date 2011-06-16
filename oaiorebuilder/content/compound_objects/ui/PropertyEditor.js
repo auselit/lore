@@ -448,7 +448,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }
         }
     },
-    bindModel : function(model){
+    bindModel : function(resource){
+        //lore.debug.ore("bind model " + this.id,resource);
+        var model;
+        if (resource){
+            model = resource.get('properties');
+        }
         if (this.model == model){
             return;
         }
@@ -461,10 +466,55 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     	if (this.model){
     		this.model.on("propertyChanged",this.onModelPropertyChanged,this);
             this.model.on("propertyRemoved",this.onModelPropertyRemoved,this);
-    	}
+            var props = this.model.getSortedArray();
+            // add resource url or compound object ID as prop
+            var data = [];
+            var resPropID = "resource_0";
+            var resPropName = "resource";
+            if (this.id == "remgrid"){
+                resPropID = "rdf:about_0";
+                resPropName = "Compound Object ID";
+            } 
+            if (!resource.get("title")){
+                data.push({id: "dc:title_0", name: "dc:title", value: "", type: "plainstring"});
+            }
+            if (!resource.get("isPlaceholder")){
+                data.push({
+                    id: resPropID,
+                    name: resPropName,
+                    value: resource.get('uri'),
+                    type: "uri"
+                });
+            }
+            var counter = 0;
+            var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            for (var i= 0; i < props.length; i++){
+                var thePropValues = props[i];
+                for (var j = 0; j < thePropValues.length; j++){
+                    var theProp = thePropValues[j];
+                    // don't display properties from layout, ore or rdf namespaces in the editor
+                    // Also, don't display the property in the editor if it should be displayed as a relationship
+                    if (theProp.prefix != "layout" && theProp.prefix != "ore" && theProp.prefix != "rdf" &&
+                        (!theProp.value || !theProp.value.toString().match("^http://") || !currentCO.getAggregatedResource(theProp.value)) ){
+                        counter ++;
+                        data.push({
+                            id: theProp.prefix + ":" + theProp.name + "_" + j,
+                            name: theProp.prefix + ":" + theProp.name,
+                            value: theProp.value,
+                            type: theProp.type
+                        });
+                    }
+                }
+                
+            }
+            this.store.loadData(data);
+        } else {
+            this.store.removeAll();
+        }
     },
     /** Update grid if property value changes in model */
     onModelPropertyChanged: function(config, index){
+        lore.debug.ore("model property changed",config)
     	try{
 	    	if (config){
                 var theid = config.prefix + ':' + config.name + "_" + index;
@@ -472,8 +522,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 	    		// check whether value has actually changed
 	    		if (rec && rec.value != config.value){
 	    			// update record
-	    			rec.set('value',config.value);
-	    			rec.commit();
+    	    	    rec.set('value',config.value);
+    	    		rec.commit();
 	    		} else if (!rec){
                     // new property value: add to grid
                     this.store.loadData([{id: theid, name: config.prefix + ":" + config.name, value: config.value, type: config.type}],true);
@@ -537,14 +587,17 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         var escVal = (val.replace) ? val.replace(/"/g,"&quot;"): val;
         if (rec.get("name") == "dc:subject" && val){
             // display tag names not uris
-            var tags = val.split(",");
+            var tags = (val? val.toString().split(","): "");
             var sbs = this.tagEditor.field;
             var renderString = "";
             for (var t = 0; t < tags.length; t++){
                 if (t > 0){
                     renderString += ", ";
                 }
-	            var idx = sbs.store.findUnfiltered('id', tags[t]);//tags[t].replace(/&amp;/,'&'));
+	            var idx = sbs.store.findUnfiltered('id', tags[t].replace(/&amp;/,'&'));
+                if (idx == -1){
+                    idx = sbs.store.findUnfiltered('id', tags[t]);
+                }
                 if (idx >= 0){
                    var tagRec = sbs.store.getAtUnfiltered(idx);
                    var name = tagRec.get('name');
@@ -631,7 +684,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         	panel.loadedOntology = lore.ore.ontologyManager.ontologyURL;
         	panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties(panel.id == "remgrid"));
         }
-        if (panel.id == "remgrid" || lore.ore.ui.graphicalEditor.getSelectedFigure() instanceof lore.ore.ui.graph.ResourceFigure){
+        var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
+        if (panel.id == "remgrid" || selfig instanceof lore.ore.ui.graph.ResourceFigure || selfig instanceof lore.ore.ui.graph.EntityFigure){
             if (panel.collapsed) {
                 panel.expand(false);
             }
@@ -685,7 +739,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }
                 }
             } else {
-                // property without namespace in name (probably Compound Object ID), don't allow delete
+                // property without namespace in name (probably resource or Compound Object ID), don't allow delete
                 lore.ore.ui.vp.warning("Cannot remove mandatory property: " + propName);
                 
             }
@@ -772,6 +826,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     var cleanvalue;
                     if (args.record.get("type") == "date" || args.record.get("type") == "uri"){
                         cleanvalue = args.value;
+                    } else if (args.record.get("name") == "dc:subject"){
+                        // don't escape ampersands in subject urls
+                        cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
                     } else {
                         cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true);
                     }
@@ -791,7 +848,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 var propname = pidsplit[0];
                 var ns = lore.constants.NAMESPACES[pfx];
                 var propuri = ns + propname;
-                var cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true); 
+                var cleanvalue;
+                if (propuri == lore.constants.NAMESPACES["dc"]+ "subject"){
+                    cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
+                } else {
+                    cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true); 
+                }
                 var propData = {
                     id: propuri, 
                     ns: ns, 

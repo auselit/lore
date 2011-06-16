@@ -35,7 +35,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    },
    initComponent: function(config){
     lore.ore.ui.GraphicalEditor.superclass.initComponent.call(this,config); 
-    lore.debug.ore("graphical Editor initComponent",this);
    },
    /** bindModel, update listeners */
    bindModel: function(co){
@@ -75,7 +74,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     'copy' : false
             });
             droptarget.notifyDrop = function(dd, e, data) {
-                //lore.debug.ore("notifydrop codd",data);
                 var ge = lore.ore.ui.graphicalEditor;
                 var coGraph = ge.coGraph;
                 var figopts = {
@@ -110,29 +108,17 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    },
    /**
     * Updates the views when nodes or connections are selected
-    * @param {draw2d.Figure} figure ResourceFigure or ContextmenuConnection that was selected
+    * @param {draw2d.Figure} figure ResourceFigure, EntityFigure or ContextmenuConnection that was selected
     */
    onSelectionChanged : function(figure) {
-        //lore.debug.ore("selected figure is",figure);
 	   	lore.ore.controller.updateSelection(figure, this);
         if (figure != null) {
             // raise tab first so that properties are rendered and column widths get sized correctly for resource/rels
-            Ext.getCmp("propertytabs").activate("properties");
-            if (figure.model && figure.model.data && figure.model.data.properties){
-                lore.ore.ui.nodegrid.bindModel(figure.model.data.properties);
-            }
-            lore.ore.ui.nodegrid.store.removeAll();
-            // TODO: use figure.model here instead of metadataproperties: this should be part of the bindModel call above
-            if (figure.metadataproperties) {
-                for (p in figure.metadataproperties){
-                    var pname = p;
-                    var pidx = p.indexOf("_");
-                    if (pidx != -1){
-                        pname = p.substring(0,pidx);
-                    } 
-                    var ptype = figure.getPropertyType(p);
-                    // TODO: this should be in the PropertyEditor
-                    lore.ore.ui.nodegrid.store.loadData([{id: p, name: pname, value: figure.getProperty(p), type: ptype}],true); 
+            
+            if (figure instanceof lore.ore.ui.graph.ResourceFigure || figure instanceof lore.ore.ui.graph.EntityFigure) {
+                Ext.getCmp("propertytabs").activate("properties");
+                if (figure.model){
+                    lore.ore.ui.nodegrid.bindModel(figure.model);
                 }
                 // get connections
                 var relationshipsData = [];
@@ -201,7 +187,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             lore.ore.ui.relsgrid.expand();
             lore.ore.ui.grid.collapse();
         } else {
-            lore.ore.ui.nodegrid.store.removeAll();
+            //lore.ore.ui.nodegrid.store.removeAll();
+            lore.ore.ui.nodegrid.bindModel(null);
             lore.ore.ui.relsgrid.store.removeAll();
             // Background selected: only show compound object properties
             lore.ore.ui.relsgrid.collapse();
@@ -223,7 +210,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             // command was undone, check whether dirty needs to be reverted
             lore.ore.controller.rollbackDirty();
         } else if (0!=(details&(draw2d.CommandStack.POST_REDO) || 0!=(details&(draw2d.CommandStack.POST_EXECUTE)))){
-            lore.debug.ore("in stack changed ",event)
             lore.ore.controller.setDirty();
         }
         
@@ -241,7 +227,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	            comm.undo();
 	        }
 	        
-	        if (comm_fig instanceof lore.ore.ui.graph.ResourceFigure) {
+	        if (comm_fig instanceof lore.ore.ui.graph.ResourceFigure || comm_fig instanceof lore.ore.ui.graph.EntityFigure) {
 	            // reset dummy graph layout position to prevent new nodes being added too far from content
 	            if (comm instanceof draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
 	                && comm.oldY == this.dummylayoutprevy) {   
@@ -425,11 +411,17 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                         title: title,
                         representsCO: figRepresentsCO,
                         representsAnno: figRepresentsAnno,
+                        isPlaceholder: opts.placeholder,
                         properties: figProps
+                        
                 });   
             }
-            fig = new lore.ore.ui.graph.ResourceFigure(theProps);
-            
+            var resource = this.model.getAggregatedResource(theURL);
+            if (!opts.placeholder){
+                fig = new lore.ore.ui.graph.ResourceFigure(resource,theURL);
+            } else {
+                fig = new lore.ore.ui.graph.EntityFigure(resource);
+            }
             if (opts.oh) {
                fig.originalHeight = opts.oh;
             }
@@ -457,12 +449,12 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                 // adds to undo stack
                 this.coGraph.addResourceFigure(fig, opts.x, opts.y);            
             }
-            var resource = this.model.getAggregatedResource(theURL);
+            /*var resource = this.model.getAggregatedResource(theURL);
             if  (resource){
                 fig.setModel(resource);
             } else {
                 lore.debug.ore("Model not found for " + theURL,fig);
-            }
+            }*/
             this.lookup[theURL] = fig.getId();
         } else {
             lore.ore.ui.vp.warning("Resource is already in the compound object: " + theURL);
