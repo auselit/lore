@@ -433,6 +433,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             nodemenu.add("-");
             nodemenu.add({
                 text : "Show connections",
+                icon: "chrome://lore/skin/icons/network.png",
                 scope: fdcontroller,
                 handler : function(evt) {
                     var node = this.clickedNode;
@@ -441,6 +442,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             });
             nodemenu.add({
                text: "Show in browser",
+               icon: "chrome://lore/skin/icons/page_go.png",
                scope: fdcontroller,
                handler: function(evt) {
                     var node = this.clickedNode;
@@ -450,6 +452,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             });
             nodemenu.add({
                 text : "Hide this resource and connections",
+                icon: "chrome://lore/skin/icons/cross.png",
                 scope: fdcontroller,
                 handler : function(evt) {
                     var node = this.clickedNode;
@@ -515,6 +518,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
              });
              this.contextmenu.add({
                 text: "Reset visualisation",
+                icon: "chrome://lore/skin/icons/arrow_refresh.png",
                 scope: this,
                 handler: function(evt){
                     this.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
@@ -522,6 +526,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
              });
              this.contextmenu.add({
                 text: "Show color key and options",
+                icon: "chrome://lore/skin/icons/color-swatch.png",
                 scope: this,
                 handler: function(evt){
                     var relFieldSet = this.colorKeyWin.getComponent(0);
@@ -541,6 +546,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                       
              this.contextmenu.add({
                     text: "Zoom out",
+                    icon: "chrome://lore/skin/icons/magnifier-zoom-out.png",
                     scope: this,
                     handler: function (){
                         this.fd.canvas.scale(0.7,0.7);                     
@@ -548,6 +554,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
              });
              this.contextmenu.add({
                     text: "Zoom in",
+                    icon: "chrome://lore/skin/icons/magnifier-zoom-in.png",
                     scope: this,
                     handler: function (){
                         this.fd.canvas.scale(1.3,1.3);                     
