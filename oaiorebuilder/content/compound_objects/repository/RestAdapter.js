@@ -25,9 +25,10 @@
  */
 lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	// Override the idPrefix property with a different URL
-	constructor : function(reposURL) {
-		lore.ore.repos.RestAdapter.superclass.constructor.call(this, reposURL);
-	    this.idPrefix = reposURL;
+	constructor : function(baseURL) {
+		lore.ore.repos.RestAdapter.superclass.constructor.call(this, baseURL);
+        this.reposURL = baseURL + "/ore/";
+	    this.idPrefix = this.reposURL;
 	    this.unsavedSuffix = "#unsaved";
 	},
     getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){

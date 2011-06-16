@@ -23,6 +23,12 @@
  * @extends lore.ore.repos.RepositoryAdapter
  */
 lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
+    constructor: function(baseURL){
+        lore.ore.repos.SesameAdapter.superclass.constructor.call(this, baseURL);
+        this.reposURL = baseURL;
+        // prefix for identifiers is base URI (ie reposURL after http:// until next slash) plus 'rem/'
+        this.idPrefix = baseURL.substring(0, baseURL.indexOf('/',7) + 1) + "rem/";
+    },
     getCompoundObjects : function(matchuri, matchpred, matchval, isSearchQuery){
         var sa = this;
 	    try {
