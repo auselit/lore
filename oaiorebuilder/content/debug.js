@@ -116,12 +116,12 @@ debug = {
     },
 	
 	enableFileLogger : function (enable) {
-		if ( enable && !debug.moz ) {
+		/*if ( enable && !debug.moz ) {
 			debug.moz = new MozillaFileLogger();
 		} else if( !enable && debug.moz) {
 			debug.moz.destruct();
 			debug.moz = null;
-		}
+		}*/
 	},
 	
 	/**
@@ -264,6 +264,6 @@ try {
             .wrappedJSObject 
             .getTracer("extensions.lore"); 
     } catch (ex) {
-        // suppress errors if getting fbTrace fails - Firebug probably not installed/enabled        
+        // suppress errors if getting fbTrace fails - Firebug probably not installed/enabled  
     }
 }
