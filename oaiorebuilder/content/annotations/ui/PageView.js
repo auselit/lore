@@ -477,7 +477,7 @@ lore.anno.ui.PageView.prototype = {
 				return;
 			}
 			//CSS used by selection library
-			lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
+			lore.global.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
 			
 			var im;
 			
@@ -619,7 +619,7 @@ lore.anno.ui.PageView.prototype = {
 			enableFunc();
         }
 	} else { // inject the imgareaselect css anyway because we also use it for tooltips
-        lore.global.util.injectCSS("content/lib/imgareaselect-deprecated.css", cw);
+        lore.global.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
     }
 },
 
