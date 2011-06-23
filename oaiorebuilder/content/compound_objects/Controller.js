@@ -771,9 +771,8 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
     },
     addPlaceholder: function(){
-        lore.debug.ore("add placeholder");
         try{
-      lore.ore.ui.graphicalEditor.addFigure({url:lore.ore.reposAdapter.generatePlaceholderID(), placeholder:true, props: {"dc:title_0": "Placeholder"}});
+            lore.ore.ui.graphicalEditor.addFigure({url:lore.ore.reposAdapter.generatePlaceholderID(), placeholder:true, props: {"dc:title_0": "Placeholder"}});
         } catch (ex){
             lore.debug.ore("Problem",ex);
         }
