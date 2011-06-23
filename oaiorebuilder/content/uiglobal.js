@@ -25,8 +25,8 @@
 	 */
 	ui = {};
 
-	Components.utils.import("resource://lore/debug.js");
-	Components.utils.import("resource://lore/util.js");
+	Components.utils["import"]("resource://lore/debug.js");
+	Components.utils["import"]("resource://lore/util.js");
 
 	/**
 	 * Display an informational message to the user

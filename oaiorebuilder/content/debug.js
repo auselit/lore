@@ -20,7 +20,7 @@
 
 var EXPORTED_SYMBOLS = ['debug'];
 
-Components.utils.import("resource://lore/constants.js");
+Components.utils["import"]("resource://lore/constants.js");
 
 
 
@@ -254,7 +254,7 @@ debug.fbTrace = {};
 
 //Use Firebug trace console for debug logs - edit the extension preferences to enable (about:config)
 try {
-	Components.utils.import("resource://firebug/firebug-trace-service.js");
+	Components.utils["import"]("resource://firebug/firebug-trace-service.js");
 	debug.fbTrace = traceConsoleService.getTracer("extensions.lore");
 } catch (ex) {
     // Maybe this is an old version of Firebug, try loading the trace service from XPCOM

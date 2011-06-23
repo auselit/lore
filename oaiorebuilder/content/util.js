@@ -21,14 +21,15 @@
 var EXPORTED_SYMBOLS = ['util'];
 
 if (typeof constants === "undefined") {
-    Components.utils.import("resource://lore/constants.js");
+    Components.utils["import"]("resource://lore/constants.js");
 }
 
 if (typeof debug !== "object") {
-    Components.utils.import("resource://lore/debug.js");
+    Components.utils["import"]("resource://lore/debug.js");
 }
 if (typeof XPointerService === "undefined") {
-    Components.utils.import("resource://lore/lib/nsXPointerService.js");
+    Components.utils["import"]("resource://lore/lib/nsXPointerService.js");
+    
 }
 
 /**
