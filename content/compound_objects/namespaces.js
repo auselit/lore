@@ -43,10 +43,10 @@ try {
      * Use eval for the import statements because the YUI compressor does not allow 
      * us to call the import function directly as import is a reserved word in JavaScript.
      */
-    Components.utils.import("resource://lore/constants.js", lore);
-    Components.utils.import("resource://lore/util.js", lore.global);
-    Components.utils.import("resource://lore/debug.js", lore);
-    Components.utils.import("resource://lore/uiglobal.js", lore.global);
+    Components.utils["import"]("resource://lore/constants.js", lore);
+    Components.utils["import"]("resource://lore/util.js", lore.global);
+    Components.utils["import"]("resource://lore/debug.js", lore);
+    Components.utils["import"]("resource://lore/uiglobal.js", lore.global);
 } catch (e) {
     window.top.alert(
         "Unable to load LORE. Please provide the following details to the development team:\n\n" 
