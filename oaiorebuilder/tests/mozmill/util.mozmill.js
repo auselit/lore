@@ -1,8 +1,8 @@
 var jumlib = {};
-Components.utils.import("resource://mozmill/modules/jum.js",jumlib);
+Components.utils["import"]("resource://mozmill/modules/jum.js",jumlib);
 
 var test={};
-Components.utils.import("resource://lore/util.js",test);
+Components.utils["import"]("resource://lore/util.js",test);
 
 var setupModule = function (){
   controller = mozmill.getBrowserController();

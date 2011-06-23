@@ -21,10 +21,10 @@
 var jumlib = {};
 
 lore = {global: {}};
-Components.utils.import("resource://mozmill/modules/jum.js", jumlib);
-Components.utils.import("resource://loretest/mozmill/modules/LoreController.js");
-Components.utils.import("resource://lore/util.js", lore.global);
-Components.utils.import("resource://lore/debug.js", lore);
+Components.utils["import"]("resource://mozmill/modules/jum.js", jumlib);
+Components.utils["import"]("resource://loretest/mozmill/modules/LoreController.js");
+Components.utils["import"]("resource://lore/util.js", lore.global);
+Components.utils["import"]("resource://lore/debug.js", lore);
 
 
 var EXPORTED_SYMBOLS = ['AnnotationTestController'];

@@ -20,7 +20,7 @@
 
 var jumlib = {};
 
-Components.utils.import("resource://mozmill/modules/jum.js", jumlib);
+Components.utils["import"]("resource://mozmill/modules/jum.js", jumlib);
 
 var EXPORTED_SYMBOLS = ['LoreController'];
 
