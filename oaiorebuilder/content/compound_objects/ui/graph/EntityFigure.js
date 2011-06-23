@@ -148,14 +148,14 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      */
     stopEditing : function(cancel){
         try{
+        this.workflow.editingText = false;
+        this.editing = false;
         if (!cancel && this.editField.isValid()){
             // update title
             var t = this.editField.getRawValue();
             this.setProperty("dc:title_0",t)
         }
         this.editField.hide();
-        this.workflow.editingText = false;
-        this.editing = false;
         } catch (ex){
             lore.debug.ore("stop editing",ex)
         }
@@ -165,12 +165,12 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      */
     startEditing : function(){
         try{
+            // prevent keystrokes entered into text field being interpreted by editor to move/delete nodes
+            this.workflow.editingText = true;
             if (this.editing){
                 return;
             }
             this.editing = true;
-            // prevent keystrokes entered into text field being interpreted by editor to move/delete nodes
-            this.workflow.editingText = true;
             // hide display label
             this.displayTitle("");
             // display editing field with current value
@@ -671,7 +671,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      */
     onKeyDown : function(keyCode, ctrl) {
         // on delete or backspace
-        if (keyCode == 46 || keyCode == 8) {
+        if (keyCode == 46 || keyCode == 8 && !this.editing) {
             this.workflow
                     .getCommandStack()
                     .execute(this
