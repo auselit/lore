@@ -56,6 +56,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
      * @param {} callback Function to call after urls have been loaded
      */
     reloadEmmetUrls: function(prefs, callback) {
+        this.prefs = prefs;
         var emmetUrl = prefs.url + '/emmet.svc';
         lore.debug.ui("reloadEmmetUrls " + emmetUrl);
         // check whether login url is defined (if not, network may not have been enabled on load)
@@ -231,7 +232,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
         try{
             if (!this.LOGIN_URL){
                 // Network might not have been available when LORE was loaded: try reloading emmet urls
-                reloadEmmetUrls(this.prefs,doPopup);
+                this.reloadEmmetUrls(this.prefs,doPopup);
             } else {
                 doPopup();
             }
@@ -252,7 +253,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
              });
         }
         if (!this.LOGOUT_URL){
-            reloadEmmetUrls(this.prefs, doLogout);
+            this.reloadEmmetUrls(this.prefs, doLogout);
         } else {
             doLogout();
         }
