@@ -75,8 +75,9 @@
   <xsl:template match="*[* or processing-instruction() or comment() or string-length(.) &gt; 50]">
     <table>
       <tr>
-        <xsl:call-template name="expander"/>
+        
         <td>
+          <xsl:call-template name="expander"/>
           <span class="markup">&lt;</span>
           <span class="start-tag"><xsl:value-of select="name(.)"/></span>
           <xsl:apply-templates select="@*"/>
@@ -118,8 +119,9 @@
   <xsl:template match="processing-instruction()[string-length(.) &gt; 50]">
     <table>
       <tr>
-        <xsl:call-template name="expander"/>
+        
         <td class="pi">
+          <xsl:call-template name="expander"/>
           &lt;?<xsl:value-of select="name(.)"/>
           <div class="indent expander-content"><xsl:value-of select="."/></div>
           <xsl:text>?&gt;</xsl:text>
@@ -139,8 +141,9 @@
   <xsl:template match="comment()[string-length(.) &gt; 50]">
     <table>
       <tr>
-        <xsl:call-template name="expander"/>
+        
         <td class="comment">
+          <xsl:call-template name="expander"/>
           <xsl:text>&lt;!--</xsl:text>
           <div class="indent expander-content"><xsl:value-of select="."/></div>
           <xsl:text>--&gt;</xsl:text>
