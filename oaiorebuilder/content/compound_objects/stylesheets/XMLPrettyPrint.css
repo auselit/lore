@@ -73,6 +73,7 @@ td {
   background-image: url(chrome://lore/content/lib/ext3.2/resources/images/default/tree/elbow-minus-nl.gif);
   background-repeat: no-repeat;
   background-position: 0px -2px;
+  display:inline-block;
 }
 
 .expander-display-closed {
@@ -83,8 +84,11 @@ td {
   background-image: url(chrome://lore/content/lib/ext3.2/resources/images/default/tree/elbow-plus-nl.gif);
   background-repeat: no-repeat;
   background-position: 0px -2px;
+  display:inline-block;
 }
-
+div.expander-content {
+	margin-left:1em;
+}
 .expander-closed > * > .expander-content {
   display: none;
 }

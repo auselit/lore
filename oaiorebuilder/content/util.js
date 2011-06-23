@@ -1161,12 +1161,17 @@ util = {
         return uri.QueryInterface(Components.interfaces.nsIURL);
     },
     expandXML: function (e) {
-        if (e.parentNode.className != 'expander-closed') {
-            e.parentNode.className = 'expander-closed';
-            e.className = 'expander-display-closed';
-        } else {
-            e.parentNode.className = '';
-            e.className = 'expander-display-open';
+        try{
+            var parent = e.parentNode.parentNode;
+            if (parent.className != 'expander-closed') {
+                parent.className = 'expander-closed';
+                e.className = 'expander-display-closed';
+            } else {
+               parent.className = '';
+                e.className = 'expander-display-open';
+            }
+        } catch(ex){
+            debug.ui("Problem in expandXML",ex);
         }
     },
     /** Normalize character encoding to uppercase in URL (specifically to deal with AustLit urls ) */
