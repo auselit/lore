@@ -22,12 +22,12 @@
 try { 
 var jumlib = {};
 
-Components.utils.import("resource://mozmill/modules/jum.js", jumlib);
+Components.utils["import"]("resource://mozmill/modules/jum.js", jumlib);
 
 var lore = { global : {}};
-Components.utils.import("resource://lore/util.js", lore.global);
-Components.utils.import("resource://loretest/mozmill/modules/LoreController.js");
-Components.utils.import("resource://loretest/mozmill/modules/AnnotationTestController.js");
+Components.utils["import"]("resource://lore/util.js", lore.global);
+Components.utils["import"]("resource://loretest/mozmill/modules/LoreController.js");
+Components.utils["import"]("resource://loretest/mozmill/modules/AnnotationTestController.js");
 
 	
 	//TODO: #185 - This file needs to be separated into separate files for each group of operation as the
