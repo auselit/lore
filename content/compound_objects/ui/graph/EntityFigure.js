@@ -192,7 +192,6 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      * @param {number} h Height in pixels
      */
     setDimension : function(w, h) {
-        lore.debug.ore("setDimension")
         draw2d.Node.prototype.setDimension.call(this, w, h);
         if(this.textarea){
             this.highlightElement.width=(this.width) + "px";
