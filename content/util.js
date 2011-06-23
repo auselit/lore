@@ -370,10 +370,11 @@ util = {
      * @param {} chromefile
      * @param {} win
 	 */
-	injectCSS : function ( chromefile, win ) {
+	injectCSS : function ( chromefile, win, callingwin) {
 		var doc = win.document;
-        var url = "chrome://lore/" + chromefile;
-        var xhr = new win.XMLHttpRequest();
+        var url = "resource://lore/" + chromefile;
+        var xhr = new callingwin.XMLHttpRequest();
+        
         xhr.open("GET", url);
         xhr.onreadystatechange = function(){
             if (xhr.readyState == 4) {
