@@ -110,10 +110,10 @@
 	<![CDATA[
 		try{
 			var lore = {};
-			Components.utils.import("resource://lore/debug.js", lore);
+			Components.utils["import"]("resource://lore/debug.js", lore);
 			// For compatibility with FF 3.0
 			if (typeof(JSON) == "undefined") {  
-			  Components.utils.import("resource://gre/modules/JSON.jsm");
+			  Components.utils["import"]("resource://gre/modules/JSON.jsm");
 			  JSON.parse = JSON.fromString;
 			  JSON.stringify = JSON.toString;
 			}

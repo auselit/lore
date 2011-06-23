@@ -8,14 +8,14 @@ try {
     // for naming consistency with other code
     var lore = { global: {} };
     // lore.debug
-    Components.utils.import("resource://lore/debug.js", lore);  
+    Components.utils["import"]("resource://lore/debug.js", lore);  
     // lore.global.ui
-    Components.utils.import("resource://lore/uiglobal.js", lore.global);
+    Components.utils["import"]("resource://lore/uiglobal.js", lore.global);
     // lore.global.store
-    Components.utils.import("resource://lore/annotations/store.js", lore.global);
+    Components.utils["import"]("resource://lore/annotations/store.js", lore.global);
     
     // lore.global.util
-    Components.utils.import("resource://lore/util.js", lore.global);
+    Components.utils["import"]("resource://lore/util.js", lore.global);
     
     if (!lore.global.ui || !lore.global.store || !lore.debug ) {
         // sanity check
@@ -26,7 +26,7 @@ try {
     
     // consistent access to JSON across versions of FF
     if (typeof(JSON) == "undefined") {  
-    	  Components.utils.import("resource://gre/modules/JSON.jsm");
+    	  Components.utils["import"]("resource://gre/modules/JSON.jsm");
     	  JSON.parse = JSON.fromString;
     	  JSON.stringify = JSON.toString;
     }
@@ -145,7 +145,7 @@ try {
                 var splashVersion = this.prefs.getCharPref("splashVersion");
                 try {
                     // Firefox 4
-                    Components.utils.import("resource://gre/modules/AddonManager.jsm");
+                    Components.utils["import"]("resource://gre/modules/AddonManager.jsm");
                     AddonManager.getAddonByID("lore@maenad.itee.uq.edu.au", function(addon) {
                     var version = addon.version;
                     if (version != splashVersion){
