@@ -82,7 +82,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                         // Link to resource
                         relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
                         // Open in browser link only for real resources, not placeholders
-                        if (!propR.get('isPlaceholder')){
+                        if (propR && !propR.get('isPlaceholder')){
                             relhtml += "<a href='#' title='Show in browser' onclick='lore.global.util.launchTab(\"" 
                             	+ theProp.value 
                             	+ ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
@@ -99,7 +99,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                         } else {
                             relhtml += displayVal;
                         }
-                        if (!propR.get('isPlaceholder')){
+                        if (propR && !propR.get('isPlaceholder')){
                             relhtml += "</a>";
                         }
                         if (propR){
