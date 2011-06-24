@@ -329,7 +329,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, draw2d.Node, {
 		this.setMimeType(theurl);
 	},
 	setModel : function(modelObj){
-        lore.debug.ore("setModel",modelObj)
         try{
             var props;
             if (this.model){
