@@ -300,6 +300,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             theval = "";
                         } */
                         // Most of the layout properties only apply to a single view and are managed by that view
+                        
                         // highlightcolor applies to all views, so we create a property for that
                         if (prefix != "layout" || (prefix == "layout" && propsplit.term=="highlightColor")){
                             resourceData.properties.setProperty({
@@ -468,6 +469,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             rdfxml += serialize_property(propname, rec.data.value, proptype, ltsymb, nlsymb);
            }
         });
+        // TODO: get version from preferences
+        rdfxml += serialize_property("layout:loreVersion", "0.80", "plainstring", ltsymb, nlsymb);
         rdfxml += ltsymb + rdfdescclose + nlsymb;
         // create RDF for aggregation
         rdfxml += ltsymb + rdfdescabout + describedaggre + closetag + ltsymb
@@ -521,7 +524,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 // create RDF for resources in aggregation
                 var props = fig.model.get('properties').getSortedArray();
                 for (var p = 0; p < props.length; p++){
-                    lore.debug.ore("processing property",props[p]);
                     var thePropValues = props[p];
                     for (var pi = 0; pi < thePropValues.length; pi++){
                         var theProp = thePropValues[pi]; 
@@ -545,10 +547,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
                         + ltsymb + "layout:originalHeight rdf:datatype=\"xsd:int\">" + fig.originalHeight
                         + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
-                /*var col = fig.getHighlightColor();
-                if (col){
-                   resourcerdf += ltsymb + "layout:highlightColor rdf:datatype=\"xsd:string\">"+ col + ltsymb + "/layout:highlightColor>" + nlsymb;
-                }*/
+
                 if (fig.abstractPreview) {
                     resourcerdf += ltsymb + "layout:abstractPreview rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
                 }
@@ -642,7 +641,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
      */
     serialize : function(format) {
         var rdf = this.asRDFXML(false);
-        lore.debug.ore("rdf is ",rdf);
         /*if ('rdf' == format){
             return rdf;
         }*/
