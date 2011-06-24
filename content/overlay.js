@@ -128,7 +128,8 @@ try {
                 gBrowser.addProgressListener(this.oreLocationListener, Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
                 window.addEventListener("close", this.onClose, false); 
                 
-                this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
+                this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                    .getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
                 this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
                 this.loadGlobalPrefs();  
                 
@@ -146,23 +147,24 @@ try {
                 try {
                     // Firefox 4
                     Components.utils["import"]("resource://gre/modules/AddonManager.jsm");
-                    AddonManager.getAddonByID("lore@maenad.itee.uq.edu.au", function(addon) {
-                    var version = addon.version;
-                    if (version != splashVersion){
-                        // show info page for LORE
-                        lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
-                        this.prefs.setCharPref("splashVersion",version);
-                    }   
+                    AddonManager.getAddonByID("lore@maenad.itee.uq.edu.au", function(addon) {              
+                        var version = addon.version;
+                        if (version != splashVersion){
+                            // show info page for LORE
+                            lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
+                            loreoverlay.prefs.setCharPref("splashVersion", version);
+                        }   
+                        loreoverlay.version = version; 
                   });
                 } catch (ex) {
                     // Firefox 3.6 and earlier
                     var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
                        .getService(Components.interfaces.nsIExtensionManager);
-                    var version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
-                    if (version != splashVersion){
+                    this.version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
+                    if (this.version != splashVersion){
                         // show info page for LORE
                         lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
-                        this.prefs.setCharPref("splashVersion",version);
+                        this.prefs.setCharPref("splashVersion", this.version);
                     }
                 } 
                 this.prefs.addObserver("", this, false);
@@ -218,8 +220,12 @@ try {
                 }
                 
                 this.loadGlobalPrefs();
-                this.loadCompoundObjectPrefs();
-                this.loadAnnotationPrefs();
+                if (this.coView()){
+                    this.loadCompoundObjectPrefs();
+                }
+                if (this.annoView()){
+                    this.loadAnnotationPrefs();
+                }
             } catch (e ) {
                 lore.debug.ui("Error updating preferences on prefs change", e);
             }
@@ -251,7 +257,6 @@ try {
             } 
         },
         onDragDrop : function(aEvent){
-            lore.debug.ui("onDragDrop",aEvent);
             var dragService = Components.classes["@mozilla.org/widget/dragservice;1"].getService(Components.interfaces.nsIDragService);
             var dragSession = dragService.getCurrentSession();
             this.coView().onDropURL(dragSession.sourceNode, aEvent);
@@ -444,17 +449,24 @@ try {
                 this.authManager.logout();
             }
         },
-        reportProblem: function(){          
-          var version = this.prefs.getCharPref("splashVersion");
-          var url = "mailto:lore@aus-e-lit.net?subject=Problem%20with%20LORE%20" + version
-            + "&Body=Please describe the problem in as much detail as possible, " 
-            + "including URLs for the web resources you were working with when the problem occurred:%0A%0A%0A%0A"
-            + "Recent activity (this information may assist the developers to diagnose the problem): %0A"
-            + lore.debug.getRecentLog();
-          document
-            .getElementById("content")
-            .webNavigation
-            .loadURI(url, 0, null, null, null);  
+        reportProblem: function(){  
+            try{ 
+              var version = this.version;
+              if (!version){
+                version = this.prefs.getCharPref("splashVersion");
+              }
+              var url = "mailto:auselit@gmail.com?subject=Problem%20with%20LORE%20" + version
+                + "&Body=Please describe the problem in as much detail as possible, " 
+                + "including URLs for the web resources you were working with when the problem occurred:%0A%0A%0A%0A"
+                + "Recent activity (this information may assist the developers to diagnose the problem): %0A"
+                + lore.debug.getRecentLog();
+              document
+                .getElementById("content")
+                .webNavigation
+                .loadURI(url, 0, null, null, null);
+            } catch (e){
+                lore.debug.ui("loreoverlay.reportProblem",e);
+            }
         },
         /** Annotations Toolbar button handler: Trigger removing an annotation */
         removeAnnotation: function() {
