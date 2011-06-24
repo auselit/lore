@@ -163,7 +163,7 @@ try {
                     this.version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
                     if (this.version != splashVersion){
                         // show info page for LORE
-                        lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
+                        lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + this.version,window);
                         this.prefs.setCharPref("splashVersion", this.version);
                     }
                 } 
