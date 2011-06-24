@@ -1,4 +1,17 @@
 LORE (Literature Object Re-use and Exchange)
+
+version 0.80
+  LORE has been updated to be compatible with Firefox 4 and 5.
+  Fixed problem with authentication if LORE was started before network was available.
+  
+  Compound objects:
+  * Added support for non-digital placeholders to represent concepts and things
+  * New button to access RSS feeds for compound objects about a particular URL (e.g. same results as Browse panel)
+  * Added zoom menu options for graphical editor and Using Compound Objects
+  * Added context menu option to reorder resources in list view from graphical layout
+  * Improvements to High Contrast mode
+  
+  
 version 0.70
   Preferences have been updated to point to the new annotation & compound object store.
   
