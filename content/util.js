@@ -377,6 +377,7 @@ util = {
         var xhr = new callingwin.XMLHttpRequest();
         
         xhr.open("GET", url);
+        xhr.overrideMimeType('text/css');
         xhr.onreadystatechange = function(){
             if (xhr.readyState == 4) {
                 try {
@@ -396,7 +397,8 @@ util = {
                 }
             }
         }
-        xhr.send(null);  
+        xhr.send(null); 
+         
 	},
 	
     /**
