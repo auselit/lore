@@ -109,8 +109,9 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
      * @param {boolean} external Whether this is being called by draw2d or externally (eg from rel editor)
      * @return {}
      */
-    onContextMenu : function(x,y,external) {    	
+    onContextMenu : function(x,y,external) { 
         try {
+            this.setColor(new draw2d.Color(170,204,246)); 
         	if (!(lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
     	            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl))) {
         		lore.ore.ui.graph.ContextmenuConnection.contextmenu = new Ext.menu.Menu({
@@ -189,6 +190,9 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
         		absy = y;
         	}
     		lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt([absx, absy]);
+            lore.ore.ui.graph.ContextmenuConnection.contextmenu.on("beforehide",function(){
+                this.setColor(new draw2d.Color(174,174,174));
+            },this);
         } catch (ex){ 
             lore.debug.ore("problem generating context menu for connection",ex);
             return null;
