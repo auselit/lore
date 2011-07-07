@@ -58,7 +58,8 @@ lore.ore.ui.graph.FanConnectionRouter = Ext.extend(draw2d.BezierConnectionRouter
             // up or down
             diffX = connIndex * this.FAN_AMOUNT;
             if (connIndex % 2 == 0) {
-                diffX = 0 - connIndex;
+                diffX = 0 - diffX;
+                
             }
           } else if (dir == 1 || dir == 3){
             // left or right
