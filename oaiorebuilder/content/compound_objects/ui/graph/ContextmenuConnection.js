@@ -31,7 +31,7 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
         this.label = new lore.ore.ui.graph.RelationshipLabel();
         this.label.setColor(this.labelColor);
         this.addFigure(this.label, new lore.ore.ui.graph.LabelLocator(this), true);
-    	this.setRouter(new draw2d.BezierConnectionRouter());
+    	this.setRouter(new lore.ore.ui.graph.FanConnectionRouter());
         this.setRelationshipType("http://purl.org/dc/elements/1.1/","relation",false);
     	this.sourcePort=null;
         this.targetPort=null;
@@ -44,6 +44,24 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     	this.setSourceAnchor(new draw2d.ChopboxConnectionAnchor());
     	this.setTargetAnchor(new draw2d.ChopboxConnectionAnchor());
         
+    },
+    /**
+     * Find all other connections between the same resources
+     * @return {}
+     */
+    getSiblings : function(){
+      var result = new draw2d.ArrayList();
+      var ports = this.getSource().getParent().getPorts(); 
+      for (var p = 0; p < ports.getSize(); p++){
+        var outgoingconnections = ports.get(p).getConnections();
+        for (var j = 0; j < outgoingconnections.getSize(); j++) {
+            var theconnector = outgoingconnections.get(j);
+            if (theconnector.getTarget().getParent() == this.getTarget().getParent()){
+                result.add(theconnector);
+            }
+        }
+      }
+      return result;
     },
     /**
      * Return the id
