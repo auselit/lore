@@ -119,14 +119,29 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
         /*
          * Helper function that constructs the 'Search' tab
          */
-        var searchPanel = {
-            xtype: 'annosearchpanel',
-            layout: 'border',
-            id: 'searchpanel',
-            model: this.annotationManager.annosearchds,
-            annoManager: this.annotationManager
-        };
+//        var keywordSearchPanel = {
+//            xtype: 'solrsearchpanel',
+////            autoHeight: 'true',
+//            title: 'Keyword',
+//        };
     
+        
+        var dannoSearchPanel = {
+			xtype: 'annosearchpanel',
+//			layout: 'border',
+			title: 'Search',
+			id: 'searchpanel',
+			model: this.annotationManager.annosearchds,
+			annotationManager: this.annotationManager
+        };
+        
+//        var searchPanel = {
+//    		xtype: 'tabpanel',
+//    		title: 'Search',
+//			activeTab: 0,
+//    		items: [keywordSearchPanel, dannoSearchPanel]
+//        };
+        
     
         try {
             lore.anno.ui.tabpanel = new Ext.TabPanel({
@@ -136,7 +151,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                 id: "navigationtabs",
                 deferredRender: false,
                 activeTab: "treeview",
-                items: [browsePanel, searchPanel, aboutPanel]
+                items: [browsePanel, dannoSearchPanel, aboutPanel]
             });
     
             var gui_spec = {
@@ -151,14 +166,6 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                     defaultText: "",
                     autoClear: 6000,
                     items: [
-		                {
-		                    xtype:'button',
-		                    id:'feedButton', 
-		                    icon: "chrome://lore/skin/icons/feed.png",
-                            tooltip: "Show feed",
-                            handler: this.annotationManager.getFeedURL,
-                            scope: this.annotationManager
-		                },
 		                ' '
 		            ]
                 }]

@@ -751,36 +751,32 @@ lore.anno.ui.handleSaveAnnotationChanges = function () {
 
 /**
  * Add the annotations for the selected search result rows to the compound object editor
- * @param {Object} evt Not Used
+ * @param {Object} recs Records to add
  */
-lore.anno.ui.handleAddResultsToCO = function (evt) {
+lore.anno.ui.handleAddResultsToCO = function (recs) {
     try {
-        var sels = lore.anno.ui.search.dataView.getSelectedRecords();
-
-        for (var i = 0; i < sels.length; i++) {
-            var rec = sels[i];
+        for (var i = 0; i < recs.length; i++) {
+            var rec = recs[i];
             lore.global.ui.compoundObjectView.get(window.instanceId).addResource(rec.data.id, {
                 "rdf:type_0": rec.data.type
             });
         }
-
     } catch (e) {
         lore.debug.anno("Error adding annotation/s to compound editor", e);
     }
 };
 
-lore.anno.ui.handleViewAnnotationInBrowser = function (evt) {
+lore.anno.ui.handleViewAnnotationInBrowser = function (recs) {
     try {
-        var sels = lore.anno.ui.search.dataView.getSelectedRecords();
-
-        for (var i = 0; i < sels.length; i++) {
-            var rec = sels[i];
+        for (var i = 0; i < recs.length; i++) {
+            var rec = recs[i];
             lore.global.util.launchTab(rec.data.id + "?danno_useStylesheet");
         }
     } catch (e) {
         lore.debug.anno("Error viewing annotation/s in browser", e);
     }
 };
+
 /**
  * Toggle on and off the annotation highlighting for all annotations
  */
