@@ -22,6 +22,44 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
             emptyText: 'No annotations to display'
         });
         lore.anno.ui.AnnotationsDataView.superclass.initComponent.apply(this,arguments);
+        
+        
+        this.getSelectedRecords();
+        
+        var contextmenu = new Ext.menu.Menu({
+            items: [{
+                text: "Add as node/s in compound object editor",
+                handler: function () {
+                	var recs = this.getSelectedRecords();
+                	lore.anno.ui.handleAddResultsToCO(recs);
+                },
+                scope: this
+            }, {
+                text: "View annotation/s in browser",
+                handler: function () {
+                	var recs = this.getSelectedRecords();
+                	lore.anno.ui.handleViewAnnotationInBrowser(recs);
+                },
+                scope: this
+            }
+        ]});
+        this.on('contextmenu', function(scope, rowIndex, node, e) {
+            e.preventDefault();
+            this.select(node, true);
+            contextmenu.showAt(e.xy);
+        }, this);
+        
+        this.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
+            if (!event.ctrlKey && !event.shiftKey) {
+                    var record = this.getRecord(node);
+                    var ruri = record.data.resource;
+                    if (ruri && ruri.match(lore.anno.prefs.url)){
+                            ruri += "?danno_useStylesheet=";
+                    }
+                    lore.anno.annoMan.justUpdated = record.id;
+                    lore.global.util.launchTab(ruri);
+            }
+        }, this);
     }
 });
 Ext.reg('annodataview', lore.anno.ui.AnnotationsDataView);

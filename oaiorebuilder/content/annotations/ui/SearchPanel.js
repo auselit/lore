@@ -18,11 +18,11 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
-    initComponent: function() {
+    initComponent: function () {
         var config = {
             keys: [{
                 key: [10, 13],
-                fn: function() {
+                fn: function () {
                     this.searchButton.fireEvent('click');
                 },
                 scope: this
@@ -31,9 +31,9 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
             defaultType: 'datefield',
             labelAlign: 'right',
             height: 210,
-                bodyStyle : "padding: 0 10px 4px 4px",
-            defaults: {anchor: '100%'}
-            ,items: [{
+            bodyStyle : "padding: 0 10px 4px 4px",
+            defaults: {anchor: '100%'},
+            items: [{
                 fieldLabel : 'URL',
                 name : 'url',
                 xtype: 'textfield'
@@ -67,7 +67,13 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
                         ref: "../searchButton",
                         xtype: 'button',
                         flex: 1
-                    }]
+                    },{
+	                    xtype:'button',
+	                    id:  'feedButton',
+	                    ref: "../feedButton",
+	                    icon: "chrome://lore/skin/icons/feed.png",
+                        tooltip: "Show feed"
+	                }]
             }]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -81,96 +87,61 @@ Ext.reg('annosearchform', lore.anno.ui.SearchForm);
  * @class lore.anno.ui.SearchPanel
  * @extends Ext.Panel
  */
-lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
+lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
 
     /**
      * Load configuration options and generate search GUI
      * @constructor
      */
-    initComponent: function(){
-        // paging bar on the bottom
-        /*bbar: new Ext.PagingToolbar({
-         pageSize: 25,
-         store: store,
-         displayInfo: true,
-         displayMsg: 'Displaying topics {0} - {1} of {2}',
-         emptyMsg: "No topics to display",
-         items:[
-         '-', {
-         pressed: true,
-         enableToggle:true,
-         text: 'Show Preview',
-         cls: 'x-btn-text-icon details',
-         toggleHandler: function(btn, pressed){
-         var view = grid.getView();
-         view.showPreview = pressed;
-         view.refresh();
-         }
-         }]
-         })*/
-
-
-            try {
+    initComponent: function() {
+        try {
             var config = {
-                        title : "Search",
-                        layout: "border",
-                        items : [{
-                            xtype: 'annosearchform',
-                            itemId: 'mySearchForm',
-                            ref: 'searchForm',
-                            region:'north',
-                            split: true,
-                            collapseMode: 'mini'
-                          }
-                          ,{
-                            xtype: 'annodataview',
-                            id: 'search-view',
-                            itemId: 'dataview',
-                            ref: 'dataView',
-                            region:'center',
-                            store: this.model
-                          }
-                        ]
-                    };
+                layout: "border",
+                split: true,
+                collapseMode: 'mini',
+                items : [{
+                	xtype: 'tabpanel',
+                	region: 'center',
+                	autoHeight: 'true',
+            		items: [{
+	                        xtype: 'solrsearchpanel',
+	                        title: 'Keyword',
+	                        ref: '../keySearchForm'
+//	                    	autoHeight: 'true',
+	            		}, {
+	            			xtype: 'annosearchform',
+	            			title: 'Advanced',
+	            			itemId: 'mySearchForm',
+	            			ref: '../advSearchForm'
+//	                    	autoHeight: 'true',
+	            		}]
+                }
+                ,{
+                    xtype: 'annodataview',
+                    id: 'search-view',
+                    itemId: 'dataview',
+                    ref: 'dataView',
+                    region:'south',
+                    store: this.model
+                  }
+                ]
+            };
             Ext.apply(this, Ext.apply(this.initialConfig, config));
             lore.anno.ui.SearchPanel.superclass.initComponent.call(this);
 
 
-            this.searchForm.searchButton.on('click', this.handleSearchAnnotations, this);
-
-            var dataview = this.getComponent('dataview');
+            this.advSearchForm.searchButton.on('click', this.handleSearchAnnotations, this);
             
-            var contextmenu = new Ext.menu.Menu({
-                items: [{
-                    text: "Add as node/s in compound object editor",
-                    handler: lore.anno.ui.handleAddResultsToCO,
-                    scope: dataview
-                }, {
-                    text: "View annotation/s in browser",
-                    handler: lore.anno.ui.handleViewAnnotationInBrowser,
-                    scope: dataview
-                }
-            ]});
-            dataview.on('contextmenu', function(scope, rowIndex, node, e) {
-                e.preventDefault();
-                this.select(node, true);
-                contextmenu.showAt(e.xy);
-            }, dataview);
-            dataview.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
-                if (!event.ctrlKey && !event.shiftKey) {
-                        var record = this.getRecord(node);
-                        var ruri = record.data.resource;
-                        if (ruri && ruri.match(lore.anno.prefs.url)){
-                                ruri += "?danno_useStylesheet=";
-                        }
-                        lore.anno.annoMan.justUpdated = record.id;
-                        lore.global.util.launchTab(ruri);
-                }
-            }, dataview);
+            this.keySearchForm.searchButton.on('click', function () {
+            	this.dataView.bindStore(this.keySearchForm.ds);
+            }, this);
+            
+//            this.searchForm.feedButton.on('click', this.annotationManager.getFeedURL, this.annotationManager);
 
-            } catch (e) {
-                    lore.debug.anno("SearchPanel:initComponent" , e);
-            }
+
+        } catch (e) {
+            lore.debug.anno("SearchPanel:initComponent" , e);
+        }
     },
 
     /**
@@ -178,22 +149,23 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Panel, {
      * forms and display results in grid
      */
     handleSearchAnnotations : function() {
-            try {
-                var sform = this.searchForm.getForm();
-                var vals = sform.getFieldValues();
+        try {
+        	this.dataView.bindStore(this.model);
+        	
+            var sform = this.searchForm.getForm();
+            var vals = sform.getFieldValues();
 
-                lore.anno.ui.loreInfo("Searching...");
-                // perform search
-                this.annoManager.searchAnnotations(vals, function(result, resp) {
-                        // data store will be updated and grid will auto update, all have to do
-                        // recalc layout
-                        lore.debug.anno("result from search: " + result, resp);
-                        lore.anno.ui.loreInfo("Search Finished");
-                });
-            } catch (e) {
-                    lore.debug.anno("error occurring performing search annotations", e);
-            }
-
+            lore.anno.ui.loreInfo("Searching...");
+            // perform search
+            this.annotationManager.searchAnnotations(vals, function(result, resp) {
+                    // data store will be updated and grid will auto update, all have to do
+                    // recalc layout
+                    lore.debug.anno("result from search: " + result, resp);
+                    lore.anno.ui.loreInfo("Search Finished");
+            });
+        } catch (e) {
+                lore.debug.anno("error occurring performing search annotations", e);
+        }
     }
 
 });
