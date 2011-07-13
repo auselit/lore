@@ -35,7 +35,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 valueField: 'id',
                 extraItemCls: 'x-tag',
                 styleField: 'style'
-                
             })),
             /** Drop down editor for fixed values */
             dropDownEditor: new Ext.grid.GridEditor(new Ext.form.ComboBox({
@@ -253,6 +252,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 				},
                 // override to allow different editors for specific properties/datatypes
                 getCellEditor: function(colIndex, rowIndex){
+                   if (lore.ore.controller.checkReadOnly()){
+                        return;
+                   }
                    try{
 	                  if (colIndex == 1){
 		                  var currentRec = this.propEditor.store.getAt(rowIndex);
@@ -265,6 +267,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 	                      } 
                           else if (currentRec && currentRec.get("name") == "dc:subject"){
                             return this.propEditor.tagEditor;
+                          } else if (currentRec && currentRec.get("type") == "boolean"){
+                            // This is a hack: change value directly because using an editor requires too many clicks
+                            currentRec.set("value", !currentRec.get("value"));
+                            currentRec.commit();
+                            return;
                           }
                          
                           // TODO: look at datatype and return date editor, boolean editor etc
@@ -564,6 +571,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     },
     /** Grey out rows that are not editable by the user */
     propNameRenderFunction: function(val, cell, rec){
+        if (rec && rec.data && rec.data.id == "lorestore:isPrivate_0"){
+            return "<span>Private</span>";
+        }
         if (rec && rec.data && 
                 (rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
                     || rec.data.id == "rdf:type_0"
@@ -582,6 +592,18 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     },
     /** Grey out rows that are not editable by the user */
 	renderFunction: function(val, cell, rec){
+        if (rec.get("name") == "lorestore:isPrivate"){
+             var checkedImg = 'chrome://lore/content/lib/ext3.2/resources/images/default/menu/checked.gif';
+            var uncheckedImg = 'chrome://lore/content/lib/ext3.2/resources/images/default/menu/unchecked.gif';
+            var cb = ''
+                + '<div style="height:13px;overflow:visible">'
+                + '<img style="vertical-align:-3px" src="'
+                + (val ? checkedImg : uncheckedImg)
+                + '"'
+                + ' />'
+                + '</div>';
+            return cb;
+        }
         try{
         // Escape double quotes for display in tooltips 
         var escVal = (val.replace) ? val.replace(/"/g,"&quot;"): val;
@@ -663,6 +685,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         var ptype = (this.text == "dcterms:abstract" || this.text == "dc:description")? "string" : "plainstring";
                         if (this.text == "dcterms:created" || this.text == "dcterms:modified"){
                             ptype = "date";
+                        } else if (this.text == "lorestore:isPrivate"){
+                            ptype = "boolean";
                         }
                         pstore.loadData([{id: theid, name: this.text, value: "", type: ptype}],true);
                     } catch (ex){
@@ -679,6 +703,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} panel
      */
     addPropertyAction : function (ev, toolEl, panel) {
+        if (lore.ore.controller.checkReadOnly()){
+            return;
+        } 
+ 
     	try{
         if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.ontologyURL != panel.loadedOntology)) {        	
         	panel.loadedOntology = lore.ore.ontologyManager.ontologyURL;
@@ -704,6 +732,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} panel
      */
     removePropertyAction: function (ev, toolEl, panel) {  
+        if (lore.ore.controller.checkReadOnly()){
+            return;
+        }
         try {
         var om = lore.ore.ontologyManager;
         var sel = panel.getSelectionModel().getSelected();
@@ -851,6 +882,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 var cleanvalue;
                 if (propuri == lore.constants.NAMESPACES["dc"]+ "subject"){
                     cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
+                } else if (propuri == lore.constants.NAMESPACES["lorestore"] + "isPrivate"){
+                    cleanvalue = args.value;
                 } else {
                     cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true); 
                 }
@@ -862,6 +895,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     prefix: pfx,
                     type: args.record.get("type")
                 };
+                lore.debug.ore("propData is ",propData);
                 this.model.setProperty(propData,idx);
                 
                  // update the CO title in the dataview

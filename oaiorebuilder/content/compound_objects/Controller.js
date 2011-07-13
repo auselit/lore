@@ -217,8 +217,6 @@ Ext.apply(lore.ore.Controller.prototype, {
 					.optional('?url layout:width ?w')
 					.optional('?url layout:height ?h')
 					.optional('?url layout:originalHeight ?oh')
-					.optional('?url layout:scrollx ?sx')
-					.optional('?url layout:scrolly ?sy')
 					.optional('?url layout:highlightColor ?hc')
 					.optional('?url layout:orderIndex ?order')
 					.optional('?url layout:abstractPreview ?abstractPreview')
@@ -604,6 +602,14 @@ Ext.apply(lore.ore.Controller.prototype, {
         // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
         // update rdfquery to reflect most recent save
         var remid = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
+        if (lore.ore.controller.locked){
+            Ext.Msg.show({
+                title: "Save disabled",
+                msg: "Saving is disabled for this compound object because it is locked",
+                buttons: Ext.MessageBox.OK
+            });
+            return;
+        }
         if(!remid.match(lore.ore.reposAdapter.idPrefix)){
             Ext.Msg.show({
                 title: "Save disabled",
@@ -1125,7 +1131,31 @@ Ext.apply(lore.ore.Controller.prototype, {
           }
         } catch (e){
             lore.debug.ore("Controller: problem in onDropURL",e);
+        }    
+    },
+    locked : false,
+    readOnly : false,
+    toggleLockCompoundObject: function(b){
+        try{
+        lore.debug.ore("pressed lock button",[this,b]);
+        if (this.locked){
+            this.locked = false;
+            this.readOnly = false;
+            b.setIcon("chrome://lore/skin/icons/lock-unlock.png");
+        } else {
+            this.locked = true;
+            this.readOnly = true;
+            b.setIcon("chrome://lore/skin/icons/lock.png");
         }
-            
+        
+        } catch(e){
+            lore.debug.ore("Problem",e);
+        }
+    },
+    checkReadOnly: function(){
+        if (this.readOnly){
+            lore.ore.ui.vp.info("Compound Object is read only");
+        }
+        return this.readOnly;
     }
 });
