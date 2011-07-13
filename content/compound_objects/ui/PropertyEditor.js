@@ -572,7 +572,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     /** Grey out rows that are not editable by the user */
     propNameRenderFunction: function(val, cell, rec){
         if (rec && rec.data && rec.data.id == "lorestore:isPrivate_0"){
-            return "<span>Private</span>";
+            return "<img title='Private Compound Objects are not visible to other users' src='chrome://lore/skin/icons/eye.png' alt=''><span style='vertical-align:3px'> Private</span>";
         }
         if (rec && rec.data && 
                 (rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
@@ -661,38 +661,55 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             id: panel.id + "-add-metadata"
         });
         panel.propMenu.panelref = panel.id;
+        var addPropHandler = function () {
+            try{
+                var panel = Ext.getCmp(this.parentMenu.panelref);
+                var pstore = panel.getStore();
+                var counter = 0;
+                var prop = pstore.getById(this.text + "_" + counter);
+                
+                while (prop) {
+                    if (prop && !prop.get("value")){
+                        // don't add a second blank property, highlight existing
+                        panel.getSelectionModel().selectRecords([prop]);
+                        return;
+                    }
+                    counter = counter + 1;
+                    prop = pstore.getById(this.propname + "_" + counter);
+                }
+                var theid = this.propname + "_" + counter;
+                var pData = {id: theid, name: this.propname, value: ""};
+                var ptype = (this.propname == "dcterms:abstract" || this.propname == "dc:description")? "string" : "plainstring";
+                if (this.propname == "dcterms:created" || this.propname == "dcterms:modified"){
+                    ptype = "date";
+                } else if (this.propname == "lorestore:isPrivate"){
+                    ptype = "boolean";
+                    pData.value = true;
+                }
+                pData.type = ptype;
+                pstore.loadData([pData],true);
+            } catch (ex){
+                lore.debug.ore("exception adding prop " + this.propname,ex);
+            }
+        };
+        if (panel.id == "remgrid"){
+            panel.propMenu.add({
+                id: "remgrid-add-lorestore:isPrivate",
+                icon: "chrome://lore/skin/icons/eye.png",
+                text: "Private",
+                propname: "lorestore:isPrivate",
+                handler: addPropHandler
+            });
+            panel.propMenu.add("-");
+        }
+        
         for (var i = 0; i < mp.length; i++) {
             var propname = mp[i];
             panel.propMenu.add({
                 id: panel.id + "-add-" + propname,
                 text: propname,
-                handler: function () {
-                    try{
-                        var panel = Ext.getCmp(this.parentMenu.panelref);
-                        var pstore = panel.getStore();
-                        var counter = 0;
-                        var prop = pstore.getById(this.text + "_" + counter);
-                        while (prop) {
-                            if (prop && !prop.get("value")){
-                                // don't add a second blank property, highlight existing
-                                panel.getSelectionModel().selectRecords([prop]);
-                                return;
-                            }
-                            counter = counter + 1;
-                            prop = pstore.getById(this.text + "_" + counter);
-                        }
-                        var theid = this.text + "_" + counter;
-                        var ptype = (this.text == "dcterms:abstract" || this.text == "dc:description")? "string" : "plainstring";
-                        if (this.text == "dcterms:created" || this.text == "dcterms:modified"){
-                            ptype = "date";
-                        } else if (this.text == "lorestore:isPrivate"){
-                            ptype = "boolean";
-                        }
-                        pstore.loadData([{id: theid, name: this.text, value: "", type: ptype}],true);
-                    } catch (ex){
-                        lore.debug.ore("exception adding prop " + this.text,ex);
-                    }
-                }
+                propname: propname,
+                handler: addPropHandler
             });
         }
     },
@@ -706,7 +723,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         if (lore.ore.controller.checkReadOnly()){
             return;
         } 
- 
     	try{
         if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.ontologyURL != panel.loadedOntology)) {        	
         	panel.loadedOntology = lore.ore.ontologyManager.ontologyURL;
