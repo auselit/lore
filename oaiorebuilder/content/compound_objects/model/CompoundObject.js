@@ -371,7 +371,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         }
                         return result;
                     }
-                    if (propval.match("^http://") == "http://"){
+                    if (propval.toString().match("^http://") == "http://"){
                         // this is a resource
                         result = ltsymb + propname + " rdf:resource='" + 
                         lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(propval.toString())).replace(/&/g,'&amp;')
@@ -465,7 +465,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         lore.ore.ui.grid.store.each(function (rec){
            var propname = rec.id.substring(0,rec.id.lastIndexOf("_"));
            var proptype = rec.get("type");
-           if (propname != 'dcterms:modified' && propname != 'dcterms:created' && propname != 'rdf:about'){
+           if (propname != 'lorestore:user' && propname != 'dcterms:modified' && propname != 'dcterms:created' && propname != 'rdf:about'){
             rdfxml += serialize_property(propname, rec.data.value, proptype, ltsymb, nlsymb);
            }
         });
@@ -535,9 +535,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     }
                 }
                 /* persist node layout */
-        
-                var objframe = window.top.frames[fig.url + "-data"];
-                //lore.debug.ore("window.top.frames",window.top.frames)
                 
                 resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
                         + "layout:x rdf:datatype=\"xsd:int\">" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb
@@ -559,13 +556,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 if (fig instanceof lore.ore.ui.graph.EntityFigure){
                     resourcerdf += ltsymb + "layout:isPlaceholder rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:isPlaceholder>";
                 }
-                //lore.debug.ore("objframe " + fig.url , objframe);
-                if (objframe && (objframe.scrollX != 0 || objframe.scrollY != 0)) {
-                    resourcerdf += ltsymb + "layout:scrollx rdf:datatype=\"xsd:int\">" + objframe.scrollX
-                            + ltsymb + "/" + "layout:scrollx>" + nlsymb + ltsymb
-                            + "layout:scrolly rdf:datatype=\"xsd:int\">" + objframe.scrollY + ltsymb + "/"
-                            + "layout:scrolly>" + nlsymb;
-                }
+                
                 resourcerdf += ltsymb + rdfdescclose + nlsymb;
                 
                 // iterate over all ports' connections and serialize if this fig is the source of the connection
