@@ -26,11 +26,11 @@ lore.ore.model.OntologyManager = function() {
         "dc:contributor", "dc:coverage", "dcterms:created", "dc:description",
         "dc:identifier", "dc:language", "dcterms:modified",
         "dc:publisher", "dc:rights", "dc:source",
-        "dc:subject", "dc:title", "dc:type", "lorestore:isPrivate"];
+        "dc:subject", "dc:title", "dc:type"];
     /** Properties that are mandatory/cannot be deleted for compound objects
      *  @const */
     this.CO_REQUIRED = ["dc:creator","dcterms:created",
-        "dcterms:modified", "ore:describes", "rdf:about", "rdf:type", "lorestore:user",  
+        "dcterms:modified", "ore:describes", "rdf:about", "rdf:type", "lorestore:user"  
     ];
     /** Properties that are mandatory for an aggregated resource
      *  @const */
