@@ -181,11 +181,12 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
     load : function (args) {
         var getDatatype = function(propurl, theType){
               var dtype = theType;
-              //lore.debug.ore("getdatatype " + propname + " is " + dtype,propvalue);
-              if (dtype && dtype._string == "http://purl.org/dc/terms/W3CDTF"){
+              if (dtype && dtype == "http://purl.org/dc/terms/W3CDTF"){
                 dtype = "date";
               } else if (dtype && dtype == lore.constants.NAMESPACES["layout"]+"escapedHTMLFragment"){
                 dtype = "html";
+              } else if(dtype && dtype == lore.constants.NAMESPACES["xsd"] + "boolean"){
+                dtype = "boolean";
               } else {
                 dtype = "plainstring";
                 // Allow formatting for some fields
@@ -381,6 +382,8 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         result = ltsymb + propname;
                         if (proptype && proptype == "html"){
                             result += " rdf:datatype=\"" + lore.constants.NAMESPACES["layout"]+ "escapedHTMLFragment\""
+                        } else if (proptype && proptype == "boolean"){
+                            result += " rdf:datatype=\"" + lore.constants.NAMESPACES["xsd"] + "boolean\"";
                         }
                         result += ">"
                           + lore.global.util.escapeHTML(propval.toString().replace(/&amp;/g,'&'))
@@ -556,7 +559,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 if (fig instanceof lore.ore.ui.graph.EntityFigure){
                     resourcerdf += ltsymb + "layout:isPlaceholder rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:isPlaceholder>";
                 }
-                
                 resourcerdf += ltsymb + rdfdescclose + nlsymb;
                 
                 // iterate over all ports' connections and serialize if this fig is the source of the connection
