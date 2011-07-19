@@ -392,7 +392,9 @@ Ext.apply(lore.ore.Controller.prototype, {
         type = type.value.toString();
        }
        if (userDefined){
-	        if (type.match("Image")){
+            if (type.match("Moving")){
+                iconCls = "videoicon";
+            } else if (type.match("Image")){
 	            iconCls = "imageicon";
 	        } else if (type.match("Sound")){
 	            iconCls = "audioicon";
