@@ -268,6 +268,8 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 		       ['http://purl.org/dc/dcmitype/Dataset', 'Dataset'],
 	           ['http://purl.org/dc/dcmitype/Event','Event'],
 	           ['http://purl.org/dc/dcmitype/Image', 'Image'],
+               ['http://purl.org/dc/dcmitype/StillImage', 'Still Image'],
+               ['http://purl.org/dc/dcmitype/MovingImage', 'Moving Image'],
 	           ['http://purl.org/dc/dcmitype/InteractiveResource','InteractiveResource'],
 	           ['http://purl.org/dc/dcmitype/Service','Service'],
 	           ['http://purl.org/dc/dcmitype/Software','Software'],
