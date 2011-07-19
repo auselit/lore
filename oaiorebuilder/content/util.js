@@ -274,7 +274,7 @@ util = {
         				converter.init(fostream, "UTF-8", 0, 0);
         				converter.writeString(dataStr);
         				converter.close();
-        				return {fname: thefile.persistentDescriptor, data:dataStr};
+        				return {'fname': thefile.persistentDescriptor, 'data':dataStr};
                     }
                 );
 			}
@@ -389,7 +389,7 @@ util = {
                         var t = doc.createAttribute("type");
                         t.nodeValue = "text/css";
                         style.setAttributeNode(t);
-                        style.innerHTML = content;
+                        style.textContent = content;
                         doc.getElementsByTagName("head")[0].appendChild(style);
                     }
                 } catch (e){
@@ -988,11 +988,21 @@ util = {
 	    		+ '{display:none !important;}';
 	        var styleElem = doc.createElement("style");
 	        styleElem.type = "text/css";
-	        styleElem.innerHTML = theCSS;
+	        styleElem.textContent = theCSS;
 	        doc.getElementsByTagName("head")[0].appendChild(styleElem); 
     	} catch (e){
     		debug.ui("util.insertSecureFrameStyle:",e)
     	}
+    },
+    parseHTMLToElement : function(html,win){
+        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
+                .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
+                .parseFragment(html, false, null, win.document.body);
+        var div = win.document.createElement("div");
+        if (fragment){
+            div.appendChild(fragment);
+        }
+        return div;    
     },
     /**
      * Basic HTML Sanitizer using Firefox's parseFragment
@@ -1011,7 +1021,7 @@ util = {
 	        
 	        if (fragment) {
 	            if (asHTML){ 
-	                // copy fragment to element and get innerHTML to serialize to plain HTML
+	                // use a temporary element to serialize fragment to plain HTML
 		            var doc = win.document;
 		            var divEl = doc.getElementById('sanitize');
 		            if (!divEl){

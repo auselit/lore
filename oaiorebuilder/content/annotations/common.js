@@ -333,7 +333,7 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
 	if (!noimglink) {
         res += "<a title='Show annotation body in separate window' xmlns=\"" +
         lore.constants.NAMESPACES["xhtml"] +
-        "\" href=\"javascript:lore.global.util.launchWindow('" +
+        "\" href=\"#\" onclick=\"lore.global.util.launchWindow('" +
         annodata.bodyURL +
         "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
     }
