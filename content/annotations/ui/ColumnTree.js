@@ -191,7 +191,6 @@ Ext.extend(lore.anno.ui.ColumnTreeNode, Ext.tree.TreeNode, {
         this.attributes.bheader = bh;
         this.attributes.bfooter = bf;
         this.attributes.text = _text;
-        
         if(this.rendered){ // event without subscribing
             this.ui.onTextChange(this, { title:_title,
                                          bheader:bh,
@@ -235,12 +234,41 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
      */
     onTextChange : function( txtfield) {
         if (this.rendered){
-            this.textNode.innerHTML = txtfield.text;
-            this.titleNode.innerHTML = txtfield.title;
-            if (txtfield.bheader)
-                this.bHeaderNode.innerHTML = txtfield.bheader;
-            if (txtfield.bfooter)
-                this.bFooterNode.innerHTML = txtfield.bfooter;
+            // update the dom to display the contents of the fields from the model
+            if (this.textNode){
+                while(this.textNode.firstChild){
+                    this.textNode.removeChild(this.textNode.firstChild);
+                }
+                Ext.get(this.textNode).createChild({
+                    tag: "div",
+                    children: [txtfield.text]
+                });
+            }
+            if (this.titleNode){
+                this.titleNode.textContent = txtfield.title;
+            }
+            if(this.bHeaderNode){
+                while(this.bHeaderNode.firstChild){
+                    this.bHeaderNode.removeChild(this.bHeaderNode.firstChild);
+                }
+                if (txtfield.bheader){
+                    Ext.get(this.bHeaderNode).createChild({
+                        tag: "div",
+                        children: [txtfield.bheader]
+                    });
+                }
+            }
+            if (this.bFooterNode){
+                while(this.bFooterNode.firstChild){
+                    this.bFooterNode.removeChild(this.bFooterNode.firstChild);
+                }
+                if (txtfield.bfooter){
+                     Ext.get(this.bFooterNode).createChild({
+                        tag: "div",
+                        children: [txtfield.bfooter]
+                    });
+                }
+            }
         }
     },
     
@@ -375,7 +403,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
                 editable: false,
                 store: new Ext.data.SimpleStore({
                     fields: ['type', 'typename', 'direction'],
-                    data: [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
+                    'data': [['title', 'Title(Ascending)','asc'], ['title','Title(Descending)','desc'],
                            ['creator', 'Creator(Ascending)', 'asc'], ['creator', 'Creator(Descending)', 'desc'],
                            ['created', 'Creation Date(Ascending)','asc'], ['created', 'Creation Date(Descending)', 'desc'],
                            ['modified','Modified Date(Ascending)', 'asc' ],['modified','Modified Date(Descending)', 'desc' ],
