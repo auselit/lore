@@ -191,29 +191,41 @@ lore.anno.ui.Marker.prototype = {
 			var doc = this.target || lore.global.util.getContentWindow(window).document;
 			var cw = doc.defaultView;
 			var uid = annodata.id;
-			
-			// generate the tooltip contents
-			var desc = "<div style='color:white;background-color:darkred;min-height:18;padding:3px'><strong>" 
-				+ annodata.title + "</strong></div><div style='color:#51666b;padding:3px'>" 
-				+ lore.global.util.splitTerm(annodata.type).term + " by "
-				+ annodata.creator;
-			desc += "<div class='loreAnnoTip' style='margin:4px;max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto' >"; 			
-			desc += lore.anno.ui.genDescription(annodata, true);
-			desc += "<br>" + lore.anno.ui.genTagList(annodata);
-			desc += '</div>';
-			var d = lore.global.util.longDate(annodata.created, Date);
-			desc += "<span style=\"font-size:smaller;color:#aaa\">" + d + "</span></div>";
 			var descDom = doc.createElement("div");
-			descDom.setAttribute("style", "font-family:sans-serif");
-			descDom.setAttribute("display", "none");
-			
-			// innerHTML does not work for pages that are image/... content type, so parse html
-			// by temporarily adding to local document head. html has been sanitized.
-			var	h =	document.getElementsByTagName("head")[0];
-			h.appendChild(descDom); 
-			descDom.innerHTML = desc;
-			h.removeChild(descDom);
-			descDom.removeAttribute("display");
+            descDom.setAttribute("style", "font-family:sans-serif");
+            var d = lore.global.util.longDate(annodata.created, Date);
+            var desc = Ext.get(descDom);
+            desc.createChild({
+               tag:"div",
+                style: "color:white;background-color:darkred;min-height:18;padding:3px",
+                children:[{
+                    tag: "strong",
+                    children: [
+                        annodata.title
+                    ]
+                }]
+            });
+            desc.createChild({
+                    tag: "div",
+                    style: "color:#51666b;padding:3px",
+                    children: [
+                        (lore.global.util.splitTerm(annodata.type).term + " by " + annodata.creator),
+                        {
+                            tag: "div",
+                            cls: "loreAnnoTip",
+                            style: ("margin:4px;max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto"),
+                            children: [lore.anno.ui.genDescription(annodata, true),
+                            {tag: "br"}, lore.anno.ui.genTagList(annodata)
+                            ]
+                        }
+                    ]
+            });
+            desc.createChild({
+                    tag: "span",
+                    style: 'font-size:smaller;color:#aaa',
+                    children: [d]
+                }    
+            );
 
 			$(this.data.nodes[0], doc).simpletip({
 			content: descDom,
