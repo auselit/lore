@@ -67,13 +67,7 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
                         ref: "../searchButton",
                         xtype: 'button',
                         flex: 1
-                    },{
-	                    xtype:'button',
-	                    id:  'feedButton',
-	                    ref: "../feedButton",
-	                    icon: "chrome://lore/skin/icons/feed.png",
-                        tooltip: "Show feed"
-	                }]
+                    }]
             }]
         };
         Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -88,56 +82,107 @@ Ext.reg('annosearchform', lore.anno.ui.SearchForm);
  * @extends Ext.Panel
  */
 lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
-
+    constructor: function(config){
+        this.model = config.model;
+        this.annotationManager = config.annotationManager;
+        lore.anno.ui.SearchPanel.superclass.constructor.call(this, config);
+    },
     /**
      * Load configuration options and generate search GUI
      * @constructor
      */
     initComponent: function() {
         try {
+            
             var config = {
                 layout: "border",
-                split: true,
+                split:true,
                 collapseMode: 'mini',
                 items : [{
                 	xtype: 'tabpanel',
-                	region: 'center',
-                	autoHeight: 'true',
+                    region: 'north',
+                    split: true,
+                    collapseMode: 'mini',
+                    animCollapse: false,
+                    useSplitTips: true,
+                    id: 'searchtabs',
+                    activeTab: 'solrsearch',
+                    boxMinHeight: 0,
+                    minHeight : 0,
+                	height: 200,
             		items: [{
 	                        xtype: 'solrsearchpanel',
+                            id: 'solrsearch',
 	                        title: 'Keyword',
 	                        ref: '../keySearchForm'
-//	                    	autoHeight: 'true',
 	            		}, {
 	            			xtype: 'annosearchform',
 	            			title: 'Advanced',
 	            			itemId: 'mySearchForm',
 	            			ref: '../advSearchForm'
-//	                    	autoHeight: 'true',
 	            		}]
                 }
                 ,{
-                    xtype: 'annodataview',
-                    id: 'search-view',
-                    itemId: 'dataview',
-                    ref: 'dataView',
-                    region:'south',
-                    store: this.model
-                  }
+                    region:"center",
+                    minHeight: 0,
+                    "xtype": "panel",
+                    layout: "anchor",
+                    "id": "annoSearchResultPanel",
+                    autoScroll: true, 
+                        "tbar": {
+                            "xtype": "lore.anno.paging",
+                            displayInfo : true,
+                            "store": this.model,
+                            "id": "annospager"
+                            
+                        },
+                    items: [
+                        {
+                            "xtype": "annodataview",
+                            "store": this.model,
+                            "id": "search-view",
+                            itemId: 'dataview',
+                            ref: '../dataView'
+                        }
+                    ]
+                 } 
                 ]
             };
             Ext.apply(this, Ext.apply(this.initialConfig, config));
             lore.anno.ui.SearchPanel.superclass.initComponent.call(this);
-
-
+            
             this.advSearchForm.searchButton.on('click', this.handleSearchAnnotations, this);
+            
+            // resize search panel and hide or show feed button depending on active tab
+            this.advSearchForm.on("activate",function(){
+                Ext.getCmp('feedButton').show();
+                Ext.getCmp("searchtabs").setSize({height: 225});
+                Ext.getCmp("searchpanel").doLayout();
+            });
+            this.keySearchForm.on("activate", function(){
+                var p = Ext.getCmp("searchtabs");
+                p.setSize({height: (p.getFrameHeight() + 30)});
+                //p.setSize({height: 30});
+                Ext.getCmp("searchpanel").doLayout();
+            });
+            this.advSearchForm.on("deactivate", function(){
+               Ext.getCmp('feedButton').hide(); 
+            });
+            this.on("deactivate", function(){
+               Ext.getCmp('feedButton').hide(); 
+            });
+            this.on("activate",function(){
+                var tabs = Ext.getCmp('searchtabs');
+                if (tabs.activeTab == this.advSearchForm){
+                    Ext.getCmp('feedButton').show();
+                }
+            });
             
             this.keySearchForm.searchButton.on('click', function () {
             	this.dataView.bindStore(this.keySearchForm.ds);
+                Ext.getCmp("annospager").bindStore(this.keySearchForm.ds);
             }, this);
             
-//            this.searchForm.feedButton.on('click', this.annotationManager.getFeedURL, this.annotationManager);
-
 
         } catch (e) {
             lore.debug.anno("SearchPanel:initComponent" , e);
@@ -151,8 +196,8 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
     handleSearchAnnotations : function() {
         try {
         	this.dataView.bindStore(this.model);
-        	
-            var sform = this.searchForm.getForm();
+        	Ext.getCmp("annospager").bindStore(this.model);
+            var sform = this.advSearchForm.getForm();
             var vals = sform.getFieldValues();
 
             lore.anno.ui.loreInfo("Searching...");

@@ -128,21 +128,12 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
         
         var dannoSearchPanel = {
 			xtype: 'annosearchpanel',
-//			layout: 'border',
 			title: 'Search',
 			id: 'searchpanel',
 			model: this.annotationManager.annosearchds,
 			annotationManager: this.annotationManager
         };
-        
-//        var searchPanel = {
-//    		xtype: 'tabpanel',
-//    		title: 'Search',
-//			activeTab: 0,
-//    		items: [keywordSearchPanel, dannoSearchPanel]
-//        };
-        
-    
+   
         try {
             lore.anno.ui.tabpanel = new Ext.TabPanel({
                 anchor: "100% -25",
@@ -153,7 +144,13 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                 activeTab: "treeview",
                 items: [browsePanel, dannoSearchPanel, aboutPanel]
             });
-    
+            // hide or show feed icon when browse is activated/deactivated
+            Ext.getCmp('treeview').on("activate", function(){
+                Ext.getCmp('feedButton').show();
+            });
+            Ext.getCmp('treeview').on("deactivate",function(){
+                Ext.getCmp('feedButton').hide();
+            });
             var gui_spec = {
                 layout: "anchor",
                 border: false,
@@ -166,7 +163,16 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                     defaultText: "",
                     autoClear: 6000,
                     items: [
-		                ' '
+                        {
+                            xtype: 'button',
+                            id: 'feedButton',
+                            // Feed icon is only displayed when browse or advanced search are active
+                            hidden: true,
+                            icon: "chrome://lore/skin/icons/feed.png",
+                            handler: this.annotationManager.getFeedURL,
+                            scope: this.annotationManager
+                        }
+		                
 		            ]
                 }]
             };

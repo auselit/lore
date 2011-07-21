@@ -20,42 +20,8 @@
 
 
 lore.anno.ui.SolrSearchPanel = Ext.extend(Ext.Panel, {
-
     initComponent: function() {
-        this.ds = new Ext.data.Store({
-            proxy: new Ext.data.HttpProxy({
-                url: 'http://doc.localhost/solr/select',
-                method: 'GET'
-            }),
-            reader: new Ext.data.JsonReader({
-                root: 'response.docs',
-                total: 'response.numFound',
-                totalProperty: 'response.numFound',
-                idProperty: 'id',
-                fields: [
-                    {name: 'id', mapping: 'id'},
-                    {name: 'title', mapping: 'title'},
-                    {name: 'resource', mapping: 'annotates'},
-                    {name: 'creator', mapping: 'creator'},
-                    {name: 'created', mapping: 'created', type: 'date'},
-                    {name: 'modified', mapping: 'modified', type: 'date'}
-                ]
-            }),
-            baseParams: {
-                version: '2.2',
-                rows: '5',
-                indent: 'on',
-//                sort: 'created asc',
-                wt: 'json'
-            },
-            paramNames: {limit: 'rows'}
-        });
-        var pagingToolbar = {
-        		xtype : 'paging',
-        		store : this.ds,
-        		pageSize : 5,
-        		displayInfo : true,
-        };
+        this.ds = new lore.anno.ui.SolrStore();
         var formConfig = {
             region: 'north',
             xtype: 'panel',
@@ -71,13 +37,11 @@ lore.anno.ui.SolrSearchPanel = Ext.extend(Ext.Panel, {
                 name: 'searchtext',
                 ref: 'searchText',
                 xtype: 'textfield',
-//                region: 'center',
                 flex: 3
             }, {
                 xtype: 'button',
                 text: 'Search',
                 ref: 'searchButton',
-//                region: 'east',
                 flex: 1,
                 margins : '0 10 0 0'
             }],
@@ -87,36 +51,67 @@ lore.anno.ui.SolrSearchPanel = Ext.extend(Ext.Panel, {
                     this.searchButton.fireEvent('click');
                 },
                 scope: this
-            }],
-            bbar: pagingToolbar
+            }]
         };
-        
-//        var dataview = {
-//            xtype: 'annodataview',
-//            ref: 'dataView',
-//            itemId: 'dataview',
-//            store: this.ds,
-//            autoScroll: true,
-//            region: 'center'
-//        };
-//        var config = {
-//        	layout: 'border',
-//        	height: 50,
-//            items: [
-////                panelConfig, dataview, pagingToolbar
-//				formConfig, pagingToolbar
-//            ]
-//        };
-
 
         Ext.apply(this, Ext.apply(this.initialConfig, formConfig));
         lore.anno.ui.SolrSearchPanel.superclass.initComponent.call(this);
-
+        
         this.searchButton.on("click", function() {
+            lore.debug.anno("solr search");
         	this.ds.setBaseParam('q', this.searchText.getValue());
         	this.ds.load({start: 0});
         }, this);
-        
     }
 });
 Ext.reg('solrsearchpanel', lore.anno.ui.SolrSearchPanel);
+
+lore.anno.ui.SolrStore = Ext.extend(Ext.data.Store,{
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://austlit.edu.au/solr/select',
+        method: 'GET'
+    }),
+    remoteSort: true,
+    reader: new Ext.data.JsonReader({
+        root: 'response.docs',
+        total: 'response.numFound',
+        totalProperty: 'response.numFound',
+        idProperty: 'id',
+        fields: [
+            {name: 'id', mapping: 'id'},
+            {name: 'title', mapping: 'title'},
+            {name: 'resource', mapping: 'annotates'},
+            {name: 'creator', mapping: 'creator'},
+            {name: 'created', mapping: 'created', type: 'date'},
+            {name: 'modified', mapping: 'last_modified', type: 'date'}
+        ]
+    }),
+    baseParams: {
+        version: '2.2',
+        rows: '5',
+        indent: 'on',
+        sort: 'created desc',
+        wt: 'json'
+    },
+    paramNames: {limit: 'rows'},
+    // override default sort parameter sent for solr
+    load : function(options) {
+        lore.debug.anno("override load",options);
+        try{
+        options = Ext.apply({}, options);
+        this.storeOptions(options);
+        if(this.sortInfo && this.remoteSort){
+            var pn = this.paramNames;
+            options.params = Ext.apply({}, options.params);
+            options.params[pn.sort] = (this.sortInfo.field == "modified"? "last_modified": this.sortInfo.field) + " " + this.sortInfo.direction;
+            lore.debug.ore("sort options are " + options.params[pn.sort]);
+        }
+        
+            return this.execute('read', null, options); // <-- null represents rs.  No rs for load actions.
+        } catch(e) {
+            lore.debug.anno("problem in load",e);
+            this.handleException(e);
+            return false;
+        }
+    }
+});
