@@ -61,6 +61,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             xtype: 'container',
             autoEl: {
                 tag: 'iframe',
+                id: 'about_anno',
                 style: 'border:none',
                 src: 'chrome://lore/content/annotations/about_annotations.html',
                 width: '100%',
@@ -150,6 +151,13 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             });
             Ext.getCmp('treeview').on("deactivate",function(){
                 Ext.getCmp('feedButton').hide();
+            });
+            Ext.getCmp('about').on("activate", function(){
+                 var about= Ext.get("about_anno"); 
+                 var high_contrast = lore.anno.prefs.high_contrast;
+                 if (about && typeof high_contrast != "undefined") { 
+                     lore.global.util.setHighContrast(about.dom.contentWindow, high_contrast); 
+                 }  
             });
             var gui_spec = {
                 layout: "anchor",

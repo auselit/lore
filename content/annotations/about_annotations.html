@@ -4,6 +4,7 @@
 			body {color: #51666b;}
 			h1 {font-size: 120%}
 			h2 {font-size: 110%; padding-top:10px;clear:both;}
+			h3 {font-size: 100%;}
 			p {margin:0; margin-bottom: 10px;}
 			div {padding:0;margin:0}
 			a:hover {text-decoration: underline;}
@@ -33,6 +34,7 @@
 			var lore = {global:{}};
 			Components.utils["import"]("resource://lore/util.js", lore.global);
 		</script>
+		<link rel="alternate stylesheet" type="text/css" title="highContrast" disabled="true" href="../loreui-access.css"/>    
 		<title>LORE</title>
 		</head>
 	<body>
@@ -104,17 +106,22 @@
 		<p>Use the <span class="helpinst">Hide Editor</span> button to close the editor while editing if you wish to view other annotations before finalising and saving your annotation. Any unsaved annotations will appear in the <span class="helpinst">Unsaved Changes</span> section of the Annotation Browse panel. If you browse to other pages, your unsaved annotations and replies will remain visible in this section and you can double click on them to return to the editor to complete or cancel the edits at any time. You can use the <span id="saveall" class="helpinst"><img src="chrome://lore/skin/icons/disk_multiple.png" alt="Save all"> Save all</span> toolbar button to save all of the unsaved annotations. You will also be prompted to save any unsaved annotations when you close the web browser.
 		
 		<h2 id="search">Search</h2>
-		<p>You can search for annotations by target URL, creator or by date range in which the annotation was created or last modified. The search currently requires values to match exactly, for example, to search for annotations by a particular person, you will need to enter their full name with correct capitalisation.</p>
+		<p>There are two types of search offered: keyword, and advanced. Use the tabs at the top of the search panel to switch between search modes. Hit enter/return or select the search button to trigger the search. The results will load below the search form. Use the tool bar above the search results to sort, move between or jump to a particular page of results.</p> 
 		<p>Click on a listing from the search results to load the page on which the annotation appears in the web browser. Right-click on search results to display a context menu with other options, for example, to view the annotation directly in the web browser.</p>
-		<h3 id="messages">RSS</h3>
+		<h3>Keyword search</h3>
+		<p>Keyword search finds annotations matching the search terms in annotation bodies, creator and title fields. Search terms do not have to be exact to match. Use '*' as a wilcard/truncation character. To search phonetically, add '~' after the search term, for example a search for 'larsen~' will match words that sound similar such as Lawson. Results can be sorted by creator, date of creation, or modification date (modification date only applies if the annotation has been updated since it was created).</p>
+		<h3>Advanced search</h3>
+		<p>You can search for annotations by target URL, creator or by date range in which the annotation was created or last modified. The advanced search requires values to match exactly, for example, to search for annotations created by a particular person, you will need to enter their full name with correct capitalisation. Advanced search also provides more sort options, including sort by title or target URL.</p>
 		
-		<p>The <span class="helpinst"><img src="chrome://lore/skin/icons/feed.png" alt="RSS"> RSS feed</span> button in the bottom-right of the annotation panel will open a page in the browser containing an RSS feed of annotations. If you are viewing the browse panel, the feed will be for annotations on the page currently loaded in the browser. If you are viewing the search panel, values from the search form will be used to create the feed. You can use the Firefox web browser or an RSS client application of your choice to subscribe to these feeds so that you will be notified when new annotations are created.</p>
+		<h2 id="messages">RSS</h2>
+		
+		<p>The <span class="helpinst"><img src="chrome://lore/skin/icons/feed.png" alt="RSS"> RSS feed</span> button in the bottom-right of the annotation panel will open a page in the browser containing an RSS feed of annotations. If you are viewing the browse panel, the feed will be for annotations on the page currently loaded in the browser. If you are viewing the advanced search panel, values from the search form will be used to create the feed. The icon will be hidden if you are not viewing the browse or advanced search views. You can use the Firefox web browser or an RSS client application of your choice to subscribe to these feeds so that you will be notified when new annotations are created.</p>
 		</p>
 		
-	    <h3 id="importexport">Export</h3>
+	    <h2 id="importexport">Export</h2>
         <p>You can export a copy of your annotations to a RDF/XML file using the Annotea or Open Annotation Collaboration models by selecting from the options in the <span class="helpinst"><img  alt="Import/Export" src="chrome://lore/skin/icons/table_refresh.png"> Import/Export</span> menu.</p>
         
-		<h3 id="troubleshooting">Troubleshooting</h3>
+		<h2 id="troubleshooting">Troubleshooting</h2>
         <p>If LORE starts behaving strangely, you can reset it to its initial state by selecting <span class="helpinst"><img src="chrome://lore/skin/icons/arrow_refresh.png" alt="Reset UI"> Reset LORE UI</span> from the toolbar or by restarting your browser. If problems persist, please contact us.</p>
 		<p>You can report a problem immediately after it occurs via the <span class="helpinst"><img alt="Report a Problem" src="chrome://lore/skin/icons/mail-exclamation.png"> Report a Problem</span> toolbar button. This will create a new email through your email application, prefilled with information that may asist the developers to resolve the problem. You can edit or add to this information before sending the report to us.</p>
 		<p id="help">This manual can be viewed under the <span class="helpinst"><img src="chrome://lore/skin/icons/information.png" alt="Help">Using Compound Objects</span> tab in LORE or in the browser: <a href="#" onclick="lore.global.util.launchTab('chrome://lore/content/annotations/about_annotations.html', window);" title="Open this page in browser"><img alt="Open in browser" style="border:none;" src="chrome://lore/skin/icons/page_go.png"></a></p>

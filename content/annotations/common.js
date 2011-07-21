@@ -389,9 +389,9 @@ lore.anno.ui.genTagsHtml = function(tags) {
     for (var i = 0; i < tags.length; i++) {
         var temp = lore.anno.thesaurus.getById(tags[i]);
         if (temp) {
-            tagsHtml += '<span class="anno-tag">' + temp.data.name + '</span>';
+            tagsHtml += '\n<span class="anno-tag">' + temp.data.name + '</span> ';
         } else {
-            tagsHtml += '<span class="anno-tag">' + tags[i] + '</span>';
+            tagsHtml += '\n<span class="anno-tag">' + tags[i] + '</span> ';
         }
     }
     return tagsHtml;
