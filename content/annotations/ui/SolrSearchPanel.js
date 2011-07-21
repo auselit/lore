@@ -43,7 +43,7 @@ lore.anno.ui.SolrSearchPanel = Ext.extend(Ext.Panel, {
                 text: 'Search',
                 ref: 'searchButton',
                 flex: 1,
-                margins : '0 10 0 0'
+                margins : '0 0 0 0'
             }],
             keys: [{
                 key: [10, 13],
@@ -58,7 +58,6 @@ lore.anno.ui.SolrSearchPanel = Ext.extend(Ext.Panel, {
         lore.anno.ui.SolrSearchPanel.superclass.initComponent.call(this);
         
         this.searchButton.on("click", function() {
-            lore.debug.anno("solr search");
         	this.ds.setBaseParam('q', this.searchText.getValue());
         	this.ds.load({start: 0});
         }, this);
@@ -96,17 +95,15 @@ lore.anno.ui.SolrStore = Ext.extend(Ext.data.Store,{
     paramNames: {limit: 'rows'},
     // override default sort parameter sent for solr
     load : function(options) {
-        lore.debug.anno("override load",options);
         try{
-        options = Ext.apply({}, options);
-        this.storeOptions(options);
-        if(this.sortInfo && this.remoteSort){
-            var pn = this.paramNames;
-            options.params = Ext.apply({}, options.params);
-            options.params[pn.sort] = (this.sortInfo.field == "modified"? "last_modified": this.sortInfo.field) + " " + this.sortInfo.direction;
-            lore.debug.ore("sort options are " + options.params[pn.sort]);
-        }
-        
+            options = Ext.apply({}, options);
+            this.storeOptions(options);
+            if(this.sortInfo && this.remoteSort){
+                var pn = this.paramNames;
+                options.params = Ext.apply({}, options.params);
+                options.params[pn.sort] = (this.sortInfo.field == "modified"? "last_modified": this.sortInfo.field) + " " + this.sortInfo.direction;
+                lore.debug.ore("sort options are " + options.params[pn.sort]);
+            }
             return this.execute('read', null, options); // <-- null represents rs.  No rs for load actions.
         } catch(e) {
             lore.debug.anno("problem in load",e);
