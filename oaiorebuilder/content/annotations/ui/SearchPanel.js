@@ -27,14 +27,14 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
                 },
                 scope: this
             }],
-            labelWidth: 80,
+            labelWidth: 90,
             defaultType: 'datefield',
             labelAlign: 'right',
-            height: 210,
+            height: 200,
             bodyStyle : "padding: 0 10px 4px 4px",
             defaults: {anchor: '100%'},
             items: [{
-                fieldLabel : 'URL',
+                fieldLabel : 'Target URL',
                 name : 'url',
                 xtype: 'textfield'
             }, {
@@ -156,13 +156,12 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
             // resize search panel and hide or show feed button depending on active tab
             this.advSearchForm.on("activate",function(){
                 Ext.getCmp('feedButton').show();
-                Ext.getCmp("searchtabs").setSize({height: 225});
+                Ext.getCmp("searchtabs").setSize({height: 200});
                 Ext.getCmp("searchpanel").doLayout();
             });
             this.keySearchForm.on("activate", function(){
                 var p = Ext.getCmp("searchtabs");
                 p.setSize({height: (p.getFrameHeight() + 30)});
-                //p.setSize({height: 30});
                 Ext.getCmp("searchpanel").doLayout();
             });
             this.advSearchForm.on("deactivate", function(){
@@ -179,6 +178,8 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
             });
             
             this.keySearchForm.searchButton.on('click', function () {
+                // make sure any old results don't display by removing them from the store
+                this.keySearchForm.ds.removeAll(true);
             	this.dataView.bindStore(this.keySearchForm.ds);
                 Ext.getCmp("annospager").bindStore(this.keySearchForm.ds);
             }, this);
@@ -195,6 +196,8 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
      */
     handleSearchAnnotations : function() {
         try {
+            // make sure any old results don't display
+            this.model.removeAll(true);
         	this.dataView.bindStore(this.model);
         	Ext.getCmp("annospager").bindStore(this.model);
             var sform = this.advSearchForm.getForm();
