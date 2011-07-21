@@ -97,7 +97,6 @@
 }
 
 .x-tree-node-bheader, .x-tree-node-bfooter {
-	color:#888888;
 	font-size:smaller;
 	
 }
@@ -246,17 +245,7 @@
 }
 
 .x-tree-col-text {
-    color:#888888;
-   
-/* overflow:hidden; 
- * -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-	*/
-	
     padding:3px 3px 3px 5px;
-    
-	
     font:normal 11px arial, tahoma, helvetica, sans-serif;
 }
 
@@ -311,7 +300,7 @@
 }
 #search-view .annoListing {
     cursor:pointer;
-    font:11px arial,tahoma,helvetica,sans-serif;
+    font-family: arial,tahoma,helvetica,sans-serif;
 	padding:3px 5px 7px 5px;
 	margin: 2px;
 }
@@ -339,7 +328,7 @@
 }
 .anno-tag {
 	background-color: #E7E7E7;
-	border-color: #D7D7D7;
+	border: 1px solid #D7D7D7;
 	margin: 2px;
 	padding: 2px 10px;
 	-moz-border-radius: 5px;

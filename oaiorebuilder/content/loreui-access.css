@@ -34,5 +34,31 @@
 .x-tree-node a, .anno-search {
 	color: orange !important;
 }
-
-	
+.x-panel-header, .x-tree-headers {
+	background-image:none;
+	background-color: transparent;
+}
+#search-view {
+    background: transparent;
+}	
+#search-view .annoListing {
+    font-size:100%;
+}
+#search-view .annoURL {
+    color: white;
+}
+#search-view .x-view-over {
+    background-color: orange;
+}
+#search-view .x-view-selected {
+    background-color: orange;
+} 
+#search-view .annoListingMeta {
+    color: white;
+}
+.anno-tag {
+    background-color: transparent;
+    border: 1px solid white;
+	line-height:2em;
+	white-space:pre;
+}
