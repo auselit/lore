@@ -97,7 +97,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						hiddenName: 'type',
 						store: new Ext.data.SimpleStore({
 							fields: ['typename', 'qtype'],
-							data: [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ],
+							'data': [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ],
 							['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"],
 							['Austlit Metadata',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#MetadataAnnotation" ]]
 						}),
@@ -130,7 +130,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
 						hiddenName: 'importance',
 						store: new Ext.data.SimpleStore({
 							fields: ['impname', 'qimpname'],
-							data: [['Very Important', "VeryImportant"], ['Important', "Important"],['Trivial','Trivial' ]]
+							'data': [['Very Important', "VeryImportant"], ['Important', "Important"],['Trivial','Trivial' ]]
 						}),
 						valueField: 'qimpname',
 						displayField: 'impname',
