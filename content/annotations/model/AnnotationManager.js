@@ -102,10 +102,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		 */
 		this.annods = lore.global.store.create(lore.constants.ANNOTATIONS_STORE,
 		new Ext.data.JsonStore({	fields: fields,
-									data: {}
+									'data': {}
 								}),  config.url);
 		this.annodsunsaved =  new Ext.data.JsonStore({	fields: fields,
-									data: {}
+									'data': {}
 								});
 
 		/**
@@ -125,7 +125,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		 */
 		this.annousermetads =  new Ext.data.JsonStore( {
 			fields: mfields,
-			data: {}
+			'data': {}
 		});
 
 		// model event handlers
@@ -963,7 +963,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	        var queryURL = "";
 	        if (activetab && activetab.id == "searchpanel"){ 
 	            // if search tab is active, use search panel values to construct feed
-	            var vals = activetab.searchForm.getForm().getFieldValues();
+	            var vals = activetab.advSearchForm.getForm().getFieldValues();
 	            // TODO : update createSearchQueryURL with param to control whether to generate rss url
 	            queryURL = this.createSearchQueryURL(vals).replace("/annotea","/rss");  
 	        } else { // feed for browse results
