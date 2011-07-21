@@ -221,10 +221,12 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
         // set up the root tree node, and the two main child nodes 'Current Page' and 'Unsaved Changes'
         lore.anno.ui.treeroot = new lore.anno.ui.AnnoPageTreeNode({
             text: 'Current Page',
+            cls: 'x-tree-noicon',
             model: this.annotationManager.annods
         });
         lore.anno.ui.treeunsaved = new lore.anno.ui.AnnoModifiedPageTreeNode({
             text: 'Unsaved Changes',
+             cls: 'x-tree-noicon',
             model: this.annotationManager.annodsunsaved,
             postfix: "-unsaved"
         });
