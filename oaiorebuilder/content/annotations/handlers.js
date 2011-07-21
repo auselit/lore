@@ -213,6 +213,10 @@ lore.anno.ui.handlePrefsChange = function (args) {
         disable: args.disable
     });
     lore.global.util.setHighContrast(window, args.high_contrast);
+    var abtframe = Ext.get("about_anno");
+    if (abtframe){
+        lore.global.util.setHighContrast(abtframe.dom.contentWindow, args.high_contrast);
+    }
 };
 
 /**
