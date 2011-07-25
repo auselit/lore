@@ -205,18 +205,32 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
               offsetX: 3,
               offsetY: 3,
               onShow: function(tip, node) {
+                // clear old tip contents
+                var domObj = tip.firstChild;
+                if (domObj) {
+                    tip.removeChild(domObj);
+                }
                 if (!lore.ore.explorePanel.hideLabels || (node.data['$alpha'] == 0)) {
-                    tip.innerHTML = "";
+                    
                 } else {
-                    var tiptext = "<div class=\"exploretip-title\">" + node.name + "</div><div class=\"exploretip-text\">";
+                    var childNodes = [];
                     if (node.data.creator){
-                        tiptext += "Created by " + node.data.creator; 
+                        childNodes.push("Created by " + node.data.creator); 
                     } 
                     if (node.data.modified){
-                        tiptext += ", modified " + node.data.modified;
+                        childNodes.push(", modified " + node.data.modified);
                     }
-                    tiptext += "</div>";
-                    tip.innerHTML = tiptext;
+                    Ext.get(tip).createChild({
+                        tag: "div",
+                        cls: "exploretip-title",
+                        children: [
+                            node.name,
+                            {
+                                tag: "div",
+                                cls: "exploretip-text",
+                                children: childNodes
+                            }]
+                    });                 
                 }
               }
             },
@@ -323,13 +337,16 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 } else if (node.data["anno"]){ // annotation
                 	historyData.action = "lore.global.util.launchTab(\"" + node.id + "?danno_useStylesheet=\");";
                 }
+                var historyEl = Ext.getCmp("exploreHistory").body;
+                var childNodes = [lore.ore.explorePanel.historyTemplate.apply(historyData)];
+                if (historyEl.dom.childNodes.length != 0){
+                    childNodes.push(" &lt;&nbsp;");
+                }
+                historyEl.createChild({
+                    tag: "span",
+                    children: childNodes
+                }, historyEl.dom.firstChild);
                 
-                var historyEl = Ext.getCmp("exploreHistory").body.dom;
-                
-                historyEl.innerHTML = lore.ore.explorePanel.historyTemplate.apply(historyData) 
-                    + ((history.innerHTML != '')? " &lt;&nbsp;" : "") + historyEl.innerHTML;
-                
-              
                 lore.ore.explorePanel.loadRem(node.id, node.name, (node.data["$type"]=='circle'), function(json) {
                     try{
                     // TODO: implement a limit on the number of nodes or drop off old ones
@@ -362,7 +379,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
               } else {
                 node.name = node.name.replace(/&amp;/g, '&');
               }
-              nameContainer.innerHTML = Ext.util.Format.ellipsis(node.name,30);
+              nameContainer.textContent = Ext.util.Format.ellipsis(node.name,30);
               nameContainer.setAttribute("title","Show connections for \"" + node.name + "\"");
               domElement.appendChild(nameContainer);
               
@@ -736,10 +753,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     historyData.icon = "chrome://lore/skin/oaioreicon-sm.png";
                     historyData.tooltip = "Load in LORE";
                 }   
-                var historyEl = Ext.getCmp("exploreHistory").body.dom;
-                    
-                historyEl.innerHTML = lore.ore.explorePanel.historyTemplate.apply(historyData);
-                
+                Ext.getCmp("exploreHistory").body.update(lore.ore.explorePanel.historyTemplate.apply(historyData));
             });  
             if (!dontraise){
                 Ext.getCmp("loreviews").activate(this.id);
