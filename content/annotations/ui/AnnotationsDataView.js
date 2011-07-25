@@ -21,10 +21,7 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
             emptyText: 'No annotations / annotations loading'
         });
         lore.anno.ui.AnnotationsDataView.superclass.initComponent.apply(this,arguments);
-        
-        
-        this.getSelectedRecords();
-        
+
         var contextmenu = new Ext.menu.Menu({
             items: [{
                 text: "Add as node/s in compound object editor",
@@ -49,14 +46,25 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
         }, this);
         
         this.on('click', function searchLaunchTab(dv, rowIndex, node, event) {
+            try{
             if (!event.ctrlKey && !event.shiftKey) {
                     var record = this.getRecord(node);
-                    var ruri = record.data.resource;
+                    
+                    var ruri = record.get("resource");
+                    lore.debug.anno("record is " + ruri,record);
+                    if (!ruri){ // replies currently don't have annotates field from solr
+                        ruri = record.get("id"); // show annotation uri as fallback
+                    }
                     if (ruri && ruri.match(lore.anno.prefs.url)){
                             ruri += "?danno_useStylesheet=";
                     }
-                    lore.anno.annoMan.justUpdated = record.id;
-                    lore.global.util.launchTab(ruri);
+                    if (ruri){
+                        lore.anno.annoMan.justUpdated = record.id;
+                        lore.global.util.launchTab(ruri);
+                    }
+            }
+            } catch (e){
+                lore.debug.anno("Problem on click",e);
             }
         }, this);
     }
