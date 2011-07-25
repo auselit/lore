@@ -30,7 +30,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         this.dummylayouty = this.NODE_SPACING;
          /** Used to lookup figures by their URIs in the graphical editor */
         this.lookup = {};
-        this.readOnly = false;
         
    },
    initComponent: function(config){
@@ -115,7 +114,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         if (figure != null) {
             // raise tab first so that properties are rendered and column widths get sized correctly for resource/rels
             
-            if (figure instanceof lore.ore.ui.graph.ResourceFigure || figure instanceof lore.ore.ui.graph.EntityFigure) {
+            if (figure instanceof lore.ore.ui.graph.EntityFigure) {
                 Ext.getCmp("propertytabs").activate("properties");
                 if (figure.model){
                     lore.ore.ui.nodegrid.bindModel(figure.model);
@@ -201,7 +200,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
      * Respond to move, delete, undo and redo commands in the graphical editor
      * @param {} event
      */
-    stackChanged : function(event) {           
+    stackChanged : function(event) { 
         var details = event.getDetails(); // indicates whether post execute, undo or redo
         var comm = event.getCommand();
         var commList;
@@ -227,7 +226,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	            comm.undo();
 	        }
 	        
-	        if (comm_fig instanceof lore.ore.ui.graph.ResourceFigure || comm_fig instanceof lore.ore.ui.graph.EntityFigure) {
+	        if (comm_fig instanceof lore.ore.ui.graph.EntityFigure) {
 	            // reset dummy graph layout position to prevent new nodes being added too far from content
 	            if (comm instanceof draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
 	                && comm.oldY == this.dummylayoutprevy) {   
@@ -339,6 +338,9 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     * @return {}
     */
    addFigure : function(opts) {
+        if (lore.ore.controller.checkReadOnly()){
+            return;
+        }
         var fig = null;
         var theURL = lore.global.util.preEncode(opts.url);
         var figRepresentsCO = false;
@@ -428,10 +430,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             if (opts.w && opts.h){
                 fig.setDimension(opts.w, opts.h);    
             } 
-            if (opts.sx && opts.sy) {
-                fig.scrollx = opts.sx;
-                fig.scrolly = opts.sy;
-            }
             if (opts.order){
             	fig.orderIndex = opts.order;
             }
