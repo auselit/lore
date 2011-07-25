@@ -1030,6 +1030,7 @@ util = {
 		                divEl.style.display = "none";
 		            }
 		            divEl.appendChild(fragment);
+                    // read inner HTML to get content as HTML
 		            var serializedContent = divEl.innerHTML;
 		            divEl.removeChild(divEl.firstChild);
 		            return serializedContent;
