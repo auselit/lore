@@ -101,6 +101,14 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 ]
             }),
             colModel : new Ext.grid.ColumnModel({
+                // override to prevent editing when compound object is readonly
+                getCellEditor: function(colIndex, rowIndex){
+                   if (lore.ore.controller.checkReadOnly()){
+                        return;
+                   }
+                   // use the default Trigger Editor (with popup option)
+                   return Ext.grid.ColumnModel.prototype.getCellEditor.call(this,colIndex, rowIndex);
+                },
                 columns : [
                  {
                            header: '',
@@ -230,6 +238,9 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      * @param {} panel
      */
     removeRelationshipAction: function (ev, toolEl, panel) { 
+      if (lore.ore.controller.checkReadOnly()){
+          return;
+      }
       try {    
         var sel = panel.getSelectionModel().getSelected();
         //lore.debug.ore("selection is",sel);
