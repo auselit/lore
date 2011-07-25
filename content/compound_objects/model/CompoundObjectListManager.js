@@ -32,7 +32,7 @@ lore.ore.model.CompoundObjectListManager = function(){
               direction: "desc"
             },
             storeId: "search",
-            data: [],
+            'data': [],
             lastOptions : {
                 params : {
                     start : 0,
