@@ -23,7 +23,7 @@
  * @param {Object} initprops initial properties
  */
 lore.ore.ui.graph.EntityFigure = function(model) {
-    this.NOHIGHLIGHT = "transparent";
+    this.NOHIGHLIGHT = "FFFFFF";
     this.cornerSize = 15; 
     this.editing = false;
     this.originalHeight = 50; // for backwards compatibility: will load as collapsed ResourceFigure in previous versios
@@ -34,10 +34,10 @@ lore.ore.ui.graph.EntityFigure = function(model) {
     this.url = this.getProperty("resource_0");
     var title = this.getTitle();
     if (!title) {
-        title = "Placeholder";
+        title = "";
     }
     this.createTitleField();
-    this.displayTitle(title);
+    this.displayTitle((title ? title : 'Untitled'));
     this.setDimension(90, 30);
     Ext.get(this.header).on('dblclick',this.startEditing,this);
     Ext.get(this.menuIcon).on("click", this.onHeaderMenu, this);
@@ -53,7 +53,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
         var item = document.createElement("div");
         Ext.apply(item,{
             id:this.id,
-            className : "entity"
+            className : "entity_resource"
         });
         Ext.apply(item.style,{
                 position: "absolute",
@@ -75,12 +75,19 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
             position: "absolute",
             height : (this.cornerSize) + "px"
         });
+        Ext.get(header).createChild({
+           tag: "div",
+           cls: "headerTitle",
+           style: "padding-left: 15px"
+        });
         this.header = header;
-
+        
         var textarea = document.createElement("div");
-        Ext.apply(textarea,{
-            className: "entity-preview",
-            innerHTML : "<span class='orelink'>(placeholder)</span>"
+        textarea.className = "entity-preview";
+        Ext.get(textarea).createChild({
+            tag: "span",
+            cls: "orelink",
+            children: ["(placeholder)"]
         });
         Ext.apply(textarea.style,{
             position: "absolute",
@@ -103,9 +110,12 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
             height: (this.cornerSize) + "px"
         });
         Ext.apply(menuIcon,{
-            className: "x-unselectable",
-            title: "Menu",
-            innerHTML: "<a class='menuIcon' href='#'><img src='chrome://lore/skin/blank.png'/></a>"
+            className: "x-unselectable menuIcon",
+            title: "Menu"
+        });
+        Ext.get(menuIcon).createChild({
+                tag: "img",
+                src: "chrome://lore/skin/blank.png"
         });
         this.menuIcon = menuIcon;
         // order in which elements are appended determines z-order
@@ -221,8 +231,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      * @param {string} title
      */
     displayTitle : function(title) {
-        this.header.innerHTML = title;
-        
+        this.header.firstChild.textContent = title;
     },
     getHighlightColor: function(){
       if (this.highlightColor != this.NOHIGHLIGHT){
@@ -230,6 +239,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
       }
     },
     setHighlightColor: function(color){
+        lore.debug.ore("setHighlightColor",color)
         this.highlightColor = color;
         if (color != this.NOHIGHLIGHT){
             this.textarea.style.backgroundColor = "#" + color;
@@ -291,7 +301,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
     },
     /** Return the minimum height */
     getMinHeight : function() {
-        return 48;
+        return 32;
     },
     /**
      * Override onDragend to reset ZOrder and redisplay preview
@@ -380,7 +390,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
     },
 
     /**
-     * Append a property to the metadata properties
+     * Append a property to the properties
      * 
      * @param {} pname The name of the property to append eg dc:title
      * @param {}  pval The value of the property
@@ -388,18 +398,12 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      */
     appendProperty : function(pname, pval,ptype) {
         var counter = 0;
-        var oldrdftype = this.getProperty("rdf:type_0");
         var prop = this.getProperty(pname + "_" + counter);
         while (prop) {
             counter = counter + 1;
             prop = this.getProperty(pname + "_" + counter);
         }
         this.setProperty(pname + "_" + counter, pval,ptype);
-        // if the rdf:type has changed, regenerate preview (as it might be an
-        // annotation or compound object
-        if (pname == "rdf:type" && oldrdftype != pval && this.hasPreview) {
-            this.showContent();
-        }
     },
     /**
      * Set (or add) a property with a specific id
@@ -425,12 +429,6 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                 this.model.set('title',pval);
                 this.model.commit();
             } 
-        } else if (pid == "dcterms:abstract_0" && pval != oldval){
-            if (pval){
-                this.displayAbstract(pval);
-            } else {
-                this.displayAbstract("");
-            }
         } else if (pid == "dc:type_0"){
            // override icon
            this.setIcon(pval);
@@ -460,7 +458,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                 lore.debug.ore("problem in setProperty",ex);
             }
         }
-        lore.debug.ore("entity figure setProperty " + pid + " " + pval + " " + type,this.model);
+        lore.debug.ore("setProperty " + pid + " " + pval + " " + type,this.model);
         
     },
     /**
@@ -478,9 +476,6 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                 this.displayTitle("Resource");
             }
         }
-        if (pid == "dcterms:abstract_0"){
-            this.displayAbstract("");
-        }
         if (pid == "dc:type_0"){
             this.setIcon();
         }
@@ -495,7 +490,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
         return this.getProperty("dc:title_0") || this.getProperty("dcterms:title_0");
     },
     /**
-     * Get a property
+     * Get a property value
      * 
      * @param {string}   pid Fully qualified property index eg dc:format_0
      * @return {} the property value
@@ -512,7 +507,11 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                 // make sure that subject terms don't still have escaped ampersands in them
                  return theProp.value.toString().replace(/&amp;/,'&');
             } else {
-                return theProp.value.toString();
+                if (theProp.value){
+                    return theProp.value.toString();
+                } else {
+                    lore.debug.ore("getProperty no value" + pid);
+                }
             }
         }
     },
@@ -552,18 +551,11 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
         var absy = xy[1] - w.getAbsoluteY() + w.getScrollTop();
         this.onContextMenu(absx,absy);
     },
-    /**
-     * Show a context menu for the figure
-     * 
+    /** 
+     * Generate entries for context menu
      */
-    onContextMenu : function(x, y) {
-        var w = this.workflow;
-        if (!this.contextmenu) {
-            this.contextmenu = new Ext.menu.Menu({
-                showSeparator: false
-            });
-
-            this.contextmenu.add({
+    populateContextMenu : function(menu){
+        menu.add({
                 text: "Delete resource from Compound Object",
                 icon: "chrome://lore/skin/icons/delete.png",
                 scope: this,
@@ -572,9 +564,9 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                         .execute(this.createCommand(
                                 new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
                 }
-            });
-            this.contextmenu.add("-");
-            this.contextmenu.add({
+          });
+          menu.add("-");
+          menu.add({
                 text: "Show in Resource List",
                 icon: "chrome://lore/skin/icons/table_edit.png",
                 scope: this,
@@ -582,8 +574,8 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                     Ext.getCmp("loreviews").activate("remlistview");
                     Ext.getCmp("remlistview").selectResource(this.url);
                 }
-            });
-            this.contextmenu.add({
+          });
+          menu.add({
                 text: "Show in Details view",
                 icon: "chrome://lore/skin/icons/application_view_detail.png",
                 scope: this,
@@ -591,8 +583,8 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                     Ext.getCmp("loreviews").activate("remdetailsview");
                     Ext.getCmp("remdetailsview").scrollToResource(this.url);                
                 }
-            });
-            this.contextmenu.add({
+          });
+          menu.add({
                 text: "Show in Slideshow view",
                 icon: "chrome://lore/skin/icons/picture_empty.png",
                 scope: this,
@@ -600,8 +592,8 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                     Ext.getCmp("loreviews").activate("remslideview");
                     Ext.getCmp("newss").setActiveItem(this.url + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
                 }
-            });
-            this.contextmenu.add({
+           });
+           menu.add({
                 text: "Show in Explore view",
                 icon: "chrome://lore/skin/icons/network.png",
                 scope: this,
@@ -618,8 +610,8 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                 }
             });
             
-            this.contextmenu.add("-");
-            this.contextmenu.add(
+            menu.add("-");
+            menu.add(
                 new Ext.ColorPalette({
                     id: this.id + "_palette",
                     value: this.highlightColor,
@@ -630,6 +622,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                     colors: [this.NOHIGHLIGHT, "FFFF99","CCFFCC","DBEBFF","EFD7FF","FFE5B4","FFDBFB"],
                     handler: function(cp,color){
                         try{
+                            lore.debug.ore("setting hc from " + this.highlightColor + " to " + color)
                             var propData = {
                                 id: lore.constants.NAMESPACES["layout"] + "highlightColor", 
                                 ns: lore.constants.NAMESPACES["layout"],
@@ -651,6 +644,19 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                     
                 })
             );
+    },
+    /**
+     * Show a context menu for the figure
+     * 
+     */
+    onContextMenu : function(x, y) {
+        var w = this.workflow;
+        if (!this.contextmenu) {
+            this.contextmenu = new Ext.menu.Menu({
+                showSeparator: false
+            });
+            this.populateContextMenu(this.contextmenu);
+            
         } else {
             var cp = Ext.getCmp(this.id + "_palette");
             cp.select(this.highlightColor,true);
@@ -662,24 +668,15 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
          
     },
 
-    /**
-     * Override onKeyDown to cater for Macs without delete
-     * 
-     * @param {} keyCode
-     * @param {}   ctrl
-     */
-    onKeyDown : function(keyCode, ctrl) {
-        // on delete or backspace
-        if (keyCode == 46 || keyCode == 8 && !this.editing) {
-            this.workflow
-                    .getCommandStack()
-                    .execute(this
-                            .createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
-        }
-        if (ctrl) {
-            this.workflow.onKeyDown(keyCode, ctrl);
-        }
-    },
+	/**
+	 * Override onKeyDown - workflow will manage this
+	 * 
+	 * @param {} keyCode
+	 * @param {}   ctrl
+	 */
+	onKeyDown : function(keyCode, ctrl) {
+        this.workflow.onKeyDown(keyCode, ctrl);
+	},
      /** expand prop in form of dc:title_0 to propuri plus index */
     expandPropAbbrev : function(pid){
         if (pid){
