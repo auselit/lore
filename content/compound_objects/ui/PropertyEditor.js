@@ -46,7 +46,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     idIndex: 0,
                     fields: ['id','displayName'],
                     // data is loaded by the columnmodel in getCellEditor
-                    data: [] 
+                    'data': [] 
                 }),
                 valueField: 'id',
                 displayField: 'displayName'
@@ -572,6 +572,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     /** Grey out rows that are not editable by the user */
     propNameRenderFunction: function(val, cell, rec){
         if (rec && rec.data && rec.data.id == "lorestore:isPrivate_0"){
+            // display eye icon for private property
             return "<img title='Private Compound Objects are not visible to other users' src='chrome://lore/skin/icons/eye.png' alt=''><span style='vertical-align:3px'> Private</span>";
         }
         if (rec && rec.data && 
@@ -592,8 +593,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     },
     /** Grey out rows that are not editable by the user */
 	renderFunction: function(val, cell, rec){
-        if (rec.get("name") == "lorestore:isPrivate"){
-             var checkedImg = 'chrome://lore/content/lib/ext3.2/resources/images/default/menu/checked.gif';
+        if (rec.get("type") == "boolean"){
+            // display a checkbox for boolean values
+            var checkedImg = 'chrome://lore/content/lib/ext3.2/resources/images/default/menu/checked.gif';
             var uncheckedImg = 'chrome://lore/content/lib/ext3.2/resources/images/default/menu/unchecked.gif';
             var cb = ''
                 + '<div style="height:13px;overflow:visible">'
@@ -606,7 +608,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         }
         try{
         // Escape double quotes for display in tooltips 
-        var escVal = (val.replace) ? val.replace(/"/g,"&quot;"): val;
+        if (!val) {
+            val = "";
+        }
+        var escVal = (val && val.replace) ? val.replace(/"/g,"&quot;"): val;
         if (rec.get("name") == "dc:subject" && val){
             // display tag names not uris
             var tags = (val? val.toString().split(","): "");
@@ -729,7 +734,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         	panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties(panel.id == "remgrid"));
         }
         var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
-        if (panel.id == "remgrid" || selfig instanceof lore.ore.ui.graph.ResourceFigure || selfig instanceof lore.ore.ui.graph.EntityFigure){
+        if (panel.id == "remgrid" || selfig instanceof lore.ore.ui.graph.EntityFigure){
             if (panel.collapsed) {
                 panel.expand(false);
             }
@@ -898,7 +903,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 var cleanvalue;
                 if (propuri == lore.constants.NAMESPACES["dc"]+ "subject"){
                     cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
-                } else if (propuri == lore.constants.NAMESPACES["lorestore"] + "isPrivate"){
+                } else if (args.record.get("type") == "boolean"){
                     cleanvalue = args.value;
                 } else {
                     cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true); 
