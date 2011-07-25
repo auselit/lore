@@ -1,6 +1,12 @@
 /* Override default styles for high-contrast theme */
 * {
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+	color: #fffff6; 
+}
+body {
+	background-color: transparent;
+}
+h1, h2, h3 {
 	color: #fffff6;
 }
 .x-grid3-row-selected * {
