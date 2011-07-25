@@ -78,8 +78,22 @@ lore.anno.ui.SolrStore = Ext.extend(Ext.data.Store,{
         idProperty: 'id',
         fields: [
             {name: 'id', mapping: 'id'},
-            {name: 'title', mapping: 'title'},
-            {name: 'resource', mapping: 'annotates'},
+            {name: 'uri', mapping: 'id'},
+            {name: 'title', mapping: function(d){
+                    // title is multivalued - get first value only
+                    if (d && d.title) {
+                        return d.title[0]
+                    }
+                }
+            },
+            {name: 'resource', mapping: function(d){
+                    // annotates is multivalued (e.g. variation annotations)
+                    //lore.debug.anno("record mapping",d)
+                    if (d && d.annotates) {
+                        return d.annotates[0]
+                    }
+                }
+            },
             {name: 'creator', mapping: 'creator'},
             {name: 'created', mapping: 'created', type: 'date'},
             {name: 'modified', mapping: 'last_modified', type: 'date'}
