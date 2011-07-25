@@ -29,6 +29,7 @@
  * Initialise the Extjs UI components and listeners
  */
 lore.ore.ui.initUIComponents = function() {
+    Ext.DomHelper.useDom = true; // force Ext to use dom methods instead of inner HTML
 	Ext.Container.prototype.bufferResize = false;
     // make sure popup windows appear above everything else, particularly when over the graphical editor
     Ext.WindowMgr.zseed = 10000;
