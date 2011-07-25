@@ -29,7 +29,7 @@ lore.ore.model.CompoundObjectList = Ext.extend(Ext.ux.data.PagingJsonStore, {
         Ext.apply(this.config, {
             "idProperty" : "uri",
             "sortField" : "title",
-            data: [],
+            'data': [],
             lastOptions : {
                 params : {
                     start : 0,
