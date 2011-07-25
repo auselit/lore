@@ -87,6 +87,9 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      * 
      */
 	doLayout : function(useConnections) {
+            if (lore.ore.controller.checkReadOnly()){
+                return;
+            }
 			this.commandStack.startCommandGroup();
 	        if (useConnections && this.getDocument().getLines().getSize() > 0){
 	        	// If there are connections, use the layouter
@@ -102,8 +105,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 		        var allfigures = this.getFiguresSorted();
 		        for (var i = 0; i < allfigures.length; i++) {
 		            var fig = allfigures[i];
-		            if (fig && (fig instanceof lore.ore.ui.graph.ResourceFigure 
-                        || fig instanceof lore.ore.ui.graph.EntityFigure)){
+		            if (fig && fig instanceof lore.ore.ui.graph.EntityFigure){
 			            var command = new draw2d.CommandMove(fig);
 			            command.setPosition(x, y);
 			            this.getCommandStack().execute(command);
@@ -348,8 +350,8 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	 * @param {boolean} ctrl
 	 */
 	onKeyDown: function(keyCode, ctrl, meta, shift) {
-        // don't do anything if we are editing a text field
-        if (this.editingText){
+        // don't do anything if we are editing a text field or if compound object is read only
+        if (this.editingText || lore.ore.controller.checkReadOnly()){
              return;
         }
         var sel = this.currentSelection;
@@ -517,7 +519,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       // remove highlighting from previous selection
       for (var i = 0; i < oldMultiSelection.length; i++) {
     	  var fig = oldMultiSelection[i];
-    	  if (fig instanceof lore.ore.ui.graph.ResourceFigure || fig instanceof lore.ore.ui.graph.EntityFigure){
+    	  if (fig instanceof lore.ore.ui.graph.EntityFigure){
            oldMultiSelection[i].setSelected(false);
       	  }
       }
@@ -525,7 +527,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       // Always show line resize handles and highlighting when connection is selected
       if (sel && sel instanceof draw2d.Line) {
         this.showLineResizeHandles(sel);
-      } else if (sel instanceof lore.ore.ui.graph.ResourceFigure || sel instanceof lore.ore.ui.graph.EntityFigure) {
+      } else if (sel instanceof lore.ore.ui.graph.EntityFigure) {
         this.showResizeHandles(sel);
         sel.setSelected(true); 
       } 
@@ -666,11 +668,14 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                 icon: "chrome://lore/skin/icons/table_go.png",
                 scope: this,
                 handler: function(evt){
+                    if (lore.ore.controller.checkReadOnly()){
+                        return;
+                    }
                     var currentCO = lore.ore.cache.getLoadedCompoundObject();
                     var allfigures = this.getFiguresSorted();
                     for (var i = 0; i < allfigures.length; i++) {
                         var fig = allfigures[i];
-                        if (fig instanceof lore.ore.ui.graph.ResourceFigure || fig instanceof lore.ore.ui.graph.EntityFigure){
+                        if (fig instanceof lore.ore.ui.graph.EntityFigure){
                             fig.model.set("index",(i + 1));
                             fig.model.commit();
                         }
