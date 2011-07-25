@@ -97,6 +97,7 @@
 }
 
 .x-tree-node-bheader, .x-tree-node-bfooter {
+	color: #51666b;
 	font-size:smaller;
 	
 }
@@ -246,12 +247,11 @@
 
 .x-tree-col-text {
     padding:3px 3px 3px 5px;
-    font:normal 11px arial, tahoma, helvetica, sans-serif;
+    font-family: arial, tahoma, helvetica, sans-serif;
+	font-size:12px;
 }
 
 .x-tree-hd-text {
-    color:#888888;
-   
    overflow:hidden; 
    -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
@@ -260,7 +260,8 @@
     padding:3px 3px 3px 5px;
     white-space: normal;
 	
-    font:normal 11px arial, tahoma, helvetica, sans-serif;
+    font-size:12px;
+	font-family: arial, tahoma, helvetica, sans-serif;
 }
 /*
  * Any images displayed in the column text are shrunk to thumbnail size
@@ -300,12 +301,13 @@
 }
 #search-view .annoListing {
     cursor:pointer;
-    font-family: arial,tahoma,helvetica,sans-serif;
+    font-size: 12px;
+	font-family:arial, tahoma, helvetica, sans-serif;
 	padding:3px 5px 7px 5px;
 	margin: 2px;
 }
 #search-view .annoListingTitle {
-	font-weight: bold;
+	font-size:100%;
 }
 #search-view .annoURL, #search-view .annoListingMeta {
 	padding-left: 7px;
@@ -321,11 +323,7 @@
 #search-view .x-view-selected {
 	background-color: #dddddd;
 } 
-#search-view .annoListingMeta {
-	padding-left: 7px;
-	color: #51666b;
-	font-size:90%;
-}
+
 .anno-tag {
 	background-color: #E7E7E7;
 	border: 1px solid #D7D7D7;
