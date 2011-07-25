@@ -59,9 +59,19 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 	    	
 	    	this.on("activate", this.updateContent);  		     	    		   
 	    	this.on("rowcontextmenu", this.showContextMenu,this);
-            
-            // enable autoscrolling of list during drag and drop
-	    	this.on("render",function(){Ext.dd.ScrollManager.register(this.getView().getEditorParent())},this);
+
+	    	this.on("render",function(){
+                // enable autoscrolling of list during drag and drop
+                Ext.dd.ScrollManager.register(this.getView().getEditorParent())
+                // prevent drag and drop if read only
+                this.view.dragZone.onBeforeDrag = function(){
+                    if (lore.ore.controller.checkReadOnly()){
+                        return false;
+                    } else {
+                        return true;
+                    }
+                };
+            },this);
 	    	this.on("beforedestroy",function(){Ext.dd.ScrollManager.unregister(this.getView().getEditorParent());},this);
     	} catch (e){
     		lore.debug.ore("ResourceListPanel: init",e);
@@ -272,6 +282,9 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
             	icon: "chrome://lore/skin/icons/delete.png",
                 scope: this,
                 handler: function(evt){
+                    if (lore.ore.controller.checkReadOnly()){
+                        return;
+                    }
                 	lore.ore.controller.removeResource(this.tmpurl);
                 }
             });
