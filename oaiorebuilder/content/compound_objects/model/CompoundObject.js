@@ -272,7 +272,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	             if (this.rdftype && this.rdftype.value.toString() == lore.constants.RESOURCE_MAP){
 	                // TODO: check if it has been cached or load?
                     resourceData.representsCO = true;
-	             }  else if(this.rdftype && (this.rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || this.rdftype.value.toString().match('http://www.w3.org/2001/12/replyType'))){
+	             }  else if(this.rdftype && (this.rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || this.rdftype.value.toString().match('http://www.w3.org/2001/12/replyType') || this.rdftype.value.toString().match("http://www.w3.org/2001/03/thread"))){
                     resourceData.representsAnno = true;
                  }
 	             // TODO: Load aggregated resource predicates (properties and rels)
@@ -520,7 +520,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         
         for (var i = 0; i < allfigures.length; i++) {
             var fig = allfigures[i];
-            if (fig instanceof lore.ore.ui.graph.ResourceFigure || fig instanceof lore.ore.ui.graph.EntityFigure){
+            if (fig instanceof lore.ore.ui.graph.EntityFigure){
                 var figurl = lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(fig.url.toString())).replace(/&/g,'&amp;');
                 rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
                         + fullclosetag;
@@ -530,7 +530,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     var thePropValues = props[p];
                     for (var pi = 0; pi < thePropValues.length; pi++){
                         var theProp = thePropValues[pi]; 
-                        var mpropval = theProp.value.toString();
+                        var mpropval = (theProp.value? theProp.value.toString() : "");
                         var tagname = theProp.prefix + ":" + theProp.name;
                         resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag;
                         resourcerdf += serialize_property(tagname, mpropval, theProp.type, ltsymb, nlsymb);
@@ -556,7 +556,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 if (figRec && figRec.get('index')){
                     resourcerdf += ltsymb + "layout:orderIndex rdf:datatype=\"xsd:int\">" + figRec.get('index') + ltsymb + "/layout:orderIndex>" + nlsymb;
                 }
-                if (fig instanceof lore.ore.ui.graph.EntityFigure){
+                if (!(fig instanceof lore.ore.ui.graph.ResourceFigure)){
                     resourcerdf += ltsymb + "layout:isPlaceholder rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:isPlaceholder>";
                 }
                 resourcerdf += ltsymb + rdfdescclose + nlsymb;
