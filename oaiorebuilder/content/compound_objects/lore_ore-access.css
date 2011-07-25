@@ -17,7 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
-body {color: white; font-size: large;}
+body {color: #fffff6; background-color: transparent}
+h1, h2, h3 {color:#fffff6}
 .x-tree-multiline-node-details {
 	color:#FFFFF6;
 }
@@ -102,6 +103,14 @@ span.explorename {
 	overflow: hidden;
 	font-size: 100%;
 
+}
+.toggleIcon {
+	right: 3px;
+	top: 1px;
+}
+.menuIcon {
+	left: 4px;
+	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/access/panel/tool-sprites.gif);
 }
 .entity-preview {
     background-color: #343843;
