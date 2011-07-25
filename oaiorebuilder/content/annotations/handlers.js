@@ -761,8 +761,16 @@ lore.anno.ui.handleAddResultsToCO = function (recs) {
     try {
         for (var i = 0; i < recs.length; i++) {
             var rec = recs[i];
-            lore.global.ui.compoundObjectView.get(window.instanceId).addResource(rec.data.id, {
-                "rdf:type_0": rec.data.type
+            // temporary fix for solr search not returning type
+            var rdftype = rec.get("type");
+            if (!rdftype && !rec.get("resource")){
+                rdftype = "http://www.w3.org/2001/03/thread#Reply";
+            } else if (!rdftype) {
+                rdftype = "http://www.w3.org/2000/10/annotation-ns#Annotation";
+            }
+            lore.global.ui.compoundObjectView.get(window.instanceId).addResource(rec.get("id"), {
+                "rdf:type_0": rdftype,
+                "dc:title_0": rec.get("title")
             });
         }
     } catch (e) {
