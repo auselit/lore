@@ -91,6 +91,7 @@
           <xul:toolbarbutton id="save-rdf" oncommand="loreoverlay.saveRDF();" tooltiptext="&lore.saveRDFTip;"/>
           <xul:toolbarbutton id="create-co" tooltiptext="&lore.createCOTip;" oncommand="loreoverlay.createCompoundObject();"/>
           <xul:toolbarbutton id="copy-rdf" oncommand="loreoverlay.copyRDF();" tooltiptext="&lore.copyCOTip;"/>
+          <xul:toolbarbutton id="lock-rdf" oncommand="loreoverlay.lockRDF();" tooltiptext="&lore.lockCOTip;"/>
           <xul:toolbarbutton id="delete-rdf" oncommand="loreoverlay.deleteRDF();" tooltiptext="&lore.deleteRDFTip;"/>
           <xul:toolbarseparator id="tmsep"/> 
           <!--xul:toolbarbutton id="text-mining" tooltiptext="&lore.textMiningTip;"  oncommand="loreoverlay.doTextMining();"/-->

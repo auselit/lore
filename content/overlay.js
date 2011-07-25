@@ -501,6 +501,9 @@ try {
         saveRDF: function(){
             loreoverlay.coView().saveCompoundObjectToRepository();
         },
+        lockRDF: function(){
+           loreoverlay.coView().lockCompoundObjectInRepository(); 
+        },
         copyRDF: function(){
             loreoverlay.coView().copyCompoundObjectToNew();  
         },

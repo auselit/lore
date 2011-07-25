@@ -21,6 +21,7 @@
 <!ENTITY lore.layoutTip "Rearrange the resources in the compound object using automatic layout">
 <!ENTITY lore.createCOTip "Create a new (empty) compound object">
 <!ENTITY lore.copyCOTip "Copy contents of the current compound object to a new compound object">
+<!ENTITY lore.lockCOTip "Save and lock compound object to prevent further editing">
 <!ENTITY lore.saveMoreTip "Import/Export compound object as file">
 <!ENTITY lore.saveAnnotationsLabel "Export to Annotea RDF/XML">
 <!ENTITY lore.saveAnnotationsTip "Export annotations to an RDF/XML file">

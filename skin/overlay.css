@@ -62,6 +62,9 @@
    /*	list-style-image: url(chrome://lore/skin/icons/box-arrow.png);	*/
    list-style-image: url(chrome://lore/skin/icons/database_go.png);
 }
+#lock-rdf {
+    list-style-image: url(chrome://lore/skin/icons/lock.png);
+}
 #reset-co, #reset-anno {
 	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
 }
