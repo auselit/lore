@@ -107,11 +107,15 @@
 	opacity:.8;
     -moz-opacity:.8;
 }
-.menuIcon:hover {
+.toggleIcon {
+	right: -2px;
+	top: 0px; 
+}
+.menuIcon:hover, .toggleIcon:hover {
 	opacity:1;
     -moz-opacity:1;
 }
-.menuIcon img {
+.menuIcon img, .toggleIcon img {
 	width:15px;
 	height:15px;
 }
@@ -125,24 +129,18 @@
 	height:95%;padding:4px;overflow:auto;
 }
 .co-uri {
+	text-align:left;
 	padding-left: 3px;
 	color: #333333;
 	border-bottom: 1px solid #aeaeae;
     overflow: hidden;
 }
-.co-header {
-	background-color: #e5e5e5;
-	color: #333333;
-	border-top: 1px solid #aeaeae;
-	font-size: 11px;
-	text-align: center;
-	font-family: tahoma, arial, helvetica;
-}
+
 .entity-header {
+	overflow: hidden;
     background-color:#e5e5e5;
     color: #333333;
     font-size: 11px;
-	
     text-align: center;
     font-family: tahoma, arial, helvetica;
 	border-top-right-radius: 15px;
@@ -177,13 +175,21 @@
 .co-tl {
 	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left;
 }
-.entity {
+.entity_resource {
 	-moz-border-radius: 15px;
     border-radius: 15px;
 	background-color: transparent;
 	padding:0px;
 	text-align: center;
 	overflow: visible;
+}
+.resource_figure {
+	-moz-border-radius: 15px;
+    border-radius: 15px;
+    background-color: transparent;
+    padding:0px;
+    overflow: visible;
+	text:align:left;
 }
 .co-bl {
 	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left;
