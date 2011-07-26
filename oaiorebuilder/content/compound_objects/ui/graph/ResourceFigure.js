@@ -645,11 +645,11 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
     createPlusMinusIcon : function() {
         var ti = Ext.get(this.toggleIcon);
         if (this.isCollapsed()) {
-            ti.addClass("x-tool-minus");
-            ti.removeClass("x-tool-plus");
-        } else {
-            ti.removeClass("x-tool-minus");
             ti.addClass("x-tool-plus");
+            ti.removeClass("x-tool-minus");
+        } else {
+            ti.removeClass("x-tool-plus");
+            ti.addClass("x-tool-minus");
         }
         
     },
