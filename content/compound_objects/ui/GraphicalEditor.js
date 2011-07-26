@@ -300,7 +300,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         if (fig) {
             this.coGraph.setCurrentSelection(fig);
             fig.header.style.backgroundColor="yellow";
-            setTimeout(function(theFig) {theFig.header.style.backgroundColor = "#e5e5e5";}, 3200, fig);
+            setTimeout(function(theFig) {theFig.header.style.backgroundColor = "";}, 3200, fig);
             this.coGraph.showMask();
             this.coGraph.scrollTo(fig.x, fig.y);
             this.coGraph.hideMask();
