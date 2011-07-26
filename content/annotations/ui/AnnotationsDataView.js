@@ -51,7 +51,6 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
                     var record = this.getRecord(node);
                     
                     var ruri = record.get("resource");
-                    lore.debug.anno("record is " + ruri,record);
                     if (!ruri){ // replies currently don't have annotates field from solr
                         ruri = record.get("id"); // show annotation uri as fallback
                     }
