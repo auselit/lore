@@ -1,5 +1,27 @@
 LORE (Literature Object Re-use and Exchange)
-
+verion 0.90
+  LORE compatibility has been updated to support Firefox 6 and 7.
+  In addition to many minor bug fixes, the major changes in this release are:
+  
+  Annotations:
+    * Now supports keyword and advanced search (previously only supported advanced/exact search)
+        * Keyword search finds annotations matching the search terms in annotation bodies, creator and title fields. 
+        Search terms do not have to be exact to match.
+        * Annotation search results are now presented with a pager with sort options
+    * Updated appearance of annotations browse panel for accessibility reasons (larger, darker text).
+    
+  Compound Objects:
+    * Added support for Private Compound Objects : Private Compound  Objects are only visible to your account. Select the Private option from the add property menu to make a compound object private.
+    The eye icon is used to indicate whether compound objects are private in search and browse results.
+    * Added support for locking of Compound Objects : use the new Lock button in the toolbar to lock a compound object to prevent any further modifications being made.
+    * Added MovingImage and StillImage type options for property editor
+    * Improved graphical editor UI:
+        * Multiple connections between resources are fanned instead of overlapped
+        * Simplified appearance of resource nodes, improved appearance in high contrast mode
+        
+  Note to reviewers: I am in the process of replacing use of innerHTML and construction of content from HTML strings with DOM methods as recommended in the last review. I am investigating options for moving away from some of the JavaScript libraries that make extensive use of innerHTML.
+  
+  
 version 0.80
   LORE has been updated to be compatible with Firefox 4 and 5.
   Fixed problem with authentication if LORE was started before network was available.
