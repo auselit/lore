@@ -338,7 +338,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     * @return {}
     */
    addFigure : function(opts) {
-        if (lore.ore.controller.checkReadOnly()){
+        if (!opts.batch && lore.ore.controller.checkReadOnly()){
             return;
         }
         var fig = null;
