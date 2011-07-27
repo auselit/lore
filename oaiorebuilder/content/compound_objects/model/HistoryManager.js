@@ -54,7 +54,7 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
              this.mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
                 title, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
              this.mozannoService.setPageAnnotation(theuri, "lore/isPrivate", 
-                isPrivate, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
+                "" + isPrivate, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
              this.listManager.add(
 	            [
 	            {
@@ -88,17 +88,12 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
        */
       loadHistory : function (){
         try{
-		    var query = this.historyService.getNewQuery();
-            var privQuery = this.historyService.getNewQuery();
-            privQuery.annotation = "lore/isPrivate";
+		    var query = this.historyService.getNewQuery(); 
 		    query.annotation = "lore/compoundObject";
             var ios = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
 		    var options = this.historyService.getNewQueryOptions();
 		    options.sortingMode = options.SORT_BY_DATE_ASCENDING;
 		    options.includeHidden = true;
-            var privOptions = this.historyService.getNewQueryOptions();
-            privOptions.includeHidden = true;
-            
 		    //options.maxResults = 20;
 		    var result = this.historyService.executeQuery(query, options);
 		    result.root.containerOpen = true;
@@ -121,15 +116,10 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
                     'accessed': thedate
                 }
                 try{
-                    privQuery.uri = ios.newURI(uri, null, null);
-                    var isPrivResults = this.historyService.executeQuery(privQuery,privOptions);
-                    isPrivResults.root.containerOpen = true;
-                    if (isPrivResults.root.childCount > 0){ 
-                        node = isPrivResults.root.getChild(0);
-                        lore.debug.ore("isPrivResults",node);
-                        theCO.isPrivate = true;
-                    }
-                    isPrivResults.root.containerOpen = false;
+                	var aUri = ios.newURI(uri,null,null);
+                	if (this.mozannoService.pageHasAnnotation(aUri,"lore/isPrivate")){
+                		theCO.isPrivate = this.mozannoService.getPageAnnotation(aUri,"lore/isPrivate") == "true";
+                	} 
                 } catch (f){
                     lore.debug.ore("Problem getting isPrivate from history",f);
                 }
