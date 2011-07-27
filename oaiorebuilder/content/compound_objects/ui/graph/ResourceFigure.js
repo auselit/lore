@@ -225,7 +225,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                         {
                             tag: "a",
                             title: theurl,
-                            onclick: "lore.ore.controller.loadCompoundObjectFromURL(" + theurl + ");",
+                            onclick: "lore.global.util.launchTab('" + theurl + "',window);",
                             href: "#",
                             children: [theurl]
                         }
@@ -276,7 +276,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                         {
                             tag: "a",
                             title: theurl,
-                            onclick: "lore.ore.controller.loadCompoundObjectFromURL(" + theurl + ");",
+                            onclick: "lore.ore.controller.loadCompoundObjectFromURL('" + theurl + "');",
                             href: "#",
                             children: [theurl]
                         }
@@ -314,7 +314,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                         {
                             tag: "a",
                             title: theurl,
-                            onclick: "lore.ore.controller.loadCompoundObjectFromURL(" + displayUrl + ");",
+                            onclick: "lore.global.util.launchTab('" + displayUrl + "', window);",
                             href: "#",
                             children: [theurl]
                         }
