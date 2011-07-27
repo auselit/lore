@@ -569,13 +569,19 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         }
        
     },
-    /** Grey out rows that are not editable by the user */
+    /** Grey out rows that are not editable by the user (all of them if CO is readonly) */
     propNameRenderFunction: function(val, cell, rec){
         if (rec && rec.data && rec.data.id == "lorestore:isPrivate_0"){
             // display eye icon for private property
-            return "<img title='Private Compound Objects are not visible to other users' src='chrome://lore/skin/icons/eye.png' alt=''><span style='vertical-align:3px'> Private</span>";
+            return "<img title='Private Compound Objects are not visible to other users' src='chrome://lore/skin/icons/eye.png' alt=''><span style='"
+            + (lore.ore.controller.readOnly ? "color:grey;" : "") + "vertical-align:3px'> Private</span>";
         }
-        if (rec && rec.data && 
+        if (rec && rec.data && rec.data.id == "lorestore:isLocked_0"){
+            // display lock icon for locked property
+            return "<img src='chrome://lore/skin/icons/lock.png' alt=''><span style='"
+            + (lore.ore.controller.readOnly ? "color:grey;" : "") + "vertical-align:3px'> Locked</span>";
+        }
+        if (lore.ore.controller.readOnly || (rec && rec.data && 
                 (rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
                     || rec.data.id == "rdf:type_0"
                     || rec.data.id == "rdf:about_0" 
@@ -583,7 +589,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     || (this.id != 'nodegrid' 
                             && (rec.data.id == "dcterms:modified_0" ||
                             rec.data.id == "dcterms:created_0"))
-                    )){
+                    ))){
             
             return '<span style="color:grey;">' + val + '</span>';
         } else {
@@ -641,7 +647,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             return '<span title="' + escVal + '">' +  renderString + '</span>';
         }
         
-    	if (rec && rec.data && 
+    	if (lore.ore.controller.readOnly || (rec && rec.data && 
     			(rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
     				|| rec.data.id == "rdf:type_0"
     			    || rec.data.id == "rdf:about_0" 
@@ -649,7 +655,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     			    || (this.id != 'nodegrid' 
     			    		&& (rec.data.id == "dcterms:modified_0" ||
     			    		rec.data.id == "dcterms:created_0"))
-    			    )){
+    			    ))){
     		
     		return '<span title="' + escVal + '" style="color:grey;">' + val + '</span>';
     	} else {

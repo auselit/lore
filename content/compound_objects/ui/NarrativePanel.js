@@ -161,7 +161,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
             skipProps[ns["lorestore"]+"user"]=true;
             skipProps[ns["dc"]+"subject"]=true;
             skipProps[ns["dc"]+"format"]=true;
-            
+            skipProps[ns["lorestore"] + "isLocked"]=true;
             var sortedProps = o.getSortedArray(skipProps);
             for (var k = 0; k < sortedProps.length; k ++){
                 // don't display layout props: layout props may exist at this level if the user added the CO to itself
