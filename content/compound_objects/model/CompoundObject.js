@@ -98,8 +98,15 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             this.uri = newUri;
             // update aggregation id
             this.aggregationURI = newUri + "#aggregation";
+            
+            // remove lorestore properties : these may be different for the new object
+            var lsns = lore.constants.NAMESPACES["lorestore"];
+            this.properties.removeProperty(lsns + "isLocked",0);
+            this.properties.removeProperty(lsns + "user",0);
+            
             // remove ore:describes property
             this.properties.removeProperty(lore.constants.NAMESPACES["ore"]+ "describes",0);
+            
             this.properties.setProperty({
                id: lore.constants.NAMESPACES["rdf"]+ "about",
                ns: lore.constants.NAMESPACES["rdf"],
