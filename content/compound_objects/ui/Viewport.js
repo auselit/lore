@@ -128,7 +128,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             title : "Using Compound Objects",
                             tabTip: "View LORE documentation",
                             id : "welcome",
-                            scale: 1.0,
+                            scale: 0.90,
                             autoWidth : true,
                             autoScroll : true,
                             iconCls : "welcome-icon",
@@ -174,7 +174,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                                 this.scale = 1.0;
                                             }
                                              var body = Ext.get("about_co").dom.contentWindow.document.body
-                                             Ext.get(body).applyStyles("font-size:" + (this.scale * 100) + "%");
+                                             Ext.get(body).applyStyles("font-size:small");
                                         }
                                     });    
                                 }
@@ -203,7 +203,15 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                     text:'',
                     style: 'color:red'
                 },
-                ' '
+                ' ',
+                {
+                    xtype: 'button',
+                    hidden: true,
+                    id: 'lockButton',
+                    icon: 'chrome://lore/skin/icons/lock.png',
+                    tooltip: 'Compound Object is locked',
+                    scope: lore.ore.controller
+                }
             ]
         }, {
             region : "west",
