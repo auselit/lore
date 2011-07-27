@@ -610,6 +610,7 @@ try {
             if (this.prefs) {
                 // FIXME: should pass base URL and get annotation code to add /annotea
                 var annoserver = this.prefs.getCharPref("annoserver");
+                var solr = this.prefs.getCharPref("solr");
                 var dccreator = this.prefs.getCharPref("dccreator");
                 var high_contrast = this.prefs.getBoolPref("high_contrast");
                 var disable = this.prefs.getBoolPref("disable_annotations");
@@ -621,6 +622,7 @@ try {
                 loreoverlay.annoView().setPrefs({
                     creator: dccreator,
                     url: annoserver + "/annotea",
+                    solr: solr,
                     cacheTimeout: timeout,
                     loginUrl: loginUrl,
                     disable: disable,
