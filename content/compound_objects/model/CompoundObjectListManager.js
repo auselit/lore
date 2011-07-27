@@ -53,6 +53,8 @@ lore.ore.model.CompoundObjectListManager = function(){
                         "type" : "date"
                     }, {
                         "name" : "match"
+                    }, {
+                        "name" : "isPrivate"
                     }]
        }),
        "browse" : new Ext.ux.data.PagingJsonStore({
@@ -83,6 +85,8 @@ lore.ore.model.CompoundObjectListManager = function(){
                         "type" : "date"
                     }, {
                         "name" : "match"
+                    }, {
+                        "name" : "isPrivate"
                     }]
        }),
         "history" : new Ext.ux.data.PagingJsonStore({
@@ -113,6 +117,8 @@ lore.ore.model.CompoundObjectListManager = function(){
                         "type" : "date"
                     }, {
                         "name" : "match"
+                    }, {
+                        "name" : "isPrivate"
                     }]
        })
 	};
