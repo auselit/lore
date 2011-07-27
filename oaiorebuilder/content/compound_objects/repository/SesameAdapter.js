@@ -355,7 +355,10 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                     props.title = nodeVal;
                 } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
                     props.creator = nodeVal;
-                } else if (attr.nodeValue == 'm' && nodeVal){ // dcterms:modified
+                } else if (attr.nodeValue == 'priv' && nodeVal) { // isPrivate
+                    props.isPrivate = nodeVal;
+                }
+                else if (attr.nodeValue == 'm' && nodeVal){ // dcterms:modified
                     props.modified = nodeVal;
                     try {
                         var modDate = Date.parseDate(props.modified,'c') || Date.parseDate(props.modified,'Y-m-d');
