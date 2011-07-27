@@ -51,8 +51,8 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
                     fields: ['name', 'desc'],
                     data : (this.id == 'hpager'? [['title', 'Title'],['accessed','Last accessed']] : [['title', 'Title'],['creator','Creator'],['modified', 'Last Modified']])
                 }),
-                listeners: {
-                    'select': {fn:this.sortCompoundObjects, scope:this}
+                listeners: { 
+                	'select': {fn:function(combo){this.sortCompoundObjects(combo.getValue());}, scope:this}
                 }
         }
         ];
@@ -79,10 +79,13 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
         this.bindStore(this.store, true);
     },
     /** Sorts compound objects */
-    sortCompoundObjects: function(){
-        var v = this.items.last().getValue();
-        this.store.sort(v, (v == 'title' || v == 'creator') ? 'asc' : 'desc');
-        this.moveFirst();
+    sortCompoundObjects: function(v){
+    	try{
+	        this.store.sort(v, (v == 'title' || v == 'creator') ? 'asc' : 'desc');
+	        this.moveFirst();
+    	} catch (e){
+    		lore.debug.ore("Error in sortCompoundObjects",e);
+    	}
     },
     /**
      * Fix paging after clear: reset back to first page
