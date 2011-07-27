@@ -4,6 +4,7 @@ pref("extensions.lore.rdfrepos", "http://austlit.edu.au/auselit/ore/");
 pref("extensions.lore.rdfrepostype", "lorestore");
 pref("extensions.lore.coeditor","grapheditor");
 pref("extensions.lore.tmkey","");
+pref("extensions.lore.solr", "http://austlit.edu.au/solr");
 pref("extensions.lore.annoserver", "http://austlit.edu.au/auselit");
 pref("extensions.lore.annotationmode", false);
 pref("extensions.lore.DBG_LORE_UI", false);

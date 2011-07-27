@@ -217,6 +217,11 @@ lore.anno.ui.handlePrefsChange = function (args) {
     if (abtframe){
         lore.global.util.setHighContrast(abtframe.dom.contentWindow, args.high_contrast);
     }
+    try{
+    	Ext.getCmp('solrsearch').ds.proxy.setUrl(args.solr + "/select",true);
+    } catch (e){
+    	lore.debug.anno("Error updating solar pref",e);
+    }
 };
 
 /**
