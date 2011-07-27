@@ -148,17 +148,23 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 							lore.ore.controller.loadCompoundObject(xhr);
 							callback(location);
 						} else {
-							lore.ore.ui.vp.error('Unable to save to repository' + xhr.responseText);
-							lore.debug.ore("Unable to save to repository", {
+							lore.ore.ui.vp.error('Unable to save to repository: ' + xhr.statusText);
+							lore.debug.ore("Unable to save compound object", {
 										xhr : xhr,
 										headers : xhr.getAllResponseHeaders()
 							});
+                            
+                            var msg = '<b>' + xhr.statusText + '</b>'  
+                                + '<br><br>If an error has occurred, please save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team with details of the error for further assistance.'
+                                + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.global.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';
+                                
 							Ext.Msg.show({
-								title : 'Problem saving compound object',
-								buttons : Ext.MessageBox.OKCANCEL,
-								msg : ('There was an problem saving to the repository: '
-										+ xhr.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+								title : 'Unable to save compound object',
+								buttons : Ext.MessageBox.OK,
+                                defaultTextHeight: 100,
+								msg : msg
 							});
+                            
 						}
 					}
 				};
@@ -189,15 +195,19 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
                     if (xhr.status == 204) { // OK
                         callback(remid);
                     } else {
-                        lore.ore.ui.vp.error('Unable to delete compound object' + xhr.responseText);
+                        lore.ore.ui.vp.error('Unable to delete compound object' + xhr.statusText);
+                         
                         lore.debug.ore("Unable to delete compound object", {
                             xhr : xhr,
                             headers : xhr.getAllResponseHeaders()
                         });
+                        var msg = '<b>' + xhr.statusText + '</b>'  
+                                + '<br><br>If an error has occurred please contact the Aus-e-Lit team with details of the error for further assistance.'
+                                + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.global.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';  
                         Ext.Msg.show({
-                            title : 'Problem deleting compound object',
-                            buttons : Ext.MessageBox.OKCANCEL,
-                            msg : ('There was an problem deleting the compound object: ' + xhr.responseText)
+                            title : 'Unable to delete compound object',
+                            buttons : Ext.MessageBox.OK,
+                            msg : msg
                         });
                     }
 	            }
