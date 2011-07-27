@@ -769,10 +769,18 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} opt
      */
     afterLoadCompoundObjectFail : function(resp,opt){
-        lore.debug.ore("Unable to load compound object " + opt.url, resp);
-        lore.ore.ui.vp.error("Unable to load compound object");
-        lore.ore.controller.createCompoundObject(true);
-        Ext.Msg.hide();
+    	lore.debug.ore("Unable to load compound object " + opt.url, resp);
+    	if (resp.status == 403){
+    		Ext.Msg.show({
+    			title : 'Permission denied',
+                buttons : Ext.MessageBox.OK,
+                msg : "You are not logged in or your account does have permssion to view this private compound object.<br>Please log in with the account that was used to create the compound object."
+    		});
+    	} else {
+	        lore.ore.ui.vp.error("Unable to load compound object: " + resp.statusText);
+	        lore.ore.controller.createCompoundObject(true);
+	        Ext.Msg.hide();
+    	}
     },
     /** Add saved compound object to the model lsits
       * @param {String} remid The compound object that was saved */
