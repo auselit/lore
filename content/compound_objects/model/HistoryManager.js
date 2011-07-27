@@ -40,7 +40,7 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
      * @param {} remurl The URI of the compound object
      * @param {} title The title of the compound object
      */
-      addToHistory: function (remurl, title){
+      addToHistory: function (remurl, title, isPrivate){
         try {
 		     var theuri = Components.classes["@mozilla.org/network/io-service;1"].
 		         getService(Components.interfaces.nsIIOService).
@@ -53,12 +53,15 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
              // Use Firefox annotation to mark it as a compound object
              this.mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
                 title, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
+             this.mozannoService.setPageAnnotation(theuri, "lore/isPrivate", 
+                isPrivate, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
              this.listManager.add(
 	            [
 	            {
 	                'uri': remurl,
 	                'title': title,
-	                'accessed': visitDate
+	                'accessed': visitDate,
+                    'isPrivate': isPrivate
 	            }
                 ],
 	            'history'
@@ -86,15 +89,23 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
       loadHistory : function (){
         try{
 		    var query = this.historyService.getNewQuery();
+            var privQuery = this.historyService.getNewQuery();
+            privQuery.annotation = "lore/isPrivate";
 		    query.annotation = "lore/compoundObject";
+            var ios = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
 		    var options = this.historyService.getNewQueryOptions();
 		    options.sortingMode = options.SORT_BY_DATE_ASCENDING;
 		    options.includeHidden = true;
+            var privOptions = this.historyService.getNewQueryOptions();
+            privOptions.includeHidden = true;
+            
 		    //options.maxResults = 20;
 		    var result = this.historyService.executeQuery(query, options);
 		    result.root.containerOpen = true;
 		    var count = result.root.childCount;
             var coList = [count];
+            var annotationService = Components.classes["@mozilla.org/browser/annotation-service;1"]
+                        .getService(Components.interfaces.nsIAnnotationService);
 		    for (var i = 0; i < count; i++) {
 		        var theobj = {};
 		        var node = result.root.getChild(i);
@@ -104,11 +115,25 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
 		        var lastVisitedTimeInMicrosecs = node.time;
 		        var thedate = new Date();
 		        thedate.setTime(lastVisitedTimeInMicrosecs / 1000);
-		        coList[i] = {
+                var theCO = {
                     'uri': uri,
                     'title': title,
                     'accessed': thedate
-		        };
+                }
+                try{
+                    privQuery.uri = ios.newURI(uri, null, null);
+                    var isPrivResults = this.historyService.executeQuery(privQuery,privOptions);
+                    isPrivResults.root.containerOpen = true;
+                    if (isPrivResults.root.childCount > 0){ 
+                        node = isPrivResults.root.getChild(0);
+                        lore.debug.ore("isPrivResults",node);
+                        theCO.isPrivate = true;
+                    }
+                    isPrivResults.root.containerOpen = false;
+                } catch (f){
+                    lore.debug.ore("Problem getting isPrivate from history",f);
+                }
+		        coList[i] = theCO;
 		    }
             if (count > 0){
                 this.listManager.add(coList, 'history');
