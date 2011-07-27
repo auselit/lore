@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>lore@maenad.itee.uq.edu.au</em:id>
     <em:name>lore</em:name>
-    <em:version>0.80</em:version>
+    <em:version>0.90</em:version>
     <em:unpack>true</em:unpack>
     <em:creator>UQ ITEE eResearch</em:creator>
     <em:type>2</em:type>
