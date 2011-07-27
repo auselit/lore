@@ -77,7 +77,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     		
             // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
-            if (currentCO && currentCO.isDirty()){
+            if (currentCO && currentCO.isDirty() && !this.readOnly){
                 Ext.Msg.show({
                     title : 'Save Compound Object?',
                     buttons : Ext.MessageBox.YESNOCANCEL,
@@ -186,6 +186,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 					.where('?rem ore:describes ?aggre');
 			var aggreurl, remurl;
 			var res = remQuery.get(0);
+            var isPrivate = false;
 			if (res) {
 				remurl = res.rem.value.toString();
 				aggreurl = res.aggre.value.toString();
@@ -194,11 +195,17 @@ Ext.apply(lore.ore.Controller.prototype, {
 							format : 'application/rdf+xml',
 							content : rdfDoc
 				});
-				
+				if (tmpCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isLocked")){
+                    lore.ore.controller.setLockCompoundObject(true);
+                } else {
+                    lore.ore.controller.setLockCompoundObject(false);
+                }
+                isPrivate = tmpCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isPrivate");
 				lore.ore.cache.add(remurl, tmpCO);
 				lore.ore.cache.setLoadedCompoundObjectUri(remurl);
 				lore.ore.cache.setLoadedCompoundObjectIsNew(false);
                 lore.ore.controller.bindViews(tmpCO);
+
 			} else {
 				lore.ore.ui.vp.warning("No compound object found");
 				lore.debug.ore("no remurl found in RDF", loadedRDF);
@@ -341,7 +348,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 				if (!title) {
 					title = "Untitled";
 				}
-				lore.ore.historyManager.addToHistory(remurl, title);
+				lore.ore.historyManager.addToHistory(remurl, title, (isPrivate && isPrivate.value == true ? true: false));
 			}
 			if (lore.ore.ui.topView
 					&& lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]) {
@@ -444,6 +451,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             if (currentCO && currentCO.isDirty()){
                 
             }
+            this.setLockCompoundObject(false);
             // reuse existing model object, updating uri to new
             currentCO.copyToNewWithUri(newURI);
             lore.ore.cache.setLoadedCompoundObjectUri(newURI);
@@ -515,7 +523,8 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} dontRaise
      */
     newCO : function(dontRaise){
-    if (lore.ore.ui.topView){
+        this.setLockCompoundObject(false);
+        if (lore.ore.ui.topView){
             lore.ore.ui.topView.hideAddIcon(false);
         }
         var cDate = new Date();
@@ -596,6 +605,90 @@ Ext.apply(lore.ore.Controller.prototype, {
                 }
             }
         });
+    },
+    lockCompoundObjectInRepository: function(){
+        if (!lore.ore.reposAdapter instanceof lore.ore.repos.RestAdapter){
+            Ext.Msg.show({
+                title: "Not supported",
+                msg: "Locking of compound objects is only supported for lorestore repositories.",
+                buttons: Ext.MessageBox.OK
+            });
+            return;
+        }
+        
+        if (lore.ore.controller.locked){
+                lore.ore.ui.vp.warning("Compound object is already locked!");
+                return;
+        }
+        var remid = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
+        if(!remid.match(lore.ore.reposAdapter.idPrefix)){
+            Ext.Msg.show({
+                title: "Save disabled",
+                msg: "Saving (and locking) is disabled for this compound object because it is from a different repository than your default repository. <br><br>To enable saving for this compound object, please change the <i>Repository Acess URL</i> in the Compound Objects preferences.",
+                buttons: Ext.MessageBox.OK
+            });
+            return;
+        }
+        
+        var title = lore.ore.ui.grid.getPropertyValue("dc:title")
+            || lore.ore.ui.grid.getPropertyValue("dcterms:title");
+        // Prompt user to enter title if untitled
+        if (!title || title.trim() == ""){  
+            Ext.Msg.show({
+                title: "Enter Title",
+                msg: "Please enter a title for the compound object:",
+                prompt: true,
+                buttons: Ext.MessageBox.OK,
+                closable: false,
+                scope: this,
+                fn: function(b, t){
+                    try{
+                    title = t || "Untitled";
+                    // update the title in the model
+                    var currentCO = lore.ore.cache.getLoadedCompoundObject();
+                    var propData = {
+                        id: lore.constants.NAMESPACES["dc"] + "title", 
+                        ns: lore.constants.NAMESPACES["dc"], 
+                        name: "title", 
+                        value: title, 
+                        prefix: "dc",
+                        type: "plainstring"
+                    };
+                    currentCO.properties.setProperty(propData,0);
+                    lore.ore.coListManager.updateCompoundObject(
+                            lore.ore.cache.getLoadedCompoundObjectUri(),
+                            {title: title}
+                    );
+                    if (title) this.lockCompoundObjectInRepository();
+                    } catch (ex){
+                        lore.debug.ore("Problem setting title",ex);
+                    }
+                }
+                
+            });  
+        } else {
+            Ext.Msg.show({
+                title : 'Lock Compound Object',
+                buttons : Ext.MessageBox.OKCANCEL,
+                msg : 'Are you sure you wish to lock this compound object:<br/><br/>' + title + "<br/><br><br>Locked compound objects cannot be modified. <br>This action cannot be undone.",
+                fn : function(btn, theurl) {
+                    if (btn == 'ok') {
+                        var currentCO = lore.ore.cache.getLoadedCompoundObject();
+                        // TODO: add isLocked property
+                        currentCO.properties.setProperty({
+                           id: lore.constants.NAMESPACES["lorestore"]+ "isLocked",
+                           ns: lore.constants.NAMESPACES["lorestore"],
+                           name: "isLocked",
+                           value: true,
+                           prefix: "lorestore",
+                           type: "boolean"
+                        });
+                        lore.ore.reposAdapter.saveCompoundObject(currentCO,lore.ore.controller.afterSaveCompoundObject);
+                    }
+                }
+            });
+        }
+        
     },
     /**
     * Save the compound object to the repository - prompt user to confirm
@@ -686,6 +779,13 @@ Ext.apply(lore.ore.Controller.prototype, {
     afterSaveCompoundObject : function(remid){
         this.isDirty = false;
         this.wasClean = true;
+        // Set lock
+        var currentCO = lore.ore.cache.getLoadedCompoundObject();
+        if (currentCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isLocked")){
+            lore.ore.controller.setLockCompoundObject(true);
+        } else {
+            lore.ore.controller.setLockCompoundObject(false);
+        }
         Ext.getCmp('currentCOSavedMsg').setText('');
         lore.ore.cache.setLoadedCompoundObjectIsNew(false);
         var title = lore.ore.ui.grid.getPropertyValue("dc:title") 
@@ -701,7 +801,8 @@ Ext.apply(lore.ore.Controller.prototype, {
         if (lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]){
            lore.ore.coListManager.add([coopts]);
         }
-        lore.ore.historyManager.addToHistory(remid, title);  
+        var priv = currentCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isPrivate");
+        lore.ore.historyManager.addToHistory(remid, title, (priv && priv.value == true ? true : false));  
     },
     /** Prompt for location to save serialized compound object and save as file
     * @param {String} format The format to which to serialize (rdf, wordml, foxml or trig)
@@ -767,7 +868,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             }
         } else {
             var resourceListView = Ext.getCmp("remlistview");
-            if (obj instanceof lore.ore.ui.graph.ResourceFigure || obj instanceof lore.ore.ui.graph.EntityFigure){
+            if (obj instanceof lore.ore.ui.graph.EntityFigure){
                 resourceListView.selectResource(obj.url);
             } else {
                 // could be a connection or nothing selected: clear resource list
@@ -1026,7 +1127,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             if (currentCOMsg) {
             	currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false);
             }
-            if (currentCO.isDirty()){
+            if (currentCO.isDirty() && !this.readOnly){
                 //lore.debug.ore("setRepos: dirty");
                 Ext.Msg.show({
                     title : 'Save Compound Object?',
@@ -1137,22 +1238,19 @@ Ext.apply(lore.ore.Controller.prototype, {
     },
     locked : false,
     readOnly : false,
-    toggleLockCompoundObject: function(b){
-        try{
-        lore.debug.ore("pressed lock button",[this,b]);
-        if (this.locked){
+    setLockCompoundObject: function(locked){
+        var b = Ext.getCmp('lockButton');
+        if (!locked){
             this.locked = false;
             this.readOnly = false;
-            b.setIcon("chrome://lore/skin/icons/lock-unlock.png");
+            b.hide();
         } else {
             this.locked = true;
             this.readOnly = true;
-            b.setIcon("chrome://lore/skin/icons/lock.png");
+            b.show();
         }
-        
-        } catch(e){
-            lore.debug.ore("Problem",e);
-        }
+        // force CO properties to re-render (grey color indicates readOnly)
+        lore.ore.ui.grid.getView().refresh();
     },
     checkReadOnly: function(){
         if (this.readOnly){
