@@ -13,6 +13,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                     '<div style="float:left;padding:2px;">',
                     '<tpl if="lore.ore.reposAdapter && uri.match(lore.ore.reposAdapter.idPrefix)"><img src="chrome://lore/skin/icons/oaioreicon-sm.png"></tpl>',
                     '<tpl if="lore.ore.reposAdapter && !uri.match(lore.ore.reposAdapter.idPrefix)"><img src="chrome://lore/skin/icons/oaioreicon-grey.png"></tpl>',
+                    '<tpl if="isPrivate"><img style="float:left;position:absolute;left:11px" src="chrome://lore/skin/icons/eye.png"></tpl>',
                     '</div>',
                     '<div>{title}</div>',
                     '<div class="detailText">{creator}',
