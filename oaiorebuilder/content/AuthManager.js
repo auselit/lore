@@ -163,7 +163,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
     	} catch (e) {
     		lore.debug.ui("AuthManager:checkAuthentication failed", e);
     	}
-        lore.debug.ui("User is not authorised");
+        lore.debug.ui("User is not authorised",principal);
         this.fireSignedOut();
         if (typeof options.callIfNotAuthorised == 'function') {
             options.callIfNotAuthorised();
