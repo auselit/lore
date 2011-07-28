@@ -30,8 +30,10 @@
 	opacity: 0;
 	/*filter: alpha(opacity=0);*/
 }
-
+.loreAnnoTip {
+    z-index: 99999;
+}
 .loreAnnoTip img {
 	max-width: 256px;
-	height:auto
+	height:auto;
 }
