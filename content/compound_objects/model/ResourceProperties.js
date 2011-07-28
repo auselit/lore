@@ -72,16 +72,19 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
         return this.data;
       }
       var propValues = this.data[property];
-      var theProp = propValues[index];
-      if (propValues && propValues.length > index){
-        propValues.splice(index,1);
-        // remove from data if there are no other values for this property
-        if (propValues.length == 0) {
-            delete this.data[property];
-        }
-        this.fireEvent('propertyRemoved', theProp, index);
+      if (propValues){
+          var theProp = propValues[index];
+          if (propValues && propValues.length > index){
+            propValues.splice(index,1);
+            // remove from data if there are no other values for this property
+            if (propValues.length == 0) {
+                delete this.data[property];
+            }
+            this.fireEvent('propertyRemoved', theProp, index);
+          }
       }
       return this.data;
+      
     },
     /** Get property with given index 
      * @param {String} property URI of the property
