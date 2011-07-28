@@ -327,7 +327,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 					} 
 				}
 			});
-			// FIXME: #210 Temporary workaround to set drawing area size on load
+			// Temporary workaround to set drawing area size on load
 			// problem still exists if a node is added that extends the boundaries
 			lore.ore.ui.graphicalEditor.coGraph.resizeMask();
 

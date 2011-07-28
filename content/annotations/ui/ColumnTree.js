@@ -314,9 +314,7 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
                     + n.links[i].iconCls + "' /></a><span class='left-spacer4' />";
         }
         
-        // Hack to bypass the default tree node model's interception of child node clicks.
-        // FIXME: I'm not sure this is secure enough, what if an annotation already has other javascript
-        // Hopefully firefox has cleaned it already, but should probably check
+        // Bypass the default tree node model's interception of child node clicks.
         var txt = n.text.replace(/<A /g,'<A onclick="return false;" ');
         
         var buf = ['<li class="x-tree-node"><div ext:tree-node-id="', n.id, 
