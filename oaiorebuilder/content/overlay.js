@@ -608,7 +608,6 @@ try {
         
         loadAnnotationPrefs: function(){
             if (this.prefs) {
-                // FIXME: should pass base URL and get annotation code to add /annotea
                 var annoserver = this.prefs.getCharPref("annoserver");
                 var solr = this.prefs.getCharPref("solr");
                 var dccreator = this.prefs.getCharPref("dccreator");

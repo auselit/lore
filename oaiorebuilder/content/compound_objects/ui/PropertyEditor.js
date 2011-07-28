@@ -351,7 +351,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         });
         lore.ore.ui.PropertyEditor.superclass.initComponent.call(this,config);   
         // hide/show the properties when the collapse/expand button in the toolbar is triggered
-        // FIXME: collapse/expand getting out of sync when CO is loaded
         this.on('beforecollapse', function(p){
             p.body.setStyle('display','none');
         });
