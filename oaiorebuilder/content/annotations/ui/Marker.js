@@ -239,7 +239,7 @@ lore.anno.ui.Marker.prototype = {
                 backgroundColor : "#fcfcfc",
                 color : "#51666b",
                 border : '1.5px solid darkgrey',
-                zIndex : "3",
+                zIndex : "99999",
                 fontFamily : 'sans-serif',
                 minWidth : "250px"}
 			});
