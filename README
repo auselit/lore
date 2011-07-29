@@ -1,38 +1,58 @@
+LORE (Literature Object Re-use and Exchange)
 
-LORE makes use of the following libraries:
+LORE is a Firefox extension developed at the UQ ITEE eResearch Lab through the 
+Aus-e-Lit project for publishing and authoring compound objects and annotations.
 
-Silk icons : Creative Commons Attribution 2.5 license : http://www.famfamfam.com/lab/icons/silk/
-Ext JS 3.2: GPL 3.0 : http://extjs.com/
-
-Draw2d: http://draw2d.org/
-(wz_jsgraphics is used by draw2d)
-
-jit: http://thejit.org/
-
-rdfquery: http://code.google.com/p/rdfquery/
-
-jquery, jquery imgareaselect and simpletip
-
-From DIAS-B project:
-Modified version of nsXPointerServer : MPL 1.1/GPL 2.0/LGPL 2.1 
-dannotate : GPL 3.0 : http://maenad.itee.uq.edu.au/dias-b/dannotate.html
+http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/
 
 DISTRIBUTION
 LORE is distributed an an XPI file (Firefox extension) via the Mozilla addons site:
 https://addons.mozilla.org/en-US/firefox/addon/lore/
 
-
 DEVELOPMENT
-I use eclipse with Spket IDE http://spket.com/ for development of LORE
+
+An Aptana / Eclipse project file is provided in the repository, however any JavaScript, XML and HTML 
+editing environment would be suitable for development, for example Spket IDE http://spket.com/
+
 Use ant (dist-nojar) to build the XPI file
 
 You can point Firefox directly at the eclipse project during development.
 We recommend setting up a new profile for development (see https://developer.mozilla.org/en/Setting_up_extension_development_environment)
-Create a text file named lore@maenad.itee.uq.edu.au in your Firefox profile extension directory eg
-C:\Documents and Settings\(username)\Application Data\Mozilla\Firefox\Profiles\(profile name)\extensions
-The contents of that text file should be the location of the oaiorebuilder project eg
-C:\Workspace\oaiorebuilder
+Create a text file named lore@maenad.itee.uq.edu.au in your Firefox profile extension directory
+On Windows this will typically be:
+ C:\Documents and Settings\<username>\Application Data\Mozilla\Firefox\Profiles\<profile name>\extensions
+On Mac OSX:
+ /Users/<your username>/Library/Application Support/Firefox/Profiles/<profile name>/extensions
+ 
+The contents of that text file should be the file path to the project e.g.
+C:\Workspace\lore
 
-If you want to see LORE debug output, you'll need Firebug and Chromebug installed in your development profile.
-The X in Firebug is important - it has tracing enabled. You can get it from here:
-http://getfirebug.com/releases/firebug/
+If you want to see LORE debug output, you'll need Firebug with Tracing installed in your development profile.
+Chromebug (from the same site) can also be used for debugging/inspecting the extension.
+
+firebug-1.7X.0b4 is the most recent version with tracing available from
+http://getfirebug.com/releases/firebug/1.7X/
+Firebug 1.7X is only officially compatible with Firefox up to version 4. 
+The tracing console has recently been split into a separate addon for versions 5 onwards.
+We are in the process of switching to the new tracing console. 
+In the meantime, we unpack Firebug 1.7X and edit the install.rdf file so that it can be installed on Firefox 5 and later.
+
+Some tests are provided which can be run with Mozmill (Mozmill supports both unit tests and functional UI testing) https://developer.mozilla.org/en/Mozmill_Tests
+Install the Mozmill extension: https://addons.mozilla.org/en-US/firefox/addon/9018
+Tests are expressed in JavaScript and can be loaded and run via the Mozmill IDE
+
+ACKNOWLEDGEMENTS:
+
+LORE makes use of the following JavaScript libraries:
+Ext JS 3.2 (GPL 3.0) : http://extjs.com/
+rdfquery (MIT): http://code.google.com/p/rdfquery/
+OpenJacob draw2d (uses wz_jsgraphics) (LGPL): http://draw2d.org/
+jit (BSD): http://thejit.org/
+UUID (MIT/GPL): http://www.broofa.com/Tools/Math.uuid.js
+jquery, jquery imgareaselect and simpletip (MIT/GPL)
+Modified version of nsXPointerServer : MPL 1.1/GPL 2.0/LGPL 2.1 from 
+DIAS-B dannotate (GPL 3.0) : http://maenad.itee.uq.edu.au/dias-b/dannotate.html
+
+Some of the icons used in LORE are from:
+Silk icons by FAMFAMFAM : Creative Commons Attribution 2.5 license : http://www.famfamfam.com/lab/icons/silk/
+Fugue icons by Yusuke Kamiyamane : Creative Commons Attributes 3.0 license : http://p.yusukekamiyamane.com/
