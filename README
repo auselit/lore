@@ -11,9 +11,9 @@ https://addons.mozilla.org/en-US/firefox/addon/lore/
 
 DEVELOPMENT
 
-An Aptana / Eclipse project file is provided in the repository, however any JavaScript, XML and HTML 
-editing environment would be suitable for development, for example Spket IDE http://spket.com/
-
+We use Eclipse with Spket IDE (http://spket.com/), but any JavaScript, XML and HTML editor
+would be suitable for development.
+ 
 Use ant (dist-nojar) to build the XPI file
 
 You can point Firefox directly at the eclipse project during development.
