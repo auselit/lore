@@ -575,18 +575,6 @@ util = {
 	},
 	
 	/**
-	 * Create a dom node configure to be ignored by the xpath parser 
-	 * @param {String} tagName
-	 * @param {Document} targetDocument
-	 * @return {Node} Created dom node. Not attached to the document.
-	 */
-	domCreate: function (tagName, targetDocument) {
-		var domNode = targetDocument.createElement(tagName);
-		util.ignoreElementForXP ( domNode);
-		return domNode;
-	},
-	
-	/**
 	 * Mark element to be ignored when xpointer library is searching through dom during node resolution
 	 * @param {Object} domNode
 	 */
@@ -929,8 +917,14 @@ util = {
         iframe.setAttribute("collapsed", true);
         iframe.style.visibility = "visible";
 		iframe.setAttribute("transparent", true);
-        // clicks open the resource in the main browser
-        iframe.setAttribute("onclick","var e = arguments[0];lore.global.util.launchTab(this.getAttribute('src').replace('&printPreview=y',''),window);");
+        // click opens the resource in the main browser
+        iframe.addEventListener("click",function(e){
+            try{
+                util.launchTab(this.getAttribute('src').replace('&printPreview=y',''),this.contentWindow);
+            } catch (ex){
+                debug.ui("iframe onclick",ex);
+            }
+        },false);
         return iframe;
     },
     /**

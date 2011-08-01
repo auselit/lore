@@ -57,10 +57,12 @@ lore.anno.ui.Marker.prototype = {
 			
 			var doc = this.target;
 			// add span to doc body
-			var _div = $(lore.global.util.domCreate('span', doc));
+            var _span = doc.createElement('span');
+            lore.global.util.ignoreElementForXP(_span);
+            _span = $(_span);
 			var _parent = $('body',doc);
-			_parent.append(_div);
-			this.data.nodes = [_div.get(0)];
+			_parent.append(_span);
+			this.data.nodes = [_span.get(0)];
 			this.update(); 
 			
 		} else if (this.isStringMarker()) {

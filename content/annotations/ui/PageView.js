@@ -530,8 +530,8 @@ lore.anno.ui.PageView.prototype = {
 				});
 				
 			});
-	 					
-			var spanEl = lore.global.util.domCreate('span', doc);
+	 		var spanEl = doc.createElement('span');
+            lore.global.util.ignoreElementForXP(spanEl);
 			spanEl.id = 'lore_image_highlighting_inserted';
 			spanEl.style.display = "none";
 			$('body', doc).append(spanEl);
@@ -681,12 +681,15 @@ lore.anno.ui.PageView.prototype = {
 			var doc = cw.document;
 			var r = doc.createRange();
 			r.selectNode(z.source);
-			var span = lore.global.util.domCreate("span", doc);
+            var span = doc.createElement('span');
+            lore.global.util.ignoreElementForXP(span);
 			r.surroundContents(span);
 																	
 			this.page.metaSelections.push(span);
-			var marker = lore.global.util.domCreate("img", doc);
-			
+
+			var marker = doc.createElement('img');
+            lore.global.util.ignoreElementForXP(img);
+            
 			marker.src = isObject ? lore.constants.icons.objectIcon
 								  : lore.constants.icons.relIcon;
 			marker.setAttribute("rdfIndex", i);
