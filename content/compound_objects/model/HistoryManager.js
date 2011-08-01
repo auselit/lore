@@ -42,35 +42,35 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
      */
       addToHistory: function (remurl, title, isPrivate){
         try {
-		     var theuri = Components.classes["@mozilla.org/network/io-service;1"].
-		         getService(Components.interfaces.nsIIOService).
-		         newURI(remurl, null, null);
-		     
-		     // Add it to browser history
-		     var visitDate = new Date();
-		     var browserHistory = this.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
-		     browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
+             var theuri = Components.classes["@mozilla.org/network/io-service;1"].
+                 getService(Components.interfaces.nsIIOService).
+                 newURI(remurl, null, null);
+             
+             // Add it to browser history
+             var visitDate = new Date();
+             var browserHistory = this.historyService.QueryInterface(Components.interfaces.nsIBrowserHistory);
+             browserHistory.addPageWithDetails(theuri,title,visitDate.getTime() * 1000);
              // Use Firefox annotation to mark it as a compound object
              this.mozannoService.setPageAnnotation(theuri, "lore/compoundObject", 
                 title, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
              this.mozannoService.setPageAnnotation(theuri, "lore/isPrivate", 
                 "" + isPrivate, 0, this.mozannoService.EXPIRE_WITH_HISTORY);
              this.listManager.add(
-	            [
-	            {
-	                'uri': remurl,
-	                'title': title,
-	                'accessed': visitDate,
+                [
+                {
+                    'uri': remurl,
+                    'title': title,
+                    'accessed': visitDate,
                     'isPrivate': isPrivate
-	            }
+                }
                 ],
-	            'history'
-	         );
+                'history'
+             );
           } catch (e){
               lore.debug.ore("Error adding compound object to browser history: " + remurl,e);
           }
-	     
-		  
+         
+          
       },
       /**
        * Remove records of page visit from history
@@ -88,50 +88,50 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
        */
       loadHistory : function (){
         try{
-		    var query = this.historyService.getNewQuery(); 
-		    query.annotation = "lore/compoundObject";
+            var query = this.historyService.getNewQuery(); 
+            query.annotation = "lore/compoundObject";
             var ios = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
-		    var options = this.historyService.getNewQueryOptions();
-		    options.sortingMode = options.SORT_BY_DATE_ASCENDING;
-		    options.includeHidden = true;
-		    //options.maxResults = 20;
-		    var result = this.historyService.executeQuery(query, options);
-		    result.root.containerOpen = true;
-		    var count = result.root.childCount;
+            var options = this.historyService.getNewQueryOptions();
+            options.sortingMode = options.SORT_BY_DATE_ASCENDING;
+            options.includeHidden = true;
+            //options.maxResults = 20;
+            var result = this.historyService.executeQuery(query, options);
+            result.root.containerOpen = true;
+            var count = result.root.childCount;
             var coList = [count];
             var annotationService = Components.classes["@mozilla.org/browser/annotation-service;1"]
                         .getService(Components.interfaces.nsIAnnotationService);
-		    for (var i = 0; i < count; i++) {
-		        var theobj = {};
-		        var node = result.root.getChild(i);
-		        var title = node.title;
-		        var uri = node.uri;
-		        //var visited = node.accessCount;
-		        var lastVisitedTimeInMicrosecs = node.time;
-		        var thedate = new Date();
-		        thedate.setTime(lastVisitedTimeInMicrosecs / 1000);
+            for (var i = 0; i < count; i++) {
+                var theobj = {};
+                var node = result.root.getChild(i);
+                var title = node.title;
+                var uri = node.uri;
+                //var visited = node.accessCount;
+                var lastVisitedTimeInMicrosecs = node.time;
+                var thedate = new Date();
+                thedate.setTime(lastVisitedTimeInMicrosecs / 1000);
                 var theCO = {
                     'uri': uri,
                     'title': title,
                     'accessed': thedate
                 }
                 try{
-                	var aUri = ios.newURI(uri,null,null);
-                	if (this.mozannoService.pageHasAnnotation(aUri,"lore/isPrivate")){
-                		theCO.isPrivate = this.mozannoService.getPageAnnotation(aUri,"lore/isPrivate") == "true";
-                	} 
+                    var aUri = ios.newURI(uri,null,null);
+                    if (this.mozannoService.pageHasAnnotation(aUri,"lore/isPrivate")){
+                        theCO.isPrivate = this.mozannoService.getPageAnnotation(aUri,"lore/isPrivate") == "true";
+                    } 
                 } catch (f){
                     lore.debug.ore("Problem getting isPrivate from history",f);
                 }
-		        coList[i] = theCO;
-		    }
+                coList[i] = theCO;
+            }
             if (count > 0){
                 this.listManager.add(coList, 'history');
             }
-		    result.root.containerOpen = false;
-		  } catch (e) {
-		    lore.debug.ore("Error retrieving history",e);
-		  }
+            result.root.containerOpen = false;
+          } catch (e) {
+            lore.debug.ore("Error retrieving history",e);
+          }
       },
       onBeginUpdateBatch: function() {
       },
@@ -142,14 +142,14 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
         this.listManager.clear("history");
         this.loadHistory();
       },
-      onVisit: function(aURI, aVisitID, aTime, aSessionID, aReferringID, aTransitionType) {
+      onVisit: function(aURI, aVisitID, aTime, aSessionID, aReferringID, aTransitionType, aGUID, aAdded) {
       },
       onTitleChanged: function(aURI, aPageTitle) {
       },
       /** Remove an entry from the list if it has been removed from the browser history
        * @param {} aURI The URI that has been removed
        */
-      onDeleteURI: function(aURI) {
+      onDeleteURI: function(aURI, aGUID) {
         this.listManager.remove(aURI.spec);
       },
       /** Clear the list if the browser history has been cleared **/
