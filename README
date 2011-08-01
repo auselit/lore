@@ -9,6 +9,8 @@ DISTRIBUTION
 LORE is distributed an an XPI file (Firefox extension) via the Mozilla addons site:
 https://addons.mozilla.org/en-US/firefox/addon/lore/
 
+The source code can be found at http://github.com/auselit/lore
+
 DEVELOPMENT
 
 We use Eclipse with Spket IDE (http://spket.com/), but any JavaScript, XML and HTML editor
