@@ -1,5 +1,0 @@
-content	lore	jar:chrome/lore@maenad.itee.uq.edu.au.jar!/content/
-locale	lore	en-US	jar:chrome/lore@maenad.itee.uq.edu.au.jar!/locale/en-US/
-skin	lore	classic/1.0	jar:chrome/lore@maenad.itee.uq.edu.au.jar!/skin/
-overlay	chrome://browser/content/browser.xul	chrome://lore/content/firefoxOverlay.xul
-style	chrome://global/content/customizeToolbar.xul	chrome://lore/skin/overlay.css

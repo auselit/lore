@@ -19,6 +19,7 @@
 				<include name="skin/**" />
 				<include name="install.rdf" />
 				<include name="defaults/**" />
+				<exclude name="content/tests.js" />
 				<exclude name="**/.*" />
 				<exclude name="**/.svn/**" />
 				<exclude name="**/*.psd" />
@@ -44,6 +45,7 @@
 				<include name="skin/**" />
 				<include name="install.rdf" />
 				<include name="defaults/**" />
+				<exclude name="content/tests.js" />
 				<exclude name="**/.*" />
 				<exclude name="**/.svn/**" />
 				<exclude name="content/lib/ext3.2/ext-all-debug.js" />
