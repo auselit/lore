@@ -16,7 +16,7 @@ DEVELOPMENT
 We use Eclipse with Spket IDE (http://spket.com/), but any JavaScript, XML and HTML editor
 would be suitable for development.
  
-Use ant (dist-nojar) to build the XPI file
+Use ant (dist) to build the XPI file.
 
 You can point Firefox directly at the eclipse project during development.
 We recommend setting up a new profile for development (see https://developer.mozilla.org/en/Setting_up_extension_development_environment)
