@@ -1,73 +1,73 @@
 <?xml version="1.0" ?>
 
 <project name="lore" default="dist">
-	<property name="src.dir" value="." />
-	<property name="dist.dir" value="dist" />
-	<property name="build.dir" value="tmpbuild" />
-	<property name="app.name" value="lore@maenad.itee.uq.edu.au" />
-	<property name="app.id" value="${app.name}" />
+    <property name="src.dir" value="." />
+    <property name="dist.dir" value="dist" />
+    <property name="build.dir" value="tmpbuild" />
+    <property name="app.name" value="lore@maenad.itee.uq.edu.au" />
+    <property name="app.id" value="${app.name}" />
 
-	
-	<target name="dist" >
-		<mkdir dir="${dist.dir}" />
-		<zip destfile="${dist.dir}/${app.name}.xpi">
-			<zipfileset file="${src.dir}/chrome.manifest" fullpath="chrome.manifest"/>
-			<fileset dir="${src.dir}">
-				<!--include name="chrome.manifest" /-->
-				<include name="content/**" />
-				<include name="locale/**" />
-				<include name="skin/**" />
-				<include name="install.rdf" />
-				<include name="defaults/**" />
-				<exclude name="content/tests.js" />
-				<exclude name="**/.*" />
-				<exclude name="**/.svn/**" />
-				<exclude name="**/*.psd" />
-			</fileset>
-		</zip>
-	</target>
-	
-	<!--
-	  Changes any references to debug versions of the libraries, as well as
-	  excluding the library files themselves.
-	  
-	  This makes for a much smaller distributable .xpi.
-	-->
-	<target name="dist-nojar-minimized">
-		<mkdir dir="${dist.dir}" />
-		<mkdir dir="${build.dir}" />
-		
-		<!-- Copy all required dist files into a temporary directory -->
-		<copy todir="${build.dir}">
-			<fileset dir="${src.dir}">
-				<include name="content/**" />
-				<include name="locale/**" />
-				<include name="skin/**" />
-				<include name="install.rdf" />
-				<include name="defaults/**" />
-				<exclude name="content/tests.js" />
-				<exclude name="**/.*" />
-				<exclude name="**/.svn/**" />
-				<exclude name="content/lib/ext3.2/ext-all-debug.js" />
-				<exclude name="content/lib/ext3.2/adapter/jquery/ext-jquery-adapter-debug.js" />
-				<exclude name="**/*.psd" />
-			</fileset>
-			<filelist dir="." files="chrome.manifest" />
-		</copy>
-		
-		<!-- replace references to development/debugging library files -->
-		<replace dir="${build.dir}/" includes="**/*.html" token="ext-jquery-adapter-debug.js" value="ext-jquery-adapter.js"/>
-		<replace dir="${build.dir}/" includes="**/*.html" token="ext-all-debug.js" value="ext-all.js"/>
+    
+    <target name="dist" >
+        <mkdir dir="${dist.dir}" />
+        <zip destfile="${dist.dir}/${app.name}.xpi">
+            <zipfileset file="${src.dir}/chrome.manifest" fullpath="chrome.manifest"/>
+            <fileset dir="${src.dir}">
+                <!--include name="chrome.manifest" /-->
+                <include name="content/**" />
+                <include name="locale/**" />
+                <include name="skin/**" />
+                <include name="install.rdf" />
+                <include name="defaults/**" />
+                <exclude name="content/tests.js" />
+                <exclude name="**/.*" />
+                <exclude name="**/.svn/**" />
+                <exclude name="**/*.psd" />
+            </fileset>
+        </zip>
+    </target>
+    
+    <!--
+      Changes any references to debug versions of the libraries, as well as
+      excluding the library files themselves.
+      
+      This makes for a much smaller distributable .xpi.
+    -->
+    <target name="dist-nojar-minimized">
+        <mkdir dir="${dist.dir}" />
+        <mkdir dir="${build.dir}" />
+        
+        <!-- Copy all required dist files into a temporary directory -->
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}">
+                <include name="content/**" />
+                <include name="locale/**" />
+                <include name="skin/**" />
+                <include name="install.rdf" />
+                <include name="defaults/**" />
+                <exclude name="content/tests.js" />
+                <exclude name="**/.*" />
+                <exclude name="**/.svn/**" />
+                <exclude name="content/lib/ext3.2/ext-all-debug.js" />
+                <exclude name="content/lib/ext3.2/adapter/jquery/ext-jquery-adapter-debug.js" />
+                <exclude name="**/*.psd" />
+            </fileset>
+            <filelist dir="." files="chrome.manifest" />
+        </copy>
+        
+        <!-- replace references to development/debugging library files -->
+        <replace dir="${build.dir}/" includes="**/*.html" token="ext-jquery-adapter-debug.js" value="ext-jquery-adapter.js"/>
+        <replace dir="${build.dir}/" includes="**/*.html" token="ext-all-debug.js" value="ext-all.js"/>
 
-		<!-- create distribution xpi -->
-		<zip destfile="${dist.dir}/${app.name}.xpi">
-			<fileset dir="${build.dir}" />
-		</zip>
-		
-		<!-- remove temporary directory -->
-		<delete dir="${build.dir}" />
-	</target>
-	
+        <!-- create distribution xpi -->
+        <zip destfile="${dist.dir}/${app.name}.xpi">
+            <fileset dir="${build.dir}" />
+        </zip>
+        
+        <!-- remove temporary directory -->
+        <delete dir="${build.dir}" />
+    </target>
+    
         <target name="dist-src">
             <mkdir dir="${dist.dir}" />
 
@@ -79,9 +79,9 @@
             </zip>
         </target>
 
-	<target name="clean">
-		<delete dir="${dist.dir}" />
-	</target>
+    <target name="clean">
+        <delete dir="${dist.dir}" />
+    </target>
 
     <target name="doc">
         <java jar="doc/ext-doc.jar" fork="true">
