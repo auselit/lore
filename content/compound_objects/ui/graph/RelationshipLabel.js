@@ -34,24 +34,8 @@ Ext.extend(lore.ore.ui.graph.RelationshipLabel, draw2d.Label, {
     type : "lore.ore.ui.graph.RelationshipLabel",
     /** sets up an editable field to change the relationship type */
     createEditElement : function(){
-    	/*this.editField = new Ext.form.ComboBox({
-    		typeAhead: true,
-    		triggerAction: 'all',
-    		mode: 'local',
-    		pageSize: 10,
-    		width: 80,
-    		store: lore.ore.ontologyManager.terms,
-    		valueField: 'uri',
-    		displayField: 'label',
-    		allowBlank: false,
-    		renderTo: this.getHTMLElement(),
-    		hidden: true,
-    		style: {
-    			//backgroundColor: "red"
-    		}
-    	});*/
-    	try{
-    	this.editField = new Ext.form.TriggerField({
+        try{
+        this.editField = new Ext.form.TriggerField({
             editable: true,
             width: 100,
             renderTo: this.getHTMLElement(),
@@ -65,71 +49,71 @@ Ext.extend(lore.ore.ui.graph.RelationshipLabel, draw2d.Label, {
             },
             onTriggerClick: function(ev) {
                try {
-            	lore.debug.ore("on trigger click",ev);
-            	lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt(ev.xy);
+                lore.debug.ore("on trigger click",ev);
+                lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt(ev.xy);
              
                 
                } catch (e){
                    lore.debug.ore("problem in trigger click",e);
                }
             } 
-    	});
-    	this.editField.on("specialkey",function(f,e){	
-    		var key = e.getKey();
-    		if (e.getKey() == e.ENTER || e.getKey() == e.ESC){
-    			// cancel edit if escape is pressed
-    			this.stopEditing(key == e.ESC);
-    		}
-	    		
-    	},this);
-    	this.editField.on("blur",function(f,n,o){
-    			this.stopEditing();
-    	},this);
-    	} catch (ex){
-    		lore.debug.ore("createEditElement",ex);
-    	}
+        });
+        this.editField.on("specialkey",function(f,e){   
+            var key = e.getKey();
+            if (e.getKey() == e.ENTER || e.getKey() == e.ESC){
+                // cancel edit if escape is pressed
+                this.stopEditing(key == e.ESC);
+            }
+                
+        },this);
+        this.editField.on("blur",function(f,n,o){
+                this.stopEditing();
+        },this);
+        } catch (ex){
+            lore.debug.ore("createEditElement",ex);
+        }
     },
     /** 
      * Stop direct editing of relationship
      */
     stopEditing : function(cancel){
-    	if (!cancel && this.editField.isValid()){
-    		// update rel
-    	}
-    	this.editField.hide();
-    	Ext.get(this.textNode).show();
-    	this.parent.workflow.editingText = false;
-    	this.editing = false;
+        if (!cancel && this.editField.isValid()){
+            // update rel
+        }
+        this.editField.hide();
+        Ext.get(this.textNode).show();
+        this.parent.workflow.editingText = false;
+        this.editing = false;
     },
     /**
      * Start direct editing of relationship
      */
     startEditing : function(){
-    	try{
-    		lore.debug.ore("startEditing",this.editField);
-    	if (this.editing){
-    		return;
-    	}
-    	this.editing = true;
-		// hide display label
-    	Ext.get(this.textNode).hide();
-    	// display editing field with current value
-    	this.editField.setRawValue(this.getText());
-    	this.editField.show();
-    	
-    	// prevent keystrokes entered into text field being interpreted by editor to move/delete nodes
-    	var wf = this.parent.workflow;
-    	wf.editingText = true;
-    	
-		//lore.debug.ore("position",this.editField.getPosition())
-		//var pos = this.editField.getPosition();
-		//wf.scrollTo(pos[0], pos[1]); // TODO: adjust to allow space for drop down options
+        try{
+            lore.debug.ore("startEditing",this.editField);
+        if (this.editing){
+            return;
+        }
+        this.editing = true;
+        // hide display label
+        Ext.get(this.textNode).hide();
+        // display editing field with current value
+        this.editField.setRawValue(this.getText());
+        this.editField.show();
+        
+        // prevent keystrokes entered into text field being interpreted by editor to move/delete nodes
+        var wf = this.parent.workflow;
+        wf.editingText = true;
+        
+        //lore.debug.ore("position",this.editField.getPosition())
+        //var pos = this.editField.getPosition();
+        //wf.scrollTo(pos[0], pos[1]); // TODO: adjust to allow space for drop down options
 
-    	this.editField.focus();
-    	//this.editField.expand();
-    	} catch (ex){
-    		lore.debug.ore("startEditing",ex);
-    	}
+        this.editField.focus();
+        //this.editField.expand();
+        } catch (ex){
+            lore.debug.ore("startEditing",ex);
+        }
     },
     showMenu : function(ev){
         var pos = ev.xy;  
