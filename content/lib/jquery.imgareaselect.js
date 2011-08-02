@@ -21,14 +21,14 @@ var abs = Math.abs,
 
 
 $.imgAreaSelect = function (img, ctx, options) {
-	this.context = ctx;
-	var context = this.context;
-	
-	function div() {
+    this.context = ctx;
+    var context = this.context;
+    
+    function div() {
         var div = context.createElement('div');
         lore.global.util.ignoreElementForXP(div);
-		return $(div).attr("_lore_imgareaselect", "true");
-	}
+        return $(div).attr("_lore_imgareaselect", "true");
+    }
 
     var
 
@@ -132,8 +132,8 @@ $.imgAreaSelect = function (img, ctx, options) {
 
         imgWidth = $img.width();
         imgHeight = $img.height();
-		
-		
+        
+        
         if ($().jquery == '1.3.2' && $.browser.safari && position == 'fixed') {
             imgOfs.top += max(document.documentElement.scrollTop, $('body', context).scrollTop());
 
@@ -199,7 +199,7 @@ $.imgAreaSelect = function (img, ctx, options) {
             $border.css('margin', 0);
             setTimeout(function () { $border.css('margin', 'auto'); }, 0);
         }
-		
+        
     }
     
     function doUpdate(resetKeyPress) {
@@ -245,7 +245,7 @@ $.imgAreaSelect = function (img, ctx, options) {
     }
 
     function docMouseUp(event) {
-		$('body',context).css('cursor', '');
+        $('body',context).css('cursor', '');
 
         if (options.autoHide || selection.width * selection.height == 0)
             hide($box.add($outer), function () { $(this,context).hide(); });
@@ -440,7 +440,7 @@ $.imgAreaSelect = function (img, ctx, options) {
 
     function imgLoad() {
         imgLoaded = true;
-		
+        
         $box.add($outer).css({ visibility: '' });
 
         if (options.show) {
@@ -520,7 +520,7 @@ $.imgAreaSelect = function (img, ctx, options) {
     }
 
     function setOptions(newOptions) {
-		if (newOptions.parent)
+        if (newOptions.parent)
             ($parent = $(newOptions.parent,context)).append($box.add($outer));
 
         options = $.extend(options, newOptions);
@@ -642,8 +642,8 @@ $.imgAreaSelect = function (img, ctx, options) {
 
     this.setSelection = setSelection;
     
-	this.update = doUpdate;
-	
+    this.update = doUpdate;
+    
     if ($.browser.msie)
         $img.attr('unselectable', 'on');
 
@@ -677,11 +677,11 @@ $.imgAreaSelect = function (img, ctx, options) {
 
 $.fn.imgAreaSelect = function (options) {
     options = options || {};
-	
-	var instances = [];
-	
-	this.each(function () {
-		var ctx = this.ownerDocument;
+    
+    var instances = [];
+    
+    this.each(function () {
+        var ctx = this.ownerDocument;
         if ($(this).data('imgAreaSelect'))
             $(this).data('imgAreaSelect').setOptions(options);
         else {
@@ -690,18 +690,18 @@ $.fn.imgAreaSelect = function (options) {
 
             $(this).data('imgAreaSelect', new $.imgAreaSelect(this, this.ownerDocument, options));
         }
-		
-		instances.push($(this).data('imgAreaSelect'));
+        
+        instances.push($(this).data('imgAreaSelect'));
     });
 
     if (options.instance)
-		return instances;
+        return instances;
 
     return this;
 };
 
 $.fn.imgAreaSelectInst = function () {
-	return this.data('imgAreaSelect');
+    return this.data('imgAreaSelect');
 }
 
 })(jQuery);
