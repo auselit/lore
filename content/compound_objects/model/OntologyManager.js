@@ -40,25 +40,25 @@ lore.ore.model.OntologyManager = function() {
     this.REL_REQUIRED = ["relationship", "namespace"];
 
     /** URL from which current ontology was loaded (may be different from URL e.g. when ontology is loaded from local chrome URL)*/
-    this.ontologyURL = "";
+    this.relOntologyURL = "";
     
     /** URI identifying current ontology */
-    this.ontologyURI = "";
+    this.relOntologyURI = "";
     
     /** RDFQuery object representing current ontology */
-    this.ontology = {};
+    this.relOntology = {};
     
     this.dataTypeProps = [];
 
     // metadata for ontologies from preferences
-    this.ontologyMetadata = new Ext.data.JsonStore ({
+    this.relOntologyMetadata = new Ext.data.JsonStore ({
     	fields: ['nsprefix', 'nsuri', 'locurl', 'useco', 'useanno'],
     	idProperty: 'nsprefix',
     	storeId: 'ontologies'
     });
     
     // cache previously loaded ontology terms
-    this.ontologyCache = {};
+    this.relOntologyCache = {};
 	
 };
 
@@ -67,9 +67,9 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 	updateOntologiesMetadata : function(ontologies, om, setCurrent){
 		try{
 			// Load metadata about ontologies from data obtained from preference
-			this.ontologyMetadata.loadData(ontologies);
+			this.relOntologyMetadata.loadData(ontologies);
 			// Check that all ontology metadata entries include the nsuri for the baseuri
-			this.ontologyMetadata.each(function(r){
+			this.relOntologyMetadata.each(function(r){
 			  try{
 				var nsuri = r.get('nsuri');
 				var nspfx = r.get('nsprefix');
@@ -87,13 +87,13 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 							} else {
 								// If there was no xml:base, lookup URI or dc:identifier of OWL ontology 
 								var baseQuery = ontData.ontology
-								    .where('?ont rdf:type <http://www.w3.org/2002/07/owl#Ontology>')
-									.optional('?ont <http://purl.org/dc/elements/1.1/identifier> ?ontid');
+								    .where('?theont rdf:type <http://www.w3.org/2002/07/owl#Ontology>')
+									.optional('?theont <http://purl.org/dc/elements/1.1/identifier> ?theontid');
 								var res = baseQuery.get(0);
 								if (res){
-									var baseuri = res.ont.value.toString();
+									var baseuri = res.theont.value.toString();
 									if (!baseuri) {
-										baseuri = res.ontid.value;
+										baseuri = res.theontid.value;
 									}
 								}
 							}
@@ -129,18 +129,18 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 		}
 	},
 	/** Load ontology terms into cache */
-	cacheOntology : function(onturl, callback){
+	cacheOntology : function(ourl, callback){
 		var om = this;
-		if (onturl) {
+		if (ourl) {
 			// Check if it is already in the cache
-			if (this.ontologyCache[onturl]){
-				callback(this.ontologyCache[onturl]);
+			if (this.relOntologyCache[ourl]){
+				callback(this.relOntologyCache[ourl]);
                 return;
 			}
 			// Load the ontology
 			var xhr = new XMLHttpRequest();
 			xhr.overrideMimeType('application/xml');
-			xhr.open("GET", onturl);
+			xhr.open("GET", ourl);
 			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
@@ -197,7 +197,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 								}
 						);
 						ontData.ontology = relOntology;
-						om.ontologyCache[onturl] = ontData;
+						om.relOntologyCache[ourl] = ontData;
 						callback(ontData);
 					} catch (e) {
 						lore.debug.ore("problem loading rels", e);
@@ -209,20 +209,14 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 	},
 	/** Change the ontology currently used for relationships and properties */
 	setCurrentOntology : function(om){
-        /*var current = this.ontologyMetadata.find('nsuri', onturl);
-        if (current != -1){
-        	current = this.ontologyMetadata.getAt(current);
-        	lore.ore.debug("currentOntologyMetadata",current);
-        	var onturlnspfx = current.get('nsprefix');
-        }*/
         try{
 		om.dataTypeProps = om.METADATA_PROPS.slice(0);
-		om.cacheOntology(om.ontologyURL, function(ontData){
+		om.cacheOntology(om.relOntologyURL, function(ontData){
             try{
-			om.ontrelationships = ontData.relationships;
-            om.ontology = ontData.ontology;
+			om.theOntRelationships = ontData.relationships;
+            om.relOntology = ontData.ontology;
 			// TODO: merge ontData.dataTypeProps and om.dataTypeProps
-			lore.ore.ontrelationships = om.ontrelationships;
+			lore.ore.theOntRelationships = om.theOntRelationships;
             } catch (e){
                 lore.debug.ore("setCurrentOntology cache",e);
             }
@@ -237,13 +231,13 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
 	/**
 	 * Respond to ontology preferences being updated
 	 */
-	loadOntology : function(onturl, ontologies) {
+	loadOntology : function(ourl, ontologies) {
 		try {
 			var om = this;
 			var setCurrent = false;
-			if (!(this.ontologyURL && this.ontologyURL == onturl && !isEmptyObject(this.ontology))){
+			if (!(this.relOntologyURL && this.relOntologyURL == ourl && !isEmptyObject(this.relOntology))){
                 setCurrent = true;
-            	this.ontologyURL = onturl;
+            	this.relOntologyURL = ourl;
             }
 			this.updateOntologiesMetadata(ontologies, om, setCurrent); 
 		} catch (e) {

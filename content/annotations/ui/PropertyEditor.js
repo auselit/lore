@@ -260,18 +260,18 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	/**
 	 * Set the type of object we are editing the metadata for, restricting the
 	 * list of properties that can be added.
-	 * @param {} onturl 
+	 * @param {} ourl 
 	 */
-	setObjectType: function (onturl, type) {
+	setObjectType: function (ourl, type) {
 		var tthis = this;
-		if (this.onturl === onturl && this.type === type) {
+		if (this.metadataOnturl === ourl && this.type === type) {
 			return;
 		}
-		this.onturl = onturl;
+		this.metadataOnturl = ourl;
 		this.type = type;
-		this.loadOntology(onturl, function callback(ontology) {
-			lore.debug.anno('loadOntology callback', {ontology:ontology,type:type});
-			tthis.ontology = ontology;
+		this.loadOntology(ourl, function callback(ontology) {
+			lore.debug.anno('loadOntology callback', {ontology: ontology, type: type});
+			//tthis.mOntology = ontology;
 			tthis.propertiesList = [];
 			
 			ontology.where('?prop rdfs:domain <' + type + '>')
@@ -295,15 +295,15 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	/**
 	 * Load an ontology into the property editor panel
-	 * @param {} onturl URL to load the ontology from
+	 * @param {} ourl URL to load the ontology from
 	 * @param {} callback callback function, passed the ontology as a jQuery.rdf data store
 	 */
-	loadOntology: function (onturl, callback) {
-		if (onturl) {
-			lore.debug.anno("getting ontology : " + onturl);
+	loadOntology: function (ourl, callback) {
+		if (ourl) {
+			lore.debug.anno("getting ontology : " + ourl);
 			var xhr = new XMLHttpRequest();
 			xhr.overrideMimeType('text/xml');
-			xhr.open("GET", onturl);
+			xhr.open("GET", ourl);
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
 					try {
@@ -312,7 +312,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 						    db.prefix(ns,lore.constants.NAMESPACES[ns]);
 						}
 						db.load(xhr.responseXML);
-						lore.debug.anno("loading relationships from " + onturl);      
+						lore.debug.anno("loading relationships from " + ourl);      
 						if (typeof(callback) == 'function')
 							callback(jQuery.rdf({databank: db}));
 						
@@ -327,7 +327,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 	
 	reset: function () {
 		this.propertiesList = [];
-		this.onturl = "-";
+		this.metadataOnturl = "-";
 		this.propertiesListChanged = true;
 		this.getStore().removeAll();
 	}

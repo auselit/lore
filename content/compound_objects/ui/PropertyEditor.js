@@ -734,8 +734,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             return;
         } 
     	try{
-        if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.ontologyURL != panel.loadedOntology)) {        	
-        	panel.loadedOntology = lore.ore.ontologyManager.ontologyURL;
+        if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.relOntologyURL != panel.loadedOntology)) {        	
+        	panel.loadedOntology = lore.ore.ontologyManager.relOntologyURL;
         	panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties(panel.id == "remgrid"));
         }
         var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();

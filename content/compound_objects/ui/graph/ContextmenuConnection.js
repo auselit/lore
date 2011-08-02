@@ -19,30 +19,30 @@
  */
 /**
  * Connection figure that provides a context menu to set the connection type
- * The types are sourced from ontrelationships, which is populated from an ontology (see uifunctions.js)
+ * The types are sourced from theOntRelationships, which is populated from an ontology (see uifunctions.js)
  * @class lore.ore.ui.graph.ContextmenuConnection
  * @extends draw2d.Connection
  */
 lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     constructor: function() {
-    	draw2d.Connection.call(this);
-    	this.lineColor = new draw2d.Color(174,174,174); // light grey
-    	this.labelColor = new draw2d.Color(51,51,51); // dark grey
+        draw2d.Connection.call(this);
+        this.lineColor = new draw2d.Color(174,174,174); // light grey
+        this.labelColor = new draw2d.Color(51,51,51); // dark grey
         this.label = new lore.ore.ui.graph.RelationshipLabel();
         this.label.setColor(this.labelColor);
         this.addFigure(this.label, new lore.ore.ui.graph.LabelLocator(this), true);
-    	this.setRouter(new lore.ore.ui.graph.FanConnectionRouter());
+        this.setRouter(new lore.ore.ui.graph.FanConnectionRouter());
         this.setRelationshipType("http://purl.org/dc/elements/1.1/","relation",false);
-    	this.sourcePort=null;
+        this.sourcePort=null;
         this.targetPort=null;
-    	this.lineSegments=[];
-    	this.setColor(this.lineColor);
-    	this.setLineWidth(1);
+        this.lineSegments=[];
+        this.setColor(this.lineColor);
+        this.setLineWidth(1);
         var tgtArrow = new lore.ore.ui.graph.ArrowConnectionDecorator();
         tgtArrow.setColor(this.lineColor);
         this.setTargetDecorator(tgtArrow); 
-    	this.setSourceAnchor(new draw2d.ChopboxConnectionAnchor());
-    	this.setTargetAnchor(new draw2d.ChopboxConnectionAnchor());
+        this.setSourceAnchor(new draw2d.ChopboxConnectionAnchor());
+        this.setTargetAnchor(new draw2d.ChopboxConnectionAnchor());
         
     },
     /**
@@ -81,18 +81,18 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
      * @param {} symmetric
      */
     setRelationshipType : function(enamespace, etype, symmetric) {
-    	this.edgetype=etype;
-    	this.edgens=enamespace;
+        this.edgetype=etype;
+        this.edgens=enamespace;
         this.symmetric = symmetric;
-    	this.label.setStyledText(etype);
+        this.label.setStyledText(etype);
         try {
-    	    if (symmetric) {
-    	        var theArrow = new draw2d.ArrowConnectionDecorator();
-    	        theArrow.setColor(this.lineColor);
-    	        this.setSourceDecorator(theArrow);
-    	    } else {
-    	        this.setSourceDecorator(null);
-    	    }
+            if (symmetric) {
+                var theArrow = new draw2d.ArrowConnectionDecorator();
+                theArrow.setColor(this.lineColor);
+                this.setSourceDecorator(theArrow);
+            } else {
+                this.setSourceDecorator(null);
+            }
         } catch(ex) {
             lore.debug.ore("Exception setting connection rel type",ex);
         }
@@ -112,84 +112,84 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     onContextMenu : function(x,y,external) { 
         try {
             this.setColor(new draw2d.Color(170,204,246)); 
-        	if (!(lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
-    	            lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.onturl))) {
-        		lore.ore.ui.graph.ContextmenuConnection.contextmenu = new Ext.menu.Menu({
+            if (!(lore.ore.ui.graph.ContextmenuConnection.contextMenu && (
+                    lore.ore.ui.graph.ContextmenuConnection.loadedOntology == lore.ore.ontologyManager.relOntologyURL))) {
+                lore.ore.ui.graph.ContextmenuConnection.contextmenu = new Ext.menu.Menu({
                     showSeparator: false
                 });
                 var cm = lore.ore.ui.graph.ContextmenuConnection.contextmenu;
                 // Temporary toolbar to allow filtering of rels in menu, to be replaced with direct manipulation
                 cm.add(new Ext.Toolbar({
-            		items: [
-              		       {   id: 'tfilter',
-              		    	   enableKeyEvents: true,
-              		    	   xtype: 'textfield', 
-              		    	   name: 'filter', 
-              		    	   emptyText: 'Type here to filter...'} 
-              		]
-              	}));
+                    items: [
+                           {   id: 'tfilter',
+                               enableKeyEvents: true,
+                               xtype: 'textfield', 
+                               name: 'filter', 
+                               emptyText: 'Type here to filter...'} 
+                    ]
+                }));
                 Ext.getCmp('tfilter').on('keyup',function(tf, e){
-                	try{    	
-                	var filtertext = Ext.getCmp('tfilter').getRawValue();
-                	lore.ore.ui.graph.ContextmenuConnection.contextmenu.items.each(function(item, index, len){
-                		if (item.initialConfig.text){
-	                		 if (item.initialConfig.text.match(filtertext)){
-	                			item.show();
-	                		 } else {
-	                			item.hide();
-	                		 }
-                		}
-                	});
-                	lore.ore.ui.graph.ContextmenuConnection.contextmenu.doLayout();
-                	} catch (ex){
-                		lore.debug.ore("problem filtering rel menu",ex);
-                	}
+                    try{        
+                    var filtertext = Ext.getCmp('tfilter').getRawValue();
+                    lore.ore.ui.graph.ContextmenuConnection.contextmenu.items.each(function(item, index, len){
+                        if (item.initialConfig.text){
+                             if (item.initialConfig.text.match(filtertext)){
+                                item.show();
+                             } else {
+                                item.hide();
+                             }
+                        }
+                    });
+                    lore.ore.ui.graph.ContextmenuConnection.contextmenu.doLayout();
+                    } catch (ex){
+                        lore.debug.ore("problem filtering rel menu",ex);
+                    }
                 });
-    			// sort the menu entries alphabetically
+                // sort the menu entries alphabetically
                 var om = lore.ore.ontologyManager;
-    			var keys = [];
-    		 	for (var rel in om.ontrelationships) {
-    				keys.push(rel);
-    		 	}
-    		 	keys.sort();
+                var keys = [];
+                for (var rel in om.theOntRelationships) {
+                    keys.push(rel);
+                }
+                keys.sort();
                 
-    		 	for (var i =0; i< keys.length; i++) {
-    		 		rel = keys[i];
+                for (var i =0; i< keys.length; i++) {
+                    rel = keys[i];
                     
-    				var relnamespace=om.ontrelationships[rel];
+                    var relnamespace=om.theOntRelationships[rel];
                     //lore.debug.ore("looking up " + relnamespace, lore.constants.NAMESPACES);
-    				var nspfx = lore.constants.nsprefix(relnamespace);
-    	            var symmquery = om.ontology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
-    	                .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
-    		        var symm = symmquery.length > 0;		
-    		 		cm.add({
+                    var nspfx = lore.constants.nsprefix(relnamespace);
+                    var symmquery = om.relOntology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
+                        .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
+                    var symm = symmquery.length > 0;        
+                    cm.add({
                         text: (nspfx? nspfx + " : " : "") + rel,          
                         scope: {ns: relnamespace, rel:rel, symm: symm, external: external},
                         handler: function(evt){
-                        	var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
-                        	selfig.setRelationship(this.ns, this.rel, this.symm);
-                        	if (external) {
-                        		var srcfig =  selfig.sourcePort.getParent();
-                        		if (srcfig){
-                        			lore.ore.ui.graphicalEditor.coGraph.setCurrentSelection(srcfig);
-                        		}
-                        	}
+                            var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
+                            selfig.setRelationship(this.ns, this.rel, this.symm);
+                            if (external) {
+                                var srcfig =  selfig.sourcePort.getParent();
+                                if (srcfig){
+                                    lore.ore.ui.graphicalEditor.coGraph.setCurrentSelection(srcfig);
+                                }
+                            }
                         }
                      });
-    		 	}
-    	        lore.ore.ui.graph.ContextmenuConnection.loadedOntology = om.ontologyURL;
-    			
-    	    }
-        	var w = this.workflow;
-        	var absx, absy;
-        	if (!external){
-        		absx = w.getAbsoluteX() +  x - w.getScrollLeft();
-        		absy = w.getAbsoluteY() +  y - w.getScrollTop();
-        	} else {
-        		absx = x;
-        		absy = y;
-        	}
-    		lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt([absx, absy]);
+                }
+                lore.ore.ui.graph.ContextmenuConnection.loadedOntology = om.relOntologyURL;
+                
+            }
+            var w = this.workflow;
+            var absx, absy;
+            if (!external){
+                absx = w.getAbsoluteX() +  x - w.getScrollLeft();
+                absy = w.getAbsoluteY() +  y - w.getScrollTop();
+            } else {
+                absx = x;
+                absy = y;
+            }
+            lore.ore.ui.graph.ContextmenuConnection.contextmenu.showAt([absx, absy]);
             lore.ore.ui.graph.ContextmenuConnection.contextmenu.on("beforehide",function(){
                 this.setColor(new draw2d.Color(174,174,174));
             },this);
@@ -202,34 +202,34 @@ lore.ore.ui.graph.ContextmenuConnection = Ext.extend(draw2d.Connection, {
     getEndAngle : function() {
         var angle = 180;
         try {
-    	  var p1 = this.lineSegments.get(this.lineSegments.getSize()-1).end;
-    	  var p2 = this.lineSegments.get(this.lineSegments.getSize()-1).start;
-    	  if(this.router instanceof draw2d.BezierConnectionRouter) {
-    	   p2 = this.lineSegments.get(this.lineSegments.getSize()-5).end;
-    	  }
-    	  var length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
-    	  // adjustment for short lines
-    	  if (length < 8) {
-    	    p2 = this.lineSegments.get(this.lineSegments.getSize()-20).end;
-    	    length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
-    	  }
-    	  angle = -(180/Math.PI) *Math.asin((p1.y-p2.y)/length);
-    	  
-    	  if (angle<0) {
-    	     if(p2.x<p1.x) {
-    	       angle = Math.abs(angle) + 180;
+          var p1 = this.lineSegments.get(this.lineSegments.getSize()-1).end;
+          var p2 = this.lineSegments.get(this.lineSegments.getSize()-1).start;
+          if(this.router instanceof draw2d.BezierConnectionRouter) {
+           p2 = this.lineSegments.get(this.lineSegments.getSize()-5).end;
+          }
+          var length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
+          // adjustment for short lines
+          if (length < 8) {
+            p2 = this.lineSegments.get(this.lineSegments.getSize()-20).end;
+            length = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
+          }
+          angle = -(180/Math.PI) *Math.asin((p1.y-p2.y)/length);
+          
+          if (angle<0) {
+             if(p2.x<p1.x) {
+               angle = Math.abs(angle) + 180;
              } else {
-    	       angle = 360- Math.abs(angle);
+               angle = 360- Math.abs(angle);
              }
-    	  }
-    	  else {
-    	     if (p2.x < p1.x) {
-    	       angle = 180-angle;
+          }
+          else {
+             if (p2.x < p1.x) {
+               angle = 180-angle;
              }
-    	  }
+          }
         } catch (e) {
-    	    lore.debug.ore("ContextMenuConnection.getEndAngle", e);
-    	}
+            lore.debug.ore("ContextMenuConnection.getEndAngle", e);
+        }
       return angle;
     },
     /** override addFigure to allow child figures to have associated events */
