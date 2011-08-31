@@ -21,6 +21,11 @@
   >  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   >  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+ /* Modified for inclusion in LORE :
+  * 
+  * * reduced number of global variables
+  * * removed use of innerHTML
+  */
  (function () { 
 
 /*
@@ -35,16 +40,11 @@
  This variable is the *only* global variable defined in the Toolkit. 
  There are also other interesting properties attached to this variable described below.
  */
-window.$jit = function(w) {
-  w = w || window;
-  for(var k in $jit) {
-    if($jit[k].$extend) {
-      w[k] = $jit[k];
-    }
-  }
+$jit = function(w) {
+
 };
 
-$jit.version = '2.0.0a';
+$jit.version = '2.0.0a.lore';
 /*
   Object: $jit.id
   
@@ -344,7 +344,7 @@ $.hexToRgb = function(hex) {
 // http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
 
 $.rgbToHsl = function(rgbArray) {
-  r = rgbArray[0] / 255, g = rgbArray[1] / 255, b = rgbArray[2] / 255;
+  var r = rgbArray[0] / 255, g = rgbArray[1] / 255, b = rgbArray[2] / 255;
 
   var max = Math.max(r, g, b), min = Math.min(r, g, b);
   var h, s, l = (max + min) / 2;
@@ -396,7 +396,7 @@ $.hslToHex = function(hslArray) {
 };
 
 $.rgbToHsv = function (rgbArray) {
-  r = rgbArray[0]/255, g = rgbArray[1]/255, b = rgbArray[2]/255;
+  var r = rgbArray[0]/255, g = rgbArray[1]/255, b = rgbArray[2]/255;
   var max = Math.max(r, g, b), min = Math.min(r, g, b);
   var h, s, v = max;
 
@@ -3072,7 +3072,7 @@ var Canvas;
     translateToCenter: function(ps) {
       var size = this.getSize(),
           width = ps? (size.width - ps.width - this.translateOffsetX*2) : size.width;
-          height = ps? (size.height - ps.height - this.translateOffsetY*2) : size.height;
+      var height = ps? (size.height - ps.height - this.translateOffsetY*2) : size.height;
       var ctx = this.getCtx();
       ps && ctx.scale(1/this.scaleOffsetX, 1/this.scaleOffsetY);
       ctx.translate(width/2, height/2);
@@ -5475,7 +5475,7 @@ Graph.Op = {
                 break;
             
             case 'fade:seq': case 'fade': case 'fade:con':
-                that = this;
+                var that = this;
                 graph = viz.construct(json);
 
                 //set alpha to 0 for nodes to add.
@@ -5563,6 +5563,7 @@ Graph.Op = {
         var viz = this.viz;
         var options = $.merge(this.options, viz.controller, opt), root = viz.root;
         var graph;
+        var fadeEdges;
         //TODO(nico) this hack makes morphing work with the Hypertree. 
         //Need to check if it has been solved and this can be removed.
         viz.root = opt.id || viz.root;
@@ -5609,7 +5610,7 @@ Graph.Op = {
                 break;
                 
             case 'fade:seq': case 'fade': case 'fade:con':
-                that = this;
+                var that = this;
                 graph = viz.construct(json);
                 //preprocessing for nodes to delete.
                 viz.graph.eachNode(function(elem) {
@@ -5647,7 +5648,7 @@ Graph.Op = {
                     });
                 }); 
                 //preprocessing for adding nodes.
-                var fadeEdges = this.preprocessSum(graph);
+                fadeEdges = this.preprocessSum(graph);
 
                 var modes = !fadeEdges? ['node-property:alpha'] : 
                                         ['node-property:alpha', 
@@ -7760,9 +7761,8 @@ var NodeDim = {
         style.width  = autoWidth? 'auto' : width + 'px';
         style.height = autoHeight? 'auto' : height + 'px';
         
-        //TODO(nico) should let the user choose what to insert here.
-        label.innerHTML = n.name;
-        
+        var nameLabel = document.createTextNode(n.name);
+        label.appendChild(nameLabel);
         var offsetWidth  = label.offsetWidth,
             offsetHeight = label.offsetHeight;
         var type = n.getData('type');
@@ -9876,8 +9876,9 @@ $jit.AreaChart = new Class({
           
           domElement.style.width = node.getData('width') + 'px';
           domElement.style.height = node.getData('height') + 'px';
-          label.innerHTML = node.name;
-          
+          var nameLabel = document.createTextNode(node.name);
+          label.appendChild(nameLabel);
+         
           domElement.appendChild(wrapper);
         }
       },
@@ -9919,7 +9920,8 @@ $jit.AreaChart = new Class({
           labelStyle.top = (config.labelOffset + leftAcum) + 'px';
           domElement.style.top = parseInt(domElement.style.top, 10) - leftAcum + 'px';
           domElement.style.height = wrapperStyle.height = leftAcum + 'px';
-          labels.aggregate.innerHTML = acum;
+          var nameLabel = document.createTextNode(acum);
+          labels.aggregate.appendChild(nameLabel);
         }
       }
     });
@@ -12012,7 +12014,7 @@ $jit.Icicle = new Class({
     }
 
     //final plot callback
-    callback = {
+    var callback = {
       onComplete: function() {
         that.clickedNode = parent;
         if(config.request) {
@@ -12633,7 +12635,7 @@ $jit.RGraph = new Class( {
     if (this.root != id && !this.busy) {
       this.busy = true;
       this.root = id;
-      that = this;
+      var that = this;
       this.controller.onBeforeCompute(this.graph.getNode(id));
       var obj = this.getNodeAndParentAngle(id);
 
@@ -14005,7 +14007,7 @@ TM.Base = {
       return;
     }
     //final plot callback
-    callback = {
+    var callback = {
       onComplete: function() {
         that.clickedNode = parent;
         if(config.request) {
@@ -15021,9 +15023,8 @@ $jit.BarChart = new Class({
         domElement.style.width = node.getData('width') + 'px';
         domElement.style.height = node.getData('height') + 'px';
         aggregateStyle.left = labelStyle.left =  '0px';
-
-        label.innerHTML = node.name;
-        
+        var nameLabel = document.createTextNode(node.name);
+        label.appendChild(nameLabel);
         domElement.appendChild(wrapper);
       },
       onPlaceLabel: function(domElement, node) {
@@ -15071,7 +15072,9 @@ $jit.BarChart = new Class({
             domElement.style.top = parseInt(domElement.style.top, 10) - height + 'px';
             domElement.style.height = wrapperStyle.height = height + 'px';
           }
-          labels.aggregate.innerHTML = acum;
+
+          var nameLabel = document.createTextNode(acum);
+          labels.aggregate.appendChild(nameLabel);
         }
       }
     });
@@ -16377,7 +16380,8 @@ $jit.PieChart = new Class({
           style.fontFamily = labelConf.family;
           style.color = labelConf.color;
           style.textAlign = 'center';
-          domElement.innerHTML = node.name;
+          var nameLabel = document.createTextNode(node.name);
+          domElement.appendChild(nameLabel);
         }
       },
       onPlaceLabel: function(domElement, node) {
