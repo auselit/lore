@@ -597,7 +597,8 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,Ext.form.Comb
                 break;
             default:
                 t = Ext.getDom(this.msgTarget);
-                t.innerHTML = msg;
+                var msgEl = document.createTextNode(msg)
+                t.appendChild(msgEl);
                 t.style.display = this.msgDisplay;
                 break;
         }
