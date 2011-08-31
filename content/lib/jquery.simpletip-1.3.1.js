@@ -12,10 +12,8 @@
  * Released: February 5, 2009 - 11:04am
  */
 
-var curtip;
-
 (function($){
-
+   var curtip;
    function Simpletip(elem, conf)
    {
       var self = this;
@@ -244,6 +242,8 @@ var curtip;
          
          updatePos: function(event)
          {
+            var posX;
+            var posY;
             var tooltipWidth = tooltip.outerWidth();
             var tooltipHeight = tooltip.outerHeight();
             
