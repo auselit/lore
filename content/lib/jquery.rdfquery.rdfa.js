@@ -763,6 +763,8 @@
     /** @ignore */
     validate: function (v) {
       var
+        month,
+        day,
         m = this.regex.exec(v),
         year = parseInt(m[1], 10),
         tz = m[10] === undefined || m[10] === 'Z' ? '+0000' : m[10].replace(/:/, ''),
@@ -1184,7 +1186,7 @@
     uriRegex = /^<(([^>]|\\>)*)>$/,
     literalRegex = /^("""((\\"|[^"])*)"""|"((\\"|[^"])*)")(@([a-z]+(-[a-z0-9]+)*)|\^\^(.+))?$/,
     tripleRegex = /(("""((\\"|[^"])*)""")|("(\\"|[^"]|)*")|(<(\\>|[^>])*>)|\S)+/g,
-
+    
     blankNodeSeed = databankSeed = new Date().getTime() % 1000,
     blankNodeID = function () {
       blankNodeSeed += 1;
@@ -1793,7 +1795,9 @@
         return doc;
       }
     },
-
+    /** 
+     * Append an element within an XML document (for serialization purposes)
+     */
     appendElement = function (parent, namespace, name, indent) {
       var doc = parent.ownerDocument,
         e;
@@ -2134,7 +2138,7 @@
     },
 
     parseRdfXml = function (doc) {
-      var i, lang, d, triples = [];
+      var i, lang, d, base, triples = [];
       if (doc.documentElement.namespaceURI === rdfNs && getLocalName(doc.documentElement) === 'RDF') {
         lang = getAttributeNS(doc.documentElement, 'http://www.w3.org/XML/1998/namespace', 'lang');
         base = getAttributeNS(doc.documentElement, 'http://www.w3.org/XML/1998/namespace', 'base') || $.uri.base();
@@ -2177,7 +2181,7 @@
       }
       // collect together the grouped results
       for (i = 0; i < bindings.length; i += 1) {
-        key = bindings[i][variable];
+        var key = bindings[i][variable];
         if (grouped[key] === undefined) {
           grouped[key] = [];
         }
@@ -2438,7 +2442,7 @@
       if (triple.isFixed()) {
         this.databank.remove(triple.triple(), options);
       } else {
-        query = this;
+        var query = this;
         this.each(function (i, data) {
           var t = triple.triple(data);
           if (t !== null) {
@@ -2969,7 +2973,7 @@
         if (dump.xml) {
           return dump.xml.replace(/\s+$/,'');
         } else {
-          serializer = new XMLSerializer();
+          var serializer = new XMLSerializer();
           return serializer.serializeToString(dump);
         }
       } else {
@@ -3366,15 +3370,7 @@
         proxy = (opts && opts.proxy) || $.rdf.databank.defaults.proxy,
         depth = (opts && opts.depth) || $.rdf.databank.defaults.depth;
       if (typeof data === 'string' || data.scheme) {
-        if (!queue(this, data, { success: success, error: error })) {
-          url = typeof data === 'string' ? $.uri(data) : data;
-          script = '<script type="text/javascript" src="' + proxy + '?id=' + this.id + '&amp;depth=' + depth + '&amp;url=' + encodeURIComponent(url.resolve('').toString()) + '"></script>';
-          if (async) {
-            setTimeout("$('head').append('" + script + "')", 0);
-          } else {
-            $('head').append(script);
-          }
-        }
+        // do nothing: proxy disabled for LORE
         return this;
       } else if (data.ownerDocument !== undefined) {
         if (data.documentElement.nodeName === 'html') {
@@ -4863,13 +4859,13 @@
         ns = this.xmlns();
       atts = getAttributes(this).atts;
       if (what.length) {
-        for (i = 0; i < what.length; i += 1) {
+        for (var i = 0; i < what.length; i += 1) {
           removeRDFa.call(this, what[i]);
         }
         return this;
       }
-      hasRelation = atts.rel !== undefined || atts.rev !== undefined;
-      hasRDFa = hasRelation || atts.property !== undefined || atts['typeof'] !== undefined;
+      var hasRelation = atts.rel !== undefined || atts.rev !== undefined;
+      var hasRDFa = hasRelation || atts.property !== undefined || atts['typeof'] !== undefined;
       if (hasRDFa) {
         if (what.property !== undefined) {
           if (atts.property !== undefined) {
