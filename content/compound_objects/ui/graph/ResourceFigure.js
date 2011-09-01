@@ -532,8 +532,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                     return false;
                 } 
             } 
-            this.raise();
-            return draw2d.Node.prototype.onDragstart.call(this, x, y);
+            return lore.ore.ui.graph.EntityFigure.prototype.onDragstart.call(this, x, y);
         } catch (ex){
             lore.debug.ore("Error in onDragstart",ex);
             return true;
