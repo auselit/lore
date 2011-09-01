@@ -19,18 +19,20 @@
  */
 /**
  * @class lore.ore.ui.graph.COGraph The Graphical compound object editing view
- * @extends draw2d.Workflow
+ * @extends lore.draw2d.Workflow
  * @param {} id
  */
 lore.ore.ui.graph.COGraph = function(id) {
-    draw2d.Workflow.call(this, id);
+    
+    lore.draw2d.Workflow.call(this, id);
     try {
-    	this.commandStack = new lore.ore.ui.graph.CommandStack();
+    	this.commandStack = new lore.draw2d.CommandStack();
 	    this.layouter = new lore.ore.ui.graph.autolayout.Layouter(this);
 	    this.layouter.setPreferredEdgeLength(160);
         /* The mask element covers figures to allow mouse to move over figures during moves
          * without interference from figure contents
          **/
+
 	    this.mask = document.createElement("div");
         this.scale = 1.0;
         this.mask.style.position="absolute";
@@ -40,6 +42,7 @@ lore.ore.ui.graph.COGraph = function(id) {
 	    this.mask.style.display="none";
         this.mask.style.zIndex="6000";
         this.html.appendChild(this.mask);
+        
         this.showEmptyMessage();
         /* Override resizeHandles to use handles that raise/lower figures when resizing */
         this.resizeHandle1 = new lore.ore.ui.graph.ResizeHandle(this,1); // 1 = LEFT TOP
@@ -50,10 +53,12 @@ lore.ore.ui.graph.COGraph = function(id) {
 		this.resizeHandle6 = new lore.ore.ui.graph.ResizeHandle(this,6); // 6 = CENTER_BOTTOM
 		this.resizeHandle7 = new lore.ore.ui.graph.ResizeHandle(this,7); // 7 = LEFT_BOTTOM
 		this.resizeHandle8 = new lore.ore.ui.graph.ResizeHandle(this,8); // 8 = LEFT_MIDDLE
-        this.resizeHandleStart = new lore.ore.ui.graph.LineStartResizeHandle(this); 
-        this.resizeHandleEnd = new lore.ore.ui.graph.LineEndResizeHandle(this); 
+        this.resizeHandleStart = new lore.draw2d.LineStartResizeHandle(this); 
+        this.resizeHandleEnd = new lore.draw2d.LineEndResizeHandle(this); 
+        
         // default colour for line that is displayed for creating connections
-        this.connectionLine.setColor(new draw2d.Color(174, 174, 174));
+        this.connectionLine.setColor(new lore.draw2d.Color(174, 174, 174));
+        this.connectionLine.stroke = 2.5;
         this.previewCanvas = document.createElement("canvas");
         this.setSnapToGeometry(true);
         this.setPanning(true);
@@ -64,8 +69,8 @@ lore.ore.ui.graph.COGraph = function(id) {
         // allow multiple selection
         this.multiSelection = [];
         this.selecting = false;
-        this.selectionFigure = new draw2d.Rectangle(10,10);
-        this.selectionFigure.setColor(new draw2d.Color(170,204,246));
+        this.selectionFigure = new lore.draw2d.Rectangle(10,10);
+        this.selectionFigure.setColor(new lore.draw2d.Color(170,204,246));
         
         // detect other key modifiers eg meta, shift
         var oThis = this;
@@ -79,7 +84,7 @@ lore.ore.ui.graph.COGraph = function(id) {
         lore.debug.ore("error setting up COGraph",ex);
     }
 };
-Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
+Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
     type : "lore.ore.ui.graph.COGraph",
 
     /** 
@@ -106,7 +111,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 		        for (var i = 0; i < allfigures.length; i++) {
 		            var fig = allfigures[i];
 		            if (fig && fig instanceof lore.ore.ui.graph.EntityFigure){
-			            var command = new draw2d.CommandMove(fig);
+			            var command = new lore.draw2d.CommandMove(fig);
 			            command.setPosition(x, y);
 			            this.getCommandStack().execute(command);
 			            lineHeight = Math.max(lineHeight, fig.height);
@@ -178,10 +183,12 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     resizeMask : function () {
         // set drawing area back to 100% before getting scroll values - 
         // allowing scroll area to shrink to content
+        this.canvElem.setSize(100,100);
         this.html.style.width = "100%";
         this.html.style.height = "100%";
         var newx = this.scrollArea.scrollWidth - 1;
         var newy = this.scrollArea.scrollHeight - 1;
+        this.canvElem.setSize(newx, newy);
         this.mask.style.height = newy + "px";
         this.mask.style.width = newx + "px";
         this.html.style.width = newx + "px";
@@ -191,39 +198,55 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
      * Remove all figures and reset mask and empty message
      */
     clear : function() {
-        draw2d.Workflow.prototype.clear.call(this);
-        this.commandStack = new lore.ore.ui.graph.CommandStack();
+        lore.draw2d.Workflow.prototype.clear.call(this);
+        this.commandStack = new lore.draw2d.CommandStack();
         this.resizeMask();
         this.showEmptyMessage();
+        this.canvElem.clear();
     },
     /**
      * Override to hide/show empty message when figures are added or removed
      */
     setDocumentDirty: function() {
-      draw2d.Workflow.prototype.setDocumentDirty.call(this);
+      lore.draw2d.Workflow.prototype.setDocumentDirty.call(this);
       if (this.figures.getSize() == 0) {
         this.showEmptyMessage();
       } else {
         this.clearEmptyMessage();
       }
     },
+    removeFigure: function(fig) {
+        lore.draw2d.Canvas.prototype.removeFigure.call(this, fig);
+        this.figures.remove(fig);
+        this.lines.remove(fig);
+        this.dialogs.remove(fig);
+        fig.setWorkflow(null);
+        
+        if (fig instanceof lore.draw2d.Connection) {
+            fig.disconnect();
+        }
+        if (this.currentSelection == fig) {
+            this.setCurrentSelection(null);
+        }
+        this.setDocumentDirty();
+    },
     showSelectionFigure: function(x, y, w, h) {
       this.selectionFigure.setPosition(x,y);
       this.selectionFigure.setDimension(w,h);
       
       if(this.selectionFigure.canvas==null) {
-        draw2d.Canvas.prototype.addFigure.call(this,this.selectionFigure);
+        lore.draw2d.Canvas.prototype.addFigure.call(this,this.selectionFigure);
       }
     },
     hideSelectionFigure: function() {
         if(this.selectionFigure.canvas!=null) {
-            draw2d.Canvas.prototype.removeFigure.call(this,this.selectionFigure);
+            lore.draw2d.Canvas.prototype.removeFigure.call(this,this.selectionFigure);
         }
     },
     // TODO: move resizeHandles to be owned by Figure so that we can support multi-selection
 	/**
 	 * Overrides the method from the superclass to change the colour of the handles
-	 * @param {draw2d.Figure} figure The figure on which the resize handles are to be displayed
+	 * @param {lore.draw2d.Figure} figure The figure on which the resize handles are to be displayed
 	 */
 	showResizeHandles: function(figure) {
 	  this.hideLineResizeHandles();
@@ -246,10 +269,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	  var objWidth    = figure.getWidth();
 	  var xPos = figure.getX();
 	  var yPos = figure.getY();
-	  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle1,xPos-resizeWidth,yPos-resizeHeight);
-	  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle3,xPos+objWidth,yPos-resizeHeight);
-	  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle5,xPos+objWidth,yPos+objHeight);
-	  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle7,xPos-resizeWidth,yPos+objHeight);
+	  lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle1,xPos-resizeWidth,yPos-resizeHeight);
+	  lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle3,xPos+objWidth,yPos-resizeHeight);
+	  lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle5,xPos+objWidth,yPos+objHeight);
+	  lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle7,xPos-resizeWidth,yPos+objHeight);
 	
 	  this.moveFront(this.resizeHandle1);
 	  this.moveFront(this.resizeHandle3);
@@ -261,8 +284,8 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	  this.resizeHandle5.setCanDrag(figure.isResizeable());
 	  this.resizeHandle7.setCanDrag(figure.isResizeable());
 	  if (figure.isResizeable()) {
-	    var blue = new draw2d.Color(217,232,251);
-	    var brightblue = new draw2d.Color(170,204,246);
+	    var blue = new lore.draw2d.Color(217,232,251);
+	    var brightblue = new lore.draw2d.Color(170,204,246);
 	    this.resizeHandle1.setBackgroundColor(blue);
 	    this.resizeHandle2.setBackgroundColor(blue);
 	    this.resizeHandle3.setBackgroundColor(blue);
@@ -280,7 +303,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	    this.resizeHandle7.setColor(brightblue);
 	    this.resizeHandle8.setColor(brightblue);
 	  } else {
-	  	var grey = new draw2d.Color(174,174,174);
+	  	var grey = new lore.draw2d.Color(174,174,174);
 	    this.resizeHandle1.setBackgroundColor(null);
 	    this.resizeHandle2.setBackgroundColor(null);
 	    this.resizeHandle3.setBackgroundColor(null);
@@ -304,10 +327,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	    this.resizeHandle4.setCanDrag(figure.isResizeable());
 	    this.resizeHandle6.setCanDrag(figure.isResizeable());
 	    this.resizeHandle8.setCanDrag(figure.isResizeable());
-	    draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle2,xPos+(objWidth/2)-this.resizeHandleHalfWidth,yPos-resizeHeight);
-	    draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle4,xPos+objWidth,yPos+(objHeight/2)-(resizeHeight/2));
-	    draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle6,xPos+(objWidth/2)-this.resizeHandleHalfWidth,yPos+objHeight);
-	    draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle8,xPos-resizeWidth,yPos+(objHeight/2)-(resizeHeight/2));
+	    lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle2,xPos+(objWidth/2)-this.resizeHandleHalfWidth,yPos-resizeHeight);
+	    lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle4,xPos+objWidth,yPos+(objHeight/2)-(resizeHeight/2));
+	    lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle6,xPos+(objWidth/2)-this.resizeHandleHalfWidth,yPos+objHeight);
+	    lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandle8,xPos-resizeWidth,yPos+(objHeight/2)-(resizeHeight/2));
 	    this.moveFront(this.resizeHandle2);
 	    this.moveFront(this.resizeHandle4);
 	    this.moveFront(this.resizeHandle6);
@@ -316,18 +339,18 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	},
 	/**
 	 * Customize the resize handles
-	 * @param {draw2d.Line} figure The line for the resize handles.
+	 * @param {lore.draw2d.Line} figure The line for the resize handles.
 	 * @private
 	 **/
 	showLineResizeHandles:function(figure) {
-	  var blue = new draw2d.Color(217,232,251);
-	  var brightblue = new draw2d.Color(170,204,246);
+	  var blue = new lore.draw2d.Color(217,232,251);
+	  var brightblue = new lore.draw2d.Color(170,204,246);
 	  var resizeWidthHalf = this.resizeHandleStart.getWidth()/2;
 	  var resizeHeightHalf= this.resizeHandleStart.getHeight()/2;
 	  var startPoint = figure.getStartPoint();
 	  var endPoint   = figure.getEndPoint();
-	  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandleStart,startPoint.x-resizeWidthHalf,startPoint.y-resizeWidthHalf);
-	  draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandleEnd,endPoint.x-resizeWidthHalf,endPoint.y-resizeWidthHalf);
+	  lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandleStart,startPoint.x-resizeWidthHalf,startPoint.y-resizeWidthHalf);
+	  lore.draw2d.Canvas.prototype.addFigure.call(this,this.resizeHandleEnd,endPoint.x-resizeWidthHalf,endPoint.y-resizeWidthHalf);
 	  this.resizeHandleStart.setCanDrag(figure.isResizeable());
 	  this.resizeHandleEnd.setCanDrag(figure.isResizeable());
 	  if(figure.isResizeable()) {
@@ -365,11 +388,11 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
     	  if((keyCode==46 || keyCode==8)) {
     		  // delete selected figure(s)
     		  if (sel){
-    			  this.commandStack.execute(sel.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+    			  this.commandStack.execute(sel.createCommand(new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.DELETE)));
     		  } else if (msel){
     			  this.commandStack.startCommandGroup();
     			  for (var i = 0; i < msel.length; i++){
-    				  this.commandStack.execute(msel[i].createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+    				  this.commandStack.execute(msel[i].createCommand(new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.DELETE)));
     			  }
     			  this.commandStack.endCommandGroup();
     		  }
@@ -401,7 +424,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
                     }
                     
                     if (newX >= 0 && newY >= 0) {
-                        var comm = fig.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.MOVE));
+                        var comm = fig.createCommand(new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.MOVE));
                         comm.setPosition(newX, newY);
                         this.commandStack.execute(comm);
                     }
@@ -477,10 +500,6 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       this.mouseDownPosX = x;
       this.mouseDownPosY = y;
 
-      if(this.toolPalette!=null && this.toolPalette.getActiveTool()!=null) {
-        this.toolPalette.getActiveTool().execute(x,y);
-      }
-
       this.showMenu(null);
       // check if a line has been hit
       var line = this.getBestLine(x,y);
@@ -507,9 +526,9 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       var oldMultiSelection = this.multiSelection;
       if (multi){
     	  this.multiSelection = sel;
-    	  draw2d.Workflow.prototype.setCurrentSelection.call(this,null);
+    	  lore.draw2d.Workflow.prototype.setCurrentSelection.call(this,null);
       } else {
-    	   draw2d.Workflow.prototype.setCurrentSelection.call(this,sel);
+    	   lore.draw2d.Workflow.prototype.setCurrentSelection.call(this,sel);
 	       if (sel) {
 	            this.multiSelection = [sel];
 	       } else {
@@ -525,7 +544,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
       }
       
       // Always show line resize handles and highlighting when connection is selected
-      if (sel && sel instanceof draw2d.Line) {
+      if (sel && sel instanceof lore.draw2d.Line) {
         this.showLineResizeHandles(sel);
       } else if (sel instanceof lore.ore.ui.graph.EntityFigure) {
         this.showResizeHandles(sel);
@@ -591,7 +610,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
    
     addResourceFigure: function(fig, x, y) {
         
-        this.commandStack.execute(new draw2d.CommandAdd(this, fig, x, y));
+        this.commandStack.execute(new lore.draw2d.CommandAdd(this, fig, x, y));
         
         this.setCurrentSelection(fig);
         // workaround to ensure keyboard events work immediately
@@ -779,11 +798,11 @@ Ext.extend(lore.ore.ui.graph.COGraph, draw2d.Workflow, {
 	},
     /**  Don't show snap to lines when making a connection */
     snapToHelper: function(figure,  pos){
-        if (figure instanceof lore.ore.ui.graph.Port){
-            var result = new draw2d.Dimension(pos.x,pos.y, figure.getWidth(), figure.getHeight());
+        if (figure instanceof lore.draw2d.Port){
+            var result = new lore.draw2d.Dimension(pos.x,pos.y, figure.getWidth(), figure.getHeight());
             return result.getTopLeft();
         }
-        return draw2d.Workflow.prototype.snapToHelper.call(this,figure,pos);
+        return lore.draw2d.Workflow.prototype.snapToHelper.call(this,figure,pos);
     },
     /** Return the figures in the graph, sorted left-right, top-bottom by x, y coordinates */
     getFiguresSorted : function(){

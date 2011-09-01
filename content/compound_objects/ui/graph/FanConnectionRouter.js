@@ -20,12 +20,12 @@
 /**
  * Fans multiple connections between the same resources so they are not drawn on top of each other
  * @class lore.ore.ui.graph.FanConnectionRouter
- * @extends draw2d.BezierConnectionRouter
+ * @extends lore.draw2d.BezierConnectionRouter
  */
-lore.ore.ui.graph.FanConnectionRouter = Ext.extend(draw2d.BezierConnectionRouter, {
+lore.ore.ui.graph.FanConnectionRouter = Ext.extend(lore.draw2d.BezierConnectionRouter, {
     FAN_AMOUNT: 30,
     constructor: function() {
-        draw2d.BezierConnectionRouter.call(this);
+        lore.draw2d.BezierConnectionRouter.call(this);
         
     },
     route: function(conn){
@@ -72,10 +72,10 @@ lore.ore.ui.graph.FanConnectionRouter = Ext.extend(draw2d.BezierConnectionRouter
            if (pointList.length > 0){
               pointIndex =  Math.min(pointList.length, Math.floor(pointList.length/2));
               point = pointList[pointIndex]; 
-              newPoint = new draw2d.Point(point.getX() + diffX, point.getY() + diffY)
+              newPoint = new lore.draw2d.Point(point.getX() + diffX, point.getY() + diffY)
               pointList.splice(pointIndex, 0, newPoint );
            } else {
-              newPoint = new draw2d.Point(diffX, diffY);
+              newPoint = new lore.draw2d.Point(diffX, diffY);
               pointList.push(newPoint);
            }
        }

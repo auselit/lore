@@ -19,7 +19,7 @@
  */
 /**
  * @class lore.ore.ui.graph.EntityFigure Displays a placeholder entity
- * @extends draw2d.Node
+ * @extends lore.draw2d.Node
  * @param {Object} initprops initial properties
  */
 lore.ore.ui.graph.EntityFigure = function(model) {
@@ -28,7 +28,7 @@ lore.ore.ui.graph.EntityFigure = function(model) {
     this.editing = false;
     this.originalHeight = 50; // for backwards compatibility: will load as collapsed ResourceFigure in previous versios
     this.highlightColor = this.NOHIGHLIGHT; 
-    draw2d.Node.call(this);
+    lore.draw2d.Node.call(this);
     // Need to set model after call to superclass as it sets model property to null
     this.setModel(model);
     this.url = this.getProperty("resource_0");
@@ -42,7 +42,7 @@ lore.ore.ui.graph.EntityFigure = function(model) {
     Ext.get(this.header).on('dblclick',this.startEditing,this);
     Ext.get(this.menuIcon).on("click", this.onHeaderMenu, this);
 };
-Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
+Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
     type : "lore.ore.ui.graph.EntityFigure",
     /**
      * Create the HTML to represent the figure
@@ -64,7 +64,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                 margin : "0px",
                 padding : "0px",
                 outlineStyle : "none",
-                zIndex : "" + draw2d.Figure.ZOrderBaseIndex
+                zIndex : "" + lore.draw2d.Figure.ZOrderBaseIndex
         }); 
         var header = document.createElement("div");
         Ext.apply(header,{
@@ -202,7 +202,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      * @param {number} h Height in pixels
      */
     setDimension : function(w, h) {
-        draw2d.Node.prototype.setDimension.call(this, w, h);
+        lore.draw2d.Node.prototype.setDimension.call(this, w, h);
         if(this.textarea){
             this.highlightElement.width=(this.width) + "px";
             this.textarea.style.width = (this.width) + "px";
@@ -293,7 +293,8 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      */
     onDragstart : function(x, y) {
         this.raise();
-        return draw2d.Node.prototype.onDragstart.call(this, x, y);
+        return lore.draw2d.Node.prototype.onDragstart.call(this, x, y);
+        
     },
     /** Return the minimum width */
     getMinWidth : function() {
@@ -308,7 +309,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      */
     onDragend : function() {
         this.lower();
-        draw2d.Node.prototype.onDragend.call(this);
+        lore.draw2d.Node.prototype.onDragend.call(this);
     },
     /**
      * 
@@ -316,7 +317,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
      *            flag
      */
     setCanDrag : function(flag) {
-        draw2d.Node.prototype.setCanDrag.call(this, flag);
+        lore.draw2d.Node.prototype.setCanDrag.call(this, flag);
         this.html.style.cursor = "";
         if (!this.header) {
             return;
@@ -339,56 +340,51 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
     },
     /**
      * 
-     * @param {lore.ore.ui.graph.COGraph}  wf The parent draw2d.Workflow object
+     * @param {lore.ore.ui.graph.COGraph}  wf The parent lore.draw2d.Workflow object
      */
     setWorkflow : function(wf) {
-        draw2d.Node.prototype.setWorkflow.call(this, wf);
-        if (this.getZOrder() == draw2d.Figure.ZOrderBaseIndex && wf) {
-            this.setZOrder(draw2d.Figure.ZOrderBaseIndex
+        lore.draw2d.Node.prototype.setWorkflow.call(this, wf);
+        if (this.getZOrder() == lore.draw2d.Figure.ZOrderBaseIndex && wf) {
+            this.setZOrder(lore.draw2d.Figure.ZOrderBaseIndex
                     + wf.getDocument().getFigures().getSize());
         }
         if (wf && !this.inputPort) {
-            this.inputPort = new lore.ore.ui.graph.Port();
+            this.inputPort = new lore.draw2d.Port();
             this.inputPort.setWorkflow(wf);
             this.inputPort.setName("input");
             this.addPort(this.inputPort, 0, this.height / 2);
 
-            this.inputPort2 = new lore.ore.ui.graph.Port();
+            this.inputPort2 = new lore.draw2d.Port();
             this.inputPort2.setWorkflow(wf);
             this.inputPort2.setName("input2");
             this.addPort(this.inputPort2, this.width / 2, 0);
 
-            this.outputPort = new lore.ore.ui.graph.Port();
+            this.outputPort = new lore.draw2d.Port();
             this.outputPort.setWorkflow(wf);
             this.outputPort.setName("output");
             this.addPort(this.outputPort, this.width + 2, this.height / 2);
 
-            this.outputPort2 = new lore.ore.ui.graph.Port();
+            this.outputPort2 = new lore.draw2d.Port();
             this.outputPort2.setWorkflow(wf);
             this.outputPort2.setName("output2");
             this.addPort(this.outputPort2, this.width / 2, this.height + 2);
 
         }
         this.draggable.removeEventListener("dragstart", this.tmpDragstart);
-        var oThis = this;
         // override dragstart to not select figure (we do this by default in
         // setCurrentSelection
         this.tmpDragstart = function(oEvent) {
-            var w = oThis.workflow;
+            var obj = oEvent.target.node;
+           
+            var w = obj.workflow;
             w.showMenu(null);
-            // reset old action of the toolbar
-            if (w.toolPalette && w.toolPalette.activeTool) {
-                oEvent.returnValue = false;
-                w.onMouseDown(oThis.x + oEvent.x, oEvent.y + oThis.y);
-                w.onMouseUp(oThis.x + oEvent.x, oEvent.y + oThis.y);
-                return;
-            }
-            w.setCurrentSelection(oThis);
-            oEvent.returnValue = oThis.onDragstart(oEvent.x, oEvent.y);
+            w.setCurrentSelection(obj);
+            oEvent.returnValue = obj.onDragstart(oEvent.x, oEvent.y);
         };
-        this.draggable.addEventListener("dragstart", this.tmpDragstart);
+       
+       this.draggable.addEventListener("dragstart",this.tmpDragstart);  
     },
-
+    
     /**
      * Append a property to the properties
      * 
@@ -505,7 +501,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
         if (theProp){
             if (pid.match("dc:subject")){
                 // make sure that subject terms don't still have escaped ampersands in them
-                 return theProp.value.toString().replace(/&amp;/,'&');
+                 return theProp.value.toString().replace(/&amp;/g,'&');
             } else {
                 if (theProp.value){
                     return theProp.value.toString();
@@ -562,7 +558,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
                 handler: function(evt){
                     this.workflow.getCommandStack()
                         .execute(this.createCommand(
-                                new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+                                new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.DELETE)));
                 }
           });
           menu.add("-");
@@ -667,7 +663,12 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, draw2d.Node, {
         w.setCurrentSelection(this, false);
          
     },
-
+    setCanvas: function(c){
+      this.canvas = c;
+      for (var i = 0; i < this.ports.getSize(); i++) {
+        this.ports.get(i).setCanvas(c);
+      }  
+    },
 	/**
 	 * Override onKeyDown - workflow will manage this
 	 * 

@@ -369,8 +369,8 @@ lore.ore.ui.graph.autolayout.HybridVertexVertexRepulsionLaw = Ext.extend(lore.or
 lore.ore.ui.graph.autolayout.ForceModel = function(graph) {
         this.graph = graph;
         this.preferredEdgeLength = 0;
-        this.forceLaws = new draw2d.ArrayList();
-        this.constraints = new draw2d.ArrayList();
+        this.forceLaws = new lore.draw2d.ArrayList();
+        this.constraints = new lore.draw2d.ArrayList();
 };
     /**
      * 
@@ -1214,12 +1214,12 @@ lore.ore.ui.graph.autolayout.Vertex = Ext.extend(lore.ore.ui.graph.autolayout.Ce
         this.undirectedDegree = 0;
         this.inDegree = 0;
         this.outDegree = 0;
-        this.undirectedEdges = new draw2d.ArrayList();
-        this.inEdges = new draw2d.ArrayList();
-        this.outEdges = new draw2d.ArrayList();
-        this.undirectedNeighbors = new draw2d.ArrayList();
-        this.inNeighbors = new draw2d.ArrayList();
-        this.outNeighbors = new draw2d.ArrayList();
+        this.undirectedEdges = new lore.draw2d.ArrayList();
+        this.inEdges = new lore.draw2d.ArrayList();
+        this.outEdges = new lore.draw2d.ArrayList();
+        this.undirectedNeighbors = new lore.draw2d.ArrayList();
+        this.inNeighbors = new lore.draw2d.ArrayList();
+        this.outNeighbors = new lore.draw2d.ArrayList();
         this.name = "";
         this.fixed = false;
         this.setContext(graph);
@@ -1470,8 +1470,8 @@ lore.ore.ui.graph.autolayout.Graph = Ext.extend(lore.ore.ui.graph.autolayout.Cel
         this.numberOfVertices = 0;
         this.numberOfMarkedVertices = 0;
         this.numberOfEdges = 0;
-        this.vertices = new draw2d.ArrayList();
-        this.edges = new draw2d.ArrayList();
+        this.vertices = new lore.draw2d.ArrayList();
+        this.edges = new lore.draw2d.ArrayList();
         if (dimensions) {
             this.setDimensions(dimensions);
         }
@@ -1681,7 +1681,7 @@ lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw = Ext.extend(lore.ore.ui.gra
         for (var i = 0; i < d; i++) {
             gridSize[i] = parseInt(drawingArea[i] / k) + 1;
         }
-        var grid = new draw2d.ArrayList();
+        var grid = new lore.draw2d.ArrayList();
         var gMin = this.graph.getMin();
         var index = new Array();
         var sign = new Array();
@@ -1693,7 +1693,7 @@ lore.ore.ui.graph.autolayout.VertexEdgeRepulsionLaw = Ext.extend(lore.ore.ui.gra
             }
             var gridCell = grid.get(index);
             if (gridCell == null) {
-                grid.insertElementAt(new draw2d.ArrayList(), index);
+                grid.insertElementAt(new lore.draw2d.ArrayList(), index);
             } else {
                 gridCell.add(v);
             }
@@ -2292,13 +2292,13 @@ Ext.apply(lore.ore.ui.graph.autolayout.Layouter.prototype, {
         this.graph = new lore.ore.ui.graph.autolayout.Graph(this.dimensions);
         this.graph.setSize([this.workflow.getWidth(), this.workflow.getHeight()]);
         var workflowFigures = this.workflow.getFigures();
-        this.figures = new draw2d.ArrayList();
+        this.figures = new lore.draw2d.ArrayList();
         for (var i = 0; i < workflowFigures.getSize(); i++) {
             var currFigure = workflowFigures.get(i);
             // modified for lore: removed check for figure type
             this.figures.add(currFigure);
         }
-        this.vertexes = new draw2d.ArrayList();
+        this.vertexes = new lore.draw2d.ArrayList();
         for (var i = 0; i < this.figures.getSize(); i++) {
             var figure = this.figures.get(i);
             var vertex = this.graph.insertVertex();
@@ -2395,7 +2395,7 @@ Ext.apply(lore.ore.ui.graph.autolayout.Layouter.prototype, {
             var vertex = this.vertexes.get(i);
             var figure = this.figures.get(i);
             var coords = vertex.getCoords();
-            var command = new draw2d.CommandMove(figure);
+            var command = new lore.draw2d.CommandMove(figure);
             command.setPosition(parseInt(coords[0]), parseInt(coords[1]));
             this.workflow.getCommandStack().execute(command);
         }
