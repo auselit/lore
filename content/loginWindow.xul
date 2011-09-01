@@ -2,7 +2,8 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <!DOCTYPE window SYSTEM "chrome://lore/locale/about.dtd">
 <window title="Login Window" orient="vertical" autostretch="always" onload="onLoad();" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-<script><![CDATA[
+<script type="text/javascript">
+<![CDATA[
     var gIframe, gLogger;
     var initURL = "about:blank";
     function onLoad() {
@@ -29,7 +30,8 @@
         }
             
     }
-]]></script>
+]]>
+</script>
 <hbox flex="1">
 
     <iframe id="loginframe" type="content-primary" src="about:blank" flex="1"/>
