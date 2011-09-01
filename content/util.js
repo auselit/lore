@@ -1008,14 +1008,14 @@ util = {
 	            .createInstance(Components.interfaces.nsIDOMSerializer);
 	        
 	        html = html.replace(/<br>$/,'');
-	        
+	        // parseFragment sanitizes html content
 	        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
 	            .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
 	            .parseFragment(html, false, null, win.document.body);
 	        
 	        if (fragment) {
 	            if (asHTML){ 
-	                // use a temporary element to serialize fragment to plain HTML
+	                // use a temporary element to serialize sanitized fragment to plain HTML
 		            var doc = win.document;
 		            var divEl = doc.getElementById('sanitize');
 		            if (!divEl){
@@ -1024,7 +1024,7 @@ util = {
 		                divEl.style.display = "none";
 		            }
 		            divEl.appendChild(fragment);
-                    // read inner HTML to get content as HTML
+                    // read inner HTML to serialize to HTML
 		            var serializedContent = divEl.innerHTML;
 		            divEl.removeChild(divEl.firstChild);
 		            return serializedContent;
@@ -1202,6 +1202,107 @@ util = {
 	    	var url2r = url2.replace(/\#.*$/,'');
 	        return decodeURIComponent(url1r) === decodeURIComponent(url2r);
     	}
-    }
-   
+    },
+    /**
+     * Convert chrome:// uri to file (from developer.mozilla.org code snippets)
+     * @param {} aPath
+     */
+    chromeToPath : function (aPath) {
+       if (!aPath || !(/^chrome:/.test(aPath)))
+          return; //not a chrome url
+       var rv;
+       
+          var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces["nsIIOService"]);
+            var uri = ios.newURI(aPath, "UTF-8", null);
+            var cr = Components.classes['@mozilla.org/chrome/chrome-registry;1'].getService(Components.interfaces["nsIChromeRegistry"]);
+            rv = cr.convertChromeURL(uri).spec;
+            if (/^file:/.test(rv)) 
+              rv = this.urlToPath(rv);
+            else
+              rv = this.urlToPath("file://"+rv);
+          return rv;
+    },
+    /**
+     * Convert url to path, used by chromeToPath (from developer.mozilla.org code snippets)
+     * @param {} aPath
+     */
+    urlToPath: function (aPath) {
+        if (!aPath || !/^file:/.test(aPath))
+          return ;
+        var rv;
+       var ph = Components.classes["@mozilla.org/network/protocol;1?name=file"]
+            .createInstance(Components.interfaces.nsIFileProtocolHandler);
+        rv = ph.getFileFromURLSpec(aPath).path;
+        return rv;
+    },
+/*
+From Math.uuid.js 1.3
+Copyright (c) 2008, Robert Kieffer
+All rights reserved.
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of Robert Kieffer nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/**
+ * Generate a random uuid.
+ *  
+ * <pre>USAGE: uuid(length, radix)
+ * EXAMPLES:
+ *   // No arguments  - returns RFC4122, version 4 ID
+ *   >>> uuid()
+ *   "92329D39-6F5C-4520-ABFC-AAB64544E172"
+ * 
+ *   // One argument - returns ID of the specified length
+ *   >>> uuid(15)     // 15 character ID (default base=62)
+ *   "VcydxgltxrVZSTV"
+ *
+ *   // Two arguments - returns ID of the specified length, and radix. (Radix must be <= 62)
+ *   >>> uuid(8, 2)  // 8 character ID (base=2)
+ *   "01001010"
+ *   >>> uuid(8, 10) // 8 character ID (base=10)
+ *   "47473046"
+ *   >>> uuid(8, 16) // 8 character ID (base=16)
+ *   "098F4D35"
+ *   </pre>
+ *  @param {int} length - the desired number of characters
+ *  @param {int} radix  - the number of allowable values for each character.
+ */
+  uuid : (function() {
+      // Private array of chars to use
+      var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''); 
+    
+      return function (len, radix) {
+        var chars = CHARS;
+        var u = []
+        var rnd = Math.random;
+        radix = radix || chars.length;
+    
+        if (len) {
+          // Compact form
+          for (var i = 0; i < len; i++) u[i] = chars[0 | rnd()*radix];
+        } else {
+          // rfc4122, version 4 form
+          var r;
+    
+          // rfc4122 requires these characters
+          u[8] = u[13] = u[18] = u[23] = '-';
+          u[14] = '4';
+    
+          // Fill in random data.  At i==19 set the high bits of clock sequence as
+          // per rfc4122, sec. 4.1.5
+          for (var i = 0; i < 36; i++) {
+            if (!u[i]) {
+              r = 0 | rnd()*16;
+              u[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r & 0xf];
+            }
+          }
+        }
+    
+        return u.join('');
+      };
+    })()
+
 };
