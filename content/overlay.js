@@ -123,7 +123,6 @@ try {
         onLoad: function(){
             try {
                 this.instId = lore.global.ui.genInstanceID();
-                
                 lore.global.ui.topWindowView.registerView(this, this.instId);
                 gBrowser.addProgressListener(this.oreLocationListener, Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
                 window.addEventListener("close", this.onClose, false); 
@@ -553,7 +552,7 @@ try {
         },
         /** Display the preferences window */
         openOptions: function(){
-            var instantApply = getBoolPref("browser.preferences.instantApply", false);
+            var instantApply = getBoolPref("browser.preferences.instantApply");
             var features = "chrome,titlebar,toolbar,centerscreen,resizable=yes" + (instantApply ? ",dialog=no" : ",modal");
             openDialog("chrome://lore/content/options.xul","", features);
         },
