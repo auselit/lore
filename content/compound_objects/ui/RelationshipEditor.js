@@ -251,7 +251,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             var coGraph = lore.ore.ui.graphicalEditor.coGraph;
             var fig = coGraph.getLine(sel.id);
             if (fig){
-                coGraph.commandStack.execute(fig.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+                coGraph.commandStack.execute(fig.createCommand(new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.DELETE)));
             }
             panel.getStore().remove(sel);        
          } else {

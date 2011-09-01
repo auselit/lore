@@ -107,7 +107,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    },
    /**
     * Updates the views when nodes or connections are selected
-    * @param {draw2d.Figure} figure ResourceFigure, EntityFigure or ContextmenuConnection that was selected
+    * @param {lore.draw2d.Figure} figure ResourceFigure, EntityFigure or Connection that was selected
     */
    onSelectionChanged : function(figure) {
 	   	lore.ore.controller.updateSelection(figure, this);
@@ -205,15 +205,15 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         var comm = event.getCommand();
         var commList;
         
-        if (0!=(details&(draw2d.CommandStack.POST_UNDO))) {
+        if (0!=(details&(lore.draw2d.CommandStack.POST_UNDO))) {
             // command was undone, check whether dirty needs to be reverted
             lore.ore.controller.rollbackDirty();
-        } else if (0!=(details&(draw2d.CommandStack.POST_REDO) || 0!=(details&(draw2d.CommandStack.POST_EXECUTE)))){
+        } else if (0!=(details&(lore.draw2d.CommandStack.POST_REDO) || 0!=(details&(lore.draw2d.CommandStack.POST_EXECUTE)))){
             lore.ore.controller.setDirty();
         }
         
         // handle a group of commands eg auto layout, multi-select delete etc
-        if (comm instanceof lore.ore.ui.graph.CommandGroup){
+        if (comm instanceof lore.draw2d.CommandGroup){
         	commList = comm.commands;
         } else {
         	commList = [comm];
@@ -222,20 +222,20 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         	comm = commList[i];
 	        var comm_fig = comm.figure;
 	        // don't allow figures to be moved outside bounds of canvas
-	        if (comm instanceof draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)) {
+	        if (comm instanceof lore.draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)) {
 	            comm.undo();
 	        }
 	        
 	        if (comm_fig instanceof lore.ore.ui.graph.EntityFigure) {
 	            // reset dummy graph layout position to prevent new nodes being added too far from content
-	            if (comm instanceof draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
+	            if (comm instanceof lore.draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
 	                && comm.oldY == this.dummylayoutprevy) {   
 	                    this.nextXY(comm.newX, comm.newY);
 	            }
 	            // remove the url from lookup if node is deleted, add it back if it is undone
 	            // update address bar add icon to reflect whether current URL is in compound object
-	            if (0!=(details&(draw2d.CommandStack.POST_EXECUTE))) {
-	                if (comm instanceof draw2d.CommandDelete) {
+	            if (0!=(details&(lore.draw2d.CommandStack.POST_EXECUTE))) {
+	                if (comm instanceof lore.draw2d.CommandDelete) {
 	                	try{
 	                		this.model.removeAggregatedResource(comm_fig.url);
 	                	} catch (x){
@@ -245,18 +245,18 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	                    if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
 	                           lore.ore.ui.topView.hideAddIcon(false);
 	                    }
-	                } else if (comm instanceof draw2d.CommandAdd) {
+	                } else if (comm instanceof lore.draw2d.CommandAdd) {
 	                    if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
 	                           lore.ore.ui.topView.hideAddIcon(true);
 	                    }
 	                }
 	            }
-	            else if ((0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandDelete)
-	                || (0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandAdd)) {
+	            else if ((0!=(details&(lore.draw2d.CommandStack.POST_UNDO)) && comm instanceof lore.draw2d.CommandDelete)
+	                || (0!=(details&(lore.draw2d.CommandStack.POST_REDO)) && comm instanceof lore.draw2d.CommandAdd)) {
 	                //  check that URI isn't in resource map (eg another node's resource may have been changed)
 	                
 	                if (this.lookup[comm_fig.url]){
-	                    if (comm instanceof draw2d.CommandDelete) {
+	                    if (comm instanceof lore.draw2d.CommandDelete) {
 	                        lore.ore.ui.vp.warning("Cannot undo deletion: resource is aleady in Compound Object");
 	                        comm.redo();
 	                    } else {
@@ -271,8 +271,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	                this.model.addAggregatedResource(comm_fig.model);
 	           } 
 	             
-	            else if ((0!=(details&(draw2d.CommandStack.POST_REDO)) && comm instanceof draw2d.CommandDelete)
-	             || (0!=(details&(draw2d.CommandStack.POST_UNDO)) && comm instanceof draw2d.CommandAdd)) {
+	            else if ((0!=(details&(lore.draw2d.CommandStack.POST_REDO)) && comm instanceof lore.draw2d.CommandDelete)
+	             || (0!=(details&(lore.draw2d.CommandStack.POST_UNDO)) && comm instanceof lore.draw2d.CommandAdd)) {
                     try{
                         this.model.removeAggregatedResource(comm_fig.url);
                     } catch (x){
@@ -326,7 +326,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    removeFigure : function(uri){
 	    try{
 	        var fig = this.lookupFigure(uri);
-	        this.coGraph.getCommandStack().execute(fig.createCommand(new draw2d.EditPolicy(draw2d.EditPolicy.DELETE)));
+	        this.coGraph.getCommandStack().execute(fig.createCommand(new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.DELETE)));
 	    } catch (e){
 	        lore.debug.ore("removeFigure",e);
 	    }

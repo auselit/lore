@@ -249,7 +249,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     var tt = ep.edgeToolTip;
                     var canvasCtx = ep.fd.canvas.viz.canvas.getCtx();
                     var data = canvasCtx.getImageData(e.layerX,e.layerY,1,1).data;
-                    var color = '#' + new draw2d.Color(data[0], data[1], data[2]).hex();
+                    var color = '#' + new lore.draw2d.Color(data[0], data[1], data[2]).hex();
                     var rel = false;
                     if (color != '#000000') {
                         //if (color == '#DDDDDD') {

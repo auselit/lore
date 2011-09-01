@@ -626,7 +626,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 if (t > 0){
                     renderString += ", ";
                 }
-	            var idx = sbs.store.findUnfiltered('id', tags[t].replace(/&amp;/,'&'));
+	            var idx = sbs.store.findUnfiltered('id', tags[t].replace(/&amp;/g,'&'));
                 if (idx == -1){
                     idx = sbs.store.findUnfiltered('id', tags[t]);
                 }
@@ -849,7 +849,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 var theval;
                 var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
                 //lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
-                if (selfig instanceof lore.ore.ui.graph.ContextmenuConnection){
+                if (selfig instanceof lore.draw2d.Connection){
                     if (args.record.data.name == 'relationship'){ 
                         selfig.setRelationship(
                             this.getPropertyValue("namespace"),args.value);

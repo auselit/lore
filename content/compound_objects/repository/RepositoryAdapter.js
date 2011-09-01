@@ -90,10 +90,10 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
     generateID: function(){
         // TODO: #125 should use a persistent identifier service to request an identifier
         // TODO: check that this id hasn't been used before
-        return this.idPrefix + draw2d.UUID.create();
+        return this.idPrefix + lore.draw2d.UUID.create();
     },
     generatePlaceholderID: function(){
-      return this.reposBase + "/ids/" + draw2d.UUID.create(); 
+      return this.reposBase + "/ids/" + lore.draw2d.UUID.create(); 
     },
     /** Create JSON with related resources for explore view */
     getExploreData : function(uri,title,isCompoundObject, callback) {
