@@ -27,7 +27,6 @@
 }
 
 .x-grid3-hd-row td, .x-grid3-row td, .x-grid3-summary-row td{
-    -moz-outline: none;
     outline: none;
 	-moz-user-focus: normal;
 }
@@ -82,7 +81,6 @@
 }
 
 .x-grid3-body-cell {
-    -moz-outline:0 none;
     outline:0 none;
 }
 
@@ -149,7 +147,6 @@
 	height:1px;
     line-height:1px;
     font-size:1px;
-    -moz-outline:0 none;
     outline:0 none;
     -moz-user-select: text;
     -khtml-user-select: text;

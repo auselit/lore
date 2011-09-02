@@ -96,7 +96,6 @@
 .x-repaint {
     zoom: 1;
     background-color: transparent;
-    -moz-outline: none;
     outline: none;
 }
 
@@ -142,7 +141,6 @@
     float: left;
     padding: 2px;
     text-decoration: none;
-    -moz-outline: 0 none;
     outline: 0 none;
     cursor: pointer;
 }

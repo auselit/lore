@@ -212,7 +212,6 @@ textarea {
     visibility:hidden;
     top: -10000px;
 	white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
     word-wrap: break-word;
@@ -531,13 +530,11 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
 }
         
 .ext-gecko .x-window-body .x-form-item {
-    -moz-outline: none;
     outline: none;
     overflow: auto;
 }
 
 .ext-gecko .x-form-item {
-    -moz-outline: none;
     outline: none;
 }
 

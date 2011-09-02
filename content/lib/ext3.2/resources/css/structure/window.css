@@ -178,7 +178,6 @@
 }
 
 .x-dlg-focus{
-	-moz-outline:0 none;
 	outline:0 none;
 	width:0;
 	height:0;

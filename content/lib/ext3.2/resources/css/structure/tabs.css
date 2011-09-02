@@ -116,8 +116,7 @@ ul.x-tab-strip li.x-tab-edge {
 }
 
 .x-tab-strip a {
-	text-decoration:none !important;
-	-moz-outline: none;
+	text-decoration:none !important;;
 	outline: none;
 	cursor:pointer;
 }

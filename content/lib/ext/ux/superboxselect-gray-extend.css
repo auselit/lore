@@ -12,7 +12,7 @@
 .x-superboxselect-stacked li {float: none !important;}
 .x-superboxselect-input input { border: none; outline: none; margin-top: 4px; margin-bottom: 4px;}
 body.ext-ie .x-superboxselect-input input {background: none; border: none; margin-top: 3px;}
-.x-superboxselect-item {position: relative; -moz-border-radius: 6px; -webkit-border-radius: 6px; border-radius: 6px; o-border-radius: 6px; khtml-border-radius: 6px; border: 1px solid #d7d7d7; background-color: #e7e7e7; padding: 1px 15px 1px 5px !important; }
+.x-superboxselect-item {position: relative; -moz-border-radius: 6px; -webkit-border-radius: 6px; border-radius: 6px; border: 1px solid #d7d7d7; background-color: #e7e7e7; padding: 1px 15px 1px 5px !important; }
 body.ext-ie7 .x-superboxselect-item {margin: 2px 1px 2px 1px; line-height: 1.2em; padding: 2px 17px 4px 5px !important;}
 body.ext-ie6 .x-superboxselect-item {margin: 2px 1px 2px 1px; line-height: 1.2em; padding: 2px 19px 4px 5px !important;}
 .x-superboxselect-item-hover {background: #cdcdcd; border: 1px solid #949494;}

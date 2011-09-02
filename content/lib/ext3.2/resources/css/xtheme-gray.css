@@ -81,7 +81,6 @@
 	background-color: #eaeaea;
 	border-color:#d0d0d0;
     overflow:hidden;
-    zoom:1;
 }
 
 .x-tab-panel-header, .x-tab-panel-footer {
@@ -185,8 +184,6 @@ ul.x-tab-strip-bottom{
 .x-tab-scroller-left-disabled {
     background-position: -18px 0;
     opacity:.5;
-    -moz-opacity:.5;
-    filter:alpha(opacity=50);
     cursor:default;
 }
 
@@ -743,7 +740,6 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .x-grid-group, .x-grid-group-body, .x-grid-group-hd {
-    zoom:1;
 }
 
 .x-grid-group-hd {
