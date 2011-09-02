@@ -430,7 +430,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
     /** @private Render the current compound object in TriG format in the TriG view*/
     updateTrigView: function(){
         var trig = lore.ore.cache.getLoadedCompoundObject().serialize('trig');
-        Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;-moz-pre-wrap:true'>" 
+        Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;'>" 
             + Ext.util.Format.htmlEncode(trig) + "</pre>");
     },
     /** @private Render the current compound object as Fedora Object XML in the FOXML view */
