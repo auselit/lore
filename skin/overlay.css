@@ -42,34 +42,34 @@
 	list-style-image: url(chrome://lore/skin/oaioreicon-sm.png);
 }
 #add-node {
-	list-style-image: url(chrome://lore/skin/icons/add.png);
+	list-style-image: url(chrome://lore/skin/icons/ore/add.png);
 }
 #co-add-placeholder {
-	list-style-image:url(chrome://lore/skin/icons/plus-white.png);
+	list-style-image:url(chrome://lore/skin/icons/ore/plus-white.png);
 }
 #create-co {
-	list-style-image: url(chrome://lore/skin/icons/box-plus.png);
-	list-style-image: url(chrome://lore/skin/icons/database_add.png);
+	/*list-style-image: url(chrome://lore/skin/icons/box-plus.png);*/
+	list-style-image: url(chrome://lore/skin/icons/ore/database_add.png);
 }
 #save-rdf {
-	list-style-image: url(chrome://lore/skin/icons/disk.png);
+	list-style-image: url(chrome://lore/skin/icons/ore/disk.png);
 }
 #delete-rdf {
 	/*list-style-image: url(chrome://lore/skin/icons/box-minus.png);	*/
-	list-style-image: url(chrome://lore/skin/icons/database_delete.png);	
+	list-style-image: url(chrome://lore/skin/icons/ore/database_delete.png);	
 }
 #copy-rdf {
    /*	list-style-image: url(chrome://lore/skin/icons/box-arrow.png);	*/
-   list-style-image: url(chrome://lore/skin/icons/database_go.png);
+   list-style-image: url(chrome://lore/skin/icons/ore/database_go.png);
 }
 #lock-rdf {
-    list-style-image: url(chrome://lore/skin/icons/lock.png);
+    list-style-image: url(chrome://lore/skin/icons/ore/lock.png);
 }
 #reset-co, #reset-anno {
 	list-style-image: url(chrome://lore/skin/icons/arrow_refresh.png);
 }
 #layout-co {
-	list-style-image: url(chrome://lore/skin/icons/layout.png);
+	list-style-image: url(chrome://lore/skin/icons/ore/layout.png);
 }
 #auth-status-icon, #auth-status-icon-co {
 	list-style-image: url(chrome://lore/skin/icons/user_key.png);
@@ -78,29 +78,29 @@
 	list-style-image: url(chrome://lore/skin/icons/tick.png);
 }
 #add-annotation {
-	list-style-image: url(chrome://lore/skin/icons/comment_add.png);
+	list-style-image: url(chrome://lore/skin/icons/anno/comment_add.png);
 }
 
 #remove-annotation {
-	list-style-image: url(chrome://lore/skin/icons/comment_delete.png);
+	list-style-image: url(chrome://lore/skin/icons/anno/comment_delete.png);
 }
 
 #edit-annotation {
-	list-style-image: url(chrome://lore/skin/icons/comment_edit.png);
+	list-style-image: url(chrome://lore/skin/icons/anno/comment_edit.png);
 }
 
 #reply-annotation {
-	list-style-image: url(chrome://lore/skin/icons/comments_add.png);
+	list-style-image: url(chrome://lore/skin/icons/anno/comments_add.png);
 }
 #save-annotation {
 	list-style-image: url(chrome://lore/skin/icons/disk.png);
 }
 
 #save-all-annotations {
-	list-style-image: url(chrome://lore/skin/icons/disk_multiple.png);
+	list-style-image: url(chrome://lore/skin/icons/anno/disk_multiple.png);
 }
 #show-annotations {
-	list-style-image: url(chrome://lore/skin/icons/comment_yellow.gif);	
+	list-style-image: url(chrome://lore/skin/icons/anno/comment_yellow.gif);	
 }
 #load-rdf{
 	
@@ -109,7 +109,7 @@
 	list-style-image: url(chrome://lore/skin/icons/table_refresh.png);
 }
 #co-find {
-	list-style-image: url(chrome://lore/skin/icons/page_white_magnify.png);
+	list-style-image: url(chrome://lore/skin/icons/ore/page_white_magnify.png);
 }
 #show-prefs, #show-prefs2 {
 	list-style-image: url(chrome://lore/skin/icons/cog.png);
