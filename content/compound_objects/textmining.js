@@ -45,7 +45,7 @@ lore.ore.textm.processRDFa = function(tmtab) {
         if (triple.source.style){
             triple.source.style.border="0.5px solid #eeeeee";
             jQuery(triple.source).simpletip({
-                content: '&nbsp;<img src="chrome://lore/skin/icons/rdf.png">&nbsp;' +  triplestr,
+                content: '&nbsp;<img src="../../skin/icons/ore/rdf.png">&nbsp;' +  triplestr,
                 showEffect: 'custom',
                 fixed:true,
                 position:["-20","0"],

@@ -11,9 +11,9 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                 '<div class="coListing" onclick="lore.ore.controller.loadCompoundObjectFromURL(\'{uri}\')">',
                     '<table><tr valign="top"><td>{[this.genNumber(values.uri)]}</td><td>',
                     '<div style="float:left;padding:2px;">',
-                    '<tpl if="lore.ore.reposAdapter && uri.match(lore.ore.reposAdapter.idPrefix)"><img src="chrome://lore/skin/icons/oaioreicon-sm.png"></tpl>',
-                    '<tpl if="lore.ore.reposAdapter && !uri.match(lore.ore.reposAdapter.idPrefix)"><img src="chrome://lore/skin/icons/oaioreicon-grey.png"></tpl>',
-                    '<tpl if="isPrivate"><img style="float:left;position:absolute;left:11px" src="chrome://lore/skin/icons/eye.png"></tpl>',
+                    '<tpl if="lore.ore.reposAdapter && uri.match(lore.ore.reposAdapter.idPrefix)"><img src="../../skin/icons/oaioreicon-sm.png"></tpl>',
+                    '<tpl if="lore.ore.reposAdapter && !uri.match(lore.ore.reposAdapter.idPrefix)"><img src="../../skin/icons/oaioreicon-grey.png"></tpl>',
+                    '<tpl if="isPrivate"><img style="float:left;position:absolute;left:11px" src="../../skin/icons/eye.png"></tpl>',
                     '</div>',
                     '<div>{title}</div>',
                     '<div class="detailText">{creator}',
@@ -119,7 +119,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                  if (this.id == 'cohview'){
                     cm.add({
                        text: "Do not show in history",
-                       icon: "chrome://lore/skin/icons/cross.png",
+                       icon: "../../skin/icons/ore/cross.png",
                        iconCls: "no-icon",
                        scope: this,
                        handler: function(obj,evt) {

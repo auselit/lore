@@ -37,7 +37,7 @@
 				</par>
 				<!-- create a link to start slideshow again -->
 				<par>
-					<img region="img_r" src="../../skin/icons/action_go.gif">
+					<img region="img_r" src="../../skin/icons/ore/action_go.gif">
 						<area id="back" region="img_r" href="#slideshow" />
 					</img>
 					<smilText region="txt_r">Play slideshow again:</smilText>
