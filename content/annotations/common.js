@@ -114,7 +114,6 @@ lore.anno.ui.loreMsg = function(message, iconCls){
  */
 lore.anno.ui.loreInfo = function(message){
 	lore.anno.ui.loreMsg(message, 'info-icon');
-	lore.global.ui.loreInfo(message);
 };
 
 /**
@@ -123,8 +122,6 @@ lore.anno.ui.loreInfo = function(message){
  */
 lore.anno.ui.loreError = function(message){
 	lore.anno.ui.loreMsg(message, 'error-icon');
-	lore.global.ui.loreError(message);
-	
 };
 
 /**
@@ -133,7 +130,6 @@ lore.anno.ui.loreError = function(message){
  */
 lore.anno.ui.loreWarning = function(message){
 	lore.anno.ui.loreMsg(message, 'warning-icon');
-	lore.global.ui.loreWarning(message);
 };
 		
 		
@@ -335,7 +331,7 @@ lore.anno.ui.genDescription = function(annodata, noimglink){
         lore.constants.NAMESPACES["xhtml"] +
         "\" href=\"#\" onclick=\"lore.global.util.launchWindow('" +
         annodata.bodyURL +
-        "',false);\" ><img src='chrome://lore/skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
+        "',false);\" ><img src='../../skin/icons/page_go.png' alt='View annotation body in new window'></a>&nbsp;";
     }
 	
     var body = '';
