@@ -115,7 +115,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
         });
         Ext.get(menuIcon).createChild({
                 tag: "img",
-                src: "chrome://lore/skin/blank.png"
+                src: "../../skin/blank.png"
         });
         this.menuIcon = menuIcon;
         // order in which elements are appended determines z-order
@@ -553,7 +553,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
     populateContextMenu : function(menu){
         menu.add({
                 text: "Delete resource from Compound Object",
-                icon: "chrome://lore/skin/icons/delete.png",
+                icon: "../../skin/icons/delete.png",
                 scope: this,
                 handler: function(evt){
                     this.workflow.getCommandStack()
@@ -564,7 +564,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
           menu.add("-");
           menu.add({
                 text: "Show in Resource List",
-                icon: "chrome://lore/skin/icons/table_edit.png",
+                icon: "../../skin/icons/ore/table_edit.png",
                 scope: this,
                 handler: function(evt){
                     Ext.getCmp("loreviews").activate("remlistview");
@@ -573,7 +573,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
           });
           menu.add({
                 text: "Show in Details view",
-                icon: "chrome://lore/skin/icons/application_view_detail.png",
+                icon: "../../skin/icons/ore/application_view_detail.png",
                 scope: this,
                 handler: function(evt){
                     Ext.getCmp("loreviews").activate("remdetailsview");
@@ -582,7 +582,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
           });
           menu.add({
                 text: "Show in Slideshow view",
-                icon: "chrome://lore/skin/icons/picture_empty.png",
+                icon: "../../skin/icons/ore/picture_empty.png",
                 scope: this,
                 handler: function(evt){     
                     Ext.getCmp("loreviews").activate("remslideview");
@@ -591,7 +591,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
            });
            menu.add({
                 text: "Show in Explore view",
-                icon: "chrome://lore/skin/icons/network.png",
+                icon: "../../skin/icons/ore/network.png",
                 scope: this,
                 handler: function(evt){
                     this.contextmenu.hide();

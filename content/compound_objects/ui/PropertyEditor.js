@@ -105,7 +105,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    {
 		                    	xtype: 'button',                 	
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: 'chrome://lore/skin/icons/cc/by.png',
+		                    	icon: '../../skin/icons/cc/by.png',
 		                    	tooltip: 'Set to Creative Commons Attribution license',
 		                    	scope: this,
 		                    	handler: function(){
@@ -116,7 +116,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: 'chrome://lore/skin/icons/cc/bysa.png',
+		                    	icon: '../../skin/icons/cc/bysa.png',
 		                    	tooltip: 'Set to Creative Commons Attribution Share Alike license',
 		                    	scope: this,
 		                    	handler: function(){
@@ -127,7 +127,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: 'chrome://lore/skin/icons/cc/bync.png',
+		                    	icon: '../../skin/icons/cc/bync.png',
 		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial license',
 		                    	scope: this,
 		                    	handler: function(){
@@ -138,7 +138,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: 'chrome://lore/skin/icons/cc/bynd.png',
+		                    	icon: '../../skin/icons/cc/bynd.png',
 		                    	tooltip: 'Set to Creative Commons Attribution No Derivative Works license',
 		                    	scope: this,
 		                    	handler: function(){
@@ -149,7 +149,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    {
 		                    	xtype: 'button',
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: 'chrome://lore/skin/icons/cc/byncsa.png',
+		                    	icon: '../../skin/icons/cc/byncsa.png',
 		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike license',
 		                    	scope: this,
 		                    	handler: function(){
@@ -160,7 +160,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 		                    {
 		                    	xtype: 'button',                    	
 		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: 'chrome://lore/skin/icons/cc/byncnd.png',
+		                    	icon: '../../skin/icons/cc/byncnd.png',
 		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial No Derivatives license',
 		                    	scope: this,
 		                    	handler: function(){
@@ -572,12 +572,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     propNameRenderFunction: function(val, cell, rec){
         if (rec && rec.data && rec.data.id == "lorestore:isPrivate_0"){
             // display eye icon for private property
-            return "<img title='Private Compound Objects are not visible to other users' src='chrome://lore/skin/icons/eye.png' alt=''><span style='"
+            return "<img title='Private Compound Objects are not visible to other users' src='../../skin/icons/eye.png' alt=''><span style='"
             + (lore.ore.controller.readOnly ? "color:grey;" : "") + "vertical-align:3px'> Private</span>";
         }
         if (rec && rec.data && rec.data.id == "lorestore:isLocked_0"){
             // display lock icon for locked property
-            return "<img src='chrome://lore/skin/icons/lock.png' alt=''><span style='"
+            return "<img src='../../skin/icons/ore/lock.png' alt=''><span style='"
             + (lore.ore.controller.readOnly ? "color:grey;" : "") + "vertical-align:3px'> Locked</span>";
         }
         if (lore.ore.controller.readOnly || (rec && rec.data && 
@@ -600,8 +600,8 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 	renderFunction: function(val, cell, rec){
         if (rec.get("type") == "boolean"){
             // display a checkbox for boolean values
-            var checkedImg = 'chrome://lore/content/lib/ext3.2/resources/images/default/menu/checked.gif';
-            var uncheckedImg = 'chrome://lore/content/lib/ext3.2/resources/images/default/menu/unchecked.gif';
+            var checkedImg = '../../content/lib/ext3.2/resources/images/default/menu/checked.gif';
+            var uncheckedImg = '../../content/lib/ext3.2/resources/images/default/menu/unchecked.gif';
             var cb = ''
                 + '<div style="height:13px;overflow:visible">'
                 + '<img style="vertical-align:-3px" src="'
@@ -705,7 +705,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         if (panel.id == "remgrid"){
             panel.propMenu.add({
                 id: "remgrid-add-lorestore:isPrivate",
-                icon: "chrome://lore/skin/icons/eye.png",
+                icon: "../../skin/icons/eye.png",
                 text: "Private",
                 propname: "lorestore:isPrivate",
                 handler: addPropHandler

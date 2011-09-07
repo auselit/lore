@@ -239,7 +239,7 @@ constants = {
     // Calais web service (text mining)
        /** String to display to attribute Calais web service
         * @const */
-       POWEREDBY_CALAIS : "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/Calais_icon.jpg'> Powered by Calais</a>"
+       POWEREDBY_CALAIS : "<br><hr><a href='http://opencalais.com'><img src='../skin/icons/ore/Calais_icon.jpg'> Powered by Calais</a>"
     },
     
     // Icons

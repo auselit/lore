@@ -110,7 +110,7 @@ span.explorename {
 }
 .menuIcon {
 	left: 4px;
-	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/access/panel/tool-sprites.gif);
+	background-image:url(../lib/ext3.2/resources/images/access/panel/tool-sprites.gif);
 }
 .entity-preview {
     background-color: #343843;
@@ -127,19 +127,19 @@ span.explorename {
 	border-bottom: 1px solid #fffff6;
 }
 .co-tl {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat top left;
+	background: url(../../skin/resourcenodecircleminus-hc.gif) no-repeat top left;
 }
 .co-bl {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat bottom left;
+	background: url(../../skin/resourcenodecircleminus-hc.gif) no-repeat bottom left;
 }
 .co-br {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat bottom right;
+	background: url(../../skin/resourcenodecircleminus-hc.gif) no-repeat bottom right;
 }
 .co-tr-minus {
-	background: url(chrome://lore/skin/resourcenodecircleminus-hc.gif) no-repeat top right;
+	background: url(../../skin/resourcenodecircleminus-hc.gif) no-repeat top right;
 }
 .co-tr-plus {
-	background: url(chrome://lore/skin/resourcenodecircleplus-hc.gif) no-repeat top right;
+	background: url(../../skin/resourcenodecircleplus-hc.gif) no-repeat top right;
 }
 .slideshowTitle, .sectionTitle, .slideshowToc, .slideshowProps {
 	color: #fffff6;

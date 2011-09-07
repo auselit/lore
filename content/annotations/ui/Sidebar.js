@@ -63,7 +63,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                 tag: 'iframe',
                 id: 'about_anno',
                 style: 'border:none',
-                src: 'chrome://lore/content/annotations/about_annotations.html',
+                src: '../../content/annotations/about_annotations.html',
                 width: '100%',
                 height: '100%'
             }
@@ -176,7 +176,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                             id: 'feedButton',
                             // Feed icon is only displayed when browse or advanced search are active
                             hidden: true,
-                            icon: "chrome://lore/skin/icons/feed.png",
+                            icon: "../../skin/icons/feed.png",
                             handler: this.annotationManager.getFeedURL,
                             scope: this.annotationManager
                         }

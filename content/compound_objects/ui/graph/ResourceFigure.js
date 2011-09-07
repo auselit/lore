@@ -73,7 +73,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
         
         this.metadataarea = document.createElement("div");
         this.metadataarea.className = "co-uri";
-        this.uriexpander = "<img class=\"hideuri\" style=\"margin-left:-7px\" onclick=\"if(this.className){this.className = '';this.parentNode.parentNode.className='';} else {this.className = 'hideuri';this.parentNode.parentNode.className='hideuribox';}\" src=\"../../skin/icons/bullet_arrow_down.png\">";
+        this.uriexpander = "<img class=\"hideuri\" style=\"margin-left:-7px\" onclick=\"if(this.className){this.className = '';this.parentNode.parentNode.className='';} else {this.className = 'hideuri';this.parentNode.parentNode.className='hideuribox';}\" src=\"../../skin/icons/ore/bullet_arrow_down.png\">";
         this.iframearea = document.createElement("div");
         this.iframearea.style.border = "none";
         
@@ -92,7 +92,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
         toggleIcon.className = "toggleIcon x-tool x-unselectable";
         Ext.get(toggleIcon).createChild({
                 tag: "img",
-                src: "chrome://lore/skin/blank.png"
+                src: "../../skin/blank.png"
         });
         this.toggleIcon = toggleIcon;
         item.appendChild(toggleIcon);
@@ -256,7 +256,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                         {tag: "br"}, 
                         {
                             tag: "img",
-                            src: "../../skin/icons/action_go.gif"
+                            src: "../../skin/icons/ore/action_go.gif"
                         }, 
                         "&nbsp;Load in LORE"
                     ]
@@ -659,7 +659,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
         if (this.iframe){
             menu.add({
                 text: "Reset preview",
-                icon: "chrome://lore/skin/icons/arrow_refresh.png",
+                icon: "../../skin/icons/arrow_refresh.png",
                 scope: this,
                 handler: function(evt){
                     if (this.iframe && !this.abstractPreview) {
@@ -687,7 +687,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
         if (!format || !format.match("rdf")) {
             menu.add({
                 text: "Open resource in separate window",
-                icon: "chrome://lore/skin/icons/page_go.png",
+                icon: "../../skin/icons/page_go.png",
                 scope: this,
                 handler: function(evt){
                     lore.global.util.launchWindow(this.url, true, window);

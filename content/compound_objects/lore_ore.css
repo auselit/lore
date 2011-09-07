@@ -35,77 +35,75 @@
 	top:-4px;
 }
 .pageicon {
-	/*list-style-image: url(chrome://lore/skin/icons/page.gif);*/
 	list-style-type: none;
 }
 .imageicon {
-	list-style-image: url(chrome://lore/skin/icons/image.png);
+	list-style-image: url(../../skin/icons/ore/image.png);
 }
 .htmlicon {
-	list-style-image: url(chrome://lore/skin/icons/page_html.gif);
+	list-style-image: url(../../skin/icons/ore/page_html.gif);
 }
 .videoicon {
-	list-style-image: url(chrome://lore/skin/icons/film.png);
+	list-style-image: url(../../skin/icons/ore/film.png);
 }
 .pdficon {
-	list-style-image: url(chrome://lore/skin/icons/file_acrobat.gif);
+	list-style-image: url(../../skin/icons/ore/file_acrobat.gif);
 }
 .audioicon {
-	list-style-image: url(chrome://lore/skin/icons/page_sound.gif);
+	list-style-image: url(../../skin/icons/ore/page_sound.gif);
 }
 .xmlicon {
-	list-style-image: url(chrome://lore/skin/icons/page_code.png);
+	list-style-image: url(../../skin/icons/ore/page_code.png);
 	padding-top:2px;
 }
 .annoicon {
-	list-style-image: url(chrome://lore/skin/icons/comment.png);
+	list-style-image: url(../../skin/icons/comment.png);
 }
 .dataseticon {
-	list-style-image: url(chrome://lore/skin/icons/database_table.png);
+	list-style-image: url(../../skin/icons/ore/database_table.png);
 	padding-top:2px;
 }
 .collectionicon {
-	list-style-image: url(chrome://lore/skin/icons/page_white_stack.png);
+	list-style-image: url(../../skin/icons/ore/page_white_stack.png);
 	padding-top:2px;
 }
 .texticon{
-	list-style-image: url(chrome://lore/skin/icons/page_white_text.png);
+	list-style-image: url(../../skin/icons/ore/page_white_text.png);
 	padding-top:2px;
 }
 .objicon {
-	list-style-image: url(chrome://lore/skin/icons/chair.png);
+	list-style-image: url(../../skin/icons/ore/chair.png);
 	padding-top:2px;
 }
 .softwareicon {
-	list-style-image: url(chrome://lore/skin/icons/application.png);
+	list-style-image: url(../../skin/icons/ore/application.png);
 }
 .serviceicon {
-	list-style-image: url(chrome://lore/skin/icons/server-network.png);
+	list-style-image: url(../../skin/icons/ore/server-network.png);
 	padding-top:2px;
 }
 .interactiveicon {
-	list-style-image: url(chrome://lore/skin/icons/map_cursor.png);
+	list-style-image: url(../../skin/icons/ore/map_cursor.png);
 	padding-top:2px;
 }
 .eventicon {
-	list-style-image: url(chrome://lore/skin/icons/alarm-clock-select.png);
+	list-style-image: url(../../skin/icons/ore/alarm-clock-select.png);
 	padding-top:2px;
 }
 .oreicon {
-	list-style-image: url(chrome://lore/skin/icons/oaioreicon-sm.png); 
+	list-style-image: url(../../skin/icons/oaioreicon-sm.png); 
 	padding-top:2px;
 }
 .rdficon {
-	background-image: url(chrome://lore/skin/icons/rdf.png) !important;	
+	background-image: url(../../skin/icons/ore/rdf.png) !important;	
 }
 
 /* Graphical Editor styles */
 /* Allow uri of nodes to be expanded */
 .menuIcon {
-	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
+	background-image:url(../lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
 	background-position: 0 -90px;
 	opacity:.8;
-    -moz-opacity:.8;
 }
 .toggleIcon {
 	right: -2px;
@@ -113,7 +111,6 @@
 }
 .menuIcon:hover, .toggleIcon:hover {
 	opacity:1;
-    -moz-opacity:1;
 }
 .menuIcon img, .toggleIcon img {
 	width:15px;
@@ -173,7 +170,7 @@
 	font-size: 2px;
 }
 .co-tl {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top left;
+	background: url(../../skin/resourcenodecircleminus.gif) no-repeat top left;
 }
 .entity_resource {
 	-moz-border-radius: 15px;
@@ -189,19 +186,19 @@
     background-color: transparent;
     padding:0px;
     overflow: visible;
-	text:align:left;
+	text-align:left;
 }
 .co-bl {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom left;
+	background: url(../../skin/resourcenodecircleminus.gif) no-repeat bottom left;
 }
 .co-br {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat bottom right;
+	background: url(../../skin/resourcenodecircleminus.gif) no-repeat bottom right;
 }
 .co-tr-minus {
-	background: url(chrome://lore/skin/resourcenodecircleminus.gif) no-repeat top right;
+	background: url(../../skin/resourcenodecircleminus.gif) no-repeat top right;
 }
 .co-tr-plus {
-	background: url(chrome://lore/skin/resourcenodecircleplus.gif) no-repeat top right;
+	background: url(../../skin/resourcenodecircleplus.gif) no-repeat top right;
 }
 .ctxtConnLabel {
 	color: #51666b !important;
@@ -211,19 +208,19 @@
 /* main tabs content styles */
 
 .graph-icon {
-	background-image: url(chrome://lore/skin/icons/layout_pencil.png) !important; 
+	background-image: url(../../skin/icons/ore/layout_pencil.png) !important; 
 }
 .list-icon {
-	background-image: url(chrome://lore/skin/icons/table_edit.png) !important; 
+	background-image: url(../../skin/icons/ore/table_edit.png) !important; 
 }
 .detail-icon {
-	background-image: url(chrome://lore/skin/icons/application_view_detail.png) !important; 
+	background-image: url(../../skin/icons/ore/application_view_detail.png) !important; 
 }
 .slide-icon {
-	background-image: url(chrome://lore/skin/icons/picture_empty.png) !important; 
+	background-image: url(../../skin/icons/ore/picture_empty.png) !important; 
 }
 .explore-icon {
-	background-image: url(chrome://lore/skin/icons/network.png) !important; 
+	background-image: url(../../skin/icons/ore/network.png) !important; 
 }
 .exploreHistory {
     vertical-align:middle;
@@ -317,7 +314,7 @@
 .explore-loading{
 	background-position: center;
 	background-repeat: no-repeat;
-	background-image: url(chrome://lore/skin/icons/loading.png);
+	background-image: url(../../skin/icons/ore/loading.png);
 }
 span.exploreclose {
     color:white;
@@ -331,7 +328,7 @@ span.exploreclose:hover {
 }
 span.explorename {
     cursor: pointer;
-    background-image: url(chrome://lore/skin/transparentwhite.png);
+    background-image: url(../../skin/icons/ore/transparentwhite.png);
 }
 div.exploretip-title {
     font-size: smaller;
@@ -393,9 +390,7 @@ div.coListing:hover {
 	color:#51666b;
 	font-size:90%
 }
-.x-tree-multiline-node-expanded .x-tree-elbow-line-multiline-expanded {
-    background-image: url(chrome://lore/content/ext/resources/images/default/tree/elbow-line.gif);
-}
+
         
 .x-tree-multiline-node-collapsed .x-tree-elbow-line-multiline-expanded {
     background-image: none;
@@ -403,40 +398,40 @@ div.coListing:hover {
 
 /* icons used to indicate co source in listings */
 .oreresult {
-	background-image: url(chrome://lore/skin/icons/oaioreicon-sm.png) !important;
+	background-image: url(../../skin/icons/oaioreicon-sm.png) !important;
 }
 .ro-oreresult {
-    background-image: url(chrome://lore/skin/icons/oaioreicon-grey.png) !important; 
+    background-image: url(../../skin/icons/oaioreicon-grey.png) !important; 
 }
 
 
 /* Context menu icons for listings menu */
 .add-icon {
-	background-image: url(chrome://lore/skin/icons/add.png);
+	background-image: url(../../skin/icons/ore/add.png);
 }
 .delete-icon {
-    background-image: url(chrome://lore/skin/icons/database_delete.png);
+    background-image: url(../../skin/icons/ore/database_delete.png);
 }
 .edit-icon {
-    background-image: url(chrome://lore/skin/icons/pencil.png);
+    background-image: url(../../skin/icons/pencil.png);
 }
 
 /* Property panel:  relationship icons */
 .rel-to {
-	background-image: url(chrome://lore/skin/icons/arrow_left.png);
+	background-image: url(../../skin/icons/ore/arrow_left.png);
 	background-repeat:no-repeat;
 }
 .rel-from {
-	background-image: url(chrome://lore/skin/icons/arrow_right.png);
+	background-image: url(../../skin/icons/ore/arrow_right.png);
 	background-repeat:no-repeat;
 }
 .rel-with {
-    background-image: url(chrome://lore/skin/icons/arrow_both.png);
+    background-image: url(../../skin/icons/ore/arrow_both.png);
     background-repeat:no-repeat;
 }
 /* Formatting toolbox for popup property editor */
 .x-edit-pt {
-	background-image: url(chrome://lore/skin/icons/toolbox_pencil.png) !important;
+	background-image: url(../../skin/icons/ore/toolbox_pencil.png) !important;
 }
 /* Override superbox select for property editor */
 .x-superboxselect-btns div {float: left; width: 16px; height: 16px; margin-top: 1px;}
@@ -449,10 +444,9 @@ div.coListing:hover {
     padding-right:19px;
 }
 .x-tab-strip .x-tab-strip-with-menu a.x-tab-strip-menu {	
-	background-image:url(chrome://lore/content/lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
+	background-image:url(../lib/ext3.2/resources/images/gray/panel/tools-sprites-trans.gif);
     background-position:0 -90px;
 	opacity:.6;
-    -moz-opacity:.6;
     background-repeat:no-repeat;
     display:block;
 	width:15px;
@@ -466,9 +460,8 @@ div.coListing:hover {
 }
 .x-tab-strip .x-tab-strip-active a.x-tab-strip-menu {
     opacity:.8;
-    -moz-opacity:.8;
 }
 .x-tab-strip .x-tab-strip-active a.x-tab-strip-menu:hover{
     opacity:1;
-    -moz-opacity:1;
+
 }

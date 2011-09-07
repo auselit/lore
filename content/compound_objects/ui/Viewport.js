@@ -132,7 +132,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             autoWidth : true,
                             autoScroll : true,
                             iconCls : "welcome-icon",
-                            html : "<iframe id='about_co' type='content' style='border:none' height='100%' width='100%' src='chrome://lore/content/compound_objects/about_compound_objects.html'></iframe>",
+                            html : "<iframe id='about_co' type='content' style='border:none' height='100%' width='100%' src='about_compound_objects.html'></iframe>",
                             menuHandler: "Ext.getCmp('welcome').onTabMenu(event);",
                             onTabMenu : function(e){
                                 var el = Ext.get(e.explicitOriginalTarget);
@@ -145,7 +145,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                     });
                                    this.contextmenu.add({
                                         text: "Zoom out",
-                                        icon: "chrome://lore/skin/icons/magnifier-zoom-out.png",
+                                        icon: "../skin/icons/ore/magnifier-zoom-out.png",
                                         scope: this,
                                         handler: function(b){
                                             if (this.scale >= 0.3) {this.scale = this.scale - 0.2}; 
@@ -155,7 +155,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                     });
                                     this.contextmenu.add({
                                         text: "Zoom in",
-                                        icon: "chrome://lore/skin/icons/magnifier-zoom-in.png",
+                                        icon: "../skin/icons/ore/magnifier-zoom-in.png",
                                         scope: this,
                                         handler: function(b){ 
                                             if (this.scale <  2.0) {this.scale = this.scale + 0.2};
@@ -165,7 +165,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                     });
                                     this.contextmenu.add({
                                         text: "Reset Zoom",
-                                        icon: "chrome://lore/skin/icons/magnifier-zoom-actual.png",
+                                        icon: "../skin/icons/ore/ore/magnifier-zoom-actual.png",
                                         scope: this,
                                         handler: function(b){
                                             if (lore.ore.controller.high_contrast){
@@ -208,7 +208,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                     xtype: 'button',
                     hidden: true,
                     id: 'lockButton',
-                    icon: 'chrome://lore/skin/icons/lock.png',
+                    icon: '../skin/icons/ore/lock.png',
                     tooltip: 'Compound Object is locked',
                     scope: lore.ore.controller
                 }
@@ -266,7 +266,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                     '->',
                                     {
                                        xtype:'button',
-                                       icon: "chrome://lore/skin/icons/feed.png",
+                                       icon: "../skin/icons/feed.png",
                                        tooltip: "Show feed",
                                        handler: function(){
                                            try{
@@ -437,7 +437,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
     updateFOXMLView : function (){
         var foxml = lore.ore.cache.getLoadedCompoundObject().toFOXML(function(foxml){ 
             lore.global.util.transformXML({
-                stylesheetURL: "chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl", 
+                stylesheetURL: "../compound_objects/stylesheets/XMLPrettyPrint.xsl", 
                 theXML: foxml, 
                 window: window,
                 serialize: true, 
@@ -455,7 +455,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
     updateRDFXMLView : function() {
         var rdfXML = lore.ore.cache.getLoadedCompoundObject().serialize('rdf');
         lore.global.util.transformXML({ 
-            stylesheetURL: "chrome://lore/content/compound_objects/stylesheets/XMLPrettyPrint.xsl",
+            stylesheetURL: "../compound_objects/stylesheets/XMLPrettyPrint.xsl",
             theXML: rdfXML,
             window: window,
             serialize: true,
@@ -494,7 +494,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                     }
         };
         lore.ore.ui.status.setStatus(statusopts);
-        lore.global.ui.loreInfo(message);
     },
     /**
      * Display a warning message to the user
@@ -509,7 +508,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             }
         };
         lore.ore.ui.status.setStatus(statusopts);
-        lore.global.ui.loreWarning(message);
     },
     /**
      * Display a progress message (with loading icon) to the user
@@ -522,6 +520,5 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             'clear': false
         };
         lore.ore.ui.status.setStatus(statusopts);
-        lore.global.ui.loreInfo(message);
     }
 });

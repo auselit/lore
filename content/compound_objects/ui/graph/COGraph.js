@@ -139,7 +139,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
      * @private
      */
     showEmptyMessage : function() {
-        this.setBackgroundImage("chrome://lore/skin/icons/emptyco.png",false);
+        this.setBackgroundImage("../../skin/icons/ore/emptyco.png",false);
     },
     /** 
      * Remove the message indicating the compound object is empty
@@ -629,7 +629,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             });
             this.contextmenu.add({
                 text: "Undo",
-                icon: "chrome://lore/skin/icons/arrow_undo.png",
+                icon: "../../skin/icons/ore/arrow_undo.png",
                 scope: this,
                 handler: function(b){ 
                 	try{
@@ -641,7 +641,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             });
             this.contextmenu.add({
                 text: "Redo",
-                icon: "chrome://lore/skin/icons/arrow_redo.png",
+                icon: "../../skin/icons/ore/arrow_redo.png",
                 scope: this,
                 handler: function(b){ 
                 	 this.commandStack.redo();    	 
@@ -650,7 +650,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Save diagram as image (PNG)",
-                icon: "chrome://lore/skin/icons/image.png",
+                icon: "../../skin/icons/ore/image.png",
                 scope: this,
                 handler: function(b,e){  
                 	try{
@@ -668,7 +668,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             });
             this.contextmenu.add({
                 text: "Auto layout",
-                icon: "chrome://lore/skin/icons/layout.png",
+                icon: "../../skin/icons/ore/layout.png",
                 scope: this,
                 handler: function(evt){              	
                 	 this.doLayout(false);   
@@ -676,7 +676,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             });
             this.contextmenu.add({
                 text: "Auto layout (using connections only)",
-                icon: "chrome://lore/skin/icons/graph_go.png",
+                icon: "../../skin/icons/ore/graph_go.png",
                 scope: this,
                 handler: function(evt){              	
                 	 this.doLayout(true);   
@@ -684,7 +684,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             });
             this.contextmenu.add({
                 text: "Set resource list order from layout",
-                icon: "chrome://lore/skin/icons/table_go.png",
+                icon: "../../skin/icons/ore/table_go.png",
                 scope: this,
                 handler: function(evt){
                     if (lore.ore.controller.checkReadOnly()){
@@ -704,7 +704,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Zoom out",
-                icon: "chrome://lore/skin/icons/magnifier-zoom-out.png",
+                icon: "../../skin/icons/ore/magnifier-zoom-out.png",
                 scope: this,
                 handler: function(b){ 
                     if (this.scale >= 0.3) {this.scale = this.scale - 0.2};
@@ -713,7 +713,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             });
             this.contextmenu.add({
                 text: "Zoom in",
-                icon: "chrome://lore/skin/icons/magnifier-zoom-in.png",
+                icon: "../../skin/icons/ore/magnifier-zoom-in.png",
                 scope: this,
                 handler: function(b){ 
                     if (this.scale <  2.0) {this.scale = this.scale + 0.2};
@@ -722,7 +722,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             });
              this.contextmenu.add({
                 text: "Reset Zoom",
-                icon: "chrome://lore/skin/icons/magnifier-zoom-actual.png",
+                icon: "../../skin/icons/ore/magnifier-zoom-actual.png",
                 scope: this,
                 handler: function(b){ 
                     this.scale = 1.0;
@@ -732,7 +732,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             this.contextmenu.add("-");
             this.contextmenu.add({
             	text: "Launch all resources in browser",
-            	icon: "chrome://lore/skin/icons/page_go.png",
+            	icon: "../../skin/icons/page_go.png",
             	scope: this,
             	handler: function(evt){
             		lore.ore.controller.launchInTabs();
@@ -741,7 +741,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Add current URL",
-                icon: "chrome://lore/skin/icons/add.png",
+                icon: "../../skin/icons/ore/add.png",
                 scope: this,
                 handler: function(evt){              	
     	            lore.ore.controller.addResource(lore.ore.controller.currentURL);  
@@ -750,7 +750,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Save Compound Object",
-                icon: "chrome://lore/skin/icons/disk.png",
+                icon: "../../skin/icons/ore/disk.png",
                 scope: this,
                 handler: function(evt){                 
                     lore.ore.controller.saveCompoundObjectToRepository();
@@ -758,7 +758,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
              });
             this.contextmenu.add({
                 text: "New Compound Object",
-                icon: "chrome://lore/skin/icons/database_add.png",
+                icon: "../../skin/icons/ore/database_add.png",
                 scope: this,
                 handler: function(evt){              	
                 	lore.ore.controller.createCompoundObject();
@@ -766,7 +766,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
              });
              this.contextmenu.add({
                 text: "Copy Compound Object",
-                icon: "chrome://lore/skin/icons/database_go.png",
+                icon: "../../skin/icons/ore/database_go.png",
                 scope: this,
                 handler: function(evt){                 
                     lore.ore.controller.copyCompoundObjectToNew();
@@ -774,7 +774,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
              });
             this.contextmenu.add({
                 text: "Delete Compound Object",
-                icon: "chrome://lore/skin/icons/database_delete.png",
+                icon: "../../skin/icons/ore/database_delete.png",
                 scope: this,
                 handler: function(evt){              	
                 	lore.ore.controller.deleteCompoundObjectFromRepository();
@@ -783,10 +783,10 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Open LORE preferences",
-                icon: "chrome://lore/skin/icons/cog.png",
+                icon: "../../skin/icons/cog.png",
                 scope: this,
                 handler: function(evt){              	
-                	window.open("chrome://lore/content/options.xul", "", "chrome,centerscreen,modal,toolbar");
+                	window.open("../../content/options.xul", "", "chrome,centerscreen,modal,toolbar");
                 }
              });
             
