@@ -56,14 +56,14 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
          */
         this.rdf = rdf;
         try {
-            attr = rdf.getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'about');
+            attr = rdf.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'about');
             if (attr) {
                 /** @property id
                  * Annotation URI (identifier)
                  */
-                this.id = attr.nodeValue;
+                this.id = attr;
             } else {
-                var nodeID = rdf.getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'nodeID');
+                var nodeID = rdf.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID');
                 if (nodeID) {
                     // Not an Annotea Annotation
                     return;
@@ -73,9 +73,9 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
             node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'type');
 
             for (var i = 0; i < node.length; i++) {
-                attr = node[i].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                attr = node[i].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
                 if (attr) {
-                    tmp = attr.nodeValue;
+                    tmp = attr;
                 }
                 if (tmp.indexOf(lore.constants.NAMESPACES["annotype"]) == 0) {
                     /** @property type
@@ -107,12 +107,12 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                 // resource is a url
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'annotates');
 
-                attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
                 if (attr) {
                     /** @property resource
                      * The URI of the resource annotated (from Annotea annotates)
                      */
-                    this.resource = attr.nodeValue;
+                    this.resource = attr;
                 }
                 this.about = null;
             }
@@ -120,20 +120,20 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'root');
                 if (node[0]) {
-                    attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
 
                     if (attr) {
-                        this.resource = attr.nodeValue;
+                        this.resource = attr;
                     }
                 }
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'inReplyTo');
                 if (node[0]) {
-                    attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
                     if (attr) {
                         /** @property about
                          *  If the annotation is a reply, about is the URI of the annotation to which is replies (from Annotea inReplyTo)
                          */
-                        this.about = attr.nodeValue;
+                        this.about = attr;
                     }
                 }
             }
@@ -142,12 +142,12 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
 
             if (!bodyEmbedded) {
                 if (node[0]) {
-                    attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
                     if (attr) {
                         /** @property bodyURL
                          * The URI of the body resource
                          */
-                        this.bodyURL = attr.nodeValue;
+                        this.bodyURL = attr;
                     }
                 }
             } else {
@@ -247,10 +247,10 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
             node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'tag');
             for (var j = 0; j < node.length; j++) {
                 var tagval = "";
-                attr = node[j].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                attr = node[j].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
                 if (attr) {
                     // a thesaurus tag
-                    tagval = attr.nodeValue;
+                    tagval = attr;
                 }
                 else {
                     // a freeform tag - make sure it's added to the list of tags
@@ -274,23 +274,23 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                     node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised');
                 }
                 if (node[0]) {
-                    attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
                     if (attr) {
                         /** @property variant
                          * For a VariationAnnotation, the URI of the variant resource
                          */
-                        this.variant = attr.nodeValue;
+                        this.variant = attr;
                     }
                 }
 
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original');
                 if (node[0]) {
-                    attr = node[0].getAttributeNodeNS(lore.constants.NAMESPACES["rdf"], 'resource');
+                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
                     if (attr) {
                         /** @property original
                          * For a VariationAnnotation, the URI of the original resource
                          */
-                        this.original = attr.nodeValue;
+                        this.original = attr;
                     }
                 }
 
@@ -688,10 +688,10 @@ lore.anno.RDFAnnotationSerializer.prototype = {
     }
 
 };
-lore.anno.WordSerializer = function(){
+/*lore.anno.WordSerializer = function(){
     
 }
-lore.anno.WordSerializer().prototype = {
+lore.anno.WordSerializer.prototype = {
     serialize: function(annos) {
         var result = {
             docxml: "",
@@ -701,7 +701,7 @@ lore.anno.WordSerializer().prototype = {
         
         return result;
     }
-}
+}*/
 
 /**
  * Class that serializes Annotation object/s as OAC RDF
