@@ -29,25 +29,6 @@
 	Components.utils["import"]("resource://lore/util.js");
 
 	/**
-	 * Display an informational message to the user
-	 * @param {String} message The message to display
-	 */
-	ui.loreInfo = function(message){
-	};
-
-	/**
-	 * Display an warning message to the user
-	 * @param {String} message The message to display
-	 */
-	ui.loreWarning = function(message){
-	};
-	/**
-	 * Display an error message to the user
-	 * @param {String} message The message to display
-	 */
-	ui.loreError = function(message){
-	};
-	/**
      * @param {} win
      * @param {} instId
 	 */

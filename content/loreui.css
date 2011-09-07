@@ -53,7 +53,7 @@
 	width: 200px;
 }		
 .welcome-icon {
-    background-image: url(chrome://lore/skin/icons/information.png) !important;
+    background-image: url(../skin/icons/information.png) !important;
 }
 
 /* Tree styles */
@@ -63,29 +63,29 @@
 }
 
 .x-tree-node .anno-icon, .anno-icon {
-	background-image: url(chrome://lore/skin/icons/comment.png);
+	background-image: url(../skin/icons/comment.png);
 	background-repeat: no-repeat;
 }
 .x-tree-node .anno-icon-reply, .anno-icon-reply  {
-	background-image: url(chrome://lore/skin/icons/reply.png);
+	background-image: url(../skin/icons/anno/reply.png);
 	background-repeat: no-repeat;
 }
 .x-tree-node .anno-icon-variation, .anno-icon-variation {
-	background-image: url(chrome://lore/skin/icons/variation.png) !important;
+	background-image: url(../skin/icons/anno/variation.png) !important;
 	background-repeat: no-repeat;
 }
 .x-tree-node .anno-icon-explanation, .anno-icon-explanation {
-	background-image: url(chrome://lore/skin/icons/explanation.png);
+	background-image: url(../skin/icons/anno/explanation.png);
 	background-repeat: no-repeat;
 }
 
 .x-tree-node .anno-icon-question, .anno-icon-question {
-	background-image: url(chrome://lore/skin/icons/question.png);
+	background-image: url(../skin/icons/anno/question.png);
 	background-repeat: no-repeat;
 }
 
 .anno-icon-private {
-	background-image: url(chrome://lore/skin/icons/eye.png);
+	background-image: url(../skin/icons/eye.png);
 	background-repeat: no-repeat;
     height: 16px;
     width: 16px;
@@ -103,11 +103,11 @@
 }
 
 .x-tree-node .anno-icon-launchWindow {
-	background-image: url(chrome://lore/skin/icons/page_go.png) !important;
+	background-image: url(../skin/icons/page_go.png) !important;
 	/*display:none;*/
 }
 .x-tree-node .anno-icon-splitter {
-	background-image: url(chrome://lore/skin/icons/application_tile_horizontal.png);
+	background-image: url(../skin/icons/anno/application_tile_horizontal.png);
 	/*display:none;*/
 }
 
@@ -170,8 +170,8 @@
 .x-edit-img {
 	background-image: url(../skin/icons/picture_add.png) !important;
 }
-.x-edit-outdent {background: url(../skin/icons/edit-outdent.png) 0 0 no-repeat !important;}
-.x-edit-indent {background: url(../skin/icons/edit-indent.png) 0 0 no-repeat !important;}
+.x-edit-outdent {background: url(../skin/icons/ore/edit-outdent.png) 0 0 no-repeat !important;}
+.x-edit-indent {background: url(../skin/icons/ore/edit-indent.png) 0 0 no-repeat !important;}
 .x-form-item {margin-bottom:2px}
 .x-hide-label {padding:0;margin:0}
 #delannobtn .x-btn-center .x-btn-text {
@@ -210,11 +210,9 @@
 }
 
 .x-column-tree .x-tree-node {
-    zoom:1;
 }
 .x-column-tree .x-tree-node-el {
     /*border-bottom:1px solid #eee; borders? */
-    zoom:1;
 }
 
 .x-column-tree  .x-tree-node a {
@@ -232,8 +230,7 @@
 	
     float:left;
     padding:0 1px;
-    zoom:1;
-	whitespace:normal;
+    white-space:normal;
 }
 
 .x-tree-col-div-general {
@@ -273,9 +270,8 @@
 
 .x-tree-headers {
 	/*margin-top: 3px;*/
-	background: #f9f9f9 url(chrome://lore/content/lib/ext/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
+	background: #f9f9f9 url(/lib/ext/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
 	cursor:default;
-    zoom:1;
 }
 
 .x-tree-hd {
@@ -286,7 +282,7 @@
 }
 
 .x-form-field-wrap .x-form-ellipsis-trigger{
-    background-image:url(chrome://lore/skin/icons/ellipsis-trigger-grey.gif);
+    background-image:url(../skin/icons/ore/ellipsis-trigger-grey.gif);
     border-bottom-color:#b5b8c8;
 }
 

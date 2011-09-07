@@ -46,7 +46,7 @@
               <xul:menupopup>
                 <xul:menuitem id="save-xml" label="&lore.saveAnnotationsLabel;" tooltiptext="&lore.saveAnnotationsTip;" oncommand="loreoverlay.serializeAnnotations('rdf')"/>
                 <xul:menuitem id="save-oac" label="&lore.exportOACFileLabel;" tooltiptext="&lore.saveAnnotationsTip;" oncommand="loreoverlay.serializeAnnotations('oac')"/>
-                <!-- <xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/>--> 
+                <!--xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/--> 
                 <!-- <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadAnnoRDF()"/> -->
               </xul:menupopup>
             </xul:toolbarbutton>
@@ -157,7 +157,7 @@
           </xul:menupopup>
     </xul:popupset>
   <xul:hbox id="urlbar-icons">
-    <xul:image src="chrome://lore/skin/icons/ore_add.png" id="ore-add-icon" tooltiptext="&lore.addNodeTip;"  onclick="loreoverlay.addGraphNode();" position="1" hidden="false"/>
-    <xul:image src="chrome://lore/skin/icons/ore_added.png" id="ore-added-icon" tooltiptext="&lore.addedNodeTip;"  onclick="loreoverlay.toggleBar(true);" position="1" hidden="true"/>
+    <xul:image src="chrome://lore/skin/icons/ore/ore_add.png" id="ore-add-icon" tooltiptext="&lore.addNodeTip;"  onclick="loreoverlay.addGraphNode();" position="1" hidden="false"/>
+    <xul:image src="chrome://lore/skin/icons/ore/ore_added.png" id="ore-added-icon" tooltiptext="&lore.addedNodeTip;"  onclick="loreoverlay.toggleBar(true);" position="1" hidden="true"/>
   </xul:hbox>
 </xul:overlay>

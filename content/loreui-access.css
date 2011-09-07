@@ -21,7 +21,7 @@ h1, h2, h3 {
 .timeline-bubble, .timeline-event-bubble-title, .timeline-event-bubble-body, .timeline-band, .x-tree-node-bheader {
 	color: #fffff6;
 	background-color: #1f2730;
-	font: 100%;
+	font-size: 100%;
 }
 .timeline-link {
 	font-size:100%;
