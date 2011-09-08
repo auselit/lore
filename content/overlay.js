@@ -124,7 +124,7 @@ try {
             try {
                 this.instId = lore.global.ui.genInstanceID();
                 lore.global.ui.topWindowView.registerView(this, this.instId);
-                gBrowser.addProgressListener(this.oreLocationListener, Components.interfaces.nsIWebProgress.NOTIFY_STATE_ALL);
+                gBrowser.addProgressListener(this.oreLocationListener);
                 window.addEventListener("close", this.onClose, false); 
                 
                 this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
