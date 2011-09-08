@@ -149,10 +149,10 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                         // Get xml:base
                         var tmp = xhr.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'RDF')[0];
                         if (tmp){
-                            tmp = tmp.getAttributeNodeNS('http://www.w3.org/XML/1998/namespace','base');
+                            tmp = tmp.getAttributeNS('http://www.w3.org/XML/1998/namespace','base');
                         }
                         if (tmp){
-                            ontData.nsuri = tmp.nodeValue;
+                            ontData.nsuri = tmp;
                         }
                         // Load contents of ontology into rdfquery databank
                         var db = jQuery.rdf.databank();

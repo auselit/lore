@@ -337,11 +337,11 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
         try {  
            bindings = result.getElementsByTagName('binding');
            for (var j = 0; j < bindings.length; j++){  
-            attr = bindings[j].getAttributeNode('name');
-            if (attr.nodeValue =='g'){ //graph uri
+            attr = bindings[j].getAttribute('name');
+            if (attr =='g'){ //graph uri
                 node = bindings[j].getElementsByTagName('uri'); 
                 props.uri = lore.global.util.safeGetFirstChildValue(node);
-            } else if (attr.nodeValue == 'v'){
+            } else if (attr == 'v'){
                 node = bindings[j].getElementsByTagName('literal');
                 nodeVal = lore.global.util.safeGetFirstChildValue(node);
                 if (!nodeVal){
@@ -351,14 +351,14 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
             } else {
                 node = bindings[j].getElementsByTagName('literal');
                 nodeVal = lore.global.util.safeGetFirstChildValue(node);
-                if (attr.nodeValue == 't' && nodeVal){ //title
+                if (attr == 't' && nodeVal){ //title
                     props.title = nodeVal;
-                } else if (attr.nodeValue == 'a' && nodeVal){// dc:creator
+                } else if (attr == 'a' && nodeVal){// dc:creator
                     props.creator = nodeVal;
-                } else if (attr.nodeValue == 'priv' && nodeVal) { // isPrivate
+                } else if (attr == 'priv' && nodeVal) { // isPrivate
                     props.isPrivate = nodeVal;
                 }
-                else if (attr.nodeValue == 'm' && nodeVal){ // dcterms:modified
+                else if (attr == 'm' && nodeVal){ // dcterms:modified
                     props.modified = nodeVal;
                     try {
                         var modDate = Date.parseDate(props.modified,'c') || Date.parseDate(props.modified,'Y-m-d');
