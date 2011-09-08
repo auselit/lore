@@ -386,9 +386,7 @@ util = {
                     var content = xhr.responseText;
                     if (content){
                         var style = doc.createElement("style");
-                        var t = doc.createAttribute("type");
-                        t.nodeValue = "text/css";
-                        style.setAttributeNode(t);
+                        style.setAttribute("type","text/css");
                         style.textContent = content;
                         doc.getElementsByTagName("head")[0].appendChild(style);
                     }
@@ -1059,9 +1057,7 @@ util = {
         var links = node.getElementsByTagName('a');
         var attr;
         for (var i=0; i < links.length; i++){
-            attr = node.ownerDocument.createAttribute('target');
-            attr.nodeValue = "_blank";
-            links[i].setAttributeNode(attr);
+            links[i].setAttribute("target","_blank");
         }
     },
     /**
