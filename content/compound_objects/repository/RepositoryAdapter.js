@@ -28,7 +28,7 @@ lore.ore.repos.RepositoryAdapter = function (baseURL){
     var xhr = new XMLHttpRequest();                
     xhr.overrideMimeType('text/xml');
     var oThis = this;
-    xhr.open("GET", 'chrome://lore/content/compound_objects/stylesheets/sparqlexplore.xsl');
+    xhr.open("GET", '../../content/compound_objects/stylesheets/sparqlexplore.xsl');
     xhr.onreadystatechange= function(){
         if (xhr.readyState == 4) {
             oThis.exploreStylesheet = xhr.responseXML;
