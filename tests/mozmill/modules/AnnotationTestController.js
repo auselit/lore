@@ -23,7 +23,7 @@ var jumlib = {};
 lore = {global: {}};
 Components.utils["import"]("resource://mozmill/modules/jum.js", jumlib);
 Components.utils["import"]("resource://loretest/mozmill/modules/LoreController.js");
-Components.utils["import"]("resource://lore/util.js", lore.global);
+Components.utils["import"]("resource://lore/util.js", lore);
 Components.utils["import"]("resource://lore/debug.js", lore);
 
 
@@ -269,7 +269,7 @@ AnnotationTestController = {
 		
 		// Problems checking via XPath and controller method so use Ext Internal State
 		var bodyCmp = _anno.lore.anno.ui.formpanel.getComponent("body");
-		var val = lore.global.util.trim(bodyCmp.getValue());
+		var val = lore.util.trim(bodyCmp.getValue());
 		
 		//TODO: #185 - Context and Tags field
 		_loreController.assertValues(_annoDoc, {
@@ -283,7 +283,7 @@ AnnotationTestController = {
 			
 		// Problems checking via XPath and controller method so use Ext Internal State
 		var bodyCmp = _anno.lore.anno.ui.formpanel.getComponent("body");
-		var val = lore.global.util.trim(bodyCmp.getValue());
+		var val = lore.util.trim(bodyCmp.getValue());
 		
 		/*var l = loreController.anno.lore;
 		l.debug.anno('-->VAL IS: ' + val);
@@ -301,7 +301,7 @@ AnnotationTestController = {
 	 * @param {Object} node
 	 */
 	setTextSelection: function(node ) {
-		var window = lore.global.util.getContentWindow(_controller.window);
+		var window = lore.util.getContentWindow(_controller.window);
 		var document = window.document;
 		
 		var sel = window.getSelection();
@@ -516,7 +516,7 @@ AnnotationTestController = {
 			altFunc = altFunc || _annoController.replyClick;
 			
 			for (var i = 0; i < amount; i++) {
-				//var node = lore.global.util.findChildRecursively(_loreController.anno.lore.anno.ui.treeroot, 'id', rec.data.id);
+				//var node = lore.util.findChildRecursively(_loreController.anno.lore.anno.ui.treeroot, 'id', rec.data.id);
 				var clickNode = function(){
 					lore.debug.anno("clicking tree node");
 					_annoController.treeNodeClick(node);
@@ -674,7 +674,7 @@ AnnotationTestController = {
 					});
 					
 					//if (targetNode.id == id) {  ID is changed, newer version of danno returns the id in a header...
-					var anno = _loreController.anno.lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods, targetNode.id).data
+					var anno = _loreController.anno.lore.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods, targetNode.id).data
 
 					
 					//TODO: #185 - Need more sophisticated way of matching anntation 
@@ -699,9 +699,9 @@ AnnotationTestController = {
 			
 			var id = _loreController.anno.lore.anno.ui.nodeIdToRecId(nodes[0]);
 			lore.debug.anno('node id: ' + id);
-			var anno = lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods,  id);
+			var anno = lore.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods,  id);
 			if ( anno == null)
-				anno = lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annodsunsaved,  id);
+				anno = lore.util.findRecordById(_loreController.anno.lore.anno.annoMan.annodsunsaved,  id);
 			
 			pre = anno.data.isNew() ? preNew: preExisting;	
 		} else {
@@ -734,7 +734,7 @@ AnnotationTestController = {
 		var recurseNodes = function(parent){
 			for (var i = 0; i < parent.childNodes.length; i++) {
 				var n = parent.childNodes[i];
-				var rec = lore.global.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods, n.id);
+				var rec = lore.util.findRecordById(_loreController.anno.lore.anno.annoMan.annods, n.id);
 				_annoController.testNodeMap[rec.data.title] = n;
 				if (n.childNodes && n.childNodes.length > 0) 
 					recurseNodes(n);

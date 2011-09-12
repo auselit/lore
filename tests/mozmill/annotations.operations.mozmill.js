@@ -25,7 +25,7 @@ var jumlib = {};
 Components.utils["import"]("resource://mozmill/modules/jum.js", jumlib);
 
 var lore = { global : {}};
-Components.utils["import"]("resource://lore/util.js", lore.global);
+Components.utils["import"]("resource://lore/util.js", lore);
 Components.utils["import"]("resource://loretest/mozmill/modules/LoreController.js");
 Components.utils["import"]("resource://loretest/mozmill/modules/AnnotationTestController.js");
 
@@ -288,7 +288,7 @@ Components.utils["import"]("resource://loretest/mozmill/modules/AnnotationTestCo
 				creator: loreController.testPreferences.dccreator,
 				selection:  null
 		}];
-		var c = lore.global.util.clone(changes[0]);
+		var c = lore.util.clone(changes[0]);
 		changes.push(c);
 
 		unsavedNodes.push( annoController.editAnnotation(node, {

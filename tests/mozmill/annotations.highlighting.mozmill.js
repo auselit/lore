@@ -28,7 +28,7 @@ try {
 		global: {}
 	};
 	
-	Components.utils["import"]("resource://lore/util.js", lore.global);
+	Components.utils["import"]("resource://lore/util.js", lore);
 	Components.utils["import"]("resource://loretest/mozmill/modules/LoreController.js");
 	Components.utils["import"]("resource://loretest/mozmill/modules/AnnotationTestController.js");
 	Components.utils["import"]("resource://lore/debug.js", lore);
@@ -74,7 +74,7 @@ try {
 		annoController.hideEditorClick();
 		loreController.anno.lore.anno.annoMan.annodsunsaved.removeAll();
 		loreController.anno.lore.anno.ui.page.setCurrentAnno();
-		var sel = lore.global.util.getContentWindow(controller.window).getSelection();
+		var sel = lore.util.getContentWindow(controller.window).getSelection();
 		if (sel.rangeCount > 0) 
 			sel.removeAllRanges();
 		
@@ -105,13 +105,13 @@ try {
 		var elem = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[2]");
 		controller.assertNode(elem);
 		
-		var node = lore.global.util.getNodeForXPath("/html/body/div[2]", lore.global.util.getContentWindow(controller.window).document);
+		var node = lore.util.getNodeForXPath("/html/body/div[2]", lore.util.getContentWindow(controller.window).document);
 		jumlib.assertEquals(node.style.display, 'block', 'Pop up node exists and is visible');
 		
 		// check that pop up closes
 		controller.click(new elementslib.XPath(controller.tabs.activeTab, "/html/body/div[2]/img[1]"));
 		controller.sleep(500);
-		node = lore.global.util.getNodeForXPath("/html/body/div[2]",lore.global.util.getContentWindow(controller.window).document);
+		node = lore.util.getNodeForXPath("/html/body/div[2]",lore.util.getContentWindow(controller.window).document);
 		jumlib.assertEquals(node.style.display, 'none', 'Pop up node is not visible');
 			
 		// check that highlighting disappears when focus is taken off annotation
@@ -143,7 +143,7 @@ try {
 	
 	var testAddWithHighlighting = function(){
 		// /html/body/div/h4  == "The  Procession of Egos."
-		var document = lore.global.util.getContentWindow(controller.window).document;
+		var document = lore.util.getContentWindow(controller.window).document;
 		var node = document.getElementsByTagName("h4")[0];  
 
 		annoController.setTextSelection(node);
@@ -156,7 +156,7 @@ try {
 	var testAddWithHighlightingViaContextMenu = function () {
 		
 		// test 'create annotation with selection' menu works
-		var document = lore.global.util.getContentWindow(controller.window).document;
+		var document = lore.util.getContentWindow(controller.window).document;
 		var node = document.getElementsByTagName("h4")[0];  
 
 		annoController.setTextSelection(node);
@@ -172,7 +172,7 @@ try {
 	var testUpdateContext = function () {
 		var unsavedNode = annoController.addAnnotation(1);
 		
-		var document = lore.global.util.getContentWindow(controller.window).document;
+		var document = lore.util.getContentWindow(controller.window).document;
 		var node = document.getElementsByTagName("h4")[0];  
 		annoController.setTextSelection(node);
 			
@@ -189,7 +189,7 @@ try {
 	var testUpdateContextViaContextMenu = function(){
 		var unsavedNode = annoController.addAnnotation(1);
 		
-		var document = lore.global.util.getContentWindow(controller.window).document;
+		var document = lore.util.getContentWindow(controller.window).document;
 		var node = document.getElementsByTagName("h4")[0];  
 		annoController.setTextSelection(node);
 			
@@ -204,7 +204,7 @@ try {
 	}
 	
 	var testImageHighlightingEnabled = function () {
-		var doc = lore.global.util.getContentWindow(controller.window).document;
+		var doc = lore.util.getContentWindow(controller.window).document;
 		var node = doc.getElementById("lore_image_highlighting_inserted");
 		jumlib.assertNotNull(node, "Image highlighting is enabled");
 		
@@ -231,14 +231,14 @@ try {
 		var highlightElem = new elementslib.XPath(controller.tabs.activeTab, "/html/body/span[2]");
 		controller.assertNode(highlightElem);
 		
-		var document = lore.global.util.getContentWindow(controller.window).document;
+		var document = lore.util.getContentWindow(controller.window).document;
 	 
 		// check that pop up appears when hovering over highlight
 		controller.mouseOver(highlightElem);
 		controller.sleep(500); // wait for the pop-up to be rendered
 		var elem = new elementslib.XPath(controller.tabs.activeTab, "/html/body/div");
 		controller.assertNode(elem);
-		var node = lore.global.util.getNodeForXPath("/html/body/div", document);
+		var node = lore.util.getNodeForXPath("/html/body/div", document);
 		jumlib.assertEquals(node.style.display, 'block', 'Pop up node exists and is visible');
 		
 		// check that pop up closes
@@ -246,7 +246,7 @@ try {
 		/* The automated testing is having issues with this, however it's not apparent when done manually
 		   so this is more an issue with using mozmill
 		controller.click(new elementslib.XPath(controller.tabs.activeTab, "/html/body/div/img[1]"));
-		node = lore.global.util.getNodeForXPath("/html/body/div", document);
+		node = lore.util.getNodeForXPath("/html/body/div", document);
 		jumlib.assertEquals(node.style.display, 'none', 'Pop up node is not visible');*/
 		
 		// check that highlighting disappears when focus is taken off annotation
@@ -281,7 +281,7 @@ try {
 		controller.waitForPageLoad(this.controller.tabs.activeTab);
 		
 		 
-		var window = lore.global.util.getContentWindow(controller.window);
+		var window = lore.util.getContentWindow(controller.window);
 		var document = window.document;
 		
 		var fireOnThis = document.getElementById('DataListItem_ctl00_imgItem');
