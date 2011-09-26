@@ -37,6 +37,7 @@ h1, h2, h3 {color:#fffff6}
 .highlightEntity {
     display:block;
     -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
     border-radius: 15px;
     border: 4px solid orange;
     background-color: orange;
@@ -93,6 +94,8 @@ span.explorename {
     border-top-left-radius: 15px;
     -moz-border-radius-topright: 15px;
     -moz-border-radius-topleft: 15px;
+    -webkit-border-top-left-radius: 15px;
+    -webkit-border-top-right-radius: 15px;
     border: 1px solid #fffff6;
 }
 .co-preview {
@@ -121,6 +124,8 @@ span.explorename {
     border-bottom-left-radius: 15px;
     -moz-border-radius-bottomright: 15px;
     -moz-border-radius-bottomleft: 15px;
+    -webkit-border-bottom-left-radius: 15px;
+    -webkit-border-bottom-right-radius: 15px;
 }
 .co-footer {
 	background-color: #343843;

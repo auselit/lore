@@ -118,12 +118,15 @@
 }
 .hideuri {
     -moz-transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
 }
 .hideuribox {
 	white-space: pre;
 }
 .nodeabstract {
-	height:95%;padding:4px;overflow:auto;
+	height:95%;
+	padding:4px;
+	overflow:auto;
 }
 .co-uri {
 	text-align:left;
@@ -144,6 +147,8 @@
 	border-top-left-radius: 15px;
     -moz-border-radius-topright: 15px;
 	-moz-border-radius-topleft: 15px;
+    -webkit-border-top-left-radius: 15px;
+    -webkit-border-top-right-radius: 15px;
 	border: 1px solid #aeaeae;
 }
 .co-preview {
@@ -163,6 +168,8 @@
     border-bottom-left-radius: 15px;
     -moz-border-radius-bottomright: 15px;
     -moz-border-radius-bottomleft: 15px;
+    -webkit-border-bottom-left-radius: 15px;
+    -webkit-border-bottom-right-radius: 15px;
 }
 .co-footer {
 	background-color: white;
@@ -174,6 +181,7 @@
 }
 .entity_resource {
 	-moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
     border-radius: 15px;
 	background-color: transparent;
 	padding:0px;
@@ -182,6 +190,7 @@
 }
 .resource_figure {
 	-moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
     border-radius: 15px;
     background-color: transparent;
     padding:0px;
@@ -286,6 +295,7 @@
 .highlightEntity {
 	display:block;
 	-moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
     border-radius: 15px;
 	border: 4px solid yellow;
 	background-color: yellow;
@@ -385,6 +395,15 @@ div.coListing:hover {
 .detailText {
 	padding-left:20px;color:#51666b;font-size:87%
 }
+.detailsselected {
+    background-color: yellow;
+}
+.underlined {
+    padding-bottom: 2px;
+    display:block;
+    width: 100%;
+    border-bottom: 1px solid #51666b;
+}
 /* override multiline tree styles for listingss */
 .x-tree-multiline-node-details{
 	color:#51666b;
@@ -407,7 +426,7 @@ div.coListing:hover {
 
 /* Context menu icons for listings menu */
 .add-icon {
-	background-image: url(../../skin/icons/ore/add.png);
+	background-image: url(../../skin/icons/add.png);
 }
 .delete-icon {
     background-image: url(../../skin/icons/ore/database_delete.png);

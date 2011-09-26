@@ -15,56 +15,10 @@ h1, h2, h3 {
 .x-tab-panel-body {
 	background-color: #343843;
 }
-
-/* Annotations */
-
-.timeline-bubble, .timeline-event-bubble-title, .timeline-event-bubble-body, .timeline-band, .x-tree-node-bheader {
-	color: #fffff6;
-	background-color: #1f2730;
-	font-size: 100%;
-}
-.timeline-link {
-	font-size:100%;
-}
-
-.anno-caption, .x-tree-col-text, .x-tree-col-div-general, .x-tree-hd-text, .timeline-date-label {
-	color: #fffff6;
-	background: transparent;
-}
-.timeline-ether-bg {
-	background-color: #1f2730 !important;
-}
-.timeline-ether-highlight {
-	background-color: #617089 !important;
-}
-.x-tree-node a, .anno-search {
+.x-tree-node a {
 	color: orange !important;
 }
 .x-panel-header, .x-tree-headers {
 	background-image:none;
 	background-color: transparent;
-}
-#search-view {
-    background: transparent;
-}	
-#search-view .annoListing {
-    font-size:100%;
-}
-#search-view .annoURL {
-    color: white;
-}
-#search-view .x-view-over {
-    background-color: orange;
-}
-#search-view .x-view-selected {
-    background-color: orange;
-} 
-#search-view .annoListingMeta {
-    color: white;
-}
-.anno-tag {
-    background-color: transparent;
-    border: 1px solid white;
-	line-height:2em;
-	white-space:pre;
 }

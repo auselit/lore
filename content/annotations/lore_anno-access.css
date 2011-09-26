@@ -1,0 +1,33 @@
+.anno-caption, .x-tree-col-text, .x-tree-col-div-general, .x-tree-hd-text, .timeline-date-label {
+    color: #fffff6;
+    background: transparent;
+}
+.x-tree-node-bheader {
+    color: #fffff6;
+    background-color: #1f2730;
+    font-size: 100%;
+}
+.anno-tag {
+    background-color: transparent;
+    border: 1px solid white;
+    line-height:2em;
+    white-space:pre;
+}
+#search-view {
+    background: transparent;
+}   
+#search-view .annoListing {
+    font-size:100%;
+}
+#search-view .annoURL {
+    color: white;
+}
+#search-view .x-view-over {
+    background-color: orange;
+}
+#search-view .x-view-selected {
+    background-color: orange;
+} 
+#search-view .annoListingMeta {
+    color: white;
+}

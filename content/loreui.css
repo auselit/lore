@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 - 2009 School of Information Technology and Electrical
+ * Copyright (C) 2008 - 2011 School of Information Technology and Electrical
  * Engineering, University of Queensland (www.itee.uq.edu.au).
  *  
  * This file is part of LORE. LORE was developed as part of the Aus-e-Lit project.
@@ -23,29 +23,9 @@
 .ext-mb-icon, .ext-mb-content, .ext-mb-text, .ext-mb-fix-cursor,.ext-mb-input,.ext-mb-textarea {
 	background:none;
 }
-
 .x-window-dlg .ext-mb-text {
 	font-size:10px;	
 }
-
-.textfield {
-	padding:1px; 
-	padding-left:3px;
-	margin:0; 
-	height:1.8em; 
-	width:400px;
-	border: solid #363636 1px;
-}
-.button {
-	font-weight:bold; 
-	padding:0;
-	margin:0;
-	height:1.8em; 
-	border:none;
-	background:#363636;
-	color:white;
-}
-
 .x-layout-split {
 	width: 3px;
 }
@@ -55,87 +35,24 @@
 .welcome-icon {
     background-image: url(../skin/icons/information.png) !important;
 }
-
 /* Tree styles */
 /* suppress icons for top level tree nodes */
 .tree-anno, .tree-ore {
     display:none;
 }
-
-.x-tree-node .anno-icon, .anno-icon {
-	background-image: url(../skin/icons/comment.png);
-	background-repeat: no-repeat;
-}
-.x-tree-node .anno-icon-reply, .anno-icon-reply  {
-	background-image: url(../skin/icons/anno/reply.png);
-	background-repeat: no-repeat;
-}
-.x-tree-node .anno-icon-variation, .anno-icon-variation {
-	background-image: url(../skin/icons/anno/variation.png) !important;
-	background-repeat: no-repeat;
-}
-.x-tree-node .anno-icon-explanation, .anno-icon-explanation {
-	background-image: url(../skin/icons/anno/explanation.png);
-	background-repeat: no-repeat;
-}
-
-.x-tree-node .anno-icon-question, .anno-icon-question {
-	background-image: url(../skin/icons/anno/question.png);
-	background-repeat: no-repeat;
-}
-
-.anno-icon-private {
-	background-image: url(../skin/icons/eye.png);
-	background-repeat: no-repeat;
-    height: 16px;
-    width: 16px;
-}
-
-
-.x-tree-node .anno-view {
-	height: 16px !important;
-}
-
-.x-tree-node-bheader, .x-tree-node-bfooter {
-	color: #51666b;
-	font-size:smaller;
-	
-}
-
-.x-tree-node .anno-icon-launchWindow {
-	background-image: url(../skin/icons/page_go.png) !important;
-	/*display:none;*/
-}
-.x-tree-node .anno-icon-splitter {
-	background-image: url(../skin/icons/anno/application_tile_horizontal.png);
-	/*display:none;*/
-}
-
-
-
-.x-tree-node a, .anno-search {
+.x-tree-node a {
 	color:blue !important;
 	cursor: auto;
-	
 }
 
 /* #90 visibility bug in sidebar*/
 .x-tree-node-ct {
 	visibility: inherit !important;
 }
-
 .x-tree-node a:hover {
 	color:blue;
 	text-decoration:underline;
 }
-
-.underlined {
-	padding-bottom: 2px;
-	display:block;
-	width: 100%;
-	border-bottom: 1px solid #51666b;
-}
-
 /* status bar/pop-up styles */
 .info-icon {
 	padding-left: 25px !important;
@@ -153,183 +70,49 @@
     padding-left: 25px !important;
     background: transparent url(lib/ext3.2/resources/images/default/grid/loading.gif) no-repeat 3px 3px;
 }
-
-.annoreadonly {
-	border: 0;
-	background-color: red;
-}
-
-/* Annotation editor styles */
-.annochanged {
-	background-color: #ffcccc !important;
-}
-
 .x-grid3-cell-inner {
 	height: 1.2em;
+}
+/* Editor styles */
+.textfield {
+    padding:1px; 
+    padding-left:3px;
+    margin:0; 
+    height:1.8em; 
+    width:400px;
+    border: solid #363636 1px;
+}
+.button {
+    font-weight:bold; 
+    padding:0;
+    margin:0;
+    height:1.8em; 
+    border:none;
+    background:#363636;
+    color:white;
 }
 .x-edit-img {
 	background-image: url(../skin/icons/picture_add.png) !important;
 }
-.x-edit-outdent {background: url(../skin/icons/ore/edit-outdent.png) 0 0 no-repeat !important;}
-.x-edit-indent {background: url(../skin/icons/ore/edit-indent.png) 0 0 no-repeat !important;}
-.x-form-item {margin-bottom:2px}
-.x-hide-label {padding:0;margin:0}
-#delannobtn .x-btn-center .x-btn-text {
-	color:red;
+.x-edit-outdent {
+	background: url(../skin/icons/ore/edit-outdent.png) 0 0 no-repeat !important;
 }
-#updctxtbtn, #addmetabtn, #remmetabtn, #chgmetactxbtn {
-    width:70px !important;
-    margin-left:auto;margin-right:13px;
-    margin-bottom:3px;margin-top:3px;
+.x-edit-indent {
+	background: url(../skin/icons/ore/edit-indent.png) 0 0 no-repeat !important;
 }
-
-.x-combo-list, .x-combo-list-inner {min-width:200px;}
-
-.anno-caption {
-	font-size:small;
-	color:#51666b;
+.x-form-item {
+	margin-bottom:2px
 }
-#variationdetails {
-	font-size:smaller;
-	padding: 5px;
+.x-hide-label {
+	padding:0;margin:0
 }
-.detailsselected {
-	background-color: yellow;
+.x-combo-list, .x-combo-list-inner {
+	min-width:200px;
 }
-
-.left-spacer4 {
-	padding-left: 4px;
-}
-.x-column-tree .x-panel-header {
-	padding: 3px 0px 0px 0px;
-	border-bottom-width: 0px;
-}
-
-.x-column-tree .x-panel-header .x-panel-header-text {
-	margin-left: 3px
-}
-
-.x-column-tree .x-tree-node {
-}
-.x-column-tree .x-tree-node-el {
-    /*border-bottom:1px solid #eee; borders? */
-}
-
-.x-column-tree  .x-tree-node a {
-    line-height:18px;
-    vertical-align:middle;
-}
-.x-column-tree  .x-tree-node a span{
-	
-}
-.x-column-tree  .x-tree-node .x-tree-selected a span{
-	background:transparent;
-	color:#000;
-}
-.x-tree-col {
-	
-    float:left;
-    padding:0 1px;
-    white-space:normal;
-}
-
-.x-tree-col-div-general {
-	white-space: normal;
-	width: 100%;
-}
-
-.x-tree-node .x-tree-col-div-general a {
-	-moz-user-select:text !important;
-}
-
-.x-tree-col-text {
-    padding:3px 3px 3px 5px;
-    font-family: arial, tahoma, helvetica, sans-serif;
-	font-size:12px;
-}
-
-.x-tree-hd-text {
-   overflow:hidden; 
-   -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-	
-    padding:3px 3px 3px 5px;
-    white-space: normal;
-	
-    font-size:12px;
-	font-family: arial, tahoma, helvetica, sans-serif;
-}
-/*
- * Any images displayed in the column text are shrunk to thumbnail size
- */
-.x-tree-col-text img {
-	max-width:128px;
-    height:auto;
-}
-
-.x-tree-headers {
-	/*margin-top: 3px;*/
-	background: #f9f9f9 url(/lib/ext/resources/images/default/grid/grid3-hrow.gif) repeat-x 0 bottom;
-	cursor:default;
-}
-
-.x-tree-hd {
-    float:left;
-    overflow:hidden;
-    border-left:1px solid #eee;
-    border-right:1px solid #d0d0d0;
-}
-
 .x-form-field-wrap .x-form-ellipsis-trigger{
-    background-image:url(../skin/icons/ore/ellipsis-trigger-grey.gif);
+    background-image:url(../../skin/icons/ore/ellipsis-trigger-grey.gif);
     border-bottom-color:#b5b8c8;
 }
-
-/* the background image was blank anyway, and made it hard to highlight a field with a colour */
 .x-form-text, textarea.x-form-field{
     background-image: none;
-}
-
-/** For the Annotation Search DataView **/
-#search-view {
-	background: white;
-}
-#search-view .annoListing {
-    cursor:pointer;
-    font-size: 12px;
-	font-family:arial, tahoma, helvetica, sans-serif;
-	padding:3px 5px 7px 5px;
-	margin: 2px;
-}
-#search-view .annoListingTitle {
-	font-size:100%;
-}
-#search-view .annoURL, #search-view .annoListingMeta {
-	padding-left: 7px;
-	color: #51666b;
-	font-size:90%;
-}
-#search-view .annoURL {
-	color: blue;
-}
-#search-view .x-view-over {
-	background-color: #eeeeee;
-}
-#search-view .x-view-selected {
-	background-color: #dddddd;
 } 
-
-.anno-tag {
-	background-color: #E7E7E7;
-	border: 1px solid #D7D7D7;
-	margin: 2px;
-	padding: 2px 10px;
-	-moz-border-radius: 5px;
-}
-.x-tree-col-div-general * ol {
-	list-style:decimal !important;
-}
-.x-tree-col-div-general * ul {
-	list-style:disc !important;
-}
