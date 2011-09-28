@@ -68,6 +68,7 @@ td {
 .expander-display-open {
   cursor: pointer;
   -moz-user-select: none;
+  -webkit-user-select: none;
   vertical-align: top;
   text-align: center;
   background-image: url(chrome://lore/content/lib/ext3.2/resources/images/default/tree/elbow-minus-nl.gif);
@@ -79,6 +80,7 @@ td {
 .expander-display-closed {
   cursor: pointer;
   -moz-user-select: none;
+  -webkit-user-select: none;
   vertical-align: top;
   text-align: center;
   background-image: url(chrome://lore/content/lib/ext3.2/resources/images/default/tree/elbow-plus-nl.gif);
@@ -103,13 +105,13 @@ div.expander-content {
   background-color: white;
 }
 #viewsource {
-  font-family: -moz-fixed;
+  font-family: Consolas, Courier New, -moz-fixed;
   font-weight: normal;
   color: black;
   white-space: pre;
 }
 #viewsource.wrap {
-  white-space: -moz-pre-wrap;
+  white-space: pre-wrap;
 }
 pre {
   font: inherit;
