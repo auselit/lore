@@ -342,7 +342,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             return;
         }
         var fig = null;
-        var theURL = lore.global.util.preEncode(opts.url);
+        var theURL = lore.util.preEncode(opts.url);
         var figRepresentsCO = false;
         var figRepresentsAnno = false;
         opts.props = opts.props || {};

@@ -98,7 +98,7 @@ lore.anno.ui.PageData = Ext.extend(Ext.util.Observable, {
 			this.rdfa = ds.rdfa;
 			this.metaSelections = ds.metaSelections;
 			
-			var rec = lore.global.util.findRecordById(this.model, ds.curSelAnnoId);
+			var rec = lore.util.findRecordById(this.model, ds.curSelAnnoId);
 
 			if (rec) {
 				this.curSelAnno = rec;

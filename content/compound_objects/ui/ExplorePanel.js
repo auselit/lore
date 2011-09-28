@@ -324,7 +324,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     context.shadowColor   = '#666666';*/
                 var historyData = {
                     name: Ext.util.Format.ellipsis(node.name.toString(),30),
-                    action : "lore.global.util.launchTab(\"" + node.id + "\", window);",
+                    action : "lore.util.launchTab(\"" + node.id + "\", window);",
                     icon : "../../skin/icons/page_go.png",
                     tooltip : "Show in browser"
                 };
@@ -335,7 +335,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     historyData.icon = "../../skin/oaioreicon-sm.png";
                     historyData.tooltip = "Load in LORE";
                 } else if (node.data["anno"]){ // annotation
-                	historyData.action = "lore.global.util.launchTab(\"" + node.id + "?danno_useStylesheet=\");";
+                	historyData.action = "lore.util.launchTab(\"" + node.id + "?danno_useStylesheet=\");";
                 }
                 var historyEl = Ext.getCmp("exploreHistory").body;
                 var childNodes = [lore.ore.explorePanel.historyTemplate.apply(historyData)];
@@ -463,7 +463,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                handler: function(evt) {
                     var node = this.clickedNode;
                     // TODO: disable this option if it's a compound object: provide option to open in LORE instead
-                    lore.global.util.launchTab(Ext.util.Format.htmlDecode(node.id), window);
+                    lore.util.launchTab(Ext.util.Format.htmlDecode(node.id), window);
                }
             });
             nodemenu.add({
@@ -523,7 +523,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         setTimeout(function(ep) {
                             var imgData = ep.getAsImage();
                             if (imgData) {
-                                lore.global.util.writeURIWithSaveAs("explore", "png", window, imgData);
+                                lore.util.writeURIWithSaveAs("explore", "png", window, imgData);
                             } else {
                                 lore.ore.ui.vp.error("Unable to generate explore image");
                             }
@@ -743,7 +743,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 
                 var historyData = {
                         name: Ext.util.Format.ellipsis(title,30),
-                        action : "lore.global.util.launchTab(\"" + id + "\", window);",
+                        action : "lore.util.launchTab(\"" + id + "\", window);",
                         icon : "../../skin/icons/page_go.png",
                         tooltip : "Show in browser"
                 };

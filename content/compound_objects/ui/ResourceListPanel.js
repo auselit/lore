@@ -256,7 +256,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 scope: this,
                 handler: function(evt){
                     if (!this.tmpPlaceholder){
-                	   lore.global.util.copyToClip(this.tmpurl);
+                	   lore.util.copyToClip(this.tmpurl);
 					   lore.ore.ui.vp.info("URI copied to clipboard: " + this.tmpurl);
                     } else {
                         lore.ore.ui.vp.info("Cannot copy URI for placeholder");
@@ -270,7 +270,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
                 scope: this,
                 handler: function(evt){
                     if (!this.tmpPlaceholder){
-                	   lore.global.util.launchTab(this.tmpurl, window);
+                	   lore.util.launchTab(this.tmpurl, window);
                     } else {
                         lore.ore.ui.vp.info("Cannot show placeholder in browser");
                     }
