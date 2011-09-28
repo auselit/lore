@@ -26,7 +26,6 @@
 	ui = {};
 
 	Components.utils["import"]("resource://lore/debug.js");
-	Components.utils["import"]("resource://lore/util.js");
 
 	/**
      * @param {} win

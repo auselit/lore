@@ -17,34 +17,41 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
- 
-var EXPORTED_SYMBOLS = ['util'];
-
-if (typeof constants === "undefined") {
-    Components.utils["import"]("resource://lore/constants.js");
+if (typeof lore !== "object"){
+    var lore = {};   
 }
-
-if (typeof debug !== "object") {
-    Components.utils["import"]("resource://lore/debug.js");
-}
-if (typeof XPointerService === "undefined") {
-    Components.utils["import"]("resource://lore/lib/nsXPointerService.js");
+if (typeof Components !== "undefined") {
+    // Firefox, util is exported for code module
+    var EXPORTED_SYMBOLS = ['util'];
     
+    if (typeof constants === "undefined") {
+        Components.utils["import"]("resource://lore/constants.js",lore);
+    }
+    if (typeof debug !== "object") {
+        Components.utils["import"]("resource://lore/debug.js",lore);
+    }
+    if (typeof XPointerService === "undefined") {
+        Components.utils["import"]("resource://lore/lib/nsXPointerService.js");
+    }
+} else {
+    // Google Chrome, use lore.util directly
+    var XPointerService = function(){
+        // FIXME: dummy - needs to be loaded prior
+    }
 }
-
-/**
- * @property lore.global.util.xps
- * @type XPointerService
- * Used for generating xpointers for annotations
- */
-m_xps = new XPointerService(); 
 
 /**
  * General utility functions for I/O, manipulating the DOM, selections etc 
- * @class lore.global.util
+ * @class lore.util
  * @singleton
  */
-util = {
+lore.util = {
+    /**
+     * @property lore.util.xps
+     * @type XPointerService
+     * Used for generating xpointers for annotations
+     */
+    m_xps : new XPointerService(),
     /**
      * Determine if an object is empty (has no properties)
      * @param {Object} ob The object to check
@@ -259,7 +266,9 @@ util = {
 	            fp.appendFilters(nsIFilePicker.filterXML); 
 	        } else if ("txt" == defExtension){
 	            fp.appendFilters(nsIFilePicker.filterText);  
-	        } 
+	        } else if ("docx" == defExtension) {
+                fp.appendFilter("MS Word 2007 documents","*.docx");
+            }
 			fp.appendFilters(nsIFilePicker.filterAll);
 			fp.init(win, title, nsIFilePicker.modeSave);
 			var res = fp.show();
@@ -485,7 +494,7 @@ util = {
 						if ( n) ignore[n.id] = n;
 					}
 				}
-			} else if ( (nt == 3 || nt ==4 || nt == 8) && util.trim(container.nodeValue) != '') {
+			} else if ( (nt == 3 || nt ==4 || nt == 8) && lore.util.trim(container.nodeValue) != '') {
 				var w = targetDocument.createRange();
 				w.selectNodeContents(container);
 				//debug.ui("tagging : " + w , w);
@@ -556,18 +565,18 @@ util = {
      */
 	highlightRange : function (sel, targetDocument, styleCallback) {
 		try {
-            var highlightNodeTmpl = targetDocument.createElementNS(constants.NAMESPACES["xhtml"], "span");
+            var highlightNodeTmpl = targetDocument.createElementNS(lore.constants.NAMESPACES["xhtml"], "span");
 			if (styleCallback)
 				styleCallback(highlightNodeTmpl);
 			
-			var highlightNodes =  util.safeSurroundContents(targetDocument, sel, highlightNodeTmpl);
+			var highlightNodes =  lore.util.safeSurroundContents(targetDocument, sel, highlightNodeTmpl);
 			for ( var i =0; i< highlightNodes.length;i++) {
-				util.ignoreElementForXP(highlightNodes[i]);
+				lore.util.ignoreElementForXP(highlightNodes[i]);
 			}
             
             return highlightNodes;
         } catch (e) {
-            debug.ui(e,e);
+            lore.debug.ui(e,e);
             return null;
         }
 	},
@@ -577,7 +586,7 @@ util = {
 	 * @param {Object} domNode
 	 */
 	ignoreElementForXP : function ( domNode ) {
-		m_xps.markElement(domNode);
+		lore.util.m_xps.markElement(domNode);
 	},	
 	
     /**
@@ -593,7 +602,7 @@ util = {
      */
     getSelectionForXPath : function(xp, targetDocument)
     {
-        return m_xps.xptrResolver.resolveXPointerToRange(xp, targetDocument);
+        return lore.util.m_xps.xptrResolver.resolveXPointerToRange(xp, targetDocument);
     },
     /**
      * @param {} xp
@@ -615,7 +624,8 @@ util = {
      * @return {}
      */
     getXPathFromXPointer : function(xp) {
-        xp = util.normalizeXPointer(xp);
+        xp = lore.util.normalizeXPointer(xp);
+        lore.debug.ui("xpointer is ",xp);
         var start = xp.indexOf('(') + 1,
             end = xp.lastIndexOf(')');
         return xp.substring(start, end);
@@ -630,7 +640,7 @@ util = {
 	getNodeForXPointer: function(xp, targetDocument) {
 		if ( xp.indexOf("#") != -1)
 			xp = xp.substring(xp.indexOf("#")+1);
-		return m_xps.parseXPointerToNode(xp, targetDocument);
+		return lore.util.m_xps.parseXPointerToNode(xp, targetDocument);
 	},
 	
     /**
@@ -642,14 +652,14 @@ util = {
     
     getXPathForSelection : function(win)
     {
-      var mainwindow = util.getContentWindow(win);
+      var mainwindow = lore.util.getContentWindow(win);
       var xp = '';
       try {
         var seln = mainwindow.getSelection();
         
         if (seln && seln!='') {
           var select = seln.getRangeAt(0);
-          xp = m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
+          xp = lore.util.m_xps.xptrCreator.createXPointerFromSelection(seln, mainwindow.document);
         }
       }
       catch (ex) {
@@ -661,14 +671,14 @@ util = {
      * Return an XPath for an image
      */
 	getXPathForImageSelection : function (domNode, doc, coords, noScale ) {
-			var scale = noScale ? {x:1,y:1}: util.getImageScaleFactor( domNode, doc);
+			var scale = noScale ? {x:1,y:1}: lore.util.getImageScaleFactor( domNode, doc);
 			var x1 = parseInt(coords.x1 * scale.x), y1 = parseInt(coords.y1 * scale.y), 
 				x2 = parseInt(coords.x2 * scale.x), y2 = parseInt(coords.y2 * scale.y);
 			
-			var xp = ("xpointer(image-range(" + m_xps.xptrCreator.create_child_XPointer(domNode)
+			var xp = ("xpointer(image-range(" + lore.util.m_xps.xptrCreator.create_child_XPointer(domNode)
 			+ ",[" + x1 + "," + y1 + "],[" + x2 + "," + y2 + "],\"" + domNode.src + "\"))");
 			 
-			debug.ui("The image region Xpointer is: " + xp);
+			lore.debug.ui("The image region Xpointer is: " + xp);
 			return xp;	
 	},
 	
@@ -682,14 +692,14 @@ util = {
 		var sel = {};
 		
 		if (!triple.source) {
-			debug.ui ( "Couldn't find dom context", triple);
+			lore.debug.ui ( "Couldn't find dom context", triple);
 			return sel;
 		}
 		
 		try {
-			sel.xp = "xpointer(" + m_xps.xptrCreator.create_child_XPointer(triple.source) + ")"; 
+			sel.xp = "xpointer(" + lore.util.m_xps.xptrCreator.create_child_XPointer(triple.source) + ")"; 
 		} catch (e) {
-			debug.anno("Error occurred generating xpointer for tirple:  " +e, e);
+			lore.debug.anno("Error occurred generating xpointer for tirple:  " +e, e);
 		}
 		return sel;
 	},
@@ -724,10 +734,10 @@ util = {
 	 * Decode an image-range xpointer into it's component parts
 	 */
 	decodeImageRangeXPointer: function(xpointer) {
-		if (!util.isXPointerImageRange(xpointer) )
+		if (!lore.util.isXPointerImageRange(xpointer) )
 			return null;
 		
-		xpointer = util.normalizeXPointer(xpointer);
+		xpointer = lore.util.normalizeXPointer(xpointer);
 		var xpBits = xpointer.substring("xpointer(image-range(".length ).split(',');
 		var xp =  xpBits[0];
 	
@@ -750,13 +760,13 @@ util = {
      * @return {}
 	 */
 	parseImageRangeXPointer: function (xpointer, targetDocument) {
-		if (!util.isXPointerImageRange(xpointer))
+		if (!lore.util.isXPointerImageRange(xpointer))
 			return null;
 		
 		var decoded = this.decodeImageRangeXPointer(xpointer);
 		
 		if (targetDocument)
-			decoded.image = util.getNodeForXPath(decoded.xp, targetDocument);
+			decoded.image = lore.util.getNodeForXPath(decoded.xp, targetDocument);
 	
 		return decoded;
 	},
@@ -794,14 +804,14 @@ util = {
     getSelectionText : function(currentCtxt, targetDocument){
         var selText = "";
         if (currentCtxt){
-            if ( util.isXPointerImageRange(currentCtxt)){
+            if (lore.util.isXPointerImageRange(currentCtxt)){
 				
-				var data = util.parseImageRangeXPointer(currentCtxt, targetDocument);
+				var data = lore.util.parseImageRangeXPointer(currentCtxt, targetDocument);
 				var c = data.coords;
 				return 'Image region (' + c.x1 + ', ' + c.y1 +')-(' + c.x2 +', ' + c.y2 +') selected from ' + data.image.src; 				
 			}
 			var idx = currentCtxt.indexOf('#');
-            var sel = util.getSelectionForXPath(currentCtxt.substring(idx + 1), targetDocument);
+            var sel = lore.util.getSelectionForXPath(currentCtxt.substring(idx + 1), targetDocument);
             selText = sel.toString();
             if (selText){
                 if (selText.length > 100){
@@ -847,7 +857,7 @@ util = {
             }
             else {
                 // Find it in this tree
-                if(found = util.findChildRecursively(cs[i], attribute, value)) {
+                if(found = lore.util.findChildRecursively(cs[i], attribute, value)) {
                     return found;
                 }
             }
@@ -918,9 +928,9 @@ util = {
         // click opens the resource in the main browser
         iframe.addEventListener("click",function(e){
             try{
-                util.launchTab(this.getAttribute('src').replace('&printPreview=y',''),this.contentWindow);
+                lore.util.launchTab(this.getAttribute('src').replace('&printPreview=y',''),this.contentWindow);
             } catch (ex){
-                debug.ui("iframe onclick",ex);
+                lore.debug.ui("iframe onclick",ex);
             }
         },false);
         return iframe;
@@ -942,7 +952,7 @@ util = {
         iframe.docShell.allowMetaRedirects = false;
         iframe.docShell.allowPlugins = false;
         iframe.setAttribute("src",theurl);
-        iframe.addEventListener("load", util.insertSecureFrameStyle, true, true);        
+        iframe.addEventListener("load", lore.util.insertSecureFrameStyle, true, true);        
     },
     /**
      * @param {} win
@@ -951,16 +961,16 @@ util = {
      * @return {}
      */
     createSecureIFrame : function(win, theurl, extraFunc) {
-        var iframe = util.createXULIFrame(win);
+        var iframe = lore.util.createXULIFrame(win);
         iframe.addEventListener("load", function onLoadTrigger (event) {
                 try {
                     iframe.removeEventListener("load", onLoadTrigger, true);
-                    util.setSecureXULIFrameContent(iframe, theurl);
+                    lore.util.setSecureXULIFrameContent(iframe, theurl);
                     if ( extraFunc) {
                         extraFunc();
                     }
                 } catch (e ) {
-                    debug.ui("iframe(onload): " + e, e);
+                    lore.debug.ui("iframe(onload): " + e, e);
                 }
             }, true);
         // trigger onload
@@ -983,7 +993,7 @@ util = {
 	        styleElem.textContent = theCSS;
 	        doc.getElementsByTagName("head")[0].appendChild(styleElem); 
     	} catch (e){
-    		debug.ui("util.insertSecureFrameStyle:",e)
+    		lore.debug.ui("lore.util.insertSecureFrameStyle:",e)
     	}
     },
     parseHTMLToElement : function(html,win){
@@ -995,6 +1005,13 @@ util = {
             div.appendChild(fragment);
         }
         return div;    
+    },
+    htmlToDom : function(html, win){
+            var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
+                .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
+                .parseFragment(html, false, null, win.document.body);
+            
+            return fragment;
     },
     /**
      * Basic HTML Sanitizer using Firefox's parseFragment
@@ -1036,7 +1053,7 @@ util = {
 	            return "";
 	        }
         } catch (ex){
-            debug.ui("Problem sanitizing html",ex);
+            lore.debug.ui("Problem sanitizing html",ex);
             return "";
         }
         
@@ -1124,7 +1141,7 @@ util = {
                             }
                         }
                     } catch (e){
-                        debug.ui("Error transforming XML",e);
+                        lore.debug.ui("Error transforming XML",e);
                         return "";
                     }
                 }
@@ -1175,7 +1192,7 @@ util = {
                 e.className = 'expander-display-open';
             }
         } catch(ex){
-            debug.ui("Problem in expandXML",ex);
+            lore.debug.ui("Problem in expandXML",ex);
         }
     },
     /** Normalize character encoding to uppercase in URL (specifically to deal with AustLit urls ) */
@@ -1302,3 +1319,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     })()
 
 };
+if (typeof Components !== "undefined"){
+    // For Firefox code modules
+    util = lore.util;
+}

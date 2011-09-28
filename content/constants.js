@@ -17,15 +17,17 @@
  * You should have received a copy of the GNU General Public License along with
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
-
-var EXPORTED_SYMBOLS = ['constants'];
-
+if (typeof Components !== "undefined") {
+    var EXPORTED_SYMBOLS = ['constants'];
+}
 /** Constants used in LORE
  * @singleton
  * @class lore.constants
  */
-
-constants = {
+if (typeof lore !== "object"){
+    var lore = {};   
+}
+lore.constants = {
      nsprefix : function(ns, defaultNS) {
         var nssize = 0;
         for (var prefix in this.NAMESPACES) {
@@ -250,3 +252,7 @@ constants = {
           relIcon    : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEXSURBVDjLY/j//z8DJZhhmBpg2POQn2wDDDof8HvOe3osYtXzDzCxuM2vP3gvfn4MJIfXAP22e0Ies58eK9r2+r//3Kf3YOIhq17eK9v95j9ITrv2jhBWA/Ra7kVEr375vXDrq/9+s57eUy+4IY0kJx2w6Nk9kFzE0uffgXIRKAboNtxlC1/+/GPljjdABc9+q+ZcM0Z3qmb5LWOQXOmml/8DZz7+qJB0hQ3FBerFNyNC5z/9nrXqxX+Pvgf35OMuSSPJSXtPfXQPJBc089F3oFwE1jBQTLkiZNtw51jq4qf/XVvuwsPAa9Kjexkrnv8HyclFXxTCGwsyERf4LctvHvPuvAePBf8pDz/Y1N45BpIbKUmZFAwAR3nW32nUrY0AAAAASUVORK5CYII="
     }
 };
+if (typeof Components !== "undefined"){
+    // For Firefox code modules
+    constants = lore.constants;
+}
