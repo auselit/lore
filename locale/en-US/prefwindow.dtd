@@ -26,7 +26,7 @@
 <!ENTITY dccreator.label "Creator (your name):">
 <!ENTITY dccreator.accesskey "C">
 <!ENTITY annometaontology.label "Annotation Ontology:">
-<!ENTITY annoserver.label "Annotation Server URL:">
+<!ENTITY annoserver.label "Server URL:">
 <!ENTITY solr.label "Solr URL (for keyword search):">
 <!ENTITY annocachetimeout.label "Page cache timeout" >
 <!ENTITY disable_anno.label "Disable annotation features">

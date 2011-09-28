@@ -86,28 +86,13 @@
     <prefpane onpaneload="lore.prefs.updateCompoundObjectRepository(document.getElementById('lorestore_radio').selected)" image="chrome://lore/skin/icons/wrench_orange.png" id="repos-prefs" label="&repos.label;" style="width:350px">
         <preferences>
             <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
-            <preference id="rdfrepos_pref" name="extensions.lore.rdfrepos" type="unichar"/>
-            <preference id="type_pref" name="extensions.lore.rdfrepostype" type="string"/>
             <preference id="solr_pref" name="extensions.lore.solr" type="unichar"/>
         </preferences>
-        <groupbox>
-            <caption label="&anno.label;"/>
-            <label control="text_annoserver">&annoserver.label;</label>
-            <textbox id="text_annoserver" preference="annoserver_pref"/>
-            <label control="text_solr">&solr.label;</label>
-            <textbox id="text_solr" preference="solr_pref"/>
-        </groupbox>
-        <groupbox>     
-            <caption label="&co.label;"/>
-            <label>&rdfrepostype.label;</label>
-            <radiogroup preference="type_pref" disabled="false">
-                <!--radio id="fedora_radio" label="&fedora.label;" value="fedora"  disabled="true"/-->
-                <radio onclick="lore.prefs.updateCompoundObjectRepository(true)" id="lorestore_radio" label="&lorestore.label;" value="lorestore"/>
-                <radio onclick="lore.prefs.updateCompoundObjectRepository()" id="sesame_radio" label="&sesame.label;" value="sesame"/>
-            </radiogroup>
-            <label control="text_rdfrepos">&rdfrepos.label;</label>
-            <textbox id="text_rdfrepos" preference="rdfrepos_pref"/>
-        </groupbox>    
+        <label control="text_annoserver">&annoserver.label;</label>
+        <textbox id="text_annoserver" preference="annoserver_pref"/>
+        <label control="text_solr">&solr.label;</label>
+        <textbox id="text_solr" preference="solr_pref"/>
+   
     </prefpane>
 	<script>
 	<![CDATA[
