@@ -30,7 +30,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
             Ext.apply(this,config);
             if (!this.id){
                 
-                this.id = "#new" + lore.global.util.uuid();
+                this.id = "#new" + lore.util.uuid();
             }
             this.createdOrModified = (!this.modified || this.modified == '') ? this.created : this.modified;
             if (this.type.match(lore.constants.NAMESPACES["vanno"]) && !this.original) {
@@ -159,7 +159,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                     /** @property body
                      * The content of the body resource
                      */
-                    this.body = lore.global.util.sanitizeHTML(bodyText, window) || '';
+                    this.body = lore.util.sanitizeHTML(bodyText, window) || '';
                     /** @property bodyLoaded
                      * @type boolean
                      * True if the {@link #body} property has been loaded from {@link #bodyURL}
@@ -172,13 +172,13 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
             /** @property created
              * From Annotea created (the date and time when the annotation was created)
              */
-            this.created = lore.global.util.safeGetFirstChildValue(node);
+            this.created = lore.util.safeGetFirstChildValue(node);
 
             node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
             /** @property modified
              * From Annotea modified (the date and time when the annotation was last modified)
              */
-            this.modified = lore.global.util.safeGetFirstChildValue(node);
+            this.modified = lore.util.safeGetFirstChildValue(node);
 
             this.createdOrModified = (this.modified == '') ? this.created : this.modified;
 
@@ -188,7 +188,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
              * Is this annotation 'private', ie, only visible to the current user
              */
             node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES['vanno'], 'private');
-            this.privateAnno = lore.global.util.safeGetFirstChildValue(node) === 'true';
+            this.privateAnno = lore.util.safeGetFirstChildValue(node) === 'true';
 
             this.meta = { context: null, fields: []};
             if (this.isReply) {
@@ -198,11 +198,11 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                 /** @property context
                  * From Annotea context
                  */
-                this.context = lore.global.util.normalizeXPointer(lore.global.util.safeGetFirstChildValue(node));
+                this.context = lore.util.normalizeXPointer(lore.util.safeGetFirstChildValue(node));
 
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
                 if (node && node.length > 0) {
-                    this.meta.context = lore.global.util.safeGetFirstChildValue(node);
+                    this.meta.context = lore.util.safeGetFirstChildValue(node);
 
                     this.meta.context = this.meta.context.split('\n');
                 }
@@ -228,19 +228,19 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
             /** @property creator
              * dc:creator of the annotation
              */
-            this.creator = lore.global.util.safeGetFirstChildValue(node, 'anon');
+            this.creator = lore.util.safeGetFirstChildValue(node, 'anon');
 
             node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'title');
             /** @property title
              * dc:title of the annotation
              */
-            this.title = lore.global.util.safeGetFirstChildValue(node);
+            this.title = lore.util.safeGetFirstChildValue(node);
 
             node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'language');
             /** @property lang
              * dc:lang of the annotation
              */
-            this.lang = lore.global.util.safeGetFirstChildValue(node);
+            this.lang = lore.util.safeGetFirstChildValue(node);
 
             // get tags
             this.tags = "";
@@ -298,7 +298,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                 /** @property originalcontext
                  * For a VariationAnnotation, the context associated with the {@link #original} resource
                  */
-                this.originalcontext = lore.global.util.safeGetFirstChildValue(node);
+                this.originalcontext = lore.util.safeGetFirstChildValue(node);
 
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant-context');
                 if (node.length == 0) {
@@ -307,25 +307,25 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                 /** @property variantcontext
                  * For a VariationAnnotation, the context associated with the {@link #variant} resource
                  */
-                this.variantcontext = lore.global.util.safeGetFirstChildValue(node);
+                this.variantcontext = lore.util.safeGetFirstChildValue(node);
 
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-agent');
                 if (node.length == 0) {
                     node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-agent');
                 }
-                this.variationagent = lore.global.util.safeGetFirstChildValue(node);
+                this.variationagent = lore.util.safeGetFirstChildValue(node);
 
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-place');
                 if (node.length == 0) {
                     node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-place');
                 }
-                this.variationplace = lore.global.util.safeGetFirstChildValue(node);
+                this.variationplace = lore.util.safeGetFirstChildValue(node);
 
                 node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-date');
                 if (node.length == 0) {
                     node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-date');
                 }
-                this.variationdate = lore.global.util.safeGetFirstChildValue(node);
+                this.variationdate = lore.util.safeGetFirstChildValue(node);
             }
             if (!this.original) {
                 this.original = this.resource;
@@ -341,7 +341,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
             return "Annotation [" + this.id + "," +
             (this.modified ? this.modified : this.created) +
             "," +
-            lore.global.util.splitTerm(this.type).term +
+            lore.util.splitTerm(this.type).term +
             "]";
     },
     /**
@@ -372,7 +372,7 @@ lore.anno.RDFAnnotationSerializer  = function () {
 
 };
 
-lore.anno.RDFAnnotationSerializer.prototype = {
+Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
     /**
      * Generate the RDF for an array of annotations
      * @param {Array} annos An array of records or Annotation objects
@@ -423,10 +423,10 @@ lore.anno.RDFAnnotationSerializer.prototype = {
             if (annoOrig.isReply) {
                 rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
 
-                var rootannonode = lore.global.util.findRecordById(store, annoOrig.about);
+                var rootannonode = lore.util.findRecordById(store, annoOrig.about);
                 if (rootannonode) {
                     while (rootannonode.data.isReply) {
-                        rootannonode = lore.global.util.findRecordById(store, rootannonode.data.about);
+                        rootannonode = lore.util.findRecordById(store, rootannonode.data.about);
                     }
                     rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id.replace(/&/g,'&amp;') + '"/>';
                 }
@@ -467,7 +467,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
             }
             if (annoOrig.creator) {
                 rdfxml += '<creator xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-                lore.global.util.trim(anno.creator) +
+                lore.util.trim(anno.creator) +
                 '</creator>';
             }
             if (!annoOrig.created) {
@@ -483,7 +483,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
             }
             if (annoOrig.context) {
                 rdfxml += '<context xmlns="' + lore.constants.NAMESPACES["annotea"] + '">' +
-                lore.global.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.context +
+                lore.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.context +
                 '</context>';
             }
 
@@ -542,7 +542,7 @@ lore.anno.RDFAnnotationSerializer.prototype = {
                 var tagsarray = anno.tags.split(',');
 
                 for (var ti = 0; ti < tagsarray.length; ti++) {
-                    var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
+                    var thetag = lore.util.escapeHTML(tagsarray[ti]);
                     rdfxml += '<tag xmlns="' + lore.constants.NAMESPACES["vanno"] + '"';
                     if (thetag.indexOf("http://") == 0) {
                         rdfxml += ' resource="' + thetag + '"/>';
@@ -682,26 +682,14 @@ lore.anno.RDFAnnotationSerializer.prototype = {
                 (title ? title : 'Annotation') +
                 '</title></head>' +
                 '<body>' +
-                lore.global.util.sanitizeHTML(body, window) +
+                lore.util.sanitizeHTML(body, window) +
                 '</body></html>' +
                 '</Body></rdf:Description>';
     }
 
-};
-/*lore.anno.WordSerializer = function(){
-    
-}
-lore.anno.WordSerializer.prototype = {
-    serialize: function(annos) {
-        var result = {
-            docxml: "",
-            rels: []
-        };
-        
-        
-        return result;
-    }
-}*/
+});
+
+
 
 /**
  * Class that serializes Annotation object/s as OAC RDF
@@ -711,7 +699,7 @@ lore.anno.OACAnnotationSerializer  = function () {
 
 };
 
-lore.anno.OACAnnotationSerializer.prototype = {
+Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
     /**
      * Generate OAC RDF using rdfquery to serialize
      * @param {Array} annos An array of records or Annotation objects
@@ -732,8 +720,8 @@ lore.anno.OACAnnotationSerializer.prototype = {
                         rdfdb.add(annoid + " oac:hasTarget <" + target + "#" + context + ">");
                     } else {
                         // generate a ConstrainedTarget and constraint with content as text
-                        var ctuuid = "<urn:uuid:" + lore.global.util.uuid() + ">"; // constrained target
-                        var cuuid = "<urn:uuid:" + lore.global.util.uuid() + ">"; // constraint
+                        var ctuuid = "<urn:uuid:" + lore.util.uuid() + ">"; // constrained target
+                        var cuuid = "<urn:uuid:" + lore.util.uuid() + ">"; // constraint
                         rdfdb.add(annoid + " oac:hasTarget " + ctuuid)
                         .add(ctuuid + " oac:constrains <" + target + ">")
                         .add(ctuuid + " a oac:ConstrainedTarget")
@@ -765,7 +753,7 @@ lore.anno.OACAnnotationSerializer.prototype = {
                 annoid = "<" + annoid + ">";
             } else {
                 // no id, generate a unique blank node
-                annoid = "_:anno" + Math.uuid();
+                annoid = "_:anno" + lore.util.uuid();
             }
             if (!anno.privateAnno){ // don't export private annotations to OAC
                 if (anno.isReply) {
@@ -791,12 +779,12 @@ lore.anno.OACAnnotationSerializer.prototype = {
                 // At present attach tags as another body: eventually we may wish to use a structured/compound body with both tags and html/text body
                 var tagsarray = anno.tags.split(',');
                 if (tagsarray.length > 0 && tagsarray[0] != ""){
-                    var buuid = "<urn:uuid:" + Math.uuid() + ">"; // tag body
+                    var buuid = "<urn:uuid:" + lore.util.uuid() + ">"; // tag body
                     var tagsrdfxml = '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] 
                         + '" xmlns:vanno="' + lore.constants.NAMESPACES["vanno"] + '">'
                         + '<rdf:Description about="' + anno.resource + '">';
                     for (var ti = 0; ti < tagsarray.length; ti++) {
-                        var thetag = lore.global.util.escapeHTML(tagsarray[ti]);
+                        var thetag = lore.util.escapeHTML(tagsarray[ti]);
                         tagsrdfxml += '<vanno:tag';
                         if (thetag.indexOf("http://") == 0) { // uri
                             tagsrdfxml += ' resource="' + thetag + '"/>';
@@ -818,10 +806,10 @@ lore.anno.OACAnnotationSerializer.prototype = {
                 }
                 // Annotation properties
                 if (anno.creator) {
-                    var agentid = anno.agentId? "<" + anno.agentId + ">" : ("_:user" + Math.uuid()); // TODO: get user id from original annotation
+                    var agentid = anno.agentId? "<" + anno.agentId + ">" : ("_:user" + lore.util.uuid()); // TODO: get user id from original annotation
                     rdfdb.add(annoid + " dcterms:creator " + agentid)
                     .add(agentid + " a foaf:Agent")
-                    .add(agentid + " foaf:name \"" + lore.global.util.trim(anno.creator) + "\"");
+                    .add(agentid + " foaf:name \"" + lore.util.trim(anno.creator) + "\"");
                 }
                 if (anno.lang) {
                     rdfdb.add(annoid + " dc:language \"" +  anno.lang +"\"");
@@ -850,10 +838,10 @@ lore.anno.OACAnnotationSerializer.prototype = {
     
 
     convertImageRangeXpointerToMediaFragment: function(/*string*/xpointer) {
-        if (!lore.global.util.isXPointerImageRange(xpointer))
+        if (!lore.util.isXPointerImageRange(xpointer))
             return xpointer;
 
-        var decoded = lore.global.util.decodeImageRangeXPointer(xpointer);
+        var decoded = lore.util.decodeImageRangeXPointer(xpointer);
         var x = decoded.coords.x1,
             y = decoded.coords.y1,
             w = decoded.coords.x2 - x,
@@ -864,4 +852,167 @@ lore.anno.OACAnnotationSerializer.prototype = {
         return decoded.imgUrl + '#xywh=' + [x,y,w,h].join(',');
     }
 
-};
+});
+lore.anno.WordSerializer = function(){
+    var oThis = this;
+    // Load xslt from local file for transforming body content to ooxml for inclusion in docx
+    var xhr = new XMLHttpRequest();                
+    xhr.overrideMimeType('text/xml');
+    xhr.open("GET", '../export/html2word.xsl');
+    xhr.onreadystatechange= function(){
+        if (xhr.readyState == 4) {
+            oThis.bodyStylesheet = xhr.responseXML;
+            oThis.xsltproc = new XSLTProcessor();
+            oThis.xsltproc.importStylesheet(oThis.bodyStylesheet);
+        }
+    };
+    xhr.send(null);
+    this.docxTemplate.setSerializer(this);
+}
+Ext.apply(lore.anno.WordSerializer.prototype, {
+    docxTemplate : new Ext.XTemplate(
+       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+       '<w:document xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">',
+       '<w:body>',
+       '<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>LORE Annotations</w:t></w:r></w:p>',
+       '<w:p><w:r><w:rPr><w:rStyle w:val="SubtleEmphasis" /> </w:rPr><w:t>Exported for {[this.processHyperlink(lore.anno.controller.currentURL, lore.anno.controller.currentURL)]},<w:br />{[new Date().format("F j, Y, g:i a")]}</w:t></w:r></w:p>',
+       '<tpl for="."><tpl for="data">',
+           '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr>',
+           '<w:bookmarkStart w:id="{#}" w:name="_Ref{[this.getRef(values.id)]}" />',
+           '<w:r><w:t>{[lore.util.escapeHTML(values.title)]}</w:t></w:r>',
+           '<w:bookmarkEnd w:id="{#}" />',
+           '</w:p>\n',
+           '<w:p><w:pPr><w:pStyle w:val="Subtitle"/></w:pPr><w:r><w:t>By {[lore.util.escapeHTML(values.creator)]}, {[new Date(values.created).format("F j, Y, g:i a")]}</w:t></w:r>',
+                '<tpl if="modified"><w:r><w:br /><w:t>Last modified {[new Date(values.modified).format("F j, Y, g:i a")]}</w:t></w:r></tpl>',
+           '</w:p>\n',
+           '<tpl if="isReply==true">',
+                '{[this.refTpl.apply({ref: this.getRef(values.resource), name:"(IN REPLY TO ANNOTATION)"})]}',
+           '</tpl>',
+           '{[this.processBody(values.body)]}\n',
+           '<tpl if="tags">',
+                '<w:p><w:r><w:rPr><w:rStyle w:val="Strong" /></w:rPr><w:t>Tags: </w:t></w:r></w:p>\n',
+                '<w:p>{[this.processTags(values.tags)]}</w:p>',
+           '</tpl>',
+           '{[this.processReplies(values.replies)]}',
+       '</tpl></tpl>',
+       //'<w:sectPr><w:pgSz w:w="11906" w:h="16838" /><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0" /> <w:cols w:space="708" /> <w:docGrid w:linePitch="360" /> </w:sectPr>',
+       '</w:body></w:document>',
+       {
+            refTpl : new Ext.XTemplate(
+                '<w:p>',
+                '<w:r><w:fldChar w:fldCharType="begin" /></w:r>',
+                '<w:r><w:instrText xml:space="preserve">REF _Ref{ref} \\\\h</w:instrText> </w:r>',
+                '<w:r><w:fldChar w:fldCharType="separate" /> </w:r>',
+                '<w:r><w:rPr><w:color w:val="EA9A47"/><w:u w:val="single"/></w:rPr><w:t>{name}</w:t></w:r>',
+                '<w:r><w:fldChar w:fldCharType="end" /></w:r></w:p>'),
+            getRef: function(uri){
+              return   uri.substring(uri.lastIndexOf('/') + 1);
+            },
+            setSerializer: function(ws){
+              this.wordSerializer = ws;  
+            },
+            /** Set array of links (used for generating ids for hyperlinks) */
+            setRels: function(rels) {
+                this.rels = rels;  
+            },
+            processReplies: function(repObj) {
+                var result = "";
+               if (repObj && repObj.count > 0){
+                   result += "<w:p><w:r><w:t>Replies:</w:t></w:r></w:p>";
+                   for (r in repObj.map){
+                        var reply = repObj.map[r];
+                        result += this.refTpl.apply({ref: this.getRef(reply.data.id), name:reply.data.title})
+                   }
+                   
+               }
+               return result;
+            },
+            processBody: function(body){
+                var result = "";
+                
+                if (this.wordSerializer && this.wordSerializer.xsltproc){
+                    // get body as xml dom
+                    var bodyDoc = lore.util.htmlToDom("<div>" + body + "</div>",window);
+                    // transform body using XSLT
+                    var serializer = new XMLSerializer();
+                    var thefrag = this.wordSerializer.xsltproc.transformToFragment(bodyDoc, document);
+                    result = serializer.serializeToString(thefrag);
+                } else {
+                    result = lore.util.escapeHTML(body);
+                }
+                
+                return result;
+            },
+            processHyperlink: function(url, displayText){
+                return lore.util.escapeHTML(url); // FIXME
+                var result = "";
+                var linkidx = this.rels.indexOf(url);
+                if (linkidx != -1){
+                   var linkid = "rId" + (linkidx + 1); 
+                   result += '<w:hyperlink r:id="' + linkid + '"><w:r><w:rPr><w:rStyle w:val="Hyperlink" /></w:rPr>'
+                        + "<w:t>" + lore.util.escapeHTML(displayText? displayText : url) + "</w:t>" 
+                        + "</w:r></w:hyperlink> ";
+                } else {
+                    result += "<w:r><w:t>" + (displayText ? displayText + " ": "") + url + "</w:t><w:br/></w:r>";
+                }
+                return result;
+            },
+            processTags: function(tags){
+                var result = "";
+                if (typeof tags == 'string'){
+                    var splittags = tags.split(',');
+                    for (var i = 0; i < splittags.length; i++){
+                        var tag = splittags[i];
+                        var tagName;
+                        var tagidx = this.rels.indexOf(tag);
+                        if (tagidx != -1){
+                            var tagid = "rId" + (tagidx + 1); 
+                            tagidx = lore.anno.thesaurus.findUnfiltered('id',tag);
+                            if (tagidx != -1) {
+                                var tagRec = lore.anno.thesaurus.getAtUnfiltered(tagidx);
+                                tagName = tagRec.get('name');
+                            }
+                            
+                            result += '<w:hyperlink r:id="' + tagid + '"><w:r><w:rPr><w:rStyle w:val="Hyperlink" /></w:rPr>'
+                                + "<w:t>" + lore.util.escapeHTML(tagName? tagName : splittags[i]) + "</w:t>" // should be tag display name
+                                + "<w:br/></w:r></w:hyperlink> ";
+                        } else { // no hyperlink
+                            result += "<w:r><w:t>" + tag + "</w:t><w:br/></w:r>";
+                        }
+                        
+                    }
+                }
+                return result;
+            }
+       }
+    ),
+    serialize: function(annos) {
+        lore.debug.anno("serialize to word", annos);
+        var linksArray = this.extractLinks(annos);
+        this.docxTemplate.setRels(linksArray);
+        var result = {
+            docxml: this.docxTemplate.apply(annos),
+            rels: linksArray
+        };
+        
+        
+        return result;
+    },
+    extractLinks: function(annos) {
+        var rels = [lore.anno.controller.currentURL];
+        for (var i = 0; i < annos.length; i++){
+            var anno = annos[i];
+            rels.push(anno.data.id);
+            rels.push(anno.data.bodyURL);
+            if (anno.data.tags){
+                var splittags = anno.data.tags.split(',');
+                for (var j = 0; j < splittags.length; j++){
+                    rels.push(splittags[j]);
+                }
+            }
+            // TODO extract links from body text
+            // TODO original, variant etc
+        }
+        return rels;
+    }
+});
