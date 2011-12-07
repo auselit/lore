@@ -1,5 +1,5 @@
 /** 
- * @class lore.ore.ui.CompoundObjectDataView Displays a summary of a compound object eg in browse, history, search lists
+ * @class lore.ore.ui.CompoundObjectDataView Displays a summary of a Resource Map eg in browse, history, search lists
  * @extends Ext.DataView
  */
 lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
@@ -31,7 +31,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                     }
                 }
             ),
-            loadingText: "Loading compound objects...",
+            loadingText: "Loading Resource Maps...",
             singleSelect: true,
             autoScroll: false,
             style: "overflow-y:auto;overflow-x:hidden",
@@ -69,12 +69,12 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                 });
                 this.contextMenu = cm;
                 cm.remoteMsg = new Ext.form.Label({
-                        text : "Compound object is not from default repository",
+                        text : "Resource Map is not from default repository",
                         cls: 'underlined'
                  });
                 cm.add(cm.remoteMsg);
                 cm.localLoad = new Ext.menu.Item({
-                    text: "Edit compound object",
+                    text: "Edit Resource Map",
                        iconCls: "edit-icon",
                        scope: this,
                        handler: function(obj,evt) {
@@ -83,7 +83,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                         }
                     });
                  cm.remoteLoad = new Ext.menu.Item({
-                    text: "View compound object in editor (read-only)",
+                    text: "View Resource Map in editor (read-only)",
                        iconCls: "edit-icon",
                        scope: this,
                        handler: function(obj,evt) {
@@ -95,7 +95,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                  cm.add(cm.localLoad);
                  cm.add(cm.remoteLoad);
                  cm.localDelete = new Ext.menu.Item({
-                    text : "Delete compound object",
+                    text : "Delete Resource Map",
                     iconCls: "delete-icon",
                     scope: this,
                     handler : function(obj,evt) {
@@ -107,7 +107,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                  cm.add(cm.localDelete);
                  
                  cm.add({
-                    text : "Add as nested compound object",
+                    text : "Add as nested Resource Map",
                     iconCls: "add-icon",
                     scope: this,
                     handler : function(obj, evt) {

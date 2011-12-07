@@ -19,7 +19,7 @@ Ext.override(Ext.Viewport, {
     }
 });
 /**
- * @class lore.ore.ui.Viewport The LORE Compound Objects UI (except for toolbar, status icon etc which are in the overlay)
+ * @class lore.ore.ui.Viewport The LORE Resource Maps UI (except for toolbar, status icon etc which are in the overlay)
  * @extends Ext.Viewport
  */
 lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
@@ -91,20 +91,20 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                 autoScroll : true,
                 items : [{
                             title : "Graphical Editor",
-                            tabTip: "View or edit the compound object graphically",
+                            tabTip: "View or edit the Resource Map graphically",
                             id : "drawingarea",
                             xtype : "grapheditor",
                             iconCls: "graph-icon"
                         },{
 		                    title : "Resource List",
-		                    tabTip: "View or edit the list of resources in the compound object",
+		                    tabTip: "View or edit the list of resources in the Resource Map",
 		                    xtype : "resourcepanel",
 		                    id : "remlistview",
 		                    iconCls: "list-icon"
 		                },  {
                             title : "Details",
                             id: "remdetailsview",
-                            tabTip: "View detailed description of compound object contents including properties and relationships",
+                            tabTip: "View detailed description of Resource Map contents including properties and relationships",
                             xtype: "narrativepanel",
                             iconCls: "detail-icon"
                         }, {
@@ -112,7 +112,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             id : "remslideview",
                             title : "Slideshow",
                             iconCls: "slide-icon",
-                            tabTip: "View compound object contents as a slideshow",
+                            tabTip: "View Resource Map contents as a slideshow",
                             items : [{
                                         id : 'newss',
                                         xtype : "slideshowpanel",
@@ -125,7 +125,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             xtype : "explorepanel",
                             iconCls: "explore-icon"
                     }   , {
-                            title : "Using Compound Objects",
+                            title : "Using Resource Maps",
                             tabTip: "View LORE documentation",
                             id : "welcome",
                             scale: 0.90,
@@ -194,7 +194,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                 {
                     xtype:'label',
                     id:'currentCOMsg', 
-                    text: 'New compound object'
+                    text: 'New Resource Map'
                 },
                 ' ',
                 {
@@ -209,7 +209,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                     hidden: true,
                     id: 'lockButton',
                     icon: '../skin/icons/ore/lock.png',
-                    tooltip: 'Compound Object is locked',
+                    tooltip: 'Resource Map is locked',
                     scope: lore.ore.controller
                 }
             ]
@@ -256,7 +256,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                         "xtype": "panel",
                         layout: "anchor",
                         "title": "Browse",
-                        tabTip: "Browse related compound objects",
+                        tabTip: "Browse related Resource Maps",
                         "id": "browsePanel",
                         tbar: {
                                 "xtype": "lore.paging",
@@ -266,13 +266,13 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                     '->',
                                     {
                                        xtype:'button',
-                                       icon: "../skin/icons/feed.png",
+                                       icon: "../../skin/icons/feed.png",
                                        tooltip: "Show feed",
                                        handler: function(){
                                            try{
                                             if (lore.ore.reposAdapter && lore.ore.reposAdapter instanceof lore.ore.repos.RestAdapter){
                                                  var queryURL = lore.ore.reposAdapter.reposURL + "feed?refersTo=" + lore.ore.controller.currentURL;
-                                                 lore.global.util.launchTab(queryURL,window);
+                                                 lore.util.launchTab(queryURL,window);
                                             } else {
                                                  lore.ore.ui.vp.info("Feeds only supported for lorestore: please update your repository preferences.");
                                             }
@@ -293,7 +293,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                      },
                      {
                             title: "History",
-                            tabTip: "List recently viewed compound objects",
+                            tabTip: "List recently viewed Resource Maps",
                             id: "historyPanel",
                             xtype: "panel",
                             anchor: "100% 50%",
@@ -316,10 +316,10 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                         xtype : "panel",
                         layout : "anchor",
                         title : "Properties",
-                        tabTip: "View or edit compound object properties",
+                        tabTip: "View or edit Resource Map properties",
                         id : "properties",
                         items : [{
-                                    title : 'Compound Object Properties',
+                                    title : 'Resource Map Properties',
                                     id : "remgrid",
                                     propertyType: "property",
                                     xtype : "propertyeditor"
@@ -380,17 +380,17 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         loreviews.on("contextmenu", function(tabpanel, tab, e) {
                     Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
         });
-        // make sure Using Compound Objects has correct stylesheet
+        // make sure Using Resource Maps has correct stylesheet
         Ext.getCmp("welcome").on("activate",
             function(comp){
                 var aboutco= Ext.get("about_co");
                 if (aboutco && typeof lore.ore.controller.high_contrast != "undefined") {
-                    lore.global.util.setHighContrast(aboutco.dom.contentWindow, lore.ore.controller.high_contrast);
+                    lore.util.setHighContrast(aboutco.dom.contentWindow, lore.ore.controller.high_contrast);
                 } 
              }
         );
     },
-    /** @private Create a compound object view displayed in a closeable tab */
+    /** @private Create a Resource Map view displayed in a closeable tab */
     openView : function (/*String*/panelid,/*String*/paneltitle,/*function*/activationhandler){
         var tab = Ext.getCmp(panelid);
         if (!tab) {
@@ -405,7 +405,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         tab.show();
     },
     /**
-     * @private Remove listeners and reference to a Compound Object view if it is closed
+     * @private Remove listeners and reference to a Resource Map view if it is closed
      * 
      * @param {Object} tabpanel
      * @param {Object} panel
@@ -427,16 +427,16 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         }
         return true;
     },
-    /** @private Render the current compound object in TriG format in the TriG view*/
+    /** @private Render the current Resource Map in TriG format in the TriG view*/
     updateTrigView: function(){
         var trig = lore.ore.cache.getLoadedCompoundObject().serialize('trig');
         Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;'>" 
             + Ext.util.Format.htmlEncode(trig) + "</pre>");
     },
-    /** @private Render the current compound object as Fedora Object XML in the FOXML view */
+    /** @private Render the current Resource Map as Fedora Object XML in the FOXML view */
     updateFOXMLView : function (){
         var foxml = lore.ore.cache.getLoadedCompoundObject().toFOXML(function(foxml){ 
-            lore.global.util.transformXML({
+            lore.util.transformXML({
                 stylesheetURL: "../compound_objects/stylesheets/XMLPrettyPrint.xsl", 
                 theXML: foxml, 
                 window: window,
@@ -451,10 +451,10 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         });
         
     },
-    /** @private Render the current compound object as RDF/XML in the RDF view */
+    /** @private Render the current Resource Map as RDF/XML in the RDF view */
     updateRDFXMLView : function() {
         var rdfXML = lore.ore.cache.getLoadedCompoundObject().serialize('rdf');
-        lore.global.util.transformXML({ 
+        lore.util.transformXML({ 
             stylesheetURL: "../compound_objects/stylesheets/XMLPrettyPrint.xsl",
             theXML: rdfXML,
             window: window,
@@ -479,7 +479,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                 }
         };
         lore.ore.ui.status.setStatus(statusopts);
-        lore.global.ui.loreError(message);
     },
     /**
      * Display an information message to the user

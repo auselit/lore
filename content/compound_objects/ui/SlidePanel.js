@@ -83,7 +83,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                         relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
                         // Open in browser link only for real resources, not placeholders
                         if (propR && !propR.get('isPlaceholder')){
-                            relhtml += "<a href='#' title='Show in browser' onclick='lore.global.util.launchTab(\"" 
+                            relhtml += "<a href='#' title='Show in browser' onclick='lore.util.launchTab(\"" 
                             	+ theProp.value 
                             	+ ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
                             	+ "\");'>";
@@ -103,7 +103,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                             relhtml += "</a>";
                         }
                         if (propR){
-                        	// Goto slide link (only if resource is in same compound object)
+                        	// Goto slide link (only if resource is in same Resource Map)
 	                        relhtml += "&nbsp;<a href='#' title='Go to slide' onclick='Ext.getCmp(\"" 
 	                        	+ this.ssid + "\").setActiveItem(\"" + theProp.value + "_" + container.uri+"\");'>"
 	                        	+ "<img src='../../skin/icons/ore/picture_empty.png'></a>";
@@ -189,7 +189,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         if (resource instanceof lore.ore.model.CompoundObject){
         	
             // Title slide for entire Slideshow
-            title = title || 'Compound object';
+            title = title || 'Resource Map';
             slidehtml += "<div style='padding:0.5em'><div class='slideshowTitle'>" + title + "</div>";
 
             
@@ -232,7 +232,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	                    slidehtml += makeTOC(contentResources, resourceprops.representsCO.uri,this.ssid);
 	                    slidehtml += "</div>";
 		            }
-		            slidehtml += "<div class='slideshowFooter'>This nested compound object created";
+		            slidehtml += "<div class='slideshowFooter'>This nested Resource Map created";
 	                ccreator = resourceprops.representsCO.properties.data[dc+"creator"];
 	                if (ccreator){
 	                	slidehtml += " by";
@@ -247,7 +247,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	                slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"modified",0),", last updated ");
 		            slidehtml += "</div>";
 	            } else {
-	                slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + resourceprops.uri + "\");'>Nested Compound Object:<br>"
+	                slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + resourceprops.uri + "\");'>Nested Resource Map:<br>"
 	                        + "<img src='../../skin/icons/ore/action_go.gif'/> Load in LORE</p>";
 	            }
 	            slidehtml += "</div>";
@@ -281,7 +281,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                     // no link for placeholder resource
                    slidehtml += "<li class='" + icontype + "'>&nbsp;"  + title + "</li>";
                 } else {
-	               slidehtml += "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
+	               slidehtml += "<a onclick='lore.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
                 }
 	            slidehtml += "</div>";
 	            slidehtml += this.displayProperties(resourceprops, resource.store.co);
@@ -290,7 +290,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	                previewEl = document.createElement('img');
 	                previewEl.src=resourceprops.uri;
 	                previewEl.alt = "image preview";
-	                previewEl.onclick= function(e){lore.global.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false;};
+	                previewEl.onclick= function(e){lore.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false;};
 	                previewEl.style.maxHeight = "100%";
 	            } else if (hasPreview) {
 	                var theURL = resourceprops.uri;
@@ -299,7 +299,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
 	                } else if (resourceprops.uri.match('austlit.edu.au') && (resourceprops.uri.match('ShowWork') || resourceprops.uri.match('ShowAgent'))){
 	                    theURL = theURL + '&printPreview=y';
 	                }
-	                previewEl = lore.global.util.createSecureIFrame(window.top, theURL);
+	                previewEl = lore.util.createSecureIFrame(window.top, theURL);
 	                previewEl.style.width = "100%";
 	                previewEl.style.height = "100%";
 	                previewEl.name = resourceprops.uri + "-ss";
@@ -311,8 +311,8 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         	var container = resource.store.co;
         	
         	slidehtml += "Viewing "
-        		+ (resourceprops.representsCO ? "nested compound object " : (resourceprops.isPlaceholder ? "a placeholder ": 
-        		 "<a onclick='lore.global.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>"));
+        		+ (resourceprops.representsCO ? "nested Resource Map " : (resourceprops.isPlaceholder ? "a placeholder ": 
+        		 "<a onclick='lore.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>"));
         	// TODO: refactor: remove hardcoding
             if (container){
                 slidehtml += " &nbsp; from &nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + container.uri + "\");'>" + (container.properties.getTitle() || container.uri) + "</a>"; 

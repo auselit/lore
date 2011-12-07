@@ -1,5 +1,5 @@
 /**
- * @class lore.ore.ui.NarrativePanel Display a text-heavy view of the entire compound object with embedded previews
+ * @class lore.ore.ui.NarrativePanel Display a text-heavy view of the entire Resource Map with embedded previews
  * @extends Ext.Panel
  */
  // TODO: allow to be configured eg select which properties to display in this view
@@ -14,7 +14,7 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
     initComponent: function(){
         Ext.apply(this,{
             items: [{
-                    xtype: "panel", // For Compound object properties
+                    xtype: "panel", // For Resource Map properties
                     border: false
                 },
                 {xtype: "narrativedataview", selectedClass: 'detailsselected'}]
@@ -82,7 +82,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
     '<tpl for=".">',
     '<div style="width:100%">',
         '<table style="whitespace:normal;width:100%;font-family:arial;padding-bottom;0.5em"><tr><td>',
-        '<span style="font-size:140%;font-weight:bold;color:#cc0000;">{title}<tpl if="!title">Untitled Compound Object</tpl></span></td><td style="text-align:right" width="30">',
+        '<span style="font-size:140%;font-weight:bold;color:#cc0000;">{title}<tpl if="!title">Untitled Resource Map</tpl></span></td><td style="text-align:right" width="30">',
         '&nbsp;<a href="#" onclick="lore.ore.controller.exportCompoundObject(\'wordml\');">',
         '<img src="../../skin/icons/ore/page_white_word.png" title="Export to MS Word"></a>',
         '</td></tr></table>',
@@ -268,7 +268,7 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
  * @extends Ext.DataView
  */
 /**
- * @class lore.ore.ui.NarrativeDataView Displays the properties and relationships of every resource in the compound object in full (text format)
+ * @class lore.ore.ui.NarrativeDataView Displays the properties and relationships of every resource in the Resource Map in full (text format)
  * @extends Ext.DataView
  */
 lore.ore.ui.NarrativeDataView = Ext.extend(Ext.DataView, {

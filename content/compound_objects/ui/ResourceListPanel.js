@@ -1,7 +1,7 @@
 Ext.namespace("lore.ore.ui");
 
 /**
- * @class lore.ore.ui.SummaryPanel Display the list of resources aggregated by the compound object and allow editing
+ * @class lore.ore.ui.SummaryPanel Display the list of resources aggregated by the Resource Map and allow editing
  * @extends Ext.Panel
  */
 lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
@@ -49,7 +49,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
 		   		}),
 	   		    viewConfig: {
 	                deferEmptyText: false,
-		    		emptyText: 'Empty compound object',
+		    		emptyText: 'Empty Resource Map',
 		    		forceFit: true
 	   		    }, 
 	   		    colModel: this.defaultCM
@@ -116,8 +116,8 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
       }
     },
     /**
-     * Sets the compound object
-     * @param {} co The compound object model object
+     * Sets the Resource Map
+     * @param {} co The Resource Map model object
      */
     bindModel: function(){
     	if (this.model) {
@@ -278,7 +278,7 @@ lore.ore.ui.ResourceListPanel = Ext.extend(Ext.grid.GridPanel,{
              });
     		
             this.contextmenu.add({
-            	text: "Delete resource from Compound Object",
+            	text: "Delete resource from Resource Map",
             	icon: "../../skin/icons/delete.png",
                 scope: this,
                 handler: function(evt){

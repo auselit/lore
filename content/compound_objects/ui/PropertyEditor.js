@@ -5,7 +5,7 @@ Ext.intercept(Ext.form.HtmlEditor.prototype, 'execCmd', function() {
 });
 
 /** 
- * @class lore.ore.ui.PropertyEditor Grid-based editor for Compound object or resource properties and relationships
+ * @class lore.ore.ui.PropertyEditor Grid-based editor for Resource Map or resource properties and relationships
  * @extends Ext.grid.EditorGridPanel
  */
 lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{ 
@@ -182,12 +182,27 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 var ta = w.getComponent(0);
                                 // need to start/stop editing to trigger handlePropertyChange to update model
                                 this.startEditing(w.activeRow,1);
+                                
+                                // remove unwanted elements that might have been pasted in from somewhere else
+                                var doc = ta.getDoc(); 
+                                jQuery(doc.body).find('table, a, img, form, input, object, embed, applet, frameset, iframe, textarea, map').each(function(){
+                                    var t = jQuery(this);
+                                    t.after(t.text());
+                                    t.remove();
+                                });
+                                ta.syncValue();
                                 var val = ta.getRawValue();
-                                // Remove markup such as scripts from value before updating property field
-                                val = (val? lore.global.util.sanitizeHTML(val,window,true) : '');
-                                w.triggerField.setValue(val);
-                                // Call update formatting status before stopEditing to ensure type is finalised before value is saved back to model
+                                 // Call update formatting status before stopEditing to ensure type is finalised before value is saved back to model
                                 this.updateFormattingStatus(w.activeRow, true);
+                                var currentRec = this.store.getAt(w.activeRow);
+                                if (currentRec.get("type") == "html"){
+                                    // Remove markup such as scripts from value before updating property field
+                                    val = (val? lore.util.sanitizeHTML(val,window) : '');
+                                } else {
+                                    // type is not html, remove all markup
+                                    val = (val? lore.util.stripHTML(val,window,true) : '');
+                                }
+                                w.triggerField.setValue(val);
                                 this.stopEditing();
                                 w.hide();
                             } catch (e){
@@ -473,13 +488,13 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     		this.model.on("propertyChanged",this.onModelPropertyChanged,this);
             this.model.on("propertyRemoved",this.onModelPropertyRemoved,this);
             var props = this.model.getSortedArray();
-            // add resource url or compound object ID as prop
+            // add resource url or Resource Map ID as prop
             var data = [];
             var resPropID = "resource_0";
             var resPropName = "resource";
             if (this.id == "remgrid"){
                 resPropID = "rdf:about_0";
-                resPropName = "Compound Object ID";
+                resPropName = "Resource Map ID";
             } 
             if (!resource.get("title")){
                 data.push({id: "dc:title_0", name: "dc:title", value: "", type: "plainstring"});
@@ -572,7 +587,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     propNameRenderFunction: function(val, cell, rec){
         if (rec && rec.data && rec.data.id == "lorestore:isPrivate_0"){
             // display eye icon for private property
-            return "<img title='Private Compound Objects are not visible to other users' src='../../skin/icons/eye.png' alt=''><span style='"
+            return "<img title='Private Resource Maps are not visible to other users' src='../../skin/icons/eye.png' alt=''><span style='"
             + (lore.ore.controller.readOnly ? "color:grey;" : "") + "vertical-align:3px'> Private</span>";
         }
         if (rec && rec.data && rec.data.id == "lorestore:isLocked_0"){
@@ -796,7 +811,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }
                 }
             } else {
-                // property without namespace in name (probably resource or Compound Object ID), don't allow delete
+                // property without namespace in name (probably resource or Resource Map ID), don't allow delete
                 lore.ore.ui.vp.warning("Cannot remove mandatory property: " + propName);
                 
             }
@@ -824,14 +839,14 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             if (splitprop.length > 1){
                 var ns = lore.constants.NAMESPACES[splitprop[0]];
                 infoMsg += "<p>This property is defined in " 
-                        + "<a style='text-decoration:underline' href='#' onclick='lore.global.util.launchTab(\"" 
+                        + "<a style='text-decoration:underline' href='#' onclick='lore.util.launchTab(\"" 
                         + ns + "\");'>" + ns + "</a></p>";
             }
             
             Ext.Msg.show({
-                    title : 'About ' + sel.data.name,
+                    title : lore.util.sanitizeHTML('About ' + sel.data.name,window,true),
                     buttons : Ext.MessageBox.OK,
-                    msg : infoMsg
+                    msg : infoMsg // TODO: sanitize
                 });
         } else {
             lore.ore.ui.vp.info("Please click on a property prior to selecting the help button");
@@ -843,7 +858,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     /** update the properties for the selected figure */
     handlePropertyChange : function(args) {
     	lore.ore.controller.setDirty();
-        // at present this only updates resource/rel properties - also needs to update on compound object
+        // at present this only updates resource/rel properties - also needs to update on Resource Map
         try{
             if (this.id == "nodegrid"){
                 var theval;
@@ -885,9 +900,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         cleanvalue = args.value;
                     } else if (args.record.get("name") == "dc:subject"){
                         // don't escape ampersands in subject urls
-                        cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
+                        cleanvalue = lore.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
                     } else {
-                        cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true);
+                        cleanvalue = lore.util.sanitizeHTML(args.value,window,true);
                     }
                     // TODO: update model not figure
                     selfig.setProperty(args.record.id,cleanvalue,args.record.get("type"));
@@ -907,11 +922,11 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 var propuri = ns + propname;
                 var cleanvalue;
                 if (propuri == lore.constants.NAMESPACES["dc"]+ "subject"){
-                    cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
+                    cleanvalue = lore.util.sanitizeHTML(args.value,window,true).replace(/&amp;/g,'&');
                 } else if (args.record.get("type") == "boolean"){
                     cleanvalue = args.value;
                 } else {
-                    cleanvalue = lore.global.util.sanitizeHTML(args.value,window,true); 
+                    cleanvalue = lore.util.sanitizeHTML(args.value,window,true); 
                 }
                 var propData = {
                     id: propuri, 
@@ -930,7 +945,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         lore.ore.cache.getLoadedCompoundObjectUri(),
                         {title: args.value}
                     );
-                    // update the name of the compound object in the bottom right
+                    // update the name of the Resource Map in the bottom right
                     var readOnly = !lore.ore.cache.getLoadedCompoundObjectUri().match(lore.ore.reposAdapter.idPrefix);
                     Ext.getCmp('currentCOMsg').setText(Ext.util.Format.ellipsis(args.value, 50) + (readOnly? ' (read-only)' : ''),false);
                   }
@@ -986,7 +1001,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
 Ext.reg('propertyeditor',lore.ore.ui.PropertyEditor);
 
 /**
- * ToggleFormatting used by Compound Objects Property Editor
+ * ToggleFormatting used by Resource Maps Property Editor
  */
 Ext.ux.form.HtmlEditor.ToggleFormatting = Ext.extend(Ext.util.Observable, {
     init: function(cmp){

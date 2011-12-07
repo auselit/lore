@@ -7,7 +7,7 @@ lore.ore.ui.SearchPanel = Ext.extend(Ext.Panel,{
     Ext.apply(this,{
         layout : "border",
         title : "Search",
-        tabTip: "Find compound objects",
+        tabTip: "Find Resource Maps",
         autoScroll : false,
         items : [{
             xtype : "tabpanel",
@@ -72,7 +72,7 @@ lore.ore.ui.SearchPanel = Ext.extend(Ext.Panel,{
                 items : [{
                     xtype : "label",
                     id : "find-co-label",
-                    text : "Find Compound Objects",
+                    text : "Find Resource Maps",
                     style : "font-family: arial, tahoma, helvetica, sans-serif; font-size:11px;line-height:2em"
                 }, {
                     xtype : "textfield",

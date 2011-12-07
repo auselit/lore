@@ -101,7 +101,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 ]
             }),
             colModel : new Ext.grid.ColumnModel({
-                // override to prevent editing when compound object is readonly
+                // override to prevent editing when Resource Map is readonly
                 getCellEditor: function(colIndex, rowIndex){
                    if (lore.ore.controller.checkReadOnly()){
                         return;
@@ -276,9 +276,9 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             var infoMsg = panel.aboutTemplate.apply(sel.data);
             
             Ext.Msg.show({
-                    title : 'About \"' + sel.data.relName + '\" relationship',
+                    title : lore.util.sanitizeHTML('About \"' + sel.data.relName + '\" relationship',window,true),
                     buttons : Ext.MessageBox.OK,
-                    msg : infoMsg
+                    msg : infoMsg // TODO: sanitize
                 });
         } else {
             lore.ore.ui.vp.info("Please click on a relationship prior to selecting the help button");

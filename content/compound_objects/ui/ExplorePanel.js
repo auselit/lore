@@ -329,7 +329,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     tooltip : "Show in browser"
                 };
                 
-                // stylesheet sets type to circle for compound objects
+                // stylesheet sets type to circle for Resource Maps
                 if (node.data["$type"] == "circle"){
                     historyData.action = "lore.ore.controller.loadCompoundObjectFromURL(\"" + node.id + "\");";
                     historyData.icon = "../../skin/oaioreicon-sm.png";
@@ -462,7 +462,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                scope: fdcontroller,
                handler: function(evt) {
                     var node = this.clickedNode;
-                    // TODO: disable this option if it's a compound object: provide option to open in LORE instead
+                    // TODO: disable this option if it's a Resource Map: provide option to open in LORE instead
                     lore.util.launchTab(Ext.util.Format.htmlDecode(node.id), window);
                }
             });
@@ -537,7 +537,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 icon: "../../skin/icons/arrow_refresh.png",
                 scope: this,
                 handler: function(evt){
-                    this.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true);
+                    this.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Resource Map",true);
                 }
              });
              this.contextmenu.add({
@@ -643,7 +643,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             try{
 	            this.clearExploreData();
 	            this.exploreLoaded = "";
-	            Ext.getCmp("exploreHistory").body.update("No connections to explore from repository: current compound object is unsaved&nbsp;");
+	            Ext.getCmp("exploreHistory").body.update("No connections to explore from repository: current Resource Map is unsaved&nbsp;");
 	            return;
             } catch (ex){
                 lore.debug.ore("problem updating explore view",ex);
@@ -661,8 +661,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     },
     /**
      * Gets resource map as RDF, transforms to JSON and applies function to it
-     * @param {URI} id Identifier of the compound object to be retrieved
-     * @param {String} title Used as a label for the compound object
+     * @param {URI} id Identifier of the Resource Map to be retrieved
+     * @param {String} title Used as a label for the Resource Map
      * @param {function} f Function to apply
      */
     loadRem : function(id, title, isCompoundObject, f){
@@ -705,9 +705,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
             Ext.getCmp("exploreinfovis").el.removeClass('explore-loading')
         }
     },
-    /** Initialize the explore view to display resources from the repository related to a compound object
-     * @param {URI} id The URI of the compound object
-     * @param {String} title Label to display for the compound object
+    /** Initialize the explore view to display resources from the repository related to a Resource Map
+     * @param {URI} id The URI of the Resource Map
+     * @param {String} title Label to display for the Resource Map
      */
     showInExploreView : function (id, title, isCompoundObject, dontraise){
         try{
@@ -747,7 +747,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         icon : "../../skin/icons/page_go.png",
                         tooltip : "Show in browser"
                 };
-                // if it is a compound object use lore icon and open in lore instead of browser link
+                // if it is a Resource Map use lore icon and open in lore instead of browser link
                 if (isCompoundObject){
                     historyData.action = "lore.ore.controller.loadCompoundObjectFromURL(\"" + id + "\");";
                     historyData.icon = "../../skin/oaioreicon-sm.png";

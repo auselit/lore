@@ -12,10 +12,10 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     defaults: {
         border:false
     },   
-    /** jump to slide for a resource from the current compound object */
+    /** jump to slide for a resource from the current Resource Map */
     showResource: function(uri){
     	Ext.getCmp("loreviews").activate(this.id);
-    	// The id of the active item has the containing compound object appended
+    	// The id of the active item has the containing Resource Map appended
     	this.setActiveItem(uri + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
     },
     /** 
@@ -150,7 +150,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
                     } else {
                         lore.debug.ore("CO not found in cache " + r.uri,lore.ore.cache);
                     }
-                    // nested compound objects must be unique across entire slideshow - ie only create slides once               
+                    // nested Resource Maps must be unique across entire slideshow - ie only create slides once               
                     if (!this.findById(r.uri)) {
                         slide = new lore.ore.ui.SlidePanel({id: r.uri, ssid: this.id});
                         slide.loadContent(rec);
@@ -188,9 +188,9 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         this.loadContent(tmpCO);
         Ext.Msg.hide();
    },
-   /** Clear and reload content to represent a compound object
+   /** Clear and reload content to represent a Resource Map
     * 
-    * @param {} co The compound object to render
+    * @param {} co The Resource Map to render
     */
    loadContent: function(co){
     
@@ -210,8 +210,8 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     }
    },
    /**
-    * Sets the compound object represented by the slide show
-    * @param {} co The compound object model object
+    * Sets the Resource Map represented by the slide show
+    * @param {} co The Resource Map model object
     */
    bindModel: function(co){
         if (this.model) {

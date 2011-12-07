@@ -1,5 +1,5 @@
 /**
- * @class lore.ore.ui.PagingToolbar Used to page compound object results in browse, history and search lists
+ * @class lore.ore.ui.PagingToolbar Used to page Resource Map results in browse, history and search lists
  * @extends Ext.PagingToolbar
  */
 lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
@@ -78,7 +78,7 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
         this.cursor = 0;
         this.bindStore(this.store, true);
     },
-    /** Sorts compound objects */
+    /** Sorts Resource Maps */
     sortCompoundObjects: function(v){
     	try{
 	        this.store.sort(v, (v == 'title' || v == 'creator') ? 'asc' : 'desc');

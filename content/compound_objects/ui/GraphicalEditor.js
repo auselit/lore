@@ -1,5 +1,5 @@
 /**
- * @class lore.ore.ui.GraphicalEditor Panel that provides the graphical editor for compound objects
+ * @class lore.ore.ui.GraphicalEditor Panel that provides the graphical editor for Resource Maps
  * @extends Ext.Panel
  */
 lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{ 
@@ -67,7 +67,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             this.coGraph = coGraph;
             coGraph.setScrollArea(document.getElementById(this.id).parentNode);
             
-            // create drop target for dropping new nodes onto editor from the compound objects dataview
+            // create drop target for dropping new nodes onto editor from the Resource Maps dataview
             var droptarget = new Ext.dd.DropTarget(this.id, {
                     'ddGroup' : 'coDD',
                     'copy' : false
@@ -189,7 +189,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             //lore.ore.ui.nodegrid.store.removeAll();
             lore.ore.ui.nodegrid.bindModel(null);
             lore.ore.ui.relsgrid.store.removeAll();
-            // Background selected: only show compound object properties
+            // Background selected: only show Resource Map properties
             lore.ore.ui.relsgrid.collapse();
             lore.ore.ui.grid.expand();
             //FIXME: gets out of sync when new node is added 
@@ -233,7 +233,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	                    this.nextXY(comm.newX, comm.newY);
 	            }
 	            // remove the url from lookup if node is deleted, add it back if it is undone
-	            // update address bar add icon to reflect whether current URL is in compound object
+	            // update address bar add icon to reflect whether current URL is in Resource Map
 	            if (0!=(details&(lore.draw2d.CommandStack.POST_EXECUTE))) {
 	                if (comm instanceof lore.draw2d.CommandDelete) {
 	                	try{
@@ -257,10 +257,10 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
 	                
 	                if (this.lookup[comm_fig.url]){
 	                    if (comm instanceof lore.draw2d.CommandDelete) {
-	                        lore.ore.ui.vp.warning("Cannot undo deletion: resource is aleady in Compound Object");
+	                        lore.ore.ui.vp.warning("Cannot undo deletion: resource is aleady in Resource Map");
 	                        comm.redo();
 	                    } else {
-	                        lore.ore.ui.vp.warning("Cannot redo addition: resource is aleady in Compound Object");
+	                        lore.ore.ui.vp.warning("Cannot redo addition: resource is aleady in Resource Map");
 	                        comm.undo();
 	                    }
 	                }
@@ -315,11 +315,11 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    onAddResource : function(res){
      lore.debug.ore("onAddResource",res);
    },
-   /** respond to model event: remove figure when resource is removed from compound object */
+   /** respond to model event: remove figure when resource is removed from Resource Map */
    onRemoveResource : function(res){
      lore.debug.ore("onRemoveResource",res);
    },
-   /** load compound object from model object into graphical editor */
+   /** load Resource Map from model object into graphical editor */
    loadContent: function(co){
     
    },
@@ -371,7 +371,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             }
         }
         if (theURL && theURL == lore.ore.cache.getLoadedCompoundObjectUri()){
-            lore.ore.ui.vp.warning("Cannot add compound object to itself");
+            lore.ore.ui.vp.warning("Cannot add Resource Map to itself");
         } else if (theURL && !this.lookup[theURL]) {
             var theProps = opts.props;
             if (opts.format){
@@ -455,7 +455,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             }*/
             this.lookup[theURL] = fig.getId();
         } else {
-            lore.ore.ui.vp.warning("Resource is already in the compound object: " + theURL);
+            lore.ore.ui.vp.warning("Resource is already in the Resource Map: " + theURL);
         }
         if (fig){
             this.nextXY(opts.x,opts.y);
