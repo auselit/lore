@@ -18,19 +18,6 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * @include  "/oaiorebuilder/content/annotations/model/AnnotationManager.js"
- * @include  "/oaiorebuilder/content/annotations/model/PageData.js"
- * @include  "/oaiorebuilder/content/annotations/model/Preferences.js"
- * @include  "/oaiorebuilder/content/annotations/model/RDFaManager.js"
- * @include  "/oaiorebuilder/content/annotations/ui/ColumnTree.js"
- * @include  "/oaiorebuilder/content/annotations/ui/EditorPanel.js"
- * @include  "/oaiorebuilder/content/annotations/ui/PageView.js"
- * @include  "/oaiorebuilder/content/annotations/ui/SearchPanel.js"
- * @include  "/oaiorebuilder/content/annotations/handlers.js"
- * @include  "/oaiorebuilder/content/uiglobal.js"
- * @include  "/oaiorebuilder/content/debug.js"
- */
 
 /**
  * Annotations View
@@ -53,22 +40,6 @@ lore.anno.ui.topView = null;
 
 
 // annotation view state
-/**
- * The current URL of the active tab
- * @property currentURL
- */
-lore.anno.ui.currentURL = null;
-/**
- * The visibility of the annotation view
- * @property lorevisible
- */
-lore.anno.ui.lorevisible = null;
-/**
- * The loaded state of the annotation view
- * @property initialized
- */
-lore.anno.ui.initialized = null;
-
 /**
  * Reference to the PageData object
  * @property page
@@ -109,32 +80,38 @@ lore.anno.ui.init = (function() {
                disable: false,
                high_contrast: false
            });
-           lore.anno.prefs.on('prefs_changed', lore.anno.ui.handlePrefsChange);
-   
-           lore.anno.ui.currentURL = lore.global.util.getContentWindow(window).location.href;
+           
+           lore.anno.controller = new lore.anno.Controller();
+           lore.anno.prefs.on('prefs_changed', lore.anno.controller.handlePrefsChange,lore.anno.controller);
+           lore.anno.controller.currentURL = lore.util.getContentWindow(window).location.href;
            lore.anno.annoMan = new lore.anno.AnnotationManager({
-               url: lore.anno.ui.currentURL,
+               url: lore.anno.controller.currentURL,
                prefs: lore.anno.prefs
            });
-   
+           // TODO: select type from annorepostype pref
+           lore.anno.reposAdapter = new lore.anno.repos.DannoAdapter(lore.anno.prefs.url);
+            
            // construct GUI
            initView(lore.anno.annoMan);
    
-           lore.anno.ui.topView.on('tab_changed', lore.anno.ui.handleTabChange);
-           lore.anno.ui.topView.on('location_changed', lore.anno.ui.handleLocationChange);
-           lore.anno.ui.topView.on('location_refresh', lore.anno.ui.handleContentPageRefresh);
+           lore.anno.ui.topView.on('tab_changed', lore.anno.controller.handleTabChange, lore.anno.controller);
+           lore.anno.ui.topView.on('location_changed', lore.anno.controller.handleLocationChange, lore.anno.controller);
+           lore.anno.ui.topView.on('location_refresh', lore.anno.controller.handleContentPageRefresh, lore.anno.controller);
    
-           lore.anno.ui.lorevisible = lore.anno.ui.topView.annotationsVisible();
-           lore.global.ui.annotationView.registerView(lore.anno.ui, window.instanceId);
-   
+           lore.anno.controller.lorevisible = lore.anno.ui.topView.annotationsVisible();
+           
+
+           //lore.global.ui.annotationView.registerView(lore.anno.ui, window.instanceId);
+           lore.global.ui.annotationView.registerView(lore.anno.controller, window.instanceId);
+           
            // Load Preferences
            lore.anno.ui.topView.loadAnnotationPrefs();
    
-           lore.anno.ui.initialized = true;
+           lore.anno.controller.initialized = true;
    
-           if (lore.anno.ui.currentURL && lore.anno.ui.lorevisible) {
+           if (lore.anno.controller.currentURL && lore.anno.controller.lorevisible) {
                lore.debug.anno("anno init: updating sources");
-               lore.anno.ui.handleLocationChange(lore.anno.ui.currentURL);
+               lore.anno.controller.handleLocationChange(lore.anno.controller.currentURL);
            }
    
        } catch (e) {
@@ -180,17 +157,10 @@ lore.anno.ui.init = (function() {
  */
 lore.anno.ui.uninit = function () {
     lore.anno.ui.pageui.removeHighlightForCurrentAnnotation();
-    lore.anno.ui.topView.un('location_changed', lore.anno.ui.handleLocationChange);
-    lore.anno.ui.topView.un('location_refresh', lore.anno.ui.handleContentPageRefresh);
+    lore.anno.ui.topView.un('location_changed', lore.anno.controller.handleLocationChange);
+    lore.anno.ui.topView.un('location_refresh', lore.anno.controller.handleContentPageRefresh);
     if (lore.anno.ui.pageui.removeResizeListeners) {
         lore.anno.ui.pageui.removeResizeListeners();
     }
 };
-
-
-
-
-
-
-
 

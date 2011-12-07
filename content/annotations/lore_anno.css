@@ -92,7 +92,7 @@
     -webkit-user-select:text !important;
 }
 .x-tree-col-text {
-    padding:3px 3px 3px 3px;
+    padding:0;
     font-family: arial, tahoma, helvetica, sans-serif;
     font-size:12px;
 }
