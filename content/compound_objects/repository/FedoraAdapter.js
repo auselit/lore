@@ -31,7 +31,7 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
         
     },
     loadCompoundObject : function(remid, callback){
-        //var fedoraid = 'demo:' + lore.global.util.splitTerm(remid).term;
+        //var fedoraid = 'demo:' + lore.util.splitTerm(remid).term;
         Ext.Ajax.request({
                     url: this.reposURL + "/objects/" + remid + "/export",
                     method: "GET",
@@ -42,20 +42,20 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                         callback(rdf);
                     },
                     failure: function(resp, opt){
-                        lore.debug.ore("Unable to load compound object " + opt.url, resp);
+                        lore.debug.ore("Unable to load Resource Map " + opt.url, resp);
                     }
                 }); 
     },
     saveCompoundObject : function (theco,callback){
         // /objects/ [{pid}| new] ? [label] [format] [encoding] [namespace] [ownerId] [logMessage] [ignoreMime]
     
-        // creates a new compound object
+        // creates a new Resource Map
         // TODO: allow modification of existing
         // FIXME:
 /*        var coid = theco.uri;
         var thexml = theco.asRDFXML(false);
         var foxml = lore.ore.createFOXML();
-        //var remid = 'demo:' + lore.global.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri() ).term;
+        //var remid = 'demo:' + lore.util.splitTerm(lore.ore.cache.getLoadedCompoundObjectUri() ).term;
         lore.debug.ore("saving foxml to fedora",foxml);
         try {                  
                var xhr = new XMLHttpRequest();
@@ -64,7 +64,7 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
                         if (xhr.status == 201) {
-                            lore.ore.ui.vp.info("Compound object " + remid + " saved");
+                            lore.ore.ui.vp.info("Resource Map " + remid + " saved");
                             callback(remid);
                         } else {
                             lore.ore.ui.vp.error('Unable to save to repository' + xhr.responseText);
@@ -72,7 +72,7 @@ lore.ore.repos.FedoraAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                             Ext.Msg.show({
                                 title : 'Problem saving RDF',
                                 buttons : Ext.MessageBox.OKCANCEL,
-                                msg : ('There was an problem saving to the repository: ' + xhr.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+                                msg : ('There was an problem saving to the repository: ' + xhr.responseText + '<br>Please try again in a few minutes or save your Resource Map to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
                             });
                             
                         }

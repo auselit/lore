@@ -18,7 +18,7 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Abstract superclass providing functions for storing, loading compound objects from a repository
+ * Abstract superclass providing functions for storing, loading Resource Maps from a repository
  * @class lore.ore.repos.RepositoryAdapter
  * @param {} reposURL
  */
@@ -52,7 +52,7 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
         return this.reposURL;
     },
     /**
-     * Gets compound objects that match the parameters and add them to the model
+     * Gets Resource Maps that match the parameters and add them to the model
      * @param {String} matchuri The URI to match 
      * @param {String} matchpred The predicate to match
      * @param {String} matchval The value to search for
@@ -62,29 +62,29 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
         throw "Method not implemented";
     },
     /**
-     * Get a compound object from the repository and load it into the editor
-     * @param {String} remid The identifier of the compound object to get
+     * Get a Resource Map from the repository and load it into the editor
+     * @param {String} remid The identifier of the Resource Map to get
      */
     loadCompoundObject : function(remid, callback, failcallback){
         throw "Method not implemented";
     },
     /**
-     * Creates (or replaces) a compound object in the sesame repository
-     * @param {CompoundObject} theco The compound object model
+     * Creates (or replaces) a Resource Map in the sesame repository
+     * @param {CompoundObject} theco The Resource Map model
      */
     saveCompoundObject : function (theco){
         throw "Method not implemented";
     },
     /**
-     * Delete the compound object from the sesame repository
+     * Delete the Resource Map from the sesame repository
      * calls afterDeleteCompoundObject to remove it from the UI
-     * @param {String} remid The URI of the compound object to remove 
+     * @param {String} remid The URI of the Resource Map to remove 
      **/
     deleteCompoundObject : function(remid){
         throw "Method not implemented";
     },
     /**
-     * Generate a URI for a compound object to be stored in this repository
+     * Generate a URI for a Resource Map to be stored in this repository
      * @return {}
      */
     generateID: function(){

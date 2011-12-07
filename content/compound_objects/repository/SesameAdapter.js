@@ -19,7 +19,7 @@
  */
  
 /** 
- * @class lore.ore.repos.SesameAdapter Access and store compound objects using a Sesame 2 repository
+ * @class lore.ore.repos.SesameAdapter Access and store Resource Maps using a Sesame 2 repository
  * @extends lore.ore.repos.RepositoryAdapter
  */
 lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
@@ -119,14 +119,14 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 					        lore.ore.coListManager.add(coList,listname);
 					    } 
 	                } else if (req.status == 404){
-	                    lore.debug.ore("404 accessing compound object repository",req);
+	                    lore.debug.ore("404 accessing Resource Map repository",req);
 	                }
 	            }
 	        };
 	        req.send(null);
 	    } catch (e) {
-	        lore.debug.ore("Unable to retrieve compound objects",e);
-	        lore.ore.ui.vp.warning("Unable to retrieve compound objects");
+	        lore.debug.ore("Unable to retrieve Resource Maps",e);
+	        lore.ore.ui.vp.warning("Unable to retrieve Resource Maps");
 	    }
 	},
 	loadCompoundObject : function(remid, callback, failcallback){
@@ -143,11 +143,11 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	        }); 
 	},
 	saveCompoundObject : function (theco,callback){
-        // TODO: first check that the compound object hasn't changed on the server
+        // TODO: first check that the Resource Map hasn't changed on the server
         var remid = theco.uri;
         var therdf = theco.asRDFXML(false);
 		Ext.Msg.show({
-	           msg: 'Saving Compound Object to repository...',
+	           msg: 'Saving Resource Map to repository...',
 	           width:250,
 	           defaultTextHeight: 0,
 	           closable: false,
@@ -161,7 +161,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	            	Ext.Msg.hide();
 	                if (xmlhttp2.status == 204) {
 	                    lore.debug.ore("sesame: RDF saved",xmlhttp2);
-	                    lore.ore.ui.vp.info("Compound object " + remid + " saved");
+	                    lore.ore.ui.vp.info("Resource Map " + remid + " saved");
                         callback(remid);
 	                } else {
 	                    lore.ore.ui.vp.error('Unable to save to repository' + xmlhttp2.responseText);
@@ -169,7 +169,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	                    Ext.Msg.show({
 	                        title : 'Problem saving RDF',
 	                        buttons : Ext.MessageBox.OKCANCEL,
-	                        msg : ('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again in a few minutes or save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.')
+	                        msg : lore.util.sanitizeHTML('There was an problem saving to the repository: ' + xmlhttp2.responseText + '<br>Please try again in a few minutes or save your Resource Map to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team for further assistance.',window,true)
 	                    });
 	                }
 	            }
@@ -191,15 +191,15 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                     if (xmlhttp.status == 204) { // OK
                         callback(remid);
                     } else {
-                        lore.ore.ui.vp.error('Unable to delete compound object ' + xmlhttp.responseText);
-                        lore.debug.ore("Unable to delete compound object", {
+                        lore.ore.ui.vp.error('Unable to delete Resource Map ' + xmlhttp.responseText);
+                        lore.debug.ore("Unable to delete Resource Map", {
                             xmlhttp : xmlhttp,
                             headers : xmlhttp.getAllResponseHeaders()
                         });
                         Ext.Msg.show({
-                            title : 'Problem deleting compound object',
+                            title : 'Problem deleting Resource Map',
                             buttons : Ext.MessageBox.OKCANCEL,
-                            msg : ('There was an problem deleting the compound object: ' + xmlhttp.responseText)
+                            msg : lore.util.sanitizeHTML('There was an problem deleting the Resource Map: ' + xmlhttp.responseText, window, true)
                         });
                     }
 	            }
@@ -207,7 +207,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	        xmlhttp.send(null);
 	    } catch (e){
             Ext.MessageBox.hide();
-	        lore.debug.ore("sesame: error deleting compound object",e);
+	        lore.debug.ore("sesame: error deleting Resource Map",e);
 	    }        
 	},
     /**
@@ -228,7 +228,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
             + "PREFIX ore:<http://www.openarchives.org/ore/terms/> " 
             + "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns%23>"
 		    + "SELECT DISTINCT ?something ?somerel ?sometitle ?sometype ?creator ?modified ?anotherrel ?somethingelse WHERE {"
-            // Compound objects that contain this uri
+            // Resource Maps that contain this uri
 		    + "{?aggre ore:aggregates <" + eid2 + "> . " 
                     + "?something ore:describes ?aggre . "
 		            + "?something a ?sometype . " 
@@ -249,7 +249,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                     + "FILTER (?somerel != ore:describes) . "
                     + "OPTIONAL {?something a ?sometype} ."
                     + "OPTIONAL {?something dc:title ?sometitle.}}"
-            // if this is a compound object, uris contained
+            // if this is a Resource Map, uris contained
 		    + "UNION {<" + eid2 + "> ore:describes ?aggre ."
                     + "?aggre ?somerel ?something . " 
                     + "FILTER isURI(?something) ."
@@ -319,15 +319,15 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
         return {filter: fExpr, matchval: newmatchval};
     },
    /**
-    * Parses compound object details from a SPARQL XML result
+    * Parses Resource Map details from a SPARQL XML result
     * @param {XMLNode} XML node to be parsed
     * Returns an object with the following properties:
-    *  {string} uri The identifier of the compound object 
-    *  {string} title The (Dublin Core) title of the compound object 
-    *  {string} creator The (Dublin Core) creator of the compound object 
-    *  {Date} modified The date on which the compound object was modified (from dcterms:modified) 
+    *  {string} uri The identifier of the Resource Map 
+    *  {string} title The (Dublin Core) title of the Resource Map 
+    *  {string} creator The (Dublin Core) creator of the Resource Map 
+    *  {Date} modified The date on which the Resource Map was modified (from dcterms:modified) 
     *  {string} match The value of the subject, predicate or object from the triple that matched the search 
-    *  {Date} acessed The date this compound object was last accessed (from the browser history) 
+    *  {Date} acessed The date this Resource Map was last accessed (from the browser history) 
     * */
    parseCOFromXML: function(/*Node*/result){
         var props = {};
@@ -340,17 +340,17 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
             attr = bindings[j].getAttribute('name');
             if (attr =='g'){ //graph uri
                 node = bindings[j].getElementsByTagName('uri'); 
-                props.uri = lore.global.util.safeGetFirstChildValue(node);
+                props.uri = lore.util.safeGetFirstChildValue(node);
             } else if (attr == 'v'){
                 node = bindings[j].getElementsByTagName('literal');
-                nodeVal = lore.global.util.safeGetFirstChildValue(node);
+                nodeVal = lore.util.safeGetFirstChildValue(node);
                 if (!nodeVal){
                     node = bindings[j].getElementsByTagName('uri');
                 }
-                props.match = lore.global.util.safeGetFirstChildValue(node);
+                props.match = lore.util.safeGetFirstChildValue(node);
             } else {
                 node = bindings[j].getElementsByTagName('literal');
-                nodeVal = lore.global.util.safeGetFirstChildValue(node);
+                nodeVal = lore.util.safeGetFirstChildValue(node);
                 if (attr == 't' && nodeVal){ //title
                     props.title = nodeVal;
                 } else if (attr == 'a' && nodeVal){// dc:creator
@@ -372,7 +372,7 @@ lore.ore.repos.SesameAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
             }
            }
         } catch (ex) {
-            lore.debug.ore("Unable to process compound object result list", ex);
+            lore.debug.ore("Unable to process Resource Map result list", ex);
         }
         return props;
     }

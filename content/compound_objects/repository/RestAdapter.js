@@ -19,7 +19,7 @@
  */
  
 /** 
- * @class lore.ore.repos.RestAdapter Access and store compound objects using a
+ * @class lore.ore.repos.RestAdapter Access and store Resource Maps using a
  *  REST based respository
  * @extends lore.ore.repos.SesameAdapter
  */
@@ -88,14 +88,14 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 					        lore.ore.coListManager.add(coList,listname);
 					    } 
 	                } else if (xhr.status == 404){
-	                    lore.debug.ore("404 accessing compound object repository",xhr);
+	                    lore.debug.ore("404 accessing Resource Map repository",xhr);
 	                }
 	            }
 	        };
 	        xhr.send(null);
 	    } catch (e) {
-	        lore.debug.ore("Unable to retrieve compound objects",e);
-	        lore.ore.ui.vp.warning("Unable to retrieve compound objects");
+	        lore.debug.ore("Unable to retrieve Resource Maps",e);
+	        lore.ore.ui.vp.warning("Unable to retrieve Resource Maps");
 	    }
 	},
 	loadCompoundObject : function(remid, callback, failcallback){
@@ -115,7 +115,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
         var therdf = theco.asRDFXML(false);
         var oThis = this;
 		Ext.Msg.show({
-	           msg: 'Saving Compound Object to repository...',
+	           msg: 'Saving Resource Map to repository...',
 	           width:250,
 	           defaultTextHeight: 0,
 	           closable: false,
@@ -125,12 +125,12 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
           lore.ore.am.runWithAuthorisation(function() {
 				var xhr = new XMLHttpRequest();
 				if (remid.indexOf(oThis.unsavedSuffix) > 1) { 
-                    // New compound object, not in the repo yet
-					lore.debug.ore("lorestore: saving new compound object", theco);
+                    // New Resource Map, not in the repo yet
+					lore.debug.ore("lorestore: saving new Resource Map", theco);
 					xhr.open("POST", oThis.reposURL);
 
-				} else { // updating an existing compound object
-					lore.debug.ore("lorestore: saving existing compound object: " + remid, theco);
+				} else { // updating an existing Resource Map
+					lore.debug.ore("lorestore: saving existing Resource Map: " + remid, theco);
 					xhr.open("PUT", remid);
 				}
 				xhr.onreadystatechange = function() {
@@ -138,28 +138,28 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 						Ext.Msg.hide();
 						if (xhr.status == 200) { // OK
 							lore.debug.ore("lorestore: RDF saved", xhr);
-							lore.ore.ui.vp.info("Compound object " + remid + " saved");
+							lore.ore.ui.vp.info("Resource Map " + remid + " saved");
 							callback(remid);
 						} else if (xhr.status == 201) { // Created
 							lore.debug.ore("lorestore: RDF saved", xhr);
 							var location = xhr.getResponseHeader("Location");
 							lore.debug.ore("New CO URI is: " + location);
-							lore.ore.ui.vp.info("Compound object " + remid + " saved");
+							lore.ore.ui.vp.info("Resource Map " + remid + " saved");
 							lore.ore.controller.loadCompoundObject(xhr);
 							callback(location);
 						} else {
 							lore.ore.ui.vp.error('Unable to save to repository: ' + xhr.statusText);
-							lore.debug.ore("Unable to save compound object", {
+							lore.debug.ore("Unable to save Resource Map", {
 										xhr : xhr,
 										headers : xhr.getAllResponseHeaders()
 							});
                             
                             var msg = '<b>' + xhr.statusText + '</b>'  
-                                + '<br><br>If an error has occurred, please save your compound object to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team with details of the error for further assistance.'
-                                + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.global.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';
+                                + '<br><br>If an error has occurred, please save your Resource Map to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team with details of the error for further assistance.'
+                                + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';
                                 
 							Ext.Msg.show({
-								title : 'Unable to save compound object',
+								title : 'Unable to save Resource Map',
 								buttons : Ext.MessageBox.OK,
                                 defaultTextHeight: 100,
 								msg : msg
@@ -172,7 +172,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 				xhr.send(therdf);
 			});
 	    } catch (e) {
-	        lore.debug.ore("lorestore: problem saving compound object", e);
+	        lore.debug.ore("lorestore: problem saving Resource Map", e);
 	    }
 	},
 	loadNew : function(oldURI, newURI) {
@@ -195,17 +195,17 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
                     if (xhr.status == 204) { // OK
                         callback(remid);
                     } else {
-                        lore.ore.ui.vp.error('Unable to delete compound object' + xhr.statusText);
+                        lore.ore.ui.vp.error('Unable to delete Resource Map' + xhr.statusText);
                          
-                        lore.debug.ore("Unable to delete compound object", {
+                        lore.debug.ore("Unable to delete Resource Map", {
                             xhr : xhr,
                             headers : xhr.getAllResponseHeaders()
                         });
                         var msg = '<b>' + xhr.statusText + '</b>'  
                                 + '<br><br>If an error has occurred please contact the Aus-e-Lit team with details of the error for further assistance.'
-                                + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.global.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';  
+                                + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';  
                         Ext.Msg.show({
-                            title : 'Unable to delete compound object',
+                            title : 'Unable to delete Resource Map',
                             buttons : Ext.MessageBox.OK,
                             msg : msg
                         });
@@ -216,7 +216,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
           });
 	    } catch (e){
 	        Ext.MessageBox.hide();
-	        lore.debug.ore("RestAdapter: error deleting compound object",e);
+	        lore.debug.ore("RestAdapter: error deleting Resource Map",e);
 	    }        
 	},
     /**
