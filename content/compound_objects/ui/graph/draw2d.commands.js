@@ -288,7 +288,6 @@ Ext.extend(lore.draw2d.CommandDelete, lore.draw2d.Command, {
         }
     },
     redo : function() {
-        
         this.workflow.removeFigure(this.figure);
         this.workflow.setCurrentSelection(null);
         if (this.figure instanceof lore.draw2d.Node && this.connections == null) {

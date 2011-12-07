@@ -104,7 +104,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
     appendProperty: function(pname, pval,ptype){
         var oldrdftype = this.getProperty("rdf:type_0");
         lore.ore.ui.graph.EntitityFigure.prototype.appendProperty.call(this, pname, pval,ptype)
-        // if the rdf:type has changed, regenerate preview (as it might be an annotation or compound object
+        // if the rdf:type has changed, regenerate preview (as it might be an annotation or Resource Map
         if (pname == "rdf:type" && oldrdftype != pval && this.hasPreview) {
             this.showContent();
         } 
@@ -225,7 +225,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                         {
                             tag: "a",
                             title: theurl,
-                            onclick: "lore.global.util.launchTab('" + theurl + "',window);",
+                            onclick: "lore.util.launchTab('" + theurl + "',window);",
                             href: "#",
                             children: [theurl]
                         }
@@ -252,7 +252,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                     href: "#",
                     onclick: "lore.ore.controller.loadCompoundObjectFromURL('" + theurl + "');",
                     children: [
-                        "Compound Object: ", 
+                        "Resource Map: ", 
                         {tag: "br"}, 
                         {
                             tag: "img",
@@ -269,7 +269,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                 children: [
                     {
                        tag: "li",
-                       title: "Compound Object",
+                       title: "Resource Map",
                        cls: "mimeicon oreicon",
                        children: [
                         this.uriexpander,
@@ -314,7 +314,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                         {
                             tag: "a",
                             title: theurl,
-                            onclick: "lore.global.util.launchTab('" + displayUrl + "', window);",
+                            onclick: "lore.util.launchTab('" + displayUrl + "', window);",
                             href: "#",
                             children: [theurl]
                         }
@@ -356,7 +356,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                 style: "width:auto; z-index:-9001"
             });
             previewArea.first().on("click", function(e){
-                lore.global.util.launchTab(this.getAttribute("src"), window);
+                lore.util.launchTab(this.getAttribute("src"), window);
                 e.stopPropagation();
                 return false
             });
@@ -384,18 +384,25 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
      */
     createPreview : function(theurl) {
         var iframe;
-        if (theurl.match("^http") == "http") {
-            iframe = lore.global.util.createSecureIFrame(window.top, theurl);
+        if (!lore.ore.firefox){
+            // Google Chrome: use thumbnail preview? e.g. from createVisibleTab if it is open in browser
+            
         } else {
-            iframe = lore.global.util.createSecureIFrame(window.top,
-                    "about:blank");
+            // use secure iframe for firefox
+            if (theurl.match("^http") == "http") {
+                iframe = lore.util.createSecureIFrame(window.top, theurl);
+            } else {
+                iframe = lore.util.createSecureIFrame(window.top,
+                        "about:blank");
+            }
+    
+            iframe.style.width = "100%";
+            iframe.style.height = "100%";
+            iframe.name = theurl + "-data";
+            iframe.id = theurl + "-data";
+            this.iframe = iframe;
+            
         }
-
-        iframe.style.width = "100%";
-        iframe.style.height = "100%";
-        iframe.name = theurl + "-data";
-        iframe.id = theurl + "-data";
-        this.iframe = iframe;
         this.iframearea.appendChild(iframe);
     },
     /**
@@ -555,9 +562,10 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
             if (!this.iframearea.firstChild) {
                 this.showContent();
             }
-
             this.iframearea.style.display = "block";
         }
+        // make sure ports and connections are redrawn
+        this.paint();
     },
     /**
      * Set (or add) a property with a specific id
@@ -690,7 +698,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                 icon: "../../skin/icons/page_go.png",
                 scope: this,
                 handler: function(evt){
-                    lore.global.util.launchWindow(this.url, true, window);
+                    lore.util.launchWindow(this.url, true, window);
                 }
              });
         }

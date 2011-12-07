@@ -31,6 +31,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.children = new lore.draw2d.ArrayList();
         this.sourcePort=null;
         this.targetPort=null;
+        this.model=null;
         this.lineColor = new lore.draw2d.Color(174,174,174); // light grey
         this.labelColor = new lore.draw2d.Color(51,51,51); // dark grey
         this.label = new lore.draw2d.Label();
@@ -58,6 +59,14 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.targetPort.detachMoveListener(this);
         this.fireTargetPortRouteEvent();
       }
+      if (this.model && this.targetPort){
+        var props = this.model.get('properties');
+        var prop = this.edgens + this.edgetype;
+        var propIndex = props.findProperty(prop,this.targetPort.getParent().url);
+        if (propIndex != -1){
+            props.removeProperty(prop,propIndex);
+        }
+      }
     },
     reconnect: function() {
       if(this.sourcePort!=null)
@@ -69,6 +78,17 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       {
         this.targetPort.attachMoveListener(this);
         this.fireTargetPortRouteEvent();
+      }
+      if (this.model && this.targetPort){
+        var props = this.model.get('properties');
+        var propData = {
+            id: this.edgens + this.edgetype, 
+            ns: this.edgens, 
+            name: this.edgetype, 
+            value: this.targetPort.getParent().url, 
+            prefix: lore.constants.nsprefix(this.edgens)
+        };
+        props.setProperty(propData);
       }
     },
     /**
@@ -172,6 +192,13 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         var item = lore.draw2d.Line.prototype.createHTMLElement.call(this);
         item.className = "ctxtConn";
         return item;
+    },
+    handleShowContextMenu : function(ev){
+        var pos = ev.xy;
+        var wf = this.getWorkflow();
+        wf.setCurrentSelection(this);
+        wf.showLineResizeHandles(this);
+        this.onContextMenu(pos[0], pos[1], true);
     },
     /**
      * Construct the context menu for selecting the connection type
@@ -297,12 +324,16 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.setEndPoint(this.targetPort.getAbsoluteX(), this.targetPort.getAbsoluteY());
     },
     setSource: function(/*:lore.draw2d.Port*/ port) {
-      if(this.sourcePort!=null)
+      if(this.sourcePort!=null) {
         this.sourcePort.detachMoveListener(this);
+        this.model = null;
+      }
     
       this.sourcePort = port;
-      if(this.sourcePort==null)
+      if(this.sourcePort==null){
         return;
+      }
+      this.model = this.sourcePort.getParent().model;
       this.sourceAnchor.setOwner(this.sourcePort);
       this.fireSourcePortRouteEvent();
       this.sourcePort.attachMoveListener(this);
@@ -419,6 +450,8 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
             canvElem: this.getWorkflow().canvElem,
             clear: function(){
                 if (this.ln) {
+                    Ext.get(this.ln.node).un("contextmenu",this.fig.handleShowContextMenu);
+                    Ext.get(this.ln.node).un("dblclick",this.fig.handleShowContextMenu);
                     this.ln.remove();
                 }
             },
@@ -487,13 +520,22 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
                 this.ln.attr("cursor","move");
                 
                 this.ln.click(function(){
-                  try{
                     wf.setCurrentSelection(selectedFig);
                     wf.showLineResizeHandles(selectedFig);
-                  } catch (e){
-                    lore.debug.ore("problem",e);
-                  }
                 });
+
+                Ext.get(this.ln.node).on("contextmenu", 
+                    this.fig.handleShowContextMenu,
+                    this.fig,
+                    {
+                        stopPropagation: true, 
+                        preventDefault: true
+                    }
+                );
+                Ext.get(this.ln.node).on("dblclick", 
+                    this.fig.handleShowContextMenu,
+                    this.fig
+                );
             },
             setStroke: function(s){
                 this.ln.attr("stroke-width",s);

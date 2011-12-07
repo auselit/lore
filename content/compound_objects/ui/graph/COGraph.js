@@ -18,7 +18,7 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * @class lore.ore.ui.graph.COGraph The Graphical compound object editing view
+ * @class lore.ore.ui.graph.COGraph The Graphical Resource Map editing view
  * @extends lore.draw2d.Workflow
  * @param {} id
  */
@@ -135,14 +135,14 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
 	},
     
     /**
-     * Show a message indicating the compound object is empty
+     * Show a message indicating the Resource Map is empty
      * @private
      */
     showEmptyMessage : function() {
         this.setBackgroundImage("../../skin/icons/ore/emptyco.png",false);
     },
     /** 
-     * Remove the message indicating the compound object is empty
+     * Remove the message indicating the Resource Map is empty
      * @private
      */
     clearEmptyMessage : function() {
@@ -373,7 +373,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
 	 * @param {boolean} ctrl
 	 */
 	onKeyDown: function(keyCode, ctrl, meta, shift) {
-        // don't do anything if we are editing a text field or if compound object is read only
+        // don't do anything if we are editing a text field or if Resource Map is read only
         if (this.editingText || lore.ore.controller.checkReadOnly()){
              return;
         }
@@ -600,7 +600,6 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
         vp.setSize(vpsize);
         vp.syncSize();
 
-        //lore.global.util.launchTab(imgData);
         return imgData;
      } catch (e) {
         lore.debug.ore("getAsImage",e);
@@ -657,7 +656,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
                 	b.parentMenu.hide();
                 	var imgData = this.getAsImage();
                     if (imgData) {
-                        lore.global.util.writeURIWithSaveAs("diagram", "png", window, imgData);
+                        lore.util.writeURIWithSaveAs("diagram", "png", window, imgData);
                     } else {
                         lore.ore.ui.vp.error("Unable to generate diagram image");
                     }
@@ -741,7 +740,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             this.contextmenu.add("-");
             this.contextmenu.add({
                 text: "Add current URL",
-                icon: "../../skin/icons/ore/add.png",
+                icon: "../../skin/icons/add.png",
                 scope: this,
                 handler: function(evt){              	
     	            lore.ore.controller.addResource(lore.ore.controller.currentURL);  
@@ -749,7 +748,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
              });
             this.contextmenu.add("-");
             this.contextmenu.add({
-                text: "Save Compound Object",
+                text: "Save Resource Map",
                 icon: "../../skin/icons/ore/disk.png",
                 scope: this,
                 handler: function(evt){                 
@@ -757,7 +756,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
                 }
              });
             this.contextmenu.add({
-                text: "New Compound Object",
+                text: "New Resource Map",
                 icon: "../../skin/icons/ore/database_add.png",
                 scope: this,
                 handler: function(evt){              	
@@ -765,7 +764,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
                 }
              });
              this.contextmenu.add({
-                text: "Copy Compound Object",
+                text: "Copy Resource Map",
                 icon: "../../skin/icons/ore/database_go.png",
                 scope: this,
                 handler: function(evt){                 
@@ -773,7 +772,7 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
                 }
              });
             this.contextmenu.add({
-                text: "Delete Compound Object",
+                text: "Delete Resource Map",
                 icon: "../../skin/icons/ore/database_delete.png",
                 scope: this,
                 handler: function(evt){              	

@@ -239,7 +239,6 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
       }
     },
     setHighlightColor: function(color){
-        lore.debug.ore("setHighlightColor",color)
         this.highlightColor = color;
         if (color != this.NOHIGHLIGHT){
             this.textarea.style.backgroundColor = "#" + color;
@@ -552,7 +551,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
      */
     populateContextMenu : function(menu){
         menu.add({
-                text: "Delete resource from Compound Object",
+                text: "Delete resource from Resource Map",
                 icon: "../../skin/icons/delete.png",
                 scope: this,
                 handler: function(evt){
