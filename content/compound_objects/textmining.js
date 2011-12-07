@@ -18,11 +18,6 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
  
- /*
-  * @include  "/oaiorebuilder/content/compound_objects/RdfStore.js"
-  * @include "/oaiorebuilder/content/compound_objects/RdfGrid.js"
-  */
-  
 /**
  * Handler function for successful return of Ajax request to Calais web service
  * 
@@ -31,7 +26,7 @@
 lore.ore.textm.processRDFa = function(tmtab) {
     try{
     // process RDFa in current page
-    var doc = lore.global.util.getContentWindow(window).document;
+    var doc = lore.util.getContentWindow(window).document;
     var contentElem = jQuery('body',doc);
     tmtab.body.update("Found the following from RDFa:<br>");
     var myrdf = contentElem.rdfa();
@@ -40,7 +35,7 @@ lore.ore.textm.processRDFa = function(tmtab) {
     lore.debug.ore("json dump", Ext.util.JSON.encode(jQuery.rdf.dump(triples)));
     for (var t = 0; t < triples.length; t++){
         var triple = triples[t];
-        var triplestr = lore.global.util.escapeHTML(triple.toString());
+        var triplestr = lore.util.escapeHTML(triple.toString());
         // add a border around elements with rdfa with a hover to disply the triple
         if (triple.source.style){
             triple.source.style.border="0.5px solid #eeeeee";
@@ -121,7 +116,7 @@ lore.ore.doTextMining = function() {
             + '</c:params>';
 
     // set contentStr to current selection
-    var selection = lore.global.util.getContentWindow(window).getSelection();
+    var selection = lore.util.getContentWindow(window).getSelection();
     if (!selection || !selection.toString()){
         lore.ore.ui.vp.warning("Please highlight text to be analysed from the current page prior to selecting the text mining button");
     }
