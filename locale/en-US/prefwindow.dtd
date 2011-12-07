@@ -1,9 +1,9 @@
 <!ENTITY ui.label "User Interface">
 <!ENTITY anno.label "Annotations">
-<!ENTITY co.label "Compound Objects">
+<!ENTITY co.label "Resource Maps">
 <!ENTITY general.label "General">
 <!ENTITY repos.label "Repositories">
-<!ENTITY co.label "Compound Objects">
+<!ENTITY co.label "Resource Maps">
 <!ENTITY tm.label "Text Mining">
 <!ENTITY tmkey.label "Text mining API key:">
 <!ENTITY tmkey.message "Please visit the OpenCalais site to request an access key for the text mining service:">
@@ -12,7 +12,7 @@
 <!ENTITY grapheditor.label "Graphical editor">
 <!ENTITY listeditor.label "Resource List editor">
 <!ENTITY coeditor.label "Preferred editor:">
-<!ENTITY relonturl.label "Compound Object Ontology:">
+<!ENTITY relonturl.label "Resource Map Ontology:">
 <!ENTITY relonturl.accesskey "U">
 <!ENTITY relontns.label "Relationship Ontology Namespace:">
 <!ENTITY relontns.accesskey "N">
@@ -29,8 +29,8 @@
 <!ENTITY annoserver.label "Server URL:">
 <!ENTITY solr.label "Solr URL (for keyword search):">
 <!ENTITY annocachetimeout.label "Page cache timeout" >
-<!ENTITY disable_anno.label "Disable annotation features">
-<!ENTITY disable_co.label "Disable compound object features">
+<!ENTITY disable_anno.label "Disable Annotation features">
+<!ENTITY disable_co.label "Disable Resource Map features">
 <!ENTITY debug.label "Logging" >
 <!ENTITY filelogging.label "Enable logging to file" >
 <!ENTITY accessibility.label "Accessibility">

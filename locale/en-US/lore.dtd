@@ -1,53 +1,54 @@
 <!ENTITY lore.label "LORE">
 <!ENTITY lore.annoLabel "Annotations">
-<!ENTITY lore.coLabel "Compound Objects">
-<!ENTITY loreContextLink.label "Add linked resource to LORE compound object">
-<!ENTITY loreContextImage.label "Add image to LORE compound object">
-<!ENTITY loreContextBGImage.label "Add background image to LORE compound object">
+<!ENTITY lore.coLabel "Resource Maps">
+<!ENTITY loreContextLink.label "Add linked resource to LORE Resource Map">
+<!ENTITY loreContextImage.label "Add image to LORE Resource Map">
+<!ENTITY loreContextBGImage.label "Add background image to LORE Resource Map">
 <!ENTITY loreContextAddAnno.label "Create annotation with selection">
 <!ENTITY loreContextModAnnoSel.label "Update annotation selection">
 <!ENTITY loreToolbar.label "LORE">
 <!ENTITY annoSplitter.tooltip "Resize Annotations Panel (click between arrows to minimize)">
-<!ENTITY coSplitter.tooltip "Resize Compound Objects Panel (click between arrows to minimize)">
+<!ENTITY coSplitter.tooltip "Resize Resource Maps Panel (click between arrows to minimize)">
 <!ENTITY loreToolbar.tooltip "Toggle LORE">
 <!ENTITY lore.addNodeLabel "Add Resource">
-<!ENTITY lore.addNodeTip "Add browser URL to LORE compound object">
+<!ENTITY lore.addNodeTip "Add browser URL to LORE Resource Map">
 <!ENTITY lore.addNodeDirectlyTip "Add resource by typing or pasting URL directly">
 <!ENTITY lore.addNodeDirectlyLabel "Add resource URL">
 <!ENTITY lore.addFromTabsLabel "Add resources from tabs">
 <!ENTITY lore.placeholderLabel "Add placeholder to represent a concept or thing that does not have a URI">
 <!ENTITY lore.addFromTabsTip "Select resources to add from open browser tabs">
-<!ENTITY lore.addedNodeTip "URL is in LORE compound object">
-<!ENTITY lore.layoutTip "Rearrange the resources in the compound object using automatic layout">
-<!ENTITY lore.createCOTip "Create a new (empty) compound object">
-<!ENTITY lore.copyCOTip "Copy contents of the current compound object to a new compound object">
-<!ENTITY lore.lockCOTip "Save and lock compound object to prevent further editing">
-<!ENTITY lore.saveMoreTip "Import/Export compound object as file">
+<!ENTITY lore.addedNodeTip "URL is in LORE Resource Map">
+<!ENTITY lore.layoutTip "Rearrange the resources in the Resource Map using automatic layout">
+<!ENTITY lore.createCOTip "Create a new (empty) Resource Map">
+<!ENTITY lore.copyCOTip "Copy contents of the current Resource Map to a new Resource Map">
+<!ENTITY lore.lockCOTip "Save and lock Resource Map to prevent further editing">
+<!ENTITY lore.saveMoreTip "Import/Export Resource Map as file">
 <!ENTITY lore.saveAnnotationsLabel "Export to Annotea RDF/XML">
 <!ENTITY lore.saveAnnotationsTip "Export annotations to an RDF/XML file">
 <!ENTITY lore.exportOACFileLabel "Export to OAC RDF/XML">
+<!ENTITY lore.exportAnnotationsWordLabel "Export annotations to Word document">
 <!ENTITY lore.saveFileLabel "Export to RDF/XML">
-<!ENTITY lore.saveFileTip "Export compound object as an RDF/XML file">
+<!ENTITY lore.saveFileTip "Export Resource Map as an RDF/XML file">
 <!ENTITY lore.loadRDFLabel "Import from RDF/XML file">
-<!ENTITY lore.loadRDFTip "Import a compound object from a RDF/XML file">
+<!ENTITY lore.loadRDFTip "Import a Resource Map from a RDF/XML file">
 <!ENTITY lore.loadRDFURLLabel "Import from RDF/XML URL">
-<!ENTITY lore.loadRDFURLTip "Import a compound object from a URL">
-<!ENTITY lore.saveWordTip "Export compound object summary as a MS Word document">
+<!ENTITY lore.loadRDFURLTip "Import a Resource Map from a URL">
+<!ENTITY lore.saveWordTip "Export Resource Map summary as a MS Word document">
 <!ENTITY lore.saveWordLabel "Export Summary to Word">
-<!ENTITY lore.saveTrigTip "Export compound object as RDF in TriG format">
+<!ENTITY lore.saveTrigTip "Export Resource Map as RDF in TriG format">
 <!ENTITY lore.saveTrigLabel "Export to TriG">
-<!ENTITY lore.saveJsonTip "Export compound object in Javascript Object Notation">
+<!ENTITY lore.saveJsonTip "Export Resource Map in Javascript Object Notation">
 <!ENTITY lore.saveJsonLabel "Export to JSON">
-<!ENTITY lore.saveFOXMLTip "Export compound object to Fedora Object XML">
+<!ENTITY lore.saveFOXMLTip "Export Resource Map to Fedora Object XML">
 <!ENTITY lore.saveFOXMLLabel "Export FOXML">
 <!ENTITY lore.resetUITip "Reset LORE UI (Any unsaved changes will be lost)">
 <!ENTITY lore.saveRDFLabel "Save RDF">
-<!ENTITY lore.saveRDFTip "Save the current compound object to the repository">
+<!ENTITY lore.saveRDFTip "Save the current Resource Map to the repository">
 <!ENTITY lore.deleteRDFLabel "Delete RDF">
-<!ENTITY lore.deleteRDFTip "Delete the current compound object from the repository">
-<!ENTITY lore.findTip "Find text within currently visible compound object view">
+<!ENTITY lore.deleteRDFTip "Delete the current Resource Map from the repository">
+<!ENTITY lore.findTip "Find text within currently visible Resource Map view">
 <!ENTITY lore.authStatusTip "Sign in to annotation service">
-<!ENTITY lore.authCOStatusTip "Sign in to Compound Object service">
+<!ENTITY lore.authCOStatusTip "Sign in to Resource Map service">
 <!ENTITY lore.addAnnotationLabel "Add annotation">
 <!ENTITY lore.addAnnotationTip "Add annotation on the current page">
 <!ENTITY lore.editAnnotationLabel "Edit annotation">
