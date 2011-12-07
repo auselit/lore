@@ -15,7 +15,7 @@
 	<xsl:strip-space elements="*"/>
 	
 	<xsl:param name="coid" select="'demo:1234'"/>
-	<!-- TODO: deal with nested compound objects -->
+	<!-- TODO: deal with nested Resource Maps -->
 	
 	<xsl:template match="/">
 		<foxml:digitalObject VERSION="1.1" PID="{$coid}"
@@ -23,7 +23,7 @@
  			xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
  			<foxml:objectProperties>
     			<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="A"/>
-    			<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Compound object exported from LORE"/>
+    			<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="Resource Map exported from LORE"/>
   			</foxml:objectProperties>
  			<xsl:apply-templates select="//rdf:Description/ore:aggregates"/>
  			<xsl:apply-templates/>
@@ -64,7 +64,7 @@
 	      		LABEL="Dublin Core Record for this object">
 		      	<foxml:xmlContent>
 			       	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/">
-			       		<!-- only dublin core properties for the compound object go here - others go in rels-ext -->
+			       		<!-- only dublin core properties for the Resource Map go here - others go in rels-ext -->
 				        <xsl:for-each select="*[namespace-uri(.)='http://purl.org/dc/elements/1.1/']">
 				        	<xsl:copy-of select="."/>
 				        </xsl:for-each>  

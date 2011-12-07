@@ -95,7 +95,7 @@
 						<w:pStyle w:val="Heading1" />
 					</w:pPr>
 					<w:r>
-						<w:t><xsl:value-of select="dc:title"/><xsl:if test="dc:title">&#160;</xsl:if>Compound Object</w:t>
+						<w:t><xsl:value-of select="dc:title"/><xsl:if test="dc:title">&#160;</xsl:if>Resource Map</w:t>
 					</w:r>
 					
 				</w:p>

@@ -151,7 +151,7 @@
   </xsl:template>
   
   <xsl:template name="expander">
-    <div class="expander-display-open" onclick="lore.global.util.expandXML(this);"><div class="spacer"></div></div>
+    <div class="expander-display-open" onclick="lore.util.expandXML(this);"><div class="spacer"></div></div>
   </xsl:template>
 
 </xsl:stylesheet>

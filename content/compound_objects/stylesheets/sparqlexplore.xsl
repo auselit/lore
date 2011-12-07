@@ -42,7 +42,7 @@
       </xsl:when>
       <xsl:otherwise>
       <xsl:choose>
-        <xsl:when test="$isCompoundObject = 'y'">Untitled Compound Object</xsl:when>
+        <xsl:when test="$isCompoundObject = 'y'">Untitled Resource Map</xsl:when>
         <xsl:otherwise><xsl:value-of select="$subj"/></xsl:otherwise>
         </xsl:choose>
       </xsl:otherwise>
@@ -55,7 +55,7 @@
       </xsl:choose>
       <xsl:text>"}, "adjacencies": [</xsl:text>
       <xsl:for-each select="sparql:result">
-      <!--  the query should always return somerel except when finding compound objects that aggregate this -->
+      <!--  the query should always return somerel except when finding Resource Maps that aggregate this -->
       <xsl:variable name="therel">
 	      <xsl:choose>
 	      	<xsl:when test="sparql:binding[@name='somerel']">
@@ -125,7 +125,7 @@
       		</xsl:when>
       		<xsl:otherwise>
       		    <xsl:choose>
-      		    <xsl:when test="$isCO='y'">Untitled Compound Object</xsl:when>
+      		    <xsl:when test="$isCO='y'">Untitled Resource Map</xsl:when>
       		    <xsl:otherwise>
       			   <xsl:value-of select="$theuri"/>
       			</xsl:otherwise>
