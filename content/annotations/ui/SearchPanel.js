@@ -75,6 +75,7 @@ lore.anno.ui.SearchForm = Ext.extend(Ext.form.FormPanel, {
     }
 });
 Ext.reg('annosearchform', lore.anno.ui.SearchForm);
+//Ext.reg('annosearchform', 'lore.anno.ui.SearchForm');
 
 /**
  * Object that encapsulates a search screen for annotations
@@ -217,5 +218,5 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
     }
 
 });
-
 Ext.reg("annosearchpanel", lore.anno.ui.SearchPanel);
+//Ext.reg("annosearchpanel", 'lore.anno.ui.SearchPanel');

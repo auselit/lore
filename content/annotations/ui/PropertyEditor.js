@@ -144,7 +144,8 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 					}, {
 						id : 'help',
 						qtip : 'Display information about the selected property',
-						handler : this.helpPropertyAction
+						handler : this.helpPropertyAction,
+                        scope: this
 					}],
 			id : "remgrid",
 			autoHeight : true,
@@ -226,6 +227,16 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 			lore.debug.anno("error removing property ",ex);
 		}
 	},
+    /* Used for displaying property values : values have been sanitized before being passed to template */
+    helpTpl: new Ext.XTemplate(
+        '<p style="font-weight:bold;font-size:130%">{name}</p>',
+        '<p style="font-size:110%;margin:5px;">{value}</p>',
+        '<tpl if="ns">',
+            '<p>This property is defined in ',
+            '<a style="text-decoration:underline" href="#" onclick="lore.util.launchTab(\'{ns}\');">{ns}</a>',
+            '</p>',
+        '</tpl>'
+    ),
     /** Handler for help tool button on property grids
      * 
      * @param {} ev
@@ -233,28 +244,31 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
      * @param {} panel
      */
 	helpPropertyAction: function (ev,toolEl, panel) {
+        try{
 	    var sel = panel.getSelectionModel().getSelected();
 	    if (panel.collapsed){
 	        lore.anno.ui.loreInfo("Please expand the properties panel and select a property");
 	    } else if (sel){
+            var helpConfig = {
+                name: lore.util.sanitizeHTML(sel.data.name, window, true), 
+                value: lore.util.sanitizeHTML(sel.data.value, window, true)
+            };
 	        var splitprop =  sel.data.name.split(":");
-	        var infoMsg = "<p style='font-weight:bold;font-size:130%'>" + sel.data.name + "</p><p style='font-size:110%;margin:5px;'>" 
-	        + sel.data.value + "</p>";
 	        if (splitprop.length > 1){
-	            var ns = lore.constants.NAMESPACES[splitprop[0]];
-	            infoMsg += "<p>This property is defined in " 
-	                    + "<a style='text-decoration:underline' href='#' onclick='lore.global.util.launchTab(\"" 
-	                    + ns + "\");'>" + ns + "</a></p>";
+                // TODO : this value should be safe, but make sure it doesn't have any nasties in it
+	            helpConfig.ns = lore.constants.NAMESPACES[splitprop[0]];
 	        }
-	        
 	        Ext.Msg.show({
-	                title : 'About ' + sel.data.name,
+	                title : lore.util.sanitizeHTML('About ' + sel.data.name,window,true),
 	                buttons : Ext.MessageBox.OK,
-	                msg : infoMsg
+	                msg : this.helpTpl.apply(helpConfig)
 	            });
 	    } else {
 	        lore.anno.ui.loreInfo("Please click on a property prior to selecting the help button");
 	    }
+        } catch (ex){
+            lore.debug.anno("Error creating help",ex);
+        }
 	},
 	
 	/**
@@ -271,7 +285,6 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 		this.type = type;
 		this.loadOntology(ourl, function callback(ontology) {
 			lore.debug.anno('loadOntology callback', {ontology: ontology, type: type});
-			//tthis.mOntology = ontology;
 			tthis.propertiesList = [];
 			
 			ontology.where('?prop rdfs:domain <' + type + '>')
@@ -335,5 +348,5 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
 
 
 
-
 Ext.reg("annopropertyeditor", lore.anno.ui.PropertyEditor);
+//Ext.reg("annopropertyeditor", 'lore.anno.ui.PropertyEditor');

@@ -18,11 +18,6 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * @include  "/oaiorebuilder/content/annotations/annotations.js"
- * @include  "/oaiorebuilder/content/debug.js"
- * @include  "/oaiorebuilder/content/util.js"
-  */
  
  
 
@@ -147,6 +142,91 @@ lore.anno.ui.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
     }
 });
 
+        
+
+lore.anno.ui.AnnoTreeNode = Ext.extend(Ext.tree.TreeNode, {
+    /**
+     * Generate annotation caption for the given annotation using the formatting
+     * string
+     * @param {Annotation} anno The annotation to retrieve the information from
+     * @param {String} formatStr Formatting string. The follow characters are interpreted as:
+     * t: The annotation Type
+     * c: The annotation Creator
+     * d: The annotation Creation Date short date
+     * D: the annotation Creation Date long date
+     * r: The number of replies for this annotation
+     * The \ character escapes these characters.
+     */
+    genAnnotationCaption : function(anno, formatStr){
+        var buf = '';
+        
+        
+        for (var i = 0; i < formatStr.length; i++) {
+            switch (formatStr[i]) {
+                case 't':
+                    buf += lore.util.splitTerm(anno.type).term;
+                    break;
+                case 'c':
+                    buf += anno.creator;
+                    break;
+                case 'd':
+                    buf += lore.util.shortDate(anno.created, Date);
+                    break;
+                case 'D':
+                    buf += lore.util.longDate(anno.created, Date);
+                    break;
+                case 'r':
+                    var replies = "";
+                    if (anno.replies) {
+                        var n = anno.replies.count;
+                        if (n > 0) {
+                            replies = " (" + n + (n == 1 ? " reply" : " replies") + ")";
+                        }
+                    }
+                    buf += replies;
+                    break;
+                case '\\':
+                    if (i < formatStr.length - 1) {
+                        i++;
+                        buf += formatStr[i];
+                    }
+                    break;
+                default:
+                    buf += formatStr[i];
+            }
+        }
+        
+        return buf;
+    },
+    /**
+     * Notification function called when a clear operation occurs in the store.
+     * Clears the tree.
+     * @param {Store} store The data store that performed the notification
+     */
+    handleClear: function(store){
+        this.removeAll();
+    },
+    /**
+     * Generates a series of <span>s to display the passed in comma
+     * separated list of tag references
+     */
+    genTagsHtml : function(tags) {
+        if (!tags) {
+            return '';
+        }
+        var tagsHtml = '';
+        var tags = tags.split(',');
+        for (var i = 0; i < tags.length; i++) {
+            var temp = lore.anno.thesaurus.getById(tags[i]);
+            if (temp) {
+                tagsHtml += '\n<span class="anno-tag">' + temp.data.name + '</span> ';
+            } else {
+                tagsHtml += '\n<span class="anno-tag">' + tags[i] + '</span> ';
+            }
+        }
+        return tagsHtml;
+    }
+});                
 /**
  * Construct a column tree node
  * @constructor
@@ -169,7 +249,7 @@ lore.anno.ui.ColumnTreeNode = function(attributes){
  * @class lore.anno.ui.ColumnTreeNode
  * @extends Ext.tree.TreeNode
  */
-Ext.extend(lore.anno.ui.ColumnTreeNode, Ext.tree.TreeNode, {
+Ext.extend(lore.anno.ui.ColumnTreeNode, lore.anno.ui.AnnoTreeNode, {
     
     /**
      * Set the text fields for the tree node
@@ -311,7 +391,7 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
                 linksBuf += "<a title=\"" + n.links[i].title + "\" onclick=\"" + n.links[i].jscript + ";return false;\">"
                     + "<img  src='" + this.emptyIcon 
                     + "' class='x-tree-node-icon x-tree-node-inline-icon anno-view " 
-                    + n.links[i].iconCls + "' /></a><span class='left-spacer4' />";
+                    + n.links[i].iconCls + "' /></a>";
         }
         
         // Bypass the default tree node model's interception of child node clicks.
@@ -376,7 +456,7 @@ lore.anno.ui.ColumnTreeNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
         var a = event.getTarget('a');
         
         if (a && a.href != "") {
-            lore.global.util.launchTab(a.href, window);
+            lore.util.launchTab(a.href, window);
         }
         
         lore.anno.ui.ColumnTreeNodeUI.superclass.onClick.call(this, event);
@@ -500,7 +580,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
             // direction can be dynamically changed
             var sortType =  function(node){
                 try {
-                    var r = lore.global.util.findRecordById(tree.model, lore.anno.ui.nodeIdToRecId(node));
+                    var r = lore.util.findRecordById(tree.model, lore.anno.ui.nodeIdToRecId(node));
                     if (r) {
                         return r.data[ts.sortField] || r.data.created;
                     }
@@ -576,10 +656,8 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
         
     
         
-        
 
-                
-lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode, 
+lore.anno.ui.AnnoPageTreeNode = Ext.extend( lore.anno.ui.AnnoTreeNode, 
 {
     constructor: function(config ){
         this.config = config || {};
@@ -620,7 +698,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
                         
                     var parent = null;
                     if (anno.isReply) 
-                        parent = lore.anno.ui.findNode(anno.about, this);                
+                        parent = lore.anno.controller.findNode(anno.about, this);                
                     else 
                         parent = this;
                     
@@ -648,7 +726,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
          */    
     handleRemove: function(store, rec, ind ) {
     try {
-            var node = lore.anno.ui.findNode(rec.data.id, this);
+            var node = lore.anno.controller.findNode(rec.data.id, this);
             if (node) {
                 node.remove();
             }
@@ -667,31 +745,20 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
      */            
     handleUpdate: function(store, rec, operation) {
         try {
-            var ui = lore.anno.ui;
-            var node = ui.findNode(rec.data.id, this);
+            var node = lore.anno.controller.findNode(rec.data.id, this);
             
             if (!node) {
                 return;
             }
 
             var info = ' ';
-            info = ui.genAnnotationCaption(rec.data, 'by c, d r');
+            info = this.genAnnotationCaption(rec.data, 'by c, d r');
             
-            node.setText(rec.data.title, info, ui.genTagsHtml(rec.data.tags), ui.genTreeNodeText(rec.data));
-
+            node.setText(rec.data.title, info, this.genTagsHtml(rec.data.tags), lore.anno.ui.genTreeNodeText(rec.data));
         } 
         catch (e) {
             lore.debug.ui("Error updating annotation tree view: " + e, e);
         }
-    },
-    
-    /**
-     * Notification function called when a clear operation occurs in the store.
-     * Clears the tree.
-     * @param {Store} store The data store that performed the notification
-     */
-    handleClear: function(store ){
-        this.removeAll();
     },
     
     refresh : function () {
@@ -704,7 +771,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( Ext.tree.TreeNode,
 
  
 
-lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
+lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend(lore.anno.ui.AnnoTreeNode, {
 
     constructor: function(config ){
           this.config = config || {};
@@ -745,7 +812,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
     
     handleRemove : function(store, rec, index) {
         try {
-            var node = lore.anno.ui.findNode(rec.data.id + this.postfix, this);
+            var node = lore.anno.controller.findNode(rec.data.id + this.postfix, this);
             if (node) {
                 node.remove();
             } else {
@@ -759,8 +826,8 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
     
     handleUpdate : function(store, rec, operation){
         try {
-            var ui = lore.anno.ui;
-            var node = ui.findNode(rec.data.id + this.postfix, this);
+            
+            var node = lore.anno.controller.findNode(rec.data.id + this.postfix, this);
             
             if (!node) {
                 return;
@@ -768,31 +835,22 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend( Ext.tree.TreeNode, {
             var info = ' ';
             
          
-            if (!lore.global.util.urlsAreSame(rec.data.resource, ui.currentURL)) {
+            if (!lore.util.urlsAreSame(rec.data.resource, lore.anno.controller.currentURL)) {
                 info = "Unsaved annotation on " + rec.data.resource + " ";
             }
             
             if (!rec.data.isNew()) {
-                info = info + ui.genAnnotationCaption(rec.data, 'by c, d r');
+                info = info + this.genAnnotationCaption(rec.data, 'by c, d r');
             }
             
             
             
-            node.setText(rec.data.title, info, ui.genTagsHtml(rec.data.tags), ui.genTreeNodeText(rec.data));
+            node.setText(rec.data.title, info, this.genTagsHtml(rec.data.tags), lore.anno.ui.genTreeNodeText(rec.data));
             
         } 
         catch (e) {
             lore.debug.ui("Error updating annotation tree view: " + e, e);
         }
-    },
-        
-    /**
-     * Notification function called when a clear operation occurs in the store.
-     * Clears the tree.
-     * @param {Store} store The data store that performed the notification
-     */
-    handleClear: function(store){
-        this.removeAll();
     }
 });
  
@@ -816,15 +874,37 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
     * Set the intial config values for text, uri etc from the model object
     */
    initConfig: function(){
+        /* Utility function to get anno title */
+        var getAnnoTitle = function(anno){
+            var title = anno.title;
+            if (!title || title == '') {
+                title = "Untitled";
+            }
+            return title;
+        };
+        /*
+         * Utility function to retrieve the icon for the annotation depending on it's type
+         */
+        var getAnnoTypeIcon = function(anno){
+            var aType = lore.util.splitTerm(anno.type).term;
+            var icons = {
+                'Comment': 'anno-icon',
+                'Explanation': 'anno-icon-explanation',
+                'VariationAnnotation': 'anno-icon-variation',
+                'Question': 'anno-icon-question'
+            };
+            
+            return icons[aType] || 'anno-icon';
+        };
         try {
             var anno = this.config.anno;
-            var iCls = lore.anno.ui.getAnnoTypeIcon(anno);
+            var iCls = getAnnoTypeIcon(anno);
             
             Ext.apply(this.config, {
                 id: anno.id + ( this.config.postfix ? this.config.postfix:''),
                 iconCls: iCls,
                 privateAnno: anno.privateAnno,
-                title: lore.anno.ui.getAnnoTitle(anno),
+                title: getAnnoTitle(anno),
                 uiProvider: lore.anno.ui.ColumnTreeNodeUI,
                 nodeType: anno.type                
             });
@@ -837,8 +917,8 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
             } else {
                 Ext.apply(this.config, {
                     text: lore.anno.ui.genTreeNodeText(anno),
-                    bheader: lore.anno.ui.genAnnotationCaption(anno, 'by c, d r'),
-                    bfooter: lore.anno.ui.genTagsHtml(anno.tags),
+                    bheader: this.genAnnotationCaption(anno, 'by c, d r'),
+                    bfooter: this.genTagsHtml(anno.tags),
                     links: this.config.links
                 });
             }
@@ -869,5 +949,6 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 Ext.reg('columntreepanel', lore.anno.ui.ColumnTree);
 Ext.reg('annocolumntreepanel', lore.anno.ui.AnnoColumnTree);
 Ext.reg('annopagetreenode', lore.anno.ui.AnnoPageTreeNode);
-Ext.reg('annomodpagetreenode', lore.anno.ui.AnnoPageTreeNode);
-
+//Ext.reg('columntreepanel', 'lore.anno.ui.ColumnTree');
+//Ext.reg('annocolumntreepanel', 'lore.anno.ui.AnnoColumnTree');
+//Ext.reg('annopagetreenode', 'lore.anno.ui.AnnoPageTreeNode');

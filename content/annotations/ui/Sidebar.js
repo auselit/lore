@@ -117,15 +117,6 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             loreuieditor]
         };
     
-        /*
-         * Helper function that constructs the 'Search' tab
-         */
-//        var keywordSearchPanel = {
-//            xtype: 'solrsearchpanel',
-////            autoHeight: 'true',
-//            title: 'Keyword',
-//        };
-    
         
         var dannoSearchPanel = {
 			xtype: 'annosearchpanel',
@@ -143,7 +134,11 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                 id: "navigationtabs",
                 deferredRender: false,
                 activeTab: "treeview",
-                items: [browsePanel, dannoSearchPanel, aboutPanel]
+                items: [
+                    browsePanel, 
+                    dannoSearchPanel, 
+                    aboutPanel
+                ]
             });
             // hide or show feed icon when browse is activated/deactivated
             Ext.getCmp('treeview').on("activate", function(){
@@ -156,7 +151,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                  var about= Ext.get("about_anno"); 
                  var high_contrast = lore.anno.prefs.high_contrast;
                  if (about && typeof high_contrast != "undefined") { 
-                     lore.global.util.setHighContrast(about.dom.contentWindow, high_contrast); 
+                     lore.util.setHighContrast(about.dom.contentWindow, high_contrast); 
                  }  
             });
             var gui_spec = {
@@ -268,8 +263,8 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             text: "Show RDF/XML",
             handler: function () {
                 try {
-                    lore.anno.ui.openView("remrdfview", "RDF/XML", function () {
-                        Ext.getCmp("remrdfview").body.update(lore.global.util.escapeHTML(lore.anno.serialize("rdf")));
+                    lore.anno.controller.openView("remrdfview", "RDF/XML", function () {
+                        Ext.getCmp("remrdfview").body.update(lore.util.escapeHTML(lore.anno.serialize("rdf")));
                     });
                 } catch (e) {
                     lore.debug.anno("Error generating RDF view", e);
@@ -282,7 +277,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
         });
     
         // Add handler to add Context Menu for Tree Nodes when they're appended
-        lore.anno.ui.treeroot.on('append', lore.anno.ui.handleAttachAnnoCtxMenuEvents);
+        lore.anno.ui.treeroot.on('append', lore.anno.controller.handleAttachAnnoCtxMenuEvents, lore.anno.controller);
     },
     
     /*
@@ -290,26 +285,26 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
      */
     attachHandlers: function () {
         // Add default behaviour when a new annotation is added
-        lore.anno.ui.treeroot.on('append', lore.anno.ui.handleAttachNodeLinks);
+        lore.anno.ui.treeroot.on('append', lore.anno.controller.handleAttachNodeLinks, lore.anno.controller);
     
         // Tree node is clicked/double clicked
-        Ext.getCmp("annosourcestree").on("click", lore.anno.ui.handleTreeNodeSelection);
-        Ext.getCmp("annosourcestree").on("dblclick", lore.anno.ui.handleEdit);
+        Ext.getCmp("annosourcestree").on("click", lore.anno.controller.handleTreeNodeSelection, lore.anno.controller);
+        Ext.getCmp("annosourcestree").on("dblclick", lore.anno.controller.handleEdit, lore.anno.controller);
     
         // editor handlers
-        Ext.getCmp("hideeditbtn").on('click', lore.anno.ui.handleHideAnnotationEditor);
-        Ext.getCmp("updannobtn").on('click', lore.anno.ui.handleSaveAnnotationChanges);
-        Ext.getCmp("canceleditbtn").on('click', lore.anno.ui.handleCancelEditing);
+        Ext.getCmp("hideeditbtn").on('click', lore.anno.controller.handleHideAnnotationEditor, lore.anno.controller);
+        Ext.getCmp("updannobtn").on('click', lore.anno.controller.handleSaveAnnotationChanges, lore.anno.controller);
+        Ext.getCmp("canceleditbtn").on('click', lore.anno.controller.handleCancelEditing, lore.anno.controller);
     
         // Annotation Manager
-        lore.anno.annoMan.on('annotationsloaded', lore.anno.ui.handleAnnotationsLoaded);
-        lore.anno.annoMan.on('annotationrepliesloaded', lore.anno.ui.handleAnnotationRepliesLoaded);
-        lore.anno.annoMan.on('committedannotation', lore.anno.ui.handleCommittedAnnotation);
-        lore.anno.annoMan.on('servererror', lore.anno.ui.handleServerError);
+        lore.anno.annoMan.on('annotationsloaded', lore.anno.controller.handleAnnotationsLoaded, lore.anno.controller);
+        lore.anno.annoMan.on('annotationrepliesloaded', lore.anno.controller.handleAnnotationRepliesLoaded, lore.anno.controller);
+        lore.anno.annoMan.on('committedannotation', lore.anno.controller.handleCommittedAnnotation, lore.anno.controller);
+        lore.anno.annoMan.on('servererror', lore.anno.controller.handleServerError, lore.anno.controller);
     
         // Authentication Manager
-        lore.anno.am.on('signedin', lore.anno.ui.loadAnyPrivateAnnosForPage);
-        lore.anno.am.on('signedout', lore.anno.ui.refreshAnnotations);
+        lore.anno.am.on('signedin', lore.anno.controller.loadAnyPrivateAnnosForPage, lore.anno.controller);
+        lore.anno.am.on('signedout', lore.anno.controller.refreshAnnotations, lore.anno.controller);
     }
     
     

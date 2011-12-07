@@ -24,21 +24,34 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
 
         var contextmenu = new Ext.menu.Menu({
             items: [{
-                text: "Add as node/s in compound object editor",
+                text: "Add as node/s in Resource Map editor",
+                icon: "../../skin/icons/add.png",
                 handler: function () {
                 	var recs = this.getSelectedRecords();
-                	lore.anno.ui.handleAddResultsToCO(recs);
+                	lore.anno.controller.handleAddResultsToCO(recs);
                 },
                 scope: this
             }, {
                 text: "View annotation/s in browser",
+                icon: "../../skin/icons/page_go.png",
                 handler: function () {
                 	var recs = this.getSelectedRecords();
-                	lore.anno.ui.handleViewAnnotationInBrowser(recs);
+                	lore.anno.controller.handleViewAnnotationInBrowser(recs);
                 },
                 scope: this
-            }
+            }/*,
+            {
+                text: "Delete annotation",
+                icon: "../../skin/icons/anno/comment_delete.png",
+                handler: function () {
+                    var rects = this.getSelectedRecords();
+                    // TODO create doDelete method in Controller
+                    lore.anno.controller.doDelete(recs);
+                },
+                scope: this
+            }*/
         ]});
+        
         this.on('contextmenu', function(scope, rowIndex, node, e) {
             e.preventDefault();
             this.select(node, true);
@@ -59,7 +72,7 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
                     }
                     if (ruri){
                         lore.anno.annoMan.justUpdated = record.id;
-                        lore.global.util.launchTab(ruri);
+                        lore.util.launchTab(ruri);
                     }
             }
             } catch (e){
@@ -69,3 +82,4 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
     }
 });
 Ext.reg('annodataview', lore.anno.ui.AnnotationsDataView);
+//Ext.reg('annodataview', 'lore.anno.ui.AnnotationsDataView');

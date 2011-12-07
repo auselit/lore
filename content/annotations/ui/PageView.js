@@ -18,11 +18,6 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * @include  "/oaiorebuilder/content/annotations/annotations.js"
- * @include  "/oaiorebuilder/content/debug.js"
- * @include  "/oaiorebuilder/content/util.js"
- */
 
 /**
  * @class lore.anno.ui.PageView Class which abstracts the visual operations
@@ -126,7 +121,22 @@ lore.anno.ui.PageView.prototype = {
             lore.debug.anno("PageView:handleUpdate", e);
         }
     },
-    
+    /**
+     * Callback for setting the default DOM styles for an annotation
+     * span
+     * @param {Integer} type Annotation Type, either 0: Text 1: Image
+     * @param {Object} domObj The object the style applies to
+     */
+    setCurAnnoStyle : function(type, domObj){
+        
+        if (type == 0) {
+            domObj.style.textDecoration = "underline";
+        }
+        else if (type == 1) { 
+            domObj.style.borderStyle = 'solid';
+        }
+        return domObj;
+    },
     /**
      * Hide or Show the page view
      * @param {Boolean} visible
@@ -139,7 +149,7 @@ lore.anno.ui.PageView.prototype = {
                 var cc = this.getCreatorColour(this.page.getCurrentAnno().data.creator);
                 
                 for (var i = 0; i < lore.anno.ui.page.curAnnoMarkers.length; i++) {
-                    this.page.curAnnoMarkers[i].show(cc, lore.anno.ui.setCurAnnoStyle, true);
+                    this.page.curAnnoMarkers[i].show(cc, this.setCurAnnoStyle, true);
                 }
             }
             else if ( !visible ){
@@ -206,7 +216,7 @@ lore.anno.ui.PageView.prototype = {
                 colour = this.colourLookup[this.page.colourCount++];
             } else {
                 // back up
-                colour = lore.global.util.generateColour(196, 196, 196, 240, 240, 240);
+                colour = lore.util.generateColour(196, 196, 196, 240, 240, 240);
             }
             this.page.colourForOwner[creator] = colour;
         }
@@ -254,12 +264,12 @@ lore.anno.ui.PageView.prototype = {
      * Retrieve the current selection whether that is selected text or selected part of an image
      */
     getCurrentSelection: function(){
-        var selxp = lore.global.util.getXPathForSelection(window);
+        var selxp = lore.util.getXPathForSelection(window);
         
-        if (this.page.curImage && lore.global.util.trim(selxp) == '') {
+        if (this.page.curImage && lore.util.trim(selxp) == '') {
             var sel = this.page.curImage.imgAreaSelectInst().getSelection();
             if (sel.x1 != sel.x2 && sel.y1 != sel.y2) {
-                return lore.global.util.getXPathForImageSelection(this.page.curImage.get(0), this.page.curImage.get(0).ownerDocument, sel, true);
+                return lore.util.getXPathForImageSelection(this.page.curImage.get(0), this.page.curImage.get(0).ownerDocument, sel, true);
             }
         }
         
@@ -281,9 +291,9 @@ lore.anno.ui.PageView.prototype = {
                 });
                 inst.update();
             }
-            this.page.curAnnoMarkers = this.highlightAnnotation(rec, lore.anno.ui.setCurAnnoStyle);
+            this.page.curAnnoMarkers = this.highlightAnnotation(rec, this.setCurAnnoStyle);
         } catch (e) {
-            lore.debug.anno("highlightCurrentAnnotation", e);
+            lore.debug.anno("Error in highlightCurrentAnnotation", e);
             lore.debug.anno("Error highlighting (record)", rec);
             lore.anno.ui.loreError('Unable to highlight. Page has been modified.');
         }
@@ -300,11 +310,11 @@ lore.anno.ui.PageView.prototype = {
     highlightAnnotation : function(rec, annoStyle) {
         var markers = [];
         
-        var urlsAreSame = lore.global.util.urlsAreSame;
+        var urlsAreSame = lore.util.urlsAreSame;
         
         try {
         // regular non variant case for highlighting
-        if (rec.data.context && urlsAreSame(rec.data.resource, lore.anno.ui.currentURL) &&
+        if (rec.data.context && urlsAreSame(rec.data.resource, lore.anno.controller.currentURL) &&
             rec.data.type!= lore.constants.NAMESPACES["vanno"] + "VariationAnnotation")  {
                 markers.push(
                     new lore.anno.ui.Marker({
@@ -313,7 +323,7 @@ lore.anno.ui.PageView.prototype = {
                     }));
 
         } else  {
-            if (urlsAreSame(rec.data.original, lore.anno.ui.currentURL)) {
+            if (urlsAreSame(rec.data.original, lore.anno.controller.currentURL)) {
                 try {
                     if (rec.data.context) {
                         markers.push(new lore.anno.ui.Marker({xpointer:rec.data.context, page: this.page }));
@@ -333,7 +343,7 @@ lore.anno.ui.PageView.prototype = {
                 }
             }
             
-            if (urlsAreSame(rec.data.variant, lore.anno.ui.currentURL)) {
+            if (urlsAreSame(rec.data.variant, lore.anno.controller.currentURL)) {
                 try {
                     if ( rec.data.variantcontext ) {
                         markers.push(
@@ -455,7 +465,7 @@ lore.anno.ui.PageView.prototype = {
      */
     enableImageHighlighting : function(contentWindow){
     
-        var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
+        var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
         var doc = cw.document;
         var imgOnly = doc.contentType.indexOf("image") == 0;
         
@@ -463,7 +473,7 @@ lore.anno.ui.PageView.prototype = {
         
         var enableFunc = function(){
         try {
-            var cw = contentWindow ? contentWindow : lore.global.util.getContentWindow(window);
+            var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
             var doc = cw.document;
             
             if ($('span#lore_image_highlighting_inserted', doc).size() > 0) {
@@ -477,7 +487,7 @@ lore.anno.ui.PageView.prototype = {
                 return;
             }
             //CSS used by selection library
-            lore.global.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
+            lore.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
             
             var im;
             
@@ -531,7 +541,7 @@ lore.anno.ui.PageView.prototype = {
                 
             });
             var spanEl = doc.createElement('span');
-            lore.global.util.ignoreElementForXP(spanEl);
+            lore.util.ignoreElementForXP(spanEl);
             spanEl.id = 'lore_image_highlighting_inserted';
             spanEl.style.display = "none";
             $('body', doc).append(spanEl);
@@ -574,13 +584,13 @@ lore.anno.ui.PageView.prototype = {
                     lore.debug.anno("error occurred during window resize handler", ex);
                 }
             };
-            lore.global.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
+            lore.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
             lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
             if (imgOnly) 
                 im.click(refreshImageMarkers);
             
             self.removeResizeListeners = function() {
-                lore.global.util.getContentWindow(window).removeEventListener("resize", refreshImageMarkers, false);
+                lore.util.getContentWindow(window).removeEventListener("resize", refreshImageMarkers, false);
                 lore.anno.ui.topView.getVariationContentWindow().removeEventListener("resize", refreshImageMarkers, false);
             };
             
@@ -619,7 +629,7 @@ lore.anno.ui.PageView.prototype = {
             enableFunc();
         }
     } else { // inject the imgareaselect css anyway because we also use it for tooltips
-        lore.global.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
+        lore.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
     }
 },
 
@@ -641,7 +651,7 @@ lore.anno.ui.PageView.prototype = {
             try {
                 var n = ms[i];
                 n.removeChild(n.firstChild);
-                lore.global.util.removeNodePreserveChildren(n, lore.global.util.getContentWindow(window));
+                lore.util.removeNodePreserveChildren(n, lore.util.getContentWindow(window));
             } 
             catch (e) {
                 lore.debug.anno('error removing node for meta selection', e);
@@ -649,16 +659,56 @@ lore.anno.ui.PageView.prototype = {
         }
         this.page.metaSelections = [];
     },
-    
+
+
     /**
      * Show the RDFa triples on the page
      * @param {Object} callback Function called when RDFa element is selected
      */
-    turnOnPageTripleMarkers : function(/*function*/callback) {
+    turnOnPageTripleMarkers : function(callback) {
+        /*
+         * Utility function to Detemerine whether the triple object supplied is a relationship
+         * understandable by a user
+         */
+         var isHumanReadableTriple = function( triple) {
+            var valid = ["isRecordFor", "birthName", "alternateName", "usesPseudoAgent", "birthOf", "deathOf", "gender", "biography",
+            "influenceOnWork", "type"];
+            
+            //work record
+            valid = valid.concat( ["title", "form", "producedOutput" ]);
+            
+            //manifestation
+            valid = valid.concat( ['hasReprint']);
+            
+            // don't process if it's a blank nodes
+            if ( triple.source && triple.subject.type != 'bnode') {
+                var rel = triple.property.toString();
+                
+                for (var i = 0; i < valid.length; i++) {
+                
+                    if ( rel.lastIndexOf("#" + valid[i]) != -1 || rel.lastIndexOf("/" + valid[i]) != -1)
+                        return true;
+                }
+            } 
+            return false;
+        };
+        /*
+         * Utility function to retrieve the term from the URI 
+         */
+        var tripleURIToString = function ( prop) {
+            prop = prop.toString();
+            if ( prop.indexOf('#')!=-1)
+                prop = prop.substring(prop.indexOf("#") + 1, prop.length - 1);
+            else if ( prop.lastIndexOf("/")!=-1) {
+                prop = prop.substring(prop.lastIndexOf("/")+1, prop.length -1);
+            }
+            return prop;
+        };
+        
         for (var i=0 ; i < this.page.rdfa.triples.length; i++ ) {
             // for each triple determine whether it's human readable
             var z = this.page.rdfa.triples[i];
-            if ( !lore.anno.ui.isHumanReadableTriple(z))
+            if ( !isHumanReadableTriple(z))
                 continue;
 
             var isObject = z.property.toString().indexOf("#type") != -1;
@@ -668,7 +718,7 @@ lore.anno.ui.PageView.prototype = {
                 continue;
             }
             
-            var val = lore.anno.ui.tripleURIToString(z.object);
+            var val = tripleURIToString(z.object);
 
             
             //TODO: #194 - This logic should be based on store with valid Objects
@@ -677,18 +727,18 @@ lore.anno.ui.PageView.prototype = {
                 continue;
                 
             // create a span around the location of the triple that's embedded in the HTML
-            var cw = lore.global.util.getContentWindow(window);
+            var cw = lore.util.getContentWindow(window);
             var doc = cw.document;
             var r = doc.createRange();
             r.selectNode(z.source);
             var span = doc.createElement('span');
-            lore.global.util.ignoreElementForXP(span);
+            lore.util.ignoreElementForXP(span);
             r.surroundContents(span);
                                                                     
             this.page.metaSelections.push(span);
 
             var marker = doc.createElement('img');
-            lore.global.util.ignoreElementForXP(marker);
+            lore.util.ignoreElementForXP(marker);
             
             marker.src = isObject ? lore.constants.icons.objectIcon
                                   : lore.constants.icons.relIcon;
@@ -697,7 +747,7 @@ lore.anno.ui.PageView.prototype = {
             var s = $(marker);
         
             //tooltip
-            marker.title = isObject ? val : lore.anno.ui.tripleURIToString(z.property);
+            marker.title = isObject ? val : tripleURIToString(z.property);
             
             s.hover(function () {
                 $(this).parent().css({
@@ -748,14 +798,14 @@ lore.anno.ui.PageView.prototype = {
      * @param {Function} callbackScope The scope to run the callback in
      */
      updateSplitter :  function (rec, show, callback, callbackScope) {
-        var urlsAreSame = lore.global.util.urlsAreSame;
+        var urlsAreSame = lore.util.urlsAreSame;
         try {
             
             if (rec.data.variant) {
                 // show splitter
                 var ctx = null;
                 var title = '';
-                if (urlsAreSame(rec.data.original, lore.anno.ui.currentURL)) {
+                if (urlsAreSame(rec.data.original, lore.anno.controller.currentURL)) {
                     ctx = rec.data.variant;
                     title = "Variation";
                 }

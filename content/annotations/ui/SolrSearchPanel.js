@@ -67,7 +67,7 @@ Ext.reg('solrsearchpanel', lore.anno.ui.SolrSearchPanel);
 
 lore.anno.ui.SolrStore = Ext.extend(Ext.data.Store,{
     proxy: new Ext.data.HttpProxy({
-    	// This is the default value, it is overridden from preferences in lore.anno.ui.handlePrefsChange
+    	// This is the default value, it is overridden from preferences in lore.anno.Controller.handlePrefsChange
         url: 'http://austlit.edu.au/solr/select',
         method: 'GET'
     }),
