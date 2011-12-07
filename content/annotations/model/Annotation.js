@@ -33,310 +33,11 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
                 this.id = "#new" + lore.util.uuid();
             }
             this.createdOrModified = (!this.modified || this.modified == '') ? this.created : this.modified;
-            if (this.type.match(lore.constants.NAMESPACES["vanno"]) && !this.original) {
+            if (this.type && this.type.match(lore.constants.NAMESPACES["vanno"]) && !this.original) {
                 this.original = this.resource;
             }
         },
-        /**
-         * If rdf property supplied read in RDF and convert to name value pairs as properties
-         * of class
-         * @constructor
-         * @param {String} rdf The RDF
-         * @param {XMlDoc} xmldoc The complete document, used for grabbing unnamed RDF sets
-         * @param {Boolean} bodyEmbedded Whether the body value is embedded in the RDF or simply a URL to the body
-         */
-        loadFromXML: function(rdf, xmldoc, bodyEmbedded){
-        if (!rdf)
-            return;
-        var tmp;
-        var node;
-        var attr;
-        /** @property rdf
-         * The wrappered rdf
-         */
-        this.rdf = rdf;
-        try {
-            attr = rdf.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'about');
-            if (attr) {
-                /** @property id
-                 * Annotation URI (identifier)
-                 */
-                this.id = attr;
-            } else {
-                var nodeID = rdf.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'nodeID');
-                if (nodeID) {
-                    // Not an Annotea Annotation
-                    return;
-                }
-            }
-            var isReply = false;
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'type');
-
-            for (var i = 0; i < node.length; i++) {
-                attr = node[i].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-                if (attr) {
-                    tmp = attr;
-                }
-                if (tmp.indexOf(lore.constants.NAMESPACES["annotype"]) == 0) {
-                    /** @property type
-                     * The annotation type
-                     */
-                    this.type = tmp;
-                }
-                else
-                    if (tmp.indexOf(lore.constants.NAMESPACES["annoreply"]) == 0) {
-                        this.type = tmp;
-                    }
-                    else
-                        if (tmp.indexOf(lore.constants.NAMESPACES["vanno"]) == 0) {
-                            this.type = tmp;
-                        }
-                        else
-                            if (tmp.indexOf(lore.constants.NAMESPACES["thread"]) == 0) {
-                                isReply = true;
-                            }
-
-            }
-            /** @property isReply
-             * @type boolean
-             * Indicates whether this is a reply type of Annotation
-             */
-            this.isReply = isReply;
-
-            if (!this.isReply) {
-                // resource is a url
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'annotates');
-
-                attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-                if (attr) {
-                    /** @property resource
-                     * The URI of the resource annotated (from Annotea annotates)
-                     */
-                    this.resource = attr;
-                }
-                this.about = null;
-            }
-            else {
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'root');
-                if (node[0]) {
-                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-
-                    if (attr) {
-                        this.resource = attr;
-                    }
-                }
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["thread"], 'inReplyTo');
-                if (node[0]) {
-                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-                    if (attr) {
-                        /** @property about
-                         *  If the annotation is a reply, about is the URI of the annotation to which is replies (from Annotea inReplyTo)
-                         */
-                        this.about = attr;
-                    }
-                }
-            }
-
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'body');
-
-            if (!bodyEmbedded) {
-                if (node[0]) {
-                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-                    if (attr) {
-                        /** @property bodyURL
-                         * The URI of the body resource
-                         */
-                        this.bodyURL = attr;
-                    }
-                }
-            } else {
-                var node = node[0].getElementsByTagName('body');
-                if ( node[0]) {
-
-                    var serializer = new XMLSerializer();
-                    var bodyText = serializer.serializeToString(node[0]);
-                    /** @property body
-                     * The content of the body resource
-                     */
-                    this.body = lore.util.sanitizeHTML(bodyText, window) || '';
-                    /** @property bodyLoaded
-                     * @type boolean
-                     * True if the {@link #body} property has been loaded from {@link #bodyURL}
-                     */
-                    this.bodyLoaded = true;
-                }
-            }
-
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'created');
-            /** @property created
-             * From Annotea created (the date and time when the annotation was created)
-             */
-            this.created = lore.util.safeGetFirstChildValue(node);
-
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'modified');
-            /** @property modified
-             * From Annotea modified (the date and time when the annotation was last modified)
-             */
-            this.modified = lore.util.safeGetFirstChildValue(node);
-
-            this.createdOrModified = (this.modified == '') ? this.created : this.modified;
-
-
-            /**
-             * @property privateAnno
-             * Is this annotation 'private', ie, only visible to the current user
-             */
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES['vanno'], 'private');
-            this.privateAnno = lore.util.safeGetFirstChildValue(node) === 'true';
-
-            this.meta = { context: null, fields: []};
-            if (this.isReply) {
-                this.context = '';
-            } else {
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["annotea"], 'context');
-                /** @property context
-                 * From Annotea context
-                 */
-                this.context = lore.util.normalizeXPointer(lore.util.safeGetFirstChildValue(node));
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'meta-context' );
-                if (node && node.length > 0) {
-                    this.meta.context = lore.util.safeGetFirstChildValue(node);
-
-                    this.meta.context = this.meta.context.split('\n');
-                }
-                //TODO: #194 - Enable code to read in semantic facts added, once changes to backend and UI have been done
-//              node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'semantic-context');
-//              if (node && node.length > 0) {
-//                  this.semantictriple = {};
-//
-//                  var node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'subject');
-//                  this.semantictriple.subject = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
-//
-//                  node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'predicate');
-//                  this.semantictriple.property = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
-//
-//                  node2 = node[0].getElementByTagNameNS(lore.constants.NAMESPACES["rdf"], 'object');
-//                  this.semantictriple.object = node2.getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource')
-//              }
-
-            }
-
-
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'creator');
-            /** @property creator
-             * dc:creator of the annotation
-             */
-            this.creator = lore.util.safeGetFirstChildValue(node, 'anon');
-
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'title');
-            /** @property title
-             * dc:title of the annotation
-             */
-            this.title = lore.util.safeGetFirstChildValue(node);
-
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["dc10"], 'language');
-            /** @property lang
-             * dc:lang of the annotation
-             */
-            this.lang = lore.util.safeGetFirstChildValue(node);
-
-            // get tags
-            this.tags = "";
-            node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'tag');
-            for (var j = 0; j < node.length; j++) {
-                var tagval = "";
-                attr = node[j].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-                if (attr) {
-                    // a thesaurus tag
-                    tagval = attr;
-                }
-                else {
-                    // a freeform tag - make sure it's added to the list of tags
-                    tagval = node[j].firstChild.nodeValue;
-                    Ext.getCmp('tagselector').fireEvent('newitem', Ext.getCmp('tagselector'), tagval);
-                }
-                if (tagval) {
-                    if (j > 0)
-                        this.tags += ",";
-                        /** @property tags
-                         * Tags attached to the annotation
-                         */
-                    this.tags += tagval;
-                }
-            }
-
-            // Additional fields for variation annotations only
-            if (this.type.match(lore.constants.NAMESPACES["vanno"])) {
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant');
-                if (node.length == 0) {
-                    node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised');
-                }
-                if (node[0]) {
-                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-                    if (attr) {
-                        /** @property variant
-                         * For a VariationAnnotation, the URI of the variant resource
-                         */
-                        this.variant = attr;
-                    }
-                }
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original');
-                if (node[0]) {
-                    attr = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'resource');
-                    if (attr) {
-                        /** @property original
-                         * For a VariationAnnotation, the URI of the original resource
-                         */
-                        this.original = attr;
-                    }
-                }
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'original-context');
-                /** @property originalcontext
-                 * For a VariationAnnotation, the context associated with the {@link #original} resource
-                 */
-                this.originalcontext = lore.util.safeGetFirstChildValue(node);
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variant-context');
-                if (node.length == 0) {
-                    node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revised-context');
-                }
-                /** @property variantcontext
-                 * For a VariationAnnotation, the context associated with the {@link #variant} resource
-                 */
-                this.variantcontext = lore.util.safeGetFirstChildValue(node);
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-agent');
-                if (node.length == 0) {
-                    node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-agent');
-                }
-                this.variationagent = lore.util.safeGetFirstChildValue(node);
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-place');
-                if (node.length == 0) {
-                    node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-place');
-                }
-                this.variationplace = lore.util.safeGetFirstChildValue(node);
-
-                node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'variation-date');
-                if (node.length == 0) {
-                    node = rdf.getElementsByTagNameNS(lore.constants.NAMESPACES["vanno"], 'revision-date');
-                }
-                this.variationdate = lore.util.safeGetFirstChildValue(node);
-            }
-            if (!this.original) {
-                this.original = this.resource;
-            }
-        }
-        catch (ex) {
-            lore.debug.anno("Error parsing RDF " +
-            (this.id ? ' for ' + this.id : ''), ex);
-        }
-    },
-
+        
     toString: function(){
             return "Annotation [" + this.id + "," +
             (this.modified ? this.modified : this.created) +
@@ -381,6 +82,10 @@ Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
      */
 
     serialize: function ( annos, store, storeDates ) {
+        var rdfTpl = new Ext.XTemplate(
+            
+            
+        );
         if (!annos.length )
             annos = [annos];
 
@@ -636,8 +341,6 @@ Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
         return rdfxml;
     },
 
-
-
     createMetaRDFBody: function(anno) {
         var meta = anno.meta;
         var metaContext = anno['semanticEntity'];
@@ -700,6 +403,7 @@ lore.anno.OACAnnotationSerializer  = function () {
 };
 
 Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
+
     /**
      * Generate OAC RDF using rdfquery to serialize
      * @param {Array} annos An array of records or Annotation objects
@@ -712,12 +416,15 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                 var hashloc = context.indexOf('#');
                 if (hashloc == 0){ // context starts with hash, assume fragment identifier
                     rdfdb.add(annoid + " oac:hasTarget <" + target + context + ">");
+                    rdfdb.add("<" + target + context + "> dcterms:isPartOf <" + target + ">");
                 } else if (hashloc > 0){ // context contains hash, assume targetURL + fragment identifier
                     rdfdb.add(annoid + " oac:hasTarget <" + context + ">");
+                    rdfdb.add("<" + context + "> dcterms:isPartOf <" + target + ">");
                 } else { 
                     // TODO: check if context contains an xpointer
                     if (context.match("xpointer").index == 0){
                         rdfdb.add(annoid + " oac:hasTarget <" + target + "#" + context + ">");
+                        rdfdb.add("<" + target + "#" + context + "> dcterms:isPartOf <" + target + ">");
                     } else {
                         // generate a ConstrainedTarget and constraint with content as text
                         var ctuuid = "<urn:uuid:" + lore.util.uuid() + ">"; // constrained target
@@ -761,10 +468,22 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                 } else {
                     rdfdb.add(annoid + " a oac:Annotation");
                 }
-                if (anno.bodyURL){
+                // FIXME: allow bodyURLs
+                /*if (anno.bodyURL){
                     // For a metadata annotation this will be an RDF document, for others it will be html
                     rdfdb.add(annoid + " oac:hasBody <" + anno.bodyURL + ">");
-                }
+                } else {*/
+                    
+                    var buuid = "<urn:uuid:" + lore.util.uuid() + ">";
+                    rdfdb.prefix('cnt', 'http://www.w3.org/2008/content#')
+                        .add(annoid + " oac:hasBody " + buuid)
+                        .add(buuid + " a cnt:ContentAsXML")
+                        .add(buuid + " cnt:version \"1.0\"")
+                        .add(buuid + " cnt:declaredEncoding \"UTF-8\"")
+                        .add(buuid + " cnt:standalone \"yes\"")
+                        .add(buuid + " cnt:rest \"" + lore.util.sanitizeHTML(anno.body, window) + "\"");
+                //}
+                // TODO: inline body if no body URL
                 if (!anno.variant){
                     genTarget(anno.resource, anno.context); 
                 } else { 
@@ -832,7 +551,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
         };
         //lore.debug.anno("oac serialize to databank", rdfdb);
         //+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
-            
+        lore.debug.anno("OAC JSON",Ext.util.JSON.encode(rdfdb.dump({format:'application/json', serialize:false})));
         return rdfdb.dump({format:'application/rdf+xml',serialize:true});
     },
     
