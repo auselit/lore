@@ -155,7 +155,7 @@ lore.util = {
      * @param {} win The parent window
      */
     launchWindow : function(url, locbar, win) {
-        var winOpts = 'height=650,width=800,top=200,left=250,resizable,scrollbars=yes';
+        var winOpts = 'chrome=no,height=650,width=800,top=200,left=250,resizable=yes,scrollbars=yes';
         if (locbar) {
             winOpts += ',location=1';
         }
@@ -1013,6 +1013,28 @@ lore.util = {
             
             return fragment;
     },
+    /** Remove any markup from the provided value */
+    stripHTML : function(val, win){
+        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
+                .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
+                .parseFragment(val, false, null, win.document.body);
+        var serializedContent = "";
+        if (fragment){
+            var doc = win.document;
+            var divEl = doc.getElementById('sanitize');
+            if (!divEl){
+                divEl = doc.createElement("div");
+                divEl.setAttribute("id","sanitize");
+                divEl.style.display = "none";
+            }
+            divEl.appendChild(fragment);
+            // read textContent to strip out markup
+            serializedContent = divEl.textContent;
+            divEl.removeChild(divEl.firstChild);
+        }
+        lore.debug.ui("stripped",serializedContent);
+        return serializedContent;
+    },
     /**
      * Basic HTML Sanitizer using Firefox's parseFragment
      * @param {Object} html
@@ -1039,7 +1061,7 @@ lore.util = {
 		                divEl.style.display = "none";
 		            }
 		            divEl.appendChild(fragment);
-                    // read inner HTML to serialize to HTML
+                    // read inner HTML to serialize to HTML : used for annotations
 		            var serializedContent = divEl.innerHTML;
 		            divEl.removeChild(divEl.firstChild);
 		            return serializedContent;
