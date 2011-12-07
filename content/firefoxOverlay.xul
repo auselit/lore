@@ -46,14 +46,14 @@
               <xul:menupopup>
                 <xul:menuitem id="save-xml" label="&lore.saveAnnotationsLabel;" tooltiptext="&lore.saveAnnotationsTip;" oncommand="loreoverlay.serializeAnnotations('rdf')"/>
                 <xul:menuitem id="save-oac" label="&lore.exportOACFileLabel;" tooltiptext="&lore.saveAnnotationsTip;" oncommand="loreoverlay.serializeAnnotations('oac')"/>
-                <!--xul:menuitem id="save-wordml" label="Save Word doc" tooltiptext="Export compound object to a Word document" oncommand="loreoverlay.serializeAnnotations('wordml')"/--> 
+                <xul:menuitem id="save-wordml" label="&lore.exportAnnotationsWordLabel;" tooltiptext="&lore.exportAnnotationsWordLabel;" oncommand="loreoverlay.serializeAnnotations('wordml')"/> 
                 <!-- <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadAnnoRDF()"/> -->
               </xul:menupopup>
             </xul:toolbarbutton>
             <xul:toolbarbutton id="save-all-annotations" tooltiptext="&lore.saveAllAnnotationsTip;" oncommand="loreoverlay.saveAllAnnotations();" /> 
             <xul:toolbarseparator id ="annsep3" />
             <xul:toolbarbutton id="show-prefs" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
-            <xul:toolbarbutton id="reset-anno" tooltiptext="&lore.resetUITip;"  oncommand="loreoverlay.resetUI();"/>
+            <!--xul:toolbarbutton id="reset-anno" tooltiptext="&lore.resetUITip;"  oncommand="loreoverlay.resetUI();"/-->
             <xul:toolbarbutton id="report-problem2" tooltiptext="&lore.reportProblem;" oncommand="loreoverlay.reportProblem();"/>
         
           </xul:toolbar>
@@ -109,17 +109,15 @@
           <xul:toolbarseparator/>
           <xul:toolbarbutton id="co-find" tooltiptext="&lore.findTip;" oncommand="loreoverlay.find();"/>
           <xul:toolbarbutton id="show-prefs2" tooltiptext="&lore.showPrefsTip;"  oncommand="loreoverlay.openOptions();"/>
-          <xul:toolbarbutton id="reset-co" tooltiptext="&lore.resetUITip;"  oncommand="loreoverlay.resetUI();"/>
+          <!--xul:toolbarbutton id="reset-co" tooltiptext="&lore.resetUITip;"  oncommand="loreoverlay.resetUI();"/-->
           <xul:toolbarbutton id="report-problem" tooltiptext="&lore.reportProblem;" oncommand="loreoverlay.reportProblem();"/>
         </xul:toolbar>
       </xul:toolbox>
       <xul:tooltip id="aHTMLTooltip" onpopupshowing="return loreoverlay.fillInHTMLTooltip(document.tooltipNode);" />
-      <!-- This iframe represents our main compound objects GUI, which is implemented as HTML + Javascript, loaded from a local file via a chrome URI. Initially empty (about:blank), the contents are loaded in uiglobal.js -->
+      <!-- This iframe represents our main Resource Maps GUI, which is implemented as HTML + Javascript, loaded from a local file via a chrome URI. Initially empty (about:blank), the contents are loaded in uiglobal.js -->
       <!-- All web content displayed within the UI is sanitized or wrapped in iframes with type='content' see createXULIFrame in util.js -->
       <xul:iframe ondragdrop="loreoverlay.onDragDrop(event)" context="clipmenu" type="chrome" tooltip="aHTMLTooltip" flex="1" height="100%" width="100%" src="about:blank" name="graphiframe" id="graphiframe"/>
     </xul:vbox>
-    
-         
   </xul:vbox>
   
   <xul:popup id="contentAreaContextMenu" onpopupshown="loreoverlay.onMenuPopup(event)">

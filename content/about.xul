@@ -8,7 +8,7 @@
   <description style="white-space: pre;">
 LORE (Literature Object Re-use and Exchange)
 enables literary scholars to author, publish and
-search annotations and compound objects.</description>
+search annotations and resource maps.</description>
   <!--text value="&version; 0.25"/-->
   <separator class="thin"/>
   <text value="&createdBy;" style="font-weight: bold;"/>

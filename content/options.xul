@@ -62,7 +62,7 @@
                     <splitter class="tree-splitter"/>
                     <treecol id="nsuri" label="Namespace" flex="1" persist="width ordinal hidden" hidden="true"/>
                     <!--treecol id="useanno" class="treecol-image" src="chrome://lore/skin/icons/comment.png" type="checkbox" editable="true" tooltiptext="Use ontology for annotations" label="A"/>
-                         <treecol id="useco" class="treecol-image" src="chrome://lore/skin/icons/oaioreicon-sm.png" type="checkbox" editable="true" tooltiptext="Use ontology for compound objects" label="CO"/-->
+                         <treecol id="useco" class="treecol-image" src="chrome://lore/skin/icons/oaioreicon-sm.png" type="checkbox" editable="true" tooltiptext="Use ontology for Resource Maps" label="CO"/-->
                 </treecols>
                 <treechildren id="rows"/>
             </tree>

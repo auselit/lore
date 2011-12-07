@@ -13,9 +13,8 @@ try {
     Components.utils["import"]("resource://lore/uiglobal.js", lore.global);
     // lore.global.store
     Components.utils["import"]("resource://lore/annotations/store.js", lore.global);
-    
-    // lore.global.util
-    Components.utils["import"]("resource://lore/util.js", lore.global);
+    // lore.util
+    Components.utils["import"]("resource://lore/util.js",lore);
     
     if (!lore.global.ui || !lore.global.store || !lore.debug ) {
         // sanity check
@@ -32,7 +31,7 @@ try {
     }
     
     var loreoverlay = {
-        /** The compound objects view */
+        /** The Resource Maps view */
         coView: function () { 
             return lore.global.ui.compoundObjectView.get(this.instId);
         },
@@ -67,7 +66,7 @@ try {
                     var co = loreoverlay.coView();
                     var an = loreoverlay.annoView();
                     if (lore.global.ui.compoundObjectView.loaded(loreoverlay.instId)){
-                        // If the URL is not in the current compound object, show the add url icon
+                        // If the URL is not in the current Resource Map, show the add url icon
                         var hideAdd = loreoverlay.coView().isInCompoundObject(updateURI);
                         loreoverlay.hideAddIcon(hideAdd);
                     }
@@ -150,7 +149,7 @@ try {
                         var version = addon.version;
                         if (version != splashVersion){
                             // show info page for LORE
-                            lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
+                            lore.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
                             loreoverlay.prefs.setCharPref("splashVersion", version);
                         }   
                         loreoverlay.version = version; 
@@ -162,7 +161,7 @@ try {
                     this.version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
                     if (this.version != splashVersion){
                         // show info page for LORE
-                        lore.global.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + this.version,window);
+                        lore.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + this.version,window);
                         this.prefs.setCharPref("splashVersion", this.version);
                     }
                 } 
@@ -250,7 +249,7 @@ try {
               supported = dragSession.isDataFlavorSupported("application/x-moz-file");
             }*/
             
-            // currently only support dragging URLs onto compound objects
+            // currently only support dragging URLs onto Resource Maps
             if (supported && aEvent.view.name == 'graphiframe'){
               dragSession.canDrop = true;
             } 
@@ -268,7 +267,7 @@ try {
             this.toggleBar();
         },
         /**
-         *  Trigger adding a node to the compound object editor from browser context menu on links
+         *  Trigger adding a node to the Resource Map editor from browser context menu on links
          *  @param {} event
          **/
         onMenuItemCommand: function(event){
@@ -299,7 +298,7 @@ try {
         },
         /** 
          * Show a context menu in the browser on images, links and background images, 
-         * for creating nodes in compound object editor and annnotations.
+         * for creating nodes in Resource Map editor and annnotations.
          * Menu options are enabled even if lore is closed to allow adding nodes while browsing.
          * Menu options are hidden for disabled components.
          * @param {] event
@@ -347,7 +346,7 @@ try {
                 lore.debug.ui("image selection failed", e);
             }
         },
-        /** Trigger adding a node to the compound object editor from browser context menu on images */ 
+        /** Trigger adding a node to the Resource Map editor from browser context menu on images */ 
         addImageMenuItemCommand: function(e){
             if (gContextMenu.onImage) {
                 var props = {"dc:source_0": gContextMenu.browser.currentURI.spec};
@@ -357,7 +356,7 @@ try {
                 loreoverlay.coView().addResource(gContextMenu.imageURL, props);
             }
         },
-        /** Trigger adding a node to the compound object editor from browser context menu on background images */
+        /** Trigger adding a node to the Resource Map editor from browser context menu on background images */
         addBGImageMenuItemCommand: function(e){
             if (gContextMenu.hasBGImage) {
                 loreoverlay.coView().addResource(gContextMenu.bgImageURL,{"dc:source_0": gContextMenu.browser.currentURI.spec});
@@ -385,14 +384,14 @@ try {
                    this.setAnnotationsVisibility(true);
                    this.setCompoundObjectsVisibility(true);
                    
-                   // trigger events to be fired that will allow annotations/compound objects to update
+                   // trigger events to be fired that will allow annotations/Resource Maps to update
                    this.authManager.isAuthenticated();
                 }
             } catch (e ) {
                 lore.debug.ui("loreoverlay.toggleBar",e);
             }
         },
-        /** Compound Objects Toolbar button handler: Triggers loading compound object RDF from a URL **/
+        /** Resource Maps Toolbar button handler: Triggers loading Resource Map RDF from a URL **/
         loadRDFURL: function(){
             loreoverlay.coView().loadCompoundObjectPromptForURL();
         },
@@ -401,21 +400,21 @@ try {
             loreoverlay.annoView().handleImportRDF();
         },
         
-        /** Compound Objects Toolbar button handler: Allow the user to choose an RDF/XML file describing a compound object and display it in the editor */
+        /** Resource Maps Toolbar button handler: Allow the user to choose an RDF/XML file describing a Resource Map and display it in the editor */
         loadRDF: function(){
             
             try{
-                var fObj =  lore.global.util.loadFileWithOpen("Select Compound Object RDF/XML file", 
+                var fObj =  lore.util.loadFileWithOpen("Select Resource Map RDF/XML file", 
                 {desc:"RDF documents", filter:"*.rdf"}, window);
                 
                 if ( fObj) {
                     loreoverlay.coView().loadCompoundObject(fObj.data);
                 }
             } catch (e){
-                lore.debug.ui("Exception importing compound object from file",e);
+                lore.debug.ui("Exception importing Resource Map from file",e);
             }
         },
-        /** Compound Objects toolbar button handler: pop up find window to find text within Compound Object window */
+        /** Resource Maps toolbar button handler: pop up find window to find text within Resource Map window */
         find: function(){
         	document.getElementById("graphiframe").contentWindow.find("",false, false, true, false, true, true);        	
         },
@@ -496,7 +495,7 @@ try {
         showAnnotations: function(){
             loreoverlay.annoView().handleToggleAllAnnotations();
         },
-        /** Compound Objects Toolbar button handler: Trigger saving the current compound object to the repository */
+        /** Resource Maps Toolbar button handler: Trigger saving the current Resource Map to the repository */
         saveRDF: function(){
             loreoverlay.coView().saveCompoundObjectToRepository();
         },
@@ -506,17 +505,17 @@ try {
         copyRDF: function(){
             loreoverlay.coView().copyCompoundObjectToNew();  
         },
-        /** Compound Objects Toolbar button handler: Trigger deleting a compound object from the repository */
+        /** Resource Maps Toolbar button handler: Trigger deleting a Resource Map from the repository */
         deleteRDF: function(){
             loreoverlay.coView().deleteCompoundObjectFromRepository();
         },
-        /** Compound Objects Toolbar button handler: Trigger serializing a compound object to a file
+        /** Resource Maps Toolbar button handler: Trigger serializing a Resource Map to a file
          * @param {String} format The format of the serialization
          */
         serializeREM: function (format) {
             loreoverlay.coView().exportCompoundObject(format);
         },
-        /** Compound Object Toolbar button handler: Trigger adding the current URI to the compound object editor */
+        /** Resource Map Toolbar button handler: Trigger adding the current URI to the Resource Map editor */
         addGraphNode: function(prompt){
         	if (prompt){
         		loreoverlay.coView().addResourceWithPrompt();
@@ -524,7 +523,7 @@ try {
         		loreoverlay.coView().addResource(window.content.location.href);
         	}
         },
-        /** Compound Object Toolbar button handler: Batch add from open tabs */
+        /** Resource Map Toolbar button handler: Batch add from open tabs */
         addFromTabs: function(){
         	var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
         		    .getService(Components.interfaces.nsIWindowMediator);
@@ -538,7 +537,7 @@ try {
         createCompoundObject: function(){
             loreoverlay.coView().createCompoundObject();  
         },
-        /** Toolbar button handler: reset the compound objects and annotations views */
+        /** Toolbar button handler: reset the Resource Maps and annotations views */
         resetUI: function(){
             if (this.authManager){
 	            this.authManager.purgeListeners();
@@ -567,7 +566,7 @@ try {
             } catch (ex) {
             }
         },
-        /** Reload preferences for compound objects and disable/enable the compound objects view depending on prefs 
+        /** Reload preferences for Resource Maps and disable/enable the Resource Maps view depending on prefs 
          * @param {boolean} ignoreDisable Don't do anything with the disable preference eg on initial load */
         loadCompoundObjectPrefs: function(ignoreDisable){
             if (this.prefs) {
@@ -654,7 +653,8 @@ try {
                     }
                 }
             } catch (e ) {
-                lore.debug.ui("loreoverlay.fireEvent",e);
+                lore.debug.ui("FireEvent ",regListeners);
+                lore.debug.ui("Error in loreoverlay.fireEvent",e);
             }
         },
         
@@ -795,7 +795,7 @@ try {
             return document.getElementById('oobAnnoContentBox').getAttribute("collapsed") == "false";   
         },
         /**
-         * @return {boolean} Returns true if the compound object view is visible
+         * @return {boolean} Returns true if the Resource Map view is visible
          */
         compoundObjectsVisible: function () {
             return document.getElementById('oobContentBox').getAttribute("collapsed") == "false";
@@ -840,8 +840,8 @@ try {
             }
         },
         /**
-         * Hide or show the compound objects view
-         * @param {boolean} show Set to true to make the compound objects view visible
+         * Hide or show the Resource Maps view
+         * @param {boolean} show Set to true to make the Resource Maps view visible
          */
         setCompoundObjectsVisibility: function (show) {
             var contentBox = document.getElementById('oobContentBox');
@@ -858,7 +858,7 @@ try {
                     loreoverlay.coView().onShow();
                 }else {
                     lore.global.ui.compoundObjectView.onload(this.instId, function () {
-                        lore.debug.ore("Compound Objects: Delayed loreOpen running...");
+                        lore.debug.ore("Resource Maps: Delayed loreOpen running...");
                         loreoverlay.coView().onShow();
                     });
                 }
@@ -914,7 +914,7 @@ try {
         setCompoundObjectsSignedIn: function(username) {
             var authStatusIcon = document.getElementById("auth-status-icon-co");
             authStatusIcon.className = 'signed-in';
-            authStatusIcon.tooltipText = "Signed in to Compound Object server as " + username;
+            authStatusIcon.tooltipText = "Signed in to Resource Map server as " + username;
             var authButton = document.getElementById("auth-signout-co");
             authButton.label = "Sign Out " + username;
             authButton.hidden = false;
