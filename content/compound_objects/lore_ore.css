@@ -18,7 +18,7 @@
  * along with LORE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Styles specific to compound objects */
+/* Styles specific to Resource Maps */
 
 .orelink {
 	font-style:italic; 
@@ -303,7 +303,7 @@
 	height: 100%;
 }
 
-/* Compound object explore view */
+/* Resource Map explore view */
 .node {
 	font-size:0.6em;
 	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
