@@ -200,7 +200,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                     val = (val? lore.util.sanitizeHTML(val,window) : '');
                                 } else {
                                     // type is not html, remove all markup
-                                    val = (val? lore.util.stripHTML(val,window,true) : '');
+                                    val = (val? lore.util.stripHTML(val,window.document,true) : '');
                                 }
                                 w.triggerField.setValue(val);
                                 this.stopEditing();
