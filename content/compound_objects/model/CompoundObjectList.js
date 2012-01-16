@@ -19,7 +19,7 @@
  */
 Ext.namespace("lore.ore.model");
 /** 
- * @class lore.ore.model.CompoundObjectList Represents a list of compound object summaries 
+ * @class lore.ore.model.CompoundObjectList Represents a list of Resource Map summaries 
  * @extends Ext.ux.data.PagingJsonStore
  **/
 lore.ore.model.CompoundObjectList = Ext.extend(Ext.ux.data.PagingJsonStore, {

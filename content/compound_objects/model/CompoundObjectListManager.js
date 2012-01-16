@@ -19,7 +19,7 @@
  */
 Ext.namespace("lore.ore.model");
 /** 
- * Manages the lists of compound objects which are 
+ * Manages the lists of Resource Maps which are 
  * the results of browse/search queries and stored in history
  * @class lore.ore.model.CompoundObjectListManager
  */
@@ -135,9 +135,9 @@ Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
         return this.lists[listname];
     },
     /**
-     * Add compound objects to a list
+     * Add Resource Maps to a list
      * @param {Array} coSummaries Array of objects to be added
-     * @param {String} listname The list to which to add the compound objects. If not supplied, the compound object will be added to the 'browse' list by default.
+     * @param {String} listname The list to which to add the Resource Maps. If not supplied, the Resource Map will be added to the 'browse' list by default.
      */
     add: function(coSummaries, listname){
         if (!listname){
@@ -170,8 +170,8 @@ Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
         }
     },
     /**
-     * Remove a compound object from all managed lists
-     * @param {String} uri The URI of the compound object to removed
+     * Remove a Resource Map from all managed lists
+     * @param {String} uri The URI of the Resource Map to removed
      */
     remove : function(uri){
         try{
@@ -187,7 +187,7 @@ Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
         }
     },
     /**
-     * Update some fields in the compound object
+     * Update some fields in the Resource Map
      * @param {} uri
      * @param {} fields
      */

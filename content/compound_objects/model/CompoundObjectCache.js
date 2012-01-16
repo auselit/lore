@@ -19,7 +19,7 @@
  */
 Ext.namespace("lore.ore.model");
 /**
- * @class lore.ore.model.CompoundObjectCache manages a cache of Compound Objects that have been loaded in LORE
+ * @class lore.ore.model.CompoundObjectCache manages a cache of Resource Maps that have been loaded in LORE
  */
 lore.ore.model.CompoundObjectCache = function() {
     this.cache = {};
@@ -31,17 +31,17 @@ lore.ore.model.CompoundObjectCache = function() {
 };
 Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
     /**
-     * Add a compound object to the cache
-     * @param {String} aUri The URI of the Compound Object
-     * @param {lore.ore.model.CompoundObject} co The Compound Object model object
+     * Add a Resource Map to the cache
+     * @param {String} aUri The URI of the Resource Map
+     * @param {lore.ore.model.CompoundObject} co The Resource Map model object
      */
     add: function(aUri,co) {
         this.cache[aUri] = co;
         this.timestamps[aUri] = new Date();
     },
     /**
-     * Remove a compound object from the cache
-     * @param {} aURI The URI identifying the Compound Object to be removed
+     * Remove a Resource Map from the cache
+     * @param {} aURI The URI identifying the Resource Map to be removed
      */
     remove: function(aURI) {
         delete this.cache[aURI];
@@ -60,7 +60,7 @@ Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
     setLoadedCompoundObjectIsNew: function(boolean) {
         this.loadedIsNew = boolean;  
     },
-    /** Returns true if the loaded Compound Object has been flagged as newly created 
+    /** Returns true if the loaded Resource Map has been flagged as newly created 
      * @return {boolean}
      */
     getLoadedCompoundObjectIsNew: function(){
@@ -72,19 +72,19 @@ Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
     setLoadedCompoundObjectUri: function(aURI) {
         this.loadedCompoundObject = aURI;
     },
-    /** Get the URI of the currently loaded Compound Object
+    /** Get the URI of the currently loaded Resource Map
      * @return {String} 
      */
     getLoadedCompoundObjectUri: function() {
       return this.loadedCompoundObject;  
     },
-    /** Get the currently loaded Compound Object
+    /** Get the currently loaded Resource Map
      * @return {lore.ore.model.CompoundObject}
      */
     getLoadedCompoundObject: function() {
         return this.getCompoundObject(this.loadedCompoundObject);
     },
-    /** Get the Compound Object that was cached, by URI
+    /** Get the Resource Map that was cached, by URI
      * @param {} aURI
      * @return {}
      */
@@ -92,7 +92,7 @@ Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
             // TODO: check timestamp and expire if too old
             return this.cache[aURI];
     },
-    /** Cache nested compound objects 
+    /** Cache nested Resource Maps 
      * @param {} coContents
      * @param {} nestingLevel
      */
