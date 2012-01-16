@@ -18,16 +18,16 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 Ext.namespace("lore.ore.model");
-/** @class lore.ore.model.OntologyManager Manage object and datatype properties from domain ontology that can be used in compound objects */
+/** @class lore.ore.model.OntologyManager Manage object and datatype properties from domain ontology that can be used in Resource Maps */
 lore.ore.model.OntologyManager = function() {
-    /** Default list of properties that can be specified for compound objects or resources 
+    /** Default list of properties that can be specified for Resource Maps or resources 
     * @const */
     this.METADATA_PROPS = ["dcterms:abstract", "dcterms:audience", "dc:creator",
         "dc:contributor", "dc:coverage", "dcterms:created", "dc:description",
         "dc:identifier", "dc:language", "dcterms:modified",
-        "dc:publisher", "dc:rights", "dc:source",
+        "dc:publisher", "dc:relation", "dc:rights", "dc:source",
         "dc:subject", "dc:title", "dc:type"];
-    /** Properties that are mandatory/cannot be deleted for compound objects
+    /** Properties that are mandatory/cannot be deleted for Resource Maps
      *  @const */
     this.CO_REQUIRED = ["dc:creator","dcterms:created",
         "dcterms:modified", "ore:describes", "rdf:about", "rdf:type", "lorestore:user"  
@@ -141,12 +141,14 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
             var xhr = new XMLHttpRequest();
             xhr.overrideMimeType('application/xml');
             xhr.open("GET", ourl);
+            
             xhr.setRequestHeader('Content-Type', "application/rdf+xml");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
                     try {
                         var ontData = {relationships:{}, dataTypeProps: []};
                         // Get xml:base
+                        //lore.debug.ore("cacheOntology response " + ourl,xhr)
                         var tmp = xhr.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'RDF')[0];
                         if (tmp){
                             tmp = tmp.getAttributeNS('http://www.w3.org/XML/1998/namespace','base');
@@ -165,20 +167,22 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                         });
                         // always provide dc:relation as an option
                         ontData.relationships["relation"] = lore.constants.NAMESPACES["dc"];
-                        // Cache RDF properties
+                        // Cache RDF properties (add to both datatype and object property lists as could be either)
                         relOntology.where('?prop rdf:type <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property>')
                                 .each(function() {
-                                    var relresult = lore.global.util
+                                    var relresult = lore.util
                                             .splitTerm(this.prop.value
                                                     .toString());
+                                    var ns = lore.constants.nsprefix(relresult.ns);
                                     ontData.relationships[relresult.term] = relresult.ns;
+                                    ontData.dataTypeProps.push(ns + ":" + relresult.term);
                                 });
                         // Cache OWL Object properties
                         relOntology.where('?prop rdf:type <'
                                 + lore.constants.OWL_OBJPROP + '>').each(
                                 function() {
                                     try {
-                                        var relresult = lore.global.util
+                                        var relresult = lore.util
                                                 .splitTerm(this.prop.value
                                                         .toString());
                                         ontData.relationships[relresult.term] = relresult.ns;
@@ -190,7 +194,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                         relOntology.where('?prop rdf:type <' + lore.constants.OWL_DATAPROP + '>').each(
                                 function (){
                                     try {
-                                        var relresult = lore.global.util.splitTerm(this.prop.value.toString());
+                                        var relresult = lore.util.splitTerm(this.prop.value.toString());
                                         var ns = lore.constants.nsprefix(relresult.ns);
                                         ontData.dataTypeProps.push(ns + ":" + relresult.term);
                                     } catch (e){
@@ -217,7 +221,13 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
             try{
             om.theOntRelationships = ontData.relationships;
             om.relOntology = ontData.ontology;
-            // TODO: merge ontData.dataTypeProps and om.dataTypeProps
+            // merge ontData.dataTypeProps and om.dataTypeProps : remove duplicates
+            for (var i = 0; i< ontData.dataTypeProps.length; i++){
+                var d = ontData.dataTypeProps[i];
+                if (om.dataTypeProps.indexOf(d) == -1){
+                    om.dataTypeProps.push(d);
+                }
+            }
             lore.ore.theOntRelationships = om.theOntRelationships;
             } catch (e){
                 lore.debug.ore("setCurrentOntology cache",e);
