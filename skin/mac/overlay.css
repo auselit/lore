@@ -1,9 +1,11 @@
-#oobAnnoCloseButton {
-	list-style-image: url("chrome://global/skin/icons/closetab.png") !important;
-}
-#oobAnnoCloseButton:hover {
-	-moz-image-region: auto;
-}
-#oobAnnoCloseButton:hover:active {
-	-moz-image-region: auto;
+#add-node *, #add-options *, #co-add-placeholder *, #create-co *, #save-rdf *,
+#reset-co *, #reset-anno *, #co-find *,
+#show-prefs *, #show-prefs2 *,
+#delete-rdf *, #lock-rdf * , #add-options *, #copy-rdf *,
+#add-annotation *, #remove-annotation *, #edit-annotation *, #reply-annotation *,
+#save-annotation *, #show-annotations *, #save-all-annotations *,
+#import-export *, #import-export-anno *,
+#report-problem *, #report-problem2 *,
+#auth-status-icon *, #auth-status-icon-co * {
+    margin:0;
 }
