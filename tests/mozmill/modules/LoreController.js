@@ -49,7 +49,7 @@ LoreController = {
 				
 		//TODO: #185 - Would be better to load from JSON file.
 		this.testPreferences = {
-			annoserver: "http://maenad-auselit.cloud.itee.uq.edu.au/danno/annotea",
+			annoserver: "http://www.austlit.edu.au/auselit",
 			dccreator: "Test User",
 			disable: false,
 			mode: false,

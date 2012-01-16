@@ -670,7 +670,7 @@ AnnotationTestController = {
 		var condition = function(tree, parent, targetNode){
 				try {
 					lore.debug.anno('condition() called. targetNode: ' + targetNode, {
-						arg: arguments,
+						arg: arguments
 					});
 					
 					//if (targetNode.id == id) {  ID is changed, newer version of danno returns the id in a header...
