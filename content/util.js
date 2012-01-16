@@ -21,17 +21,23 @@ if (typeof lore !== "object"){
     var lore = {};   
 }
 if (typeof Components !== "undefined") {
-    // Firefox, util is exported for code module
-    var EXPORTED_SYMBOLS = ['util'];
-    
-    if (typeof constants === "undefined") {
-        Components.utils["import"]("resource://lore/constants.js",lore);
-    }
-    if (typeof debug !== "object") {
-        Components.utils["import"]("resource://lore/debug.js",lore);
-    }
-    if (typeof XPointerService === "undefined") {
-        Components.utils["import"]("resource://lore/lib/nsXPointerService.js");
+    try{
+        // Firefox, util is exported for code module
+        var EXPORTED_SYMBOLS = ['util'];
+        
+        if (typeof constants === "undefined") {
+            Components.utils["import"]("resource://lore/constants.js",lore);
+        }
+        if (typeof debug !== "object") {
+            Components.utils["import"]("resource://lore/debug.js",lore);
+        }
+        if (typeof XPointerService === "undefined") {
+            Components.utils["import"]("resource://lore/lib/nsXPointerService.js");
+        }
+    } catch (ex){
+        // ignore to allow unit tests to pass when not run from extension
+        var XPointerService = function(){
+        }
     }
 } else {
     // Google Chrome, use lore.util directly
@@ -1014,17 +1020,16 @@ lore.util = {
             return fragment;
     },
     /** Remove any markup from the provided value */
-    stripHTML : function(val, win){
+    stripHTML : function(val, doc){
         var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
                 .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
-                .parseFragment(val, false, null, win.document.body);
+                .parseFragment(val, false, null, doc.body);
         var serializedContent = "";
         if (fragment){
-            var doc = win.document;
             var divEl = doc.getElementById('sanitize');
             if (!divEl){
                 divEl = doc.createElement("div");
-                divEl.setAttribute("id","sanitize");
+                divEl.setAttribute("id", "sanitize");
                 divEl.style.display = "none";
             }
             divEl.appendChild(fragment);
@@ -1032,7 +1037,7 @@ lore.util = {
             serializedContent = divEl.textContent;
             divEl.removeChild(divEl.firstChild);
         }
-        lore.debug.ui("stripped",serializedContent);
+        lore.debug.ui("stripped", serializedContent);
         return serializedContent;
     },
     /**
