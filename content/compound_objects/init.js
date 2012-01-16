@@ -18,13 +18,6 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * @include "/oaiorebuilder/content/constants.js" 
- * @include "/oaiorebuilder/content/uiglobal.js" 
- * @include "/oaiorebuilder/content/debug.js" 
- * @include "/oaiorebuilder/content/compound_objects/loregui.js"
- */
-
 /**
  * Initialise the Extjs UI components and listeners
  */
@@ -108,32 +101,56 @@ lore.ore.ui.initUIComponents = function() {
 };
 
 /**
- * Initialise Compound Objects component of LORE
+ * Initialise Resource Maps component of LORE
  */
 lore.ore.ui.init = function() {
 	try {
-
-        // The overlay
-		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
-       
-        var currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
-	
+        var currentURL;
+        if (lore.ore.firefox){
+            // Get a reference to the overlay
+    		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
+            currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
+        } else {
+            currentURL = "http://austlit.edu.au";
+        }
         lore.ore.controller = new lore.ore.Controller({
             currentURL: currentURL
         });
-        lore.global.ui.compoundObjectView.registerView(lore.ore.controller,window.instanceId);
+        if (lore.ore.ui.topView){
+            lore.global.ui.compoundObjectView.registerView(lore.ore.controller,window.instanceId);
+            lore.ore.am = lore.ore.ui.topView.getAuthManager();
+            if (!lore.ore.am){
+                lore.ore.am = lore.ore.ui.topView.setAuthManager(new lore.AuthManager(window));
+            }
+            
+            lore.ore.am.on('error', lore.ore.controller.onAuthErrorOrCancel);
+            lore.ore.am.on('cancel', lore.ore.controller.onAuthErrorOrCancel);
         
-        lore.ore.am = lore.ore.ui.topView.getAuthManager();
-        if (!lore.ore.am){
-            lore.ore.am = lore.ore.ui.topView.setAuthManager(new lore.AuthManager(window));
         }
         
-        lore.ore.am.on('error', lore.ore.controller.onAuthErrorOrCancel);
-        lore.ore.am.on('cancel', lore.ore.controller.onAuthErrorOrCancel);
-        
         lore.ore.ontologyManager = new lore.ore.model.OntologyManager();
-        lore.ore.ui.topView.loadCompoundObjectPrefs(true);
         
+        if (lore.ore.firefox){
+            lore.ore.ui.topView.loadCompoundObjectPrefs(true);
+        } else {
+            // load preference defaults for Google Chrome
+            lore.ore.controller.handlePreferencesChanged(new Store("settings", {
+                creator: "Anonymous",
+                relonturl: "/content/ontologies/austlitoaiore.owl",
+                rdfrepos: "http://austlit.edu.au/auselit/ore/",
+                rdfrepostype: "lorestore",
+                annoserver: "http://austlit.edu.au/auselit",
+                disable: false,
+                ontologies: '[{\"nsprefix\":\"austlit\",\"locurl\":\"/content/ontologies/AustLit.xml\",\"useanno\":\"true\",\"useco\":\"false\", \"status\":\"default\", \"nsuri\":\"http://austlit.edu.au/owl/austlit.owl#\"},{\"nsuri\":\"http://RDVocab.info/Elements/\",\"nsprefix\":\"rda\",\"locurl\":\"/content/ontologies/rda.rdf\",\"useanno\":\"false\",\"useco\":\"false\", \"status\":\"custom\"},{\"nsprefix\":\"lore\", \"locurl\":\"/content/ontologies/austlitoaiore.owl\",\"useanno\":\"false\",\"useco\":\"true\", \"status\":\"default\", \"nsuri\":\"http://austlit.edu.au/owl/austlitore.owl#\"}]',
+                editor: "grapheditor"
+            }).toObject());
+            chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+              if (request.action == 'gpmeGetOptions') {
+                var settings = new Store("settings",{});
+                lore.ore.controller.handlePreferencesChanged(settings.toObject());
+              }
+            });
+        }
         lore.ore.coListManager = new lore.ore.model.CompoundObjectListManager();
         lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
         lore.ore.cache = new lore.ore.model.CompoundObjectCache();    
@@ -145,15 +162,15 @@ lore.ore.ui.init = function() {
         
 		lore.ore.controller.createCompoundObject();
 
-        if (lore.ore.ui.topView.compoundObjectsVisible()){
+        if (lore.ore.ui.topView && lore.ore.ui.topView.compoundObjectsVisible()){
             lore.ore.controller.onShow();
         }
 
-		lore.debug.ui("LORE Compound Object init complete", lore);
+		lore.debug.ui("LORE Resource Maps init complete", lore);
         Ext.Msg.hide();
         Ext.getCmp("drawingarea").focus();
         
 	} catch (e) {
-		lore.debug.ui("Exception in Compound Object init", e);
+		lore.debug.ui("Exception in Resource Map init", e);
 	}
 };
