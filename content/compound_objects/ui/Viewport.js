@@ -369,13 +369,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             },
             scope: this
         });
-        loreviews.contextmenu.add({
-            text : "Show FOXML",
-            handler : function() {
-                lore.ore.ui.vp.openView("remfoxmlview", "FOXML", this.updateFOXMLView);
-            },
-            scope: this
-        });
     
         loreviews.on("contextmenu", function(tabpanel, tab, e) {
                     Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
@@ -419,9 +412,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         else if (panel.id == 'remsmilview') {
             tab.un("activate", this.updateSMILView);   
         }
-        else if (panel.id == 'remfoxmlview') {
-            tab.un("activate",this.updateFOXMLView);
-        }
         else if (panel.id == 'remtrigview') {
             tab.un("activate",this.updateTriGView);
         }
@@ -432,24 +422,6 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         var trig = lore.ore.cache.getLoadedCompoundObject().serialize('trig');
         Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;'>" 
             + Ext.util.Format.htmlEncode(trig) + "</pre>");
-    },
-    /** @private Render the current Resource Map as Fedora Object XML in the FOXML view */
-    updateFOXMLView : function (){
-        var foxml = lore.ore.cache.getLoadedCompoundObject().toFOXML(function(foxml){ 
-            lore.util.transformXML({
-                stylesheetURL: "../compound_objects/stylesheets/XMLPrettyPrint.xsl", 
-                theXML: foxml, 
-                window: window,
-                serialize: true, 
-                callback: function(foxmlString){
-                    if (!foxmlString){
-                        foxmlString = "Unable to generate FOXML";
-                    }
-                    Ext.getCmp("remfoxmlview").body.update(foxmlString);    
-                }
-            });
-        });
-        
     },
     /** @private Render the current Resource Map as RDF/XML in the RDF view */
     updateRDFXMLView : function() {

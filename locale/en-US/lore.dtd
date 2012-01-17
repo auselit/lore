@@ -39,8 +39,6 @@
 <!ENTITY lore.saveTrigLabel "Export to TriG">
 <!ENTITY lore.saveJsonTip "Export Resource Map in Javascript Object Notation">
 <!ENTITY lore.saveJsonLabel "Export to JSON">
-<!ENTITY lore.saveFOXMLTip "Export Resource Map to Fedora Object XML">
-<!ENTITY lore.saveFOXMLLabel "Export FOXML">
 <!ENTITY lore.resetUITip "Reset LORE UI (Any unsaved changes will be lost)">
 <!ENTITY lore.saveRDFLabel "Save RDF">
 <!ENTITY lore.saveRDFTip "Save the current Resource Map to the repository">

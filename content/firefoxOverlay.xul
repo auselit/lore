@@ -101,7 +101,6 @@
               <xul:menuitem id="cosave-xml" label="&lore.saveFileLabel;" tooltiptext="&lore.saveFileTip;" oncommand="loreoverlay.serializeREM('rdf')"/>
               <xul:menuitem id="cosave-trig" label="&lore.saveTrigLabel;" tooltiptext="&lore.saveTrigTip;" oncommand="loreoverlay.serializeREM('trig')"/>
               <xul:menuitem id="cosave-json" label="&lore.saveJsonLabel;" tooltiptext="&lore.saveJsonTip;" oncommand="loreoverlay.serializeREM('json')"/>
-              <xul:menuitem id="cosave-foxml" label="&lore.saveFOXMLLabel;" tooltiptext="&lore.saveFOXMLTip;" oncommand="loreoverlay.serializeREM('foxml')"/>
               <xul:menuitem id="coload-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadRDF()"/>
               <xul:menuitem id="coload-rdf-url" label="&lore.loadRDFURLLabel;" tooltiptext="&lore.loadRDFURLTip;" oncommand="loreoverlay.loadRDFURL()"/>
             </xul:menupopup>
