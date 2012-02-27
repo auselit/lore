@@ -101,7 +101,7 @@ lore.anno.ui.loreWarning = function(message){
 lore.anno.ui.genTreeNodeText = function(annodata){
 	var res = "";
     var body = '';
-    if (annodata.bodyLoaded) {
+    if (annodata.bodyLoaded || !annodata.body) {
     	if (annodata.meta.length > 0) {
     		// Metadata annotation
     		body = 'Metadata Annotation<br>';
