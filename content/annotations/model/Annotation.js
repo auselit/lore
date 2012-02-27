@@ -411,7 +411,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
      * @return {String} The RDF that was generated
      */
     serialize : function (annos, store, storeDates, sformat) {
-    	var result = "";
+        var result = "";
         var genTarget = function(target, context){
             if (context){
                 var hashloc = context.indexOf('#');
@@ -549,18 +549,18 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                     rdfdb.add(annoid + " dcterms:modified \"" + anno.modified.toString() + "\"");
                 }
                 if (sformat == "trig"){
-                	// if exporting to trig, reset databank for each anno
-	                result +=  annoid + "\n{\n";
-	                var triples = rdfdb.triples();
-	                for (var t = 0; t < triples.length; t++){
-	                 var triple = triples[t];
-	                 result += triple.toString() + "\n"; 
-	                }
-	                result += "}\n";
-	                rdfdb = jQuery.rdf.databank();
-	                for (ns in lore.constants.NAMESPACES){
-	                    rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
-	                }
+                    // if exporting to trig, reset databank for each anno
+                    result +=  annoid + "\n{\n";
+                    var triples = rdfdb.triples();
+                    for (var t = 0; t < triples.length; t++){
+                     var triple = triples[t];
+                     result += triple.toString() + "\n"; 
+                    }
+                    result += "}\n";
+                    rdfdb = jQuery.rdf.databank();
+                    for (ns in lore.constants.NAMESPACES){
+                        rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
+                    }
                 }
             }
         };
@@ -570,7 +570,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
         if (sformat == "trig"){
             return result;	
         } else {
-        	return rdfdb.dump({format:'application/rdf+xml',serialize:true});
+            return rdfdb.dump({format:'application/rdf+xml',serialize:true});
         }
     },
     

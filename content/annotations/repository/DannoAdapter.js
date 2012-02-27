@@ -31,10 +31,10 @@ lore.anno.repos.DannoAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
         lore.debug.anno("created repos adapter",this);
     },
     getAnnotatesQuery : function(matchuri, scope, filterFunction){
-    	 var queryUrl = this.reposURL  + lore.constants.ANNOTEA_ANNOTATES + lore.util.fixedEncodeURIComponent(matchuri);
+         var queryUrl = this.reposURL  + lore.constants.ANNOTEA_ANNOTATES + lore.util.fixedEncodeURIComponent(matchuri);
          lore.debug.anno("Updating annotations with request URL: " + queryUrl);
 
-    	 Ext.Ajax.request({
+         Ext.Ajax.request({
              url: queryUrl,
              method: "GET",
              disableCaching: false,
@@ -58,7 +58,7 @@ lore.anno.repos.DannoAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
              },
              scope:scope
          });
-    	
+        
     },
     getRepliesQuery : function(annoID, scope){
         var queryURL = this.reposURL + lore.constants.ANNOTEA_REPLY_TREE + annoID;

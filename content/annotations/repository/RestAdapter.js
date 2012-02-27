@@ -38,7 +38,7 @@ lore.anno.repos.RestAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
              url: queryUrl,
              method: "GET",
              headers: {
-            	'Accept': 'application/trix' 
+                'Accept': 'application/trix' 
              },
              disableCaching: false,
              success: function(resp, opt) {
