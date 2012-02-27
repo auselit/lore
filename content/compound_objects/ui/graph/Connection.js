@@ -59,14 +59,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.targetPort.detachMoveListener(this);
         this.fireTargetPortRouteEvent();
       }
-      if (this.model && this.targetPort){
-        var props = this.model.get('properties');
-        var prop = this.edgens + this.edgetype;
-        var propIndex = props.findProperty(prop,this.targetPort.getParent().url);
-        if (propIndex != -1){
-            props.removeProperty(prop,propIndex);
-        }
-      }
+      this.removeFromModel();
     },
     reconnect: function() {
       if(this.sourcePort!=null)
@@ -79,17 +72,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.targetPort.attachMoveListener(this);
         this.fireTargetPortRouteEvent();
       }
-      if (this.model && this.targetPort){
-        var props = this.model.get('properties');
-        var propData = {
-            id: this.edgens + this.edgetype, 
-            ns: this.edgens, 
-            name: this.edgetype, 
-            value: this.targetPort.getParent().url, 
-            prefix: lore.constants.nsprefix(this.edgens)
-        };
-        props.setProperty(propData);
-      }
+      this.updateModel();
     },
     /**
      * Find all other connections between the same resources
@@ -127,11 +110,13 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
      * @param {} symmetric
      */
     setRelationshipType : function(enamespace, etype, symmetric) {
+    	this.removeFromModel();
         this.edgetype=etype;
         this.edgens=enamespace;
         this.symmetric = symmetric;
         this.label.setStyledText(etype);
         this.setSourceDecorator(symmetric);
+        this.updateModel();
     },
     isResizeable: function(){
       return true;
@@ -153,6 +138,38 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       this.sourceAnchor.setOwner(this.sourcePort);
       if(this.graphics !=null)
         this.paint();
+    },
+    removeFromModel: function(){
+    	lore.debug.ore("remove from model",this);
+    	if (this.model && this.targetPort){
+            var props = this.model.get('properties');
+            var prop = this.edgens + this.edgetype;
+            var propIndex = props.findProperty(prop,this.targetPort.getParent().url);
+            if (propIndex != -1){
+                props.removeProperty(prop,propIndex);
+            }
+          }
+    },
+    updateModel: function(){
+    	try{
+    	  lore.debug.ore("update rel",this);
+  	      if (this.model && this.targetPort){
+  	    	  
+  	          var props = this.model.get('properties');
+  	          var propData = {
+  	              id: this.edgens + this.edgetype, 
+  	              ns: this.edgens, 
+  	              name: this.edgetype, 
+  	              value: this.targetPort.getParent().url, 
+  	              prefix: lore.constants.nsprefix(this.edgens)
+  	          };
+  	          props.setProperty(propData);
+  	      } else {
+  	    	  lore.debug.ore("Error : no model or targetPort",this);
+  	      }
+        } catch (e){
+      	  lore.debug.ore("Problem updating model from connection",e);
+        }
     },
     setTargetAnchor: function(anchor) {
       this.targetAnchor = anchor;
@@ -326,6 +343,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
     setSource: function(/*:lore.draw2d.Port*/ port) {
       if(this.sourcePort!=null) {
         this.sourcePort.detachMoveListener(this);
+        this.removeFromModel();
         this.model = null;
       }
     
@@ -338,14 +356,16 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       this.fireSourcePortRouteEvent();
       this.sourcePort.attachMoveListener(this);
       this.setStartPoint(port.getAbsoluteX(), port.getAbsoluteY());
+      this.updateModel();
     },
     getSource: function(){
       return this.sourcePort;
     },
     setTarget: function(port){
-      if(this.targetPort!=null)
+      if(this.targetPort!=null) {
         this.targetPort.detachMoveListener(this);
-    
+        this.removeFromModel();
+      }
       this.targetPort = port;
       if(this.targetPort==null)
         return;
@@ -353,6 +373,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       this.fireTargetPortRouteEvent();
       this.targetPort.attachMoveListener(this);
       this.setEndPoint(port.getAbsoluteX(), port.getAbsoluteY());
+      this.updateModel();
     },
     getTarget: function(){
       return this.targetPort;
