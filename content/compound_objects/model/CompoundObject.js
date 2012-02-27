@@ -20,13 +20,13 @@
 Ext.namespace("lore.ore.model");
 
 /** @class lore.ore.model.CompoundObject
- * Model class representing a compound object */
+ * Model class representing a Resource Map */
 lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
     constructor: function(config){
         config = config || {};
         this.uri = config.uri || "";
 	    lore.ore.model.CompoundObject.superclass.constructor.call(this, config);
-        /** The compound object properties */
+        /** The Resource Map properties */
         this.properties = new lore.ore.model.ResourceProperties(); 
         /** Store of aggregated resources */
         this.aggregatedResourceStore = new Ext.data.JsonStore({
@@ -40,7 +40,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     {name: 'uri', type:'string', allowBlank: false}, // aggregated resource URI
                     {name: 'title', type: 'string'}, // aggregated resource title
                     {name: 'index', type: 'int', defaultValue: '1000'}, // for storing order information, large default value ensures resources are initially added at the end
-                    {name: 'representsCO', type: 'boolean', defaultValue: false}, // indicates if this represents a nested compound object
+                    {name: 'representsCO', type: 'boolean', defaultValue: false}, // indicates if this represents a nested Resource Map
                     {name: 'representsAnno',type: 'boolean', defaultValue: false}, // indicates if this represents an annotation
                     {name: 'isPlaceholder', type: 'boolean', defaultValue: false}, // indicates if this resource has a generated URI, being a placeholder for some concept/thing
                     {name: 'properties'} // all other properties, key is property uri, value is array of Property objects
@@ -67,30 +67,30 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             return res;
         } 
 	},
-    initProperties : function(){
-        this.properties.setProperty({
+    initProperties : function(defaultCreator){
+       /*this.properties.setProperty({
                id: lore.constants.NAMESPACES["rdf"]+ "about",
                ns: lore.constants.NAMESPACES["rdf"],
                name: "about",
                value: this.uri,
                prefix: "rdf",
                type: "uri"
-        },0);
+        },0);*/
+        if (defaultCreator){
         this.properties.setProperty({
                id: lore.constants.NAMESPACES["dc"]+ "creator",
                ns: lore.constants.NAMESPACES["dc"],
                name: "creator",
-               value: lore.ore.controller.defaultCreator,
+                   value: defaultCreator,
                prefix: "dc",
                type: "plainstring"
         },0);
-        // TODO: also store created and modified
-            
+        }  
     },
     /**
-     * Set the URI that identifies the compound object
+     * Set the URI that identifies the Resource Map
      */
-	copyToNewWithUri : function(newUri){
+	copyToNewWithUri : function(newUri, defaultCreator){
         var oldUri = this.uri;
         if (oldUri != newUri){
             // remove loaded content
@@ -134,13 +134,13 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             },0);
             // Add default creator as creator 
             var dc = lore.constants.NAMESPACES["dc"];
-            var creatorIndex = this.properties.findProperty(dc + "creator", lore.ore.controller.defaultCreator);
+            var creatorIndex = this.properties.findProperty(dc + "creator", defaultCreator);
             if (creatorIndex == -1) {
                 this.properties.setProperty({
                        id: dc+ "creator",
                        ns: dc,
                        name: "creator",
-                       value: lore.ore.controller.defaultCreator,
+                       value: defaultCreator,
                        prefix: "dc",
                        type: "plainstring"
                 });
@@ -148,7 +148,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         }
         
     },
-	/** Add a resource to the compound object
+	/** Add a resource to the Resource Map
 	 * @param {} config The properties of the resource to add
 	 * @return {} The aggregated resources
 	 */
@@ -165,7 +165,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
       }
 	},
 	
-	/** Remove a resource from the compound object
+	/** Remove a resource from the Resource Map
 	 * @param {} aUri The resource to remove
 	 * @return {} The aggregated resources
 	 */
@@ -177,7 +177,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	  
 	},
 	toString : function(){
-	    return "Compound Object " + this.uri + " contains " + this.aggregatedResourceStore.getTotalCount() + " resources";    
+	    return "Resource Map " + this.uri + " contains " + this.aggregatedResourceStore.getTotalCount() + " resources";    
 	},
     /** Load from a variety of formats eg JSON, RDF/XML etc
      * 
@@ -226,17 +226,17 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	           this.uri = res.rem.value.toString();
 	           this.aggregationURI = res.aggre.value.toString();
 	        }  else {
-	            lore.ore.ui.vp.warning("No compound object found");
 	            lore.debug.ore("no remurl found in RDF",[args.content, this.loadedContent]);
                 // TODO: throw some kind of error
+                throw("No Resource Map Found");
 	        }
             
-            // Load properties for this Compound Object
+            // Load properties for this Resource Map
             this.loadedContent.about('<' + this.uri + '>')
             .each(function(){
                 try {
                 var propurl = this.property.value.toString();
-                var propsplit = lore.global.util.splitTerm(propurl); 
+                var propsplit = lore.util.splitTerm(propurl); 
                 var propval = this.value.value;
                 var propData = {
                     id: propurl,
@@ -266,7 +266,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 }
                 oThis.properties.setProperty(propData);
                 } catch (e){
-                    lore.debug.ore("Error loading compound object properties",e);
+                    lore.debug.ore("Error loading Resource Map properties",e);
                 }
             });
             
@@ -286,7 +286,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	             oThis.loadedContent.about('<' + resourceURL + '>')
                     .each(function() {
                         var propurl = this.property.value.toString();
-                        var propsplit = lore.global.util.splitTerm(propurl);
+                        var propsplit = lore.util.splitTerm(propurl);
                         var prefix = lore.constants.nsprefix(propsplit.ns);
                         
                         if ((prefix == "dc" || prefix == "dcterms") && propsplit.term == "title"){
@@ -310,7 +310,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         // Most of the layout properties only apply to a single view and are managed by that view
                         
                         // highlightcolor applies to all views, so we create a property for that
-                        if (prefix != "layout" || (prefix == "layout" && propsplit.term=="highlightColor")){
+                        if (!((prefix == "layout" && propsplit.term == "isPlaceholder") || (prefix == "layout" && propsplit.term == "orderIndex"))){
                             resourceData.properties.setProperty({
                                id: propurl,
                                ns: propsplit.ns,
@@ -331,7 +331,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         this.aggregatedResourceStore.loadData(newResources); 
     },
     /** 
-     * Compare with another compound object model object to determine whether they have the same properties, 
+     * Compare with another Resource Map model object to determine whether they have the same properties, 
      * aggregated resources, resource properties and relationships
      * 
      * @param {lore.ore.model.CompoundObject} co
@@ -676,17 +676,17 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         }
     },
     /**
-     * Checks whether this compound object has been modified since it was last saved
-     * @return {Boolean} Returns true if the compound object has been modified
+     * Checks whether this Resource Map has been modified since it was last saved
+     * @return {Boolean} Returns true if the Resource Map has been modified
      */
     isDirty : function (){
         // TODO: #56 fix this method - compare state of model (uses graphical editor for now)
-        // If it was a new compound object and the graphical view is either not defined 
+        // If it was a new Resource Map and the graphical view is either not defined 
         // or has no resources, don't consider it to be dirty
-    	var isEmpty = lore.global.util.isEmptyObject(this.loadedContent);
+    	var isEmpty = lore.util.isEmptyObject(this.loadedContent);
     	
     	if (!isEmpty && this.properties.findProperty(lore.constants.NAMESPACES["dc"] + "creator", lore.ore.controller.defaultCreator) == -1){
-    		// not creator and not a new compound object: don't bother prompting
+    		// not creator and not a new Resource Map: don't bother prompting
     		return false;
     	}
         if (isEmpty && (!lore.ore.ui.graphicalEditor || 

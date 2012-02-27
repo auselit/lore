@@ -21,9 +21,9 @@
 /** 
  * @class lore.ore.repos.RestAdapter Access and store Resource Maps using a
  *  REST based respository
- * @extends lore.ore.repos.SesameAdapter
+ * @extends lore.ore.repos.RepositoryAdapter
  */
-lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
+lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
 	// Override the idPrefix property with a different URL
 	constructor : function(baseURL) {
 		lore.ore.repos.RestAdapter.superclass.constructor.call(this, baseURL);
@@ -112,7 +112,8 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	},
 	saveCompoundObject : function (theco,callback){
         var remid = theco.uri;
-        var therdf = theco.asRDFXML(false);
+
+        var therdf = theco.serialize('rdf');
         var oThis = this;
 		Ext.Msg.show({
 	           msg: 'Saving Resource Map to repository...',
@@ -124,14 +125,16 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 	    try {
           lore.ore.am.runWithAuthorisation(function() {
 				var xhr = new XMLHttpRequest();
+				var theURL = "";
 				if (remid.indexOf(oThis.unsavedSuffix) > 1) { 
                     // New Resource Map, not in the repo yet
 					lore.debug.ore("lorestore: saving new Resource Map", theco);
 					xhr.open("POST", oThis.reposURL);
-
+					theURL = oThis.reposURL;
 				} else { // updating an existing Resource Map
 					lore.debug.ore("lorestore: saving existing Resource Map: " + remid, theco);
 					xhr.open("PUT", remid);
+					theURL = remid;
 				}
 				xhr.onreadystatechange = function() {
 					if (xhr.readyState == 4) {
@@ -148,11 +151,13 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
 							lore.ore.controller.loadCompoundObject(xhr);
 							callback(location);
 						} else {
-							lore.ore.ui.vp.error('Unable to save to repository: ' + xhr.statusText);
-							lore.debug.ore("Unable to save Resource Map", {
-										xhr : xhr,
-										headers : xhr.getAllResponseHeaders()
+							lore.debug.ore("Unable to save Resource Map " + remid + " to " + theURL, {
+								xhr : xhr,
+								headers : xhr.getAllResponseHeaders()
+								
 							});
+							lore.ore.ui.vp.error('Unable to save to repository: ' + xhr.statusText);
+							
                             
                             var msg = '<b>' + xhr.statusText + '</b>'  
                                 + '<br><br>If an error has occurred, please save your Resource Map to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team with details of the error for further assistance.'
@@ -274,6 +279,64 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.SesameAdapter,{
     
     generateID : function() {
     	return this.reposURL + this.unsavedSuffix;
+    },
+      /**
+    * Parses Resource Map details from a SPARQL XML result
+    * @param {XMLNode} XML node to be parsed
+    * Returns an object with the following properties:
+    *  {string} uri The identifier of the Resource Map 
+    *  {string} title The (Dublin Core) title of the Resource Map 
+    *  {string} creator The (Dublin Core) creator of the Resource Map 
+    *  {Date} modified The date on which the Resource Map was modified (from dcterms:modified) 
+    *  {string} match The value of the subject, predicate or object from the triple that matched the search 
+    *  {Date} acessed The date this Resource Map was last accessed (from the browser history) 
+    * */
+   parseCOFromXML: function(/*Node*/result){
+        var props = {};
+        var bindings, node, attr, nodeVal;
+        props.title = "Untitled";
+        props.creator = "Anonymous";
+        try {  
+           bindings = result.getElementsByTagName('binding');
+           for (var j = 0; j < bindings.length; j++){  
+            attr = bindings[j].getAttribute('name');
+            if (attr =='g'){ //graph uri
+                node = bindings[j].getElementsByTagName('uri'); 
+                props.uri = lore.util.safeGetFirstChildValue(node);
+            } else if (attr == 'v'){
+                node = bindings[j].getElementsByTagName('literal');
+                nodeVal = lore.util.safeGetFirstChildValue(node);
+                if (!nodeVal){
+                    node = bindings[j].getElementsByTagName('uri');
+                }
+                props.match = lore.util.safeGetFirstChildValue(node);
+            } else {
+                node = bindings[j].getElementsByTagName('literal');
+                nodeVal = lore.util.safeGetFirstChildValue(node);
+                if (attr == 't' && nodeVal){ //title
+                    props.title = nodeVal;
+                } else if (attr == 'a' && nodeVal){// dc:creator
+                    props.creator = nodeVal;
+                } else if (attr == 'priv' && nodeVal) { // isPrivate
+                    props.isPrivate = nodeVal;
+                }
+                else if (attr == 'm' && nodeVal){ // dcterms:modified
+                    props.modified = nodeVal;
+                    try {
+                        var modDate = Date.parseDate(props.modified,'c') || Date.parseDate(props.modified,'Y-m-d');
+                        if (modDate){
+                            props.modified = modDate;
+                        }
+                    } catch (e){
+                        lore.debug.ore("parseCOFromXML: error converting date",e);
+                    }
+                } 
+            }
+           }
+        } catch (ex) {
+            lore.debug.ore("Unable to process Resource Map result list", ex);
+        }
+        return props;
     }
 });
 

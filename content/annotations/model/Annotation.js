@@ -46,7 +46,7 @@ lore.anno.Annotation = Ext.extend(Ext.util.Observable, {
             "]";
     },
     /**
-     * Determine whether an annotation is new, and is not in the respository
+     * Determine whether an annotation is new, and is not in the repository
      * @param {Object} anno An Annotation object or an Ext Record object
      * @return {Boolean}
      */

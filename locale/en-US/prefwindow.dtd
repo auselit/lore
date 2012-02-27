@@ -19,7 +19,6 @@
 <!ENTITY relontprefix.label "Relationship Ontology Prefix:">
 <!ENTITY rdfrepos.label "URL:">
 <!ENTITY rdfrepostype.label "Repository Type:">
-<!ENTITY sesame.label "Sesame">
 <!ENTITY lorestore.label "LoreStore">
 <!ENTITY relontprefix.accesskey "P">
 <!ENTITY dccreator.label "Creator (your name):">

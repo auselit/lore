@@ -18,13 +18,6 @@
  * LORE. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * @include  "/oaiorebuilder/content/annotations/init.js"
- * @include  "/oaiorebuilder/content/debug.js"
- * @include  "/oaiorebuilder/content/util.js"
- * @include  "/oaiorebuilder/content/uiglobal.js"
- * @include  "/oaiorebuilder/content/constants.js"
- */
 
 /**
  * AnnotationManager
@@ -400,13 +393,13 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				},
 				method: "DELETE",
 				scope:this
-			});
+            });*/
 		}
 	},
 
 	/**
 	 * Creates an array of Annotations from a list of RDF nodes in ascending date
-	 * created order - unchanged from dannotate.js
+     * created order 
 	 *
 	 * @param {XMLDoc} xmldoc
 	 *            XML Document containing annotations
@@ -595,7 +588,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 						callback(anno, body);
 					}
 				} catch (e ) {
-					lore.debug.anno("Problem getting annotation body",e);
+                    lore.debug.anno("Error getting annotation body",e);
 				}
 			};
 			xhr.open("GET",uri);
@@ -639,7 +632,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
 			}
 			catch (e) {
-				lore.debug.anno("getBodyContentAsync", e);
+                lore.debug.anno("Error in getBodyContentAsync", e);
 			}
 
 			lore.debug.timeElapsed("End getBodyContentAsync() callback");

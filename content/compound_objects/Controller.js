@@ -6,12 +6,12 @@ lore.ore.Controller = function(config){
     this.currentURL = config.currentURL || "";
     /** Indicates whether the controller is actively responding to user actions (it is not active when LORE is closed) */
     this.active = false;
-    /** The name of the default creator used for new compound objects (from preferences) */
+    /** The name of the default creator used for new Resource Maps (from preferences) */
     this.defaultCreator = "Anonymous";
-    /** @private The URL for which related compound objects were most recently loaded */
+    /** @private The URL for which related Resource Maps were most recently loaded */
     this.loadedURL;
-	/** Property name displayed for the compound object identifier */
-    this.REM_ID_PROP = "Compound Object ID";
+	/** Property name displayed for the Resource Map identifier */
+    this.REM_ID_PROP = "Resource Map ID";
     this.isDirty = false;
     this.wasClean = true;
     this.MAXSIZE = 300;
@@ -39,7 +39,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         Ext.getCmp('currentCOSavedMsg').setText('');
       }
     },
-    /** Activate Controller and trigger related compound objects to be fetched when lore Compound Objects panel is shown */
+    /** Activate Controller and trigger related Resource Maps to be fetched when lore Resource Maps panel is shown */
     onShow: function(){
         this.active = true; 
         if (this.currentURL && this.currentURL != 'about:blank' && this.currentURL != '' &&
@@ -58,7 +58,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     	Ext.Msg.show({
             title : 'Load from RDF/XML URL',
             buttons : Ext.MessageBox.OKCANCEL,
-            msg : 'Please enter the URL of the compound object:',
+            msg : 'Please enter the URL of the Resource Map:',
             scope: this,
             fn : function(btn, theurl) {
                 if (btn == 'ok') {
@@ -69,19 +69,19 @@ Ext.apply(lore.ore.Controller.prototype, {
         });
     },
     /**
-     * Loads a Compound object from a RDf/XML file via URL 
+     * Loads a Resource Map from a RDf/XML file via URL 
      * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
      */
     loadCompoundObjectFromURL: function(rdfURL){
     	try{
     		
-            // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
+            // Check if the currently loaded Resource Map has been modified and if it has prompt the user to save changes
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
             if (currentCO && currentCO.isDirty() && !this.readOnly){
                 Ext.Msg.show({
-                    title : 'Save Compound Object?',
+                    title : 'Save Resource Map?',
                     buttons : Ext.MessageBox.YESNOCANCEL,
-                    msg : 'Would you like to save the current compound object before proceeding?',
+                    msg : 'Would you like to save the current Resource Map before proceeding?',
                     fn : function(btn) {
                         if (btn === 'yes') {
                             var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -89,7 +89,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                             lore.ore.reposAdapter.saveCompoundObject(currentCO,function(remid){
                                 lore.ore.controller.afterSaveCompoundObject(remid);
 	                             Ext.MessageBox.show({
-	            	                    msg: 'Loading compound object',
+	            	                    msg: 'Loading Resource Map',
 	            	                    width:250,
 	            	                    defaultTextHeight: 0,
 	            	                    closable: false,
@@ -102,7 +102,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                             
                         } else if (btn === 'no') {
                         	Ext.MessageBox.show({
-        	                    msg: 'Loading compound object',
+        	                    msg: 'Loading Resource Map',
         	                    width:250,
         	                    defaultTextHeight: 0,
         	                    closable: false,
@@ -116,7 +116,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 });
             } else {
 	            Ext.MessageBox.show({
-	                    msg: 'Loading compound object',
+	                    msg: 'Loading Resource Map',
 	                    width:250,
 	                    defaultTextHeight: 0,
 	                    closable: false,
@@ -138,8 +138,8 @@ Ext.apply(lore.ore.Controller.prototype, {
         lore.ore.ui.grid.bindModel(co);
     },
     /**
-     * Load a compound object into LORE
-     * @param {} rdf XML doc or XML HTTP response containing the compound object (RDF/XML)
+     * Load a Resource Map into LORE
+     * @param {} rdf XML doc or XML HTTP response containing the Resource Map (RDF/XML)
      */
     loadCompoundObject : function(rdf) {
 		try {
@@ -181,7 +181,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 			var loadedRDF = jQuery.rdf({
 						databank : databank
 			});
-			// Display the properties for the compound object
+			// Display the properties for the Resource Map
 			var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
 					.where('?rem ore:describes ?aggre');
 			var aggreurl, remurl;
@@ -207,7 +207,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.ore.controller.bindViews(tmpCO);
 
 			} else {
-				lore.ore.ui.vp.warning("No compound object found");
+				lore.ore.ui.vp.warning("No Resource Map found");
 				lore.debug.ore("no remurl found in RDF", loadedRDF);
 				// lore.debug.ore("the input rdf was",rdf);
                 return;
@@ -282,17 +282,17 @@ Ext.apply(lore.ore.Controller.prototype, {
 				if (!srcfig) {
 					// TODO: fix this as now preEncode is called - implement unPreEncode or something
 					srcfig = lore.ore.ui.graphicalEditor
-							.lookupFigure(lore.global.util.unescapeHTML(subject
+							.lookupFigure(lore.util.unescapeHTML(subject
 									.replace('%3C', '<').replace('%3F', '>')));
 				}
 				if (srcfig) {
-					var relresult = lore.global.util.splitTerm(this.pred.value.toString());
+					var relresult = lore.util.splitTerm(this.pred.value.toString());
 
 					var obj = this.obj.value.toString();
 					var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
 					/*
 					 * if (!tgtfig) { tgtfig = lore.ore.ui.graphicalEditor
-					 * .lookupFigure(lore.global.util.unescapeHTML(obj.replace(
+					 * .lookupFigure(lore.util.unescapeHTML(obj.replace(
 					 * '%3C', '<').replace('%3F', '>'))); }
 					 */
 					if (tgtfig && (srcfig != tgtfig)) { // this is a connection
@@ -300,7 +300,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 						// relresult.term,[tgtfig, srcfig]);
 						// lore.debug.timeElapsed("connection 1");
 						try {
-							var c = new lore.ore.ui.graph.ContextmenuConnection();
+							var c = new lore.draw2d.Connection();
 							// lore.debug.timeElapsed("connection 2");
 							var srcPort = srcfig.getPort("output");
 							// lore.debug.timeElapsed("connection 3");
@@ -331,13 +331,13 @@ Ext.apply(lore.ore.Controller.prototype, {
 			// problem still exists if a node is added that extends the boundaries
 			lore.ore.ui.graphicalEditor.coGraph.resizeMask();
 
-			lore.ore.ui.vp.info("Loading compound object");
+			lore.ore.ui.vp.info("Loading Resource Map");
             if (counter > lore.ore.controller.MAXSIZE){
-                lore.ore.ui.vp.error("Compound object is too big for LORE graphical editor! " + (counter - lore.ore.controller.MAXSIZE) + " resources not shown");
+                lore.ore.ui.vp.error("Resource Map is too big for LORE graphical editor! " + (counter - lore.ore.controller.MAXSIZE) + " resources not shown");
             }
 			Ext.Msg.hide();
 			lore.ore.cache.setLoadedCompoundObjectUri(remurl);
-            // preload nested compound objects to cache
+            // preload nested Resource Maps to cache
             lore.ore.cache.cacheNested(loadedRDF, 0);
             
 			// lore.ore.populateResourceDetailsCombo();
@@ -353,7 +353,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 			if (lore.ore.ui.topView
 					&& lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]) {
 				lore.ore.ui.topView.hideAddIcon(true);
-			} else {
+			} else if (lore.ore.ui.topView) {
 				lore.ore.ui.topView.hideAddIcon(false);
 			}
 			// lore.debug.timeElapsed("done");
@@ -365,7 +365,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             lore.ore.controller.isDirty = false;
             lore.ore.controller.wasClean = true;
 		} catch (e) {
-			lore.ore.ui.vp.error("Error loading compound object");
+			lore.ore.ui.vp.error("Error loading Resource Map");
 			lore.debug.ore("exception loading RDF from string", e);
 			lore.debug.ore("the RDF string was", rdf);
 			lore.debug.ore("the serialized databank is", databank.dump({
@@ -379,7 +379,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         lore.debug.ore("lookupTag " + tagId)
         var store = lore.anno.thesaurus;
         // TODO : it should not be necessary to unescape ampersands: check that model is not storing them
-        var idx = store.findUnfiltered('id', tagId.replace(/&amp;/,'&'));
+        var idx = store.findUnfiltered('id', tagId.replace(/&amp;/g,'&'));
         if (idx >= 0){
            var tagRec = store.getAtUnfiltered(idx);
            var name = tagRec.get('name');
@@ -444,8 +444,8 @@ Ext.apply(lore.ore.Controller.prototype, {
         try {
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
             var newURI = lore.ore.reposAdapter.generateID();
-            /*if (lore.ore.cache && currentCO && lore.global.util.isEmptyObject(currentCO.getInitialContent())){
-                // this is a new unsaved compound object : should probably warn the user 
+            /*if (lore.ore.cache && currentCO && lore.util.isEmptyObject(currentCO.getInitialContent())){
+                // this is a new unsaved Resource Map : should probably warn the user 
             }*/
             // TODO: check if pending changes /ask whether to save/yes->save/copy no->copy cancel->return
             if (currentCO && currentCO.isDirty()){
@@ -453,7 +453,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             }
             this.setLockCompoundObject(false);
             // reuse existing model object, updating uri to new
-            currentCO.copyToNewWithUri(newURI);
+            currentCO.copyToNewWithUri(newURI, this.defaultCreator);
             lore.ore.cache.setLoadedCompoundObjectUri(newURI);
             lore.ore.cache.remove(currentCO.uri);
             lore.ore.cache.add(newURI,currentCO);
@@ -467,25 +467,25 @@ Ext.apply(lore.ore.Controller.prototype, {
             this.wasClean = false;
 
             Ext.getCmp("propertytabs").activate("properties");
-            lore.ore.ui.vp.info("Contents copied to new compound object");
+            lore.ore.ui.vp.info("Contents copied to new Resource Map");
         } catch (e){
             lore.debug.ore("copyCompoundObjectToNew",e)
         }
     },
     /**
-	 * Prompt whether to save the current compound object, then calls newCO to
-	 * create new compound object
+	 * Prompt whether to save the current Resource Map, then calls newCO to
+	 * create new Resource Map
 	 */
     createCompoundObject: function(dontRaise, callback){
         try{
-            // Check if the currently loaded compound object has been modified and if it has prompt the user to save changes
+            // Check if the currently loaded Resource Map has been modified and if it has prompt the user to save changes
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
             if (currentCO && currentCO.isDirty()){
                 Ext.Msg.show({
-                    title : 'Save Compound Object?',
+                    title : 'Save Resource Map?',
                     buttons : Ext.MessageBox.YESNOCANCEL,
-                    msg : 'Would you like to save the compound object before proceeding?<br><br>Any unsaved changes will be lost if you select "No".',
-                    //msg: 'Any unsaved changes to the current compound object will be lost. Would you like to continue anyway?',
+                    msg : 'Would you like to save the Resource Map before proceeding?<br><br>Any unsaved changes will be lost if you select "No".',
+                    //msg: 'Any unsaved changes to the current Resource Map will be lost. Would you like to continue anyway?',
                     fn : function(btn) {
                         if (btn === 'yes') {
                             var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -519,7 +519,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         
     },
     /**
-     * Create new Compound object
+     * Create new Resource Map
      * @param {} dontRaise
      */
     newCO : function(dontRaise){
@@ -530,16 +530,18 @@ Ext.apply(lore.ore.Controller.prototype, {
         var cDate = new Date();
         // TODO: fix properties - use date string for now
         var currentREM = lore.ore.reposAdapter.generateID();
-        var currentCO = new lore.ore.model.CompoundObject({uri: currentREM});
+        var currentCO = new lore.ore.model.CompoundObject({
+            uri: currentREM
+        });
         lore.ore.cache.add(currentREM, currentCO);
         lore.ore.cache.setLoadedCompoundObjectUri(currentREM);
         lore.ore.cache.setLoadedCompoundObjectIsNew(true);
-        currentCO.initProperties();
+        currentCO.initProperties(this.defaultCreator);
         lore.ore.ui.graphicalEditor.initGraph();
         this.isDirty = false;
         this.wasClean = true;
         this.bindViews(lore.ore.cache.getLoadedCompoundObject())
-        Ext.getCmp('currentCOMsg').setText('New compound object');
+        Ext.getCmp('currentCOMsg').setText('New Resource Map');
         Ext.getCmp('currentCOSavedMsg').setText(''); 
         if (!dontRaise) {
             Ext.getCmp("propertytabs").activate("properties");
@@ -547,7 +549,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         
     }, 
     /**
-    * Delete the compound object that is loaded
+    * Delete the Resource Map that is loaded
     */
     deleteCompoundObjectFromRepository: function(aURI, aTitle){
         var remid = aURI;
@@ -560,19 +562,19 @@ Ext.apply(lore.ore.Controller.prototype, {
         if(!remid.match(lore.ore.reposAdapter.idPrefix)){
             Ext.Msg.show({
                 title: "Delete disabled",
-                msg: "Deletion is disabled for this compound object because it is from a different repository than your default repository. <br><br>To enable deletion for this compound object, please change the <i>Repository Acess URL</i> in the Compound Objects preferences.",
+                msg: "Deletion is disabled for this Resource Map because it is from a different repository than your default repository. <br><br>To enable deletion for this Resource Map, please change the <i>Repository Acess URL</i> in the Resource Maps preferences.",
                 buttons: Ext.MessageBox.OK
             });
             return;
         }
         Ext.Msg.show({
-            title : 'Remove Compound Object',
+            title : 'Remove Resource Map',
             buttons : Ext.MessageBox.OKCANCEL,
-            msg : 'Are you sure you want to delete this compound object?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",
+            msg : lore.util.sanitizeHTML('Are you sure you want to delete this Resource Map?<br><br>' + title + ' &lt;' + remid + "&gt;<br><br>This action cannot be undone.",window,true),
             fn : function(btn, theurl) {
                 if (btn == 'ok') {
                     Ext.MessageBox.show({
-                        msg: 'Deleting compound object',
+                        msg: 'Deleting Resource Map',
                         width:250,
                         defaultTextHeight: 0,
                         closable: false,
@@ -583,7 +585,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                         lore.ore.cache.setLoadedCompoundObjectUri("");
                         lore.ore.ui.graphicalEditor.coGraph.clear();
                         lore.ore.controller.createCompoundObject(); 
-                        lore.ore.ui.vp.info("Unsaved compound object deleted");
+                        lore.ore.ui.vp.info("Unsaved Resource Map deleted");
                         Ext.MessageBox.hide();
                     } else {
 	                    lore.ore.reposAdapter.deleteCompoundObject(remid,function(deletedrem){
@@ -595,10 +597,10 @@ Ext.apply(lore.ore.Controller.prototype, {
 	                            }
 	                            lore.ore.coListManager.remove(deletedrem);
 	                            lore.ore.historyManager.deleteFromHistory(deletedrem);
-	                            lore.ore.ui.vp.info("Compound object deleted");
+	                            lore.ore.ui.vp.info("Resource Map deleted");
 	                            Ext.MessageBox.hide();
 	                        } catch (ex){
-	                            lore.debug.ore("Error after deleting compound object",ex);
+	                            lore.debug.ore("Error after deleting Resource Map",ex);
 	                        }
 	                    });
                     }
@@ -610,21 +612,21 @@ Ext.apply(lore.ore.Controller.prototype, {
         if (!lore.ore.reposAdapter instanceof lore.ore.repos.RestAdapter){
             Ext.Msg.show({
                 title: "Not supported",
-                msg: "Locking of compound objects is only supported for lorestore repositories.",
+                msg: "Locking of Resource Maps is only supported for lorestore repositories.",
                 buttons: Ext.MessageBox.OK
             });
             return;
         }
         
         if (lore.ore.controller.locked){
-                lore.ore.ui.vp.warning("Compound object is already locked!");
+                lore.ore.ui.vp.warning("Resource Map is already locked!");
                 return;
         }
         var remid = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
         if(!remid.match(lore.ore.reposAdapter.idPrefix)){
             Ext.Msg.show({
                 title: "Save disabled",
-                msg: "Saving (and locking) is disabled for this compound object because it is from a different repository than your default repository. <br><br>To enable saving for this compound object, please change the <i>Repository Acess URL</i> in the Compound Objects preferences.",
+                msg: "Saving (and locking) is disabled for this Resource Map because it is from a different repository than your default repository. <br><br>To enable saving for this Resource Map, please change the <i>Repository Acess URL</i> in the Resource Maps preferences.",
                 buttons: Ext.MessageBox.OK
             });
             return;
@@ -636,7 +638,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         if (!title || title.trim() == ""){  
             Ext.Msg.show({
                 title: "Enter Title",
-                msg: "Please enter a title for the compound object:",
+                msg: "Please enter a title for the Resource Map:",
                 prompt: true,
                 buttons: Ext.MessageBox.OK,
                 closable: false,
@@ -668,9 +670,11 @@ Ext.apply(lore.ore.Controller.prototype, {
             });  
         } else {
             Ext.Msg.show({
-                title : 'Lock Compound Object',
+                title : 'Lock Resource Map',
                 buttons : Ext.MessageBox.OKCANCEL,
-                msg : 'Are you sure you wish to lock this compound object:<br/><br/>' + title + "<br/><br><br>Locked compound objects cannot be modified. <br>This action cannot be undone.",
+                msg : 'Are you sure you wish to lock this Resource Map:<br/><br/>'
+                    + lore.util.sanitizeHTML(title,window,true) 
+                    + "<br/><br><br>Locked Resource Maps cannot be modified. <br>This action cannot be undone.",
                 fn : function(btn, theurl) {
                     if (btn == 'ok') {
                         var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -691,16 +695,16 @@ Ext.apply(lore.ore.Controller.prototype, {
         
     },
     /**
-    * Save the compound object to the repository - prompt user to confirm
+    * Save the Resource Map to the repository - prompt user to confirm
     */
     saveCompoundObjectToRepository: function(){
-        // TODO: compare new compound object with contents of rdfquery db that stores initial state - don't save if unchanged
+        // TODO: compare new Resource Map with contents of rdfquery db that stores initial state - don't save if unchanged
         // update rdfquery to reflect most recent save
         var remid = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
         if (lore.ore.controller.locked){
             Ext.Msg.show({
                 title: "Save disabled",
-                msg: "Saving is disabled for this compound object because it is locked",
+                msg: "Saving is disabled for this Resource Map because it is locked",
                 buttons: Ext.MessageBox.OK
             });
             return;
@@ -708,7 +712,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         if(!remid.match(lore.ore.reposAdapter.idPrefix)){
             Ext.Msg.show({
                 title: "Save disabled",
-                msg: "Saving is disabled for this compound object because it is from a different repository than your default repository. <br><br>To enable saving for this compound object, please change the <i>Repository Acess URL</i> in the Compound Objects preferences.",
+                msg: "Saving is disabled for this Resource Map because it is from a different repository than your default repository. <br><br>To enable saving for this Resource Map, please change the <i>Repository Acess URL</i> in the Resource Maps preferences.",
                 buttons: Ext.MessageBox.OK
             });
             return;
@@ -720,7 +724,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         if (!title || title.trim() == ""){  
             Ext.Msg.show({
                 title: "Enter Title",
-                msg: "Please enter a title for the compound object:",
+                msg: "Please enter a title for the Resource Map:",
                 prompt: true,
                 buttons: Ext.MessageBox.OK,
                 closable: false,
@@ -754,7 +758,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         	Ext.Msg.show({
                 title : 'Save RDF',
                 buttons : Ext.MessageBox.OKCANCEL,
-                msg : 'Are you sure you wish to save compound object:<br/><br/>' + title + "<br/><br/>to repository as " + remid + "?",
+                msg : lore.util.sanitizeHTML('Are you sure you wish to save Resource Map:<br/><br/>' + title + "<br/><br/>to repository as " + remid + "?",window,true),
                 fn : function(btn, theurl) {
                     if (btn == 'ok') {
                         var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -764,26 +768,26 @@ Ext.apply(lore.ore.Controller.prototype, {
             });
         }
     },
-    /** Recover from failure to load compound object 
+    /** Recover from failure to load Resource Map 
      * @param {} resp
      * @param {} opt
      */
     afterLoadCompoundObjectFail : function(resp,opt){
-    	lore.debug.ore("Unable to load compound object " + opt.url, resp);
+    	lore.debug.ore("Unable to load Resource Map " + opt.url, resp);
     	if (resp.status == 403){
     		Ext.Msg.show({
     			title : 'Permission denied',
                 buttons : Ext.MessageBox.OK,
-                msg : "You are not logged in or your account does have permssion to view this private compound object.<br>Please log in with the account that was used to create the compound object."
+                msg : "You are not logged in or your account does have permssion to view this private Resource Map.<br>Please log in with the account that was used to create the Resource Map."
     		});
     	} else {
-	        lore.ore.ui.vp.error("Unable to load compound object: " + resp.statusText);
+	        lore.ore.ui.vp.error("Unable to load Resource Map: " + resp.statusText);
 	        lore.ore.controller.createCompoundObject(true);
 	        Ext.Msg.hide();
     	}
     },
-    /** Add saved compound object to the model lsits
-      * @param {String} remid The compound object that was saved */
+    /** Add saved Resource Map to the model lsits
+      * @param {String} remid The Resource Map that was saved */
     afterSaveCompoundObject : function(remid){
         this.isDirty = false;
         this.wasClean = true;
@@ -889,7 +893,12 @@ Ext.apply(lore.ore.Controller.prototype, {
     },
     addPlaceholder: function(){
         try{
-            lore.ore.ui.graphicalEditor.addFigure({url:lore.ore.reposAdapter.generatePlaceholderID(), placeholder:true, props: {"dc:title_0": "Placeholder"}});
+            var placeholderOptions = {
+                url: lore.ore.reposAdapter.generatePlaceholderID(), 
+                placeholder: true, 
+                props: {"dc:title_0": "Placeholder"}
+            };
+            lore.ore.ui.graphicalEditor.addFigure(placeholderOptions);
         } catch (ex){
             lore.debug.ore("Problem",ex);
         }
@@ -909,7 +918,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         });
     },
     /**
-     * Add a resource to the compound object
+     * Add a resource to the Resource Map
      * @param {} uri
      * @param {} props
      */
@@ -924,7 +933,8 @@ Ext.apply(lore.ore.Controller.prototype, {
         	activeView = Ext.getCmp("remlistview");
         	Ext.getCmp("loreviews").activate(activeView);
         }*/
-        var normalizedUri = lore.global.util.normalizeUrlEncoding(uri);
+        
+        var normalizedUri = lore.util.normalizeUrlEncoding(uri);
         // temporarily update graphical editor: it should be listening on the model
         lore.ore.ui.graphicalEditor.addFigure({url:normalizedUri, props: props});
         
@@ -932,7 +942,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             lore.ore.ui.graphicalEditor.showResource(normalizedUri);
         }
     },
-    /** Remove a resource from the compound object
+    /** Remove a resource from the Resource Map
      * @param {} uri
      */
     removeResource: function(uri){
@@ -943,7 +953,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Open all resources in current CO in browser tabs */
     launchInTabs: function(){
     	lore.ore.cache.getLoadedCompoundObject().aggregatedResourceStore.each(function(r){
-    		lore.global.util.launchTab(r.get('uri'), window);  		
+    		lore.util.launchTab(r.get('uri'), window);  		
     	});
     },
     /** Add a bunch of resources from open browser tabs
@@ -956,7 +966,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 	    var formitems = [{
 	    	xtype: 'label',
 	    	anchor: '100%',
-	    	text: 'Add the following resources to the Compound Object:'
+	    	text: 'Add the following resources to the Resource Map:'
 	    }];
 	    for (var i = 0; i < num; i++) {
 	        var b = thebrowser.getBrowserAtIndex(i);
@@ -1046,7 +1056,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Handle search */
     search : function (searchuri, searchpred, searchval){
         if (!searchuri && !searchpred && !searchval){
-            // blank search searches for all compound objects for now (not scalable!)
+            // blank search searches for all Resource Maps for now (not scalable!)
             searchval = lore.constants.RESOURCE_MAP;
         }
         try{
@@ -1085,20 +1095,20 @@ Ext.apply(lore.ore.Controller.prototype, {
           //lore.ore.textm.tmkey = prefs.tmkey;
           this.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
           this.high_contrast = prefs.high_contrast;
-          lore.global.util.setHighContrast(window, prefs.high_contrast);
+          lore.util.setHighContrast(window, prefs.high_contrast);
           var abtframe = Ext.get("about_co");
           if (abtframe && abtframe.dom && abtframe.dom.contentWindow){
-            lore.global.util.setHighContrast(Ext.get("about_co").dom.contentWindow, prefs.high_contrast);
+            lore.util.setHighContrast(Ext.get("about_co").dom.contentWindow, prefs.high_contrast);
           } 
       } catch (e){
         lore.debug.ore("Controller: Problem handling changed preferences",e);
       }
     },
     /**
-     * Set the compound object repository: typically triggered after user updates preferences
+     * Set the Resource Map repository: typically triggered after user updates preferences
      *
      * @param {String} rdfrepos The repository access URL
-     * @param {String} rdfrepostype The type of the repository (eg sesame, fedora)
+     * @param {String} rdfrepostype The type of the repository (eg lorestore)
      * @param {String} annoserver The annotation server access URL
      */
     setRepos : function(/*String*/rdfrepos, /*String*/rdfrepostype, /*String*/annoserver){
@@ -1112,8 +1122,8 @@ Ext.apply(lore.ore.Controller.prototype, {
             // same access url, use existing adapter
             return;
         }    
-        // check whether currently loaded compound object is from different repos
-        var isEmpty = lore.ore.cache && lore.global.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent());
+        // check whether currently loaded Resource Map is from different repos
+        var isEmpty = lore.ore.cache && lore.util.isEmptyObject(lore.ore.cache.getLoadedCompoundObject().getInitialContent());
         // at this point the repos adaptor still contains the old value
         var diffReposToEditor = lore.ore.reposAdapter && lore.ore.cache && lore.ore.cache.getLoadedCompoundObjectUri().match(lore.ore.reposAdapter.idPrefix);
         var title = "";
@@ -1125,7 +1135,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 title = "Untitled";
             }
         }
-        // check whether there is a compound object being edited and prompt to save if changed
+        // check whether there is a Resource Map being edited and prompt to save if changed
         if (!isEmpty && diffReposToEditor){
             // set editor to read-only
             /*if (lore.ore.ui.graphicalEditor){
@@ -1138,9 +1148,9 @@ Ext.apply(lore.ore.Controller.prototype, {
             if (currentCO.isDirty() && !this.readOnly){
                 //lore.debug.ore("setRepos: dirty");
                 Ext.Msg.show({
-                    title : 'Save Compound Object?',
+                    title : 'Save Resource Map?',
                     buttons : Ext.MessageBox.YESNO,
-                    msg : 'The default Compound Object repository preferences have been changed. <br>You will be able to view the current compound object in read-only mode, however you will not be able to save changes unless the repository preferences are changed back to the repository that contains this compound object. <br><br>Would you like to save your changes before proceeding?',
+                    msg : 'The default Resource Map repository preferences have been changed. <br>You will be able to view the current Resource Map in read-only mode, however you will not be able to save changes unless the repository preferences are changed back to the repository that contains this Resource Map. <br><br>Would you like to save your changes before proceeding?',
                     fn : function(btn, theurl) {
                         if (btn == 'yes') {
                             // TODO: #56 check that the save completed successfully?
@@ -1157,27 +1167,22 @@ Ext.apply(lore.ore.Controller.prototype, {
             if (currentCOMsg) {currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50),false);}
             //lore.debug.ore("setrepos: not different");
         }
-        if (rdfrepostype == 'sesame'){
-            /** Adapter used to access the repository */
-            lore.ore.reposAdapter = new lore.ore.repos.SesameAdapter(rdfrepos);
-        } else if (rdfrepostype == 'lorestore') {
+        if (rdfrepostype == 'lorestore') {
             lore.ore.reposAdapter = new lore.ore.repos.RestAdapter(annoserver);
-        } else if (rdfrepostype == 'fedora'){
-            lore.ore.reposAdapter = new lore.ore.repos.FedoraAdapter(rdfrepos);
         } else {
-            lore.ore.ui.vp.warning("Not yet implemented: change your repository type preference");
+            lore.ore.ui.vp.warning("LORE only supports lorestore for Resource Maps");
         }
         if (isEmpty) {
-                // empty compound object, reset it to get a new id
+                // empty Resource Map, reset it to get a new id
                 //lore.debug.ore("setrepos: empty");
                 this.newCO(true);
         }
-        // Reload history so that compound objects from other repositories are marked as read-only
+        // Reload history so that Resource Maps from other repositories are marked as read-only
         if (lore.ore.historyManager){
             lore.ore.historyManager.onEndUpdateBatch();
         }
         if (lore.ore.reposAdapter){
-            // Trigger reposAdapter to get related compound objects
+            // Trigger reposAdapter to get related Resource Maps
             lore.ore.reposAdapter.getCompoundObjects(this.currentURL);
         }
         
@@ -1187,27 +1192,27 @@ Ext.apply(lore.ore.Controller.prototype, {
             //lore.ore.ui.searchtreeroot.setDetails([]);
         }
         if (lore.ore.explorePanel && lore.ore.cache){
-            lore.ore.explorePanel.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Compound Object",true, true);
+            lore.ore.explorePanel.showInExploreView(lore.ore.cache.getLoadedCompoundObjectUri(),"Current Resource Map",true, true);
         }
     },
     /** Triggered when the user navigates to a different page in the browser, or switches between tabs.
      *  Only handled when controller is active
      *  @param {String} contextURL The new URL */
     handleLocationChange : function (contextURL) {
-        this.currentURL = lore.global.util.preEncode(contextURL);
-        //var uri = lore.global.util.makeURI(this.currentURL);
+        this.currentURL = lore.util.preEncode(contextURL);
+        //var uri = lore.util.makeURI(this.currentURL);
         //lore.debug.ore("loaded " + this.currentURL, uri.asciiSpec);
 
         if (!this.active){
             return;
         }
         if (lore.ore.reposAdapter){
-            // Trigger reposAdapter to get related compound objects
+            // Trigger reposAdapter to get related Resource Maps
             lore.ore.reposAdapter.getCompoundObjects(this.currentURL);
         }
         this.loadedURL = this.currentURL; 
     },
-    /** Asks the model whether theURL is aggregated by the current compound object. 
+    /** Asks the model whether theURL is aggregated by the current Resource Map. 
      *  Used by overlay to determine whether to update the url-bar icon after user has browsed to new location
      *  @param {String} theURL 
      *  @return boolean */
@@ -1216,12 +1221,12 @@ Ext.apply(lore.ore.Controller.prototype, {
         var isInCO = typeof(lore.ore.ui.graphicalEditor.lookup[theURL]) !== 'undefined';
         return isInCO;
     },
-    /** Triggered by user dragging and dropping a URL from the main browser and dropping anywhere on the Compound Objects UI */
+    /** Triggered by user dragging and dropping a URL from the main browser and dropping anywhere on the Resource Maps UI */
     onDropURL: function(sn, aEvent){
         try{
         //lore.debug.ore("onDropURL",sn);
         // If sourceNode is not null, then the drop was from inside the application
-        // add to compound object if it is a link or image
+        // add to Resource Map if it is a link or image
         if (sn){
                 if (sn instanceof HTMLAnchorElement){
                     var sntitle = sn.textContent;
@@ -1262,7 +1267,7 @@ Ext.apply(lore.ore.Controller.prototype, {
     },
     checkReadOnly: function(){
         if (this.readOnly){
-            lore.ore.ui.vp.info("Compound Object is read only");
+            lore.ore.ui.vp.info("Resource Map is read only");
         }
         return this.readOnly;
     }

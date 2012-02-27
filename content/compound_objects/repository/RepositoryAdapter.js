@@ -69,14 +69,14 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
         throw "Method not implemented";
     },
     /**
-     * Creates (or replaces) a Resource Map in the sesame repository
+     * Creates (or replaces) a Resource Map in the repository
      * @param {CompoundObject} theco The Resource Map model
      */
     saveCompoundObject : function (theco){
         throw "Method not implemented";
     },
     /**
-     * Delete the Resource Map from the sesame repository
+     * Delete the Resource Map from the repository
      * calls afterDeleteCompoundObject to remove it from the UI
      * @param {String} remid The URI of the Resource Map to remove 
      **/
