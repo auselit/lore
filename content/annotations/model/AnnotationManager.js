@@ -126,10 +126,14 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		this.annods.on("remove", this.onDSRemove);
 
 		this.serializer = new lore.anno.RDFAnnotationSerializer();
+        try{
+            this.oacserializer = new lore.anno.OACAnnotationSerializer();
+            this.wordserializer = new lore.anno.WordSerializer();
+        } catch (e){
+            lore.debug.anno("Error",e);
+        }
 		this.prefs = config.prefs;
 	},
-
-
 	/**
      * Update annotations that are parents of replies by creating a map of children replies and count of local and overall replies {@link #annods} loads
      * @param {} store
@@ -138,14 +142,12 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 */
 	onDSLoad : function(store, records, options) {
 		for( var i =0; i < records.length;i++) {
-
 				// recursively update the parent/s of a reply, incrementing
 				// their reply counts
 				var incParentReplies = function(rec, countonly){
 					if ( !rec.data.isReply  )
 						return;
                     var prec = lore.util.findRecordById(store, rec.data.about);
-
 					if ( !prec) {
 						lore.debug.anno("Couldn't find parent to update replies list. Bad");
 						return;
@@ -281,46 +283,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
         if (!resultCallback) {
             resultCallback = function(){};
         }
-
-		var annoRDF = this.serializer.serialize([annoRec.data], this.annods);
-        var t = this;
-
-		var xhr = new XMLHttpRequest();
-		if (annoRec.data.isNew()) {
-			lore.debug.anno("creating new annotation");
-			// create new annotation
-            var action = 'create';
-            var successfulStatus = 201;
-			xhr.open("POST", this.prefs.url);
-			xhr.setRequestHeader('Content-Type', "application/rdf+xml");
-			xhr.setRequestHeader('Content-Length', annoRDF.length);
-
-		} else {
-			lore.debug.anno("updating existing annotation");
-			// Update the annotation on the server via HTTP PUT
-            var action = 'create';
-            var successfulStatus = 200;
-			xhr.open("PUT", annoRec.data.id);
-			xhr.setRequestHeader('Content-Type', "application/xml");
-		}
-        xhr.onreadystatechange = function(){
-            try {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == successfulStatus) {
-                        resultCallback(xhr, action);
-                        t.fireEvent("committedannotation", action, annoRec);
-                    } else {
-                        t.fireEvent('servererror', action, xhr);
-                    }
-                }
-
-            } catch(e ) {
-                lore.debug.anno("error sending annotation to server", e);
-            }
-        };
-        xhr.send(annoRDF);
-        lore.debug.anno("RDF of annotation", annoRDF);
+        if (lore.anno.reposAdapter){
+            lore.anno.reposAdapter.saveAnnotation(annoRec, resultCallback, this);
 		this.annodsunsaved.remove(annoRec);
+        }
 	},
 
 
@@ -375,25 +341,27 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 
 		this.annodsunsaved.remove(anno);
-		if (existsInBackend) {
-
-			Ext.Ajax.request({
-				url: anno.data.id,
-				success: function(resp){
+        var successCallback = function(resp){
                     this.annods.remove(anno);
 					lore.debug.anno("Deletion success: " + resp );
-
 					lore.anno.ui.loreInfo('Annotation deleted');
-				},
-
-				failure: function(resp, opts){
-					lore.debug.anno("Annotation deletion failed: " + opts.url, resp);
-                    this.fireEvent('servererror', 'delete', resp);
+        };
+        var failureCallback = function(config){
+            lore.debug.anno("Annotation deletion failed: " + config.opts.url, config.resp);
+            this.fireEvent('servererror', 'delete', config.resp);
                     lore.anno.ui.loreError('Unable to delete annotation');
-				},
-				method: "DELETE",
-				scope:this
-            });*/
+            
+            /*var msg = '<b>' + resp.statusText + '</b>'  
+                    + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';  
+            Ext.Msg.show({
+                title : 'Unable to delete annotation',
+                buttons : Ext.MessageBox.OK,
+                msg : msg
+            });
+            */
+        };
+        if (existsInBackend && lore.anno.reposAdapter) {
+            lore.anno.reposAdapter.deleteAnnotation(anno.data.id, successCallback, failureCallback, this);
 		}
 	},
 
@@ -678,7 +646,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			return false;
 		}
 
-		var currentURL = lore.anno.ui.currentURL;
+        var currentURL = lore.anno.controller.currentURL;
 
 		if (urlsAreSame(anno.resource, currentURL) ||
             urlsAreSame(anno.variant, currentURL) ||
@@ -703,36 +671,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		if (!filterFunction) {
 			this.clearAnnotationStore();
 		}
-
-		var queryURL = this.prefs.url + lore.constants.ANNOTEA_ANNOTATES + lore.global.util.fixedEncodeURIComponent(theURL);
-		lore.debug.anno("Updating annotations with request URL: " + queryURL);
-
-		Ext.Ajax.request({
-			url: queryURL,
-			method: "GET",
-			disableCaching: false,
-			success: function(resp, opt) {
-				try {
-					lore.debug.anno("Success retrieving annotations from " + opt.url, resp);
-
-					this.handleAnnotationsLoaded(resp, filterFunction);
-				} catch (e ) {
-					lore.debug.anno("Error getting annotations",e);
+        if (lore.anno.reposAdapter){
+            lore.anno.reposAdapter.getAnnotatesQuery(theURL, this, filterFunction);
 				}
 			},
-			failure: function(resp, opt){
-				try {
-                    this.fireEvent('servererror', 'list', resp);
-					lore.debug.anno("Unable to retrieve annotations from " + opt.url, resp);
-					lore.anno.ui.loreError("Failure loading annotations for page.");
-
-				} catch (e ) {
-					lore.debug.anno("Error on failure loading annotations",e);
-				}
-			},
-			scope:this
-		});
-	},
 
 	/**
 	 * Search for annotations given the search parameters and update data searching data store
@@ -843,17 +785,16 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 		// find a leaf node
 		while(firstAnno && firstAnno.isReply ) {
-			firstAnno = lore.global.util.findRecordById(this.annods, firstAnno.resource).data;
+            firstAnno = lore.util.findRecordById(this.annods, firstAnno.resource).data;
 		}
 
 		// check that they haven't switched tabs since data was loaded from server, if not load into datastore
 		if (this.locationChanged(firstAnno)) {
-			lore.debug.anno("loadAnnotation says switched tabs", {annotation:firstAnno,currentURL:lore.anno.ui.currentURL});
+            lore.debug.anno("loadAnnotation says switched tabs", {annotation:firstAnno,currentURL:lore.anno.controller.currentURL});
 		} else {
 			this.annods.loadData(annotations, true);
 		}
 	},
-
 
 	/**
 	 * Handler function that's called when annotation information is successfully
@@ -890,8 +831,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 			for (var i = 0; i < annotations.length; i++) {
 				try {
+                    if (!annotations[i].bodyLoaded){
 					this.getBodyContentAsync(annotations[i], window);
 				}
+                }
 				catch (e) {
 					lore.debug.anno('error loading body content', e);
 				}
@@ -906,17 +849,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				var annoID = anno.id;
 				var annoType = anno.type;
 
+                if (lore.anno.reposAdapter){
+                    lore.debug.anno("getting replies for anno " + i);
+                    lore.anno.reposAdapter.getRepliesQuery(annoID, this);
+                }
 
-				Ext.Ajax.request({
-					disableCaching: false, // without this the request was failing
-					method: "GET",
-					url: this.prefs.url + lore.constants.ANNOTEA_REPLY_TREE + annoID,
-					success: this.handleAnnotationRepliesLoaded,
-					failure: function(resp, opt){
-						lore.debug.anno("Unable to obtain replies for " + opt.url, resp);
-					},
-					scope:this
-				});
 			}
             if (this.justUpdated){
                 lore.debug.anno("updated an annotation " + this.justUpdated); 
@@ -960,22 +897,21 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	            // TODO : update createSearchQueryURL with param to control whether to generate rss url
 	            queryURL = this.createSearchQueryURL(vals).replace("/annotea","/rss");  
 	        } else { // feed for browse results
-	           queryURL =  this.createSearchQueryURL({url: lore.anno.ui.currentURL}).replace("/annotea","/rss");
+               queryURL =  this.createSearchQueryURL({url: lore.anno.controller.currentURL}).replace("/annotea","/rss");
 	        }
-	        lore.global.util.launchTab(queryURL,window);
+            lore.util.launchTab(queryURL,window);
         } catch (e){
-            lore.debug.anno("Problem creating feed url",e);
+            lore.debug.anno("Error creating feed url",e);
         }
     },
 	
 
 	/** Generate a Word document from the top-level, non-variation annotations on the page
 	 * @param domNode HTML node to serialize
-	 * @return {String} The annotated page returned as String containing WordML XML.
+     * @return {Object} Properties: docxml (the document xml) and rels : array of links
 	 */
-	createAnnoWord: function(domNode){
-		/* TODO: #117  */
-
+    createAnnoWord: function(annos){
+        return this.wordserializer.serialize(annos);
 	},
 
 	/**
@@ -986,10 +922,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @param {Boolean} showDates whether to save the annotation dates
 	 * @return {String} serialized version of the annotations in OAC RDF
 	 */
-	createAnnoOAC: function (annos, store, showDates) {
-		var oacSerializer = new lore.anno.OACAnnotationSerializer();
-
-		return oacSerializer.serialize(annos, store, showDates);
+    createAnnoOAC: function (annos, store, showDates, format) {
+        return this.oacserializer.serialize(annos, store, showDates, format);
 	},
 
 	/**
@@ -1000,11 +934,13 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	serialize: function (format) {
 		lore.debug.anno("serialize format: " + format);
 		if ( format == 'wordml') {
-			return this.createAnnoWord( lore.global.util.getContentWindow(window).document.body, true);
+            return this.createAnnoWord(this.annods.getRange());//lore.util.getContentWindow(window).document.body, true);
 		} else if ( format == 'rdf') {
 			return this.serializer.serialize(this.annods.getRange(), this.annods, true);
 		} else if (format === 'oac') {
-			return this.createAnnoOAC(this.annods.getRange(), this.annods, true);
+            return this.createAnnoOAC(this.annods.getRange(), this.annods, true, "xml");
+        } else if (format === 'oactrig') {
+            return this.createAnnoOAC(this.annods.getRange(), this.annods, true, "trig");
 		} else {
 			return null;
 		}
