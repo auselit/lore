@@ -410,7 +410,8 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
      * @param {Object} storeDates (Optional) Specify whethere dates are to be stored in the OAC RDF. Defaults to false
      * @return {String} The RDF that was generated
      */
-    serialize : function (annos, store, storeDates ) {
+    serialize : function (annos, store, storeDates, sformat) {
+    	var result = "";
         var genTarget = function(target, context){
             if (context){
                 var hashloc = context.indexOf('#');
@@ -547,12 +548,30 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                     rdfdb.add(annoid + " dcterms:created \"" + anno.created.toString() + "\"");
                     rdfdb.add(annoid + " dcterms:modified \"" + anno.modified.toString() + "\"");
                 }
+                if (sformat == "trig"){
+                	// if exporting to trig, reset databank for each anno
+	                result +=  annoid + "\n{\n";
+	                var triples = rdfdb.triples();
+	                for (var t = 0; t < triples.length; t++){
+	                 var triple = triples[t];
+	                 result += triple.toString() + "\n"; 
+	                }
+	                result += "}\n";
+	                rdfdb = jQuery.rdf.databank();
+	                for (ns in lore.constants.NAMESPACES){
+	                    rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
+	                }
+                }
             }
         };
         //lore.debug.anno("oac serialize to databank", rdfdb);
         //+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
         lore.debug.anno("OAC JSON",Ext.util.JSON.encode(rdfdb.dump({format:'application/json', serialize:false})));
-        return rdfdb.dump({format:'application/rdf+xml',serialize:true});
+        if (sformat == "trig"){
+            return result;	
+        } else {
+        	return rdfdb.dump({format:'application/rdf+xml',serialize:true});
+        }
     },
     
 

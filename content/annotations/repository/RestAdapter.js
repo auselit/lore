@@ -37,6 +37,9 @@ lore.anno.repos.RestAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
          Ext.Ajax.request({
              url: queryUrl,
              method: "GET",
+             headers: {
+            	'Accept': 'application/trix' 
+             },
              disableCaching: false,
              success: function(resp, opt) {
                  try {
@@ -143,7 +146,7 @@ lore.anno.repos.RestAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
     },*/
     
     saveAnnotation : function (annoRec, resultCallback,t){
-        var annoRDF = t.createAnnoOAC([annoRec.data], t.annods, true);
+        var annoRDF = t.createAnnoOAC([annoRec.data], t.annods, true, "xml");
         var xhr = new XMLHttpRequest();
         if (annoRec.data.isNew()) {
             lore.debug.anno("creating new annotation");

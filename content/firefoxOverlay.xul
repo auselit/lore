@@ -46,6 +46,7 @@
               <xul:menupopup>
                 <xul:menuitem id="save-xml" label="&lore.saveAnnotationsLabel;" tooltiptext="&lore.saveAnnotationsTip;" oncommand="loreoverlay.serializeAnnotations('rdf')"/>
                 <xul:menuitem id="save-oac" label="&lore.exportOACFileLabel;" tooltiptext="&lore.saveAnnotationsTip;" oncommand="loreoverlay.serializeAnnotations('oac')"/>
+                <xul:menuitem id="save-oac-trig" label="Export to OAC TriG" tooltiptext="&lore.saveAnnotationsTip;" oncommand="loreoverlay.serializeAnnotations('oactrig')"/>
                 <xul:menuitem id="save-wordml" label="&lore.exportAnnotationsWordLabel;" tooltiptext="&lore.exportAnnotationsWordLabel;" oncommand="loreoverlay.serializeAnnotations('wordml')"/> 
                 <!-- <xul:menuitem id="load-rdf" label="&lore.loadRDFLabel;" tooltiptext="&lore.loadRDFTip;" oncommand="loreoverlay.loadAnnoRDF()"/> -->
               </xul:menupopup>

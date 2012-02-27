@@ -515,9 +515,11 @@ Ext.apply(lore.anno.Controller.prototype, {
         if (this.fakeid != lore.anno.controller.fakeid){
             lore.debug.ore("SCOPE IS WRONG",this);
         }
+        if (this.lorevisible){
         lore.anno.annoMan.updateAnnotationsSourceList(this.currentURL, function (anno) {
             return anno.privateAnno;
         });
+        }
     },
     /**
      * Update the label on any unsaved annotations, to indicate they are for
@@ -1018,7 +1020,8 @@ Ext.apply(lore.anno.Controller.prototype, {
         var fileExtensions = {
             "rdf": "xml",
             "wordml": "docx",
-            "oac": "xml"
+            "oac": "xml",
+            "oactrig": "txt"
         };
         if (!format) {
             format = "rdf";

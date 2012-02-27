@@ -144,7 +144,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				var incParentReplies = function(rec, countonly){
 					if ( !rec.data.isReply  )
 						return;
-					var prec = lore.global.util.findRecordById(store, rec.data.about);
+                    var prec = lore.util.findRecordById(store, rec.data.about);
 
 					if ( !prec) {
 						lore.debug.anno("Couldn't find parent to update replies list. Bad");
@@ -176,7 +176,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			if ( !rec.data.isReply)
 				return;
 
-			var prec = lore.global.util.findRecordById(store, rec.data.about);
+            var prec = lore.util.findRecordById(store, rec.data.about);
 			if ( !prec)
 				return;
 
@@ -227,7 +227,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		lore.debug.anno('AM.addAnnotation()', {currentContext:currentContext,anno:anno});
 
 		this.annodsunsaved.loadData([anno], true);
-		return lore.global.util.findRecordById(this.annodsunsaved, anno.id);
+        return lore.util.findRecordById(this.annodsunsaved, anno.id);
 	},
 
 	/**
@@ -455,7 +455,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                 } else if(isReply && "context" ==p){
                     annoconfig.context = ''; // LORE ignores context for replies
                 } else if ("context" == p) {
-                    annoconfig[p] = lore.global.util.normalizeXPointer(aboutanno[p].value.toString());
+                    annoconfig[p] = lore.util.normalizeXPointer(aboutanno[p].value.toString());
                 } else {
 	                annoconfig[p] = aboutanno[p].value.toString();
 	            }
@@ -569,12 +569,12 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
 
 				if (bodyText) {
-					return lore.global.util.sanitizeHTML(bodyText, window);
+                    return lore.util.sanitizeHTML(bodyText, window);
 				}
 				lore.debug.anno("No usable annotation body for content: " + rtype + " request: " + uri, xhr);
 				return "";
 			} catch (e ) {
-				lore.debug.anno("handleResponse", e);
+                lore.debug.anno("Error in handleResponse", e);
 			}
 			return "";
 		};
@@ -617,7 +617,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				if (tthis.locationChanged(anno))
 					return;
 
-				var r = lore.global.util.findRecordById(tthis.annods, anno.id);
+                var r = lore.util.findRecordById(tthis.annods, anno.id);
 
 
 				if (r) {
@@ -670,7 +670,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 
 	locationChanged: function(anno) {
-        var urlsAreSame = lore.global.util.urlsAreSame;
+        var urlsAreSame = lore.util.urlsAreSame;
 		if (!anno) {
 			return false;
 		}
@@ -1028,7 +1028,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				var clone = shallowClone(rec);
 				this.annodsunsaved.loadData([clone], true);
 
-				unsaved = lore.global.util.findRecordById(this.annodsunsaved, rec.data.id);
+                unsaved = lore.util.findRecordById(this.annodsunsaved, rec.data.id);
 			}
 			return unsaved;
 		} else {
@@ -1057,11 +1057,11 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	},
 
 	findUnsavedRecById : function (id) {
-		return lore.global.util.findRecordById(this.annodsunsaved, id);
+        return lore.util.findRecordById(this.annodsunsaved, id);
 	},
 
 	findStoredRecById : function (id) {
-		return lore.global.util.findRecordById(this.annods, id);
+        return lore.util.findRecordById(this.annods, id);
 	},
 
 	numUnsavedAnnotations: function() {
