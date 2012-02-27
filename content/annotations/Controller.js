@@ -274,7 +274,11 @@ Ext.apply(lore.anno.Controller.prototype, {
             lore.util.setHighContrast(abtframe.dom.contentWindow, args.high_contrast);
         }
         // TODO: select type from annorepostype pref
-        lore.anno.reposAdapter = new lore.anno.repos.RestAdapter("http://openannotation.metadata.net/lorestore");
+        if (args.annorepostype == 'danno'){
+            lore.anno.reposAdapter = new lore.anno.repos.DannoAdapter(args.url);
+        } else if (args.annorepostype == 'lorestore'){
+            lore.anno.reposAdapter = new lore.anno.repos.RestAdapter("http://localhost:8080/lorestore");
+        }
         try{
             Ext.getCmp('solrsearch').ds.proxy.setUrl(args.solr + "/select",true);
         } catch (e){
@@ -516,9 +520,9 @@ Ext.apply(lore.anno.Controller.prototype, {
             lore.debug.ore("SCOPE IS WRONG",this);
         }
         if (this.lorevisible){
-        lore.anno.annoMan.updateAnnotationsSourceList(this.currentURL, function (anno) {
-            return anno.privateAnno;
-        });
+	        lore.anno.annoMan.updateAnnotationsSourceList(this.currentURL, function (anno) {
+	            return anno.privateAnno;
+	        });
         }
     },
     /**

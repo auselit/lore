@@ -570,30 +570,23 @@ try {
          * @param {boolean} ignoreDisable Don't do anything with the disable preference eg on initial load */
         loadCompoundObjectPrefs: function(ignoreDisable){
             if (this.prefs) {
-                var dccreator = this.prefs.getCharPref("dccreator");
-                var relonturl = this.prefs.getCharPref("relonturl");
-                var rdfrepos = this.prefs.getCharPref("rdfrepos");
-                var rdfrepostype = this.prefs.getCharPref("rdfrepostype");
                 var annoserver = this.prefs.getCharPref("annoserver");
                 var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
-                var high_contrast = this.prefs.getBoolPref("high_contrast");
-                var tmkey = this.prefs.getCharPref("tmkey");
                 var ontologies = this.prefs.getCharPref("ontologies");
-                var editor = this.prefs.getCharPref("coeditor");
                 if (ontologies){
                 	ontologies = JSON.parse(ontologies);
                 } 
                 loreoverlay.coView().handlePreferencesChanged({
-                    creator: dccreator,
-                    relonturl: relonturl,
-                    rdfrepos: rdfrepos,
-                    rdfrepostype: rdfrepostype,
+                    creator: this.prefs.getCharPref("dccreator"),
+                    relonturl: this.prefs.getCharPref("relonturl"),
+                    rdfrepos: this.prefs.getCharPref("rdfrepos"),
+                    rdfrepostype: this.prefs.getCharPref("rdfrepostype"),
                     annoserver: annoserver,
                     disable: disable_co,
-                    tmkey: tmkey,
-                    high_contrast: high_contrast,
+                    tmkey: this.prefs.getCharPref("tmkey"),
+                    high_contrast: this.prefs.getBoolPref("high_contrast"),
                     ontologies: ontologies,
-                    editor: editor
+                    editor: this.prefs.getCharPref("coeditor")
                 });
                 if(!ignoreDisable){
                     this.setCompoundObjectsVisibility(!disable_co);
@@ -607,25 +600,20 @@ try {
         loadAnnotationPrefs: function(){
             if (this.prefs) {
                 var annoserver = this.prefs.getCharPref("annoserver");
-                var solr = this.prefs.getCharPref("solr");
-                var dccreator = this.prefs.getCharPref("dccreator");
-                var high_contrast = this.prefs.getBoolPref("high_contrast");
-                var disable = this.prefs.getBoolPref("disable_annotations");
-                var mode = this.prefs.getBoolPref("annotationmode");
-                var timeout = this.prefs.getIntPref("annocache_timeout") * 1000; // to millis
-                var metadataOntologyURL = this.prefs.getCharPref("annotationMetadataOntologyURL");
+                // FIXME
                 var loginUrl = annoserver.replace('annotea', 'account/loggedIn.html');
                 
                 loreoverlay.annoView().setPrefs({
-                    creator: dccreator,
+                    creator: this.prefs.getCharPref("dccreator"),
                     url: annoserver + "/annotea",
-                    solr: solr,
-                    cacheTimeout: timeout,
+                    solr: this.prefs.getCharPref("solr"),
+                    cacheTimeout: (this.prefs.getIntPref("annocache_timeout") * 1000), // to millis
                     loginUrl: loginUrl,
-                    disable: disable,
-                    mode: mode, 
-                    high_contrast: high_contrast,
-                    metadataOntologyURL: metadataOntologyURL
+                    disable: this.prefs.getBoolPref("disable_annotations"),
+                    mode: this.prefs.getBoolPref("annotationmode"), 
+                    high_contrast: this.prefs.getBoolPref("high_contrast"),
+                    metadataOntologyURL: this.prefs.getCharPref("annotationMetadataOntologyURL"),
+                    annorepostype: this.prefs.getCharPref("annorepostype")
                 });
                 if (this.authManager){
                     this.authManager.reloadEmmetUrls({url: annoserver});

@@ -2,6 +2,7 @@ pref("extensions.lore.relonturl", "chrome://lore/content/ontologies/austlitoaior
 pref("extensions.lore.dccreator","Anonymous");
 pref("extensions.lore.rdfrepos", "http://austlit.edu.au/auselit/ore/");
 pref("extensions.lore.rdfrepostype", "lorestore");
+pref("extensions.lore.annorepostype", "danno");
 pref("extensions.lore.coeditor","grapheditor");
 pref("extensions.lore.tmkey","");
 pref("extensions.lore.solr", "http://austlit.edu.au/solr");

@@ -480,6 +480,25 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
             this.model.get('properties').removeProperty(propData.id, propData.index);
         }
     },
+    /** Update layout related properties in model */
+    persistLayout : function(){
+    	// orderIndex and isPlaceholder are managed and persisted by the CompoundObject
+        if (this.abstractPreview){
+            this.setProperty("layout:abstractPreview_0",1);
+        } else {
+            this.unsetProperty("layout:abstractPreview_0", true);
+        }
+        this.setProperty("layout:height_0",this.height);
+        this.setProperty("layout:originalHeight_0", this.originalHeight);
+        this.setProperty("layout:width_0", this.width);
+        this.setProperty("layout:x_0", this.x);
+        this.setProperty("layout:y_0", this.y)
+        if (this.highlightColor){
+        	this.setProperty("layout:highlightColor_0",this.highlightColor);
+        } else {
+        	this.unsetProperty("layout:highlightColor_0",true);
+        }
+    },
     /** Return the title of the figure */
     getTitle : function(){
         return this.getProperty("dc:title_0") || this.getProperty("dcterms:title_0");
@@ -692,6 +711,17 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
             var propuri = ns + propname;
             return {id: propuri, name: propname, ns: ns, prefix: pfx, index: idx};
         }
-    }
+    },
+    /**
+     * Displays an icon depending on the mimetype of the resource
+     */
+    setIcon : function(overrideType) { 
+        /*var typeTitle = overrideType;
+        this.icontype = lore.ore.controller.lookupIcon(overrideType,true);
+        var icon = $('#a' + this.id + "-icon" ,this.metadataarea);
+        if (icon) {
+           icon.removeClass().addClass('mimeicon').addClass(this.icontype).attr('title',typeTitle);
+        } */
+    },
     
 });

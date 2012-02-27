@@ -88,9 +88,7 @@ lore.anno.ui.init = (function() {
                url: lore.anno.controller.currentURL,
                prefs: lore.anno.prefs
            });
-           // TODO: select type from annorepostype pref
-           lore.anno.reposAdapter = new lore.anno.repos.DannoAdapter(lore.anno.prefs.url);
-            
+
            // construct GUI
            initView(lore.anno.annoMan);
    
