@@ -4,9 +4,6 @@
 <!ENTITY general.label "General">
 <!ENTITY repos.label "Repositories">
 <!ENTITY co.label "Resource Maps">
-<!ENTITY tm.label "Text Mining">
-<!ENTITY tmkey.label "Text mining API key:">
-<!ENTITY tmkey.message "Please visit the OpenCalais site to request an access key for the text mining service:">
 <!ENTITY annotation_mode.label "Show experimental scholarly annotation fields" >
 <!ENTITY prefwindow.title "LORE preferences">
 <!ENTITY grapheditor.label "Graphical editor">

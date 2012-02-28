@@ -1087,8 +1087,6 @@ Ext.apply(lore.ore.Controller.prototype, {
           if (om){
             om.loadOntology(prefs.relonturl, prefs.ontologies);
           } 
-          //Disabled for now
-          //lore.ore.textm.tmkey = prefs.tmkey;
           this.setRepos(prefs.rdfrepos, prefs.rdfrepostype, prefs.annoserver);
           this.high_contrast = prefs.high_contrast;
           lore.util.setHighContrast(window, prefs.high_contrast);

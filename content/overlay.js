@@ -347,7 +347,6 @@ try {
          * @param {Object} event
          */
         selImageMenuItemCommand: function(event) {
-            //TODO: Security risk? document.popupNode?
             try {
                 loreoverlay.annoView().handleBeginImageSelection(document.popupNode);
             } catch (e ) {
@@ -591,7 +590,6 @@ try {
                     rdfrepostype: this.prefs.getCharPref("rdfrepostype"),
                     annoserver: annoserver,
                     disable: disable_co,
-                    tmkey: this.prefs.getCharPref("tmkey"),
                     high_contrast: this.prefs.getBoolPref("high_contrast"),
                     ontologies: ontologies,
                     editor: this.prefs.getCharPref("coeditor")

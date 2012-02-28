@@ -95,7 +95,6 @@
           <xul:toolbarbutton id="lock-rdf" oncommand="loreoverlay.lockRDF();" tooltiptext="&lore.lockCOTip;"/>
           <xul:toolbarbutton id="delete-rdf" oncommand="loreoverlay.deleteRDF();" tooltiptext="&lore.deleteRDFTip;"/>
           <xul:toolbarseparator id="tmsep"/> 
-          <!--xul:toolbarbutton id="text-mining" tooltiptext="&lore.textMiningTip;"  oncommand="loreoverlay.doTextMining();"/-->
           <xul:toolbarbutton type="menu" id="import-export" tooltiptext="&lore.saveMoreTip;">
             <xul:menupopup>
               <xul:menuitem id="cosave-wordml" label="&lore.saveWordLabel;" tooltiptext="&lore.saveWordTip;" oncommand="loreoverlay.serializeREM('wordml')"/>

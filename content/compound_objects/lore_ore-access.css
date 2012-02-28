@@ -8,7 +8,7 @@ h1, h2, h3 {color:#fffff6}
 	color: #fffff6; 
 	padding:10px;	
 }
-#remsmilview * a, #remlistview * a, #textmining * a {
+#remsmilview * a, #remlistview * a {
 	color: orange !important;
 }
 .highlightNode {

@@ -220,10 +220,10 @@
 	font-size:smaller;
 	color:#51666b;
 }
-#remsmilview, #textmining {
+#remsmilview {
 	padding-left: 20px;	
 }
-#remsmilview div, #textmining div {
+#remsmilview div {
 	padding-top:20px;
 }
 #welcome * ul li {
@@ -255,11 +255,8 @@
  	font-family: courier monospace;
  	font-size: 70%;
 }
-#welcome * a, #remsmilview * a, #remlistview * a, #textmining * a {
+#welcome * a, #remsmilview * a, #remlistview * a {
 	color: #2c5798 !important;
-}
-#textmining * a {
-	font-size:smaller;
 }
 #welcome * a:hover, #remsmilview * a:hover, #remlistview * a:hover {
 	text-decoration: underline;

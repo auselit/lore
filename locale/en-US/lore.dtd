@@ -58,7 +58,6 @@
 <!ENTITY lore.saveAnnotationTip "Save annotation on the current page">
 <!ENTITY lore.saveAllAnnotationsTip "Save all modified annotations on the current page">
 <!ENTITY lore.showAnnotationsTip "Highlight all annotations on the current page">
-<!ENTITY lore.textMiningTip "Identify people, places and concepts on the current page">
 <!ENTITY lore.addAnnotationTip "Add annotation on the current page">
 <!ENTITY lore.showPrefsTip "View or edit LORE preferences">
 <!ENTITY lore.showAboutTip "About LORE">
