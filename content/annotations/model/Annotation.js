@@ -415,7 +415,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                         .add(ctuuid + " a oac:ConstrainedTarget")
                         .add(ctuuid + " oac:constrainedBy " + cuuid)
                         .add(cuuid + " a oac:Constraint")
-                        .prefix('cnt', 'http://www.w3.org/2008/content#')
+                        .prefix('cnt', lore.constants.NAMESPACES['cnt'])
                         .add(cuuid + " a cnt:ContentAsText")
                         .add(cuuid + " cnt:chars \"" + context + "\"")
                         .add(cuuid + " cnt:characterEncoding \"utf-8\"");
@@ -456,7 +456,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                 } else {*/
                     
                     var buuid = "<urn:uuid:" + lore.util.uuid() + ">";
-                    rdfdb.prefix('cnt', 'http://www.w3.org/2008/content#')
+                    rdfdb.prefix('cnt', lore.constants.NAMESPACES['cnt'])
                         .add(annoid + " oac:hasBody " + buuid)
                         .add(buuid + " a cnt:ContentAsXML")
                         .add(buuid + " cnt:version \"1.0\"")

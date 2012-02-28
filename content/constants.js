@@ -57,7 +57,7 @@ lore.constants = {
         "austlit" : "http://austlit.edu.au/owl/austlit.owl#",
         "danno"   : "http://metadata.net/2009/09/danno#",
         "lorestore" : "http://auselit.metadata.net/lorestore/",
-        "cnt"     : "http://www.w3.org/2008/content#"
+        "cnt"     : "http://www.w3.org/2011/content#"
     },
     
     // RDF/OWL
