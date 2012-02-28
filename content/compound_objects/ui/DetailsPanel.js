@@ -1,14 +1,14 @@
 /**
- * @class lore.ore.ui.NarrativePanel Display a text-heavy view of the entire Resource Map with embedded previews
+ * @class lore.ore.ui.DetailsPanel Display a text-heavy view of the entire Resource Map with embedded previews
  * @extends Ext.Panel
  */
  // TODO: allow to be configured eg select which properties to display in this view
-lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{ 
+lore.ore.ui.DetailsPanel = Ext.extend(Ext.Panel,{ 
    constructor: function (config){
         config = config || {};
         config.bodyStyle = "padding:10px;font-family: arial;font-size:90%"; 
         config.autoScroll = true;
-        lore.ore.ui.NarrativePanel.superclass.constructor.call(this, config);
+        lore.ore.ui.DetailsPanel.superclass.constructor.call(this, config);
         this.loaded = "";
     },
     initComponent: function(){
@@ -17,9 +17,9 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
                     xtype: "panel", // For Resource Map properties
                     border: false
                 },
-                {xtype: "narrativedataview", selectedClass: 'detailsselected'}]
+                {xtype: "detailsdataview", selectedClass: 'detailsselected'}]
         });
-      lore.ore.ui.NarrativePanel.superclass.initComponent.call(this);
+      lore.ore.ui.DetailsPanel.superclass.initComponent.call(this);
       this.on("activate", this.updateBinding);
     },
     /** Update model binding when panel is activated: in case loaded CO has changed 
@@ -27,33 +27,29 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
      */
     updateBinding : function (p) {
         try{
-        Ext.MessageBox.show({
-               msg: 'Generating Summary',
-               width:250,
-               defaultTextHeight: 0,
-               closable: false,
-               cls: 'co-load-msg'
-        });
-            
-         // TODO:  generate tmp co until mvc fixed
-         var currentCO = lore.ore.cache.getLoadedCompoundObject();
-         var coContents = currentCO.serialize('rdfquery');
-         
-         var tmpCO = new lore.ore.model.CompoundObject();
-         tmpCO.load({format: 'rdfquery',content: coContents});
-
-        
-
-        /*if (currentREM != this.loaded) {
-            // rebind store 
-            this.getComponent(1).bindStore(currentCO.aggregatedResourceStore);
-            this.loaded = currentREM;
-        }*/
-        this.getComponent(1).bindStore(tmpCO.aggregatedResourceStore);
-        tmpCO.representsCO = false;
-        tmpCO.title = tmpCO.properties.getTitle();
-        this.getComponent(0).body.update(lore.ore.ui.narrativeCOTemplate.apply([tmpCO]));
-        Ext.Msg.hide();
+            Ext.MessageBox.show({
+                   msg: 'Generating Summary',
+                   width:250,
+                   defaultTextHeight: 0,
+                   closable: false,
+                   cls: 'co-load-msg'
+            });
+             // TODO:  generate tmp co until mvc fixed
+             var currentCO = lore.ore.cache.getLoadedCompoundObject();
+             var coContents = currentCO.serialize('rdfquery');
+             
+             var tmpCO = new lore.ore.model.CompoundObject();
+             tmpCO.load({format: 'rdfquery',content: coContents});
+            /*if (currentREM != this.loaded) {
+                // rebind store 
+                this.getComponent(1).bindStore(currentCO.aggregatedResourceStore);
+                this.loaded = currentREM;
+            }*/
+            this.getComponent(1).bindStore(tmpCO.aggregatedResourceStore);
+            tmpCO.representsCO = false;
+            tmpCO.title = tmpCO.properties.getTitle();
+            this.getComponent(0).body.update(lore.ore.ui.detailsCOTemplate.apply([tmpCO]));
+            Ext.Msg.hide();
         } catch(e){
             lore.debug.ore("Error in updateBinding",e);
             Ext.Msg.hide();
@@ -76,9 +72,9 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
         }
     }
 });
-Ext.reg('narrativepanel',lore.ore.ui.NarrativePanel);
+Ext.reg('detailspanel',lore.ore.ui.DetailsPanel);
 
-lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
+lore.ore.ui.detailsCOTemplate = new Ext.XTemplate(
     '<tpl for=".">',
     '<div style="width:100%">',
         '<table style="whitespace:normal;width:100%;font-family:arial;padding-bottom;0.5em"><tr><td>',
@@ -177,7 +173,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
         }
     }
 );
-lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(  
+lore.ore.ui.detailsResTemplate = new Ext.XTemplate(  
     '<tpl for=".">',
     '<div id="s{uri}">',
         '<div style="line-height:0.5em;border-top: 1px solid rgb(220, 224, 225); margin-top: 0.5em;"> </div>',
@@ -264,25 +260,25 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
 );
 
 /**
- * @class lore.ore.ui.NarrativeDataView Data view to render aggregated resources in Narrative view
+ * @class lore.ore.ui.DetailsDataView Data view to render aggregated resources in Details view
  * @extends Ext.DataView
  */
 /**
- * @class lore.ore.ui.NarrativeDataView Displays the properties and relationships of every resource in the Resource Map in full (text format)
+ * @class lore.ore.ui.DetailsDataView Displays the properties and relationships of every resource in the Resource Map in full (text format)
  * @extends Ext.DataView
  */
-lore.ore.ui.NarrativeDataView = Ext.extend(Ext.DataView, {
+lore.ore.ui.DetailsDataView = Ext.extend(Ext.DataView, {
     initComponent : function(){
         Ext.apply(this, { 
-            tpl :  lore.ore.ui.narrativeResTemplate,
+            tpl :  lore.ore.ui.detailsResTemplate,
             loadingText: "Loading resource summaries...",
             singleSelect: true,
             autoScroll: false,
             itemSelector : "div.resourceSummary"
         });
-        lore.ore.ui.NarrativeDataView.superclass.initComponent.call(this,arguments); 
+        lore.ore.ui.DetailsDataView.superclass.initComponent.call(this,arguments); 
     }
     
 });
-Ext.reg('narrativedataview', lore.ore.ui.NarrativeDataView);
+Ext.reg('detailsdataview', lore.ore.ui.DetailsDataView);
 

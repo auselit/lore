@@ -105,7 +105,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             title : "Details",
                             id: "remdetailsview",
                             tabTip: "View detailed description of Resource Map contents including properties and relationships",
-                            xtype: "narrativepanel",
+                            xtype: "detailspanel",
                             iconCls: "detail-icon"
                         }, {
                             layout : 'fit',
