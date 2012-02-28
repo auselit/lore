@@ -25,9 +25,9 @@ try {
     
     // consistent access to JSON across versions of FF
     if (typeof(JSON) == "undefined") {  
-    	  Components.utils["import"]("resource://gre/modules/JSON.jsm");
-    	  JSON.parse = JSON.fromString;
-    	  JSON.stringify = JSON.toString;
+          Components.utils["import"]("resource://gre/modules/JSON.jsm");
+          JSON.parse = JSON.fromString;
+          JSON.stringify = JSON.toString;
     }
     
     var loreoverlay = {
@@ -121,51 +121,59 @@ try {
          */
         onLoad: function(){
             try {
-                this.instId = lore.global.ui.genInstanceID();
-                lore.global.ui.topWindowView.registerView(this, this.instId);
-                gBrowser.addProgressListener(this.oreLocationListener);
-                window.addEventListener("close", this.onClose, false); 
-                
-                this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
-                    .getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
-                this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
-                this.loadGlobalPrefs();  
-                
-                this.initialized = true;
-                this.addEvents(["location_changed", "location_refresh", "tab_changed"]);
-                lore.global.ui.load(window, this.instId);
-                
-                var self = this;
-                window.addEventListener("dragover", function(ev){self.onDragOver(ev);}, true);
-                
-                var container = gBrowser.tabContainer;
-                container.addEventListener("TabSelect", this.onTabSelected, false);
-                
-                var splashVersion = this.prefs.getCharPref("splashVersion");
-                try {
-                    // Firefox 4
-                    Components.utils["import"]("resource://gre/modules/AddonManager.jsm");
-                    AddonManager.getAddonByID("lore@maenad.itee.uq.edu.au", function(addon) {              
-                        var version = addon.version;
-                        if (version != splashVersion){
+                // By default lore will be enabled in all new windows, but this doesn't work so well in small popups:
+                // Disable lore for windows without location bar & those opened from AustLit maintainer interface
+                var locbar = window.locationbar;
+                if (content.location.href.match('austlit.edu.au/common/topicEditing') || !(locbar && locbar.visible)){   
+                    document.getElementById('ore-add-icon').hidden=true;
+                    document.getElementById('oobStatusBar').hidden=true;
+                } else {
+                    this.instId = lore.global.ui.genInstanceID();
+                    lore.global.ui.topWindowView.registerView(this, this.instId);
+                    gBrowser.addProgressListener(this.oreLocationListener);
+                    window.addEventListener("close", this.onClose, false); 
+                    
+                    this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                        .getService(Components.interfaces.nsIPrefService).getBranch("extensions.lore.");
+                    this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+                    this.loadGlobalPrefs();  
+                    
+                    this.initialized = true;
+                    this.addEvents(["location_changed", "location_refresh", "tab_changed"]);
+                    lore.global.ui.load(window, this.instId);
+                    
+                    var self = this;
+                    window.addEventListener("dragover", function(ev){self.onDragOver(ev);}, true);
+                    
+                    var container = gBrowser.tabContainer;
+                    container.addEventListener("TabSelect", this.onTabSelected, false);
+                    
+                    var splashVersion = this.prefs.getCharPref("splashVersion");
+                    try {
+                        // Firefox 4
+                        Components.utils["import"]("resource://gre/modules/AddonManager.jsm");
+                        AddonManager.getAddonByID("lore@maenad.itee.uq.edu.au", function(addon) {              
+                            var version = addon.version;
+                            if (version != splashVersion){
+                                // show info page for LORE
+                                lore.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
+                                loreoverlay.prefs.setCharPref("splashVersion", version);
+                            }   
+                            loreoverlay.version = version; 
+                      });
+                    } catch (ex) {
+                        // Firefox 3.6 and earlier
+                        var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
+                           .getService(Components.interfaces.nsIExtensionManager);
+                        this.version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
+                        if (this.version != splashVersion){
                             // show info page for LORE
-                            lore.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + version,window);
-                            loreoverlay.prefs.setCharPref("splashVersion", version);
-                        }   
-                        loreoverlay.version = version; 
-                  });
-                } catch (ex) {
-                    // Firefox 3.6 and earlier
-                    var gExtensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
-                       .getService(Components.interfaces.nsIExtensionManager);
-                    this.version = gExtensionManager.getItemForID("lore@maenad.itee.uq.edu.au").version;
-                    if (this.version != splashVersion){
-                        // show info page for LORE
-                        lore.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + this.version,window);
-                        this.prefs.setCharPref("splashVersion", this.version);
-                    }
-                } 
-                this.prefs.addObserver("", this, false);
+                            lore.util.launchTab("http://itee.uq.edu.au/~eresearch/projects/aus-e-lit/loreupdated.php?version=" + this.version,window);
+                            this.prefs.setCharPref("splashVersion", this.version);
+                        }
+                    } 
+                    this.prefs.addObserver("", this, false);
+                }
             } 
             catch (e) {
                 alert("loreoverlay.onLoad: " + e + "\n" + e.stack);
@@ -416,7 +424,7 @@ try {
         },
         /** Resource Maps toolbar button handler: pop up find window to find text within Resource Map window */
         find: function(){
-        	document.getElementById("graphiframe").contentWindow.find("",false, false, true, false, true, true);        	
+            document.getElementById("graphiframe").contentWindow.find("",false, false, true, false, true, true);            
         },
 
         /** Annotations Toolbar button handler: Trigger adding an annotation */
@@ -443,7 +451,7 @@ try {
             }
         },
         logout: function () {
-        	if (this.authManager){
+            if (this.authManager){
                 this.authManager.logout();
             }
         },
@@ -517,19 +525,19 @@ try {
         },
         /** Resource Map Toolbar button handler: Trigger adding the current URI to the Resource Map editor */
         addGraphNode: function(prompt){
-        	if (prompt){
-        		loreoverlay.coView().addResourceWithPrompt();
-        	} else {
-        		loreoverlay.coView().addResource(window.content.location.href);
-        	}
+            if (prompt){
+                loreoverlay.coView().addResourceWithPrompt();
+            } else {
+                loreoverlay.coView().addResource(window.content.location.href);
+            }
         },
         /** Resource Map Toolbar button handler: Batch add from open tabs */
         addFromTabs: function(){
-        	var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-        		    .getService(Components.interfaces.nsIWindowMediator);
-        	var mainWindow = wm.getMostRecentWindow("navigator:browser");
-        	var thebrowser = mainWindow.getBrowser();
-        	loreoverlay.coView().addFromTabs(thebrowser);
+            var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                    .getService(Components.interfaces.nsIWindowMediator);
+            var mainWindow = wm.getMostRecentWindow("navigator:browser");
+            var thebrowser = mainWindow.getBrowser();
+            loreoverlay.coView().addFromTabs(thebrowser);
         },
         addPlaceholder: function(){
           loreoverlay.coView().addPlaceholder();  
@@ -540,8 +548,8 @@ try {
         /** Toolbar button handler: reset the Resource Maps and annotations views */
         resetUI: function(){
             if (this.authManager){
-	            this.authManager.purgeListeners();
-	            delete this.authManager;
+                this.authManager.purgeListeners();
+                delete this.authManager;
             }
             lore.global.ui.reset(window, this.instId);
         },
@@ -574,7 +582,7 @@ try {
                 var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
                 var ontologies = this.prefs.getCharPref("ontologies");
                 if (ontologies){
-                	ontologies = JSON.parse(ontologies);
+                    ontologies = JSON.parse(ontologies);
                 } 
                 loreoverlay.coView().handlePreferencesChanged({
                     creator: this.prefs.getCharPref("dccreator"),
