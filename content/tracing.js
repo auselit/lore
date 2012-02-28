@@ -11,7 +11,7 @@ lore.LoreTracingModel = extend(Firebug.Module,
      */
     initialize: function() 
     {
-    	// Add listener for log customization
+        // Add listener for log customization
         Firebug.TraceModule.addListener(this);
         Firebug.TraceModule.openConsole("extensions.lore");
     },
@@ -39,7 +39,7 @@ lore.LoreTracingModel = extend(Firebug.Module,
             return;
         var styleSheet = createStyleSheet(doc, "chrome://lore/skin/tracing.css");
         styleSheet.setAttribute("id", "loreTracingStyles");
-	    addStyleSheet(doc, styleSheet);
+        addStyleSheet(doc, styleSheet);
     },
     /**
      * Called when a new message is logged in to the trace-console window to color-code log entries
@@ -47,15 +47,15 @@ lore.LoreTracingModel = extend(Firebug.Module,
      */
     onDump: function(message)
     {
-    	// Last item NOTYPE is the default fallback
-    	var msgtypes = ["UI","ANNO", "ORE", "TM", "NOTYPE"]; 
-		var i = -1;
-		var j = 0;
-		var msgtype;
-		while (i != 0 && j < msgtypes.length){
-			msgtype = msgtypes[j++];
-			i = message.text.indexOf("[" + msgtype + "] ");
-		}
+        // Last item NOTYPE is the default fallback
+        var msgtypes = ["UI","ANNO", "ORE", "TM", "NOTYPE"]; 
+        var i = -1;
+        var j = 0;
+        var msgtype;
+        while (i != 0 && j < msgtypes.length){
+            msgtype = msgtypes[j++];
+            i = message.text.indexOf("[" + msgtype + "] ");
+        }
         if (i == 0) // message matched one of the types - strip the prefix
         {
             message.text = message.text.substr(("[" + msgtype + "] ").length);      

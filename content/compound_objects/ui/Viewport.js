@@ -39,28 +39,28 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                  * Override itemTpl so that we can create menu buttons on the tabs
                  */
                 itemTpl: new Ext.XTemplate(
-	                '<li class="{cls}" id="{id}"><a class="x-tab-strip-close"></a>',
+                    '<li class="{cls}" id="{id}"><a class="x-tab-strip-close"></a>',
                     '<tpl if="menuHandler">',
                         '<a title="{text} Menu" href="#" onclick="{menuHandler}" class="x-tab-strip-menu"></a>',
                     '</tpl>',
-	                '<a class="x-tab-right" href="#"><em class="x-tab-left">',
-	                '<span class="x-tab-strip-inner"><span class="x-tab-strip-text {iconCls}">{text}</span></span>',
-	                '</em></a>',
-	                '</li>'
-				),
-				/** 
-				 * Override to allow menuHandler to be passed in as config
-				 */
-			    getTemplateArgs: function(item) {
-			        var result = Ext.TabPanel.prototype.getTemplateArgs.call(this, item);
+                    '<a class="x-tab-right" href="#"><em class="x-tab-left">',
+                    '<span class="x-tab-strip-inner"><span class="x-tab-strip-text {iconCls}">{text}</span></span>',
+                    '</em></a>',
+                    '</li>'
+                ),
+                /** 
+                 * Override to allow menuHandler to be passed in as config
+                 */
+                getTemplateArgs: function(item) {
+                    var result = Ext.TabPanel.prototype.getTemplateArgs.call(this, item);
                     if (item.menuHandler){
                         result.cls = result.cls + " x-tab-strip-with-menu";
                     }
-			        return Ext.apply(result, {
-			            closable: item.closable,
-			            menuHandler: item.menuHandler
-			        });
-			    },
+                    return Ext.apply(result, {
+                        closable: item.closable,
+                        menuHandler: item.menuHandler
+                    });
+                },
                 /** Override to allow mouse clicks on menu button */
                 onStripMouseDown: function(e){
                     var menu = e.getTarget('.x-tab-strip-active a.x-tab-strip-menu', this.strip);
@@ -68,18 +68,18 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                         // default onclick behaviour will result
                         return;
                     }
-			        e.preventDefault();
-			        var t = this.findTargets(e);
-			        if(t.close){
-			            if (t.item.fireEvent('beforeclose', t.item) !== false) {
-			                t.item.fireEvent('close', t.item);
-			                this.remove(t.item);
-			            }
-			            return;
-			        }
-			        if(t.item && t.item != this.activeTab){
-			            this.setActiveTab(t.item);
-			        }
+                    e.preventDefault();
+                    var t = this.findTargets(e);
+                    if(t.close){
+                        if (t.item.fireEvent('beforeclose', t.item) !== false) {
+                            t.item.fireEvent('close', t.item);
+                            this.remove(t.item);
+                        }
+                        return;
+                    }
+                    if(t.item && t.item != this.activeTab){
+                        this.setActiveTab(t.item);
+                    }
                 },
                 enableTabScroll : true,
                 // Ext plugin to change hideMode to ensure tab contents are not reloaded
@@ -96,12 +96,12 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                             xtype : "grapheditor",
                             iconCls: "graph-icon"
                         },{
-		                    title : "Resource List",
-		                    tabTip: "View or edit the list of resources in the Resource Map",
-		                    xtype : "resourcepanel",
-		                    id : "remlistview",
-		                    iconCls: "list-icon"
-		                },  {
+                            title : "Resource List",
+                            tabTip: "View or edit the list of resources in the Resource Map",
+                            xtype : "resourcepanel",
+                            id : "remlistview",
+                            iconCls: "list-icon"
+                        },  {
                             title : "Details",
                             id: "remdetailsview",
                             tabTip: "View detailed description of Resource Map contents including properties and relationships",
@@ -277,7 +277,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                                  lore.ore.ui.vp.info("Feeds only supported for lorestore: please update your repository preferences.");
                                             }
                                            } catch (ex){
-                                            lore.debug.ore("Viewport: Error launching feed",ex);
+                                            lore.debug.ore("Error in Viewport: launching feed",ex);
                                            }
                                        }
                                     }

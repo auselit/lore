@@ -34,12 +34,9 @@ Ext.extend(lore.draw2d.Label, lore.draw2d.Figure, {
             },
             onTriggerClick: function(ev) {
                try {
-                lore.debug.ore("on trigger click",ev);
                 lore.draw2d.Connection.contextmenu.showAt(ev.xy);
-             
-                
                } catch (e){
-                   lore.debug.ore("problem in trigger click",e);
+                   lore.debug.ore("Error in trigger click",e);
                }
             } 
         });
@@ -55,7 +52,7 @@ Ext.extend(lore.draw2d.Label, lore.draw2d.Figure, {
                 this.stopEditing();
         },this);
         } catch (ex){
-            lore.debug.ore("createEditElement",ex);
+            lore.debug.ore("Error in createEditElement",ex);
         }
     },
     createHTMLElement : function() {
@@ -151,25 +148,24 @@ Ext.extend(lore.draw2d.Label, lore.draw2d.Figure, {
      */
     startEditing : function(){
         try{
-            lore.debug.ore("startEditing",this.editField);
-        if (this.editing){
-            return;
-        }
-        this.editing = true;
-        // hide display label
-        Ext.get(this.textNode).hide();
-        // display editing field with current value
-        this.editField.setRawValue(this.getText());
-        this.editField.show();
-        
-        // prevent keystrokes entered into text field being interpreted by editor to move/delete nodes
-        var wf = this.parent.workflow;
-        wf.editingText = true;
-        
-        this.editField.focus();
-        //this.editField.expand();
+            if (this.editing){
+                return;
+            }
+            this.editing = true;
+            // hide display label
+            Ext.get(this.textNode).hide();
+            // display editing field with current value
+            this.editField.setRawValue(this.getText());
+            this.editField.show();
+            
+            // prevent keystrokes entered into text field being interpreted by editor to move/delete nodes
+            var wf = this.parent.workflow;
+            wf.editingText = true;
+            
+            this.editField.focus();
+            //this.editField.expand();
         } catch (ex){
-            lore.debug.ore("startEditing",ex);
+            lore.debug.ore("Error in startEditing",ex);
         }
     },
     showMenu : function(ev){

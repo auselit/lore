@@ -98,11 +98,11 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
     
         
         var dannoSearchPanel = {
-			xtype: 'annosearchpanel',
-			title: 'Search',
-			id: 'searchpanel',
-			model: this.annotationManager.annosearchds,
-			annotationManager: this.annotationManager
+            xtype: 'annosearchpanel',
+            title: 'Search',
+            id: 'searchpanel',
+            model: this.annotationManager.annosearchds,
+            annotationManager: this.annotationManager
         };
    
         try {
@@ -154,8 +154,8 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
                             handler: this.annotationManager.getFeedURL,
                             scope: this.annotationManager
                         }
-		                
-		            ]
+                        
+                    ]
                 }]
             };
     

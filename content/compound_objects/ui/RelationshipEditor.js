@@ -21,14 +21,13 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 animateTarget: 'properties',
                 editField: function(tfield,row){
                     try {
-                        //lore.debug.ore("editRel",[tfield,row]);
                         this.triggerField = tfield;
                         this.activeRow = row;
                         var val = tfield.getValue();
                         this.show(); 
                         this.focus();
                     } catch (e){
-                        lore.debug.ore("problem in editField",e);
+                        lore.debug.ore("Error in editField",e);
                     }
                 },
                 items: [],
@@ -50,7 +49,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 
                                 w.hide();
                             } catch (e){
-                                lore.debug.ore("problem in update",e);
+                                lore.debug.ore("Error in update",e);
                             }
                         }
                     },
@@ -64,7 +63,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 var w = this.relEditorWindow;
                                 w.hide();
                             } catch (e){
-                                lore.debug.ore("problem in cancel",e);
+                                lore.debug.ore("Error in cancel",e);
                             }
                         }
                     }
@@ -83,7 +82,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                     }, {
                         name: 'relNS'
                     }, {
-                    	name: 'relPrefix'
+                        name: 'relPrefix'
                     }, {
                         name : 'fromURI'
                     }, {
@@ -159,7 +158,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                      coGraph.setCurrentSelection(selfig);
                                      selfig.onContextMenu(ev.xy[0], ev.xy[1],true);
                                     } catch (e){
-                                        lore.debug.ore("problem in trigger click",e);
+                                        lore.debug.ore("Error in trigger click",e);
                                     }
                                  } 
                            })
@@ -243,7 +242,6 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
       }
       try {    
         var sel = panel.getSelectionModel().getSelected();
-        //lore.debug.ore("selection is",sel);
         // don't allow delete when panel is collapsed (user can't see what is selected)
         if (panel.collapsed) {
             lore.ore.ui.vp.info("Please expand the panel and select the relationship to remove");
@@ -258,7 +256,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             lore.ore.ui.vp.info("Please click on the relationship to remove prior to selecting the remove button");
          }
       } catch (ex) {
-            lore.debug.ore("error removing relationship",ex);
+            lore.debug.ore("Error removing relationship",ex);
       }
     },
     /** Handler for help tool button on relationship grid
@@ -284,7 +282,7 @@ lore.ore.ui.RelationshipEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             lore.ore.ui.vp.info("Please click on a relationship prior to selecting the help button");
         }
         } catch (e){
-            lore.debug.ore("helpRelationshipAction",e);
+            lore.debug.ore("Error in helpRelationshipAction",e);
         }
     }
  

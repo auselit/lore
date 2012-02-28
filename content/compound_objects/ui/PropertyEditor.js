@@ -53,7 +53,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             })),
             /** Pop-up editor for property values */
             propEditorWindow: new Ext.Window({ 
-            	propEditor: this,
+                propEditor: this,
                 modal: true,
                 closable: false,
                 layout: 'fit',
@@ -70,19 +70,19 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                         this.show(); 
                         this.focus();
                     } catch (e){
-                        lore.debug.ore("problem in editField",e);
+                        lore.debug.ore("Error in editField",e);
                     }
                 },
                 onShow: function(){
-                	var rec = this.propEditor.store.getAt(this.activeRow);       	
-                	var ccbuttons = this.getBottomToolbar().getComponent(0);
-                	if (rec.get("name") == "dc:rights"){
-                		ccbuttons.show();
-                	} else {		         		
-                		ccbuttons.hide();        		
-                	}
+                    var rec = this.propEditor.store.getAt(this.activeRow);          
+                    var ccbuttons = this.getBottomToolbar().getComponent(0);
+                    if (rec.get("name") == "dc:rights"){
+                        ccbuttons.show();
+                    } else {                        
+                        ccbuttons.hide();               
+                    }
                     this.getComponent(0).show(); // force htmleditor handler to display or hide formatting toolbar
-                	Ext.Window.prototype.onShow.call(this);
+                    Ext.Window.prototype.onShow.call(this);
                 },
                 items: [
                     {
@@ -99,76 +99,76 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 ],
                 bbar: [
                     {
-                    	xtype: 'buttongroup',           	
-                    	columns: 3,
-                    	items: [
-		                    {
-		                    	xtype: 'button',                 	
-		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: '../../skin/icons/cc/by.png',
-		                    	tooltip: 'Set to Creative Commons Attribution license',
-		                    	scope: this,
-		                    	handler: function(){
-		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("This work by is licensed under a Creative Commons Attribution 3.0 Australia License. http://creativecommons.org/licenses/by/3.0/au/");
-		                    	}
-		                    },
-		                    {
-		                    	xtype: 'button',
-		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: '../../skin/icons/cc/bysa.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Share Alike license',
-		                    	scope: this,
-		                    	handler: function(){
-		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("This work is licensed under a Creative Commons Attribution Share Alike 3.0 Australia. License http://creativecommons.org/licenses/by-sa/3.0/au/");
-		                    	}
-		                    },
-		                    {
-		                    	xtype: 'button',
-		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: '../../skin/icons/cc/bync.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial license',
-		                    	scope: this,
-		                    	handler: function(){
-		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("This work is licensed under a Creative Commons Attribution Noncommercial 3.0 Australia License. http://creativecommons.org/licenses/by-nc/3.0/au/");
-		                    	}   	
-		                    },
-		                    {
-		                    	xtype: 'button',
-		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: '../../skin/icons/cc/bynd.png',
-		                    	tooltip: 'Set to Creative Commons Attribution No Derivative Works license',
-		                    	scope: this,
-		                    	handler: function(){
-		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("This work is licensed under a Creative Commons Attribution No Derivative Works 3.0 Australia License. http://creativecommons.org/licenses/by-nd/3.0/au/");
-		                    	}
-		                    },
-		                    {
-		                    	xtype: 'button',
-		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: '../../skin/icons/cc/byncsa.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike license',
-		                    	scope: this,
-		                    	handler: function(){
-		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("This work is licensed under a Creative Commons Attribution Noncommercial Share Alike 3.0 Australia License. http://creativecommons.org/licenses/by-nc-sa/3.0/au/");
-		                    	}
-		                    },
-		                    {
-		                    	xtype: 'button',                    	
-		                    	text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-		                    	icon: '../../skin/icons/cc/byncnd.png',
-		                    	tooltip: 'Set to Creative Commons Attribution Noncommercial No Derivatives license',
-		                    	scope: this,
-		                    	handler: function(){
-		                    		this.propEditorWindow.getComponent(0)
-		                    			.setValue("This work is licensed under a Creative Commons Attribution Noncommercial No Derivative Works 3.0 Australia License. http://creativecommons.org/licenses/by-nc-nd/3.0/au/");
-		                    	}
-		                    }
-		                ]
+                        xtype: 'buttongroup',               
+                        columns: 3,
+                        items: [
+                            {
+                                xtype: 'button',                    
+                                text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                                icon: '../../skin/icons/cc/by.png',
+                                tooltip: 'Set to Creative Commons Attribution license',
+                                scope: this,
+                                handler: function(){
+                                    this.propEditorWindow.getComponent(0)
+                                        .setValue("This work by is licensed under a Creative Commons Attribution 3.0 Australia License. http://creativecommons.org/licenses/by/3.0/au/");
+                                }
+                            },
+                            {
+                                xtype: 'button',
+                                text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                                icon: '../../skin/icons/cc/bysa.png',
+                                tooltip: 'Set to Creative Commons Attribution Share Alike license',
+                                scope: this,
+                                handler: function(){
+                                    this.propEditorWindow.getComponent(0)
+                                        .setValue("This work is licensed under a Creative Commons Attribution Share Alike 3.0 Australia. License http://creativecommons.org/licenses/by-sa/3.0/au/");
+                                }
+                            },
+                            {
+                                xtype: 'button',
+                                text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                                icon: '../../skin/icons/cc/bync.png',
+                                tooltip: 'Set to Creative Commons Attribution Noncommercial license',
+                                scope: this,
+                                handler: function(){
+                                    this.propEditorWindow.getComponent(0)
+                                        .setValue("This work is licensed under a Creative Commons Attribution Noncommercial 3.0 Australia License. http://creativecommons.org/licenses/by-nc/3.0/au/");
+                                }       
+                            },
+                            {
+                                xtype: 'button',
+                                text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                                icon: '../../skin/icons/cc/bynd.png',
+                                tooltip: 'Set to Creative Commons Attribution No Derivative Works license',
+                                scope: this,
+                                handler: function(){
+                                    this.propEditorWindow.getComponent(0)
+                                        .setValue("This work is licensed under a Creative Commons Attribution No Derivative Works 3.0 Australia License. http://creativecommons.org/licenses/by-nd/3.0/au/");
+                                }
+                            },
+                            {
+                                xtype: 'button',
+                                text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                                icon: '../../skin/icons/cc/byncsa.png',
+                                tooltip: 'Set to Creative Commons Attribution Noncommercial Share Alike license',
+                                scope: this,
+                                handler: function(){
+                                    this.propEditorWindow.getComponent(0)
+                                        .setValue("This work is licensed under a Creative Commons Attribution Noncommercial Share Alike 3.0 Australia License. http://creativecommons.org/licenses/by-nc-sa/3.0/au/");
+                                }
+                            },
+                            {
+                                xtype: 'button',                        
+                                text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                                icon: '../../skin/icons/cc/byncnd.png',
+                                tooltip: 'Set to Creative Commons Attribution Noncommercial No Derivatives license',
+                                scope: this,
+                                handler: function(){
+                                    this.propEditorWindow.getComponent(0)
+                                        .setValue("This work is licensed under a Creative Commons Attribution Noncommercial No Derivative Works 3.0 Australia License. http://creativecommons.org/licenses/by-nc-nd/3.0/au/");
+                                }
+                            }
+                        ]
                     },
                     '->',
                     {
@@ -206,7 +206,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 this.stopEditing();
                                 w.hide();
                             } catch (e){
-                                lore.debug.ore("problem in update",e);
+                                lore.debug.ore("Error in update",e);
                             }
                         }
                     },
@@ -221,7 +221,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                 this.updateFormattingStatus(w.activeRow, false);
                                 w.hide();
                             } catch (e){
-                                lore.debug.ore("problem in cancel",e);
+                                lore.debug.ore("Error in cancel",e);
                             }
                         }
                     }
@@ -250,36 +250,36 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 propEditor: this, // reference to PropertyEditor object
                 isCellEditable: function(col, row) {
                     try {
-	                    var g = this.propEditor;
-					    var record = g.store.getAt(row);
-	                    // TODO: use MVC, store read only status of properties in model rather than hardcoding this?
-	                    if (((g.id == "nodegrid") && (record.id == "dc:format_0" || record.id == "rdf:type_0")) 
-	                        || ((g.id != "nodegrid") && (record.id == "dcterms:modified_0"
-	                        || record.id == "dcterms:created_0"
+                        var g = this.propEditor;
+                        var record = g.store.getAt(row);
+                        // TODO: use MVC, store read only status of properties in model rather than hardcoding this?
+                        if (((g.id == "nodegrid") && (record.id == "dc:format_0" || record.id == "rdf:type_0")) 
+                            || ((g.id != "nodegrid") && (record.id == "dcterms:modified_0"
+                            || record.id == "dcterms:created_0"
                             || record.id == "lore:is_derived_from_0"
-	                        || record.id == "rdf:about_0" || record.id == "lorestore:user_0"))){
-						      return false;
-						} 
+                            || record.id == "rdf:about_0" || record.id == "lorestore:user_0"))){
+                              return false;
+                        } 
                     } catch (ex){
                         lore.debug.ore("Error in isCellEditable",ex);
                     }
-				    return Ext.grid.ColumnModel.prototype.isCellEditable.call(this, col, row);
-				},
+                    return Ext.grid.ColumnModel.prototype.isCellEditable.call(this, col, row);
+                },
                 // override to allow different editors for specific properties/datatypes
                 getCellEditor: function(colIndex, rowIndex){
                    if (lore.ore.controller.checkReadOnly()){
                         return;
                    }
                    try{
-	                  if (colIndex == 1){
-		                  var currentRec = this.propEditor.store.getAt(rowIndex);
-		                  if (currentRec && currentRec.get("name") == "dc:type"){
-	                        // dc:type uses a controlled vocabulary: provide a drop down list
+                      if (colIndex == 1){
+                          var currentRec = this.propEditor.store.getAt(rowIndex);
+                          if (currentRec && currentRec.get("name") == "dc:type"){
+                            // dc:type uses a controlled vocabulary: provide a drop down list
                             this.propEditor.dropDownEditor.field.store.loadData(
                                 lore.ore.ontologyManager.getDCTypeVocab()
                             );
-	                        return this.propEditor.dropDownEditor;
-	                      } 
+                            return this.propEditor.dropDownEditor;
+                          } 
                           else if (currentRec && currentRec.get("name") == "dc:subject"){
                             return this.propEditor.tagEditor;
                           } else if (currentRec && currentRec.get("type") == "boolean"){
@@ -296,9 +296,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                           }
                           */
                           
-	                  }
+                      }
                    } catch (ex){
-                    lore.debug.ore("Problem in getCellEditor",ex);
+                    lore.debug.ore("Error in getCellEditor",ex);
                    }
                    // For everything else, use the default Trigger Editor (with popup option)
                    return Ext.grid.ColumnModel.prototype.getCellEditor.call(this,colIndex, rowIndex);
@@ -331,7 +331,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                                      this.propertyEditor.stopEditing();
                                      this.propertyEditor.propEditorWindow.editField(this,row);
                                     } catch (e){
-                                        lore.debug.ore("problem in trigger click",e);
+                                        lore.debug.ore("Error in trigger click",e);
                                     }
                                  } 
                            })
@@ -378,12 +378,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             var cmodel = g.getColumnModel();
             if (cmodel.isCellEditable(1,i)){
                 // The property value field is field number 1, i is the current row index
-	            var tfield = g.getColumnModel().getCellEditor(1,i);
-	            // call startEditing + stopEditing (ensures value is updated into triggerfield)
-	            this.startEditing(i,1);
-	            this.stopEditing();
-	            // open the popup editor
-	            g.propEditorWindow.editField(tfield,i);
+                var tfield = g.getColumnModel().getCellEditor(1,i);
+                // call startEditing + stopEditing (ensures value is updated into triggerfield)
+                this.startEditing(i,1);
+                this.stopEditing();
+                // open the popup editor
+                g.propEditorWindow.editField(tfield,i);
             } else {
                  lore.ore.ui.vp.info("Property value is not editable");
             }
@@ -411,7 +411,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 }
             }
         } catch (ex){
-            lore.debug.ore("Problem in checkFormattingAllowed",ex)
+            lore.debug.ore("Error in checkFormattingAllowed",ex)
         }
         return false;
     },
@@ -419,24 +419,24 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     setFormattingEnabled : function(enable){
         try{
             if (this.store){
-		        var currentRec = this.store.getAt(this.lastEdit.row);
-		        if (currentRec){
+                var currentRec = this.store.getAt(this.lastEdit.row);
+                if (currentRec){
                     var currentType = currentRec.get("type");
                     if (enable && (!currentType || currentType == "string" || currentType == "string-pending")){
                       // We only allow html formatting if the original type was string 
                       // (as opposed to plainstring for properties like creator, title that should not have formatting)
                       // "pending" is appended to type so we can tell whether the format was changed: 
                       // this change of type will be reverted if editing is cancelled, pending is removed if changes are saved
-		              currentRec.set("type","html-pending");
+                      currentRec.set("type","html-pending");
                       return true;
                     } else if (!enable && (!currentType || currentType == "html" || currentType == "html-pending")){
                         currentRec.set("type","string-pending");
                         return true;
                     } 
-		        }
+                }
             } 
         } catch (ex){
-            lore.debug.ore("Problem in setFormattingEnabled",ex)
+            lore.debug.ore("Error in setFormattingEnabled",ex)
         }
         // Return false to indicate nothing happened or formatting is not allowed (e.g. original type was not string)
         return false;
@@ -451,7 +451,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             return false;
         }
         } catch (ex){
-            lore.debug.ore("Problem in getFormattingEnabled",ex);
+            lore.debug.ore("Error in getFormattingEnabled",ex);
         }
     },
     /** Finalise format of field upon update or cancel */
@@ -470,7 +470,6 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         }
     },
     bindModel : function(resource){
-        //lore.debug.ore("bind model " + this.id,resource);
         var model;
         if (resource){
             model = resource.get('properties');
@@ -478,14 +477,14 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         if (this.model == model){
             return;
         }
-    	// Listen to model for property changes
-    	if (this.model){
-    		this.model.un("propertyChanged",this.onModelPropertyChanged,this);
+        // Listen to model for property changes
+        if (this.model){
+            this.model.un("propertyChanged",this.onModelPropertyChanged,this);
             this.model.un("propertyRemoved",this.onModelPropertyRemoved, this);
-    	}
-    	this.model = model;
-    	if (this.model){
-    		this.model.on("propertyChanged",this.onModelPropertyChanged,this);
+        }
+        this.model = model;
+        if (this.model){
+            this.model.on("propertyChanged",this.onModelPropertyChanged,this);
             this.model.on("propertyRemoved",this.onModelPropertyRemoved,this);
             var props = this.model.getSortedArray();
             // add resource url or Resource Map ID as prop
@@ -535,24 +534,23 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     },
     /** Update grid if property value changes in model */
     onModelPropertyChanged: function(config, index){
-        lore.debug.ore("model property changed",config)
-    	try{
-	    	if (config){
+        try{
+            if (config){
                 var theid = config.prefix + ':' + config.name + "_" + index;
-	    		var rec = this.store.getById(theid);
-	    		// check whether value has actually changed
-	    		if (rec && rec.value != config.value){
-	    			// update record
-    	    	    rec.set('value',config.value);
-    	    		rec.commit();
-	    		} else if (!rec){
+                var rec = this.store.getById(theid);
+                // check whether value has actually changed
+                if (rec && rec.value != config.value){
+                    // update record
+                    rec.set('value',config.value);
+                    rec.commit();
+                } else if (!rec){
                     // new property value: add to grid
                     this.store.loadData([{id: theid, name: config.prefix + ":" + config.name, value: config.value, type: config.type}],true);
                 }
-	    	}
-    	} catch (ex){
-    		lore.debug.ore("onModelPropertyChanged",ex);
-    	}
+            }
+        } catch (ex){
+            lore.debug.ore("Error in onModelPropertyChanged",ex);
+        }
     },
     onModelPropertyRemoved: function(config,index){
         try{
@@ -579,7 +577,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }
           }
         } catch (ex){
-            lore.debug.ore("onModelPropertyRemoved", ex);
+            lore.debug.ore("Error in onModelPropertyRemoved", ex);
         }
        
     },
@@ -612,7 +610,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         return val;
     },
     /** Grey out rows that are not editable by the user */
-	renderFunction: function(val, cell, rec){
+    renderFunction: function(val, cell, rec){
         if (rec.get("type") == "boolean"){
             // display a checkbox for boolean values
             var checkedImg = '../../content/lib/ext3.2/resources/images/default/menu/checked.gif';
@@ -641,7 +639,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 if (t > 0){
                     renderString += ", ";
                 }
-	            var idx = sbs.store.findUnfiltered('id', tags[t].replace(/&amp;/g,'&'));
+                var idx = sbs.store.findUnfiltered('id', tags[t].replace(/&amp;/g,'&'));
                 if (idx == -1){
                     idx = sbs.store.findUnfiltered('id', tags[t]);
                 }
@@ -649,7 +647,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                    var tagRec = sbs.store.getAtUnfiltered(idx);
                    var name = tagRec.get('name');
                    if (name){
-	                    renderString += name;
+                        renderString += name;
                    } else {
                         renderString += tags[t];
                    }
@@ -661,28 +659,28 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             return '<span title="' + escVal + '">' +  renderString + '</span>';
         }
         
-    	if (lore.ore.controller.readOnly || (rec && rec.data && 
-    			(rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
-    				|| rec.data.id == "rdf:type_0"
-    			    || rec.data.id == "rdf:about_0" 
+        if (lore.ore.controller.readOnly || (rec && rec.data && 
+                (rec.data.id == "dc:format_0" || rec.data.id == "lorestore:user_0"
+                    || rec.data.id == "rdf:type_0"
+                    || rec.data.id == "rdf:about_0" 
                     || rec.data.id == "lore:is_derived_from_0"
-    			    || (this.id != 'nodegrid' 
-    			    		&& (rec.data.id == "dcterms:modified_0" ||
-    			    		rec.data.id == "dcterms:created_0"))
-    			    ))){
-    		
-    		return '<span title="' + escVal + '" style="color:grey;">' + val + '</span>';
-    	} else {
-    		return '<span title="' + escVal + '">' + val + '</span>';
-    	}
+                    || (this.id != 'nodegrid' 
+                            && (rec.data.id == "dcterms:modified_0" ||
+                            rec.data.id == "dcterms:created_0"))
+                    ))){
+            
+            return '<span title="' + escVal + '" style="color:grey;">' + val + '</span>';
+        } else {
+            return '<span title="' + escVal + '">' + val + '</span>';
+        }
         } catch (ex){
-            lore.debug.ore("Problem in renderFunc",ex);
+            lore.debug.ore("Error in renderFunc",ex);
         }
         return val;
     },
     makeAddPropertyMenu: function (mp){
-    	var panel = this;
-    	panel.propMenu = new Ext.menu.Menu({
+        var panel = this;
+        panel.propMenu = new Ext.menu.Menu({
             id: panel.id + "-add-metadata"
         });
         panel.propMenu.panelref = panel.id;
@@ -714,7 +712,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                 pData.type = ptype;
                 pstore.loadData([pData],true);
             } catch (ex){
-                lore.debug.ore("exception adding prop " + this.propname,ex);
+                lore.debug.ore("Error adding prop " + this.propname,ex);
             }
         };
         if (panel.id == "remgrid"){
@@ -748,10 +746,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         if (lore.ore.controller.checkReadOnly()){
             return;
         } 
-    	try{
-        if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.relOntologyURL != panel.loadedOntology)) {        	
-        	panel.loadedOntology = lore.ore.ontologyManager.relOntologyURL;
-        	panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties(panel.id == "remgrid"));
+        try{
+        if (!panel.propMenu || !panel.loadedOntology || (lore.ore.ontologyManager.relOntologyURL != panel.loadedOntology)) {            
+            panel.loadedOntology = lore.ore.ontologyManager.relOntologyURL;
+            panel.makeAddPropertyMenu(lore.ore.ontologyManager.getDataTypeProperties(panel.id == "remgrid"));
         }
         var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
         if (panel.id == "remgrid" || selfig instanceof lore.ore.ui.graph.EntityFigure){
@@ -762,9 +760,9 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
         } else {
             lore.ore.ui.vp.info("Please click on a Resource node before adding property");
         }
-    	} catch (e){
-    		lore.debug.ore("Problem in addPropertyAction",e);
-    	}
+        } catch (e){
+            lore.debug.ore("Error in addPropertyAction",e);
+        }
     },
     /** Handler for minus tool button on property grids
      * 
@@ -819,7 +817,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             lore.ore.ui.vp.info("Please click on the property to remove prior to selecting the remove button");
          }
         } catch (ex) {
-            lore.debug.ore("error removing property ",ex);
+            lore.debug.ore("Error removing property ",ex);
         }
     },
     /** Handler for help tool button on property grids
@@ -857,13 +855,12 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
     },
     /** update the properties for the selected figure */
     handlePropertyChange : function(args) {
-    	lore.ore.controller.setDirty();
+        lore.ore.controller.setDirty();
         // at present this only updates resource/rel properties - also needs to update on Resource Map
         try{
             if (this.id == "nodegrid"){
                 var theval;
                 var selfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
-                //lore.debug.ore("handle property change " + args.record.id + "  to " + args.value + " " + args.originalValue,args);
                 if (selfig instanceof lore.draw2d.Connection){
                     if (args.record.data.name == 'relationship'){ 
                         selfig.setRelationship(
@@ -951,7 +948,7 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
                   }
             }
         } catch (e){
-            lore.debug.ore("error handling property change",e);
+            lore.debug.ore("Error handling property change",e);
         }
     },
     /** Looks up property value from a grid by name
@@ -973,10 +970,10 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
      */
     setPropertyValue : function(propname, propval, pindex){
         var proprec = this.store.getById(propname + "_" + pindex);
-    	if (proprec){
-			proprec.set("value", propval);
-			this.store.commitChanges();
-    	}
+        if (proprec){
+            proprec.set("value", propval);
+            this.store.commitChanges();
+        }
     },
     appendPropertyValue : function(propname, propval, proptype){
         var counter = 0;
@@ -1046,7 +1043,7 @@ Ext.ux.form.HtmlEditor.ToggleFormatting = Ext.extend(Ext.util.Observable, {
                 this.toggleToolbar(!pressed);
               }
             } catch (ex){
-                lore.debug.ore("Problem in onRender",ex);
+                lore.debug.ore("Error in onRender",ex);
             }
           },
           scope: this,
@@ -1116,7 +1113,7 @@ Ext.ux.form.HtmlEditor.ToggleFormatting = Ext.extend(Ext.util.Observable, {
                   this.toggleToolbar(disable);
               }
           } catch (ex){
-              lore.debug.ore("Problem removing formatting",ex);
+              lore.debug.ore("Error removing formatting",ex);
           } 
     }
 });

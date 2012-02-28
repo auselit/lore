@@ -52,7 +52,7 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
                     data : (this.id == 'hpager'? [['title', 'Title'],['accessed','Last accessed']] : [['title', 'Title'],['creator','Creator'],['modified', 'Last Modified']])
                 }),
                 listeners: { 
-                	'select': {fn:function(combo){this.sortCompoundObjects(combo.getValue());}, scope:this}
+                    'select': {fn:function(combo){this.sortCompoundObjects(combo.getValue());}, scope:this}
                 }
         }
         ];
@@ -80,12 +80,12 @@ lore.ore.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
     },
     /** Sorts Resource Maps */
     sortCompoundObjects: function(v){
-    	try{
-	        this.store.sort(v, (v == 'title' || v == 'creator') ? 'asc' : 'desc');
-	        this.moveFirst();
-    	} catch (e){
-    		lore.debug.ore("Error in sortCompoundObjects",e);
-    	}
+        try{
+            this.store.sort(v, (v == 'title' || v == 'creator') ? 'asc' : 'desc');
+            this.moveFirst();
+        } catch (e){
+            lore.debug.ore("Error in sortCompoundObjects",e);
+        }
     },
     /**
      * Fix paging after clear: reset back to first page

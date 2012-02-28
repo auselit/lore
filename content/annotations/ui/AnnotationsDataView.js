@@ -27,16 +27,16 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
                 text: "Add as node/s in Resource Map editor",
                 icon: "../../skin/icons/add.png",
                 handler: function () {
-                	var recs = this.getSelectedRecords();
-                	lore.anno.controller.handleAddResultsToCO(recs);
+                    var recs = this.getSelectedRecords();
+                    lore.anno.controller.handleAddResultsToCO(recs);
                 },
                 scope: this
             }, {
                 text: "View annotation/s in browser",
                 icon: "../../skin/icons/page_go.png",
                 handler: function () {
-                	var recs = this.getSelectedRecords();
-                	lore.anno.controller.handleViewAnnotationInBrowser(recs);
+                    var recs = this.getSelectedRecords();
+                    lore.anno.controller.handleViewAnnotationInBrowser(recs);
                 },
                 scope: this
             }/*,

@@ -191,7 +191,7 @@ Ext.apply(lore.anno.Controller.prototype, {
      */
     handlePrefsChange : function (args) {
         if (!this.disableUIFeatures){
-            lore.debug.ore("no disable ui features",this);
+            lore.debug.anno("no disable ui features",this);
         }
         this.disableUIFeatures({
             disable: args.disable
@@ -423,9 +423,9 @@ Ext.apply(lore.anno.Controller.prototype, {
      */
     loadAnyPrivateAnnosForPage : function() {
         if (this.lorevisible){
-	        lore.anno.annoMan.updateAnnotationsSourceList(this.currentURL, function (anno) {
-	            return anno.privateAnno;
-	        });
+            lore.anno.annoMan.updateAnnotationsSourceList(this.currentURL, function (anno) {
+                return anno.privateAnno;
+            });
         }
     },
     /**

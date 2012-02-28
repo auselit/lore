@@ -14,9 +14,9 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     },   
     /** jump to slide for a resource from the current Resource Map */
     showResource: function(uri){
-    	Ext.getCmp("loreviews").activate(this.id);
-    	// The id of the active item has the containing Resource Map appended
-    	this.setActiveItem(uri + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
+        Ext.getCmp("loreviews").activate(this.id);
+        // The id of the active item has the containing Resource Map appended
+        this.setActiveItem(uri + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
     },
     /** 
      * Sets the slide to be displayed in the slideshow
@@ -27,15 +27,15 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
             this.layout.setActiveItem(i);
             this.activeItem = this.items.indexOf(this.layout.activeItem);
         } else {
-	        var max = this.items.length;
-	        var ai = 0;
-	        if (i < 0){
-	            ai = max - 1;
-	        } else {
-	            ai = i % max;
-	        } 
-	        this.activeItem = ai;
-	        this.layout.setActiveItem(ai);
+            var max = this.items.length;
+            var ai = 0;
+            if (i < 0){
+                ai = max - 1;
+            } else {
+                ai = i % max;
+            } 
+            this.activeItem = ai;
+            this.layout.setActiveItem(ai);
         }
        
     },
@@ -139,8 +139,8 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
         var items = [];
         var slide;
         try{
-        	cr.each(function(rec){
-        		var r = rec.data;
+            cr.each(function(rec){
+                var r = rec.data;
                 if (r.representsCO && (nestingLevel < lore.ore.cache.MAX_NESTING)) {
                     // process nested content
                     var rco = lore.ore.cache.getCompoundObject(r.uri);
@@ -167,7 +167,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
                 }
             },this);
         } catch (e) {
-            lore.debug.ore("Problem creating content slides",e);
+            lore.debug.ore("Error creating content slides",e);
         }
         return items;
    },
@@ -206,7 +206,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
             this.add(this.createContentSlides(co.aggregatedResourceStore, 0, co.uri)); 
         }
     } catch (e){
-        lore.debug.ore("Problem loading slideshow content",e);
+        lore.debug.ore("Error loading slideshow content",e);
     }
    },
    /**

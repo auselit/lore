@@ -46,9 +46,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
      */
     displayProperties : function(res, container, skip){
       try{
-    	var ns = lore.constants.NAMESPACES;
-    	var dc = ns["dc"];
-    	var dcterms = ns["dcterms"];
+        var ns = lore.constants.NAMESPACES;
+        var dc = ns["dc"];
+        var dcterms = ns["dcterms"];
         var prophtml = "<div class='slideshowProps'>";
         var relhtml = "";
         var currentProp;
@@ -65,28 +65,28 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         // ordering: description, abstract, rights, then all other props, then rels
         currentProp = res.properties.data[dc+"description"];
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
-        currentProp = res.properties.data[dcterms+"abstract"];  	
+        currentProp = res.properties.data[dcterms+"abstract"];      
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
         currentProp = res.properties.data[dc+"rights"];
         if (currentProp) {prophtml += this.propTemplate.apply(currentProp);}
         try{
         var sortedProps = res.properties.getSortedArray(skipProps);
-	 	for (var k =0; k < sortedProps.length; k++) {
-	 		var valArray = sortedProps[k];
+        for (var k =0; k < sortedProps.length; k++) {
+            var valArray = sortedProps[k];
             for (var i = 0; i < valArray.length; i++){
-            	var theProp = valArray[i];
+                var theProp = valArray[i];
                 if ("layout" != theProp.prefix && "lorestore" != theProp.prefix){
                     if (theProp.value.toString().match("^http://") == "http://") {
-                    	// property data for related resource: for looking up title etc
+                        // property data for related resource: for looking up title etc
                         var propR = (container? container.getAggregatedResource(theProp.value): false);
                         // Link to resource
                         relhtml += "<p><b>" + Ext.util.Format.capitalize(theProp.name) + ":</b>&nbsp;";
                         // Open in browser link only for real resources, not placeholders
                         if (propR && !propR.get('isPlaceholder')){
                             relhtml += "<a href='#' title='Show in browser' onclick='lore.util.launchTab(\"" 
-                            	+ theProp.value 
-                            	+ ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
-                            	+ "\");'>";
+                                + theProp.value 
+                                + ((propR && propR.get('representsAnno')) ? "?danno_useStylesheet=" : "") 
+                                + "\");'>";
                         }
                         // use title or tag name when available
                         var displayVal = theProp.value;
@@ -103,10 +103,10 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
                             relhtml += "</a>";
                         }
                         if (propR){
-                        	// Goto slide link (only if resource is in same Resource Map)
-	                        relhtml += "&nbsp;<a href='#' title='Go to slide' onclick='Ext.getCmp(\"" 
-	                        	+ this.ssid + "\").setActiveItem(\"" + theProp.value + "_" + container.uri+"\");'>"
-	                        	+ "<img src='../../skin/icons/ore/picture_empty.png'></a>";
+                            // Goto slide link (only if resource is in same Resource Map)
+                            relhtml += "&nbsp;<a href='#' title='Go to slide' onclick='Ext.getCmp(\"" 
+                                + this.ssid + "\").setActiveItem(\"" + theProp.value + "_" + container.uri+"\");'>"
+                                + "<img src='../../skin/icons/ore/picture_empty.png'></a>";
                         }
                         relhtml += "</p>";
                     } else {
@@ -117,11 +117,11 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             }
         }
         } catch (e){
-        	lore.debug.ore("problem displaying properties",e);
+            lore.debug.ore("Error displaying properties",e);
         }
         return prophtml + relhtml + "</div>";
       } catch (e){
-    	  lore.debug.ore("displayProperties:",e);
+          lore.debug.ore("Error in displayProperties:",e);
       }
     },
     /** 
@@ -130,9 +130,9 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
      */
     loadContent: function(resource){
       try{
-    	var ns = lore.constants.NAMESPACES;
-    	var dc = ns["dc"];
-    	var dcterms = ns["dcterms"];
+        var ns = lore.constants.NAMESPACES;
+        var dc = ns["dc"];
+        var dcterms = ns["dcterms"];
         var displayDate = function(cprop, desc){
             var cval;
             var datehtml = "";
@@ -178,16 +178,16 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
         var ccreator;
         var resourceprops = resource.data;
         if (resourceprops){
-        	var title = resourceprops.properties.getTitle();
+            var title = resourceprops.properties.getTitle();
         } else {
-        	var title = resource.properties.getTitle();
+            var title = resource.properties.getTitle();
         }
         var skip = {};
         skip[dc + "creator"] = true;
         skip[dcterms + "created"] = true;
         skip[dcterms + "modified"] = true;
         if (resource instanceof lore.ore.model.CompoundObject){
-        	
+            
             // Title slide for entire Slideshow
             title = title || 'Resource Map';
             slidehtml += "<div style='padding:0.5em'><div class='slideshowTitle'>" + title + "</div>";
@@ -203,13 +203,13 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             slidehtml += "<div class='slideshowFooter'>Created";
             ccreator = resource.properties.data[dc+"creator"];
             if (ccreator){
-            	slidehtml += " by";
-            	for (var i = 0; i< ccreator.length; i++){
-            		 if (i > 0) {
-            			 slidehtml += ",";
-            		 }
-            		 slidehtml += "  " + ccreator[i].value;
-            	}
+                slidehtml += " by";
+                for (var i = 0; i< ccreator.length; i++){
+                     if (i > 0) {
+                         slidehtml += ",";
+                     }
+                     slidehtml += "  " + ccreator[i].value;
+                }
             }
             slidehtml += displayDate(resource.properties.getProperty(dcterms+"created",0),' on ');
             slidehtml += displayDate(resource.properties.getProperty(dcterms+"modified",0), ', last updated ');
@@ -217,103 +217,103 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             slidehtml += "</div>";
             
         } else  {
-        	if (resourceprops.representsCO){
-	        
-	             // content slide representing nested CO
-	            // Properties
-	            slidehtml += "<div style='padding:0.5em'>";
-	            slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
-	            slidehtml += this.displayProperties(resourceprops, resource.store.co);
-	            if (resourceprops.representsCO instanceof lore.ore.model.CompoundObject){
-	                slidehtml +=  this.displayProperties(resourceprops.representsCO,resource.store.co,skip);
-	                var contentResources = resourceprops.representsCO.aggregatedResourceStore;
-		            if (contentResources.getTotalCount() > 0){
-		                slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;padding-bottom:0.5em;'>In this section:</p>";
-	                    slidehtml += makeTOC(contentResources, resourceprops.representsCO.uri,this.ssid);
-	                    slidehtml += "</div>";
-		            }
-		            slidehtml += "<div class='slideshowFooter'>This nested Resource Map created";
-	                ccreator = resourceprops.representsCO.properties.data[dc+"creator"];
-	                if (ccreator){
-	                	slidehtml += " by";
-	                	for (var i = 0; i< ccreator.length; i++){
-	                		 if (i > 0) {
-	                			 slidehtml += ",";
-	                		 }
-	                		 slidehtml += "  " + ccreator[i].value;
-	                	}
-	                }
-	                slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"created",0), ' on ');
-	                slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"modified",0),", last updated ");
-		            slidehtml += "</div>";
-	            } else {
-	                slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + resourceprops.uri + "\");'>Nested Resource Map:<br>"
-	                        + "<img src='../../skin/icons/ore/action_go.gif'/> Load in LORE</p>";
-	            }
-	            slidehtml += "</div>";
-	        } else {
-	            // content slide representing resource
-	            title = resourceprops.properties.getTitle() || "Untitled Resource";
-	            var format = resourceprops.properties.getProperty(dc+"format",0);
-	            var dctype = resourceprops.properties.getProperty(dc+"type",0);
-	            var hasPreview = false; // preview disabled by default as secure iframe does not allow plugins
-	            var icontype;
+            if (resourceprops.representsCO){
+            
+                 // content slide representing nested CO
+                // Properties
+                slidehtml += "<div style='padding:0.5em'>";
+                slidehtml += "<div class='sectionTitle'>" + (title || " ") + "</div>";
+                slidehtml += this.displayProperties(resourceprops, resource.store.co);
+                if (resourceprops.representsCO instanceof lore.ore.model.CompoundObject){
+                    slidehtml +=  this.displayProperties(resourceprops.representsCO,resource.store.co,skip);
+                    var contentResources = resourceprops.representsCO.aggregatedResourceStore;
+                    if (contentResources.getTotalCount() > 0){
+                        slidehtml += "<div class='slideshowTOC'><p style='font-weight:bold;padding-bottom:0.5em;'>In this section:</p>";
+                        slidehtml += makeTOC(contentResources, resourceprops.representsCO.uri,this.ssid);
+                        slidehtml += "</div>";
+                    }
+                    slidehtml += "<div class='slideshowFooter'>This nested Resource Map created";
+                    ccreator = resourceprops.representsCO.properties.data[dc+"creator"];
+                    if (ccreator){
+                        slidehtml += " by";
+                        for (var i = 0; i< ccreator.length; i++){
+                             if (i > 0) {
+                                 slidehtml += ",";
+                             }
+                             slidehtml += "  " + ccreator[i].value;
+                        }
+                    }
+                    slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"created",0), ' on ');
+                    slidehtml += displayDate(resourceprops.representsCO.properties.getProperty(dcterms+"modified",0),", last updated ");
+                    slidehtml += "</div>";
+                } else {
+                    slidehtml += "<a title='Open in LORE' href='#' onclick='lore.ore.controller.loadCompoundObjectFromURL(\"" + resourceprops.uri + "\");'>Nested Resource Map:<br>"
+                            + "<img src='../../skin/icons/ore/action_go.gif'/> Load in LORE</p>";
+                }
+                slidehtml += "</div>";
+            } else {
+                // content slide representing resource
+                title = resourceprops.properties.getTitle() || "Untitled Resource";
+                var format = resourceprops.properties.getProperty(dc+"format",0);
+                var dctype = resourceprops.properties.getProperty(dc+"type",0);
+                var hasPreview = false; // preview disabled by default as secure iframe does not allow plugins
+                var icontype;
                 if (resourceprops.representsAnno){
                     icontype = "annoicon";
                 } else {
                     icontype = lore.ore.controller.lookupIcon((dctype? dctype: format),dctype);
                 }
-		        if (format && (format.value.match("html") || format.value.match("image"))){
+                if (format && (format.value.match("html") || format.value.match("image"))){
                     hasPreview = true;
-		        } 
-	            
-	            if (resourceprops.representsAnno){
-	                hasPreview = true;
-	            }
-	            // Only allow http/https previews (ie no chrome, data, view-source etc uris) for security reasons
-	            if (!(resourceprops.uri.match("^http") == "http")){
-	                hasPreview = false;
-	            }
+                } 
+                
+                if (resourceprops.representsAnno){
+                    hasPreview = true;
+                }
+                // Only allow http/https previews (ie no chrome, data, view-source etc uris) for security reasons
+                if (!(resourceprops.uri.match("^http") == "http")){
+                    hasPreview = false;
+                }
                 var highlightColor = resourceprops.properties.getProperty(lore.constants.NAMESPACES["layout"]+"highlightColor",0);
-	            slidehtml += "<div style='" + (highlightColor? "background-color:#" + highlightColor.value + ";" : "") + "padding:2px;border-bottom: 1px solid #dce0e1;'>";
+                slidehtml += "<div style='" + (highlightColor? "background-color:#" + highlightColor.value + ";" : "") + "padding:2px;border-bottom: 1px solid #dce0e1;'>";
                 if (resourceprops.isPlaceholder){
                     hasPreview = false;
                     // no link for placeholder resource
                    slidehtml += "<li class='" + icontype + "'>&nbsp;"  + title + "</li>";
                 } else {
-	               slidehtml += "<a onclick='lore.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
+                   slidehtml += "<a onclick='lore.util.launchTab(\"" + resourceprops.uri + "\");' href='#' title='Open in a new tab'><li class='" + icontype + "'>&nbsp;"  + title + "</li></a>";
                 }
-	            slidehtml += "</div>";
-	            slidehtml += this.displayProperties(resourceprops, resource.store.co);
-	            var previewEl;
-	            if (format && format.value.match("image")){
-	                previewEl = document.createElement('img');
-	                previewEl.src=resourceprops.uri;
-	                previewEl.alt = "image preview";
-	                previewEl.onclick= function(e){lore.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false;};
-	                previewEl.style.maxHeight = "100%";
-	            } else if (hasPreview) {
-	                var theURL = resourceprops.uri;
-	                if (resourceprops.representsAnno){
-	                    theURL = theURL + '?danno_useStylesheet=';
-	                } else if (resourceprops.uri.match('austlit.edu.au') && (resourceprops.uri.match('ShowWork') || resourceprops.uri.match('ShowAgent'))){
-	                    theURL = theURL + '&printPreview=y';
-	                }
-	                previewEl = lore.util.createSecureIFrame(window.top, theURL);
-	                previewEl.style.width = "100%";
-	                previewEl.style.height = "100%";
-	                previewEl.name = resourceprops.uri + "-ss";
-	                previewEl.id = resourceprops.uri + "-ss";
-	                previewEl.style.zIndex = "-9001";
-	            } 
-	        }   
-        	slidehtml += "<p class='slideshowFooter'>";
-        	var container = resource.store.co;
-        	
-        	slidehtml += "Viewing "
-        		+ (resourceprops.representsCO ? "nested Resource Map " : (resourceprops.isPlaceholder ? "a placeholder ": 
-        		 "<a onclick='lore.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>"));
-        	// TODO: refactor: remove hardcoding
+                slidehtml += "</div>";
+                slidehtml += this.displayProperties(resourceprops, resource.store.co);
+                var previewEl;
+                if (format && format.value.match("image")){
+                    previewEl = document.createElement('img');
+                    previewEl.src=resourceprops.uri;
+                    previewEl.alt = "image preview";
+                    previewEl.onclick= function(e){lore.util.launchTab(this.getAttribute('src'),window);e.stopPropagation();return false;};
+                    previewEl.style.maxHeight = "100%";
+                } else if (hasPreview) {
+                    var theURL = resourceprops.uri;
+                    if (resourceprops.representsAnno){
+                        theURL = theURL + '?danno_useStylesheet=';
+                    } else if (resourceprops.uri.match('austlit.edu.au') && (resourceprops.uri.match('ShowWork') || resourceprops.uri.match('ShowAgent'))){
+                        theURL = theURL + '&printPreview=y';
+                    }
+                    previewEl = lore.util.createSecureIFrame(window.top, theURL);
+                    previewEl.style.width = "100%";
+                    previewEl.style.height = "100%";
+                    previewEl.name = resourceprops.uri + "-ss";
+                    previewEl.id = resourceprops.uri + "-ss";
+                    previewEl.style.zIndex = "-9001";
+                } 
+            }   
+            slidehtml += "<p class='slideshowFooter'>";
+            var container = resource.store.co;
+            
+            slidehtml += "Viewing "
+                + (resourceprops.representsCO ? "nested Resource Map " : (resourceprops.isPlaceholder ? "a placeholder ": 
+                 "<a onclick='lore.util.launchTab(\"" + resourceprops.uri + (resourceprops.representsAnno? "?danno_useStylesheet=" : "") +"\");' href='#'>"  + resourceprops.uri + "</a>"));
+            // TODO: refactor: remove hardcoding
             if (container){
                 slidehtml += " &nbsp; from &nbsp;&nbsp;<a href='#' onclick='Ext.getCmp(\"" + this.ssid + "\").setActiveItem(\""  + container.uri + "\");'>" + (container.properties.getTitle() || container.uri) + "</a>"; 
             }
@@ -346,7 +346,7 @@ lore.ore.ui.SlidePanel = Ext.extend(Ext.Panel,{
             this.html = slidehtml;   
         }
       } catch (e){
-    	  lore.debug.ore("loadContent",e);
+          lore.debug.ore("Error in loadContent",e);
       }
     },
     /** Reset the iframe to show resource URL */

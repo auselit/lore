@@ -3,11 +3,11 @@ Ext.namespace("lore.ore.model");
  * @class lore.ore.model.ResourceProperties Manage multi-valued properties for Resources
  */
 lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
-	constructor: function(){
-		this.data = {};
-		this.addEvents('propertyChanged');
+    constructor: function(){
+        this.data = {};
+        this.addEvents('propertyChanged');
         this.addEvents('propertyRemoved');
-	},
+    },
     /** setProperty Set a property or add if it does not exist
      * @param {Object} config The data for the property
      * @cfg id The URI of the property
@@ -38,7 +38,7 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
             }
             this.fireEvent('propertyChanged', config, retIndex);
         } catch (ex){
-            lore.debug.ore("setProperty",ex);
+            lore.debug.ore("Error in setProperty",ex);
         }
     },
     /** Remove a property with a given index (if no index is supplied, 0 is assumed)
@@ -88,15 +88,15 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
      * 
      */
     findProperty : function(property,value){
-    	var propValues = this.data[property];  	
-    	if (propValues && propValues.length > 0){
-    		for (var i = 0; i < propValues.length; i++){
-    			if (propValues[i].value == value){
-    				return i;
-    			}
-    		}
-    	}
-    	return -1;
+        var propValues = this.data[property];   
+        if (propValues && propValues.length > 0){
+            for (var i = 0; i < propValues.length; i++){
+                if (propValues[i].value == value){
+                    return i;
+                }
+            }
+        }
+        return -1;
     },
      /**
      * Convenience function to get the title of this resource 
@@ -113,20 +113,20 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
      * @param {Object} skipProps optional properties to not include in list (properties are uris of properties to skip with value = true)
      */
     getSortedArray: function (skipProps){
-    	skipProps = skipProps || {};
-    	var keys = [];
-	 	for (var p in this.data) {
-	 		if (!(p in skipProps)){
-	 			keys.push(this.data[p]);
-	 		}
-	 	}
-	 	keys.sort(function(a,b){
-	 		var aname = a[0].name.toLowerCase();
-	 		var bname = b[0].name.toLowerCase();
-	 		if (aname < bname) return -1;
-	 		if (aname > bname) return 1;
-	 		return 0;
-	 	});
-	 	return keys;
+        skipProps = skipProps || {};
+        var keys = [];
+        for (var p in this.data) {
+            if (!(p in skipProps)){
+                keys.push(this.data[p]);
+            }
+        }
+        keys.sort(function(a,b){
+            var aname = a[0].name.toLowerCase();
+            var bname = b[0].name.toLowerCase();
+            if (aname < bname) return -1;
+            if (aname > bname) return 1;
+            return 0;
+        });
+        return keys;
     }
 });

@@ -44,7 +44,7 @@ lore.util = {
      * @param {Object} ob The object to check
      * @return {Boolean} true if the object is equivalent to {}
      */
-	isEmptyObject : function (ob){
+    isEmptyObject : function (ob){
         for(var i in ob){
             if(ob.hasOwnProperty(i)) {
                 return false;
@@ -53,8 +53,8 @@ lore.util = {
         return true;
     },
     
-	
-	ELFHash: function(str) {
+    
+    ELFHash: function(str) {
      var hash = 0;
      var x    = 0;
 
@@ -79,14 +79,14 @@ lore.util = {
     preEncode : function (str) {
         return str.replace(/}/,"%7D").replace(/{/,"%7B").replace(/</, '%3C').replace(/>/, '%3E');    
     },
-	
+    
     /**
      * Trim whitespace from a string
      * @param {String} str
      */
-	trim : function (str) {
-		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-	},
+    trim : function (str) {
+        return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+    },
     
     /**
      * Removes DOM node, but preserves its children by attaching them to the node's 
@@ -199,11 +199,11 @@ lore.util = {
      * @return {String} the formatted date
      */
     longDate : function ( adate, dateObj ) {
-    	if (adate instanceof Date){
-    		return adate.format("D, d M Y H:i:s \\G\\M\\T O");
-    	} else {
-    		return dateObj.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
-    	}
+        if (adate instanceof Date){
+            return adate.format("D, d M Y H:i:s \\G\\M\\T O");
+        } else {
+            return dateObj.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
+        }
     },
     /**
      * Format a date (short format)
@@ -212,13 +212,13 @@ lore.util = {
      * @return {String}
      */
     shortDate : function (adate, dateObj ) {
-    	if (adate instanceof Date){
-    		return adate.format("d M Y H:i:s");
-    	} else {
-    		return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
-    	}
+        if (adate instanceof Date){
+            return adate.format("d M Y H:i:s");
+        } else {
+            return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
+        }
     },
-	
+    
     /**
      * Retrieve an instance of the nsiLocalFile interface, initializing it with the
      * path supplied if it is supplied.
@@ -227,12 +227,12 @@ lore.util = {
      */
     getFile: function (fileBase) {
     var file = Components.classes["@mozilla.org/file/local;1"]
-	.createInstance(Components.interfaces.nsILocalFile);
-		    if ( fileBase)
-		    file.initWithPath(fileBase);
-	    return file;
+    .createInstance(Components.interfaces.nsILocalFile);
+            if ( fileBase)
+            file.initWithPath(fileBase);
+        return file;
     },
-	
+    
     /**
      * Prompts user to choose a file to save to (creating it if it does not exist)
      * The callback should expect a single arg: a function which actually performs the save, 
@@ -244,39 +244,39 @@ lore.util = {
      * @param {} callback 
      * @param {} win
      * @return {}
-	 */
-	writeFileWithSaveAs: function (title, defExtension, callback, win) {
-			var nsIFilePicker = Components.interfaces.nsIFilePicker;
-			var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-			fp.defaultExtension = defExtension;
-	        if ("xml" == defExtension){
-	            fp.appendFilters(nsIFilePicker.filterXML); 
-	        } else if ("txt" == defExtension){
-	            fp.appendFilters(nsIFilePicker.filterText);  
-	        } else if ("docx" == defExtension) {
+     */
+    writeFileWithSaveAs: function (title, defExtension, callback, win) {
+            var nsIFilePicker = Components.interfaces.nsIFilePicker;
+            var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+            fp.defaultExtension = defExtension;
+            if ("xml" == defExtension){
+                fp.appendFilters(nsIFilePicker.filterXML); 
+            } else if ("txt" == defExtension){
+                fp.appendFilters(nsIFilePicker.filterText);  
+            } else if ("docx" == defExtension) {
                 fp.appendFilter("MS Word 2007 documents","*.docx");
             }
-			fp.appendFilters(nsIFilePicker.filterAll);
-			fp.init(win, title, nsIFilePicker.modeSave);
-			var res = fp.show();
-			if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
-				callback(
+            fp.appendFilters(nsIFilePicker.filterAll);
+            fp.init(win, title, nsIFilePicker.modeSave);
+            var res = fp.show();
+            if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
+                callback(
                     // a function which performs the save
                     function(dataStr){
-        				var thefile = fp.file;
-        				var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
-        				fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
-        				var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
-        				converter.init(fostream, "UTF-8", 0, 0);
-        				converter.writeString(dataStr);
-        				converter.close();
-        				return {'fname': thefile.persistentDescriptor, 'data':dataStr};
+                        var thefile = fp.file;
+                        var fostream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
+                        fostream.init(thefile, 0x02 | 0x08 | 0x20, 0666, 0);
+                        var converter = Components.classes["@mozilla.org/intl/converter-output-stream;1"].createInstance(Components.interfaces.nsIConverterOutputStream);
+                        converter.init(fostream, "UTF-8", 0, 0);
+                        converter.writeString(dataStr);
+                        converter.close();
+                        return {'fname': thefile.persistentDescriptor, 'data':dataStr};
                     }
                 );
-			}
-			return null;
-			
-	},
+            }
+            return null;
+            
+    },
     /** 
      * Saves content from a Data URI to a file - prompting user for location
      * @param {} title
@@ -309,25 +309,25 @@ lore.util = {
             }
             return null;
     },
-	/**
+    /**
      * Prompts user to choose a file and loads that file
      * @param {} title
      * @param {} defExtension
      * @param {} win
      * @return {}
-	 */
-	loadFileWithOpen: function(title, defExtension, win) {
-		 
-		 var nsIFilePicker = Components.interfaces.nsIFilePicker;
+     */
+    loadFileWithOpen: function(title, defExtension, win) {
+         
+         var nsIFilePicker = Components.interfaces.nsIFilePicker;
          var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
          fp.appendFilters(nsIFilePicker.filterXML);
          fp.appendFilter(defExtension.desc, defExtension.filter);
-	   	 fp.init(win, title , nsIFilePicker.modeOpen);
+         fp.init(win, title , nsIFilePicker.modeOpen);
          
-		 var res = fp.show();
+         var res = fp.show();
          
-		 if (res == nsIFilePicker.returnOK){
-         	var thefile = fp.file;
+         if (res == nsIFilePicker.returnOK){
+            var thefile = fp.file;
             var data = "";
             var fistream = Components.classes["@mozilla.org/network/file-input-stream;1"].
                         createInstance(Components.interfaces.nsIFileInputStream);
@@ -340,35 +340,35 @@ lore.util = {
                 data += str.value;
             }
             cstream.close();
-			return {fname: thefile.persistentDescriptor, data:data};
+            return {fname: thefile.persistentDescriptor, data:data};
         }
-		return null;
-	},
+        return null;
+    },
     
     /**
      * Remove any artifacts from the XPath
      * @param {} xp
      */
     normalizeXPointer : function(xp) {
-		if (typeof(xp) == 'string') {
-			var idx = xp.indexOf('#');
-			return xp.substring(idx + 1);
-		}
-	
-		for ( var i =0; i < xp.length;i++) {
-			xp[i] = xp[i] + '';
-			xp[i] = xp[i].substring(xp[i].indexOf("#")+1);
-		}
-	
-		return xp;
+        if (typeof(xp) == 'string') {
+            var idx = xp.indexOf('#');
+            return xp.substring(idx + 1);
+        }
+    
+        for ( var i =0; i < xp.length;i++) {
+            xp[i] = xp[i] + '';
+            xp[i] = xp[i].substring(xp[i].indexOf("#")+1);
+        }
+    
+        return xp;
     },
-	/**
+    /**
      * Inject contents of local stylesheet into document
      * @param {} chromefile
      * @param {} win
-	 */
-	injectCSS : function ( chromefile, win, callingwin) {
-		var doc = win.document;
+     */
+    injectCSS : function ( chromefile, win, callingwin) {
+        var doc = win.document;
         var url = "resource://lore/" + chromefile;
         var xhr = new callingwin.XMLHttpRequest();
         
@@ -393,8 +393,8 @@ lore.util = {
         }
         xhr.send(null); 
          
-	},
-	
+    },
+    
     /**
      * Generate random colour and return as hex string
      * If one or more arguments aren't supplied min fields wil default to 0
@@ -417,165 +417,165 @@ lore.util = {
         var colour = rgb[0] + ( rgb[1] << 8) + (rgb[2] << 16);
         return "#" + colour.toString(16);
     },
-	
-	/**
-	 * Disect the range into multiple ranges IF a selection passes it's containing DOM 
-	 * element's DOM boundary  
+    
+    /**
+     * Disect the range into multiple ranges IF a selection passes it's containing DOM 
+     * element's DOM boundary  
      * @param {} targetDocument
      * @param {} r
      * @param {} nodeTmpl
      * @return {}
      */
-	safeSurroundContents: function(targetDocument, r, nodeTmpl) {
-		var nodes = [];
-			
-		if ( r.startContainer.parentNode == r.endContainer.parentNode ) {
-			// doesn't cross parent element boundary
-			var n = nodeTmpl.cloneNode(false);
-			r.surroundContents(n);
-			
-			return [n];
-		} 
-		var s = r.startContainer;
-		var e = r.endContainer;
+    safeSurroundContents: function(targetDocument, r, nodeTmpl) {
+        var nodes = [];
+            
+        if ( r.startContainer.parentNode == r.endContainer.parentNode ) {
+            // doesn't cross parent element boundary
+            var n = nodeTmpl.cloneNode(false);
+            r.surroundContents(n);
+            
+            return [n];
+        } 
+        var s = r.startContainer;
+        var e = r.endContainer;
 
-		// create inital range to end of the start Container
-		// set end offset to end of contents of start node
-		// i.e <div> This [is </div> <p> a lot of </p><p>highli]ghting</p>
-		// inital range is 'is ' out the selection ( '[' and ']' denote highlighted region)
-		var w = targetDocument.createRange();
-		
-		w.selectNodeContents(s);
-		w.setStart(r.startContainer,r.startOffset);
-		//debug.ui("start range: " + w, w);
-		var n = nodeTmpl.cloneNode(false);
-		w.surroundContents(n);
-		nodes.push(n);
-		
-		var container = s.nodeType !=1 ?  n: s;
-		// loop through DOM nodes thats are completely selected 
-		// i.e 'a lot of ' range selection would be created from the example
-		var containsEl = function(src, dest) {
-			if ( src == dest) {
-				return true;
-			}
-			
-			if (src.nodeType == 1) {
-				for (var i = 0; i < src.childNodes.length; i++) {
-					if (containsEl(src.childNodes[i], dest)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		};
-		
-		var tag = function(container) {
-			var nt = container.nodeType;
-			var ignore = {};
-			if ( nt == 1 ) {
-				for (var i = 0; i < container.childNodes.length; i++) {
-					var n = container.childNodes[i];
-					if (!n.id || (n.id && !ignore[n.id])) {
-						n = tag(container.childNodes[i]);
-						if ( n) ignore[n.id] = n;
-					}
-				}
-			} else if ( (nt == 3 || nt ==4 || nt == 8) && lore.util.trim(container.nodeValue) != '') {
-				var w = targetDocument.createRange();
-				w.selectNodeContents(container);
-				//debug.ui("tagging : " + w , w);
-				var n = nodeTmpl.cloneNode(false);
-				w.surroundContents(n);
-				n.id = debug.hcounter|| 0;
-				debug.hcounter = debug.hcounter ? debug.hcounter+1:1;
-								
-				nodes.push(n);
-				return n;
-			}
-		};
-		
-		// move up the DOM tree until find parent node
-		// that contains the end container  
-		var found = false;
-		while ( !found ) {
-			while (!container.nextSibling ) {
-					//debug.ui('p');
-					container = container.parentNode;
-					if (!container)
-						break;
-			}
-			if (!container)
-				break;
-			//debug.ui('s');	
-			container = container.nextSibling;
-			
-			if ( containsEl(container, e)) {
-				found = true;
-			}
-			else {
-				tag(container);
-			}
-		}
-		// traverse down to end container
-		container = container.nodeType == 1 ? container.firstChild : container;
-		
-		while ( container != e ) {
-			if ( containsEl(container, e) ){
-				container = container.firstChild;
-			} else {
-				tag(container);
-				container = container.nextSibling;
-			}
-		}
-		
-		// create range for end container
-		// i.e 'highli' from example
-		w = targetDocument.createRange();
-		w.selectNodeContents(e);
-		w.setEnd(r.endContainer, r.endOffset);
-		//debug.ui("end range: " + w, w);
-		n = nodeTmpl.cloneNode(false);
-		w.surroundContents(n);
-		nodes.push(n);
-		//debug.ui("end");
-		
-		return nodes;
-	},
+        // create inital range to end of the start Container
+        // set end offset to end of contents of start node
+        // i.e <div> This [is </div> <p> a lot of </p><p>highli]ghting</p>
+        // inital range is 'is ' out the selection ( '[' and ']' denote highlighted region)
+        var w = targetDocument.createRange();
+        
+        w.selectNodeContents(s);
+        w.setStart(r.startContainer,r.startOffset);
+        //debug.ui("start range: " + w, w);
+        var n = nodeTmpl.cloneNode(false);
+        w.surroundContents(n);
+        nodes.push(n);
+        
+        var container = s.nodeType !=1 ?  n: s;
+        // loop through DOM nodes thats are completely selected 
+        // i.e 'a lot of ' range selection would be created from the example
+        var containsEl = function(src, dest) {
+            if ( src == dest) {
+                return true;
+            }
+            
+            if (src.nodeType == 1) {
+                for (var i = 0; i < src.childNodes.length; i++) {
+                    if (containsEl(src.childNodes[i], dest)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+        
+        var tag = function(container) {
+            var nt = container.nodeType;
+            var ignore = {};
+            if ( nt == 1 ) {
+                for (var i = 0; i < container.childNodes.length; i++) {
+                    var n = container.childNodes[i];
+                    if (!n.id || (n.id && !ignore[n.id])) {
+                        n = tag(container.childNodes[i]);
+                        if ( n) ignore[n.id] = n;
+                    }
+                }
+            } else if ( (nt == 3 || nt ==4 || nt == 8) && lore.util.trim(container.nodeValue) != '') {
+                var w = targetDocument.createRange();
+                w.selectNodeContents(container);
+                //debug.ui("tagging : " + w , w);
+                var n = nodeTmpl.cloneNode(false);
+                w.surroundContents(n);
+                n.id = debug.hcounter|| 0;
+                debug.hcounter = debug.hcounter ? debug.hcounter+1:1;
+                                
+                nodes.push(n);
+                return n;
+            }
+        };
+        
+        // move up the DOM tree until find parent node
+        // that contains the end container  
+        var found = false;
+        while ( !found ) {
+            while (!container.nextSibling ) {
+                    //debug.ui('p');
+                    container = container.parentNode;
+                    if (!container)
+                        break;
+            }
+            if (!container)
+                break;
+            //debug.ui('s');    
+            container = container.nextSibling;
+            
+            if ( containsEl(container, e)) {
+                found = true;
+            }
+            else {
+                tag(container);
+            }
+        }
+        // traverse down to end container
+        container = container.nodeType == 1 ? container.firstChild : container;
+        
+        while ( container != e ) {
+            if ( containsEl(container, e) ){
+                container = container.firstChild;
+            } else {
+                tag(container);
+                container = container.nextSibling;
+            }
+        }
+        
+        // create range for end container
+        // i.e 'highli' from example
+        w = targetDocument.createRange();
+        w.selectNodeContents(e);
+        w.setEnd(r.endContainer, r.endOffset);
+        //debug.ui("end range: " + w, w);
+        n = nodeTmpl.cloneNode(false);
+        w.surroundContents(n);
+        nodes.push(n);
+        //debug.ui("end");
+        
+        return nodes;
+    },
 
-		
-	 /**
+        
+     /**
      * Highlight part of a document
      * @param {} sel Context to highlight (as DOM Range)
      * @param {} targetDocument The document in which to highlight
      * @param {} colour highlight colour
      */
-	highlightRange : function (sel, targetDocument, styleCallback) {
-		try {
+    highlightRange : function (sel, targetDocument, styleCallback) {
+        try {
             var highlightNodeTmpl = targetDocument.createElementNS(lore.constants.NAMESPACES["xhtml"], "span");
-			if (styleCallback)
-				styleCallback(highlightNodeTmpl);
-			
-			var highlightNodes =  lore.util.safeSurroundContents(targetDocument, sel, highlightNodeTmpl);
-			for ( var i =0; i< highlightNodes.length;i++) {
-				lore.util.ignoreElementForXP(highlightNodes[i]);
-			}
+            if (styleCallback)
+                styleCallback(highlightNodeTmpl);
+            
+            var highlightNodes =  lore.util.safeSurroundContents(targetDocument, sel, highlightNodeTmpl);
+            for ( var i =0; i< highlightNodes.length;i++) {
+                lore.util.ignoreElementForXP(highlightNodes[i]);
+            }
             
             return highlightNodes;
         } catch (e) {
             lore.debug.ui(e,e);
             return null;
         }
-	},
-	
-	/**
-	 * Mark element to be ignored when xpointer library is searching through dom during node resolution
-	 * @param {Object} domNode
-	 */
-	ignoreElementForXP : function ( domNode ) {
-		lore.util.m_xps.markElement(domNode);
-	},	
-	
+    },
+    
+    /**
+     * Mark element to be ignored when xpointer library is searching through dom during node resolution
+     * @param {Object} domNode
+     */
+    ignoreElementForXP : function ( domNode ) {
+        lore.util.m_xps.markElement(domNode);
+    },  
+    
     /**
      * Return the window object of the content window
      */
@@ -597,11 +597,11 @@ lore.util = {
      * @return {}
      */
     getNodeForXPath : function(xp, targetDocument) {
-		//return targetDocument.evaluate( xp, targetDocument, null, win.XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
-		if ( xp.indexOf("#") != -1)
-			xp = xp.substring(xp.indexOf("#")+1);
-		
-		return targetDocument.evaluate( xp, targetDocument, null, 0, null ).iterateNext();
+        //return targetDocument.evaluate( xp, targetDocument, null, win.XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
+        if ( xp.indexOf("#") != -1)
+            xp = xp.substring(xp.indexOf("#")+1);
+        
+        return targetDocument.evaluate( xp, targetDocument, null, 0, null ).iterateNext();
     },
     
     /**
@@ -618,18 +618,18 @@ lore.util = {
         return xp.substring(start, end);
     },
     
-	/**
+    /**
      * 
      * @param {} xp
      * @param {} targetDocument
      * @return {}
-	 */
-	getNodeForXPointer: function(xp, targetDocument) {
-		if ( xp.indexOf("#") != -1)
-			xp = xp.substring(xp.indexOf("#")+1);
-		return lore.util.m_xps.parseXPointerToNode(xp, targetDocument);
-	},
-	
+     */
+    getNodeForXPointer: function(xp, targetDocument) {
+        if ( xp.indexOf("#") != -1)
+            xp = xp.substring(xp.indexOf("#")+1);
+        return lore.util.m_xps.parseXPointerToNode(xp, targetDocument);
+    },
+    
     /**
      * This fn depends on a hacked version of nsXpointerService being loaded by the browser
      * before this script is loaded from tags in the page being annotated.
@@ -657,39 +657,39 @@ lore.util = {
     /**
      * Return an XPath for an image
      */
-	getXPathForImageSelection : function (domNode, doc, coords, noScale ) {
-			var scale = noScale ? {x:1,y:1}: lore.util.getImageScaleFactor( domNode, doc);
-			var x1 = parseInt(coords.x1 * scale.x), y1 = parseInt(coords.y1 * scale.y), 
-				x2 = parseInt(coords.x2 * scale.x), y2 = parseInt(coords.y2 * scale.y);
-			
-			var xp = ("xpointer(image-range(" + lore.util.m_xps.xptrCreator.create_child_XPointer(domNode)
-			+ ",[" + x1 + "," + y1 + "],[" + x2 + "," + y2 + "],\"" + domNode.src + "\"))");
-			 
-			lore.debug.ui("The image region Xpointer is: " + xp);
-			return xp;	
-	},
-	
-	  
-	/**
+    getXPathForImageSelection : function (domNode, doc, coords, noScale ) {
+            var scale = noScale ? {x:1,y:1}: lore.util.getImageScaleFactor( domNode, doc);
+            var x1 = parseInt(coords.x1 * scale.x), y1 = parseInt(coords.y1 * scale.y), 
+                x2 = parseInt(coords.x2 * scale.x), y2 = parseInt(coords.y2 * scale.y);
+            
+            var xp = ("xpointer(image-range(" + lore.util.m_xps.xptrCreator.create_child_XPointer(domNode)
+            + ",[" + x1 + "," + y1 + "],[" + x2 + "," + y2 + "],\"" + domNode.src + "\"))");
+             
+            lore.debug.ui("The image region Xpointer is: " + xp);
+            return xp;  
+    },
+    
+      
+    /**
      * Return an object with a hash of the provided triple, and an xpointer to it's current location
      * @param {} triple
      * @return {}
-	 */
-	getMetaSelection: function(triple) {
-		var sel = {};
-		
-		if (!triple.source) {
-			lore.debug.ui ( "Couldn't find dom context", triple);
-			return sel;
-		}
-		
-		try {
-			sel.xp = "xpointer(" + lore.util.m_xps.xptrCreator.create_child_XPointer(triple.source) + ")"; 
-		} catch (e) {
-			lore.debug.anno("Error occurred generating xpointer for tirple:  " +e, e);
-		}
-		return sel;
-	},
+     */
+    getMetaSelection: function(triple) {
+        var sel = {};
+        
+        if (!triple.source) {
+            lore.debug.ui ( "Couldn't find dom context", triple);
+            return sel;
+        }
+        
+        try {
+            sel.xp = "xpointer(" + lore.util.m_xps.xptrCreator.create_child_XPointer(triple.source) + ")"; 
+        } catch (e) {
+            lore.debug.anno("Error occurred generating xpointer for tirple:  " +e, e);
+        }
+        return sel;
+    },
 
     
     /**
@@ -707,82 +707,82 @@ lore.util = {
             return "plain";
         }
     },
-	
-	/**
+    
+    /**
      * Checks if xpointer contains an image range
      * @param {} xp The xpointer to check
      * @return {Boolean} True if xp contains an image range
-	 */
-	isXPointerImageRange: function (xp) {
-		return xp.indexOf("image-range") != -1;
-	},
+     */
+    isXPointerImageRange: function (xp) {
+        return xp.indexOf("image-range") != -1;
+    },
     
-	/**
-	 * Decode an image-range xpointer into it's component parts
-	 */
-	decodeImageRangeXPointer: function(xpointer) {
-		if (!lore.util.isXPointerImageRange(xpointer) )
-			return null;
-		
-		xpointer = lore.util.normalizeXPointer(xpointer);
-		var xpBits = xpointer.substring("xpointer(image-range(".length ).split(',');
-		var xp =  xpBits[0];
-	
-		// co-ordinates
-		var x1 = parseInt(xpBits[1].substring(1)),
-	    	y1 = parseInt(xpBits[2].substring(0,xpBits[2].length-1)),
-			x2 = parseInt(xpBits[3].substring(1)),
-			y2 = parseInt(xpBits[4].substring(0,xpBits[4].length-1));
-		var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
-		
-		var imgUrl = xpBits[5].replace(/\"\)\).*/g, '').replace(/\"/, '');		
-		
-		return {xp:xp, coords: coords, imgUrl:imgUrl};
-	},
-	
-	/**
+    /**
+     * Decode an image-range xpointer into it's component parts
+     */
+    decodeImageRangeXPointer: function(xpointer) {
+        if (!lore.util.isXPointerImageRange(xpointer) )
+            return null;
+        
+        xpointer = lore.util.normalizeXPointer(xpointer);
+        var xpBits = xpointer.substring("xpointer(image-range(".length ).split(',');
+        var xp =  xpBits[0];
+    
+        // co-ordinates
+        var x1 = parseInt(xpBits[1].substring(1)),
+            y1 = parseInt(xpBits[2].substring(0,xpBits[2].length-1)),
+            x2 = parseInt(xpBits[3].substring(1)),
+            y2 = parseInt(xpBits[4].substring(0,xpBits[4].length-1));
+        var coords = {x1: x1, y1:y1, x2:x2, y2:y2};
+        
+        var imgUrl = xpBits[5].replace(/\"\)\).*/g, '').replace(/\"/, '');      
+        
+        return {xp:xp, coords: coords, imgUrl:imgUrl};
+    },
+    
+    /**
      * Parse and resolve in the document an iamge-range xpointer
      * @param {} xpointer
      * @param {} targetDocument
      * @return {}
-	 */
-	parseImageRangeXPointer: function (xpointer, targetDocument) {
-		if (!lore.util.isXPointerImageRange(xpointer))
-			return null;
-		
-		var decoded = this.decodeImageRangeXPointer(xpointer);
-		
-		if (targetDocument)
-			decoded.image = lore.util.getNodeForXPath(decoded.xp, targetDocument);
-	
-		return decoded;
-	},
-	
-	/**
+     */
+    parseImageRangeXPointer: function (xpointer, targetDocument) {
+        if (!lore.util.isXPointerImageRange(xpointer))
+            return null;
+        
+        var decoded = this.decodeImageRangeXPointer(xpointer);
+        
+        if (targetDocument)
+            decoded.image = lore.util.getNodeForXPath(decoded.xp, targetDocument);
+    
+        return decoded;
+    },
+    
+    /**
      * Temporarily load another copy of an image an determine if the version
      * visible on the page has been scaled (implicitly or explicitly)
      * @param img The IMG element to test
      */
     getImageScaleFactor: function  (img, doc)
     {
-		// stripped from dannotate.js
-		//var doc = img.ownerDocument;
-		var iwidth = parseInt(img.offsetWidth);
-		var iheight = parseInt(img.offsetHeight);
-		var tmpNode = doc.createElement('img');
-		tmpNode.setAttribute('src', img.src);
-		tmpNode.style.visibility = 'hidden';
-		doc.body.appendChild(tmpNode);
-		
-		var twidth = parseInt(tmpNode.offsetWidth);
-		var theight = parseInt(tmpNode.offsetHeight);
-		doc.body.removeChild(tmpNode);
-		
-		var xScaleFac = twidth/iwidth;
-		var yScaleFac = theight/iheight;
-		return { x: xScaleFac, y: yScaleFac, imgWidth:iwidth, imgHeight:iheight, origWidth:twidth,origHeight:theight};
+        // stripped from dannotate.js
+        //var doc = img.ownerDocument;
+        var iwidth = parseInt(img.offsetWidth);
+        var iheight = parseInt(img.offsetHeight);
+        var tmpNode = doc.createElement('img');
+        tmpNode.setAttribute('src', img.src);
+        tmpNode.style.visibility = 'hidden';
+        doc.body.appendChild(tmpNode);
+        
+        var twidth = parseInt(tmpNode.offsetWidth);
+        var theight = parseInt(tmpNode.offsetHeight);
+        doc.body.removeChild(tmpNode);
+        
+        var xScaleFac = twidth/iwidth;
+        var yScaleFac = theight/iheight;
+        return { x: xScaleFac, y: yScaleFac, imgWidth:iwidth, imgHeight:iheight, origWidth:twidth,origHeight:theight};
     },
-				
+                
     /**
      * Return the text contents of a selection
      * @param {} currentCtxt
@@ -792,12 +792,12 @@ lore.util = {
         var selText = "";
         if (currentCtxt){
             if (lore.util.isXPointerImageRange(currentCtxt)){
-				
-				var data = lore.util.parseImageRangeXPointer(currentCtxt, targetDocument);
-				var c = data.coords;
-				return 'Image region (' + c.x1 + ', ' + c.y1 +')-(' + c.x2 +', ' + c.y2 +') selected from ' + data.image.src; 				
-			}
-			var idx = currentCtxt.indexOf('#');
+                
+                var data = lore.util.parseImageRangeXPointer(currentCtxt, targetDocument);
+                var c = data.coords;
+                return 'Image region (' + c.x1 + ', ' + c.y1 +')-(' + c.x2 +', ' + c.y2 +') selected from ' + data.image.src;               
+            }
+            var idx = currentCtxt.indexOf('#');
             var sel = lore.util.getSelectionForXPath(currentCtxt.substring(idx + 1), targetDocument);
             selText = sel.toString();
             if (selText){
@@ -911,7 +911,7 @@ lore.util = {
         iframe.setAttribute("type", "content-targetable");
         iframe.setAttribute("collapsed", true);
         iframe.style.visibility = "visible";
-		iframe.setAttribute("transparent", true);
+        iframe.setAttribute("transparent", true);
         // click opens the resource in the main browser
         iframe.addEventListener("click",function(e){
             try{
@@ -969,19 +969,19 @@ lore.util = {
      * @param {Object} ev The onload event 
      * */
     insertSecureFrameStyle: function(ev) {
-    	try{
-	    	var doc = this.contentDocument;
-	    	var theCSS = '.flash-player, noembed, .media-player, object, embed {border: 3px solid #cc0000; padding: 4px;}' 
-	    		+ '.flash-player:before, noembed:before, .media-player:before, object:before, embed:before {font-size: 10px; font-family; Arial, sans-serif; color: #cc0000; content: \"Plugins are disabled in LORE previews. Please open resource in main browser window to view Flash or other embedded content.\" !important; } '
-	    		+ 'object[classid*=":D27CDB6E-AE6D-11cf-96B8-444553540000"],object[codebase*="swflash.cab"],object[data*=".swf"],object[type="application/x-shockwave-flash"],object[src*=".swf"],embed[type="application/x-shockwave-flash"],embed[src*=".swf"],embed[allowscriptaccess],embed[flashvars],embed[wmode]'
-	    		+ '{display:none !important;}';
-	        var styleElem = doc.createElement("style");
-	        styleElem.type = "text/css";
-	        styleElem.textContent = theCSS;
-	        doc.getElementsByTagName("head")[0].appendChild(styleElem); 
-    	} catch (e){
-    		lore.debug.ui("lore.util.insertSecureFrameStyle:",e)
-    	}
+        try{
+            var doc = this.contentDocument;
+            var theCSS = '.flash-player, noembed, .media-player, object, embed {border: 3px solid #cc0000; padding: 4px;}' 
+                + '.flash-player:before, noembed:before, .media-player:before, object:before, embed:before {font-size: 10px; font-family; Arial, sans-serif; color: #cc0000; content: \"Plugins are disabled in LORE previews. Please open resource in main browser window to view Flash or other embedded content.\" !important; } '
+                + 'object[classid*=":D27CDB6E-AE6D-11cf-96B8-444553540000"],object[codebase*="swflash.cab"],object[data*=".swf"],object[type="application/x-shockwave-flash"],object[src*=".swf"],embed[type="application/x-shockwave-flash"],embed[src*=".swf"],embed[allowscriptaccess],embed[flashvars],embed[wmode]'
+                + '{display:none !important;}';
+            var styleElem = doc.createElement("style");
+            styleElem.type = "text/css";
+            styleElem.textContent = theCSS;
+            doc.getElementsByTagName("head")[0].appendChild(styleElem); 
+        } catch (e){
+            lore.debug.ui("lore.util.insertSecureFrameStyle:",e)
+        }
     },
     parseHTMLToElement : function(html,win){
         var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
@@ -1027,39 +1027,39 @@ lore.util = {
      */
     sanitizeHTML : function(html, win, asHTML) {
         try{
-	        var serializer = Components.classes["@mozilla.org/xmlextras/xmlserializer;1"]
-	            .createInstance(Components.interfaces.nsIDOMSerializer);
-	        
-	        html = html.replace(/<br>$/,'');
-	        // parseFragment sanitizes html content
-	        var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
-	            .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
-	            .parseFragment(html, false, null, win.document.body);
-	        
-	        if (fragment) {
-	            if (asHTML){ 
-	                // use a temporary element to serialize sanitized fragment to plain HTML
-		            var doc = win.document;
-		            var divEl = doc.getElementById('sanitize');
-		            if (!divEl){
-		                divEl = doc.createElement("div");
-		                divEl.setAttribute("id","sanitize");
-		                divEl.style.display = "none";
-		            }
-		            divEl.appendChild(fragment);
+            var serializer = Components.classes["@mozilla.org/xmlextras/xmlserializer;1"]
+                .createInstance(Components.interfaces.nsIDOMSerializer);
+            
+            html = html.replace(/<br>$/,'');
+            // parseFragment sanitizes html content
+            var fragment = Components.classes["@mozilla.org/feed-unescapehtml;1"]  
+                .getService(Components.interfaces.nsIScriptableUnescapeHTML)  
+                .parseFragment(html, false, null, win.document.body);
+            
+            if (fragment) {
+                if (asHTML){ 
+                    // use a temporary element to serialize sanitized fragment to plain HTML
+                    var doc = win.document;
+                    var divEl = doc.getElementById('sanitize');
+                    if (!divEl){
+                        divEl = doc.createElement("div");
+                        divEl.setAttribute("id","sanitize");
+                        divEl.style.display = "none";
+                    }
+                    divEl.appendChild(fragment);
                     // read inner HTML to serialize to HTML : used for annotations
-		            var serializedContent = divEl.innerHTML;
-		            divEl.removeChild(divEl.firstChild);
-		            return serializedContent;
-	            } else {
-	                // use XML Serializer to serialize fragment to XML
-		            var buf = serializer.serializeToString(fragment);
-		            // remove garbage
-		            return buf.replace(/[\x80-\xff|\u0080-\uFFFF]*/g, '');
-	            }
-	        } else {
-	            return "";
-	        }
+                    var serializedContent = divEl.innerHTML;
+                    divEl.removeChild(divEl.firstChild);
+                    return serializedContent;
+                } else {
+                    // use XML Serializer to serialize fragment to XML
+                    var buf = serializer.serializeToString(fragment);
+                    // remove garbage
+                    return buf.replace(/[\x80-\xff|\u0080-\uFFFF]*/g, '');
+                }
+            } else {
+                return "";
+            }
         } catch (ex){
             lore.debug.ui("Problem sanitizing html",ex);
             return "";
@@ -1093,21 +1093,21 @@ lore.util = {
         return str.replace(/^\s*|\s(?=\s)|\s*$/g, "");
     },
     setHighContrast: function(win, activate) {
-	     var link;
-	     for (var i = 0; (link = win.document.getElementsByTagName("link")[i]); i++)
-	     {
+         var link;
+         for (var i = 0; (link = win.document.getElementsByTagName("link")[i]); i++)
+         {
            var t = link.getAttribute("title");
-	       if (link.getAttribute("rel").indexOf("style") != -1 && t)
-	       {
+           if (link.getAttribute("rel").indexOf("style") != -1 && t)
+           {
               var isHC = (t == 'highContrastExt' || t == 'highContrast' || t == 'highContrastUI');
               if (isHC && activate) {
                  link.disabled = false;
               } else if (isHC && !activate) {
                  link.disabled = true;
               }
-	       }
-	     }
-	},
+           }
+         }
+    },
     /**
      * Transform XML to a presentation format using an XSLT stylesheet
      * @param {} args
@@ -1179,9 +1179,9 @@ lore.util = {
             var twice = encodeURIComponent(once);
             uri = uri.replace(new RegExp(once, 'g'), twice);
         }
-    	return uri;
+        return uri;
         //encodeURIComponent(str).replace(/%5B/ig, '%255B').replace(/%5D/ig, '%255D');
-	},
+    },
     /** Make a nsIURI object from a string URI */
     makeURI: function(aURL, aOriginCharset, aBaseURI) {  
         var ioService = Components.classes["@mozilla.org/network/io-service;1"]  
@@ -1205,8 +1205,8 @@ lore.util = {
     },
     /** Normalize character encoding to uppercase in URL (specifically to deal with AustLit urls ) */
     normalizeUrlEncoding: function(url) {
-    	if (url){
-    		var thesplit = url.toString().split('%');
+        if (url){
+            var thesplit = url.toString().split('%');
             var newurl = thesplit[0];
             if (thesplit.length > 1){
                 for (var j = 1; j < thesplit.length; j++){
@@ -1215,14 +1215,14 @@ lore.util = {
                 }
             }
             return newurl;
-    	}
+        }
     },
     urlsAreSame : function(url1, url2) {
-    	if (url1 && url2){
-	    	var url1r = url1.replace(/\#.*$/,'');
-	    	var url2r = url2.replace(/\#.*$/,'');
-	        return decodeURIComponent(url1r) === decodeURIComponent(url2r);
-    	}
+        if (url1 && url2){
+            var url1r = url1.replace(/\#.*$/,'');
+            var url2r = url2.replace(/\#.*$/,'');
+            return decodeURIComponent(url1r) === decodeURIComponent(url2r);
+        }
     },
     /**
      * Convert chrome:// uri to file (from developer.mozilla.org code snippets)

@@ -6,16 +6,16 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
     ORE_AUTHORITY: "ROLE_ORE",
     constructor: function() {
         this.addEvents(
-			/**
-			 * @event signedin
-			 * Fires when the user has successfully signed into the server
-			 */
-			'signedin',
             /**
-			 * @event signedin
-			 * Fires when the user has signed out from the server.
-			 */
-			'signedout',
+             * @event signedin
+             * Fires when the user has successfully signed into the server
+             */
+            'signedin',
+            /**
+             * @event signedin
+             * Fires when the user has signed out from the server.
+             */
+            'signedout',
             /**
              * @event cancel
              * Fires when user cancels logging in
@@ -87,16 +87,16 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
     isAuthenticated : function(callback) {
         //lore.debug.ui("isAuthenticated",this);
         if (this.EMMET_URL){
-	        Ext.Ajax.request({
-	           url: this.EMMET_URL,
-	           success: this.checkAuthentication,
-	           failure: this.fireError.createDelegate(this),
-	           method: 'GET',
-	           params: { action: 'fetchAuthentication',
-	                     format: 'json' },
-	           callIfAuthorised: callback,
-	           scope: this
-	        });
+            Ext.Ajax.request({
+               url: this.EMMET_URL,
+               success: this.checkAuthentication,
+               failure: this.fireError.createDelegate(this),
+               method: 'GET',
+               params: { action: 'fetchAuthentication',
+                         format: 'json' },
+               callIfAuthorised: callback,
+               scope: this
+            });
         } else {
             lore.debug.ui("isAuthenticated: No emmet url defined!",this);
         }
@@ -108,16 +108,16 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
     ifNotAuthenticated : function(callback) {
         //lore.debug.ui("ifNotAuthenticated",this);
         if (this.EMMET_URL){
-	        Ext.Ajax.request({
-	           url: this.EMMET_URL,
-	           success: this.checkAuthentication,
-	           failure: this.fireError.createDelegate(this),
-	           method: 'GET',
-	           params: { action: 'fetchAuthentication',
-	                     format: 'json' },
-	           callIfNotAuthorised: callback,
-	           scope: this
-	        });
+            Ext.Ajax.request({
+               url: this.EMMET_URL,
+               success: this.checkAuthentication,
+               failure: this.fireError.createDelegate(this),
+               method: 'GET',
+               params: { action: 'fetchAuthentication',
+                         format: 'json' },
+               callIfNotAuthorised: callback,
+               scope: this
+            });
         } else {
              lore.debug.ui("ifNotAuthenticated: No emmet url defined!",this);
         }
@@ -125,7 +125,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
 
     // private
     checkAuthentication : function(xhr, options) {
-    	try {
+        try {
             var principal = Ext.decode(xhr.responseText).userAuthentication.principal;
             lore.debug.ui("checkAuthentication: ", principal);
             var authorities = principal.authorities;
@@ -133,15 +133,15 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
                 this.hasAuthority(authorities, this.ORE_AUTHORITY);
 
             if (authorised) {
-            	this.fireSignedIn(principal.userName);
+                this.fireSignedIn(principal.userName);
                 if (typeof options.callIfAuthorised == 'function') {
                     options.callIfAuthorised(principal);
                 }
                 return;
             }
-    	} catch (e) {
-    		lore.debug.ui("AuthManager:checkAuthentication failed", e);
-    	}
+        } catch (e) {
+            lore.debug.ui("AuthManager:checkAuthentication failed", e);
+        }
         lore.debug.ui("User is not authorised",principal);
         this.fireSignedOut();
         if (typeof options.callIfNotAuthorised == 'function') {
@@ -239,17 +239,17 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
     },
     
     fireSignedIn : function(userName) {
-    	if (!this.signedIn) {
-    		this.signedIn = true;
-    		this.fireEvent('signedin', userName);
-    	}
+        if (!this.signedIn) {
+            this.signedIn = true;
+            this.fireEvent('signedin', userName);
+        }
     },
     
     fireSignedOut : function() {
-    	if (this.signedIn) {
-    		this.signedIn = false;
+        if (this.signedIn) {
+            this.signedIn = false;
             this.fireEvent('signedout');
-    	}  
+        }  
     },
     fireError : function(){
         this.fireSignedOut();

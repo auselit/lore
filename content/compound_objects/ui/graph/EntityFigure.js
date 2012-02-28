@@ -148,7 +148,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
         }
         this.editField.hide();
         } catch (ex){
-            lore.debug.ore("stop editing",ex)
+            lore.debug.ore("Error in stop editing",ex)
         }
     },
     /**
@@ -170,7 +170,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
             this.editField.show();  
             this.editField.focus();     
         } catch (ex){
-            lore.debug.ore("startEditing",ex);
+            lore.debug.ore("Error in startEditing",ex);
         }
     },
     setContent : function(url){
@@ -245,7 +245,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
                 props.on("propertyRemoved", this.handlePropertyRemoved, this);
             }
         } catch (ex){
-            lore.debug.ore("setModel:",ex);
+            lore.debug.ore("Error in setModel:",ex);
         }
     },
    
@@ -431,11 +431,9 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
                 }
                 this.model.get('properties').setProperty(propData,idx)
             } catch (ex){
-                lore.debug.ore("problem in setProperty",ex);
+                lore.debug.ore("Error in setProperty",ex);
             }
         }
-        lore.debug.ore("setProperty " + pid + " " + pval + " " + type,this.model);
-        
     },
     /**
      * Unset (remove) a property by id
@@ -463,7 +461,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
     },
     /** Update layout related properties in model */
     persistLayout : function(){
-    	// orderIndex and isPlaceholder are managed and persisted by the CompoundObject
+        // orderIndex and isPlaceholder are managed and persisted by the CompoundObject
         if (this.abstractPreview){
             this.setProperty("layout:abstractPreview_0",1);
         } else {
@@ -475,9 +473,9 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
         this.setProperty("layout:x_0", this.x);
         this.setProperty("layout:y_0", this.y)
         if (this.highlightColor){
-        	this.setProperty("layout:highlightColor_0",this.highlightColor);
+            this.setProperty("layout:highlightColor_0",this.highlightColor);
         } else {
-        	this.unsetProperty("layout:highlightColor_0",true);
+            this.unsetProperty("layout:highlightColor_0",true);
         }
     },
     /** Return the title of the figure */
@@ -522,13 +520,12 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
                 lore.debug.ore("getPropertyType: no model for fig " + this.url + " " + pid,this);
             }
         } catch (ex){
-            lore.debug.ore("Problem in getPropertyType",ex);
+            lore.debug.ore("Error in getPropertyType",ex);
         
         }
         return "plainstring";
     },
     handlePropertyChanged: function(propData,index){
-        //lore.debug.ore("Resource Figure property changed " + index,propData);
         if (propData && propData.id == lore.constants.NAMESPACES["layout"] + "highlightColor"){
             this.setHighlightColor(propData.value);
         }
@@ -632,7 +629,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
                             }
                             this.contextmenu.hide();
                         } catch (ex){
-                            lore.debug.ore("Problem setting highlight color",ex);
+                            lore.debug.ore("Error setting highlight color",ex);
                         }
                     },
                     scope: this
@@ -668,15 +665,15 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
         this.ports.get(i).setCanvas(c);
       }  
     },
-	/**
-	 * Override onKeyDown - workflow will manage this
-	 * 
-	 * @param {} keyCode
-	 * @param {}   ctrl
-	 */
-	onKeyDown : function(keyCode, ctrl) {
+    /**
+     * Override onKeyDown - workflow will manage this
+     * 
+     * @param {} keyCode
+     * @param {}   ctrl
+     */
+    onKeyDown : function(keyCode, ctrl) {
         this.workflow.onKeyDown(keyCode, ctrl);
-	},
+    },
      /** expand prop in form of dc:title_0 to propuri plus index */
     expandPropAbbrev : function(pid){
         if (pid){

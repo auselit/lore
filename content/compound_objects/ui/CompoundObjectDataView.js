@@ -50,7 +50,6 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                         this.parentPanel = this.findParentByType('panel');
                     }
                     if (this.parentPanel){
-                        //lore.debug.ore("activating " + this.id,this.parentPanel);
                         Ext.getCmp("propertytabs").activate(this.parentPanel.id);
                     }
                 }
@@ -78,7 +77,6 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                        iconCls: "edit-icon",
                        scope: this,
                        handler: function(obj,evt) {
-                            //lore.debug.ore("edit " + this.sel.data.uri);
                             lore.ore.controller.loadCompoundObjectFromURL(this.sel.data.uri);
                         }
                     });
@@ -87,7 +85,6 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                        iconCls: "edit-icon",
                        scope: this,
                        handler: function(obj,evt) {
-                            //lore.debug.ore("view " + this.sel.data.uri);
                             lore.ore.controller.loadCompoundObjectFromURL(this.sel.data.uri);
                         }
                     });
@@ -99,7 +96,6 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
                     iconCls: "delete-icon",
                     scope: this,
                     handler : function(obj,evt) {
-                        //lore.debug.ore("delete handler " + this.sel.data.uri,[this,obj, evt]);
                         lore.ore.controller.deleteCompoundObjectFromRepository(this.sel.data.uri, this.sel.data.title);
                     }
                  });
@@ -148,7 +144,7 @@ lore.ore.ui.CompoundObjectDataView = Ext.extend(Ext.DataView, {
             }
             this.contextMenu.showAt(e.xy);
         } catch (ex){
-            lore.debug.ore("onContextMenu",ex);
+            lore.debug.ore("Error in onContextMenu",ex);
         }
     }
 });
@@ -173,7 +169,7 @@ Ext.extend(lore.ore.ui.CompoundObjectDragZone, Ext.dd.DragZone, {
                 return dragData;
             }
         } catch (e){
-            lore.debug.ore("problem in get drag data",e);
+            lore.debug.ore("Error in get drag data",e);
         }
         return false;
     }

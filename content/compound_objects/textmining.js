@@ -41,7 +41,7 @@ lore.ore.textm.processRDFa = function(tmtab) {
                     },400);
                     
                   } catch (ex){
-                    lore.debug.ore("exception in hover",ex);
+                    lore.debug.ore("Error: exception in hover",ex);
                   }
                 }
             });
@@ -110,19 +110,19 @@ lore.ore.doTextMining = function() {
 
     contentStr = contentStr.replace(/"/g,"\\\"");
     if (lore.ore.textm.tmkey){
-	    Ext.Ajax.request({
-	        url : "http://api.opencalais.com/enlighten/rest/",
-	        success : lore.ore.textm.handleOpenCalaisMetadata,
-	        failure : function(resp) {
-	            lore.debug.tm("Unable to obtain OpenCalais metadata", resp);
-	            lore.ore.ui.vp.warning("Unable to obtain OpenCalais metadata");
-	        },
-	        params : {
-	            licenseID : lore.ore.textm.tmkey,
-	            content : contentStr, // Ext.Ajax does urlencoding 
-	            paramsXML : ocParams
-	        }
-	    });
+        Ext.Ajax.request({
+            url : "http://api.opencalais.com/enlighten/rest/",
+            success : lore.ore.textm.handleOpenCalaisMetadata,
+            failure : function(resp) {
+                lore.debug.tm("Unable to obtain OpenCalais metadata", resp);
+                lore.ore.ui.vp.warning("Unable to obtain OpenCalais metadata");
+            },
+            params : {
+                licenseID : lore.ore.textm.tmkey,
+                content : contentStr, // Ext.Ajax does urlencoding 
+                paramsXML : ocParams
+            }
+        });
     } else {
         lore.ore.ui.vp.error("Please enter your text mining key in the preferences");
     }

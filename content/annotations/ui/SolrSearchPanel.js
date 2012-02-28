@@ -37,8 +37,8 @@ lore.anno.ui.SolrSearchPanel = Ext.extend(Ext.Panel, {
         lore.anno.ui.SolrSearchPanel.superclass.initComponent.call(this);
         
         this.searchButton.on("click", function() {
-        	this.ds.setBaseParam('q', this.searchText.getValue());
-        	this.ds.load({start: 0});
+            this.ds.setBaseParam('q', this.searchText.getValue());
+            this.ds.load({start: 0});
         }, this);
     }
 });
@@ -46,7 +46,7 @@ Ext.reg('solrsearchpanel', lore.anno.ui.SolrSearchPanel);
 
 lore.anno.ui.SolrStore = Ext.extend(Ext.data.Store,{
     proxy: new Ext.data.HttpProxy({
-    	// This is the default value, it is overridden from preferences in lore.anno.Controller.handlePrefsChange
+        // This is the default value, it is overridden from preferences in lore.anno.Controller.handlePrefsChange
         url: 'http://austlit.edu.au/solr/select',
         method: 'GET'
     }),
@@ -96,7 +96,7 @@ lore.anno.ui.SolrStore = Ext.extend(Ext.data.Store,{
                 var pn = this.paramNames;
                 options.params = Ext.apply({}, options.params);
                 options.params[pn.sort] = (this.sortInfo.field == "modified"? "last_modified": this.sortInfo.field) + " " + this.sortInfo.direction;
-                lore.debug.ore("sort options are " + options.params[pn.sort]);
+                lore.debug.anno("sort options are " + options.params[pn.sort]);
             }
             return this.execute('read', null, options); // <-- null represents rs.  No rs for load actions.
         } catch(e) {

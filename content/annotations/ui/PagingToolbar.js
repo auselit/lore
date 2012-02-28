@@ -81,12 +81,12 @@ lore.anno.ui.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
     },
     
     sortAnnotations: function(v){
-        lore.debug.ore("sort annotations " + v,this);
+        lore.debug.anno("sort annotations " + v,this);
         try{
         this.store.sort(v, (v == 'created' || v == 'modified') ? 'desc' : 'asc');
         this.moveFirst();
         } catch (e){
-            lore.debug.ore("Problem sorting annotations",e);
+            lore.debug.anno("Error sorting annotations",e);
         }
     },
     /**

@@ -78,7 +78,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
         this.toggleIcon = toggleIcon;
         item.appendChild(toggleIcon);
         } catch (e){
-            lore.debug.ore("problem creating toggle icon",e);
+            lore.debug.ore("Error creating toggle icon",e);
         }
         return item;
     },
@@ -167,7 +167,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
         var mimetype = this.getProperty("dc:format_0");
         var rdftype = this.getProperty("rdf:type_0");
         if (this.hasPreview) {
-            //lore.debug.ore("Regenerating node preview " + this.url, this);
+            lore.debug.ore("Regenerating node preview " + this.url, this);
         } else {
             this.hasPreview = true;
         }
@@ -353,7 +353,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                     this.createPreview(displayUrl);
                 }
             } catch (e) {
-                lore.debug.ore("ResourceFigure: iframe(general)", e);
+                lore.debug.ore("Error in ResourceFigure: iframe(general)", e);
             }
         }
         this.setIcon();
@@ -462,7 +462,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                                     mimetype = mimetype.replace(/([\x09\x0A\x0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})|./g, "$1");
                                 }
                             } catch (e) {
-                                lore.debug.ore("ResourceFigure: exception getting mime type", e);
+                                lore.debug.ore("Error in ResourceFigure: exception getting mime type", e);
                             }
                         }
                         // default
@@ -505,7 +505,6 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
      */
     onDragstart : function(x, y) {
         try{
-            //lore.debug.ore("onDragstart " + x + " " + y,this);
             if (!this.header) {
                 return false;
             }
@@ -610,11 +609,9 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
                 }
                 this.model.get('properties').setProperty(propData,idx)
             } catch (ex){
-                lore.debug.ore("problem in setProperty",ex);
+                lore.debug.ore("Error in setProperty",ex);
             }
         }
-        lore.debug.ore("setProperty " + pid + " " + pval + " " + type,this.model);
-        
     },
     /**
      * Unset (remove) a property by id

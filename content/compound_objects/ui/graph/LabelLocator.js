@@ -14,14 +14,14 @@ Ext.apply(lore.draw2d.LabelLocator.prototype,{
     relocate : function (label) {
         try{
            var conn = this.getConnection();
-    	   var p = new lore.draw2d.Point();
-    	   var points = conn.getPoints();
-    	   var index = Math.floor((points.getSize() - 2) / 2);
-    	   var p1 = points.get(index);
-    	   var p2 = points.get(index + 1);
-    	   p.x = (p2.x - p1.x) / 2 + p1.x + 5;
-    	   p.y = (p2.y - p1.y) / 2 + p1.y + 5;
-    	   var offsetX = label.getWidth();
+           var p = new lore.draw2d.Point();
+           var points = conn.getPoints();
+           var index = Math.floor((points.getSize() - 2) / 2);
+           var p1 = points.get(index);
+           var p2 = points.get(index + 1);
+           p.x = (p2.x - p1.x) / 2 + p1.x + 5;
+           p.y = (p2.y - p1.y) / 2 + p1.y + 5;
+           var offsetX = label.getWidth();
            if (offsetX != 0) {
               offsetX = offsetX / 2;
            }
@@ -29,7 +29,7 @@ Ext.apply(lore.draw2d.LabelLocator.prototype,{
            if (offsetY != 0) {
               offsetY = offsetY / 2;
            }
-    	   label.setPosition(p.x - offsetX, p.y - offsetY);
+           label.setPosition(p.x - offsetX, p.y - offsetY);
         } catch (e){
             lore.debug.ore("Error in relocate",e);
         }

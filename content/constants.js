@@ -21,9 +21,9 @@ lore.constants = {
         // Prefix was not found: create a new one: ensure it has a unique ns prefix
         var nprefix;
         if (defaultNS && !this.NAMESPACES[defaultNS]){
-        	nprefix = defaultNS;
+            nprefix = defaultNS;
         } else {
-        	nprefix = "ns" + nssize;
+            nprefix = "ns" + nssize;
         }
         this.NAMESPACES[nprefix] = ns;
         return nprefix;
@@ -89,12 +89,12 @@ lore.constants = {
     HIGHLIGHT_STORE : "highlights",
     
     ANNOMODE_NORMAL : "NORMAL",
-	ANNOMODE_SCHOLARLY: "SCHOLARLY",
-		
-	// Annotea protocol constants constants
+    ANNOMODE_SCHOLARLY: "SCHOLARLY",
+        
+    // Annotea protocol constants constants
     
-	// queries
-	 /**
+    // queries
+     /**
      * This is the standard query parameter requests the annotation or annotations
      * that are replies for an annotation whose URL is given by the parameter's value.
      * @const */
@@ -104,16 +104,16 @@ lore.constants = {
      * for a resource whose URL is given by the parameter's value.
      * @const */
     ANNOTEA_ANNOTATES : "?w3c_annotates=",
-	
-	// this parameter is currently not supported by LORE annotations
-	 /**
+    
+    // this parameter is currently not supported by LORE annotations
+     /**
      * This is the standard query parameter requests the bookmarks and topics.
      * for a resource whose URL is given by the parameter's value.  This was not implemented
      * by AA2.
      * @const 
      */
     ANNOTEA_BOOKMARKS : "w3c_bookmarks",
-	
+    
     /**
      * This Danno-specific request parameter sets the primary query type to select all 
      * Annotea objects in the triple store; i.e. those with an <rdf:type>  property with
@@ -121,26 +121,26 @@ lore.constants = {
      * "http://www.w3.org/2001/03/thread#Reply".
      */
     DANNO_ANNOTEA_OBJECTS : "?danno_allAnnoteaObjects=true",
-	 
-	
-	
-	
-	
-	// query parameters - currently not used/supported by LORE annotations
+     
+    
+    
+    
+    
+    // query parameters - currently not used/supported by LORE annotations
     /**
      * This Danno-specific request parameter sets the primary query type to select all 
      * objects in the triple store;
      * @const
      */
     DANNO_ALL_OBJECTS : "?danno_allObjects=true",
-	
+    
     /**
      * This Danno-specific request parameter restricts the result-set of a QUERY to records
      * whose 'a:annotates' value matches a regex.
      */
      DANNO_RESTRICT_ANNOTATES_REGEX : "danno_annotatesRegex",
-	
-	   /**
+    
+       /**
      * This Danno-specific request parameter restricts the result-set of a QUERY to records
      * with a given 'dc1.1:creator' value. 
      */

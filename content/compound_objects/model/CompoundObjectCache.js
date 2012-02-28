@@ -94,16 +94,16 @@ Ext.apply(lore.ore.model.CompoundObjectCache.prototype, {
                                 that.add(opt.url, nestedCO);
                                 that.cacheNested(nestedCO.getInitialContent(), nestingLevel + 1);
                             } catch (ex){
-                                lore.debug.ore("problem loading into cache",ex)
+                                lore.debug.ore("Error loading into cache",ex)
                             }
                           };
                           var failcallback = function(resp, opt){
-                            lore.debug.ore("failed to load into cache",[resp,opt]);
+                            lore.debug.ore("Error: failed to load into cache",[resp,opt]);
                           };
                           lore.ore.reposAdapter.loadCompoundObject(theurl, callback, failcallback);   
                       }
                     } catch (e) {
-                        lore.debug.ore("Problem loading nested CO into cache",e);
+                        lore.debug.ore("Error loading nested CO into cache",e);
                     }
                 }
             );

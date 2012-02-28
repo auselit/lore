@@ -208,8 +208,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 
 			} else {
 				lore.ore.ui.vp.warning("No Resource Map found");
-				lore.debug.ore("no remurl found in RDF", loadedRDF);
-				// lore.debug.ore("the input rdf was",rdf);
+                lore.debug.ore("Error: no remurl found in RDF", loadedRDF);
                 return;
 			}
 
@@ -296,8 +295,6 @@ Ext.apply(lore.ore.Controller.prototype, {
 					 * '%3C', '<').replace('%3F', '>'))); }
 					 */
 					if (tgtfig && (srcfig != tgtfig)) { // this is a connection
-						// lore.debug.ore("processing connection " +
-						// relresult.term,[tgtfig, srcfig]);
 						// lore.debug.timeElapsed("connection 1");
 						try {
 							var c = new lore.draw2d.Connection();
@@ -366,7 +363,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             lore.ore.controller.wasClean = true;
 		} catch (e) {
 			lore.ore.ui.vp.error("Error loading Resource Map");
-			lore.debug.ore("exception loading RDF from string", e);
+            lore.debug.ore("Error loading RDF from string", e);
 			lore.debug.ore("the RDF string was", rdf);
 			lore.debug.ore("the serialized databank is", databank.dump({
 								format : 'application/rdf+xml',
@@ -376,7 +373,6 @@ Ext.apply(lore.ore.Controller.prototype, {
 	},
     /** Lookup a label for a tag */
     lookupTag: function(tagId){
-        lore.debug.ore("lookupTag " + tagId)
         var store = lore.anno.thesaurus;
         // TODO : it should not be necessary to unescape ampersands: check that model is not storing them
         var idx = store.findUnfiltered('id', tagId.replace(/&amp;/g,'&'));
@@ -469,7 +465,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             Ext.getCmp("propertytabs").activate("properties");
             lore.ore.ui.vp.info("Contents copied to new Resource Map");
         } catch (e){
-            lore.debug.ore("copyCompoundObjectToNew",e)
+            lore.debug.ore("Error in copyCompoundObjectToNew",e)
         }
     },
     /**
@@ -663,7 +659,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                     );
                     if (title) this.lockCompoundObjectInRepository();
                     } catch (ex){
-                        lore.debug.ore("Problem setting title",ex);
+                        lore.debug.ore("Error setting title",ex);
                     }
                 }
                 
@@ -749,7 +745,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                     );
                     if (title) this.saveCompoundObjectToRepository();
                 	} catch (ex){
-                		lore.debug.ore("Problem setting title",ex);
+                        lore.debug.ore("Error setting title",ex);
                 	}
                 }
                 
@@ -773,7 +769,7 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} opt
      */
     afterLoadCompoundObjectFail : function(resp,opt){
-    	lore.debug.ore("Unable to load Resource Map " + opt.url, resp);
+        lore.debug.ore("Error: Unable to load Resource Map " + opt.url, resp);
     	if (resp.status == 403){
     		Ext.Msg.show({
     			title : 'Permission denied',
@@ -888,7 +884,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             }
         }
         } catch (e){
-            lore.debug.ore("problem in updateSelection",e);
+            lore.debug.ore("Error in updateSelection",e);
         }
     },
     addPlaceholder: function(){
@@ -900,7 +896,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             };
             lore.ore.ui.graphicalEditor.addFigure(placeholderOptions);
         } catch (ex){
-            lore.debug.ore("Problem",ex);
+            lore.debug.ore("Error in addPlaceholder",ex);
         }
     },
     addResourceWithPrompt: function(){
@@ -1050,7 +1046,7 @@ Ext.apply(lore.ore.Controller.prototype, {
 	    // work around scrolling content over iframe bug by redrawing
 	    win.body.on("scroll",function(e,t,o){this.repaint();},win.body);
     	} catch (e){
-    		lore.debug.ore("problem adding from tabs",e);
+            lore.debug.ore("Error adding from tabs",e);
     	}
     },
     /** Handle search */
@@ -1077,7 +1073,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             Ext.getCmp('cosview').onBeforeLoad();
             lore.ore.reposAdapter.getCompoundObjects(searchuri, searchpred,searchval,true);
         } catch (e){
-            lore.debug.ore("Controller: exception in search",e);
+            lore.debug.ore("Error in Controller: exception in search",e);
         }
     },
     /** Triggered when extension preferences change (eg user updates preferences).
@@ -1101,7 +1097,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             lore.util.setHighContrast(Ext.get("about_co").dom.contentWindow, prefs.high_contrast);
           } 
       } catch (e){
-        lore.debug.ore("Controller: Problem handling changed preferences",e);
+        lore.debug.ore("Error in Controller: handling changed preferences",e);
       }
     },
     /**
@@ -1146,7 +1142,6 @@ Ext.apply(lore.ore.Controller.prototype, {
             	currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false);
             }
             if (currentCO.isDirty() && !this.readOnly){
-                //lore.debug.ore("setRepos: dirty");
                 Ext.Msg.show({
                     title : 'Save Resource Map?',
                     buttons : Ext.MessageBox.YESNO,
@@ -1165,7 +1160,6 @@ Ext.apply(lore.ore.Controller.prototype, {
                 lore.ore.ui.graphicalEditor.coGraph.setReadOnly(false);
             }*/
             if (currentCOMsg) {currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50),false);}
-            //lore.debug.ore("setrepos: not different");
         }
         if (rdfrepostype == 'lorestore') {
             lore.ore.reposAdapter = new lore.ore.repos.RestAdapter(annoserver);
@@ -1174,7 +1168,6 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
         if (isEmpty) {
                 // empty Resource Map, reset it to get a new id
-                //lore.debug.ore("setrepos: empty");
                 this.newCO(true);
         }
         // Reload history so that Resource Maps from other repositories are marked as read-only
@@ -1200,9 +1193,6 @@ Ext.apply(lore.ore.Controller.prototype, {
      *  @param {String} contextURL The new URL */
     handleLocationChange : function (contextURL) {
         this.currentURL = lore.util.preEncode(contextURL);
-        //var uri = lore.util.makeURI(this.currentURL);
-        //lore.debug.ore("loaded " + this.currentURL, uri.asciiSpec);
-
         if (!this.active){
             return;
         }
@@ -1224,7 +1214,6 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Triggered by user dragging and dropping a URL from the main browser and dropping anywhere on the Resource Maps UI */
     onDropURL: function(sn, aEvent){
         try{
-        //lore.debug.ore("onDropURL",sn);
         // If sourceNode is not null, then the drop was from inside the application
         // add to Resource Map if it is a link or image
         if (sn){
@@ -1246,7 +1235,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 return;
           }
         } catch (e){
-            lore.debug.ore("Controller: problem in onDropURL",e);
+            lore.debug.ore("Error in Controller: onDropURL",e);
         }    
     },
     locked : false,

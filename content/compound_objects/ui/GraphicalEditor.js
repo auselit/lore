@@ -102,7 +102,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     }
     
     } catch (e) {
-        lore.debug.ore("GraphicalEditor: initGraph",e);
+        lore.debug.ore("Error in GraphicalEditor: initGraph",e);
     }
    },
    /**
@@ -110,7 +110,7 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     * @param {lore.draw2d.Figure} figure ResourceFigure, EntityFigure or Connection that was selected
     */
    onSelectionChanged : function(figure) {
-	   	lore.ore.controller.updateSelection(figure, this);
+        lore.ore.controller.updateSelection(figure, this);
         if (figure != null) {
             // raise tab first so that properties are rendered and column widths get sized correctly for resource/rels
             
@@ -214,77 +214,77 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
         
         // handle a group of commands eg auto layout, multi-select delete etc
         if (comm instanceof lore.draw2d.CommandGroup){
-        	commList = comm.commands;
+            commList = comm.commands;
         } else {
-        	commList = [comm];
+            commList = [comm];
         }
         for (var i=0; i < commList.length; i++){
-        	comm = commList[i];
-	        var comm_fig = comm.figure;
-	        // don't allow figures to be moved outside bounds of canvas
-	        if (comm instanceof lore.draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)) {
-	            comm.undo();
-	        }
-	        
-	        if (comm_fig instanceof lore.ore.ui.graph.EntityFigure) {
-	            // reset dummy graph layout position to prevent new nodes being added too far from content
-	            if (comm instanceof lore.draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
-	                && comm.oldY == this.dummylayoutprevy) {   
-	                    this.nextXY(comm.newX, comm.newY);
-	            }
-	            // remove the url from lookup if node is deleted, add it back if it is undone
-	            // update address bar add icon to reflect whether current URL is in Resource Map
-	            if (0!=(details&(lore.draw2d.CommandStack.POST_EXECUTE))) {
-	                if (comm instanceof lore.draw2d.CommandDelete) {
-	                	try{
-	                		this.model.removeAggregatedResource(comm_fig.url);
-	                	} catch (x){
-	                		lore.debug.ore("problem removing aggregated resource",x);
-	                	}
-	                    delete this.lookup[comm_fig.url];
-	                    if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
-	                           lore.ore.ui.topView.hideAddIcon(false);
-	                    }
-	                } else if (comm instanceof lore.draw2d.CommandAdd) {
-	                    if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
-	                           lore.ore.ui.topView.hideAddIcon(true);
-	                    }
-	                }
-	            }
-	            else if ((0!=(details&(lore.draw2d.CommandStack.POST_UNDO)) && comm instanceof lore.draw2d.CommandDelete)
-	                || (0!=(details&(lore.draw2d.CommandStack.POST_REDO)) && comm instanceof lore.draw2d.CommandAdd)) {
-	                //  check that URI isn't in resource map (eg another node's resource may have been changed)
-	                
-	                if (this.lookup[comm_fig.url]){
-	                    if (comm instanceof lore.draw2d.CommandDelete) {
-	                        lore.ore.ui.vp.warning("Cannot undo deletion: resource is aleady in Resource Map");
-	                        comm.redo();
-	                    } else {
-	                        lore.ore.ui.vp.warning("Cannot redo addition: resource is aleady in Resource Map");
-	                        comm.undo();
-	                    }
-	                }
-	                this.lookup[comm_fig.url] = comm_fig.getId();
-	                if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
-	                   lore.ore.ui.topView.hideAddIcon(true);
-	                }       
-	                this.model.addAggregatedResource(comm_fig.model);
-	           } 
-	             
-	            else if ((0!=(details&(lore.draw2d.CommandStack.POST_REDO)) && comm instanceof lore.draw2d.CommandDelete)
-	             || (0!=(details&(lore.draw2d.CommandStack.POST_UNDO)) && comm instanceof lore.draw2d.CommandAdd)) {
+            comm = commList[i];
+            var comm_fig = comm.figure;
+            // don't allow figures to be moved outside bounds of canvas
+            if (comm instanceof lore.draw2d.CommandMove && (comm.newX < 0 || comm.newY < 0)) {
+                comm.undo();
+            }
+            
+            if (comm_fig instanceof lore.ore.ui.graph.EntityFigure) {
+                // reset dummy graph layout position to prevent new nodes being added too far from content
+                if (comm instanceof lore.draw2d.CommandMove  && comm.oldX == this.dummylayoutprevx 
+                    && comm.oldY == this.dummylayoutprevy) {   
+                        this.nextXY(comm.newX, comm.newY);
+                }
+                // remove the url from lookup if node is deleted, add it back if it is undone
+                // update address bar add icon to reflect whether current URL is in Resource Map
+                if (0!=(details&(lore.draw2d.CommandStack.POST_EXECUTE))) {
+                    if (comm instanceof lore.draw2d.CommandDelete) {
+                        try{
+                            this.model.removeAggregatedResource(comm_fig.url);
+                        } catch (x){
+                            lore.debug.ore("Error removing aggregated resource",x);
+                        }
+                        delete this.lookup[comm_fig.url];
+                        if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
+                               lore.ore.ui.topView.hideAddIcon(false);
+                        }
+                    } else if (comm instanceof lore.draw2d.CommandAdd) {
+                        if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
+                               lore.ore.ui.topView.hideAddIcon(true);
+                        }
+                    }
+                }
+                else if ((0!=(details&(lore.draw2d.CommandStack.POST_UNDO)) && comm instanceof lore.draw2d.CommandDelete)
+                    || (0!=(details&(lore.draw2d.CommandStack.POST_REDO)) && comm instanceof lore.draw2d.CommandAdd)) {
+                    //  check that URI isn't in resource map (eg another node's resource may have been changed)
+                    
+                    if (this.lookup[comm_fig.url]){
+                        if (comm instanceof lore.draw2d.CommandDelete) {
+                            lore.ore.ui.vp.warning("Cannot undo deletion: resource is aleady in Resource Map");
+                            comm.redo();
+                        } else {
+                            lore.ore.ui.vp.warning("Cannot redo addition: resource is aleady in Resource Map");
+                            comm.undo();
+                        }
+                    }
+                    this.lookup[comm_fig.url] = comm_fig.getId();
+                    if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
+                       lore.ore.ui.topView.hideAddIcon(true);
+                    }       
+                    this.model.addAggregatedResource(comm_fig.model);
+               } 
+                 
+                else if ((0!=(details&(lore.draw2d.CommandStack.POST_REDO)) && comm instanceof lore.draw2d.CommandDelete)
+                 || (0!=(details&(lore.draw2d.CommandStack.POST_UNDO)) && comm instanceof lore.draw2d.CommandAdd)) {
                     try{
                         this.model.removeAggregatedResource(comm_fig.url);
                     } catch (x){
-                        lore.debug.ore("problem removing aggregated resource",x);
+                        lore.debug.ore("Error removing aggregated resource",x);
                     }
-	                delete this.lookup[comm_fig.url];
-	                if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
-	                       lore.ore.ui.topView.hideAddIcon(false);
-	                }
-	                
-	            }
-	        }
+                    delete this.lookup[comm_fig.url];
+                    if (lore.ore.ui.topView && lore.ore.controller.currentURL == comm_fig.url){
+                           lore.ore.ui.topView.hideAddIcon(false);
+                    }
+                    
+                }
+            }
         }
    },
    /** returns the figure that is currently selected */
@@ -308,28 +308,28 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    },
    /** Select a figure without activating view or scrolling */
    selectFigure: function(uri){
-	   var fig = this.lookupFigure(uri);
-	   this.coGraph.setCurrentSelection(fig);
+       var fig = this.lookupFigure(uri);
+       this.coGraph.setCurrentSelection(fig);
    },
    /** respond to model event: add figure to represent resource */
    onAddResource : function(res){
-     lore.debug.ore("onAddResource",res);
+     lore.debug.ore("Error in onAddResource",res);
    },
    /** respond to model event: remove figure when resource is removed from Resource Map */
    onRemoveResource : function(res){
-     lore.debug.ore("onRemoveResource",res);
+     lore.debug.ore("Error in onRemoveResource",res);
    },
    /** load Resource Map from model object into graphical editor */
    loadContent: function(co){
     
    },
    removeFigure : function(uri){
-	    try{
-	        var fig = this.lookupFigure(uri);
-	        this.coGraph.getCommandStack().execute(fig.createCommand(new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.DELETE)));
-	    } catch (e){
-	        lore.debug.ore("removeFigure",e);
-	    }
+        try{
+            var fig = this.lookupFigure(uri);
+            this.coGraph.getCommandStack().execute(fig.createCommand(new lore.draw2d.EditPolicy(lore.draw2d.EditPolicy.DELETE)));
+        } catch (e){
+            lore.debug.ore("Error in removeFigure",e);
+        }
    },
    /**
     * Add a figure to represent a resource to the graphical editor
@@ -431,13 +431,13 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                 fig.setDimension(opts.w, opts.h);    
             } 
             if (opts.order){
-            	fig.orderIndex = opts.order;
+                fig.orderIndex = opts.order;
             }
             if (opts.hc){
                 fig.setHighlightColor(opts.hc);
             }
             if (opts.abstractPreview == 1){
-            	fig.abstractPreview = true;
+                fig.abstractPreview = true;
             }
             fig.setContent(theURL);
            

@@ -3,11 +3,11 @@
  */
 lore.ore.ui.initUIComponents = function() {
     Ext.DomHelper.useDom = true; // force Ext to use dom methods instead of inner HTML
-	Ext.Container.prototype.bufferResize = false;
+    Ext.Container.prototype.bufferResize = false;
     // make sure popup windows appear above everything else, particularly when over the graphical editor
     Ext.WindowMgr.zseed = 10000;
 
-	try {
+    try {
         Ext.MessageBox.show({
            msg: 'Loading LORE...',
            width:250,
@@ -16,41 +16,41 @@ lore.ore.ui.initUIComponents = function() {
            cls: 'co-load-msg'
        });
         lore.ore.ui.vp = new lore.ore.ui.Viewport();
-		lore.ore.ui.vp.show();
-	} catch (e) {
-		lore.debug.ore("Error creating Ext UI components from spec", e);
-	}
+        lore.ore.ui.vp.show();
+    } catch (e) {
+        lore.debug.ore("Error creating Ext UI components from spec", e);
+    }
 
-	// set up glocal variable references to main UI components
-	lore.ore.ui.grid = Ext.getCmp("remgrid");
-	lore.ore.ui.nodegrid = Ext.getCmp("nodegrid");
+    // set up glocal variable references to main UI components
+    lore.ore.ui.grid = Ext.getCmp("remgrid");
+    lore.ore.ui.nodegrid = Ext.getCmp("nodegrid");
     lore.ore.ui.relsgrid = Ext.getCmp("relsgrid");
-	lore.ore.ui.status = Ext.getCmp("lorestatus");
+    lore.ore.ui.status = Ext.getCmp("lorestatus");
 
-	/** Tree used to display properties in resource details editor */
-	lore.ore.ui.resproptreeroot = new Ext.tree.TreeNode({
-				id : "resproptree",
-				text : "Properties",
-				qtip : "The resource's properties",
-				iconCls : "tree-ore"
-			});
+    /** Tree used to display properties in resource details editor */
+    lore.ore.ui.resproptreeroot = new Ext.tree.TreeNode({
+                id : "resproptree",
+                text : "Properties",
+                qtip : "The resource's properties",
+                iconCls : "tree-ore"
+            });
 
-	/** Tree used to display relationships in resource details editor */
-	if (Ext.getCmp("remresedit")) {
-		lore.ore.ui.resreltreeroot = new Ext.tree.TreeNode({
-					id : "resreltree",
-					text : "Relationships",
-					qtip : "The resource's relationships",
-					iconCls : "tree-ore"
-				});
-		var resdetailstree = Ext.getCmp("resdetailstree").getRootNode();
-		resdetailstree.appendChild(lore.ore.ui.resproptreeroot);
-		resdetailstree.appendChild(lore.ore.ui.resreltreeroot);
-		lore.ore.ui.resproptreeroot.on("beforeclick", lore.ore.updateResDetails);
-		lore.ore.ui.resreltreeroot.on("beforeclick", lore.ore.updateResDetails);
-		// load resource details handler
-		lore.ore.ui.resselectcombo.on("select", lore.ore.loadResourceDetails); 
-	}
+    /** Tree used to display relationships in resource details editor */
+    if (Ext.getCmp("remresedit")) {
+        lore.ore.ui.resreltreeroot = new Ext.tree.TreeNode({
+                    id : "resreltree",
+                    text : "Relationships",
+                    qtip : "The resource's relationships",
+                    iconCls : "tree-ore"
+                });
+        var resdetailstree = Ext.getCmp("resdetailstree").getRootNode();
+        resdetailstree.appendChild(lore.ore.ui.resproptreeroot);
+        resdetailstree.appendChild(lore.ore.ui.resreltreeroot);
+        lore.ore.ui.resproptreeroot.on("beforeclick", lore.ore.updateResDetails);
+        lore.ore.ui.resreltreeroot.on("beforeclick", lore.ore.updateResDetails);
+        // load resource details handler
+        lore.ore.ui.resselectcombo.on("select", lore.ore.loadResourceDetails); 
+    }
 
     
     var sidetabs = Ext.getCmp("propertytabs");
@@ -59,7 +59,7 @@ lore.ore.ui.initUIComponents = function() {
                 try {
                     p.body.setStyle('display', 'none');
                 } catch (e) {
-                    lore.debug.ore("beforecollapse", e);
+                    lore.debug.ore("Error in beforecollapse", e);
                 }
     });
     sidetabs.on('beforeexpand', function(p){p.body.setStyle('display','block');});
@@ -71,8 +71,8 @@ lore.ore.ui.initUIComponents = function() {
     });
     
     sidetabs.activate("browsePanel");
-	Ext.QuickTips.interceptTitles = true;
-	Ext.QuickTips.init();
+    Ext.QuickTips.interceptTitles = true;
+    Ext.QuickTips.init();
     
     // set up drag and drop from browse/history/search dataviews to graphical editor
     var d1 = new lore.ore.ui.CompoundObjectDragZone(Ext.getCmp('cobview'));
@@ -84,11 +84,11 @@ lore.ore.ui.initUIComponents = function() {
  * Initialise Resource Maps component of LORE
  */
 lore.ore.ui.init = function() {
-	try {
+    try {
         var currentURL;
         if (lore.ore.firefox){
             // Get a reference to the overlay
-    		lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
+            lore.ore.ui.topView = lore.global.ui.topWindowView.get(window.instanceId);
             currentURL = window.top.getBrowser().selectedBrowser.contentWindow.location.href;
         } else {
             currentURL = "http://austlit.edu.au";
@@ -135,22 +135,22 @@ lore.ore.ui.init = function() {
         lore.ore.historyManager = new lore.ore.model.HistoryManager(lore.ore.coListManager);
         lore.ore.cache = new lore.ore.model.CompoundObjectCache();    
         
-		lore.ore.ui.initUIComponents();
-	    lore.ore.ui.graphicalEditor = Ext.getCmp("drawingarea");
+        lore.ore.ui.initUIComponents();
+        lore.ore.ui.graphicalEditor = Ext.getCmp("drawingarea");
         
-		lore.ore.ui.vp.info("Welcome to LORE");
+        lore.ore.ui.vp.info("Welcome to LORE");
         
-		lore.ore.controller.createCompoundObject();
+        lore.ore.controller.createCompoundObject();
 
         if (lore.ore.ui.topView && lore.ore.ui.topView.compoundObjectsVisible()){
             lore.ore.controller.onShow();
         }
 
-		lore.debug.ui("LORE Resource Maps init complete", lore);
+        lore.debug.ui("LORE Resource Maps init complete", lore);
         Ext.Msg.hide();
         Ext.getCmp("drawingarea").focus();
         
-	} catch (e) {
-		lore.debug.ui("Exception in Resource Map init", e);
-	}
+    } catch (e) {
+        lore.debug.ui("Exception in Resource Map init", e);
+    }
 };

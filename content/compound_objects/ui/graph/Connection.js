@@ -91,7 +91,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
      * @param {} symmetric
      */
     setRelationshipType : function(enamespace, etype, symmetric) {
-    	this.removeFromModel();
+        this.removeFromModel();
         this.edgetype=etype;
         this.edgens=enamespace;
         this.symmetric = symmetric;
@@ -121,8 +121,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.paint();
     },
     removeFromModel: function(){
-    	lore.debug.ore("remove from model",this);
-    	if (this.model && this.targetPort){
+        if (this.model && this.targetPort){
             var props = this.model.get('properties');
             var prop = this.edgens + this.edgetype;
             var propIndex = props.findProperty(prop,this.targetPort.getParent().url);
@@ -132,24 +131,23 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
           }
     },
     updateModel: function(){
-    	try{
-    	  lore.debug.ore("update rel",this);
-  	      if (this.model && this.targetPort){
-  	    	  
-  	          var props = this.model.get('properties');
-  	          var propData = {
-  	              id: this.edgens + this.edgetype, 
-  	              ns: this.edgens, 
-  	              name: this.edgetype, 
-  	              value: this.targetPort.getParent().url, 
-  	              prefix: lore.constants.nsprefix(this.edgens)
-  	          };
-  	          props.setProperty(propData);
-  	      } else {
-  	    	  lore.debug.ore("Error : no model or targetPort",this);
-  	      }
+        try{
+          if (this.model && this.targetPort){
+              
+              var props = this.model.get('properties');
+              var propData = {
+                  id: this.edgens + this.edgetype, 
+                  ns: this.edgens, 
+                  name: this.edgetype, 
+                  value: this.targetPort.getParent().url, 
+                  prefix: lore.constants.nsprefix(this.edgens)
+              };
+              props.setProperty(propData);
+          } else {
+              lore.debug.ore("Error : no model or targetPort",this);
+          }
         } catch (e){
-      	  lore.debug.ore("Problem updating model from connection",e);
+          lore.debug.ore("Error updating model from connection",e);
         }
     },
     setTargetAnchor: function(anchor) {
@@ -238,7 +236,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
                     });
                     lore.draw2d.Connection.contextmenu.doLayout();
                     } catch (ex){
-                        lore.debug.ore("problem filtering rel menu",ex);
+                        lore.debug.ore("Error filtering rel menu",ex);
                     }
                 });
                 // sort the menu entries alphabetically
@@ -253,7 +251,6 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
                     rel = keys[i];
                     
                     var relnamespace=om.theOntRelationships[rel];
-                    //lore.debug.ore("looking up " + relnamespace, lore.constants.NAMESPACES);
                     var nspfx = lore.constants.nsprefix(relnamespace);
                     var symmquery = om.relOntology.prefix('rdf',lore.constants.NAMESPACES["rdf"])
                         .where('<' + relnamespace + rel +'> rdf:type <' + lore.constants.OWL_SPROP + '>');
@@ -290,7 +287,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
                 this.setColor(new lore.draw2d.Color(174,174,174));
             },this);
         } catch (ex){ 
-            lore.debug.ore("problem generating context menu for connection",ex);
+            lore.debug.ore("Error generating context menu for connection",ex);
             return null;
         }
     },
@@ -581,8 +578,7 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       this.finishStroke();
     
       // Display label
-      for(var i=0; i<this.children.getSize();i++)
-      {
+      for(var i=0; i<this.children.getSize();i++) {
          var entry = this.children.get(i);
          this.html.appendChild(entry.figure.getHTMLElement());
          entry.isAppended=true;

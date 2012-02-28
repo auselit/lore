@@ -55,24 +55,24 @@ lore.ore.ui.NarrativePanel = Ext.extend(Ext.Panel,{
         this.getComponent(0).body.update(lore.ore.ui.narrativeCOTemplate.apply([tmpCO]));
         Ext.Msg.hide();
         } catch(e){
-        	lore.debug.ore("problem in updateBinding",e);
-        	Ext.Msg.hide();
+            lore.debug.ore("Error in updateBinding",e);
+            Ext.Msg.hide();
         }
     },
     showResource: function(uri){
-    	Ext.getCmp("loreviews").activate(this.id);
-    	this.scrollToResource(uri);
+        Ext.getCmp("loreviews").activate(this.id);
+        this.scrollToResource(uri);
     },
     scrollToResource: function(id){
         try{
             var dv = this.getComponent(1);
             if (dv){
-	            var node = Ext.get('s' + id);
+                var node = Ext.get('s' + id);
                 node.scrollIntoView(this.body, false);
                 dv.select('s' + id);
             }
         } catch (e){
-            lore.debug.ore("scrollToResource",e);
+            lore.debug.ore("Error in scrollToResource",e);
         }
     }
 });
@@ -100,18 +100,18 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
          */
         displayProperties: function(o){
             var displayDate = function(cprop, desc){
-	            var cval;
-	            var datehtml = "";
-	            if (cprop){
-	                cval = cprop.value;
-	                if (Ext.isDate(cval)){
-	                    datehtml += desc + cval.format("j M Y");
-	                } else {
-	                    datehtml += desc + cval;
-	                }
-	            }
-	            return datehtml;
-	        };
+                var cval;
+                var datehtml = "";
+                if (cprop){
+                    cval = cprop.value;
+                    if (Ext.isDate(cval)){
+                        datehtml += desc + cval.format("j M Y");
+                    } else {
+                        datehtml += desc + cval;
+                    }
+                }
+                return datehtml;
+            };
           try {
             
             var ns = lore.constants.NAMESPACES;
@@ -172,7 +172,7 @@ lore.ore.ui.narrativeCOTemplate = new Ext.XTemplate(
             }   
             return res;
           } catch (ex){
-            lore.debug.ore("problem with template",ex);
+            lore.debug.ore("Error with template",ex);
           }
         }
     }
@@ -230,8 +230,8 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
                     if(prop.prefix != "layout"){
                         // look up title for rels
                         if (prop.value.toString().match("^http://") == "http://") {
-	                        // property data for related resource: for looking up title etc
-	                        var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
+                            // property data for related resource: for looking up title etc
+                            var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
                             var displayVal = prop.value.toString();
                             if (prop.prefix == "dc" && prop.name == "subject"){
                                 displayVal = lore.ore.controller.lookupTag(prop.value.toString());
@@ -239,10 +239,10 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
                             if (propR) {
                                 prop.title = propR.get('properties').getTitle() || displayVal;
                                 prop.url = propR.get('representsAnno') ? prop.value + "?danno_useStylesheet=" : prop.value;
-	                        } else {
-	                            prop.title = displayVal;
+                            } else {
+                                prop.title = displayVal;
                                 prop.url = prop.value;
-	                        }
+                            }
                             if (propR && propR.get('isPlaceholder')){
                                 // we don't want a link for placeholder resources
                                 res += this.pRelTpl.apply(prop);
@@ -257,7 +257,7 @@ lore.ore.ui.narrativeResTemplate = new Ext.XTemplate(
             }   
             return res;
           } catch (ex){
-                lore.debug.ore("problem with template",ex);
+                lore.debug.ore("Error with template",ex);
           }
         }
     }

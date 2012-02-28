@@ -548,7 +548,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
         //+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
         lore.debug.anno("OAC JSON",Ext.util.JSON.encode(rdfdb.dump({format:'application/json', serialize:false})));
         if (sformat == "trig"){
-            return result;	
+            return result;  
         } else {
             return rdfdb.dump({format:'application/rdf+xml',serialize:true});
         }

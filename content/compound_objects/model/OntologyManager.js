@@ -99,14 +99,14 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                 }
                 
               } catch (ex){
-                    lore.debug.ore("problem loading ontology metadata",ex);
+                    lore.debug.ore("Error loading ontology metadata",ex);
               }
             },this);
             if (setCurrent){
                   om.setCurrentOntology(om);
             }
         } catch (e){
-            lore.debug.ore("updateOntologiesMetadata",e);
+            lore.debug.ore("Error in updateOntologiesMetadata",e);
         }
     },
     /** Load ontology terms into cache */
@@ -129,7 +129,6 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                     try {
                         var ontData = {relationships:{}, dataTypeProps: []};
                         // Get xml:base
-                        //lore.debug.ore("cacheOntology response " + ourl,xhr)
                         var tmp = xhr.responseXML.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'RDF')[0];
                         if (tmp){
                             tmp = tmp.getAttributeNS('http://www.w3.org/XML/1998/namespace','base');
@@ -168,7 +167,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                                                         .toString());
                                         ontData.relationships[relresult.term] = relresult.ns;
                                     } catch (e) {
-                                        lore.debug.ore("problem loading rels", e);
+                                        lore.debug.ore("Error loading rels", e);
                                     }
                         });
                         // Cache datatype properties
@@ -179,7 +178,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                                         var ns = lore.constants.nsprefix(relresult.ns);
                                         ontData.dataTypeProps.push(ns + ":" + relresult.term);
                                     } catch (e){
-                                        lore.debug.ore("Problem loading data props",e);
+                                        lore.debug.ore("Error loading data props",e);
                                     }
                                 }
                         );
@@ -187,7 +186,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
                         om.relOntologyCache[ourl] = ontData;
                         callback(ontData);
                     } catch (e) {
-                        lore.debug.ore("problem loading rels", e);
+                        lore.debug.ore("Error loading rels", e);
                     }
                 }
             };
@@ -211,11 +210,11 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
             }
             lore.ore.theOntRelationships = om.theOntRelationships;
             } catch (e){
-                lore.debug.ore("setCurrentOntology cache",e);
+                lore.debug.ore("Error in setCurrentOntology cache",e);
             }
         });
         } catch (ex){
-            lore.debug.ore("setCurrentOntology",ex);
+            lore.debug.ore("Error in setCurrentOntology",ex);
         }
 
         //lore.ore.resource_metadata_props = ["rdf:type","ore:isAggregatedBy"];
@@ -234,7 +233,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
             }
             this.updateOntologiesMetadata(ontologies, om, setCurrent); 
         } catch (e) {
-            lore.debug.ore("loadOntology", e);
+            lore.debug.ore("Error in loadOntology", e);
         }
     },
     getDataTypeProperties : function(forCompoundObject){

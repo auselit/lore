@@ -207,7 +207,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	           this.uri = res.rem.value.toString();
 	           this.aggregationURI = res.aggre.value.toString();
 	        }  else {
-	            lore.debug.ore("no remurl found in RDF",[args.content, this.loadedContent]);
+                lore.debug.ore("Error: no remurl found in RDF",[args.content, this.loadedContent]);
                 // TODO: throw some kind of error
                 throw("No Resource Map Found");
 	        }

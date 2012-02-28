@@ -219,22 +219,21 @@ lore.draw2d.LineStartResizeHandle = Ext.extend(lore.draw2d.ResizeHandle, {
    /** Handle offsets and enable mask to avoid interference from node previews during connection moving */
    onDrag : function () {
     try{
-	    var wf = this.workflow;
-	    var line = wf.currentSelection;
-	    if (!line.isMoving) {
-	        line.isMoving = true;
-	        wf.showMask(); 
-	        this.yoffset = wf.getScrollTop();
-	        this.xoffset = wf.getScrollLeft();
-	    }
-	    this.x = this.draggable.getLeft() - (this.xoffset - wf.getScrollLeft());
-	    this.y = this.draggable.getTop() - (this.yoffset - wf.getScrollTop());
-        //lore.debug.ore("drag " + this.x + " " + this.y,line)
-	    line.setStartPoint(this.x,this.y);
+        var wf = this.workflow;
+        var line = wf.currentSelection;
+        if (!line.isMoving) {
+            line.isMoving = true;
+            wf.showMask(); 
+            this.yoffset = wf.getScrollTop();
+            this.xoffset = wf.getScrollLeft();
+        }
+        this.x = this.draggable.getLeft() - (this.xoffset - wf.getScrollLeft());
+        this.y = this.draggable.getTop() - (this.yoffset - wf.getScrollTop());
+        line.setStartPoint(this.x,this.y);
         // setPosition forces position of this resize handle to update and fires move event
-	    this.setPosition(this.x,this.y);
+        this.setPosition(this.x,this.y);
     } catch (ex){
-        lore.debug.ore("Problem",ex);
+        lore.debug.ore("Error in onDrag",ex);
     }
    },
    onDragstart : function(x, y) {
@@ -255,7 +254,6 @@ lore.draw2d.LineStartResizeHandle = Ext.extend(lore.draw2d.ResizeHandle, {
                 this.command.cancel();
                 //this.workflow.currentSelection.paint();
             }
-            //lore.debug.ore("foo");
             
         } else {
             if (this.command != null) {

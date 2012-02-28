@@ -78,6 +78,6 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
     },
     /** Create JSON with related resources for explore view */
     getExploreData : function(uri,title,isCompoundObject, callback) {
-    	throw "Method not implemented";
+        throw "Method not implemented";
     }
 });

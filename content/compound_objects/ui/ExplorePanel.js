@@ -39,14 +39,14 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     var w = c.getWidth();
                     var h = c.getHeight();
                     // check if canvas is smaller than current window, if so, resize
-    				// by an increment
+                    // by an increment
                     if (csize.width < w || csize.height < h){
                         canv.resize(w + 300, h + 300);
                     } 
                     canv.getPos(true);
               }
            } catch (e){
-              lore.debug.ore("ExplorePanel",e);
+              lore.debug.ore("Error in ExplorePanel",e);
            }
         },this);
         this.on("activate", this.updateContent);
@@ -54,8 +54,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         lore.ore.explorePanel = this;
         this.previewCanvas = document.createElement("canvas");
         this.colorKey = {
-		 	"http://www.openarchives.org/ore/terms/aggregates": "#EEEEEE",
-		 	"http://www.openarchives.org/ore/terms/isAggregatedBy": "#808080",
+            "http://www.openarchives.org/ore/terms/aggregates": "#EEEEEE",
+            "http://www.openarchives.org/ore/terms/isAggregatedBy": "#808080",
             "http://purl.org/dc/elements/1.1/relation": "#E3E851"
                    
         },
@@ -78,90 +78,90 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 title: "Explore View Options",
                 items: [
                    {
-                	   xtype: 'fieldset',
-                	   title: 'Relationships',
-                	   defaultType: 'checkbox',
-                	   id: 'epRels',
-                	   defaults: {
-                		   hideLabel: true
-                		   
-                	   },
-                	   anchor: "-20"
+                       xtype: 'fieldset',
+                       title: 'Relationships',
+                       defaultType: 'checkbox',
+                       id: 'epRels',
+                       defaults: {
+                           hideLabel: true
+                           
+                       },
+                       anchor: "-20"
                    },
                    {
-                	   xtype: 'fieldset',
-                	   title: 'View options',
-                	   defaultType: 'checkbox',
-                	   defaults: {
-                		   hideLabel: true
-                	   },
-                	   anchor: "-20",
-                	   items: [
-		                   {     	   
-		                	   name: 'hideLabels',
-		                	   id: 'epHideLabels',
-		                	   boxLabel: 'Hide resource labels',
-		                	   checked: false
-		                   },
-		                   {	                	  
-		                	   name: 'hideUnconnected',
-		                	   id: 'epHideUnconnected',
-		                	   boxLabel: 'Hide resources connected by hidden relationships',
-		                	   checked: lore.ore.explorePanel.hideUnconnected
-		                   }
-	                   ]
+                       xtype: 'fieldset',
+                       title: 'View options',
+                       defaultType: 'checkbox',
+                       defaults: {
+                           hideLabel: true
+                       },
+                       anchor: "-20",
+                       items: [
+                           {           
+                               name: 'hideLabels',
+                               id: 'epHideLabels',
+                               boxLabel: 'Hide resource labels',
+                               checked: false
+                           },
+                           {                          
+                               name: 'hideUnconnected',
+                               id: 'epHideUnconnected',
+                               boxLabel: 'Hide resources connected by hidden relationships',
+                               checked: lore.ore.explorePanel.hideUnconnected
+                           }
+                       ]
                    }
                 ],
                 bbar: [
                    '->',
                    {
-                	 xtype: 'button',
-                	 text: 'OK',
-                	 tooltip: 'Apply and close',
-                	 handler: function(b, e){
-                		 try{
-	                		 var ep = lore.ore.explorePanel;
-	                		 ep.colorKeyWin.hide();
-	                		 
-	                		 // iterate over rels and update filterRels
-	                		 Ext.getCmp('epRels').items.each(function(item, index, length){
-	                			 if (index != 0){
-	                				 ep.filterRels[item.getName()] = item.getValue();
-	                			 }
-	                		 });
-	                		 // onBeforePlotLine will be called which updates adjacency alphas: this is inefficient
-	                		 ep.fd.fx.plot();
-	                		 
-	                		 // update view options
-	                		 var hideLabels = Ext.getCmp('epHideLabels').getValue();
-	                		 if (ep.hideLabels != hideLabels){
-	                			 ep.fd.labels.hideLabels(hideLabels);
-	                			 ep.hideLabels = hideLabels;
-	                		 }
-	                		 
-	                		 // Hide unconnected always called because hidden connections may have changed
-	                		 var hideUnconnected = Ext.getCmp('epHideUnconnected').getValue();
-	                		 ep.hideUnconnected = hideUnconnected;
-	                		 ep.hideUnconnectedNodes();
-	                		 
-                		 } catch (e){
-                			 lore.debug.ore("problem applying explore view options",e);
-                		 }
-                	 }
+                     xtype: 'button',
+                     text: 'OK',
+                     tooltip: 'Apply and close',
+                     handler: function(b, e){
+                         try{
+                             var ep = lore.ore.explorePanel;
+                             ep.colorKeyWin.hide();
+                             
+                             // iterate over rels and update filterRels
+                             Ext.getCmp('epRels').items.each(function(item, index, length){
+                                 if (index != 0){
+                                     ep.filterRels[item.getName()] = item.getValue();
+                                 }
+                             });
+                             // onBeforePlotLine will be called which updates adjacency alphas: this is inefficient
+                             ep.fd.fx.plot();
+                             
+                             // update view options
+                             var hideLabels = Ext.getCmp('epHideLabels').getValue();
+                             if (ep.hideLabels != hideLabels){
+                                 ep.fd.labels.hideLabels(hideLabels);
+                                 ep.hideLabels = hideLabels;
+                             }
+                             
+                             // Hide unconnected always called because hidden connections may have changed
+                             var hideUnconnected = Ext.getCmp('epHideUnconnected').getValue();
+                             ep.hideUnconnected = hideUnconnected;
+                             ep.hideUnconnectedNodes();
+                             
+                         } catch (e){
+                             lore.debug.ore("Error applying explore view options",e);
+                         }
+                     }
                    } ,
                    {
-                	   xtype: 'button',
-                	   text: 'Reset',
-                	   tooltip: 'Reset to default values',
-                	   handler: function(b,e){
-                		   Ext.getCmp('epRels').items.each(function(item, index, length){
-	                			 if (index != 0){
-	                				 item.setValue(false);
-	                			 }
-                		   });
-                		   Ext.getCmp('epHideLabels').setValue(false);
-                		   Ext.getCmp('epHideUnconnected').setValue(false);
-                	   }
+                       xtype: 'button',
+                       text: 'Reset',
+                       tooltip: 'Reset to default values',
+                       handler: function(b,e){
+                           Ext.getCmp('epRels').items.each(function(item, index, length){
+                                 if (index != 0){
+                                     item.setValue(false);
+                                 }
+                           });
+                           Ext.getCmp('epHideLabels').setValue(false);
+                           Ext.getCmp('epHideUnconnected').setValue(false);
+                       }
                    }
                 ]
         });
@@ -275,12 +275,11 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     }         
                 }
                 } catch (ex){
-                    lore.debug.ore("ExplorePanel: problem with rel tooltip",ex);
+                    lore.debug.ore("Error in ExplorePanel with rel tooltip",ex);
                 }
               },
               //Change cursor style when hovering a node
               onMouseEnter: function(node) {
-                //lore.debug.ore("node hover",node);
                 lore.ore.explorePanel.fd.canvas.getElement().style.cursor = 'move';
               },
               onMouseLeave: function() {
@@ -335,7 +334,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                     historyData.icon = "../../skin/oaioreicon-sm.png";
                     historyData.tooltip = "Load in LORE";
                 } else if (node.data["anno"]){ // annotation
-                	historyData.action = "lore.util.launchTab(\"" + node.id + "?danno_useStylesheet=\");";
+                    historyData.action = "lore.util.launchTab(\"" + node.id + "?danno_useStylesheet=\");";
                 }
                 var historyEl = Ext.getCmp("exploreHistory").body;
                 var childNodes = [lore.ore.explorePanel.historyTemplate.apply(historyData)];
@@ -361,12 +360,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         }
                     });
                     } catch (e){
-                        lore.debug.ore("Problem in requestGraph loadRem",e);
+                        lore.debug.ore("Error in requestGraph loadRem",e);
                         lore.ore.ui.vp.warning("Unable to get data for explore view");
                     }
                 });
                 } catch (e){
-                    lore.debug.ore("problem in requestGraph",e);
+                    lore.debug.ore("Error in requestGraph",e);
                     lore.ore.ui.vp.warning("Unable to get data for explore view");
                 }
             },
@@ -422,7 +421,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                    if (lore.ore.explorePanel.filterRels[rel]){
                        adj.setData('alpha', 0, 'current');       
                    } else {
-                	   adj.setData('alpha',1,'current');
+                       adj.setData('alpha',1,'current');
                    }
             }
             
@@ -437,9 +436,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
     },
     /** Handle context menu for nodes in visualisation: allow deletion/expansion of each node */
     onNodeMenu: function(fdcontroller,e){  
-    	try{	
+        try{    
         if (!this.nodemenu) {
-        	
+            
             var nodemenu = new Ext.menu.Menu({
                 id : "explore-node-menu",
                 showSeparator: false
@@ -489,9 +488,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
          }
          this.titleItem.setText(Ext.util.Format.ellipsis(fdcontroller.clickedNode.name,30));
          this.nodemenu.showAt([e.pageX,e.pageY]); 
-    	} catch (e){
-    		lore.debug.ore("problem with explore context menu",e);
-    	}
+        } catch (e){
+            lore.debug.ore("Error in  explore context menu",e);
+        }
     },
     onTabMenu : function(e){
         var el = Ext.get(e.explicitOriginalTarget);
@@ -552,8 +551,8 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                         var colorKeyHTML = this.ckTemplate.apply({rel: c, color: this.colorKey[c]});
                         relFieldSet.add({
                            name: c,
-                     	   boxLabel: "&nbsp;&nbsp;" + colorKeyHTML,
-                    	   checked: lore.ore.explorePanel.filterRels[c]
+                           boxLabel: "&nbsp;&nbsp;" + colorKeyHTML,
+                           checked: lore.ore.explorePanel.filterRels[c]
                         });
                     }                    
                     this.colorKeyWin.show();
@@ -590,12 +589,9 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         var epanel = this.getComponent(0);
         var imageW = epanel.getInnerWidth() + 50;
         var imageH = epanel.getInnerHeight() + 50;
-        //lore.debug.ore("initial height?" + epanel.body.getWidth() + " " + epanel.body.getHeight());
         // TODO: get height from actual diagram rather than hardcoding image dimensions
         imageW = 1000;
         imageH = 1000;
-        
-        //lore.debug.ore("width " + imageW + " height " + imageH,this);
         // recenter jit canvas in case user has panned
         var fdc = this.fd.canvas;
         var fdcx = fdc.translateOffsetX;
@@ -617,9 +613,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
 
         // Draw the window, cropping to display just the visualisation
         context.drawWindow(window, offsetX, offsetY, imageW, imageH, "rgb(255,255,255)");
-        
-        //lore.debug.ore("current height?" + epanel.body.getWidth() + " " + epanel.body.getHeight());
-        
+
         var imgData = canvas.toDataURL();
         // restore viewport original size
         vp.setSize(vpsize);
@@ -629,7 +623,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         vp.info("Image ready");
         return imgData;
      } catch (e) {
-        lore.debug.ore("ExplorePanel.getAsImage",e);
+        lore.debug.ore("Error in ExplorePanel.getAsImage",e);
      }
         
     },
@@ -641,12 +635,12 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         if (lore.ore.cache.getLoadedCompoundObjectIsNew()){
             Ext.getCmp("exploreinfovis").body.hide();
             try{
-	            this.clearExploreData();
-	            this.exploreLoaded = "";
-	            Ext.getCmp("exploreHistory").body.update("No connections to explore from repository: current Resource Map is unsaved&nbsp;");
-	            return;
+                this.clearExploreData();
+                this.exploreLoaded = "";
+                Ext.getCmp("exploreHistory").body.update("No connections to explore from repository: current Resource Map is unsaved&nbsp;");
+                return;
             } catch (ex){
-                lore.debug.ore("problem updating explore view",ex);
+                lore.debug.ore("Error updating explore view",ex);
             }
         }
         var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -676,27 +670,27 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
         }
     },
     hideUnconnectedNodes: function(){
-    	try{
-    		if (this.hideUnconnected){
-		    	this.fd.graph.eachNode(function(node){
-		    		var alpha = 0;
-		    		node.eachAdjacency(function(adj){	    			
-		    			if (adj.data["$alpha"] != 0){
-		    				alpha = 1;
-		    			}
-		    		});
-		    		node.setData('alpha', alpha, 'current');  
-		    	});
-    		
-    		} else {
-    			this.fd.graph.eachNode(function(node){
-    				node.setData('alpha',1,'current');
-    			});
-    		}
-    		this.fd.fx.plot();
-    	} catch (e){
-    		lore.debug.ore("problem in hideUnconnectedNodes",e);
-    	}
+        try{
+            if (this.hideUnconnected){
+                this.fd.graph.eachNode(function(node){
+                    var alpha = 0;
+                    node.eachAdjacency(function(adj){                   
+                        if (adj.data["$alpha"] != 0){
+                            alpha = 1;
+                        }
+                    });
+                    node.setData('alpha', alpha, 'current');  
+                });
+            
+            } else {
+                this.fd.graph.eachNode(function(node){
+                    node.setData('alpha',1,'current');
+                });
+            }
+            this.fd.fx.plot();
+        } catch (e){
+            lore.debug.ore("Error in hideUnconnectedNodes",e);
+        }
     },
     showLoadingMessage : function(show){
         if (show){
@@ -735,7 +729,6 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                       if (canv.translateOffsetX == 0){
                         var newx = 0 - ((1100 - ep.getWidth()) / 2);
                         var newy = 0 - ((1100 - ep.getHeight()) / 2);
-                        //lore.debug.ore("translating canvas ", [newx, newy]);
                         canv.translate(newx,newy);
                       }
                     }
@@ -759,7 +752,7 @@ lore.ore.ui.ExplorePanel = Ext.extend(Ext.Panel,{
                 Ext.getCmp("loreviews").activate(this.id);
             }
         } catch (e){
-            lore.debug.ore("problem in show in explore view",e);
+            lore.debug.ore("Error in show in explore view",e);
         }
     }
 });

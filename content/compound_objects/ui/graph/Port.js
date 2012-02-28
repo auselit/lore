@@ -4,33 +4,33 @@
  */
 lore.draw2d.Port = function(uirep) {
     try{
-    lore.draw2d.Rectangle.call(this);
-    this.parentNode = null;
-    this.originX = 0;
-    this.originY = 0;
-    this.corona = null;
-    this.setDimension(16, 16);
-    lore.draw2d.Rectangle.prototype.setColor.call(this,null);
-    this.dropable = new lore.draw2d.DropTarget(this.html);
-    this.dropable.node = this;
-    this.dropable.addEventListener("dragenter", function(_5196) {
-                _5196.target.node.onDragEnter(_5196.relatedTarget.node);
-            });
-    this.dropable.addEventListener("dragleave", function(_5197) {
-        _5197.target.node.onDragLeave(_5197.relatedTarget.node);
-    });
-    this.dropable.addEventListener("drop", function(_5198) {
-        _5198.relatedTarget.node.onDrop(_5198.target.node);
-    });
-    this.coronaWidth = 35;
-    
-    this.fillColor = new lore.draw2d.Color(255, 252, 182);
-    this.highlightFillColor = new lore.draw2d.Color(170,204,246);
-    this.setBackgroundColor(this.fillColor);
-    var grey = new lore.draw2d.Color(174, 174, 174);
-    this.setColor(grey);
+        lore.draw2d.Rectangle.call(this);
+        this.parentNode = null;
+        this.originX = 0;
+        this.originY = 0;
+        this.corona = null;
+        this.setDimension(16, 16);
+        lore.draw2d.Rectangle.prototype.setColor.call(this,null);
+        this.dropable = new lore.draw2d.DropTarget(this.html);
+        this.dropable.node = this;
+        this.dropable.addEventListener("dragenter", function(_5196) {
+                    _5196.target.node.onDragEnter(_5196.relatedTarget.node);
+                });
+        this.dropable.addEventListener("dragleave", function(_5197) {
+            _5197.target.node.onDragLeave(_5197.relatedTarget.node);
+        });
+        this.dropable.addEventListener("drop", function(_5198) {
+            _5198.relatedTarget.node.onDrop(_5198.target.node);
+        });
+        this.coronaWidth = 35;
+        
+        this.fillColor = new lore.draw2d.Color(255, 252, 182);
+        this.highlightFillColor = new lore.draw2d.Color(170,204,246);
+        this.setBackgroundColor(this.fillColor);
+        var grey = new lore.draw2d.Color(174, 174, 174);
+        this.setColor(grey);
     } catch (e){
-        lore.debug.ore("Problem",e);
+        lore.debug.ore("Error creating Port",e);
     }
 };
 lore.draw2d.Port.ZOrderBaseIndex = 5000;
@@ -79,7 +79,7 @@ Ext.extend(lore.draw2d.Port, lore.draw2d.Rectangle, {
       );
       this.fireMoveEvent();
         } catch (ex){
-            lore.debug.ore("problem in port onDrag",ex);
+            lore.debug.ore("Error in port onDrag",ex);
         }
     },
     /** Reset state back to that before drag */
@@ -131,7 +131,7 @@ Ext.extend(lore.draw2d.Port, lore.draw2d.Rectangle, {
             }
         }
         } catch (e){
-            lore.debug.ore("Problem",e);
+            lore.debug.ore("Error showing corona",e);
         }
     },
     /** Show a corona when dragging near a port
@@ -156,15 +156,15 @@ Ext.extend(lore.draw2d.Port, lore.draw2d.Rectangle, {
      * @param {} port
      */
     onDrop : function(port) {
-    	if (this.parentNode.id != port.parentNode.id) {
-    		var commConn = new lore.draw2d.CommandConnect(this.workflow, this, port);
+        if (this.parentNode.id != port.parentNode.id) {
+            var commConn = new lore.draw2d.CommandConnect(this.workflow, this, port);
             var conn = new lore.draw2d.Connection();
-    		commConn.setConnection(conn);
+            commConn.setConnection(conn);
             this.workflow.getCommandStack().execute(commConn);
             this.workflow.setCurrentSelection(conn);
             // FIXME: workaround: graphical editor not focused after drag
             Ext.getCmp('drawingarea').focus();
-    	} else {
+        } else {
             lore.ore.ui.vp.warning("LORE does not currently support relating a resource to itself");
         }
     },

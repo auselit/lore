@@ -102,16 +102,16 @@ lore.ore.model.CompoundObjectListManager = function(){
                         "name" : "isPrivate"
                     }]
        })
-	};
+    };
 };
 Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
     /**
-	 * Get one of the managed lists by name
-	 * 
-	 * @param {string}
-	 *            listname The name of the list to get
-	 * @return {lore.ore.model.CompoundObjectList} The list
-	 */
+     * Get one of the managed lists by name
+     * 
+     * @param {string}
+     *            listname The name of the list to get
+     * @return {lore.ore.model.CompoundObjectList} The list
+     */
     getList : function(listname){
         return this.lists[listname];
     },
@@ -131,7 +131,7 @@ Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
             try{
                 store.loadData(coSummaries,true);  
             } catch (e){
-                lore.debug.ore("Problem adding to store",e);
+                lore.debug.ore("Error adding to store",e);
             }
         }
     },
@@ -164,7 +164,7 @@ Ext.apply(lore.ore.model.CompoundObjectListManager.prototype, {
             }
           }
         } catch (e){
-            lore.debug.ore("Problem removing from store " + uri,e);
+            lore.debug.ore("Error removing from store " + uri,e);
         }
     },
     /**

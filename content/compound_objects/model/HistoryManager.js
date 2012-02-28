@@ -137,7 +137,7 @@ Ext.apply(lore.ore.model.HistoryManager.prototype, {
                             theCO.isPrivate = this.mozannoService.getPageAnnotation(aUri,"lore/isPrivate") == "true";
                         } 
                     } catch (f){
-                        lore.debug.ore("Problem getting isPrivate from history",f);
+                        lore.debug.ore("Error getting isPrivate from history",f);
                     }
                     coList[i] = theCO;
                 }

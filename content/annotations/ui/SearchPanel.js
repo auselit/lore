@@ -81,7 +81,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
                 split:true,
                 collapseMode: 'mini',
                 items : [{
-                	xtype: 'tabpanel',
+                    xtype: 'tabpanel',
                     region: 'north',
                     split: true,
                     collapseMode: 'mini',
@@ -91,18 +91,18 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
                     activeTab: 'solrsearch',
                     boxMinHeight: 0,
                     minHeight : 0,
-                	height: 200,
-            		items: [{
-	                        xtype: 'solrsearchpanel',
+                    height: 200,
+                    items: [{
+                            xtype: 'solrsearchpanel',
                             id: 'solrsearch',
-	                        title: 'Keyword',
-	                        ref: '../keySearchForm'
-	            		}, {
-	            			xtype: 'annosearchform',
-	            			title: 'Advanced',
-	            			itemId: 'mySearchForm',
-	            			ref: '../advSearchForm'
-	            		}]
+                            title: 'Keyword',
+                            ref: '../keySearchForm'
+                        }, {
+                            xtype: 'annosearchform',
+                            title: 'Advanced',
+                            itemId: 'mySearchForm',
+                            ref: '../advSearchForm'
+                        }]
                 }
                 ,{
                     region:"center",
@@ -162,7 +162,7 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
             this.keySearchForm.searchButton.on('click', function () {
                 // make sure any old results don't display by removing them from the store
                 this.keySearchForm.ds.removeAll(true);
-            	this.dataView.bindStore(this.keySearchForm.ds);
+                this.dataView.bindStore(this.keySearchForm.ds);
                 Ext.getCmp("annospager").bindStore(this.keySearchForm.ds);
             }, this);
             
@@ -180,8 +180,8 @@ lore.anno.ui.SearchPanel = Ext.extend(Ext.Container, {
         try {
             // make sure any old results don't display
             this.model.removeAll(true);
-        	this.dataView.bindStore(this.model);
-        	Ext.getCmp("annospager").bindStore(this.model);
+            this.dataView.bindStore(this.model);
+            Ext.getCmp("annospager").bindStore(this.model);
             var sform = this.advSearchForm.getForm();
             var vals = sform.getFieldValues();
 
