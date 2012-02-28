@@ -1,25 +1,4 @@
-/*
- * Copyright (C) 2008 - 2011 School of Information Technology and Electrical
- * Engineering, University of Queensland (www.itee.uq.edu.au).
- *
- * This file is part of LORE. LORE was developed as part of the Aus-e-Lit
- * project.
- *
- * LORE is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * LORE is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * LORE. If not, see <http://www.gnu.org/licenses/>.
- */
-
 lore.anno.Controller = function(){
-    this.fakeid = lore.util.uuid();
     this.lorevisible = false;
     this.currentURL;
 }
@@ -29,9 +8,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * if it happened and show page elements
      */
     show : function () {
-        if (this.fakeid !== lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         this.lorevisible = true;
 
         if (this.currentURL && this.currentURL != 'about:blank' && this.currentURL != '') {
@@ -43,17 +19,11 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Hide the annotations view
      */
     hide : function () {
-        if (this.fakeid !== lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         this.lorevisible = false;
         lore.anno.ui.pageui.setContentsVisible(false);
     },
     /** Helper function to create a view displayed in a closeable tab */
     openView : function(/*String*/panelid,/*String*/ paneltitle,/*function*/ activationhandler){
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var tab = Ext.getCmp(panelid);
         if (!tab) {
             tab = lore.anno.ui.views.add({
@@ -71,9 +41,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Object} opts Object containing disable/enable options. Valid fields includes opts.disable_annotations
      */ 
     disableUIFeatures : function(opts){
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.debug.ui("LORE Annotations: disable ui features?", opts);
         this.disabled = opts;
         
@@ -89,18 +56,12 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Hide the variation splitter window
      */
     hideVariationSplitter : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.ui.pageui.removeHighlightForCurrentAnnotation(lore.anno.ui.topView.getVariationContentWindow());
     },
     /**
      * Detemerine whether any annotations are modified
      */
     hasModifiedAnnotations : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         this.updateAnnoFromForm();
         return lore.anno.annoMan.numUnsavedAnnotations() > 0;
     },
@@ -108,18 +69,12 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Get the currently selected image
      */
     getCurSelImage : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         return lore.anno.ui.pageui.getCurSelImage();
     },
     /**
      * Get the currently edited annotation
      */
     getCurrentEditedAnno : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         return lore.anno.ui.formpanel.getRec();
     },
     /**
@@ -128,9 +83,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Object} tree
      */
     findNode : function (id, tree) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         if (tree) {
             return lore.util.findChildRecursively(tree, 'id', id);
         }
@@ -144,9 +96,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {boolean} showOnly Disallow saving
      */
     selectAndShowNode : function (rec, showOnly) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var node = this.findNode(rec.data.id);
     
         // RESET THE FORM
@@ -168,9 +117,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * selected annotation
      */
     showSplitter : function (rec) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         if (!rec) {
             rec = lore.anno.ui.page.getCurrentAnno();
         } else if (typeof(rec) == 'string') {
@@ -183,9 +129,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Update the annotation context in the editor panel
      */
     handleUpdateAnnotationContext : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.ui.formpanel.handleUpdateAnnotationContext();
         this.show();
         Ext.getCmp("treeview").doLayout();
@@ -194,17 +137,11 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Update the variation annotation context in the editor panel
      */
     handleUpdateVariationAnnotationContext : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.ui.formpanel.handleUpdateVariationAnnotationContext(lore.anno.ui.formpanel);
         this.show();
         Ext.getCmp("treeview").doLayout();
     },
     setPrefs : function (args) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.prefs.setPrefs(args);
     },
     //////////////////////////////////////////////////////////////////////
@@ -214,9 +151,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Hide the annotation editor
      */
     hideAnnotationEditor : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         if (lore.anno.ui.formpanel.isVisible()) {
             lore.anno.ui.formpanel.hide();
             Ext.getCmp("treeview").doLayout();
@@ -229,9 +163,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * modified.
      */
     updateAnnoFromForm : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var form = lore.anno.ui.formpanel.form;
     
     
@@ -259,9 +190,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Object} args
      */
     handlePrefsChange : function (args) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         if (!this.disableUIFeatures){
             lore.debug.ore("no disable ui features",this);
         }
@@ -273,11 +201,10 @@ Ext.apply(lore.anno.Controller.prototype, {
         if (abtframe){
             lore.util.setHighContrast(abtframe.dom.contentWindow, args.high_contrast);
         }
-        // TODO: select type from annorepostype pref
         if (args.annorepostype == 'danno'){
             lore.anno.reposAdapter = new lore.anno.repos.DannoAdapter(args.url);
         } else if (args.annorepostype == 'lorestore'){
-            lore.anno.reposAdapter = new lore.anno.repos.RestAdapter("http://localhost:8080/lorestore");
+            lore.anno.reposAdapter = new lore.anno.repos.RestAdapter(args.url);
         }
         try{
             Ext.getCmp('solrsearch').ds.proxy.setUrl(args.solr + "/select",true);
@@ -294,9 +221,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      */
     
     handleAttachAnnoCtxMenuEvents : function (tree, parent, childNode, index) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("handleAttachAnnoCtxMenuEvents SCOPE IS WRONG",this);
-        }
         childNode.on('append', this.handleAttachAnnoCtxMenuEvents, this);
     
         childNode.on('contextmenu', function (node, e) {
@@ -316,9 +240,6 @@ Ext.apply(lore.anno.Controller.prototype, {
                         text: "Reply to annotation",
                         icon: "../../skin/icons/anno/comments_add.png",
                         handler: function (evt) {
-                            if (this.fakeid != lore.anno.controller.fakeid){
-                                lore.debug.ore("SCOPE IS WRONG",this);
-                            }
                             // FIXME: scoping
                             lore.anno.controller.handleReplyToAnnotation(node);
                         },
@@ -397,9 +318,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Integer} index Index of node in tree
      */
     handleAttachNodeLinks : function (tree, thus, n, index) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             var anno = lore.anno.annoMan.findStoredRecById(n.id).data;
     
@@ -429,9 +347,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Object} event Not Used
      */
     handleTreeNodeSelection : function (node, event) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         // retrieve record for node
         var unsavedNode = node.isAncestor(lore.anno.ui.treeunsaved);
         var recId = lore.anno.ui.nodeIdToRecId(node);
@@ -452,9 +367,6 @@ Ext.apply(lore.anno.Controller.prototype, {
         Ext.getCmp("treeview").doLayout();
     },
     handleTabChange : function(browser) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var currentURL = browser.currentURI.spec;
     
         lore.anno.ui.page.load(currentURL);
@@ -465,9 +377,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {String} contextURL The url the currently selected browser tab is now pointing to
      */
     handleLocationChange : function (contextURL) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var oldurl = this.currentURL + '';
         this.currentURL = contextURL;
         // only run when annotations are visible and initialised
@@ -505,9 +414,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Reloads all the annotations for the current page
      */
     refreshAnnotations : function() {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.debug.anno("refresh annotations");
         this.handleLocationChange(this.currentURL);
     },
@@ -516,9 +422,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * if there are any, loads them.
      */
     loadAnyPrivateAnnosForPage : function() {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         if (this.lorevisible){
 	        lore.anno.annoMan.updateAnnotationsSourceList(this.currentURL, function (anno) {
 	            return anno.privateAnno;
@@ -530,9 +433,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * a different page.
      */
     tagUnsavedAnnotations : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.annoMan.annodsunsaved.each(function (rec) {
             try {
                 var node = this.findNode(rec.data.id + "-unsaved", lore.anno.ui.treeunsaved);
@@ -553,18 +453,12 @@ Ext.apply(lore.anno.Controller.prototype, {
         });
     },
     handleAnnotationsLoaded : function (numLoaded) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         if (numLoaded > 0) {
             lore.anno.ui.tabpanel.activate('treeview');
         }
         this.selectUpdatedAnnotation();
     },
     selectUpdatedAnnotation : function(){
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         // try to find annotation that was most recently created/updated/searched for and select it
         try{
             var justUpdated = lore.anno.annoMan.justUpdated;
@@ -583,9 +477,6 @@ Ext.apply(lore.anno.Controller.prototype, {
         }
     },
     handleAnnotationRepliesLoaded : function(){
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
        this.selectUpdatedAnnotation();
     },
     /**
@@ -593,9 +484,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * and clear the currently selected annotation
      */
     handleContentPageRefresh : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.debug.anno("Page refreshed");
     
         try {
@@ -623,9 +511,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Record} rec (Optional) The parent annotation record. Defaults to null. A supplied record implies this annotation is a Reply annotation.
      */
     handleAddAnnotation : function (rec) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             var currentContext = "";
             lore.debug.anno('handleAddAnnotation()', { rec: rec });
@@ -681,9 +566,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Delete the currently selected annotation, requesting confirmation from user
      */
     handleDeleteAnnotation : function (node) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var rec, unsaved;
         // find rec, and work out if a saved or unsaved anno
         if (node && node.isAncestor) { // request comes from clicking on tree
@@ -741,9 +623,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Delete currently selected annotation
      */
     handleDeleteAnnotation2 : function (rec) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             lore.debug.anno("deleting " + rec);
     
@@ -776,9 +655,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Object} uri Not currently used
      */
    handleSaveAllAnnotationChanges : function (uri) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
     
             // update existing annotation if needed before saving occurs
@@ -795,18 +671,12 @@ Ext.apply(lore.anno.Controller.prototype, {
     },
     
     handleCommittedAnnotation : function (action, anno) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.ui.loreInfo('Annotation ' + action + 'd.');
         this.hideAnnotationEditor();
         lore.debug.anno(action + 'd ' + anno.data.title, anno);
     },
     
     handleServerError : function (action, response) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.ui.loreError('Unable to ' + action + ' annotation');
         lore.debug.anno('Unable to ' + action + ' annotation', {
             response: response,
@@ -840,9 +710,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Save the currently selected annotation
      */
     handleSaveAnnotationChanges : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             this.updateAnnoFromForm();
     
@@ -892,9 +759,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Object} recs Records to add
      */
     handleAddResultsToCO : function (recs) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             for (var i = 0; i < recs.length; i++) {
                 var rec = recs[i];
@@ -916,9 +780,6 @@ Ext.apply(lore.anno.Controller.prototype, {
     },
     
     handleViewAnnotationInBrowser : function (recs) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             for (var i = 0; i < recs.length; i++) {
                 var rec = recs[i];
@@ -933,9 +794,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Toggle on and off the annotation highlighting for all annotations
      */
     handleToggleAllAnnotations : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         lore.anno.ui.pageui.toggleAllAnnotations();
     },
     
@@ -944,9 +802,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * Reply to the currently selected annotation. Add the reply to the local store.
      */
     handleReplyToAnnotation : function (node) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             var rec = lore.anno.ui.page.getCurrentAnno();
     
@@ -982,9 +837,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {Object} node  The tree node
      */
     handleEdit : function (node) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         try {
             var rec;
     
@@ -1018,9 +870,6 @@ Ext.apply(lore.anno.Controller.prototype, {
      * @param {String} format The format to serialize the annotations into. 'rdf' or 'wordml'.
      */
     handleSerialize : function (format) {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var fileExtensions = {
             "rdf": "xml",
             "wordml": "docx",
@@ -1060,17 +909,11 @@ Ext.apply(lore.anno.Controller.prototype, {
      * When the 'Hide Editor' button is clicked, update the annotation from the form, then hide the editor.
      */
     handleHideAnnotationEditor : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         this.updateAnnoFromForm();
         this.hideAnnotationEditor();
     },
     
     handleCancelEditing : function () {
-        if (this.fakeid != lore.anno.controller.fakeid){
-            lore.debug.ore("SCOPE IS WRONG",this);
-        }
         var rec = lore.anno.ui.formpanel.getRec();
         lore.anno.annoMan.annodsunsaved.remove(rec);
         lore.anno.ui.page.setCurrentAnno();
