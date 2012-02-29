@@ -499,20 +499,26 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				var bodyContent = "";
 				var result = "";
 				var bodyText = "";
+                var processedText = "";
 				if (rtype == 'application/xml' || rtype == 'application/xhtml+xml') {
 					bodyContent = xhr.responseXML.getElementsByTagName('body');
 					if (bodyContent[0]) {
 						bodyText = serializer.serializeToString(bodyContent[0]);
 					}
-					else {
-						bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(xhr.responseText)[1];
+                    else if (xhr.responseText){
+                    	processedText =  /<body.*?>((.|\n|\r)*)<\/body>/.exec(xhr.responseText);
+                    	if (processedText && processedText.length > 0){
+                            bodyText = processedText[1];
+                    	}
 					}
 				} else if (rtype === 'application/rdf+xml') {
 					return xhr.responseXML;
-				} else {
-					bodyText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(xhr.responseText)[1];
+                } else if (xhr.responseText){
+                	processedText = /<body.*?>((.|\n|\r)*)<\/body>/.exec(xhr.responseText); 
+                	if (processedText && processedText.length > 0){
+                        bodyText = processedText[1];
+                	}
 				}
-
 				if (bodyText) {
                     return lore.util.sanitizeHTML(bodyText, window);
 				}
@@ -762,7 +768,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 		// find a leaf node
 		while(firstAnno && firstAnno.isReply ) {
-            firstAnno = lore.util.findRecordById(this.annods, firstAnno.resource).data;
+        	var rec = lore.util.findRecordById(this.annods, firstAnno.resource);
+        	if (rec && rec.data){
+                firstAnno = rec.data;
+        	}
 		}
 
 		// check that they haven't switched tabs since data was loaded from server, if not load into datastore
