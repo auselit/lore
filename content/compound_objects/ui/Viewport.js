@@ -366,7 +366,13 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
             },
             scope: this
         });
-    
+        /*loreviews.contextmenu.add({
+            text : "Show JSON",
+            handler : function() {
+                lore.ore.ui.vp.openView("remjsonview", "JSON", this.updateJSONView);
+            },
+            scope: this
+        });*/
         loreviews.on("contextmenu", function(tabpanel, tab, e) {
                     Ext.getCmp("loreviews").contextmenu.showAt(e.xy);
         });
@@ -405,12 +411,12 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         var tab = Ext.getCmp(panel.id);
         if (panel.id == 'remrdfview') {
             tab.un("activate", this.updateRDFXMLView);     
-        }
-        else if (panel.id == 'remsmilview') {
+        } else if (panel.id == 'remsmilview') {
             tab.un("activate", this.updateSMILView);   
-        }
-        else if (panel.id == 'remtrigview') {
+        } else if (panel.id == 'remtrigview') {
             tab.un("activate",this.updateTriGView);
+        } else if (panel.id == 'remjsonview'){
+            tab.un("activate",this.updateJSONView);
         }
         return true;
     },
@@ -419,6 +425,12 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
         var trig = lore.ore.cache.getLoadedCompoundObject().serialize('trig');
         Ext.getCmp("remtrigview").body.update("<pre style='white-space:pre-wrap;'>" 
             + Ext.util.Format.htmlEncode(trig) + "</pre>");
+    },
+    /** @private Render the current Resource Map in JSON format in the JSON view*/
+    updateJSONView: function(){
+        var json = lore.ore.cache.getLoadedCompoundObject().serialize('json');
+        Ext.getCmp("remjsonview").body.update("<pre style='white-space:pre-wrap;'>" 
+            + Ext.util.Format.htmlEncode(json) + "</pre>");
     },
     /** @private Render the current Resource Map as RDF/XML in the RDF view */
     updateRDFXMLView : function() {
