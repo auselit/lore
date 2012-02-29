@@ -33,21 +33,15 @@ lore.ore.ui.DetailsPanel = Ext.extend(Ext.Panel,{
                    closable: false,
                    cls: 'co-load-msg'
             });
-             // TODO:  generate tmp co until mvc fixed
-             var currentCO = lore.ore.cache.getLoadedCompoundObject();
-             var coContents = currentCO.serialize('rdfquery');
-             
-             var tmpCO = new lore.ore.model.CompoundObject();
-             tmpCO.load({format: 'rdfquery',content: coContents});
-            /*if (currentREM != this.loaded) {
-                // rebind store 
-                this.getComponent(1).bindStore(currentCO.aggregatedResourceStore);
-                this.loaded = currentREM;
-            }*/
+            
+            var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            // FIXME: adding resources to model causing errors when we attach directly
+            //this.getComponent(1).bindStore(currentCO.aggregatedResourceStore);
+            var tmpCO = new lore.ore.model.CompoundObject();
+            tmpCO.load({format: 'rdfquery', content: currentCO.serialize('rdfquery')});
             this.getComponent(1).bindStore(tmpCO.aggregatedResourceStore);
-            tmpCO.representsCO = false;
-            tmpCO.title = tmpCO.properties.getTitle();
-            this.getComponent(0).body.update(lore.ore.ui.detailsCOTemplate.apply([tmpCO]));
+            this.getComponent(0).body.update(lore.ore.ui.detailsCOTemplate.apply([currentCO]));
+             
             Ext.Msg.hide();
         } catch(e){
             lore.debug.ore("Error in updateBinding",e);
@@ -77,7 +71,7 @@ lore.ore.ui.detailsCOTemplate = new Ext.XTemplate(
     '<tpl for=".">',
     '<div style="width:100%">',
         '<table style="whitespace:normal;width:100%;font-family:arial;padding-bottom;0.5em"><tr><td>',
-        '<span style="font-size:140%;font-weight:bold;color:#cc0000;">{title}<tpl if="!title">Untitled Resource Map</tpl></span></td><td style="text-align:right" width="30">',
+        '<span style="font-size:140%;font-weight:bold;color:#cc0000;">{[values.properties.getTitle() || "Untitled Resource Map"]}</span></td><td style="text-align:right" width="30">',
         '&nbsp;<a href="#" onclick="lore.ore.controller.exportCompoundObject(\'wordml\');">',
         '<img src="../../skin/icons/ore/page_white_word.png" title="Export to MS Word"></a>',
         '</td></tr></table>',

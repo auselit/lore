@@ -180,12 +180,8 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
                cls: 'co-load-msg'
         });
         
-        // TODO: slideshow should listen to model and this should not be regenerated each time
-        var currentCO = lore.ore.cache.getLoadedCompoundObject();
-        var coContents = currentCO.serialize('rdfquery');
-        var tmpCO = new lore.ore.model.CompoundObject();
-        tmpCO.load({format: 'rdfquery',content: coContents});
-        this.loadContent(tmpCO);
+        // TODO: slideshow should listen to model and should not need to be regenerated each time
+        this.loadContent(lore.ore.cache.getLoadedCompoundObject());
         Ext.Msg.hide();
    },
    /** Clear and reload content to represent a Resource Map
