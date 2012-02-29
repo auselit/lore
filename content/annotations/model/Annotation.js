@@ -279,7 +279,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                     if (context.match("xpointer").index == 0){
                         rdfdb.add(annoid + " oac:hasTarget <" + target + "#" + context + ">");
                         rdfdb.add("<" + target + "#" + context + "> dcterms:isPartOf <" + target + ">");
-                    } else {
+                    } else { // TODO: support other types of constraints
                         // generate a ConstrainedTarget and constraint with content as text
                         var ctuuid = "<urn:uuid:" + lore.util.uuid() + ">"; // constrained target
                         var cuuid = "<urn:uuid:" + lore.util.uuid() + ">"; // constraint

@@ -10,7 +10,7 @@ lore.ore.Controller = function(config){
     this.defaultCreator = "Anonymous";
     /** @private The URL for which related Resource Maps were most recently loaded */
     this.loadedURL;
-	/** Property name displayed for the Resource Map identifier */
+    /** Property name displayed for the Resource Map identifier */
     this.REM_ID_PROP = "Resource Map ID";
     this.isDirty = false;
     this.wasClean = true;
@@ -20,8 +20,8 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Respond to authenticated events from AuthManager */
     onAuthErrorOrCancel : function(){
       if (Ext.MessageBox.isVisible()){
-	      //lore.ore.ui.vp.error("Action cancelled");
-	      Ext.MessageBox.hide();  
+          //lore.ore.ui.vp.error("Action cancelled");
+          Ext.MessageBox.hide();  
       }
     },
     setDirty: function(){
@@ -55,7 +55,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         this.active = false;
     },
     loadCompoundObjectPromptForURL: function(){
-    	Ext.Msg.show({
+        Ext.Msg.show({
             title : 'Load from RDF/XML URL',
             buttons : Ext.MessageBox.OKCANCEL,
             msg : 'Please enter the URL of the Resource Map:',
@@ -73,8 +73,8 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {String} rdfURL The direct URL to the RDF (eg restful web service on repository that returns RDF)
      */
     loadCompoundObjectFromURL: function(rdfURL){
-    	try{
-    		
+        try{
+            
             // Check if the currently loaded Resource Map has been modified and if it has prompt the user to save changes
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
             if (currentCO && currentCO.isDirty() && !this.readOnly){
@@ -88,43 +88,43 @@ Ext.apply(lore.ore.Controller.prototype, {
                             // TODO: #56 check that the save completed successfully 
                             lore.ore.reposAdapter.saveCompoundObject(currentCO,function(remid){
                                 lore.ore.controller.afterSaveCompoundObject(remid);
-	                             Ext.MessageBox.show({
-	            	                    msg: 'Loading Resource Map',
-	            	                    width:250,
-	            	                    defaultTextHeight: 0,
-	            	                    closable: false,
-	            	                    cls: 'co-load-msg'
-	            	             });
-	            	             if (lore.ore.reposAdapter){
-	            	                 lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.controller.loadCompoundObject, lore.ore.controller.afterLoadCompoundObjectFail);
-	            	             } 
+                                 Ext.MessageBox.show({
+                                        msg: 'Loading Resource Map',
+                                        width:250,
+                                        defaultTextHeight: 0,
+                                        closable: false,
+                                        cls: 'co-load-msg'
+                                 });
+                                 if (lore.ore.reposAdapter){
+                                     lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.controller.loadCompoundObject, lore.ore.controller.afterLoadCompoundObjectFail);
+                                 } 
                             });
                             
                         } else if (btn === 'no') {
-                        	Ext.MessageBox.show({
-        	                    msg: 'Loading Resource Map',
-        	                    width:250,
-        	                    defaultTextHeight: 0,
-        	                    closable: false,
-        	                    cls: 'co-load-msg'
-        	             });
-        	             if (lore.ore.reposAdapter){
-        	                 lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.controller.loadCompoundObject, lore.ore.controller.afterLoadCompoundObjectFail);
-        	             }
+                            Ext.MessageBox.show({
+                                msg: 'Loading Resource Map',
+                                width:250,
+                                defaultTextHeight: 0,
+                                closable: false,
+                                cls: 'co-load-msg'
+                         });
+                         if (lore.ore.reposAdapter){
+                             lore.ore.reposAdapter.loadCompoundObject(rdfURL, lore.ore.controller.loadCompoundObject, lore.ore.controller.afterLoadCompoundObjectFail);
+                         }
                         }
                     }
                 });
             } else {
-	            Ext.MessageBox.show({
-	                    msg: 'Loading Resource Map',
-	                    width:250,
-	                    defaultTextHeight: 0,
-	                    closable: false,
-	                    cls: 'co-load-msg'
-	             });
-	             if (lore.ore.reposAdapter){
-	                 lore.ore.reposAdapter.loadCompoundObject(rdfURL, this.loadCompoundObject, this.afterLoadCompoundObjectFail);
-	             }
+                Ext.MessageBox.show({
+                        msg: 'Loading Resource Map',
+                        width:250,
+                        defaultTextHeight: 0,
+                        closable: false,
+                        cls: 'co-load-msg'
+                 });
+                 if (lore.ore.reposAdapter){
+                     lore.ore.reposAdapter.loadCompoundObject(rdfURL, this.loadCompoundObject, this.afterLoadCompoundObjectFail);
+                 }
             }
     
         } catch (e){
@@ -133,7 +133,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         
     },
     bindViews: function(co){
-    	lore.ore.ui.graphicalEditor.bindModel(co);
+        lore.ore.ui.graphicalEditor.bindModel(co);
         Ext.getCmp("remlistview").bindModel(co);
         lore.ore.ui.grid.bindModel(co);
     },
@@ -142,233 +142,233 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} rdf XML doc or XML HTTP response containing the Resource Map (RDF/XML)
      */
     loadCompoundObject : function(rdf) {
-		try {
-			var getDatatype = function(propname, propvalue) {
-				var dtype = propvalue.datatype;
-				if (dtype && dtype._string == "http://purl.org/dc/terms/W3CDTF") {
-					dtype = "date";
-				} else if (dtype
-						&& dtype == lore.constants.NAMESPACES["layout"]
-								+ "escapedHTMLFragment") {
-					dtype = "html";
-				} else {
-					dtype = "plainstring";
-					// Allow formatting for some fields
-					if (propname == "dcterms:abstract"
-							|| propname == "dc:description") {
-						dtype = "string";
-					}
-				}
-				return dtype;
-			};
-			var showInHistory = false;
+        try {
+            var getDatatype = function(propname, propvalue) {
+                var dtype = propvalue.datatype;
+                if (dtype && dtype._string == "http://purl.org/dc/terms/W3CDTF") {
+                    dtype = "date";
+                } else if (dtype
+                        && dtype == lore.constants.NAMESPACES["layout"]
+                                + "escapedHTMLFragment") {
+                    dtype = "html";
+                } else {
+                    dtype = "plainstring";
+                    // Allow formatting for some fields
+                    if (propname == "dcterms:abstract"
+                            || propname == "dc:description") {
+                        dtype = "string";
+                    }
+                }
+                return dtype;
+            };
+            var showInHistory = false;
 
-			// reset the graphical view
-			lore.ore.ui.graphicalEditor.initGraph();
-			var rdfDoc;
-			if (typeof rdf != 'object') {
-				rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
-			} else {
-				showInHistory = true;
-				rdfDoc = rdf.responseXML;
-			}
-			// lore.debug.timeElapsed("creating databank");
-			var databank = jQuery.rdf.databank();
-			for (ns in lore.constants.NAMESPACES) {
-				databank.prefix(ns, lore.constants.NAMESPACES[ns]);
-			}
-			databank.load(rdfDoc);
-			var loadedRDF = jQuery.rdf({
-						databank : databank
-			});
-			// Display the properties for the Resource Map
-			var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
-					.where('?rem ore:describes ?aggre');
-			var aggreurl, remurl;
-			var res = remQuery.get(0);
+            // reset the graphical view
+            lore.ore.ui.graphicalEditor.initGraph();
+            var rdfDoc;
+            if (typeof rdf != 'object') {
+                rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
+            } else {
+                showInHistory = true;
+                rdfDoc = rdf.responseXML;
+            }
+            // lore.debug.timeElapsed("creating databank");
+            var databank = jQuery.rdf.databank();
+            for (ns in lore.constants.NAMESPACES) {
+                databank.prefix(ns, lore.constants.NAMESPACES[ns]);
+            }
+            databank.load(rdfDoc);
+            var loadedRDF = jQuery.rdf({
+                        databank : databank
+            });
+            // Display the properties for the Resource Map
+            var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
+                    .where('?rem ore:describes ?aggre');
+            var aggreurl, remurl;
+            var res = remQuery.get(0);
             var isPrivate = false;
-			if (res) {
-				remurl = res.rem.value.toString();
-				aggreurl = res.aggre.value.toString();
-				var tmpCO = new lore.ore.model.CompoundObject();
-				tmpCO.load({
-							format : 'application/rdf+xml',
-							content : rdfDoc
-				});
-				if (tmpCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isLocked")){
+            if (res) {
+                remurl = res.rem.value.toString();
+                aggreurl = res.aggre.value.toString();
+                var tmpCO = new lore.ore.model.CompoundObject();
+                tmpCO.load({
+                            format : 'application/rdf+xml',
+                            content : rdfDoc
+                });
+                if (tmpCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isLocked")){
                     lore.ore.controller.setLockCompoundObject(true);
                 } else {
                     lore.ore.controller.setLockCompoundObject(false);
                 }
                 isPrivate = tmpCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isPrivate");
-				lore.ore.cache.add(remurl, tmpCO);
-				lore.ore.cache.setLoadedCompoundObjectUri(remurl);
-				lore.ore.cache.setLoadedCompoundObjectIsNew(false);
+                lore.ore.cache.add(remurl, tmpCO);
+                lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+                lore.ore.cache.setLoadedCompoundObjectIsNew(false);
                 lore.ore.controller.bindViews(tmpCO);
 
-			} else {
-				lore.ore.ui.vp.warning("No Resource Map found");
+            } else {
+                lore.ore.ui.vp.warning("No Resource Map found");
                 lore.debug.ore("Error: no remurl found in RDF", loadedRDF);
                 return;
-			}
+            }
 
-			// lore.debug.timeElapsed("create figure for each resource ");
-			// create a node figure for each aggregated resource, restoring the layout
+            // lore.debug.timeElapsed("create figure for each resource ");
+            // create a node figure for each aggregated resource, restoring the layout
             var counter = 0;
             var numResources = 
-			loadedRDF.where('<' + aggreurl + '> ore:aggregates ?url')
-					.optional('?url layout:x ?x')
-					.optional('?url layout:y ?y')
-					.optional('?url layout:width ?w')
-					.optional('?url layout:height ?h')
-					.optional('?url layout:originalHeight ?oh')
-					.optional('?url layout:highlightColor ?hc')
-					.optional('?url layout:orderIndex ?order')
-					.optional('?url layout:abstractPreview ?abstractPreview')
+            loadedRDF.where('<' + aggreurl + '> ore:aggregates ?url')
+                    .optional('?url layout:x ?x')
+                    .optional('?url layout:y ?y')
+                    .optional('?url layout:width ?w')
+                    .optional('?url layout:height ?h')
+                    .optional('?url layout:originalHeight ?oh')
+                    .optional('?url layout:highlightColor ?hc')
+                    .optional('?url layout:orderIndex ?order')
+                    .optional('?url layout:abstractPreview ?abstractPreview')
                     .optional('?url layout:isPlaceholder ?placeholder')
-					.optional('?url dc:format ?format')
-					.optional('?url rdf:type ?rdftype')
-					.optional('?url dc:title ?title')
-					.each(function() {
-						var resourceURL = this.url.value.toString();
-						var fig;
-						var opts = {
-							batch : true,
-							url : resourceURL
-						};
-						if (this.x && this.y) {
-							for (prop in this) {
-								if (prop != 'url' && prop != 'format'
-										&& prop != 'rdftype' && prop != 'title'
-										&& prop != 'hc') {
-									opts[prop] = parseInt(this[prop].value);
-								} else {
-									opts[prop] = this[prop].value.toString();
-								}
-							}
-							if (opts.x < 0) {
-								opts.x = 0;
-							}
-							if (opts.y < 0) {
-								opts.y = 0;
-							}
-						}
+                    .optional('?url dc:format ?format')
+                    .optional('?url rdf:type ?rdftype')
+                    .optional('?url dc:title ?title')
+                    .each(function() {
+                        var resourceURL = this.url.value.toString();
+                        var fig;
+                        var opts = {
+                            batch : true,
+                            url : resourceURL
+                        };
+                        if (this.x && this.y) {
+                            for (prop in this) {
+                                if (prop != 'url' && prop != 'format'
+                                        && prop != 'rdftype' && prop != 'title'
+                                        && prop != 'hc') {
+                                    opts[prop] = parseInt(this[prop].value);
+                                } else {
+                                    opts[prop] = this[prop].value.toString();
+                                }
+                            }
+                            if (opts.x < 0) {
+                                opts.x = 0;
+                            }
+                            if (opts.y < 0) {
+                                opts.y = 0;
+                            }
+                        }
                         if (counter < lore.ore.controller.MAXSIZE){
-						 fig = lore.ore.ui.graphicalEditor.addFigure(opts);
+                         fig = lore.ore.ui.graphicalEditor.addFigure(opts);
                         }
                         counter++;
-					});
+                    });
 
-			// iterate over all predicates to create node connection figures
-			loadedRDF.where('?subj ?pred ?obj')
-			.filter(function() {
-				// filter out the layout properties and predicates about the
-				// resource map as well as literals
-				if (this.pred.value.toString()
-						.match(lore.constants.NAMESPACES["layout"])
-						|| this.pred.value.toString() === (lore.constants.NAMESPACES["dc"] + "format")
-						|| this.subj.value.toString().match(remurl)) {
-					return false;
-				} else {
-					return true;
-				}
-			}).each(function() {
-				// try to find a node that this predicate applies to
-				var subject = this.subj.value.toString();
-				var coGraph = lore.ore.ui.graphicalEditor.coGraph;
-				var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
-				if (!srcfig) {
-					srcfig = lore.ore.ui.graphicalEditor
-							.lookupFigure(lore.util.unescapeHTML(subject
-									.replace('%3C', '<').replace('%3F', '>')));
-				}
-				if (srcfig) {
-					var relresult = lore.util.splitTerm(this.pred.value.toString());
+            // iterate over all predicates to create node connection figures
+            loadedRDF.where('?subj ?pred ?obj')
+            .filter(function() {
+                // filter out the layout properties and predicates about the
+                // resource map as well as literals
+                if (this.pred.value.toString()
+                        .match(lore.constants.NAMESPACES["layout"])
+                        || this.pred.value.toString() === (lore.constants.NAMESPACES["dc"] + "format")
+                        || this.subj.value.toString().match(remurl)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }).each(function() {
+                // try to find a node that this predicate applies to
+                var subject = this.subj.value.toString();
+                var coGraph = lore.ore.ui.graphicalEditor.coGraph;
+                var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
+                if (!srcfig) {
+                    srcfig = lore.ore.ui.graphicalEditor
+                            .lookupFigure(lore.util.unescapeHTML(subject
+                                    .replace('%3C', '<').replace('%3F', '>')));
+                }
+                if (srcfig) {
+                    var relresult = lore.util.splitTerm(this.pred.value.toString());
 
-					var obj = this.obj.value.toString();
-					var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
-					/*
-					 * if (!tgtfig) { tgtfig = lore.ore.ui.graphicalEditor
-					 * .lookupFigure(lore.util.unescapeHTML(obj.replace(
-					 * '%3C', '<').replace('%3F', '>'))); }
-					 */
-					if (tgtfig && (srcfig != tgtfig)) { // this is a connection
-						// lore.debug.timeElapsed("connection 1");
-						try {
-							var c = new lore.draw2d.Connection();
-							// lore.debug.timeElapsed("connection 2");
-							var srcPort = srcfig.getPort("output");
-							// lore.debug.timeElapsed("connection 3");
-							var tgtPort = tgtfig.getPort("input");
-							// lore.debug.timeElapsed("connection 4");
-							if (srcPort && tgtPort) {
-								c.setSource(srcPort);
-								// lore.debug.timeElapsed("connection 5");
-								c.setTarget(tgtPort);
-								// lore.debug.timeElapsed("connection 6");
-								c.setRelationshipType(relresult.ns,
-										relresult.term);
-								// lore.debug.timeElapsed("connection 7");
-								coGraph.addFigure(c);
-								// lore.debug.timeElapsed("connection 8");
-							} else {
-								throw "source or target port not defined";
-							}
-						} catch (e) {
-							lore.debug.ore("problem creating connection", e);
-							delete c;
-						}
+                    var obj = this.obj.value.toString();
+                    var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
+                    /*
+                     * if (!tgtfig) { tgtfig = lore.ore.ui.graphicalEditor
+                     * .lookupFigure(lore.util.unescapeHTML(obj.replace(
+                     * '%3C', '<').replace('%3F', '>'))); }
+                     */
+                    if (tgtfig && (srcfig != tgtfig)) { // this is a connection
+                        // lore.debug.timeElapsed("connection 1");
+                        try {
+                            var c = new lore.draw2d.Connection();
+                            // lore.debug.timeElapsed("connection 2");
+                            var srcPort = srcfig.getPort("output");
+                            // lore.debug.timeElapsed("connection 3");
+                            var tgtPort = tgtfig.getPort("input");
+                            // lore.debug.timeElapsed("connection 4");
+                            if (srcPort && tgtPort) {
+                                c.setSource(srcPort);
+                                // lore.debug.timeElapsed("connection 5");
+                                c.setTarget(tgtPort);
+                                // lore.debug.timeElapsed("connection 6");
+                                c.setRelationshipType(relresult.ns,
+                                        relresult.term);
+                                // lore.debug.timeElapsed("connection 7");
+                                coGraph.addFigure(c);
+                                // lore.debug.timeElapsed("connection 8");
+                            } else {
+                                throw "source or target port not defined";
+                            }
+                        } catch (e) {
+                            lore.debug.ore("problem creating connection", e);
+                            delete c;
+                        }
 
-					} 
-				}
-			});
-			// Temporary workaround to set drawing area size on load
-			// problem still exists if a node is added that extends the boundaries
-			lore.ore.ui.graphicalEditor.coGraph.resizeMask();
+                    } 
+                }
+            });
+            // Temporary workaround to set drawing area size on load
+            // problem still exists if a node is added that extends the boundaries
+            lore.ore.ui.graphicalEditor.coGraph.resizeMask();
 
-			lore.ore.ui.vp.info("Loading Resource Map");
+            lore.ore.ui.vp.info("Loading Resource Map");
             if (counter > lore.ore.controller.MAXSIZE){
                 lore.ore.ui.vp.error("Resource Map is too big for LORE graphical editor! " + (counter - lore.ore.controller.MAXSIZE) + " resources not shown");
             }
-			Ext.Msg.hide();
-			lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+            Ext.Msg.hide();
+            lore.ore.cache.setLoadedCompoundObjectUri(remurl);
             // preload nested Resource Maps to cache
             lore.ore.cache.cacheNested(loadedRDF, 0);
             
-			// lore.ore.populateResourceDetailsCombo();
-			// lore.debug.timeElapsed("show in history");
-			if (showInHistory) {
-				var title = lore.ore.ui.grid.getPropertyValue("dc:title")
-						|| lore.ore.ui.grid.getPropertyValue("dcterms:title");
-				if (!title) {
-					title = "Untitled";
-				}
-				lore.ore.historyManager.addToHistory(remurl, title, (isPrivate && isPrivate.value == true ? true: false));
-			}
-			if (lore.ore.ui.topView
-					&& lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]) {
-				lore.ore.ui.topView.hideAddIcon(true);
-			} else if (lore.ore.ui.topView) {
-				lore.ore.ui.topView.hideAddIcon(false);
-			}
-			// lore.debug.timeElapsed("done");
-			var readOnly = !remurl.match(lore.ore.reposAdapter.idPrefix);
-			Ext.getCmp('currentCOMsg').setText(
-					Ext.util.Format.ellipsis(title, 50)
-							+ (readOnly ? ' (read-only)' : ''), false);
-			Ext.getCmp("currentCOSavedMsg").setText("");
+            // lore.ore.populateResourceDetailsCombo();
+            // lore.debug.timeElapsed("show in history");
+            if (showInHistory) {
+                var title = lore.ore.ui.grid.getPropertyValue("dc:title")
+                        || lore.ore.ui.grid.getPropertyValue("dcterms:title");
+                if (!title) {
+                    title = "Untitled";
+                }
+                lore.ore.historyManager.addToHistory(remurl, title, (isPrivate && isPrivate.value == true ? true: false));
+            }
+            if (lore.ore.ui.topView
+                    && lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]) {
+                lore.ore.ui.topView.hideAddIcon(true);
+            } else if (lore.ore.ui.topView) {
+                lore.ore.ui.topView.hideAddIcon(false);
+            }
+            // lore.debug.timeElapsed("done");
+            var readOnly = !remurl.match(lore.ore.reposAdapter.idPrefix);
+            Ext.getCmp('currentCOMsg').setText(
+                    Ext.util.Format.ellipsis(title, 50)
+                            + (readOnly ? ' (read-only)' : ''), false);
+            Ext.getCmp("currentCOSavedMsg").setText("");
             lore.ore.controller.isDirty = false;
             lore.ore.controller.wasClean = true;
-		} catch (e) {
-			lore.ore.ui.vp.error("Error loading Resource Map");
+        } catch (e) {
+            lore.ore.ui.vp.error("Error loading Resource Map");
             lore.debug.ore("Error loading RDF from string", e);
-			lore.debug.ore("the RDF string was", rdf);
-			lore.debug.ore("the serialized databank is", databank.dump({
-								format : 'application/rdf+xml',
-								serialize : true
-			}));
-		}
-	},
+            lore.debug.ore("the RDF string was", rdf);
+            lore.debug.ore("the serialized databank is", databank.dump({
+                                format : 'application/rdf+xml',
+                                serialize : true
+            }));
+        }
+    },
     /** Lookup a label for a tag */
     lookupTag: function(tagId){
         var store = lore.anno.thesaurus;
@@ -396,41 +396,41 @@ Ext.apply(lore.ore.Controller.prototype, {
             if (type.match("Moving")){
                 iconCls = "videoicon";
             } else if (type.match("Image")){
-	            iconCls = "imageicon";
-	        } else if (type.match("Sound")){
-	            iconCls = "audioicon";
-	        } else if (type.match("PhysicalObject")){
-	            iconCls = "objicon";
-	        } else if (type.match("Text")){
-	            iconCls = "texticon";
-	        } else if (type.match("Software")){
-	            iconCls = "softwareicon";
-	        } else if (type.match("Service")){
-	            iconCls = "serviceicon";
-	        } else if (type.match("InteractiveResource")){
-	            iconCls = "interactiveicon";
-	        } else if (type.match("Event")){
-	            iconCls = "eventicon";
-	        } else if (type.match("Collection")){
-	            iconCls = "collectionicon";
-	        } else if (type.match("Dataset")){
-	            iconCls = "dataseticon";
-	        }
+                iconCls = "imageicon";
+            } else if (type.match("Sound")){
+                iconCls = "audioicon";
+            } else if (type.match("PhysicalObject")){
+                iconCls = "objicon";
+            } else if (type.match("Text")){
+                iconCls = "texticon";
+            } else if (type.match("Software")){
+                iconCls = "softwareicon";
+            } else if (type.match("Service")){
+                iconCls = "serviceicon";
+            } else if (type.match("InteractiveResource")){
+                iconCls = "interactiveicon";
+            } else if (type.match("Event")){
+                iconCls = "eventicon";
+            } else if (type.match("Collection")){
+                iconCls = "collectionicon";
+            } else if (type.match("Dataset")){
+                iconCls = "dataseticon";
+            }
        } else {
-	        if (type.match("html")) {
+            if (type.match("html")) {
                 // suppress for now: users finding html icon confusing/too similar to others
-	            // iconCls = "htmlicon";
-	        } else if (type.match("image")) {
-	            iconCls = "imageicon";
-	        } else if (type.match("audio")) {
-	            iconCls = "audioicon";
-	        } else if (type.match("video") || type.match("flash")) {
-	            iconCls = "videoicon";
-	        } else if (type.match("pdf")) {
-	            iconCls = "pdficon";
-	        } else if (type.match('xml')){
-	            iconCls = "xmlicon";
-	        } 
+                // iconCls = "htmlicon";
+            } else if (type.match("image")) {
+                iconCls = "imageicon";
+            } else if (type.match("audio")) {
+                iconCls = "audioicon";
+            } else if (type.match("video") || type.match("flash")) {
+                iconCls = "videoicon";
+            } else if (type.match("pdf")) {
+                iconCls = "pdficon";
+            } else if (type.match('xml')){
+                iconCls = "xmlicon";
+            } 
        }
        return iconCls;
     },
@@ -467,9 +467,9 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
     },
     /**
-	 * Prompt whether to save the current Resource Map, then calls newCO to
-	 * create new Resource Map
-	 */
+     * Prompt whether to save the current Resource Map, then calls newCO to
+     * create new Resource Map
+     */
     createCompoundObject: function(dontRaise, callback){
         try{
             // Check if the currently loaded Resource Map has been modified and if it has prompt the user to save changes
@@ -580,21 +580,21 @@ Ext.apply(lore.ore.Controller.prototype, {
                         lore.ore.ui.vp.info("Unsaved Resource Map deleted");
                         Ext.MessageBox.hide();
                     } else {
-	                    lore.ore.reposAdapter.deleteCompoundObject(remid,function(deletedrem){
-	                            try{
-	                            if (lore.ore.cache.getLoadedCompoundObjectUri() == deletedrem){
-	                                lore.ore.cache.setLoadedCompoundObjectUri("");
-	                                lore.ore.ui.graphicalEditor.coGraph.clear();
-	                                lore.ore.controller.createCompoundObject(); 
-	                            }
-	                            lore.ore.coListManager.remove(deletedrem);
-	                            lore.ore.historyManager.deleteFromHistory(deletedrem);
-	                            lore.ore.ui.vp.info("Resource Map deleted");
-	                            Ext.MessageBox.hide();
-	                        } catch (ex){
-	                            lore.debug.ore("Error after deleting Resource Map",ex);
-	                        }
-	                    });
+                        lore.ore.reposAdapter.deleteCompoundObject(remid,function(deletedrem){
+                                try{
+                                if (lore.ore.cache.getLoadedCompoundObjectUri() == deletedrem){
+                                    lore.ore.cache.setLoadedCompoundObjectUri("");
+                                    lore.ore.ui.graphicalEditor.coGraph.clear();
+                                    lore.ore.controller.createCompoundObject(); 
+                                }
+                                lore.ore.coListManager.remove(deletedrem);
+                                lore.ore.historyManager.deleteFromHistory(deletedrem);
+                                lore.ore.ui.vp.info("Resource Map deleted");
+                                Ext.MessageBox.hide();
+                            } catch (ex){
+                                lore.debug.ore("Error after deleting Resource Map",ex);
+                            }
+                        });
                     }
                 }
             }
@@ -709,7 +709,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             });
             return;
         }
-        
+      
         var title = lore.ore.ui.grid.getPropertyValue("dc:title")
             || lore.ore.ui.grid.getPropertyValue("dcterms:title");
         // Prompt user to enter title if untitled
@@ -722,7 +722,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 closable: false,
                 scope: this,
                 fn: function(b, t){
-                	try{
+                    try{
                     title = t || "Untitled";
                     // update the title in the model
                     var currentCO = lore.ore.cache.getLoadedCompoundObject();
@@ -740,14 +740,14 @@ Ext.apply(lore.ore.Controller.prototype, {
                             {title: title}
                     );
                     if (title) this.saveCompoundObjectToRepository();
-                	} catch (ex){
+                    } catch (ex){
                         lore.debug.ore("Error setting title",ex);
-                	}
+                    }
                 }
                 
             });  
         } else {
-        	Ext.Msg.show({
+            Ext.Msg.show({
                 title : 'Save RDF',
                 buttons : Ext.MessageBox.OKCANCEL,
                 msg : lore.util.sanitizeHTML('Are you sure you wish to save Resource Map:<br/><br/>' + title + "<br/><br/>to repository as " + remid + "?",window,true),
@@ -766,17 +766,17 @@ Ext.apply(lore.ore.Controller.prototype, {
      */
     afterLoadCompoundObjectFail : function(resp,opt){
         lore.debug.ore("Error: Unable to load Resource Map " + opt.url, resp);
-    	if (resp.status == 403){
-    		Ext.Msg.show({
-    			title : 'Permission denied',
+        if (resp.status == 403){
+            Ext.Msg.show({
+                title : 'Permission denied',
                 buttons : Ext.MessageBox.OK,
                 msg : "You are not logged in or your account does have permssion to view this private Resource Map.<br>Please log in with the account that was used to create the Resource Map."
-    		});
-    	} else {
-	        lore.ore.ui.vp.error("Unable to load Resource Map: " + resp.statusText);
-	        lore.ore.controller.createCompoundObject(true);
-	        Ext.Msg.hide();
-    	}
+            });
+        } else {
+            lore.ore.ui.vp.error("Unable to load Resource Map: " + resp.statusText);
+            lore.ore.controller.createCompoundObject(true);
+            Ext.Msg.hide();
+        }
     },
     /** Add saved Resource Map to the model lsits
       * @param {String} remid The Resource Map that was saved */
@@ -801,60 +801,64 @@ Ext.apply(lore.ore.Controller.prototype, {
                 'creator': lore.ore.ui.grid.getPropertyValue("dc:creator"),
                 'modified': lore.ore.ui.grid.getPropertyValue("dcterms:modified")
         };
-        // If the current URL is in the compound object, show in related compound objects
+        // If the current URL is in the Resource Map, show in related Resource Maps
         if (lore.ore.ui.graphicalEditor.lookup[lore.ore.controller.currentURL]){
            lore.ore.coListManager.add([coopts]);
         }
         var priv = currentCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isPrivate");
         lore.ore.historyManager.addToHistory(remid, title, (priv && priv.value == true ? true : false));  
     },
-    /** Prompt for location to save serialized compound object and save as file
-    * @param {String} format The format to which to serialize (rdf, wordml, foxml or trig)
+    persistAllLayout: function(){
+        // make sure layout info is up to date in model
+        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getFiguresSorted();
+        for (var i = 0; i < allfigures.length; i++) {
+            var fig = allfigures[i];
+            if (fig instanceof lore.ore.ui.graph.EntityFigure){
+                fig.persistLayout();
+            }
+        }
+    },
+    /** Prompt for location to save serialized Resource Map and save as file
+    * @param {String} format The format to which to serialize (rdf, wordml or trig)
     */
     exportCompoundObject: function(format){
         var fileExtensions = {
             "rdf": "xml",
             "wordml": "xml",
-            "foxml": "xml",
             "trig": "txt",
             "json": "txt"
         };
         var saveContents = function(savecb, data){
             var fObj = savecb(data);
             if ( fObj ) {
-                lore.ore.ui.vp.info("Successfully saved Compound Object data to " + fObj.fname);
+                lore.ore.ui.vp.info("Successfully saved Resource Map data to " + fObj.fname);
             } else {
-                lore.ore.ui.vp.info("Unable to save Compound Object data");
+                lore.ore.ui.vp.info("Unable to save Resource Map data");
             }
         };
         try {
             format = format || "rdf"; // default value
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
-            lore.global.util.writeFileWithSaveAs("Export Compound Object as", 
-                fileExtensions[format],
-                // savecb callback will actually write the file
-                function(savecb){ 
-                    if (format == "wordml"){
-                      currentCO.toWord(function(data){
-                        saveContents(savecb, data);
-                      }); 
-                    } else if (format == "foxml") {
-                      currentCO.toFOXML(function(data){
-                        saveContents(savecb, data);
-                      }); 
-                    } else {
-                        // otherwise get contents via serialize
-                        saveContents(savecb, currentCO.serialize(format));
-                    }
-                    
-                },
-                window
-            );
-                    
+            if (format == "wordml"){
+                var wExp = new lore.exporter.WordExporter();
+                var docxData = currentCO.toWord();
+                lore.debug.ore("docx",docxData);
+                wExp.createWordFile(docxData.docxml, docxData.rels);
+            } else {
+                lore.util.writeFileWithSaveAs("Export Resource Map as", 
+                    fileExtensions[format],
+                    // savecb callback will actually write the file
+                    function(savecb){ 
+                            // get contents via serialize
+                            saveContents(savecb, currentCO.serialize(format));
+                    },
+                    window
+                );
+            }        
                                                 
         } catch (e) {
-            lore.debug.ore("Error saving Compound Objects data",e );
-            lore.ore.ui.vp.error("Error saving Compound Object: " + e);
+            lore.debug.ore("Error saving Resource Maps data",e );
+            lore.ore.ui.vp.error("Error saving Resource Map: " + e);
         }
     
     },
@@ -896,7 +900,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         }
     },
     addResourceWithPrompt: function(){
-    	Ext.Msg.show({
+        Ext.Msg.show({
             title : 'Add resource URL',
             buttons : Ext.MessageBox.OKCANCEL,
             msg : 'Please enter the URL of the resource:',
@@ -916,14 +920,14 @@ Ext.apply(lore.ore.Controller.prototype, {
      */
     addResource: function(uri,props){ 
         // TODO: #34 MVC:  make it add to model and get view to listen on model
-    	Ext.getCmp("loreviews").activate("drawingarea");
+        Ext.getCmp("loreviews").activate("drawingarea");
         //var activeView = Ext.getCmp("loreviews").getActiveTab();
         /* TODO: allow list view to be active: bug at the moment with iframe previews
          * 
         // activate one of the editors
         if (!(activeView.id == "remlistview" || activeView.id == "drawingarea")){
-        	activeView = Ext.getCmp("remlistview");
-        	Ext.getCmp("loreviews").activate(activeView);
+            activeView = Ext.getCmp("remlistview");
+            Ext.getCmp("loreviews").activate(activeView);
         }*/
         
         var normalizedUri = lore.util.normalizeUrlEncoding(uri);
@@ -938,112 +942,112 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} uri
      */
     removeResource: function(uri){
-    	lore.ore.cache.getLoadedCompoundObject().removeAggregatedResource(uri);
-    	// temporarily update graphical editor : it should be listening on the model
-    	lore.ore.ui.graphicalEditor.removeFigure(uri);
+        lore.ore.cache.getLoadedCompoundObject().removeAggregatedResource(uri);
+        // temporarily update graphical editor : it should be listening on the model
+        lore.ore.ui.graphicalEditor.removeFigure(uri);
     },
     /** Open all resources in current CO in browser tabs */
     launchInTabs: function(){
-    	lore.ore.cache.getLoadedCompoundObject().aggregatedResourceStore.each(function(r){
-    		lore.util.launchTab(r.get('uri'), window);  		
-    	});
+        lore.ore.cache.getLoadedCompoundObject().aggregatedResourceStore.each(function(r){
+            lore.util.launchTab(r.get('uri'), window);          
+        });
     },
     /** Add a bunch of resources from open browser tabs
      * @param {} thebrowser Provided by overlay: represents the tabbed browser
      */
     addFromTabs: function(thebrowser) {
-    	try{
-    	var num = thebrowser.browsers.length;
-	    if (num == 0) {return;}
-	    var formitems = [{
-	    	xtype: 'label',
-	    	anchor: '100%',
-	    	text: 'Add the following resources to the Resource Map:'
-	    }];
-	    for (var i = 0; i < num; i++) {
-	        var b = thebrowser.getBrowserAtIndex(i);
-	        var burl = b.currentURI.spec;
-	        var globalHistory = Components.classes["@mozilla.org/browser/global-history;2"].
-            	getService(Components.interfaces.nsIGlobalHistory2);
-	        var title  = globalHistory.getPageTitle(b.currentURI);
-	        if (title) {
-	        	title = Ext.util.Format.ellipsis(title,100);
-	        }
-	        if (burl != "about:blank"){
-	        	formitems.push({
-	        		xtype: "checkbox",
-	        		name: burl,
-	        		boxLabel: title || burl,
-	        		checked: true,
-	        		anchor: "100%"
-	        	});
-	        }
-	    }
-	    var win = new Ext.Window({
-	        layout      : 'fit',
-	        width       : 600,
-	        height      : 300,
-	        autoScroll: true,
-	        items: formitems,
-	        title: 'Add resources from browser tabs',
-	        buttons: [{
-		        text     : 'OK',
-		        handler: function(){
-		        	win.hide();
-		        	Ext.MessageBox.show({
-	                    msg: 'Adding resources',
-	                    width:250,
-	                    defaultTextHeight: 0,
-	                    closable: false,
-	                    cls: 'co-load-msg'
-		        	});
-		        	lore.ore.ui.graphicalEditor.coGraph.commandStack.startCommandGroup();
-			        win.items.each(
-			        	 function(item, index, length){      		 
-			        		 if (index > 0 && item.getValue()){
-			        			 // add them as collapsed nodes
-			        			 lore.ore.ui.graphicalEditor.addFigure({url:item.getName(),
-			        				 oh: 170,
-			        				 w: 220,
-			        				 h: 70});
-			        		 }	   		 
-			        });
-			        lore.ore.ui.graphicalEditor.coGraph.commandStack.endCommandGroup();
-			        Ext.MessageBox.hide();
-		            
-		        }
-	        },{
-		        text     : 'Cancel',
-		        handler  : function(){
-		            win.hide();
-		        }
-	        }, {
-	        	text : 'Select all',
-	        	handler: function(){
-	        		win.items.each(function(item,index,length){
-	        			if (index > 0){
-	        				item.setValue(true);
-	        			}
-	        		});
-	        	}
-	        }, {
-	        	text : 'Deselect all',
-	        	handler: function(){
-	        		win.items.each(function(item,index,length){
-	        			if (index > 0){
-	        				item.setValue(false);
-	        			}
-	        		});
-	        	}
-	        }]
-	    });
-	    
-	    win.show();
-	    // work around scrolling content over iframe bug by redrawing
-	    win.body.on("scroll",function(e,t,o){this.repaint();},win.body);
-    	} catch (e){
+        try{
+        var num = thebrowser.browsers.length;
+        if (num == 0) {return;}
+        var formitems = [{
+            xtype: 'label',
+            anchor: '100%',
+            text: 'Add the following resources to the Resource Map:'
+        }];
+        for (var i = 0; i < num; i++) {
+            var b = thebrowser.getBrowserAtIndex(i);
+            var burl = b.currentURI.spec;
+            var globalHistory = Components.classes["@mozilla.org/browser/global-history;2"].
+                getService(Components.interfaces.nsIGlobalHistory2);
+            var title  = globalHistory.getPageTitle(b.currentURI);
+            if (title) {
+                title = Ext.util.Format.ellipsis(title,100);
+            }
+            if (burl != "about:blank"){
+                formitems.push({
+                    xtype: "checkbox",
+                    name: burl,
+                    boxLabel: title || burl,
+                    checked: true,
+                    anchor: "100%"
+                });
+            }
+        }
+        var win = new Ext.Window({
+            layout      : 'fit',
+            width       : 600,
+            height      : 300,
+            autoScroll: true,
+            items: formitems,
+            title: 'Add resources from browser tabs',
+            buttons: [{
+                text     : 'OK',
+                handler: function(){
+                    win.hide();
+                    Ext.MessageBox.show({
+                        msg: 'Adding resources',
+                        width:250,
+                        defaultTextHeight: 0,
+                        closable: false,
+                        cls: 'co-load-msg'
+                    });
+                    lore.ore.ui.graphicalEditor.coGraph.commandStack.startCommandGroup();
+                    win.items.each(
+                         function(item, index, length){              
+                             if (index > 0 && item.getValue()){
+                                 // add them as collapsed nodes
+                                 lore.ore.ui.graphicalEditor.addFigure({url:item.getName(),
+                                     oh: 170,
+                                     w: 220,
+                                     h: 70});
+                             }           
+                    });
+                    lore.ore.ui.graphicalEditor.coGraph.commandStack.endCommandGroup();
+                    Ext.MessageBox.hide();
+                    
+                }
+            },{
+                text     : 'Cancel',
+                handler  : function(){
+                    win.hide();
+                }
+            }, {
+                text : 'Select all',
+                handler: function(){
+                    win.items.each(function(item,index,length){
+                        if (index > 0){
+                            item.setValue(true);
+                        }
+                    });
+                }
+            }, {
+                text : 'Deselect all',
+                handler: function(){
+                    win.items.each(function(item,index,length){
+                        if (index > 0){
+                            item.setValue(false);
+                        }
+                    });
+                }
+            }]
+        });
+        
+        win.show();
+        // work around scrolling content over iframe bug by redrawing
+        win.body.on("scroll",function(e,t,o){this.repaint();},win.body);
+        } catch (e){
             lore.debug.ore("Error adding from tabs",e);
-    	}
+        }
     },
     /** Handle search */
     search : function (searchuri, searchpred, searchval){
@@ -1133,7 +1137,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             }*/
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
             if (currentCOMsg) {
-            	currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false);
+                currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50) + ' (read-only)',false);
             }
             if (currentCO.isDirty() && !this.readOnly){
                 Ext.Msg.show({

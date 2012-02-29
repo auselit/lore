@@ -6,12 +6,12 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
     constructor: function(config){
         config = config || {};
         this.uri = config.uri || "";
-	    lore.ore.model.CompoundObject.superclass.constructor.call(this, config);
+        lore.ore.model.CompoundObject.superclass.constructor.call(this, config);
         /** The Resource Map properties */
         this.properties = new lore.ore.model.ResourceProperties(); 
         /** Store of aggregated resources */
         this.aggregatedResourceStore = new Ext.data.JsonStore({
-        	    co: this,
+                co: this,
                 idProperty: "uri",
                 sortInfo: {
                     field: "index",
@@ -34,20 +34,21 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         /** rdfquery object representing content loaded or since last save (or empty for new CO) */
         this.loadedContent = {};
         this.aggregationURI = "#aggregation";
-	},
-	/** Getter named this way to be consistent with ExtJS record API */
+        this.wordserializer = new lore.ore.WordSerializer();
+    },
+    /** Getter named this way to be consistent with ExtJS record API */
     'get': function(fieldName){
       return this[fieldName];  
     },
     getInitialContent : function(){
         return this.loadedContent;  
     },
-	getAggregatedResource : function(/*String*/ aUri){
+    getAggregatedResource : function(/*String*/ aUri){
         var res = this.aggregatedResourceStore.getById(aUri);
         if (res){
             return res;
         } 
-	},
+    },
     initProperties : function(defaultCreator){
        /*this.properties.setProperty({
                id: lore.constants.NAMESPACES["rdf"]+ "about",
@@ -58,20 +59,20 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                type: "uri"
         },0);*/
         if (defaultCreator){
-        this.properties.setProperty({
-               id: lore.constants.NAMESPACES["dc"]+ "creator",
-               ns: lore.constants.NAMESPACES["dc"],
-               name: "creator",
+            this.properties.setProperty({
+                   id: lore.constants.NAMESPACES["dc"]+ "creator",
+                   ns: lore.constants.NAMESPACES["dc"],
+                   name: "creator",
                    value: defaultCreator,
-               prefix: "dc",
-               type: "plainstring"
-        },0);
+                   prefix: "dc",
+                   type: "plainstring"
+            },0);
         }  
     },
     /**
      * Set the URI that identifies the Resource Map
      */
-	copyToNewWithUri : function(newUri, defaultCreator){
+    copyToNewWithUri : function(newUri, defaultCreator){
         var oldUri = this.uri;
         if (oldUri != newUri){
             // remove loaded content
@@ -129,11 +130,11 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         }
         
     },
-	/** Add a resource to the Resource Map
-	 * @param {} config The properties of the resource to add
-	 * @return {} The aggregated resources
-	 */
-	addAggregatedResource : function(config){
+    /** Add a resource to the Resource Map
+     * @param {} config The properties of the resource to add
+     * @return {} The aggregated resources
+     */
+    addAggregatedResource : function(config){
       if (config instanceof Ext.data.Record){
         var index = config.get("index");
         if (index){
@@ -144,22 +145,22 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
       } else {
         this.aggregatedResourceStore.loadData([config],true);
       }
-	},
-	
-	/** Remove a resource from the Resource Map
-	 * @param {} aUri The resource to remove
-	 * @return {} The aggregated resources
-	 */
-	removeAggregatedResource : function (aUri){
+    },
+    
+    /** Remove a resource from the Resource Map
+     * @param {} aUri The resource to remove
+     * @return {} The aggregated resources
+     */
+    removeAggregatedResource : function (aUri){
       var rec = this.aggregatedResourceStore.getById(aUri);
       if (rec) {
         this.aggregatedResourceStore.remove(rec);
       }
-	  
-	},
-	toString : function(){
-	    return "Resource Map " + this.uri + " contains " + this.aggregatedResourceStore.getTotalCount() + " resources";    
-	},
+      
+    },
+    toString : function(){
+        return "Resource Map " + this.uri + " contains " + this.aggregatedResourceStore.getTotalCount() + " resources";    
+    },
     /** Load from a variety of formats eg JSON, RDF/XML etc
      * 
      * @param {} args
@@ -189,10 +190,10 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         // Load from RDF/XML
         if (args.format == 'application/rdf+xml'){
             var databank = jQuery.rdf.databank();
-	        for (ns in lore.constants.NAMESPACES){
-	            databank.prefix(ns,lore.constants.NAMESPACES[ns]);
-	        }
-	        databank.load(args.content);
+            for (ns in lore.constants.NAMESPACES){
+                databank.prefix(ns,lore.constants.NAMESPACES[ns]);
+            }
+            databank.load(args.content);
             this.loadedContent = jQuery.rdf({databank: databank});
         } else if (args.format == 'rdfquery'){
             this.loadedContent = args.content;
@@ -203,13 +204,13 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 .where('?rem ore:describes ?aggre');
 
             var res = remQuery.get(0);
-	        if (res){
-	           this.uri = res.rem.value.toString();
-	           this.aggregationURI = res.aggre.value.toString();
-	        }  else {
+            if (res){
+               this.uri = res.rem.value.toString();
+               this.aggregationURI = res.aggre.value.toString();
+            }  else {
                 lore.debug.ore("Error: no remurl found in RDF",[args.content, this.loadedContent]);
                 throw("No Resource Map Found");
-	        }
+            }
             
             // Load properties for this Resource Map
             this.loadedContent.about('<' + this.uri + '>')
@@ -254,16 +255,16 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         this.loadedContent.where('<' + this.aggregationURI  + '> ore:aggregates ?url')
             .optional('?url rdf:type ?rdftype')
             .each(function() {
-	             var resourceURL = this.url.value.toString();
+                 var resourceURL = this.url.value.toString();
                  var resourceData = {uri: resourceURL, properties: new lore.ore.model.ResourceProperties()};
-	             if (this.rdftype && this.rdftype.value.toString() == lore.constants.RESOURCE_MAP){
-	                // TODO: check if it has been cached or load?
+                 if (this.rdftype && this.rdftype.value.toString() == lore.constants.RESOURCE_MAP){
+                    // TODO: check if it has been cached or load?
                     resourceData.representsCO = true;
-	             }  else if(this.rdftype && (this.rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || this.rdftype.value.toString().match('http://www.w3.org/2001/12/replyType') || this.rdftype.value.toString().match("http://www.w3.org/2001/03/thread"))){
+                 }  else if(this.rdftype && (this.rdftype.value.toString().match('http://www.w3.org/2000/10/annotation') || this.rdftype.value.toString().match('http://www.w3.org/2001/12/replyType') || this.rdftype.value.toString().match("http://www.w3.org/2001/03/thread"))){
                     resourceData.representsAnno = true;
                  }
-	             // TODO: Load aggregated resource predicates (properties and rels)
-	             oThis.loadedContent.about('<' + resourceURL + '>')
+                 // TODO: Load aggregated resource predicates (properties and rels)
+                 oThis.loadedContent.about('<' + resourceURL + '>')
                     .each(function() {
                         var propurl = this.property.value.toString();
                         var propsplit = lore.util.splitTerm(propurl);
@@ -273,7 +274,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                             resourceData.title = this.value.value;
                         }
                         if (prefix == "layout" && propsplit.term == "orderIndex") {
-                        	resourceData.index = this.value.value;
+                            resourceData.index = this.value.value;
                         } 
                         if (prefix == "layout" && propsplit.term == "isPlaceholder") {
                             resourceData.isPlaceholder = (this.value.value == '1');
@@ -299,7 +300,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                                prefix: prefix,
                                type: getDatatype(propurl,this.value.datatype)
                             });
-                         }
+                        }
                     }
                  );   
                  newResources.push(resourceData);
@@ -334,144 +335,93 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             
         return true;
     },
-    /**
-     * Serialize to RDF/XML using older method (eg from figures).
-     * FIXME: needs to use model rather than grid/figures
-     * @param {Boolean} escape Indicates whether to escape the results for rendering as HTML
-     * @return {String} The RDF/XML as a string
-     */
-    asRDFXML : function(/*boolean*/escape) {
-        /*
-         * Helper function that serializes a property to RDF/XML propname The name
-         * of the property to serialize properties All of the properties ltsymb Less
-         * than symbol nlsymb New line symbol returns The RDF/XML representation of
-         * the property
-         */
-        var serialize_property = function(propname, propval, proptype, ltsymb, nlsymb) {
-            var result = "";
-            try{
-                if (propval && propval != '') {
-                    if (propname == "dc:subject" && propval.match(',')){ 
-                        // value needs to be split
-                        var vals = propval.split(",");
-                        for (var v = 0; v < vals.length; v++){
-                            result += serialize_property(propname, vals[v], proptype, ltsymb, nlsymb);
-                        }
-                        return result;
-                    }
-                    if (propval.toString().match("^http://") == "http://"){
-                        // this is a resource
-                        result = ltsymb + propname + " rdf:resource='" + 
-                        lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(propval.toString())).replace(/&/g,'&amp;')
-                        + "'/>" + nlsymb;
-                    } else {
-                        // literal
-                        result = ltsymb + propname;
-                        if (proptype && proptype == "html"){
-                            result += " rdf:datatype=\"" + lore.constants.NAMESPACES["layout"]+ "escapedHTMLFragment\""
-                        } else if (proptype && proptype == "boolean"){
-                            result += " rdf:datatype=\"" + lore.constants.NAMESPACES["xsd"] + "boolean\"";
-                        }
-                        result += ">"
-                          + lore.global.util.escapeHTML(propval.toString().replace(/&amp;/g,'&'))
-                          + ltsymb + "/" + propname + ">" + nlsymb;
-                    }
-                    
-                }
-            } catch (e) {
-                lore.debug.ore("Problem serializing property",e);
-            }
-            return result;
+    updateDates : function(){
+        // update created, modified dates (for legacy store: new store manages these)
+        var now = new Date();
+        var dcterms = lore.constants.NAMESPACES["dcterms"];
+        var modifiedData = {
+                id: dcterms + "modified", 
+                ns: dcterms, 
+                name: "modified", 
+                value: now, 
+                prefix: "dcterms",
+                type: "date"
         };
+        this.properties.setProperty(modifiedData,0);
+        if (!this.properties.getProperty(dcterms + "created")){
+           var createdData = {
+                id: dcterms + "created", 
+                ns: dcterms, 
+                name: "created", 
+                value: now, 
+                prefix: "dcterms",
+                type: "date"
+            };
+            this.properties.setProperty(createdData, 0);
+        }
+    },
+    getRDF : function(asString){
+        if (lore.ore.controller){
+            lore.ore.controller.persistAllLayout();
+        }
+        var serializeProps = function(subj, props){
+            for (var p = 0; p < props.length; p++){
+                var thePropValues = props[p];
+                for (var pi = 0; pi < thePropValues.length; pi++){
+                    var theProp = thePropValues[pi]; 
+                    var mpropval;
+                    if (theProp.type == "date"){
+                        mpropval = "\"" + theProp.value.format('c') + "\"^^<http://purl.org/dc/terms/W3CDTF>";
+                    } else {
+                        mpropval = (theProp.value? theProp.value.toString().replace(/"/g, '\\"').replace(/\\/g, "\\\\") : "");
+                        mpropval = ((mpropval.match("^http") == "http") ? "<" + mpropval + ">" : "\"" + mpropval + "\"");
+                        if (theProp.type == "html"){
+                            mpropval += "^^<http://maenad.itee.uq.edu.au/lore/layout.owl#escapedHTMLFragment>";
+                        }
+                    }
+                    var curie = " " + theProp.prefix + ":" + theProp.name + " ";
+                    rdfdb.add(subj + curie + mpropval);
+                }
+            }
+        }
         try{
-        var ltsymb = "<";
-        var nlsymb = "\n";
-        if (escape) {
-            ltsymb = "&lt;";
-            nlsymb = "<br/>";
+        this.updateDates();
+        } catch (e){
+            lore.debug.ore("Error in getRDF",e);
         }
-        // TODO: check whether CO has been modified before changing the date
-        var modifiedDate = new Date();
-        var proprecidx = lore.ore.ui.grid.store.find("name","dcterms:modified");
-        if (proprecidx != -1){
-           lore.ore.ui.grid.store.getAt(proprecidx).set("value", modifiedDate);
-           lore.ore.ui.grid.store.commitChanges();
+        var rdfdb = jQuery.rdf.databank();
+        for (ns in lore.constants.NAMESPACES){
+            rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
         }
-        var rdfabout = lore.ore.ui.grid.getPropertyValue(lore.ore.controller.REM_ID_PROP);
-        
-        // Load existing aggregation id if any from original RDF
-        var describedaggre = "#aggregation";
+        var resourcemap = "<" + this.uri + ">";
+        var describedAggre = "<" + this.uri + "#aggregation" + ">";
         var loadedRDF = this.loadedContent;
-        //lore.debug.ore("loadedRDF is",loadedRDF);
-        var existingAggre = !lore.global.util.isEmptyObject(loadedRDF);
+        var existingAggre = !lore.util.isEmptyObject(loadedRDF);
         if (existingAggre) {
             var remQuery = loadedRDF.where('?aggre rdf:type ore:Aggregation')
-                .where('<'+ rdfabout +'> ore:describes ?aggre');
+                .where(resourcemap + " ore:describes ?aggre");
             if (remQuery.get(0)){
-                describedaggre = remQuery.get(0).aggre.value.toString();
+                describedAggre =  "<" + remQuery.get(0).aggre.value.toString() + ">";
             } else {
                 lore.debug.ore("Could not find aggre",remQuery);
             }
         }
-    
-    
-    
-        // RDF fragments
-        var rdfdescabout = "rdf:Description rdf:about=\"";
-        var closetag = "\">" + nlsymb;
-        var fullclosetag = "\"/>" + nlsymb;
-        var rdfdescclose = "/rdf:Description>";
-    
-        // create RDF for resource map: modified is required
-        var rdfxml = ltsymb + "?xml version=\"1.0\" encoding=\"UTF-8\" ?>" + nlsymb
-                + ltsymb + 'rdf:RDF ' + nlsymb;
-        for (var pfx in lore.constants.NAMESPACES) {
-            rdfxml += "xmlns:" + pfx + "=\"" + lore.constants.NAMESPACES[pfx]
-                    + "\"" + nlsymb;
-        }
-        
-        var modifiedString = modifiedDate.format('c');
-        rdfxml += "xml:base = \"" + rdfabout + "\">" + nlsymb + ltsymb
-                + rdfdescabout + rdfabout + closetag + ltsymb
-                + "ore:describes rdf:resource=\"" + describedaggre + fullclosetag
-                + ltsymb + 'rdf:type rdf:resource="' + lore.constants.RESOURCE_MAP
-                + '" />' + nlsymb + ltsymb + 'dcterms:modified rdf:datatype="'
-                + lore.constants.NAMESPACES["dcterms"] + 'W3CDTF">' 
-                + modifiedString + ltsymb + "/dcterms:modified>"
-                + nlsymb;
-        var created = lore.ore.ui.grid.getPropertyValue("dcterms:created");
-        
-        if (created && Ext.isDate(created)) {
-            rdfxml += ltsymb + 'dcterms:created rdf:datatype="' 
-            + lore.constants.NAMESPACES["dcterms"] + 'W3CDTF">'
-            + created.format('c') + ltsymb + "/dcterms:created>" + nlsymb;
-        }   
-         else if (created) {
-            rdfxml += ltsymb + 'dcterms:created>'// rdf:datatype="'
-                    //+ lore.constants.NAMESPACES["xsd"] + 'date">'
-                    + created + ltsymb + "/dcterms:created>" + nlsymb;
-        }
-        // serialize remaining compound object properties
-        lore.ore.ui.grid.store.each(function (rec){
-           var propname = rec.id.substring(0,rec.id.lastIndexOf("_"));
-           var proptype = rec.get("type");
-           if (propname != 'lorestore:user' && propname != 'dcterms:modified' && propname != 'dcterms:created' && propname != 'rdf:about'){
-            rdfxml += serialize_property(propname, rec.data.value, proptype, ltsymb, nlsymb);
-           }
-        });
-        // TODO: get version from preferences
-        rdfxml += serialize_property("layout:loreVersion", "0.80", "plainstring", ltsymb, nlsymb);
-        rdfxml += ltsymb + rdfdescclose + nlsymb;
-        // create RDF for aggregation
-        rdfxml += ltsymb + rdfdescabout + describedaggre + closetag + ltsymb
-                + "rdf:type rdf:resource=\"" + lore.constants.NAMESPACES["ore"] + "Aggregation"
-                + fullclosetag;
-        rdfxml += ltsymb + 'dcterms:modified>' + modifiedString + ltsymb + "/dcterms:modified>" + nlsymb;
-        // Load original aggregation properties if any
-        // LORE does not support editing these, but should preserve them
-        // TODO: REFACTOR!! this code appears several times : properties should be serialized from model
+        var dcterms = lore.constants.NAMESPACES["dcterms"];
+        var ore = lore.constants.NAMESPACES["ore"];
+        // Resource Map properties
+        rdfdb.add(resourcemap + " a ore:ResourceMap")
+            .add(describedAggre + " a ore:Aggregation")
+            .add(resourcemap + " ore:describes " + describedAggre)
+            .add(resourcemap + " layout:loreVersion \"1.0\"");
+            
+        var skipProps = {};
+        skipProps[ore+"describes"]=true;
+        serializeProps(resourcemap,this.get('properties').getSortedArray(skipProps));
+
+        // Any existing aggregation properties (from when it was loaded into LORE)
         if (existingAggre){
-            var aggreprops = loadedRDF.where('<' + describedaggre + '> ?pred ?obj')
+            // todo add to rdfdb
+            var aggreprops = loadedRDF.where(describedAggre + ' ?pred ?obj')
                 .filter(function(){
                     // filter out ore:aggregates, type and modified
                     if (this.pred.value.toString() === lore.constants.NAMESPACES["ore"] + "aggregates" ||
@@ -482,136 +432,37 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     else {
                         return true;
                     }
-                })
-                .each(function(){  
-                    
-                    var presult = lore.global.util.splitTerm(this.pred.value.toString());
-                    var propval = this.obj.value.toString();
-                    var propname = presult.term;
-                    var propnsdec = ' xmlns="' + presult.ns + '"';
-                    //lore.debug.ore("matched aggregation prop",this);
-                    if (this.obj.type == 'uri'){
-                        rdfxml += ltsymb + propname + propnsdec + " rdf:resource='" + 
-                        lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
-                        + "'/>" + nlsymb;
-                    } else {
-                        rdfxml += ltsymb + propname + propnsdec + ">"
-                        + lore.global.util.escapeHTML(propval.toString().replace(/"/g,"&quot;"))
-                        + ltsymb + "/" + propname + ">" + nlsymb;
-                    }
                 });
+                
         }
-        var allfigures = lore.ore.ui.graphicalEditor.coGraph.getFiguresSorted();
-        
-        var resourcerdf = "";
-        
-        for (var i = 0; i < allfigures.length; i++) {
-            var fig = allfigures[i];
-            if (fig instanceof lore.ore.ui.graph.EntityFigure){
-                var figurl = lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(fig.url.toString())).replace(/&/g,'&amp;');
-                rdfxml += ltsymb + "ore:aggregates rdf:resource=\"" + figurl
-                        + fullclosetag;
-                // create RDF for resources in aggregation
-                var props = fig.model.get('properties').getSortedArray();
-                for (var p = 0; p < props.length; p++){
-                    var thePropValues = props[p];
-                    for (var pi = 0; pi < thePropValues.length; pi++){
-                        var theProp = thePropValues[pi]; 
-                        var mpropval = (theProp.value? theProp.value.toString() : "");
-                        var tagname = theProp.prefix + ":" + theProp.name;
-                        resourcerdf +=  ltsymb + rdfdescabout + figurl + closetag;
-                        resourcerdf += serialize_property(tagname, mpropval, theProp.type, ltsymb, nlsymb);
-                        resourcerdf += ltsymb + rdfdescclose + nlsymb;
-                    }
-                }
-                /* persist node layout */
-                
-                resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
-                        + "layout:x rdf:datatype=\"xsd:int\">" + fig.x + ltsymb + "/" + "layout:x>" + nlsymb
-                        + ltsymb + "layout:y rdf:datatype=\"xsd:int\">" + fig.y + ltsymb + "/" + "layout:y>"
-                        + nlsymb + ltsymb + "layout:width rdf:datatype=\"xsd:int\">" + fig.width + ltsymb + "/"
-                        + "layout:width>" + nlsymb + ltsymb + "layout:height rdf:datatype=\"xsd:int\">"
-                        + fig.height + ltsymb + "/" + "layout:height>" + nlsymb
-                        + ltsymb + "layout:originalHeight rdf:datatype=\"xsd:int\">" + fig.originalHeight
-                        + ltsymb + "/" + "layout:originalHeight>" + nlsymb;
-
-                if (fig.abstractPreview) {
-                    resourcerdf += ltsymb + "layout:abstractPreview rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:abstractPreview>" + nlsymb;
-                }
-                
-                var figRec = this.getAggregatedResource(fig.url);
-                if (figRec && figRec.get('index')){
-                    resourcerdf += ltsymb + "layout:orderIndex rdf:datatype=\"xsd:int\">" + figRec.get('index') + ltsymb + "/layout:orderIndex>" + nlsymb;
-                }
-                if (!(fig instanceof lore.ore.ui.graph.ResourceFigure)){
-                    resourcerdf += ltsymb + "layout:isPlaceholder rdf:datatype=\"xsd:int\">1" + ltsymb + "/layout:isPlaceholder>";
-                }
-                resourcerdf += ltsymb + rdfdescclose + nlsymb;
-                
-                // iterate over all ports' connections and serialize if this fig is the source of the connection
-                var ports = fig.getPorts();
-                for (var p = 0; p < ports.getSize(); p++){
-                    var outgoingconnections = ports.get(p).getConnections();
-                    for (var j = 0; j < outgoingconnections.getSize(); j++) {
-                        var theconnector = outgoingconnections.get(j);
-                        if (figurl == lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(theconnector.sourcePort.parentNode.url)).replace(/&/g,'&amp;')){
-                           var relpred = theconnector.edgetype;
-                           var relns = theconnector.edgens;
-                           var relobj = lore.global.util.preEncode(lore.global.util.normalizeUrlEncoding(theconnector.targetPort.parentNode.url)).replace(/&/g,'&amp;');
-                           resourcerdf += ltsymb + rdfdescabout + figurl + closetag + ltsymb
-                                + relpred + " xmlns=\"" + relns + "\" rdf:resource=\""
-                                + relobj + fullclosetag + ltsymb + rdfdescclose + nlsymb;
-                        }
-                    }
-                } 
+        // Aggregated resources and their properties
+        this.aggregatedResourceStore.each(function(rec){
+            //uri, title, index, representsCO, representsAnno, isPlaceholder, properties
+            var escapedUri = "<" + lore.util.preEncode(lore.util.normalizeUrlEncoding(rec.get('uri').toString())) + ">";
+            rdfdb.add(describedAggre + " ore:aggregates " + escapedUri);
+            serializeProps(escapedUri, rec.get('properties').getSortedArray());
+            if (rec.get('isPlaceholder')){
+                rdfdb.add(escapedUri + " layout:isPlaceholder '1'");
             }
-        }
+            rdfdb.add(escapedUri + " layout:orderIndex '" + rec.get('index') + "'");
+        });
         
-        rdfxml += ltsymb + rdfdescclose + nlsymb;
-        rdfxml += resourcerdf;
-        rdfxml += ltsymb + "/rdf:RDF>";
-        return rdfxml;
-        } catch (ex){
-            lore.debug.ore("asRDFXML",ex);
-        }
+      if (asString){
+        return rdfdb.dump({format:'application/rdf+xml',serialize:true});
+      } else {
+        return rdfdb;
+      }
     },
-    /** Reqeust FOXML that represents this compound object.
-     * The callback will be called with the resulting content after it has been generated by XSLT 
+    
+    /** Request Word XML that represents the contents of this Resource Map. 
+     *  Generates the Word XML using a template
      **/
-    toFOXML : function (callback){
+    toWord : function (){
         try {
-            var params = {'coid': 'demo:' + lore.global.util.splitTerm(this.uri).term};
-            lore.global.util.transformXML({
-                stylesheetURL: "chrome://lore/content/compound_objects/stylesheets/foxml.xsl",
-                theXML: this.asRDFXML(false), 
-                params: params, 
-                window: window, 
-                serialize:true,
-                callback: callback
-            });
-   
-        } catch (e) {
-            lore.ore.ui.vp.warning("Unable to generate FOXML");
-            lore.debug.ore("Unable to generate FOXML",e);
-            return null;
-        }
-    },
-    /** Request Word XML that represents the contents of this compound object. 
-     *  Generates the Word XML via XSLT
-     *  The callback will be called with the resulting content
-     **/
-    toWord : function (callback){
-        try {
-            lore.global.util.transformXML({
-                stylesheetURL: "chrome://lore/content/compound_objects/stylesheets/wordml.xsl",
-                theXML: this.asRDFXML(false), 
-                window: window, 
-                serialize:true,
-                callback: callback
-            });
+            return this.wordserializer.serialize(this);
         } catch (e) {
             lore.ore.ui.vp.warning("Unable to generate Word document");
-            lore.debug.ore("Unable to generate Word document",e);
+            lore.debug.ore("Error: Unable to generate Word document",e);
             return null;
         }
     },
@@ -620,19 +471,9 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
      * @return {}
      */
     serialize : function(format) {
-        var rdf = this.asRDFXML(false);
-        /*if ('rdf' == format){
-            return rdf;
-        }*/
         // Load into rdfquery to enable dump to json, trig or making the RDF/XML output nicer
+        var databank = this.getRDF(false);
         try {
-            var rdfDoc = new DOMParser().parseFromString(rdf, "text/xml");
-                var databank = jQuery.rdf.databank();
-                databank.base(this.uri);
-                for (ns in lore.constants.NAMESPACES){
-                    databank.prefix(ns,lore.constants.NAMESPACES[ns]);
-                }
-                databank.load(rdfDoc);
             if (format == 'rdfquery') {
                 return jQuery.rdf({databank: databank});
             } else if (format == 'trig') {
@@ -663,12 +504,12 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         // TODO: #56 fix this method - compare state of model (uses graphical editor for now)
         // If it was a new Resource Map and the graphical view is either not defined 
         // or has no resources, don't consider it to be dirty
-    	var isEmpty = lore.util.isEmptyObject(this.loadedContent);
-    	
-    	if (!isEmpty && this.properties.findProperty(lore.constants.NAMESPACES["dc"] + "creator", lore.ore.controller.defaultCreator) == -1){
-    		// not creator and not a new Resource Map: don't bother prompting
-    		return false;
-    	}
+        var isEmpty = lore.util.isEmptyObject(this.loadedContent);
+        
+        if (!isEmpty && this.properties.findProperty(lore.constants.NAMESPACES["dc"] + "creator", lore.ore.controller.defaultCreator) == -1){
+            // not creator and not a new Resource Map: don't bother prompting
+            return false;
+        }
         if (isEmpty && (!lore.ore.ui.graphicalEditor || 
                 (lore.ore.ui.graphicalEditor.coGraph 
                     && lore.ore.ui.graphicalEditor.coGraph.getDocument().getFigures().getSize() == 0))){
@@ -677,4 +518,229 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
             return lore.ore.controller.isDirty;
         }
     }
+});
+lore.ore.WordSerializer = function(){
+    var oThis = this;
+    // Load xslt from local file for transforming body content to ooxml for inclusion in docx
+    var xhr = new XMLHttpRequest();                
+    xhr.overrideMimeType('text/xml');
+    xhr.open("GET", '../export/html2word.xsl');
+    xhr.onreadystatechange= function(){
+        if (xhr.readyState == 4) {
+            oThis.bodyStylesheet = xhr.responseXML;
+            oThis.xsltproc = new XSLTProcessor();
+            oThis.xsltproc.importStylesheet(oThis.bodyStylesheet);
+        }
+    };
+    xhr.send(null);
+    this.docxTemplate.setSerializer(this);
+};
+Ext.apply(lore.ore.WordSerializer.prototype, {
+    serialize: function(co) {
+        var linksArray = [];// TODO get array of aggregated resources
+        this.docxTemplate.setRels(linksArray);
+        var result = {
+            docxml: this.docxTemplate.apply(co),
+            rels: linksArray
+        };
+        return result;
+    },
+    extractLinks: function(co) {
+        var rels = [co.uri];
+        for (var i = 0; i < annos.length; i++){
+            var anno = annos[i];
+            rels.push(anno.data.id);
+            rels.push(anno.data.bodyURL);
+            if (anno.data.tags){
+                var splittags = anno.data.tags.split(',');
+                for (var j = 0; j < splittags.length; j++){
+                    rels.push(splittags[j]);
+                }
+            }
+            // TODO extract links from body text
+            // TODO original, variant etc
+        }
+        return rels;
+    },
+    docxTemplate : new Ext.XTemplate(
+       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+       '<w:document xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">',
+       '<w:body>',
+       '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>{[lore.util.escapeHTML(values.properties.getTitle())]}</w:t></w:r></w:p>',
+       '<tpl for="properties">{[this.displayProperties(values)]}</tpl>',
+       '<w:p><w:r><w:t> ({[lore.util.escapeHTML(values.uri)]})</w:t></w:r></w:p>\n',
+       '<tpl for="aggregatedResourceStore.data.items">',
+       '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr>',
+       '<w:r><w:t>{[lore.util.escapeHTML(values.data.title)]}</w:t></w:r>',
+       '</w:p>\n',
+       '<w:p><w:pPr><w:pStyle w:val="Subtitle"/></w:pPr><w:r><w:t>{[lore.util.escapeHTML(values.data.uri)]}</w:t></w:r></w:p>\n',
+       '<tpl for="data.properties">{[this.displayProperties(values)]}</tpl>',
+       '</tpl>',
+       '</w:body></w:document>',
+       {
+            displayAggregatedResources: function(o){
+                
+            },
+            setSerializer: function(ws){
+              this.wordSerializer = ws;  
+            },
+            /** Set array of links (used for generating ids for hyperlinks) */
+            setRels: function(rels) {
+                this.rels = rels;  
+            },
+            processHtml: function(html){
+                var result = "";
+                if (this.wordSerializer && this.wordSerializer.xsltproc){
+                    // get the html as xml dom
+                    var thedoc = lore.util.htmlToDom("<div>" + html + "</div>",window);
+                    // transform the html using XSLT
+                    var serializer = new XMLSerializer();
+                    var thefrag = this.wordSerializer.xsltproc.transformToFragment(thedoc, document);
+                    result = serializer.serializeToString(thefrag);
+                } else {
+                    result = lore.util.escapeHTML(html);
+                }
+                return result;
+            },
+            processHyperlink: function(url, displayText){
+                return lore.util.escapeHTML(url); // FIXME
+                var result = "";
+                var linkidx = this.rels.indexOf(url);
+                if (linkidx != -1){
+                   var linkid = "rId" + (linkidx + 1); 
+                   result += '<w:hyperlink r:id="' + linkid + '"><w:r><w:rPr><w:rStyle w:val="Hyperlink" /></w:rPr>'
+                        + "<w:t>" + lore.util.escapeHTML(displayText? displayText : url) + "</w:t>" 
+                        + "</w:r></w:hyperlink> ";
+                } else {
+                    result += "<w:r><w:t>" + (displayText ? displayText + " ": "") + url + "</w:t><w:br/></w:r>";
+                }
+                return result;
+            },
+            displayProperties: function(o){
+                var displayDate = function(desc, cprop){
+                    var cval;
+                    var datehtml = "";
+                    if (cprop){
+                        cval = cprop.value;
+                        if (Ext.isDate(cval)){
+                            datehtml += desc + cval.format("j M Y");
+                        } else {
+                            datehtml += desc + cval;
+                        }
+                    }
+                    return datehtml;
+                };
+              try{
+                var res = "";
+                
+                var ns = lore.constants.NAMESPACES;
+                var dcterms = ns["dcterms"];
+                var dc = ns["dc"];
+                var ccreator = o.data[dc+"creator"];
+                var ccreated = o.getProperty(dcterms+"created",0);
+                var cmodified = o.getProperty(dcterms+"modified",0);
+                if (ccreator || ccreated || cmodified){
+                    res += "<w:p><w:r><w:t>Created";
+                    if (ccreator){
+                        res += " by";
+                        for (var i = 0; i< ccreator.length; i++){
+                             if (i > 0) {
+                                 res += ",";
+                             }
+                             res += "  " + ccreator[i].value;
+                        }
+                    }
+                    if (ccreated) {
+                        res += displayDate(' on ', ccreated);
+                    }
+                    
+                    if (cmodified) {
+                        res += displayDate(', last updated ',cmodified);
+                    }
+                    res += "</w:t></w:r></w:p>\n";
+                } 
+                var csubject = o.data[dc+"subject"];
+                if (csubject){
+                    res += '<w:p><w:r><w:t>Subject: ';
+                    var subjects = "";
+                    for (var i = 0; i < csubject.length; i++){
+                        if (i > 0){
+                            res += ", ";
+                        }
+                       var subj = csubject[i].value.toString();
+                       if (subj.match("^http://") == "http://"){
+                          res += lore.ore.controller.lookupTag(subj);
+                          //this.resourcePropValueTpl.apply({url: subj, title:lore.ore.controller.lookupTag(subj)}); 
+                       } else {
+                          res += subj;
+                       }
+                       
+                    }
+                    res += "</w:t></w:r></w:p>\n";
+                }
+                var skipProps = {};
+                skipProps[ns["ore"]+"describes"] = true;
+                skipProps[dc+"title"]=true;
+                skipProps[dc+"format"]=true;
+                skipProps[ns["rdf"]+"type"]=true;
+                skipProps[ns["lorestore"]+"user"]=true;
+                skipProps[ns["lorestore"] + "isLocked"]=true;
+                skipProps[ns["rdf"]+"type"]=true;
+                skipProps[dc+"subject"]=true;
+                skipProps[dc+"creator"]=true;
+                skipProps[dcterms+"created"]=true;
+                skipProps[dcterms+"modified"]=true;
+                skipProps[dc+"format"]=true;
+                var sortedProps = o.getSortedArray(skipProps);
+               
+                for (var k = 0; k < sortedProps.length; k ++){
+                    var propArray = sortedProps[k];
+                    for (var i=0; i < propArray.length; i++){
+                        var prop = propArray[i];
+                        // don't include layout props
+                        if(prop.prefix != "layout"){
+                            // look up title for rels
+                            if (prop.value.toString().match("^http://") == "http://") {
+                                // property data for related resource: for looking up title etc
+                                var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
+                                var displayVal = prop.value.toString();
+                                if (prop.prefix == "dc" && prop.name == "subject"){
+                                    displayVal = lore.ore.controller.lookupTag(prop.value.toString());
+                                }
+                                if (propR) {
+                                    prop.title = propR.get('properties').getTitle() || displayVal;
+                                    prop.url = propR.get('representsAnno') ? prop.value + "?danno_useStylesheet=" : prop.value;
+                                } else {
+                                    prop.title = displayVal;
+                                    prop.url = prop.value;
+                                }
+                                if (propR && propR.get('isPlaceholder')){
+                                    // we don't want a link for placeholder resources
+                                    res += '<w:p><w:r><w:rPr><w:rStyle w:val="Strong" /></w:rPr><w:t>' 
+                                        + lore.util.escapeHTML(Ext.util.Format.capitalize(prop.name)) + ': </w:t></w:r><w:r><w:t>' 
+                                        + lore.util.escapeHTML(prop.title) 
+                                        + '</w:t></w:r></w:p>\n';
+                                } else {
+                                    // TODO: add rel link
+                                    res += '<w:p><w:r><w:rPr><w:rStyle w:val="Strong" /></w:rPr><w:t>'
+                                        + lore.util.escapeHTML(Ext.util.Format.capitalize(prop.name)) + ': </w:t></w:r><w:r><w:t>' 
+                                        + lore.util.escapeHTML(prop.title) 
+                                        + '</w:t></w:r></w:p>\n';
+                                }
+                            } else { 
+                                res += '<w:p><w:r><w:rPr><w:rStyle w:val="Strong" /></w:rPr><w:t>' 
+                                    + lore.util.escapeHTML(Ext.util.Format.capitalize(prop.name)) + ': </w:t></w:r><w:r><w:t>' 
+                                    + this.processHtml(prop.value) 
+                                    + '</w:t></w:r></w:p>\n';
+                            }
+                        }
+                    }
+                }   
+                return res;
+              } catch (ex){
+                    lore.debug.ore("Error in Word template",ex);
+              }
+            }
+       }
+    )
 });
