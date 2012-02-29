@@ -274,7 +274,7 @@ lore.anno.ui.PageView.prototype = {
         } catch (e) {
             lore.debug.anno("Error in highlightCurrentAnnotation", e);
             lore.debug.anno("Error highlighting (record)", rec);
-            lore.anno.ui.loreError('Unable to highlight. Page has been modified.');
+            lore.anno.ui.loreError('Unable to highlight annnotation target. Page may have been modified.');
         }
     },
     

@@ -149,10 +149,10 @@ lore.anno.ui.Marker.prototype = {
                 this.colour = colour || this.colour;
                 this.styleCallback = styleCallback || this.styleCallback;
                 // update scaling and offsets
-                var c = this.scaleImageCoords(this.data.image, this.data.coords, this.target);
-                var o = this.calcImageOffsets(this.data.image, this.target);
-                
-                // update CSS 
+                if (this.data.image){
+                    var c = this.scaleImageCoords(this.data.image, this.data.coords, this.target);
+                    var o = this.calcImageOffsets(this.data.image, this.target);
+                    // update CSS 
                     var _n = $(this.data.nodes[0]);
                     _n.css({
                         position: 'absolute',
@@ -161,8 +161,10 @@ lore.anno.ui.Marker.prototype = {
                         border: this.bw + 'px solid ' + this.colour,
                         zIndex: _n.parent().css('zIndex')
                     }).width(c.x2 - c.x1 - this.bw * 2).height(c.y2 - c.y1 - this.bw * 2);
-                    if (this.styleCallback) 
+                    if (this.styleCallback) {
                         this.styleCallback(this.type, this.data.nodes[0]);
+                    }
+                }
             }
         }catch (e ) {
             lore.debug.anno("Error in Marker update",e);
