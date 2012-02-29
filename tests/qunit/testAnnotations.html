@@ -23,30 +23,15 @@
   jQuery(document).ready(function(){
     
 test("create annotation", function() {
-   var tmpAnno = new lore.ore.model.CompoundObject();
-   tmpCO.initProperties("Test User");
-   equals(tmpCO.toString(),"Resource Map  contains 0 resources", "new resource map is empty");
-   equals(tmpCO.get('properties').getProperty(lore.constants.NAMESPACES["dc"] + "creator",0).value, "Test User", "creator is correct");
+   var tmpAnno = new lore.anno.model.Annotation();
+   
 });
 
-test("load resource map", function() {
+test("load annotation", function() {
     var parser = new DOMParser();
     var rdfDoc = parser.parseFromString(testData.emptyResourceMap, "text/xml");
-    var tmpCO = new lore.ore.model.CompoundObject();
-    tmpCO.load({
-        format : 'application/rdf+xml',
-        content : rdfDoc
-    });
-    equals(tmpCO.uri,"http://example.org/rem/123456", "loaded compound object uri is correct");
-    equals(tmpCO.toString(),"Resource Map http://example.org/rem/123456 contains 0 resources", "loaded empty resource map is empty");
-    tmpCO = new lore.ore.model.CompoundObject();
-    rdfDoc = parser.parseFromString(testData.basicResourceMap, "text/xml");
-    tmpCO.load({
-        format : 'application/rdf+xml',
-        content : rdfDoc
-    });
-    console.log(tmpCO.getRDF(true))
-    equals(tmpCO.toString(),"Resource Map http://austlit.edu.au/auselit/ore/ccbfa40a-571b-52e7-1ab8-8827cba5f604 contains 4 resources", "loaded resource map has correct number of resources");
+
+   
 });
 
 
@@ -56,7 +41,7 @@ test("load resource map", function() {
   
 </head>
 <body>
-  <h1 id="qunit-header">LORE Compound Objects</h1>
+  <h1 id="qunit-header">LORE Annotations</h1>
  <h2 id="qunit-banner"></h2>
  <h2 id="qunit-userAgent"></h2>
  <ol id="qunit-tests"></ol>

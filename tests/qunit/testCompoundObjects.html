@@ -69,7 +69,11 @@ test("load and serialize resource map", function(){
         format : 'application/rdf+xml',
         content : rdfDoc
     });
-   equals(tmpCO.getRDF(true),testData.basicResourceMap,"resource serialisation same");
+    var rdf = tmpCO.serialize('rdfquery');
+    // remove modified date
+    rdf.where('?c dcterms:modified ?d').remove('?c dcterms:modified ?d');
+    var result = rdf.databank.dump({format:'application/rdf+xml',serialize:true});
+    equals(result,testData.basicResourceMap,"resource serialisation same");
 });
 
 test("load broken resource maps", function(){
