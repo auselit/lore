@@ -76,7 +76,7 @@ lore.anno.ui.AnnotationsDataView = Ext.extend(Ext.DataView, {
                     }
             }
             } catch (e){
-                lore.debug.anno("Problem on click",e);
+                lore.debug.anno("Error on AnnotationsDataView click",e);
             }
         }, this);
     }

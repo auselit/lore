@@ -58,6 +58,8 @@ lore.anno.repos.DannoAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
     
     saveAnnotation : function (annoRec, resultCallback,t){
         var annoRDF = t.serializer.serialize([annoRec.data], t.annods);
+        lore.debug.anno("serialized the annotation " , annoRDF);
+        
         var xhr = new XMLHttpRequest();
         if (annoRec.data.isNew()) {
             lore.debug.anno("creating new annotation");
@@ -87,7 +89,7 @@ lore.anno.repos.DannoAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
                 }
 
             } catch(e ) {
-                lore.debug.anno("error sending annotation to server", e);
+                lore.debug.anno("Error sending annotation to server", e);
             }
         };
         xhr.send(annoRDF);

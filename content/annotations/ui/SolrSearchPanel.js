@@ -100,7 +100,7 @@ lore.anno.ui.SolrStore = Ext.extend(Ext.data.Store,{
             }
             return this.execute('read', null, options); // <-- null represents rs.  No rs for load actions.
         } catch(e) {
-            lore.debug.anno("problem in load",e);
+            lore.debug.anno("Error in load",e);
             this.handleException(e);
             return false;
         }

@@ -143,7 +143,6 @@ LoreController = {
 			}
 		},
 		
-		//TODO: #185 -Replace with firefox test profile run via command line
 		/**
 		 * Save existing preferences and load testing preferences or vice-versa
 		 * @param {Object} push

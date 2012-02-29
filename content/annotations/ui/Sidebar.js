@@ -165,7 +165,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             this.initExtComponents();
         }
         catch (ex) {
-            lore.debug.ui("Exception creating anno UI", ex);
+            lore.debug.ui("Error creating anno UI", ex);
         }
     },
     /*
@@ -190,7 +190,7 @@ lore.anno.ui.Sidebar = Ext.extend(Ext.util.Observable, {
             lore.anno.ui.formpanel.setPreferences(lore.anno.prefs);
     
         } catch (e) {
-            lore.debug.ui("Errors during initExtComponents", e);
+            lore.debug.ui("Error during initExtComponents", e);
         }
     },
        /*

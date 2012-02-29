@@ -177,7 +177,7 @@
             conf.onShow.call(self);
             
             } catch (ex) {
-                lore.debug.anno("simpletip", ex);
+                lore.debug.anno("Error in simpletip", ex);
             }
             return self;
          },

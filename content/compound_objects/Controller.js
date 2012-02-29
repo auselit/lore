@@ -215,7 +215,6 @@ Ext.apply(lore.ore.Controller.prototype, {
 			// lore.debug.timeElapsed("create figure for each resource ");
 			// create a node figure for each aggregated resource, restoring the layout
             var counter = 0;
-            // TODO check number of resources and disable graphical editor if too big
             var numResources = 
 			loadedRDF.where('<' + aggreurl + '> ore:aggregates ?url')
 					.optional('?url layout:x ?x')
@@ -279,7 +278,6 @@ Ext.apply(lore.ore.Controller.prototype, {
 				var coGraph = lore.ore.ui.graphicalEditor.coGraph;
 				var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
 				if (!srcfig) {
-					// TODO: fix this as now preEncode is called - implement unPreEncode or something
 					srcfig = lore.ore.ui.graphicalEditor
 							.lookupFigure(lore.util.unescapeHTML(subject
 									.replace('%3C', '<').replace('%3F', '>')));
@@ -523,8 +521,6 @@ Ext.apply(lore.ore.Controller.prototype, {
         if (lore.ore.ui.topView){
             lore.ore.ui.topView.hideAddIcon(false);
         }
-        var cDate = new Date();
-        // TODO: fix properties - use date string for now
         var currentREM = lore.ore.reposAdapter.generateID();
         var currentCO = new lore.ore.model.CompoundObject({
             uri: currentREM
@@ -674,7 +670,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                 fn : function(btn, theurl) {
                     if (btn == 'ok') {
                         var currentCO = lore.ore.cache.getLoadedCompoundObject();
-                        // TODO: add isLocked property
+                        // add isLocked property
                         currentCO.properties.setProperty({
                            id: lore.constants.NAMESPACES["lorestore"]+ "isLocked",
                            ns: lore.constants.NAMESPACES["lorestore"],

@@ -69,8 +69,7 @@ Ext.apply(lore.ore.repos.RepositoryAdapter.prototype, {
      * @return {}
      */
     generateID: function(){
-        // TODO: #125 should use a persistent identifier service to request an identifier
-        // TODO: check that this id hasn't been used before
+        // dummy value : lorestore manages actual id creation
         return this.idPrefix + lore.draw2d.UUID.create();
     },
     generatePlaceholderID: function(){

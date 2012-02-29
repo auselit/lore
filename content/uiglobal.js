@@ -16,17 +16,17 @@
         try {
             ui.compoundObjectView.unregisterView();
         } catch (e1) {
-            debug.ui ("error unregistering coview: " + e1,e1);
+            debug.ui ("Error unregistering coview: " + e1,e1);
         }
         try {
             ui.annotationView.unregisterView();
         } catch (e2) {
-            debug.ui("error unregistering annoview: " + e2,e2);
+            debug.ui("Error unregistering annoview: " + e2,e2);
         }
         try {
             ui.load(win, instId, true);
         } catch (e3) {
-            debug.ui ("error loading ui on reset: " + e3,e3);
+            debug.ui ("Error loading ui on reset: " + e3,e3);
         }
     };
 
@@ -97,7 +97,7 @@
             ui.compoundObjectView.unregisterView(instId);
             ui.topWindowView.unregisterView(instId);
         } catch (e) {
-            debug.ui('ui.onUnLoad(window, instId)', e);
+            debug.ui('Error in ui.onUnLoad(window, instId)', e);
         }
     };
 
@@ -172,7 +172,7 @@ function Views(args){
                                             this.views[instId].uninit();
                             }
                     } catch (e) {
-                            debug.ui('unregisterView(' + instId + ')', e);
+                            debug.ui('Error in unregisterView(' + instId + ')', e);
                     }
                     delete this.views[instId];
                     delete this.events[instId];

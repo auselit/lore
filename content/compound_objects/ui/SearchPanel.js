@@ -164,7 +164,7 @@ lore.ore.ui.SearchPanel = Ext.extend(Ext.Panel,{
             Ext.getCmp("searchpred").getStore().loadData(searchproplist);
              
         } catch (e) {
-            lore.debug.ui("SearchPanel: error setting up search combo", e);
+            lore.debug.ui("Error in SearchPanel: setting up search combo", e);
         }
         Ext.getCmp("searchforms").activate("kwsearchform");
     },

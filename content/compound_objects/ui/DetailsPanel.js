@@ -2,7 +2,6 @@
  * @class lore.ore.ui.DetailsPanel Display a text-heavy view of the entire Resource Map with embedded previews
  * @extends Ext.Panel
  */
- // TODO: allow to be configured eg select which properties to display in this view
 lore.ore.ui.DetailsPanel = Ext.extend(Ext.Panel,{ 
    constructor: function (config){
         config = config || {};

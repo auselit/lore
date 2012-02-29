@@ -190,7 +190,7 @@ try {
             try {
                 lore.global.ui.onClose(this, loreoverlay.instId);
             } catch(e) {
-                lore.debug.ui("loreoverlay.onClose",e);
+                lore.debug.ui("Error in loreoverlay.onClose",e);
             }
         },
         
@@ -292,7 +292,7 @@ try {
                     event.preventDefault();
                } 
             } catch (e){
-                lore.debug.ui("clip before popup",e);
+                lore.debug.ui("Error in clip before popup",e);
             }
         },
         onClipMenuPopup: function(event){
@@ -338,7 +338,7 @@ try {
                     gContextMenu.showItem('oaioresep', false);
                 }
             } catch (e) {
-                lore.debug.ui("loreoverlay.onMenuPopup",e);
+                lore.debug.ui("Error in loreoverlay.onMenuPopup",e);
             }
         },
         
@@ -350,7 +350,7 @@ try {
             try {
                 loreoverlay.annoView().handleBeginImageSelection(document.popupNode);
             } catch (e ) {
-                lore.debug.ui("image selection failed", e);
+                lore.debug.ui("Error: image selection failed", e);
             }
         },
         /** Trigger adding a node to the Resource Map editor from browser context menu on images */ 
@@ -395,7 +395,7 @@ try {
                    this.authManager.isAuthenticated();
                 }
             } catch (e ) {
-                lore.debug.ui("loreoverlay.toggleBar",e);
+                lore.debug.ui("Error in loreoverlay.toggleBar",e);
             }
         },
         /** Resource Maps Toolbar button handler: Triggers loading Resource Map RDF from a URL **/
@@ -418,7 +418,7 @@ try {
                     loreoverlay.coView().loadCompoundObject(fObj.data);
                 }
             } catch (e){
-                lore.debug.ui("Exception importing Resource Map from file",e);
+                lore.debug.ui("Error importing Resource Map from file",e);
             }
         },
         /** Resource Maps toolbar button handler: pop up find window to find text within Resource Map window */
@@ -431,7 +431,7 @@ try {
             try {
                 loreoverlay.annoView().handleAddAnnotation();
             }catch (e ) {
-                lore.debug.ui("loreoverlay.addAnnotation",e) ;
+                lore.debug.ui("Error in loreoverlay.addAnnotation",e) ;
             }
         },
         updateAnnotationSel: function (type) {
@@ -441,7 +441,7 @@ try {
                 else 
                     loreoverlay.annoView().handleUpdateAnnotationContext();
             }catch (e ) {
-                lore.debug.ui("updateAnnotationSel", e);
+                lore.debug.ui("Error in updateAnnotationSel", e);
             }
         },
         login: function () {
@@ -470,7 +470,7 @@ try {
                 .webNavigation
                 .loadURI(url, 0, null, null, null);
             } catch (e){
-                lore.debug.ui("loreoverlay.reportProblem",e);
+                lore.debug.ui("Error in loreoverlay.reportProblem",e);
             }
         },
         /** Annotations Toolbar button handler: Trigger removing an annotation */
@@ -478,7 +478,7 @@ try {
             try {
                 loreoverlay.annoView().handleDeleteAnnotation();
             } catch (e) {
-                lore.debug.ui("loreoverlay.removeAnnotation",e);
+                lore.debug.ui("Error in loreoverlay.removeAnnotation",e);
             }
         },
         /** Annotations Toolbar button handler: Triger replying to an annotation */
@@ -758,7 +758,7 @@ try {
                 // as it's not updated by users action within the iframe
                 iframe.contentWindow.location = url;
             } catch ( e ) {
-                lore.debug.anno("loreoverlay.updateVariationSplitter",e);
+                lore.debug.anno("Error in loreoverlay.updateVariationSplitter",e);
             }
         },
         /**
@@ -775,7 +775,7 @@ try {
                     document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
                 }
             } catch(e) {
-                lore.debug.anno("hideVariationSplitter", e);
+                lore.debug.anno("Error in hideVariationSplitter", e);
             }
         },
         hideAddIcon: function(hideAdd){

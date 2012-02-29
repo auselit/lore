@@ -37,11 +37,11 @@ lore.anno.ui.loreMsg = function(message, iconCls){
                 }
             } 
             catch (e) {
-                lore.debug.ui("loreMsg setTimeout", e);
+                lore.debug.ui("Error in loreMsg setTimeout", e);
             }
         }, 3000);
     } catch (e) {
-        lore.debug.anno("loreMsg",e);
+        lore.debug.anno("Error in loreMsg",e);
     }
 };
         

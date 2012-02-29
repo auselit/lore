@@ -151,6 +151,6 @@ lore.ore.ui.init = function() {
         Ext.getCmp("drawingarea").focus();
         
     } catch (e) {
-        lore.debug.ui("Exception in Resource Map init", e);
+        lore.debug.ui("Error in Resource Map init", e);
     }
 };

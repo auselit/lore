@@ -97,7 +97,7 @@ lore.anno.ui.PageView.prototype = {
             this.removeHighlightForCurrentAnnotation();
         } 
         catch (e) {
-            lore.debug.anno("PageView:handleUpdate", e);
+            lore.debug.anno("Error in PageView:handleUpdate", e);
         }
     },
     /**
@@ -145,7 +145,7 @@ lore.anno.ui.PageView.prototype = {
                 }
             }
         } catch (e) {
-            lore.debug.anno("setContentsVisible", e);
+            lore.debug.anno("Error in setContentsVisible", e);
         }
     },
     
@@ -176,7 +176,7 @@ lore.anno.ui.PageView.prototype = {
                 }
             }
         } catch (ex) {
-            lore.debug.anno("hide marker failure", ex);
+            lore.debug.anno("Error: hide marker failure", ex);
         }
     },
     
@@ -346,7 +346,7 @@ lore.anno.ui.PageView.prototype = {
             }
         }
         } catch (e) {
-            lore.debug.anno("highlightAnnotation", e);
+            lore.debug.anno("Error in highlightAnnotation", e);
         }
         // get colour of highlight and show marker, and generate tooltip
         var cc = this.getCreatorColour(rec.data.creator);
@@ -514,7 +514,7 @@ lore.anno.ui.PageView.prototype = {
                         });
                     } 
                     catch (ex) {
-                        lore.debug.anno("error initing image handler", ex);
+                        lore.debug.anno("Error initing image handler", ex);
                     }
                 });
                 
@@ -540,7 +540,7 @@ lore.anno.ui.PageView.prototype = {
                         } catch (ex ) {
                             //#146 On the failure of one marker this would break the resizing of
                             // all other markers
-                            lore.debug.anno('refreshImageMarkers error', ex);
+                            lore.debug.anno('Error in refreshImageMarkers', ex);
                             lore.debug.anno("refreshImageMarkers (marker)", m);
                         }
                     }
@@ -560,7 +560,7 @@ lore.anno.ui.PageView.prototype = {
                     });
                 } 
                 catch (ex) {
-                    lore.debug.anno("error occurred during window resize handler", ex);
+                    lore.debug.anno("Error occurred during window resize handler", ex);
                 }
             };
             lore.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
@@ -575,7 +575,7 @@ lore.anno.ui.PageView.prototype = {
             
         } 
         catch (ex) {
-            lore.debug.anno("error occurred enabling image highlighting", ex);
+            lore.debug.anno("Error occurred enabling image highlighting", ex);
         }
     };
     var ol = function(){
@@ -633,7 +633,7 @@ lore.anno.ui.PageView.prototype = {
                 lore.util.removeNodePreserveChildren(n, lore.util.getContentWindow(window));
             } 
             catch (e) {
-                lore.debug.anno('error removing node for meta selection', e);
+                lore.debug.anno('Error removing node for meta selection', e);
             }
         }
         this.page.metaSelections = [];
@@ -750,7 +750,7 @@ lore.anno.ui.PageView.prototype = {
                     callback(isObject, triple);
                 
                 } catch (e ) {
-                    lore.debug.anno("turnOnPageTripleMarkers",e);
+                    lore.debug.anno("Error in turnOnPageTripleMarkers",e);
                 }
                 
                 t.turnOffPageTripleMarkers();
@@ -804,12 +804,12 @@ lore.anno.ui.PageView.prototype = {
                         if (callback) callback.apply(callbackScope || this, [contentWindow, rec]);
                         
                     } catch(e){
-                        lore.debug.anno("updateVariationSplitter-callback", e);
+                        lore.debug.anno("Error in updateVariationSplitter-callback", e);
                     }
                 });
             }
         } catch (e ) {
-            lore.debug.anno("updateSplitter", e);
+            lore.debug.anno("Error in updateSplitter", e);
         }
     }
     

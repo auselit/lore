@@ -387,7 +387,7 @@ lore.util = {
                         doc.getElementsByTagName("head")[0].appendChild(style);
                     }
                 } catch (e){
-                    debug.ui("Unable to inject CSS",e);
+                    debug.ui("Error: Unable to inject CSS",e);
                 }
             }
         }
@@ -563,7 +563,7 @@ lore.util = {
             
             return highlightNodes;
         } catch (e) {
-            lore.debug.ui(e,e);
+            lore.debug.ui("Error in highlightRange",e);
             return null;
         }
     },
@@ -897,7 +897,9 @@ lore.util = {
                     replace(/&apos;/g,'\'') 
             );    
     },
-    
+    escapeQuotes : function (str) {
+    	return str.replace(/"/g, '\\"')//.replace(/\\/g, "\\\\");
+    },
     /**
      * Creates a XUL iframe that has javascript and embedded objects disabled. 
      * @param iframe DOM element 
@@ -917,7 +919,7 @@ lore.util = {
             try{
                 lore.util.launchTab(this.getAttribute('src').replace('&printPreview=y',''),this.contentWindow);
             } catch (ex){
-                lore.debug.ui("iframe onclick",ex);
+                lore.debug.ui("Error in iframe onclick",ex);
             }
         },false);
         return iframe;
@@ -957,7 +959,7 @@ lore.util = {
                         extraFunc();
                     }
                 } catch (e ) {
-                    lore.debug.ui("iframe(onload): " + e, e);
+                    lore.debug.ui("Error in iframe(onload): " + e, e);
                 }
             }, true);
         // trigger onload
@@ -980,7 +982,7 @@ lore.util = {
             styleElem.textContent = theCSS;
             doc.getElementsByTagName("head")[0].appendChild(styleElem); 
         } catch (e){
-            lore.debug.ui("lore.util.insertSecureFrameStyle:",e)
+            lore.debug.ui("Error in lore.util.insertSecureFrameStyle:",e)
         }
     },
     parseHTMLToElement : function(html,win){
@@ -1061,7 +1063,7 @@ lore.util = {
                 return "";
             }
         } catch (ex){
-            lore.debug.ui("Problem sanitizing html",ex);
+            lore.debug.ui("Error sanitizing html",ex);
             return "";
         }
         
@@ -1200,7 +1202,7 @@ lore.util = {
                 e.className = 'expander-display-open';
             }
         } catch(ex){
-            lore.debug.ui("Problem in expandXML",ex);
+            lore.debug.ui("Error in expandXML",ex);
         }
     },
     /** Normalize character encoding to uppercase in URL (specifically to deal with AustLit urls ) */

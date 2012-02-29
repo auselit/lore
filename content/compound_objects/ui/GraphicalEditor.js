@@ -37,7 +37,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
    },
    /** bindModel, update listeners */
    bindModel: function(co){
-        // TODO: listen to store events not custom events?
         if (this.model) {
             //panel.removeAll();
             this.model.un("addAggregatedResource", this.onAddResource,this);

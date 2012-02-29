@@ -29,7 +29,7 @@ lore.anno.ui.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
             });
             lore.anno.ui.ColumnTree.superclass.initComponent.apply(this, arguments);
         } catch(e){
-            lore.debug.anno("ColumnTree:initComponent() - " + e, e);
+            lore.debug.anno("Error in ColumnTree:initComponent() - " + e, e);
         }
     },
     /**
@@ -113,7 +113,7 @@ lore.anno.ui.ColumnTree = Ext.extend(Ext.tree.TreePanel, {
                 
             
         } catch(e){
-            lore.debug.anno("ColumnTree.onResize",e);
+            lore.debug.anno("Error in ColumnTree.onResize",e);
         }
         
     }
@@ -511,7 +511,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
             
             
         } catch(e){
-            lore.debug.anno("AnnoColumnTree:initComponent() - " + e, e);
+            lore.debug.anno("Error in AnnoColumnTree:initComponent() - " + e, e);
         }
     },
     
@@ -562,7 +562,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
                         return r.data[ts.sortField] || r.data.created;
                     }
                 } catch (e) {
-                    lore.debug.anno("ColumnTree.addTreeSorter", e);
+                    lore.debug.anno("Error in ColumnTree.addTreeSorter", e);
                 }
                 return "";
             };
@@ -592,7 +592,7 @@ lore.anno.ui.AnnoColumnTree = Ext.extend(lore.anno.ui.ColumnTree, {
                             return 0;
                         }
                 } catch (e ) {
-                    lore.debug.anno("sortFn: " + e, e);
+                    lore.debug.anno("Error in sortFn: " + e, e);
                 }
              };
              
@@ -682,7 +682,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( lore.anno.ui.AnnoTreeNode,
                     parent.appendChild(n);
                 
                 } catch (e) {
-                    lore.debug.anno("error loading: " + rec.id, e);
+                    lore.debug.anno("Error loading: " + rec.id, e);
                 }
             }
             
@@ -709,7 +709,7 @@ lore.anno.ui.AnnoPageTreeNode = Ext.extend( lore.anno.ui.AnnoTreeNode,
             }
         } 
         catch (e) {
-            lore.debug.ui("AnnoPageTreeNode:handleRemove() Error removing node : " + e, e);
+            lore.debug.ui("Error in AnnoPageTreeNode:handleRemove() removing node : " + e, e);
         }
     },
 
@@ -783,7 +783,7 @@ lore.anno.ui.AnnoModifiedPageTreeNode = Ext.extend(lore.anno.ui.AnnoTreeNode, {
                 
             }
         }catch (e) {
-            lore.debug.anno("handleLoad: " +e, e);
+            lore.debug.anno("Error in handleLoad: " +e, e);
         }
     },
     
@@ -900,7 +900,7 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
                 });
             }
         } catch (e ) {
-            lore.debug.anno("AnnoColumnTreeNode:initConfig() " + e, e);
+            lore.debug.anno("Error in AnnoColumnTreeNode:initConfig() " + e, e);
         }
   },
   /**

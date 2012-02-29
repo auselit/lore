@@ -174,7 +174,7 @@ Ext.apply(lore.anno.Controller.prototype, {
     
         if (form.isDirty()) {
             if (unsavedRec.store === lore.anno.annoMan.annods) {
-                lore.debug.anno("ERROR: Should never be trying to update Stored Recs!");
+                lore.debug.anno("Error: Should never be trying to update Stored Recs!");
             }
         }
     
@@ -435,10 +435,10 @@ Ext.apply(lore.anno.Controller.prototype, {
     tagUnsavedAnnotations : function () {
         lore.anno.annoMan.annodsunsaved.each(function (rec) {
             try {
-                var node = this.findNode(rec.data.id + "-unsaved", lore.anno.ui.treeunsaved);
+                var node = lore.anno.controller.findNode(rec.data.id + "-unsaved", lore.anno.ui.treeunsaved);
                 if (!node) {
-                    lore.debug.anno("modified/new annotation not found in unsaved "
-                            + "tree. This is incorrect. " + rec.data.id, rec.data);
+                    lore.debug.anno("Error: modified/new annotation not found in unsaved "
+                            + "tree. " + rec.data.id, rec.data);
                     return;
                 }
     
@@ -594,8 +594,7 @@ Ext.apply(lore.anno.Controller.prototype, {
         // show confirmation pop-up
         var msg = 'Are you sure you want to delete the "' + rec.data.title + '" annotation forever?';
         if (rec.data.hasChildren()) {
-            //msg = "Are you sure you want to delete this annotation and its REPLIES forever?";
-            lore.anno.ui.loreError("Delete the replies for this annotation first.");
+            lore.anno.ui.loreError("Annotations with replies cannot be deleted.");
             return;
         }
     
@@ -678,7 +677,7 @@ Ext.apply(lore.anno.Controller.prototype, {
     
     handleServerError : function (action, response) {
         lore.anno.ui.loreError('Unable to ' + action + ' annotation');
-        lore.debug.anno('Unable to ' + action + ' annotation', {
+        lore.debug.anno('Error: Unable to ' + action + ' annotation', {
             response: response,
             headers: response.getAllResponseHeaders()
         });

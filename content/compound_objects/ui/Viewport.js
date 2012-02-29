@@ -239,11 +239,8 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                 var activetab = Ext.getCmp("loreviews").getActiveTab();
                 var propactivetab = Ext.getCmp("propertytabs").getActiveTab();
                 activetab.hide();
-                // TODO: should hide these but doing this means property grids don't resize
-                //propactivetab.hide();
                 Ext.layout.BorderLayout.SplitRegion.prototype.onSplitMove.apply(this, arguments);
                 activetab.show();
-                //propactivetab.show();
                 return false;
             },
             deferredRender : false,

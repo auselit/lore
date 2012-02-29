@@ -224,7 +224,6 @@ Ext.extend(lore.ore.ui.graph.COGraph, lore.draw2d.Workflow, {
             lore.draw2d.Canvas.prototype.removeFigure.call(this,this.selectionFigure);
         }
     },
-    // TODO: move resizeHandles to be owned by Figure so that we can support multi-selection
     /**
      * Overrides the method from the superclass to change the colour of the handles
      * @param {lore.draw2d.Figure} figure The figure on which the resize handles are to be displayed

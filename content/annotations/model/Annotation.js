@@ -402,7 +402,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                     rdfdb.add(annoid + " oac:hasTarget <" + context + ">");
                     rdfdb.add("<" + context + "> dcterms:isPartOf <" + target + ">");
                 } else { 
-                    // TODO: check if context contains an xpointer
+                    // check if context contains an xpointer
                     if (context.match("xpointer").index == 0){
                         rdfdb.add(annoid + " oac:hasTarget <" + target + "#" + context + ">");
                         rdfdb.add("<" + target + "#" + context + "> dcterms:isPartOf <" + target + ">");
@@ -506,7 +506,7 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                 }
                 // Annotation properties
                 if (anno.creator) {
-                    var agentid = anno.agentId? "<" + anno.agentId + ">" : ("_:user" + lore.util.uuid()); // TODO: get user id from original annotation
+                    var agentid = anno.agentId? "<" + anno.agentId + ">" : ("_:user" + lore.util.uuid()); 
                     rdfdb.add(annoid + " dcterms:creator " + agentid)
                     .add(agentid + " a foaf:Agent")
                     .add(agentid + " foaf:name \"" + lore.util.trim(anno.creator) + "\"");

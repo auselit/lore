@@ -208,7 +208,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
 	           this.aggregationURI = res.aggre.value.toString();
 	        }  else {
                 lore.debug.ore("Error: no remurl found in RDF",[args.content, this.loadedContent]);
-                // TODO: throw some kind of error
                 throw("No Resource Map Found");
 	        }
             
@@ -234,7 +233,7 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                     } else if (dtString == lore.constants.NAMESPACES["xsd"] + "date") {
                         propData.value = Date.parseDate(propval,'Y-m-d');
                     } 
-                    // TODO: #10 handle other data types?
+                    // TODO: handle other data types?
                 } else if (propurl == lore.constants.NAMESPACES["dcterms"] + "created" || propurl == lore.constants.NAMESPACES["dcterms"] + "modified"){
                     // try to parse dcterms:created and dcterms:modified as dates, even if they don't have a datatype
                     var modDate = Date.parseDate(propval,'c') || Date.parseDate(propval,'Y-m-d');

@@ -165,7 +165,7 @@ lore.anno.ui.Marker.prototype = {
                         this.styleCallback(this.type, this.data.nodes[0]);
             }
         }catch (e ) {
-            lore.debug.anno("Marker update",e);
+            lore.debug.anno("Error in Marker update",e);
         }
     },
             
@@ -201,7 +201,7 @@ lore.anno.ui.Marker.prototype = {
             }
             this.visible = false;
         } catch (e){
-            lore.debug.anno("lore.anno.ui.Marker.hide()",e);
+            lore.debug.anno("Error in lore.anno.ui.Marker.hide()",e);
         }
     },
     disableTip : function() {
@@ -230,7 +230,7 @@ lore.anno.ui.Marker.prototype = {
                         bodyText += '<a target="_blank" style="color:orange" href="' + thetag + '">' + tagname + '</a>, ';
                     } 
                     catch (e) {
-                        lore.debug.anno("unable to find tag name for " + thetag, e);
+                        lore.debug.anno("Error unable to find tag name for " + thetag, e);
                     }
                 }
                 else {
@@ -310,7 +310,7 @@ lore.anno.ui.Marker.prototype = {
             });
         }
         catch (ex) {
-            lore.debug.anno("Tip creation failure: " + ex, ex);
+            lore.debug.anno("Error Tip creation failure: " + ex, ex);
         }
     },
     

@@ -92,7 +92,7 @@ lore.anno.ui.init = (function() {
            }
    
        } catch (e) {
-           lore.debug.ui("Except in anno init", e);
+           lore.debug.ui("Error in anno init", e);
        }
    };
     

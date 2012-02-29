@@ -29,7 +29,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                         this.show(); 
                         this.focus();
                     } catch (e){
-                        lore.debug.anno("editField",e);
+                        lore.debug.anno("Error in editField",e);
                     }
                 },
                 items: [
@@ -59,7 +59,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                                 
                                 w.hide();
                             } catch (e){
-                                lore.debug.anno("update",e);
+                                lore.debug.anno("Error in update",e);
                             }
                         }
                     },
@@ -73,7 +73,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                                 var w = this.propEditorWindow;
                                 w.hide();
                             } catch (e){
-                                lore.debug.anno("cancel",e);
+                                lore.debug.anno("Error in cancel",e);
                             }
                         }
                     }
@@ -120,7 +120,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                                      this.propertyEditor.stopEditing();
                                      this.propertyEditor.propEditorWindow.editField(this,row);
                                     } catch (e){
-                                        lore.debug.anno("trigger click",e);
+                                        lore.debug.anno("Error in trigger click",e);
                                     }
                                  } 
                            })
@@ -164,7 +164,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
             
             this.propertiesList = [];
         } catch (e) {
-            lore.debug.anno("PropertyEditor:initComponent", e);
+            lore.debug.anno("Error in PropertyEditor:initComponent", e);
         }
     },
     
@@ -199,7 +199,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                             var theid = this.text + "_" + counter;
                             pstore.loadData([{id: theid, name: this.text, value: ""}],true);
                         } catch (ex){
-                            lore.debug.anno("exception adding prop " + this.text,ex);
+                            lore.debug.anno("Error adding prop " + this.text,ex);
                         }
                     }
                 });
@@ -224,7 +224,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                 lore.anno.ui.loreInfo("Please click on the property to remove prior to selecting the remove button");
             }
         } catch (ex) {
-            lore.debug.anno("error removing property ",ex);
+            lore.debug.anno("Error removing property ",ex);
         }
     },
     /* Used for displaying property values : values have been sanitized before being passed to template */
@@ -330,7 +330,7 @@ lore.anno.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel, {
                             callback(jQuery.rdf({databank: db}));
                         
                     } catch (e){
-                        lore.debug.anno("problem loading rels",e);
+                        lore.debug.anno("Error loading rels",e);
                     }
                 } 
             };

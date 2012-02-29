@@ -911,7 +911,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 	 * @return {String} Returns the serialized annotations in the new format
 	 */
 	serialize: function (format) {
-		lore.debug.anno("serialize format: " + format);
 		if ( format == 'wordml') {
             return this.createAnnoWord(this.annods.getRange());//lore.util.getContentWindow(window).document.body, true);
 		} else if ( format == 'rdf') {
@@ -947,7 +946,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			}
 			return unsaved;
 		} else {
-			lore.debug.anno("ERROR: The rec wasn't in either store!", rec);
+            lore.debug.anno("Error: The rec wasn't in either store!", rec);
 		}
 
 		function shallowClone(obj) {
