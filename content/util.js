@@ -77,7 +77,7 @@ lore.util = {
      * @param {String} str
      * */
     preEncode : function (str) {
-        return str.replace(/}/,"%7D").replace(/{/,"%7B").replace(/</, '%3C').replace(/>/, '%3E');    
+        return str.replace(/}/g,'%7D').replace(/{/g,'%7B').replace(/</g, '%3C').replace(/>/g, '%3E');    
     },
     
     /**
@@ -1207,6 +1207,7 @@ lore.util = {
     },
     /** Normalize character encoding to uppercase in URL (specifically to deal with AustLit urls ) */
     normalizeUrlEncoding: function(url) {
+        return url; // FIXME
         if (url){
             var thesplit = url.toString().split('%');
             var newurl = thesplit[0];
@@ -1216,6 +1217,7 @@ lore.util = {
                     newurl += "%" + str.substr(0,2).toUpperCase() + str.substr(2);
                 }
             }
+            lore.debug.ui("normalizeUrlEncoding " + newurl);
             return newurl;
         }
     },

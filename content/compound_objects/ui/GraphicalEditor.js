@@ -337,6 +337,8 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     * @return {}
     */
    addFigure : function(opts) {
+    lore.debug.ore("addFigure",opts);
+    try{
         if (!opts.batch && lore.ore.controller.checkReadOnly()){
             return;
         }
@@ -364,12 +366,14 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             title  = globalHistory.getPageTitle(Components.classes["@mozilla.org/network/io-service;1"].
                 getService(Components.interfaces.nsIIOService).
                 newURI(theURL, null, null));
-            opts.props["dc:title_0"] = title;
+                if (title){
+                    opts.props["dc:title_0"] = title;
+                }
             } catch (e) {
                 lore.debug.ore("Error getting title from history",e);
             }
         }
-        if (theURL && theURL == lore.ore.cache.getLoadedCompoundObjectUri()){
+        if (theURL && (theURL == lore.ore.cache.getLoadedCompoundObjectUri())){
             lore.ore.ui.vp.warning("Cannot add Resource Map to itself");
         } else if (theURL && !this.lookup[theURL]) {
             var theProps = opts.props;
@@ -460,6 +464,9 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             this.nextXY(opts.x,opts.y);
         }
         return fig;
+      } catch (ex){
+          lore.debug.ore("Error in add Figure",ex);
+      }
     },
     /**
      * Get the figure that represents a resource
