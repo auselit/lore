@@ -12392,15 +12392,18 @@ Ext.util.JSON = new (function(){
         pad = function(n) {
             return n < 10 ? "0" + n : n;
         },
-        /* Modified Jan 2011 by Damien
+        /* Modified for LORE
          * remove the use of eval() to parse JSON, as this is strictly forbidden
          * by the Mozilla security guidelines.
-         * Will fail in browsers that aren't Firefox.
          */
-        ff3NativeJSON = Components.classes["@mozilla.org/dom/json;1"]
-                 .createInstance(Components.interfaces.nsIJSON),
         doDecode = function(json){
-            return ff3NativeJSON.decode(json);
+            if (typeof Components != "undefined"){
+                var ff3NativeJSON = Components.classes["@mozilla.org/dom/json;1"]
+                 .createInstance(Components.interfaces.nsIJSON);
+                return ff3NativeJSON.decode(json);
+            } else {
+                return jQuery.parseJSON(json);
+            }
         },
         doEncode = function(o){
             if(!Ext.isDefined(o) || o === null){
