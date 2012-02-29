@@ -1,94 +1,94 @@
 <html>
     <head>
         
-		<!--  Ext scripts -->
-		<script type="text/javascript" src="../lib/jquery-1.3.2.js"></script>
-		<script type="text/javascript" src="../lib/ext3.2/adapter/jquery/ext-jquery-adapter-debug.js"></script>
-		<script type="text/javascript" src="../lib/ext3.2/ext-all-debug.js"></script>
-		
-		<script type="text/javascript" src="../lib/jquery.rdfquery.rdfa.js"></script>
-		<script type="text/javascript" src="../lib/jquery.hoverIntent.js"></script> 
-		<script type="text/javascript" src="../lib/jquery.simpletip-1.3.1.js"></script>
+        <!--  Ext scripts -->
+        <script type="text/javascript" src="../lib/jquery-1.6.3.min.js"></script>
+        <script type="text/javascript" src="../lib/ext3.2/adapter/jquery/ext-jquery-adapter-debug.js"></script>
+        <script type="text/javascript" src="../lib/ext3.2/ext-all-debug.js"></script>
+        
+        <script type="text/javascript" src="../lib/jquery.rdfquery.rdfa.js"></script>
+        <script type="text/javascript" src="../lib/jquery.hoverIntent.js"></script> 
+        <script type="text/javascript" src="../lib/jquery.simpletip-1.3.1.js"></script>
         <script type="text/javascript" src="../lib/jquery.imgareaselect.js"></script>
-		
-		<script type="text/javascript" src="../lib/ext/ux/StatusBar.js"></script>
-		<script type="text/javascript" src="../lib/ext/ux/uxvismode.js"></script>
-		<script type="text/javascript" src="../lib/ext/ux/MidasCommand.js"></script>
-		<script type="text/javascript" src="../lib/ext/ux/SuperBoxSelect.js"></script>
-		<script type="text/javascript" src="../lib/ext/ux/PagingStore.js"></script>
+        
+        <script type="text/javascript" src="../lib/ext/ux/StatusBar.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/uxvismode.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/MidasCommand.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/SuperBoxSelect.js"></script>
+        <script type="text/javascript" src="../lib/ext/ux/PagingStore.js"></script>
 
-		
-		<script type="text/javascript">
-		try {
-				
-			    // Set up JavaScript namespaces
-			    Ext.ns('lore.anno.ui');
-			    Ext.ns('lore.global');
+        
+        <script type="text/javascript">
+        try {
+                
+                // Set up JavaScript namespaces
+                Ext.ns('lore.anno.ui');
+                Ext.ns('lore.global');
                 Ext.ns('lore.anno.repos');
-		        if (typeof Components != "undefined") {
-					/* Import modules into the lore namespace.
-	 * Use eval for the import statements because the YUI compressor does not allow
-	 * us to call the import function directly as import is a reserved word in JavaScript.
-	 */
-					Components.utils["import"]("resource://lore/constants.js", lore);
-					Components.utils["import"]("resource://lore/util.js", lore);
-					Components.utils["import"]("resource://lore/debug.js", lore);
-					
-					// Load and cache global ui functions
-					Components.utils["import"]("resource://lore/uiglobal.js", lore.global);
-					
-					// lore.store
-					Components.utils["import"]("resource://lore/annotations/store.js", lore.global);
-				} else {
-					// Google Chrome
-				}
-			} catch (e) {
-			    alert(e + " " + e.stack);
-			}
-		</script>
-		<script type="text/javascript" src="common.js"></script>
-		<script type="text/javascript" src="model/Preferences.js"></script>
-		<script type="text/javascript" src="../export/WordExporter.js"></script>
-		<script type="text/javascript" src="model/Annotation.js"></script>
-		<script type="text/javascript" src="model/AnnotationManager.js"></script>
-		<script type="text/javascript" src="ui/Marker.js"></script>
-		<script type="text/javascript" src="model/PageData.js"></script>
-		<script type="text/javascript" src="model/RDFaManager.js"></script>
-		<script type="text/javascript" src="ui/PageView.js"></script>
-		<script type="text/javascript" src="ui/PropertyEditor.js"></script>
-		<script type="text/javascript" src="ui/ColumnTree.js"></script>
-		<script type="text/javascript" src="ui/EditorPanel.js"></script>
-		<script type="text/javascript" src="ui/AnnotationsDataView.js"></script>	
-		<script type="text/javascript" src="ui/SearchPanel.js"></script>
-		<script type="text/javascript" src="ui/SolrSearchPanel.js"></script>
-		<script type="text/javascript" src="ui/Sidebar.js"></script>
-		<script type="text/javascript" src="ui/PagingToolbar.js"></script>
-		<script type="text/javascript" src="../AuthManager.js"></script>
+                if (typeof Components != "undefined") {
+                    /* Import modules into the lore namespace.
+                     * Use this syntax for the import statements because the YUI compressor does not allow
+                     * us to call the import function directly as import is a reserved word in JavaScript.
+                     */
+                    Components.utils["import"]("resource://lore/constants.js", lore);
+                    Components.utils["import"]("resource://lore/util.js", lore);
+                    Components.utils["import"]("resource://lore/debug.js", lore);
+                    
+                    // Load and cache global ui functions
+                    Components.utils["import"]("resource://lore/uiglobal.js", lore.global);
+                    
+                    // lore.store
+                    Components.utils["import"]("resource://lore/annotations/store.js", lore.global);
+                } else {
+                    // Google Chrome
+                }
+            } catch (e) {
+                alert(e + " " + e.stack);
+            }
+        </script>
+        <script type="text/javascript" src="common.js"></script>
+        <script type="text/javascript" src="model/Preferences.js"></script>
+        <script type="text/javascript" src="../export/WordExporter.js"></script>
+        <script type="text/javascript" src="model/Annotation.js"></script>
+        <script type="text/javascript" src="model/AnnotationManager.js"></script>
+        <script type="text/javascript" src="ui/Marker.js"></script>
+        <script type="text/javascript" src="model/PageData.js"></script>
+        <script type="text/javascript" src="model/RDFaManager.js"></script>
+        <script type="text/javascript" src="ui/PageView.js"></script>
+        <script type="text/javascript" src="ui/PropertyEditor.js"></script>
+        <script type="text/javascript" src="ui/ColumnTree.js"></script>
+        <script type="text/javascript" src="ui/EditorPanel.js"></script>
+        <script type="text/javascript" src="ui/AnnotationsDataView.js"></script>    
+        <script type="text/javascript" src="ui/SearchPanel.js"></script>
+        <script type="text/javascript" src="ui/SolrSearchPanel.js"></script>
+        <script type="text/javascript" src="ui/Sidebar.js"></script>
+        <script type="text/javascript" src="ui/PagingToolbar.js"></script>
+        <script type="text/javascript" src="../AuthManager.js"></script>
         <script type="text/javascript" src="repository/RepositoryAdapter.js"></script>
         <script type="text/javascript" src="repository/DannoAdapter.js"></script>
         <script type="text/javascript" src="repository/RestAdapter.js"></script>
-		<script type="text/javascript" src="Controller.js"></script>
+        <script type="text/javascript" src="Controller.js"></script>
         
-		
-			
-	    <!--  styles -->
-	    <link rel="stylesheet" type="text/css" href="../lib/ext3.2/resources/css/ext-all.css">
-		<link rel="stylesheet" type="text/css" href="../lib/ext3.2/resources/css/xtheme-gray.css">
-	    <link rel="alternate stylesheet" type="text/css" title="highContrastExt" disabled="true" href="../lib/ext3.2/resources/css/xtheme-access.css">
-		
-		<!--link rel="stylesheet" type="tex/css" href="../lib/ext-4.0.2a/resources/css/ext-all.css"-->
-				
-		<link rel="stylesheet" type="text/css" href="../loreui.css">    
-		<link rel="stylesheet" type="text/css" href="lore_anno.css">  
-	    <link rel="alternate stylesheet" type="text/css" title="highContrastUI" disabled="true" href="../loreui-access.css">     
-		<link rel="alternate stylesheet" type="text/css" title="highContrast" disabled="true" href="lore_anno-access.css">        
-	    <link rel="stylesheet" type="text/css" href="../lib/ext/ux/superboxselect-gray-extend.css">	
-		<link rel="stylesheet" type="text/css" href="../lib/imgareaselect-deprecated.css">
-		
+        
+            
+        <!--  styles -->
+        <link rel="stylesheet" type="text/css" href="../lib/ext3.2/resources/css/ext-all.css">
+        <link rel="stylesheet" type="text/css" href="../lib/ext3.2/resources/css/xtheme-gray.css">
+        <link rel="alternate stylesheet" type="text/css" title="highContrastExt" disabled="true" href="../lib/ext3.2/resources/css/xtheme-access.css">
+        
+        <!--link rel="stylesheet" type="tex/css" href="../lib/ext-4.0.2a/resources/css/ext-all.css"-->
+                
+        <link rel="stylesheet" type="text/css" href="../loreui.css">    
+        <link rel="stylesheet" type="text/css" href="lore_anno.css">  
+        <link rel="alternate stylesheet" type="text/css" title="highContrastUI" disabled="true" href="../loreui-access.css">     
+        <link rel="alternate stylesheet" type="text/css" title="highContrast" disabled="true" href="lore_anno-access.css">        
+        <link rel="stylesheet" type="text/css" href="../lib/ext/ux/superboxselect-gray-extend.css">    
+        <link rel="stylesheet" type="text/css" href="../lib/imgareaselect-deprecated.css">
+        
         <title>LORE Annotations</title>
     </head>
     <body>
-    	<script type="text/javascript" src="../ontologies/thesaurus.js"></script>
-		<script type="text/javascript" src="init.js"></script>
+        <script type="text/javascript" src="../ontologies/thesaurus.js"></script>
+        <script type="text/javascript" src="init.js"></script>
     </body>
 </html>
