@@ -62,263 +62,158 @@ Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
      */
 
     serialize: function ( annos, store, storeDates ) {
-        var rdfTpl = new Ext.XTemplate(
-            
-            
-        );
-        if (!annos.length )
+        
+        if (!annos.length ) {
             annos = [annos];
-
-
-        var rdfxml = "<?xml version=\"1.0\" ?>";
-        rdfxml += '<rdf:RDF xmlns:rdf="' + lore.constants.NAMESPACES["rdf"] + '">';
-
+        }
+        var rdfdb = jQuery.rdf.databank();
+        rdfdb.prefix('dc', lore.constants.NAMESPACES['dc']);
+        rdfdb.prefix('annotea', lore.constants.NAMESPACES['annotea']);
+        rdfdb.prefix('vanno', lore.constants.NAMESPACES['vanno']);
+        rdfdb.prefix('thread', lore.constants.NAMESPACES['thread']);
+        rdfdb.prefix('http', lore.constants.NAMESPACES['http']);
         for (var i = 0; i < annos.length; i++) {
-            var annoOrig =  annos[i].data || annos[i]; // an array of records or anno objects
-            var anno = {};
-
-            for (var e in annoOrig) {
-                var val = annoOrig[e];
-                if (e!= 'body' && e!='tags' && typeof(val) == 'string') {
-                    anno[e] = val.replace(/&/g, '&amp;');
-                }
-                else
-                    anno[e] =val;
-
+            var anno =  annos[i].data || annos[i]; // an array of records or anno objects
+            
+            var annoid = anno.id;
+            if (annoid && !anno.isNew() ) {
+                annoid = "<" + annoid + ">";
+            } else {
+                // no id, generate a unique blank node for now (will be replaced on server)
+                annoid = "_:anno" + lore.util.uuid();
             }
 
-            //lore.debug.anno('Serializing annotation to RDF/XML', {anno:anno});
-
-            rdfxml += '<rdf:Description';
-            if (annoOrig.id && !annoOrig.isNew() ) {
-                rdfxml += ' rdf:about="' + anno.id + '"';
+            if (anno.isReply) {
+                rdfdb.add(annoid + " a thread:Reply");
+            } else {
+                rdfdb.add(annoid + " a annotea:Annotation");
             }
-            rdfxml += ">";
-            if (annoOrig.isReply) {
-                rdfxml += '<rdf:type rdf:resource="http://www.w3.org/2001/03/thread#Reply"/>';
+            if (anno.type) {
+                rdfdb.add(annoid + " a <" + anno.type + ">");
             }
-            else {
-                rdfxml += '<rdf:type rdf:resource="' + lore.constants.NAMESPACES["annotea"] +
-                'Annotation"/>';
-            }
-            if (annoOrig.type) {
-                rdfxml += '<rdf:type rdf:resource="' + anno.type + '"/>';
-            }
-
-            if (annoOrig.isReply) {
-                rdfxml += '<inReplyTo xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-
-                var rootannonode = lore.util.findRecordById(store, annoOrig.about);
+            if (anno.isReply) {
+                rdfdb.add(annoid + " thread:inReplyTo <" + anno.about + ">");
+                var rootannonode = lore.util.findRecordById(store, anno.about);
                 if (rootannonode) {
                     while (rootannonode.data.isReply) {
                         rootannonode = lore.util.findRecordById(store, rootannonode.data.about);
                     }
-                    rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + rootannonode.data.id.replace(/&/g,'&amp;') + '"/>';
+                    rdfdb.add(annoid + " thread:root <" + rootannonode.data.id + ">");
+                } else {
+                    rdfdb.add(annoid + " thread:root <" + anno.about + ">");
                 }
-                else {
-                    rdfxml += '<root xmlns="' + lore.constants.NAMESPACES["thread"] + '" rdf:resource="' + anno.about + '"/>';
-                }
-
             } else {
-
-                if (annoOrig.variant) {
-                    rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-                    '" rdf:resource="' +
-                    anno.original + '"/>';
-                    rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-                    '" rdf:resource="' +
-                    anno.variant +
-                    '"/>';
+                if (anno.variant) {
+                    rdfdb.add(annoid + " annotea:annotates <" + anno.original + ">")
+                       .add(annoid + " annotea:annotates <" + anno.variant + ">");
+                } else {
+                    rdfdb.add(annoid + " annotea:annotates <" + anno.resource + ">");
                 }
-                else {
-                    rdfxml += '<annotates xmlns="' + lore.constants.NAMESPACES["annotea"] +
-                    '" rdf:resource="' +
-                    anno.resource +
-                    '"/>';
-                }
-                // also send variant as annotates for backwards compatability with older
-                // clients
-
             }
-
-            if (annoOrig.lang) {
-                rdfxml += '<language xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-                anno.lang +
-                '</language>';
+            if (anno.lang) {
+                rdfdb.add(annoid + " dc:language \"" + anno.lang + "\"");
             }
-            if (annoOrig.title) {
-                rdfxml += '<title xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' + anno.title +
-                '</title>';
+            if (anno.title) {
+                rdfdb.add(annoid + " dc:title \"" + lore.util.escapeQuotes(anno.title) + "\"");
             }
-            if (annoOrig.creator) {
-                rdfxml += '<creator xmlns="' + lore.constants.NAMESPACES["dc10"] + '">' +
-                lore.util.trim(anno.creator) +
-                '</creator>';
+            if (anno.creator) {
+                rdfdb.add(annoid + " dc:creator \"" + lore.util.escapeQuotes(lore.util.trim(anno.creator)) + "\"");
             }
-            if (!annoOrig.created) {
-                anno.created = new Date();
-            }
+            
             if (storeDates) {
-                // TODO: #48 - store as dates not strings
-                rdfxml += '<created xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
-                        + anno.created.toString() + '</created>';
                 anno.modified = new Date();
-                rdfxml += '<modified xmlns="' + lore.constants.NAMESPACES["annotea"] + '">'
-                        + anno.modified.toString() + '</modified>';
+                if (!anno.created) {
+                   anno.created = new Date();
+                }
+                rdfdb.add(annoid + " annotea:created \"" + anno.created.toString() + "\"")
+                    .add(annoid + " annotea:modified \"" + anno.modified.toString() + "\"");
             }
-            if (annoOrig.context) {
-                rdfxml += '<context xmlns="' + lore.constants.NAMESPACES["annotea"] + '">' +
-                lore.util.getContentWindow(window).location.href.replace(/&/g, '&amp;') + "#" + anno.context +
-                '</context>';
+            if (anno.context) {
+                rdfdb.add(annoid + " annotea:context \"" + anno.resource + "#" + lore.util.escapeQuotes(anno.context) + "\"");
             }
 
-            if (annoOrig.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
-                if (annoOrig.originalcontext) {
-                    rdfxml += '<original-context xmlns="' +
-                    lore.constants.NAMESPACES["vanno"] +
-                    '">' +
-                    anno.originalcontext +
-                    '</original-context>';
+            if (anno.type == lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") {
+                if (anno.originalcontext) {
+                    rdfdb.add(annoid + " vanno:original-context \"" + lore.util.escapeQuotes(anno.originalcontext) + "\"");
                 }
-                if (annoOrig.variantcontext) {
-                    rdfxml += '<variant-context xmlns="' +
-                    lore.constants.NAMESPACES["vanno"] +
-                    '">' +
-                    anno.variantcontext +
-                    '</variant-context>';
+                if (anno.variantcontext) {
+                    rdfdb.add(annoid + " vanno:variant-context \"" + lore.util.escapeQuotes(anno.variantcontext) + "\"");
                 }
-                if (annoOrig.variationagent) {
-                    rdfxml += '<variation-agent xmlns="' +
-                    lore.constants.NAMESPACES["vanno"] +
-                    '">' +
-                    anno.variationagent +
-                    '</variation-agent>';
+                if (anno.variationagent) {
+                    rdfdb.add(annoid + " vanno:variation-agent \"" + lore.util.escapeQuotes(anno.variationagent) + "\"");
                 }
-                if (annoOrig.variationplace) {
-                    rdfxml += '<variation-place xmlns="' +
-                    lore.constants.NAMESPACES["vanno"] +
-                    '">' +
-                    anno.variationplace +
-                    '</variation-place>';
+                if (anno.variationplace) {
+                    rdfdb.add(annoid + " vanno:variation-place \"" + lore.util.escapeQuotes(anno.variationplace) + "\"");
                 }
-                if (annoOrig.variationdate) {
-                    rdfxml += '<variation-date xmlns="' +
-                    lore.constants.NAMESPACES["vanno"] +
-                    '">' +
-                    anno.variationdate +
-                    '</variation-date>';
+                if (anno.variationdate) {
+                    rdfdb.add(annoid + " vanno:variation-date \"" + lore.util.escapeQuotes(anno.variationdate) + "\"");
                 }
-                if (annoOrig.original) {
-                    rdfxml += '<original xmlns="' +
-                    lore.constants.NAMESPACES["vanno"] +
-                    '" rdf:resource="' +
-                    anno.original +
-                    '"/>';
+                if (anno.original) {
+                    rdfdb.add(annoid + " vanno:original <" + anno.original + ">");
                 }
-                if (annoOrig.variant) {
-                    rdfxml += '<variant xmlns="' +
-                    lore.constants.NAMESPACES["vanno"] +
-                    '" rdf:resource="' +
-                    anno.variant +
-                    '"/>';
+                if (anno.variant) {
+                    rdfdb.add(annoid + " vanno:variant <" + anno.variant + ">");
                 }
             }
-            if (annoOrig.tags) {
+            if (anno.tags) {
                 var tagsarray = anno.tags.split(',');
-
                 for (var ti = 0; ti < tagsarray.length; ti++) {
-                    var thetag = lore.util.escapeHTML(tagsarray[ti]);
-                    rdfxml += '<tag xmlns="' + lore.constants.NAMESPACES["vanno"] + '"';
+                    var thetag = tagsarray[ti];
                     if (thetag.indexOf("http://") == 0) {
-                        rdfxml += ' resource="' + thetag + '"/>';
+                        thetag = "<" + thetag + ">";
                     }
                     else {
-                        rdfxml += '>' + thetag + '</tag>';
+                        thetag = "\"" + lore.util.escapeQuotes(thetag) + "\"";
                     }
+                    rdfdb.add(annoid + " vanno:tag " + thetag);
+                }
+            }
+            if ( anno.scholarly) {
+                if ( anno.scholarly.references) {
+                    rdfdb.add(annoid + " vanno:references \"" + lore.util.escapeQuotes(anno.scholarly.references) + "\"");
+                }
+
+                if ( anno.scholarly.importance) {
+                    rdfdb.add(annoid + " vanno:importance \"" + lore.util.escapeQuotes(anno.scholarly.importance) + "\"");
                 }
             }
 
-            if ( annoOrig.scholarly) {
-                if ( annoOrig.scholarly.references) {
-                    rdfxml += '<references xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-                    rdfxml += anno.scholarly.references;
-                    rdfxml += '</references>';
-                }
-
-                if ( annoOrig.scholarly.importance) {
-                    rdfxml += '<importance xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-                    rdfxml += anno.scholarly.importance;
-                    rdfxml += '</importance>';
-                }
+            if (anno.privateAnno) {
+                rdfdb.add(annoid + " vanno:private \"true\"");
             }
-
-            if (annoOrig.privateAnno) {
-                rdfxml += '<private xmlns="' + lore.constants.NAMESPACES["vanno"] + '">';
-                rdfxml += 'true';
-                rdfxml += '</private>';
-            }
-//          if (annoOrig.semantictriple) {
-//              var doc = document.implementation.createDocument("","",null);
-//              var semanticContext = doc.createElementNS(lore.constants.NAMESPACES["vanno"], 'semantic-context');
-//              var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['rdf'], 'rdf:Statement');
-//
-//              var rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:subject');
-//              rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.subject);
-//              rdfStatement.appendChild(rdfEl);
-//
-//              rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:predicate');
-//              rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.property);
-//              rdfStatement.appendChild(rdfEl);
-//
-//              rdfEl = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:object');
-//              rdfEl.setAttribute('rdf:resource', annoOrig.semantictriple.object);
-//
-//              semanticContext.appendChild(rdfStatement);
-//              rdfStatement.appendChild(rdfEl);
-//              doc.appendChild(semanticContext);
-//
-//              var serializer = new XMLSerializer();
-//              rdfxml += serializer.serializeToString(doc);
-//          }
-
+       
             if (anno.type.indexOf('Metadata') > -1) {
-                var meta = annoOrig.meta;
-                var doc = document.implementation.createDocument("","",null);
-                var body = doc.createElementNS(lore.constants.NAMESPACES["annotea"], 'body');
-                doc.appendChild(body);
-
-                var rdfDesc = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:Description');
-                body.appendChild(rdfDesc);
-
-                var node = doc.createElementNS(lore.constants.NAMESPACES["http"], 'ContentType');
-                var textNode = doc.createTextNode('application/rdf+xml');
-                node.appendChild(textNode);
-                rdfDesc.appendChild(node);
-
-                body = doc.createElementNS(lore.constants.NAMESPACES["http"], 'Body');
-                body.setAttribute('rdf:parseType', 'Literal');
-                rdfDesc.appendChild(body);
-
-                var pi = doc.createProcessingInstruction('xml-stylesheet', 'href="/auselit/stylesheets/meta-to-html.xslt" type="text/xml"');
-                body.appendChild(pi);
-                node = this.createMetaRDFBody(annoOrig);
-                node = doc.importNode(node, true);
-                body.appendChild(node);
-
+                // Metadata body
+                var bodyid = "_:body" + lore.util.uuid();
                 var serializer = new XMLSerializer();
-                rdfxml += serializer.serializeToString(doc);
+                var metadataBody = serializer.serializeToString(this.createMetaRDFBody(anno));
+                rdfdb.add(annoid + " annotea:body " + bodyid)
+                .add(bodyid + " http:ContentType \"application/rdf+xml\"")
+                        .add(bodyid + " http:Body \"" +
+                                // FIXME: don't hardcode stylesheet
+                             lore.util.escapeQuotes('<?xml-stylesheet href="/auselit/stylesheets/meta-to-html.xslt" type="text/xml"?>' + metadataBody) +
+                             "\""
+                         );
+                                
             } else {
-                if (annoOrig.body != null) {
-                    rdfxml += '<body xmlns="' + lore.constants.NAMESPACES["annotea"] +
-                    '">' + this.createHtmlBodyRDF(anno.title, anno.body) + '</body>';
+                if (anno.body != null) {
+                    // HTML body
+                    var bodyid = "_:body" + lore.util.uuid();
+                    rdfdb.add(annoid + " annotea:body " + bodyid)
+                        .add(bodyid + " http:ContentType \"text/html\"")
+                        .add(bodyid + " http:Body \"" +
+                            lore.util.escapeQuotes('<html xmlns="http://www.w3.org/1999/xhtml"><head><title>' +
+                                (anno.title ? anno.title : 'Annotation') +
+                                '</title></head>' +
+                                '<body>' +
+                                lore.util.sanitizeHTML(anno.body, window) +
+                                '</body></html>')  +
+                             "\""
+                        );
                 }
             }
-
-            rdfxml += '</rdf:Description>';
         }
-        rdfxml += '</rdf:RDF>';
-
-        return rdfxml;
+        return rdfdb.dump({format:'application/rdf+xml',serialize:true});
     },
 
     createMetaRDFBody: function(anno) {
@@ -347,29 +242,7 @@ Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
                 body.appendChild(rdfStatement);
         }
         return node;
-    },
-    /**
-     * Generate RDF for annotation body
-     * @param {String} title Annotation Title
-     * @param {String} body Annotation Body
-     */
-    createHtmlBodyRDF : function (title, body) {
-        return '<rdf:Description>' +
-                '<ContentType xmlns="' +
-                lore.constants.NAMESPACES["http"] +
-                '">text/html</ContentType>' +
-                '<Body xmlns="' +
-                lore.constants.NAMESPACES["http"] +
-                '" rdf:parseType="Literal">' +
-                '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>' +
-                (title ? title : 'Annotation') +
-                '</title></head>' +
-                '<body>' +
-                lore.util.sanitizeHTML(body, window) +
-                '</body></html>' +
-                '</Body></rdf:Description>';
     }
-
 });
 
 
@@ -544,8 +417,6 @@ Ext.apply(lore.anno.OACAnnotationSerializer.prototype, {
                 }
             }
         };
-        //lore.debug.anno("oac serialize to databank", rdfdb);
-        //+ '<rdf:value>' + this.convertImageRangeXpointerToMediaFragment(anno.context) + '</rdf:value>'
         lore.debug.anno("OAC JSON",Ext.util.JSON.encode(rdfdb.dump({format:'application/json', serialize:false})));
         if (sformat == "trig"){
             return result;  
@@ -728,8 +599,7 @@ Ext.apply(lore.anno.WordSerializer.prototype, {
                     rels.push(splittags[j]);
                 }
             }
-            // TODO extract links from body text
-            // TODO original, variant etc
+            // TODO extract links from body text, original, variant etc
         }
         return rels;
     }
