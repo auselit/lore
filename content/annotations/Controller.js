@@ -23,7 +23,7 @@ Ext.apply(lore.anno.Controller.prototype, {
         lore.anno.ui.pageui.setContentsVisible(false);
     },
     /** Helper function to create a view displayed in a closeable tab */
-    openView : function(/*String*/panelid,/*String*/ paneltitle,/*function*/ activationhandler){
+    openView : function(panelid, paneltitle, activationhandler){
         var tab = Ext.getCmp(panelid);
         if (!tab) {
             tab = lore.anno.ui.views.add({
@@ -107,8 +107,6 @@ Ext.apply(lore.anno.Controller.prototype, {
             node.ensureVisible();
             node.select();
         }
-        // Necessary due to a bug in Ext related to drawing text fields
-        // Should be fixed in Ext 3.2.1
         Ext.getCmp("treeview").doLayout();
     },
     /**
@@ -557,11 +555,6 @@ Ext.apply(lore.anno.Controller.prototype, {
         }
     },
 
-
-
-
-
-
     /**
      * Delete the currently selected annotation, requesting confirmation from user
      */
@@ -750,8 +743,6 @@ Ext.apply(lore.anno.Controller.prototype, {
             lore.debug.anno("Error updating saving annotation", e);
         }
     },
-    
-    
     
     /**
      * Add the annotations for the selected search result rows to the Resource Map editor

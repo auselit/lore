@@ -25,7 +25,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 			'load',
 			'remove',
 			'update');
-
 		// Copy configured listeners into *this* object so that the base class's
 		// constructor will add them.
 		this.listeners = config.listeners;
@@ -109,7 +108,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
             this.oacserializer = new lore.anno.OACAnnotationSerializer();
             this.wordserializer = new lore.anno.WordSerializer();
         } catch (e){
-            lore.debug.anno("Error",e);
+            lore.debug.anno("Error in AnnotationManager",e);
         }
 		this.prefs = config.prefs;
 	},
@@ -128,7 +127,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 						return;
                     var prec = lore.util.findRecordById(store, rec.data.about);
 					if ( !prec) {
-						lore.debug.anno("Couldn't find parent to update replies list. Bad");
+                        lore.debug.anno("Error. Couldn't find parent to update replies list");
 						return;
 					}
 
@@ -312,7 +311,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 		// remove the annotation from the server
 
 		if ( anno.data.hasChildren()) {
-            lore.anno.ui.loreError("Annotation not deleted. Delete replies first.");
+            lore.anno.ui.loreError("Annotations with replies can not be deleted. Delete replies or edit annotation body.");
 			return;
 		}
 
@@ -326,7 +325,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 					lore.anno.ui.loreInfo('Annotation deleted');
         };
         var failureCallback = function(config){
-            lore.debug.anno("Annotation deletion failed: " + config.opts.url, config.resp);
+            lore.debug.anno("Error: Annotation deletion failed: " + config.opts.url, config.resp);
             this.fireEvent('servererror', 'delete', config.resp);
                     lore.anno.ui.loreError('Unable to delete annotation');
             
@@ -421,7 +420,6 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                    }
                    annoconfig.tags += tagval;
              });
-             //lore.debug.anno("annoconfig is",annoconfig);
 	         return annoconfig;
 	    };
         var tmp = [];
@@ -815,7 +813,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 				}
                 }
 				catch (e) {
-					lore.debug.anno('error loading body content', e);
+                    lore.debug.anno('Error loading body content', e);
 				}
 			}
 
@@ -835,7 +833,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
 
 			}
             if (this.justUpdated){
-                lore.debug.anno("updated an annotation " + this.justUpdated); 
+                lore.debug.anno("Annotation Manager updated an annotation " + this.justUpdated); 
             }
 			this.fireEvent("annotationsloaded", annotations.length);
 		}

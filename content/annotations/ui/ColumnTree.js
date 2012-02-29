@@ -926,6 +926,3 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
 Ext.reg('columntreepanel', lore.anno.ui.ColumnTree);
 Ext.reg('annocolumntreepanel', lore.anno.ui.AnnoColumnTree);
 Ext.reg('annopagetreenode', lore.anno.ui.AnnoPageTreeNode);
-//Ext.reg('columntreepanel', 'lore.anno.ui.ColumnTree');
-//Ext.reg('annocolumntreepanel', 'lore.anno.ui.AnnoColumnTree');
-//Ext.reg('annopagetreenode', 'lore.anno.ui.AnnoPageTreeNode');

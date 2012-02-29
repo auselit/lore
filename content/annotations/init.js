@@ -4,19 +4,11 @@
  * @class lore.anno.ui
  */
 
-
-/*
- * Namespace Globals
- */
-
-// for reference
-
 /**
  * Reference to the parent view of the annotation view
  * @property topView
  */
 lore.anno.ui.topView = null;
-
 
 // annotation view state
 /**
@@ -124,10 +116,6 @@ lore.anno.ui.init = (function() {
 
    return publicInit;
 })();
-
-
-
-
 
 /**
  * Destroy any objects and undo any changes made to the current content window
