@@ -846,7 +846,7 @@ Ext.apply(lore.anno.Controller.prototype, {
                     lore.anno.controller.selectAndShowNode(rec);
                 } else {
                     lore.anno.ui.loreWarning('Annotation belongs to another user, saving disabled.');
-                    this.selectAndShowNode(rec, true);
+                    lore.anno.controller.selectAndShowNode(rec, true);
                 }
             });
         } catch (e) {
