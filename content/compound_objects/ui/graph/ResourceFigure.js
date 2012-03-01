@@ -120,6 +120,7 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
             var domObj = this.iframearea.firstChild;
             if (domObj) {
                 this.iframearea.removeChild(domObj);
+                delete this.iframe;
             }
             Ext.get(this.iframearea).appendChild({
                 tag: "div",
@@ -369,6 +370,9 @@ Ext.extend(lore.ore.ui.graph.ResourceFigure, lore.ore.ui.graph.EntityFigure, {
             // Google Chrome: use thumbnail preview? e.g. from createVisibleTab if it is open in browser
             
         } else {
+            if (this.iframe){
+                delete this.iframe;
+            }
             // use secure iframe for firefox
             if (theurl.match("^http") == "http") {
                 iframe = lore.util.createSecureIFrame(window.top, theurl);

@@ -447,170 +447,147 @@ lore.anno.ui.PageView.prototype = {
         var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
         var doc = cw.document;
         var imgOnly = doc.contentType.indexOf("image") == 0;
-        
-        var self = this;
-        
+
         var enableFunc = function(){
-        try {
-            var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
-            var doc = cw.document;
-            
-            if ($('span#lore_image_highlighting_inserted', doc).size() > 0) {
-                lore.debug.anno("page already enabled for image annotations");
-                return;
-            }
-            
-            if (doc.getElementsByTagName("head").length == 0) {
-                lore.debug.anno("image selection disabled for page.  Either not a HTML page or no <head> element.");
-                lore.anno.ui.loreWarning("Image selection disabled for page. Not a valid HTML page.");
-                return;
-            }
-            //CSS used by selection library
-            lore.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
-            
-            var im;
-            
-            if (imgOnly) {
-                im = $('img', doc);
-                lore.debug.anno("image only", im);
-            }
-            else 
-                im = $('img[offsetWidth!=0]', doc);
-                        
-            // add a handler that loads image selection capabilites to an image
-            // when the user mouses over an image for the first time. This is because
-            // trying to load the image selection library for each image on page load 
-            // causes browser timeouts for pages with large amounts of image
-     
-            im.each(function(){
-                // minimum area check 
-                if ( parseInt(this.offsetWidth) + parseInt(this.offsetHeight) < 64) 
-                    return;             
+            try {
+                var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
+                var doc = cw.document;
                 
-                $(this).mouseover(function(){
-                    try {
-                        // remove self, as it's once off use of handler
-                        $(this).unbind('mouseover');
-                        
-                        // preload image scale factor
-                        var scale = lore.anno.ui.updateImageData(this, doc);
-                        
-                        // attach image area select handle for image            
-                        $(this).imgAreaSelect({
-                            onSelectEnd: function(img, sel){
-                                if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) {
-                                    return;
-                                }
-                                self.setCurSelImage(img);
-                            },
-                            onSelectStart: function(){
-                                var selObj = cw.getSelection();
-                                selObj.removeAllRanges();
-                                //self.deselectImage();     
-                            },
-                            handles: 'corners',
-                            imageHeight: scale.origHeight,
-                            imageWidth: scale.origWidth
-                        });
-                    } 
-                    catch (ex) {
-                        lore.debug.anno("Error initing image handler", ex);
-                    }
-                });
+                if ($('span#lore_image_highlighting_inserted', doc).size() > 0) {
+                    lore.debug.anno("page already enabled for image annotations");
+                    return;
+                }
                 
-            });
-            var spanEl = doc.createElement('span');
-            lore.util.ignoreElementForXP(spanEl);
-            spanEl.id = 'lore_image_highlighting_inserted';
-            spanEl.style.display = "none";
-            $('body', doc).append(spanEl);
-            
-            lore.debug.anno("image selection enabled for the page");
-            
-            var refreshImageMarkers = function(e){
-                try {
-                    var markers = self.page.curAnnoMarkers.concat(self.page.multiSelAnno);
-                    var d = this.document || this.ownerDocument;
-                    for (var i = 0; i < markers.length; i++) {
-                        var m = markers[i];
-                        try {
-                            if (m.isImageMarker() && (m.target == d)) {
-                                m.update();
-                            }
-                        } catch (ex ) {
-                            //#146 On the failure of one marker this would break the resizing of
-                            // all other markers
-                            lore.debug.anno('Error in refreshImageMarkers', ex);
-                            lore.debug.anno("refreshImageMarkers (marker)", m);
-                        }
-                    }
+                if (doc.getElementsByTagName("head").length == 0) {
+                    lore.debug.anno("image selection disabled for page.  Either not a HTML page or no <head> element.");
+                    lore.anno.ui.loreWarning("Image selection disabled for page. Not a valid HTML page.");
+                    return;
+                }
+                //CSS used by selection library
+                lore.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
+                
+                var im;
+                
+                if (imgOnly) {
+                    im = $('img', doc);
+                    lore.debug.anno("image only", im);
+                }
+                else {
+                    im = $('img[offsetWidth!=0]', doc);
+                } 
+                // add a handler that loads image selection capabilites to an image
+                // when the user mouses over an image for the first time. This is because
+                // trying to load the image selection library for each image on page load 
+                // causes browser timeouts for pages with large amounts of image
+         
+                im.each(function(){
+                    // minimum area check 
+                    if ( parseInt(this.offsetWidth) + parseInt(this.offsetHeight) < 64) 
+                        return;             
                     
-                    im.each(function(){
-                        
-                        var inst = $(this).imgAreaSelectInst();
-                        
-                        if (inst) {
-                            // imgarea supports scaling, but it refreshes it scaling
-                            // in a stupid way, merely calling update will not work
-                            var s = inst.getSelection();
-                            inst.setOptions({});
-                            inst.setSelection(s.x1, s.y1, s.x2, s.y2);
-                            inst.update();
+                    $(this).mouseover(function(){
+                        try {
+                            // remove self, as it's once off use of handler
+                            $(this).unbind('mouseover');
+                            
+                            // preload image scale factor
+                            var scale = lore.anno.ui.updateImageData(this, doc);
+                            
+                            // attach image area select handle for image            
+                            $(this).imgAreaSelect({
+                                onSelectEnd: function(img, sel){
+                                    if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) {
+                                        return;
+                                    }
+                                    lore.anno.ui.pageui.setCurSelImage(img);
+                                },
+                                onSelectStart: function(){
+                                    var selObj = cw.getSelection();
+                                    selObj.removeAllRanges();
+                                },
+                                handles: 'corners',
+                                imageHeight: scale.origHeight,
+                                imageWidth: scale.origWidth
+                            });
+                        } 
+                        catch (ex) {
+                            lore.debug.anno("Error initing image handler", ex);
                         }
                     });
-                } 
-                catch (ex) {
-                    lore.debug.anno("Error occurred during window resize handler", ex);
+                    
+                });
+                var spanEl = doc.createElement('span');
+                lore.util.ignoreElementForXP(spanEl);
+                spanEl.id = 'lore_image_highlighting_inserted';
+                spanEl.style.display = "none";
+                $('body', doc).append(spanEl);
+                
+                lore.debug.anno("image selection enabled for the page");
+                
+                $(lore.util.getContentWindow(window)).bind("resize", lore.anno.ui.pageui.refreshImageMarkers, false);
+                $(lore.anno.ui.topView.getVariationContentWindow()).bind("resize",lore.anno.ui.pageui.refreshImageMarkers,false);
+                $(lore.util.getContentWindow(window)).unload(function(){
+                    try{
+                        var currentURL = this.window.location.href;
+                        // remove event listeners
+                        $('img', this.document).unbind();
+                        $(this.window).unbind("resize");
+                        // remove any cached data for this page
+                        lore.global.store.removeCache(lore.constants.ANNOTATIONS_STORE, currentURL);
+                        lore.global.store.removeCache(lore.constants.HIGHLIGHT_STORE, currentURL);
+                        lore.debug.anno("unload " + currentURL);
+                    } catch (e) {
+                        lore.debug.anno("Error unloading page",e);
+                    }
+                   
+                });
+                
+                if (imgOnly) {
+                    im.click(lore.anno.ui.pageui.refreshImageMarkers);
                 }
-            };
-            lore.util.getContentWindow(window).addEventListener("resize", refreshImageMarkers, false);
-            lore.anno.ui.topView.getVariationContentWindow().addEventListener("resize", refreshImageMarkers, false);
-            if (imgOnly) 
-                im.click(refreshImageMarkers);
-            
-            self.removeResizeListeners = function() {
-                lore.util.getContentWindow(window).removeEventListener("resize", refreshImageMarkers, false);
-                lore.anno.ui.topView.getVariationContentWindow().removeEventListener("resize", refreshImageMarkers, false);
-            };
-            
-        } 
-        catch (ex) {
-            lore.debug.anno("Error occurred enabling image highlighting", ex);
-        }
-    };
-    var ol = function(){
-        cw.removeEventListener("load", ol, true);
-        lore.debug.anno("on load image anno handler called");
-        enableFunc();
-        
-    };
-    
-    // case: dom content not loaded
-    if ( !doc.body) {
-        cw.addEventListener("load", ol, true);
-        return;
-    }
-    
-    var im = $('img', doc);
-
-    if (im.size() > 0) {
-        var contentLoaded = true;
-        if ( imgOnly){
-            contentLoaded = im.get(0).offsetWidth != 0;
-        } else{ 
-            im.each(function () {
-                    contentLoaded = contentLoaded && this.offsetWidth != null;  
-             });
-        }
-        if (!contentLoaded){  // case: dom content loaded, images aren't
-            cw.addEventListener("load", ol, true);
-        } else {            // case: page already loaded (i.e switching between preloaded tabs)
+                lore.anno.ui.pageui.removeResizeListeners = function() {
+                    $(lore.util.getContentWindow(window)).unbind("resize");
+                    $(lore.anno.ui.topView.getVariationContentWindow()).unbind("resize");
+                };
+                
+            } 
+            catch (ex) {
+                lore.debug.anno("Error occurred enabling image highlighting", ex);
+            }
+        };
+        // end enableFunc
+        var ol = function(){
+            cw.removeEventListener("load", ol, true);
+            lore.debug.anno("on load image anno handler called");
             enableFunc();
+        
+        };
+        // case: dom content not loaded
+        if ( !doc.body) {
+            cw.addEventListener("load", ol, true);
+            return;
         }
-    } else { // inject the imgareaselect css anyway because we also use it for tooltips
-        lore.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
-    }
-},
+        
+        var im = $('img', doc);
+    
+        if (im.size() > 0) {
+            var contentLoaded = true;
+            if ( imgOnly){
+                contentLoaded = im.get(0).offsetWidth != 0;
+            } else{ 
+                im.each(function () {
+                        contentLoaded = contentLoaded && this.offsetWidth != null;  
+                 });
+            }
+            if (!contentLoaded){  // case: dom content loaded, images aren't
+                cw.addEventListener("load", ol, true);
+            } else {            // case: page already loaded (i.e switching between preloaded tabs)
+                enableFunc();
+            }
+        } else { // inject the imgareaselect css anyway because we also use it for tooltips
+            lore.util.injectCSS("lib/imgareaselect-deprecated.css", cw,window);
+        }
+    },
 
     /**
      * Handler for when RDFa loaded for page. Currently not used
@@ -810,6 +787,41 @@ lore.anno.ui.PageView.prototype = {
             }
         } catch (e ) {
             lore.debug.anno("Error in updateSplitter", e);
+        }
+    },
+    refreshImageMarkers : function(e){
+        try {
+            var markers = lore.anno.ui.pageui.page.curAnnoMarkers.concat(lore.anno.ui.pageui.page.multiSelAnno);
+            var d = this.document || this.ownerDocument;
+            for (var i = 0; i < markers.length; i++) {
+                var m = markers[i];
+                try {
+                    if (m.isImageMarker() && (m.target == d)) {
+                        m.update();
+                    }
+                } catch (ex ) {
+                    //#146 On the failure of one marker this would break the resizing of
+                    // all other markers
+                    lore.debug.anno('Error in refreshImageMarkers', ex);
+                    lore.debug.anno("refreshImageMarkers (marker)", m);
+                }
+            }
+            
+            im.each(function(){
+                var inst = $(this).imgAreaSelectInst();
+                if (inst) {
+                    // imgarea supports scaling, but it refreshes it scaling
+                    // in a stupid way, merely calling update will not work
+                    var s = inst.getSelection();
+                    inst.setOptions({});
+                    inst.setSelection(s.x1, s.y1, s.x2, s.y2);
+                    inst.update();
+                }
+            });
+            
+        } 
+        catch (ex) {
+            lore.debug.anno("Error occurred during window resize handler", ex);
         }
     }
     
