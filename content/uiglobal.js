@@ -168,7 +168,7 @@ function Views(args){
             }
             else {
                     try {
-                            if (this.views[instId].uninit) {
+                            if (this.views[instId] && this.views[instId].uninit) {
                                             this.views[instId].uninit();
                             }
                     } catch (e) {

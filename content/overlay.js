@@ -124,11 +124,11 @@ try {
                 // By default lore will be enabled in all new windows, but this doesn't work so well in small popups:
                 // Disable lore for windows without location bar & those opened from AustLit maintainer interface
                 var locbar = window.locationbar;
+                this.instId = lore.global.ui.genInstanceID();
                 if (content.location.href.match('austlit.edu.au/common/topicEditing') || !(locbar && locbar.visible)){   
                     document.getElementById('ore-add-icon').hidden=true;
                     document.getElementById('oobStatusBar').hidden=true;
                 } else {
-                    this.instId = lore.global.ui.genInstanceID();
                     lore.global.ui.topWindowView.registerView(this, this.instId);
                     gBrowser.addProgressListener(this.oreLocationListener);
                     window.addEventListener("close", this.onClose, false); 
