@@ -144,7 +144,9 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
               };
               props.setProperty(propData);
           } else {
-              lore.debug.ore("Error : no model or targetPort",this);
+            if (!this.model){
+              lore.debug.ore("Warning : no model for connection",this);
+            }
           }
         } catch (e){
           lore.debug.ore("Error updating model from connection",e);
