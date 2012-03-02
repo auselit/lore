@@ -189,8 +189,7 @@ Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
                 rdfdb.add(annoid + " annotea:body " + bodyid)
                 .add(bodyid + " http:ContentType \"application/rdf+xml\"")
                         .add(bodyid + " http:Body \"" +
-                                // FIXME: don't hardcode stylesheet
-                             lore.util.escapeQuotes('<?xml-stylesheet href="/auselit/stylesheets/meta-to-html.xslt" type="text/xml"?>' + metadataBody) +
+                             lore.util.escapeQuotes( metadataBody) +
                              "\""
                          );
                                 
