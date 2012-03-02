@@ -905,13 +905,28 @@ Ext.apply(lore.ore.Controller.prototype, {
             activeView = Ext.getCmp("remlistview");
             Ext.getCmp("loreviews").activate(activeView);
         }*/
-        
-        //var normalizedUri = lore.util.normalizeUrlEncoding(uri);
-        // temporarily update graphical editor: it should be listening on the model
-        lore.ore.ui.graphicalEditor.addFigure({url:uri, props: props});
-        
-        if (!props || (props && !props.batch)){
-            lore.ore.ui.graphicalEditor.showResource(uri);
+        // TODO: split out these known hosts into separate configuration file
+        if (uri.match("ezproxy") || uri.match("web.ebscohost.com") || uri.match("bishop.slq.qld.gov.au") | uri.match("babel.hathitrust.org")){
+            Ext.Msg.show({
+                title: 'Potentially inaccessible resource',
+                buttons: Ext.MessageBox.OKCANCEL,
+                msg: 'The URL you are adding to the Resource Map may not be persistent or accessible to others.<br/>If possible, please use a DOI or other persistent URL',
+                scope: this,
+                fn : function(btn) {
+                    if (btn == 'ok'){
+                        lore.ore.ui.graphicalEditor.addFigure({url:uri, props: props});
+                        if (!props || (props && !props.batch)){
+                            lore.ore.ui.graphicalEditor.showResource(uri);
+                        }
+                    }
+                }
+            });
+        } else {
+            lore.ore.ui.graphicalEditor.addFigure({url:uri, props: props});
+            
+            if (!props || (props && !props.batch)){
+                lore.ore.ui.graphicalEditor.showResource(uri);
+            }
         }
     },
     /** Remove a resource from the Resource Map
