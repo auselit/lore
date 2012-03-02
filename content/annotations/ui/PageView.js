@@ -207,10 +207,16 @@ lore.anno.ui.PageView.prototype = {
      * @param {Object} img The dom element for the image i.e <img>
      */
     setCurSelImage: function(img){
-        var old = this.page.curImage;
-        this.page.curImage = $(img);
-        if (old && old.context != this.page.curImage.context) {
-            this.deselectImage(old);
+        try{
+            
+            var old = this.page.curImage;
+            this.page.curImage = $(img);
+            
+            if (old && old.context != this.page.curImage.context) {
+                this.deselectImage(old);
+            }
+        } catch (e){
+            lore.debug.anno("Error in setCurSelImage",e);
         }
     },
   
@@ -447,7 +453,6 @@ lore.anno.ui.PageView.prototype = {
         var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
         var doc = cw.document;
         var imgOnly = doc.contentType.indexOf("image") == 0;
-
         var enableFunc = function(){
             try {
                 var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
@@ -470,7 +475,6 @@ lore.anno.ui.PageView.prototype = {
                 
                 if (imgOnly) {
                     im = $('img', doc);
-                    lore.debug.anno("image only", im);
                 }
                 else {
                     im = $('img[offsetWidth!=0]', doc);
@@ -479,7 +483,7 @@ lore.anno.ui.PageView.prototype = {
                 // when the user mouses over an image for the first time. This is because
                 // trying to load the image selection library for each image on page load 
                 // causes browser timeouts for pages with large amounts of image
-         
+                
                 im.each(function(){
                     // minimum area check 
                     if ( parseInt(this.offsetWidth) + parseInt(this.offsetHeight) < 64) 
@@ -496,10 +500,14 @@ lore.anno.ui.PageView.prototype = {
                             // attach image area select handle for image            
                             $(this).imgAreaSelect({
                                 onSelectEnd: function(img, sel){
-                                    if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) {
-                                        return;
+                                    try {
+                                        if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) {
+                                            return;
+                                        }
+                                        lore.anno.ui.pageui.setCurSelImage(img);
+                                    } catch (e){
+                                       lore.debug.anno("Error in onSelectEnd",e);
                                     }
-                                    lore.anno.ui.pageui.setCurSelImage(img);
                                 },
                                 onSelectStart: function(){
                                     var selObj = cw.getSelection();
@@ -524,8 +532,9 @@ lore.anno.ui.PageView.prototype = {
                 
                 lore.debug.anno("image selection enabled for the page");
                 
-                $(lore.util.getContentWindow(window)).bind("resize", lore.anno.ui.pageui.refreshImageMarkers, false);
-                $(lore.anno.ui.topView.getVariationContentWindow()).bind("resize",lore.anno.ui.pageui.refreshImageMarkers,false);
+                $(lore.util.getContentWindow(window)).resize(lore.anno.ui.pageui.refreshImageMarkers);
+                $(lore.anno.ui.topView.getVariationContentWindow()).resize(lore.anno.ui.pageui.refreshImageMarkers);
+                
                 $(lore.util.getContentWindow(window)).unload(function(){
                     try{
                         var currentURL = this.window.location.href;
@@ -791,6 +800,9 @@ lore.anno.ui.PageView.prototype = {
     },
     refreshImageMarkers : function(e){
         try {
+            var cw =  lore.util.getContentWindow(window);
+            var doc = cw.document;
+            var imgOnly = doc.contentType.indexOf("image") == 0;
             var markers = lore.anno.ui.pageui.page.curAnnoMarkers.concat(lore.anno.ui.pageui.page.multiSelAnno);
             var d = this.document || this.ownerDocument;
             for (var i = 0; i < markers.length; i++) {
@@ -800,13 +812,18 @@ lore.anno.ui.PageView.prototype = {
                         m.update();
                     }
                 } catch (ex ) {
-                    //#146 On the failure of one marker this would break the resizing of
+                    // On the failure of one marker this would break the resizing of
                     // all other markers
                     lore.debug.anno('Error in refreshImageMarkers', ex);
                     lore.debug.anno("refreshImageMarkers (marker)", m);
                 }
             }
-            
+            var im; 
+            if (imgOnly) {
+                im = $('img', doc);
+            } else {
+                im = $('img[offsetWidth!=0]', doc);
+            } 
             im.each(function(){
                 var inst = $(this).imgAreaSelectInst();
                 if (inst) {
