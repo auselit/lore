@@ -508,14 +508,23 @@ lore.ore.ui.PropertyEditor = Ext.extend(Ext.grid.EditorGridPanel,{
             }
             var counter = 0;
             var currentCO = lore.ore.cache.getLoadedCompoundObject();
+            var displayedGraphically = function(prop){
+                // TODO check with graphical editor if property is really displayed as rel (may not be for large graph)
+                var srcfig = lore.ore.ui.graphicalEditor.getSelectedFigure();
+                var connfig;
+                /*if (srcfig){
+                    connfig = lore.ore.ui.graphicalEditor.lookupConnection(srcfig.url, theProp.id, theProp.value);
+                }*/
+                return connfig || currentCO.getAggregatedResource(prop.value);
+            }
             for (var i= 0; i < props.length; i++){
                 var thePropValues = props[i];
                 for (var j = 0; j < thePropValues.length; j++){
                     var theProp = thePropValues[j];
                     // don't display properties from layout, ore or rdf namespaces in the editor
-                    // Also, don't display the property in the editor if it should be displayed as a relationship
+                    // Also, don't display the property in the editor if it should is displayed as a relationship
                     if (theProp.prefix != "layout" && theProp.prefix != "ore" && theProp.prefix != "rdf" &&
-                        (!theProp.value || !theProp.value.toString().match("^http://") || !currentCO.getAggregatedResource(theProp.value)) ){
+                        (!theProp.value || !theProp.value.toString().match("^http://") || !displayedGraphically(theProp)) ){
                         counter ++;
                         data.push({
                             id: theProp.prefix + ":" + theProp.name + "_" + j,

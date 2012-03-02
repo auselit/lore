@@ -15,6 +15,7 @@ lore.ore.Controller = function(config){
     this.isDirty = false;
     this.wasClean = true;
     this.MAXSIZE = 300;
+    this.MAXCONNECTIONS = 45;
 };
 Ext.apply(lore.ore.Controller.prototype, {
     /** Respond to authenticated events from AuthManager */
@@ -187,25 +188,27 @@ Ext.apply(lore.ore.Controller.prototype, {
             var aggreurl, remurl;
             var res = remQuery.get(0);
             var isPrivate = false;
+            
             if (res) {
                 remurl = res.rem.value.toString();
                 aggreurl = res.aggre.value.toString();
-                var tmpCO = new lore.ore.model.CompoundObject();
-                tmpCO.load({
+                this.loadedCO = new lore.ore.model.CompoundObject();
+                this.loadedCO.load({
                             format : 'application/rdf+xml',
                             content : rdfDoc
                 });
-                if (tmpCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isLocked")){
+                if (this.loadedCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isLocked")){
                     lore.ore.controller.setLockCompoundObject(true);
                 } else {
                     lore.ore.controller.setLockCompoundObject(false);
                 }
-                isPrivate = tmpCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isPrivate");
-                lore.ore.cache.add(remurl, tmpCO);
+                isPrivate = this.loadedCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isPrivate");
+                lore.ore.cache.add(remurl, this.loadedCO);
                 lore.ore.cache.setLoadedCompoundObjectUri(remurl);
                 lore.ore.cache.setLoadedCompoundObjectIsNew(false);
-                lore.ore.controller.bindViews(tmpCO);
-
+                lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+                lore.ore.controller.bindViews(lore.ore.cache.getLoadedCompoundObject());
+                
             } else {
                 lore.ore.ui.vp.warning("No Resource Map found");
                 lore.debug.ore("Error: no remurl found in RDF", loadedRDF);
@@ -258,7 +261,7 @@ Ext.apply(lore.ore.Controller.prototype, {
                         }
                         counter++;
                     });
-
+            var ccounter = 0;
             // iterate over all predicates to create node connection figures
             loadedRDF.where('?subj ?pred ?obj')
             .filter(function() {
@@ -273,55 +276,23 @@ Ext.apply(lore.ore.Controller.prototype, {
                     return true;
                 }
             }).each(function() {
-                // try to find a node that this predicate applies to
-                var subject = this.subj.value.toString();
-                var coGraph = lore.ore.ui.graphicalEditor.coGraph;
-                var srcfig = lore.ore.ui.graphicalEditor.lookupFigure(subject);
-                if (!srcfig) {
-                    srcfig = lore.ore.ui.graphicalEditor
-                            .lookupFigure(lore.util.unescapeHTML(subject
-                                    .replace('%3C', '<').replace('%3F', '>')));
+                
+                var connopts = {
+                    subject: this.subj.value.toString(),
+                    obj : this.obj.value.toString(),
+                    pred: this.pred.value.toString()
+                };
+                
+                if (ccounter <= lore.ore.controller.MAXCONNECTIONS){
+                    var fig = lore.ore.ui.graphicalEditor.addConnection(connopts);
+                    if (fig) {
+                        ccounter ++;
+                    }
                 }
-                if (srcfig) {
-                    var relresult = lore.util.splitTerm(this.pred.value.toString());
-
-                    var obj = this.obj.value.toString();
-                    var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(obj);
-                    /*
-                     * if (!tgtfig) { tgtfig = lore.ore.ui.graphicalEditor
-                     * .lookupFigure(lore.util.unescapeHTML(obj.replace(
-                     * '%3C', '<').replace('%3F', '>'))); }
-                     */
-                    if (tgtfig && (srcfig != tgtfig)) { // this is a connection
-                        // lore.debug.timeElapsed("connection 1");
-                        try {
-                            var c = new lore.draw2d.Connection();
-                            // lore.debug.timeElapsed("connection 2");
-                            var srcPort = srcfig.getPort("output");
-                            // lore.debug.timeElapsed("connection 3");
-                            var tgtPort = tgtfig.getPort("input");
-                            // lore.debug.timeElapsed("connection 4");
-                            if (srcPort && tgtPort) {
-                                c.setSource(srcPort);
-                                // lore.debug.timeElapsed("connection 5");
-                                c.setTarget(tgtPort);
-                                // lore.debug.timeElapsed("connection 6");
-                                c.setRelationshipType(relresult.ns,
-                                        relresult.term);
-                                // lore.debug.timeElapsed("connection 7");
-                                coGraph.addFigure(c);
-                                // lore.debug.timeElapsed("connection 8");
-                            } else {
-                                throw "source or target port not defined";
-                            }
-                        } catch (e) {
-                            lore.debug.ore("problem creating connection", e);
-                            delete c;
-                        }
-
-                    } 
-                }
+                
+                
             });
+            
             // Temporary workaround to set drawing area size on load
             // problem still exists if a node is added that extends the boundaries
             lore.ore.ui.graphicalEditor.coGraph.resizeMask();
@@ -330,8 +301,11 @@ Ext.apply(lore.ore.Controller.prototype, {
             if (counter > lore.ore.controller.MAXSIZE){
                 lore.ore.ui.vp.error("Resource Map is too big for LORE graphical editor! " + (counter - lore.ore.controller.MAXSIZE) + " resources not shown");
             }
+            if (ccounter >= lore.ore.controller.MAXCONNECTIONS){
+                lore.ore.ui.vp.error("Resource Map has too many connections for graphical editor! Some connections not displayed");
+            }
             Ext.Msg.hide();
-            lore.ore.cache.setLoadedCompoundObjectUri(remurl);
+            
             // preload nested Resource Maps to cache
             lore.ore.cache.cacheNested(loadedRDF, 0);
             
@@ -359,6 +333,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             Ext.getCmp("currentCOSavedMsg").setText("");
             lore.ore.controller.isDirty = false;
             lore.ore.controller.wasClean = true;
+            lore.debug.ore("Loaded Resource Map", lore.ore.cache.getLoadedCompoundObject().serialize('rdf'));
         } catch (e) {
             lore.ore.ui.vp.error("Error loading Resource Map");
             lore.debug.ore("Error loading RDF from string", e);
@@ -517,6 +492,7 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} dontRaise
      */
     newCO : function(dontRaise){
+        delete this.loadedCO;
         this.setLockCompoundObject(false);
         if (lore.ore.ui.topView){
             lore.ore.ui.topView.hideAddIcon(false);
@@ -778,7 +754,7 @@ Ext.apply(lore.ore.Controller.prototype, {
             Ext.Msg.hide();
         }
     },
-    /** Add saved Resource Map to the model lsits
+    /** Add saved Resource Map to the model lists
       * @param {String} remid The Resource Map that was saved */
     afterSaveCompoundObject : function(remid){
         this.isDirty = false;
@@ -930,12 +906,12 @@ Ext.apply(lore.ore.Controller.prototype, {
             Ext.getCmp("loreviews").activate(activeView);
         }*/
         
-        var normalizedUri = lore.util.normalizeUrlEncoding(uri);
+        //var normalizedUri = lore.util.normalizeUrlEncoding(uri);
         // temporarily update graphical editor: it should be listening on the model
-        lore.ore.ui.graphicalEditor.addFigure({url:normalizedUri, props: props});
+        lore.ore.ui.graphicalEditor.addFigure({url:uri, props: props});
         
         if (!props || (props && !props.batch)){
-            lore.ore.ui.graphicalEditor.showResource(normalizedUri);
+            lore.ore.ui.graphicalEditor.showResource(uri);
         }
     },
     /** Remove a resource from the Resource Map

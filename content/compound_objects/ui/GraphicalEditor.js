@@ -330,6 +330,44 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             lore.debug.ore("Error in removeFigure",e);
         }
    },
+   lookupConnection : function(src, pred, target){
+        lore.debug.ore("lookupConnection " + src + " " + pred + " " + target);
+        // TODO : implement this lookup
+   },
+   addConnection : function(opts){
+        try {
+            // try to find a node that the predicate applies to
+            var srcfig = this.lookupFigure(opts.subject);
+            if (!srcfig) {
+                srcfig = lore.ore.ui.graphicalEditor
+                        .lookupFigure(lore.util.unescapeHTML(opts.subject
+                                .replace('%3C', '<').replace('%3F', '>')));
+            }
+            if (srcfig) {
+                var relresult = lore.util.splitTerm(opts.pred);
+                var tgtfig = lore.ore.ui.graphicalEditor.lookupFigure(opts.obj);
+                if (tgtfig && (srcfig != tgtfig)) { 
+                    // this is a connection
+                    var srcPort = srcfig.getPort("output");
+                    var tgtPort = tgtfig.getPort("input");
+                    if (srcPort && tgtPort) {
+                        var c = new lore.draw2d.Connection();
+                        c.setSource(srcPort);
+                        c.setTarget(tgtPort);
+                        c.setRelationshipType(relresult.ns, relresult.term);
+                        c.model = srcfig.model;
+                        this.coGraph.addFigure(c);
+                        return c;
+                    } else {
+                        throw "source or target port not defined";
+                    }
+                }
+            }
+        } catch (e) {
+            lore.debug.ore("problem creating connection", e);
+            delete c;
+        }
+   },
    /**
     * Add a figure to represent a resource to the graphical editor
     * @param {} theURL
