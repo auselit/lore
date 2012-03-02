@@ -37690,8 +37690,8 @@ Ext.extend(Ext.data.XmlWriter, Ext.data.DataWriter, {
     render : function(params, baseParams, data) {
         baseParams = this.toArray(baseParams);
         params.xmlData = this.tpl.applyTemplate({
-            version: this.xmlVersion,
-            encoding: this.xmlEncoding,
+            version: '1.0',
+            encoding: 'ISO-8859-15',
             documentRoot: (baseParams.length > 0 || this.forceDocumentRoot === true) ? this.documentRoot : false,
             record: this.meta.record,
             root: this.root,
