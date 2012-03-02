@@ -757,8 +757,8 @@ Ext.apply(lore.ore.Controller.prototype, {
     /** Add saved Resource Map to the model lists
       * @param {String} remid The Resource Map that was saved */
     afterSaveCompoundObject : function(remid){
-        this.isDirty = false;
-        this.wasClean = true;
+        lore.ore.controller.isDirty = false;
+        lore.ore.controller.wasClean = true;
         // Set lock
         var currentCO = lore.ore.cache.getLoadedCompoundObject();
         if (currentCO.properties.getProperty(lore.constants.NAMESPACES["lorestore"] + "isLocked")){
