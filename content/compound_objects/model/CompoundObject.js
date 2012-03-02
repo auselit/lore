@@ -156,7 +156,6 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
       if (rec) {
         this.aggregatedResourceStore.remove(rec);
       }
-      
     },
     toString : function(){
         return "Resource Map " + this.uri + " contains " + this.aggregatedResourceStore.getTotalCount() + " resources";    
@@ -438,7 +437,12 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
         // Aggregated resources and their properties
         this.aggregatedResourceStore.each(function(rec){
             //uri, title, index, representsCO, representsAnno, isPlaceholder, properties
-            var escapedUri = "<" + lore.util.preEncode(lore.util.normalizeUrlEncoding(rec.get('uri').toString())) + ">";
+            // preencode?
+            var escapedUri =  rec.get('uri').toString();//lore.util.normalizeUrlEncoding(rec.get('uri').toString());
+            if (!escapedUri.match("<")){
+                escapedUri = "<" + escapedUri + ">";
+            }
+            //lore.debug.ore("adding " + escapedUri + " to rdfdb ", rec.get('uri'));
             rdfdb.add(describedAggre + " ore:aggregates " + escapedUri);
             serializeProps(escapedUri, rec.get('properties').getSortedArray());
             if (rec.get('isPlaceholder')){
