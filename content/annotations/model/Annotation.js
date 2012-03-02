@@ -185,8 +185,7 @@ Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
             if (anno.type.indexOf('Metadata') > -1) {
                 // Metadata body
                 var bodyid = "_:body" + lore.util.uuid();
-                var serializer = new XMLSerializer();
-                var metadataBody = serializer.serializeToString(this.createMetaRDFBody(anno));
+                var metadataBody = this.createMetaRDFBody(anno);
                 rdfdb.add(annoid + " annotea:body " + bodyid)
                 .add(bodyid + " http:ContentType \"application/rdf+xml\"")
                         .add(bodyid + " http:Body \"" +
@@ -218,30 +217,16 @@ Ext.apply(lore.anno.RDFAnnotationSerializer.prototype, {
 
     createMetaRDFBody: function(anno) {
         var meta = anno.meta;
-        var metaContext = anno['semanticEntity'];
-        var metaType = anno['semanticEntityType'];
-
-        var doc = document.implementation.createDocument("","",null);
-
-        var node = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:RDF');
-        doc.appendChild(node);
-
-        var body = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:Description');
-        body.setAttributeNS(lore.constants.NAMESPACES["rdf"], 'rdf:about', metaContext);
-        node.appendChild(body);
-
-        var type = doc.createElementNS(lore.constants.NAMESPACES["rdf"], 'rdf:type');
-        type.setAttributeNS(lore.constants.NAMESPACES["rdf"], 'rdf:resource', metaType);
-        body.appendChild(type);
-
+        var metaContext = "<" + anno['semanticEntity'] + ">";
+        var metaType = "<" + anno['semanticEntityType'] + ">";
+        var metardf =  jQuery.rdf.databank();
+        metardf.prefix('austlit', lore.constants.NAMESPACES['austlit']);
+        metardf.add(metaContext + " a " + metaType);
+        
         for (var i = 0; i < meta.length; i++) {
-                // Serialize to RDF/XML elements
-                var rdfStatement = doc.createElementNS(lore.constants.NAMESPACES['austlit'], meta[i].name);
-                var textNode = doc.createTextNode(meta[i].value);
-                rdfStatement.appendChild(textNode);
-                body.appendChild(rdfStatement);
+                metardf.add(metaContext + " austlit:" + meta[i].name + " \"" + lore.util.escapeQuotes(meta[i].value) + "\"");
         }
-        return node;
+        return metardf.dump({format: 'application/rdf+xml', serialize:true});
     }
 });
 

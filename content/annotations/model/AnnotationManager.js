@@ -728,30 +728,36 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
     },
 
     parseMetaBody: function(anno, rdfBody) {
-        var node = rdfBody.getElementsByTagNameNS(lore.constants.NAMESPACES["rdf"], 'Description');
-
-        var meta = [];
-        anno.beginEdit();
-        if (node && node.length > 0) {
-            var semanticEntity = node[0].getAttributeNS(lore.constants.NAMESPACES["rdf"], 'about');
-            anno.set('semanticEntity', semanticEntity);
-
-            var children = node[0].children;
-
-            for (var i = 0; i < children.length; i++) {
-                var metaObj = {};
-                metaObj.name = children[i].localName;
-                metaObj.value = children[i].textContent;
-
-                if (metaObj.name === 'type') {
-                    anno.set('semanticEntityType', children[i].attributes[0].value);
-                } else {
-                    meta.push(metaObj);
-                }
+        try{
+            var rdfdb = jQuery.rdf.databank();
+            for (ns in lore.constants.NAMESPACES){
+                rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
             }
+            rdfdb.load(rdfBody); 
+            var rdfobj = jQuery.rdf({databank: rdfdb});
+            var triples = rdfobj.where('?s ?p ?o');
+            if (triples.size() > 0) {
+                var meta = [];
+                anno.beginEdit();
+                var semanticEntity = triples.get(0).s.value.toString();
+                anno.set('semanticEntity', semanticEntity);
+                triples.each(function(){
+                    var metaObj = {};
+                    metaObj.name = this.p.value.fragment;
+                    metaObj.value = this.o.value.toString();
+    
+                    if (metaObj.name === 'type') {
+                        anno.set('semanticEntityType', metaObj.value);
+                    } else {
+                        meta.push(metaObj);
+                    }
+                });
+                anno.set('meta', meta);
+                anno.endEdit();
+            }
+        } catch (e){
+            lore.debug.anno("Problem parsing meta body",e);
         }
-        anno.set('meta', meta);
-        anno.endEdit();
     },
 
 
