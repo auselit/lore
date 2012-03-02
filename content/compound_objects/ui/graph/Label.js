@@ -14,6 +14,19 @@ lore.draw2d.Label = function(msg) {
     //TODO: enable filtering by direct editing of label
     //Ext.get(this.getHTMLElement()).on('dblclick',this.startEditing,this);
     Ext.get(this.getHTMLElement()).on('dblclick',this.showMenu,this);
+    Ext.get(this.getHTMLElement()).on('contextmenu', 
+        function(ev){
+            lore.debug.ore("label context menu", ev)
+            if (this.parent){
+                this.parent.handleShowContextMenu(ev);
+            }
+        },
+        this,
+        {
+            stopPropagation: true, 
+            preventDefault: true
+        }
+    );
     this.editing = false;
 };
 Ext.extend(lore.draw2d.Label, lore.draw2d.Figure, {
