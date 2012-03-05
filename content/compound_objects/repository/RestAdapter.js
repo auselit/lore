@@ -137,12 +137,14 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
                                 
                             });
                             lore.ore.ui.vp.error('Unable to save to repository: ' + xhr.statusText);
-                            
-                            
-                            var msg = '<b>' + xhr.statusText + '</b>'  
-                                + '<br><br>If an error has occurred, please save your Resource Map to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team with details of the error for further assistance.'
-                                + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';
-                                
+                            var msg;
+                            if (xhr.status == 403) {
+                                msg = "<b>Permission Denied</b><br><br>You are not signed in or you do not own this Resource Map</a>"
+                            } else {
+                                msg = '<b>' + xhr.statusText + '</b>'  
+                                    + '<br><br>If an error has occurred, please save your Resource Map to a file using the <i>Export to RDF/XML</i> menu option from the toolbar and contact the Aus-e-Lit team with details of the error for further assistance.'
+                                    + '<br><br><a style="text-decoration:underline;color:blue" href="#" onclick="lore.util.launchWindow(\'data:text/html,' + encodeURIComponent(xhr.responseText) + '\',false,window)\">View Details</a>';
+                            }
                             Ext.Msg.show({
                                 title : 'Unable to save Resource Map',
                                 buttons : Ext.MessageBox.OK,
