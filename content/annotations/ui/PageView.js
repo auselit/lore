@@ -212,9 +212,11 @@ lore.anno.ui.PageView.prototype = {
             var old = this.page.curImage;
             this.page.curImage = $(img);
             
+            //lore.debug.anno("setCurSelImage",[this.page.curImage.imgAreaSelectInst(), this.page.curImage.context]);
             if (old && old.context != this.page.curImage.context) {
                 this.deselectImage(old);
             }
+            
         } catch (e){
             lore.debug.anno("Error in setCurSelImage",e);
         }
@@ -368,7 +370,6 @@ lore.anno.ui.PageView.prototype = {
             m.show(cc, function (type, node) {
                 node.style.backgroundColor = null;
                 node.style.border = "2px dashed " + cc;
-                lore.debug.anno(node.style.border, node);
                 return node;
             });
             m.tip(rec.data);
@@ -499,6 +500,7 @@ lore.anno.ui.PageView.prototype = {
                             
                             // attach image area select handle for image            
                             $(this).imgAreaSelect({
+                                autoHide: false,
                                 onSelectEnd: function(img, sel){
                                     try {
                                         if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) {
@@ -567,7 +569,6 @@ lore.anno.ui.PageView.prototype = {
         // end enableFunc
         var ol = function(){
             cw.removeEventListener("load", ol, true);
-            lore.debug.anno("on load image anno handler called");
             enableFunc();
         
         };

@@ -193,7 +193,7 @@ lore.anno.ui.Marker.prototype = {
                         }
                     }
                     this.data = null;
-                } else if (this.isImageMarker()) {
+                } else if (this.isImageMarker() && this.data.nodes && this.data.nodes.length > 0) {
                     // set display none and then try to remove from DOM
                     this.data.nodes[0].style.display = 'none';
                     lore.util.removeNodePreserveChildren(this.data.nodes[0], w);
