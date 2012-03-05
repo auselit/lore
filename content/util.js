@@ -100,8 +100,10 @@ lore.util = {
       while(nodeToRemove.firstChild) {
         fragment.appendChild(nodeToRemove.firstChild);
       }
-      nodeToRemove.parentNode.insertBefore(fragment, nodeToRemove);
-      nodeToRemove.parentNode.removeChild(nodeToRemove);
+      if (nodeToRemove.parentNode){
+        nodeToRemove.parentNode.insertBefore(fragment, nodeToRemove);
+        nodeToRemove.parentNode.removeChild(nodeToRemove);
+      }
     },
     
     /**
