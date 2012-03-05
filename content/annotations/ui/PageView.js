@@ -503,7 +503,9 @@ lore.anno.ui.PageView.prototype = {
                                 autoHide: false,
                                 onSelectEnd: function(img, sel){
                                     try {
-                                        if ((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) {
+                                        if (((sel.x1 + sel.x2 + sel.y1 + sel.y2) == 0) || (sel.width <= 1 || sel.height <=1)){
+                                            lore.anno.ui.loreWarning("Unable to use selected image region");
+                                            lore.anno.ui.pageui.deselectImage($(img));
                                             return;
                                         }
                                         lore.anno.ui.pageui.setCurSelImage(img);
