@@ -329,7 +329,7 @@ Ext.apply(lore.anno.Controller.prototype, {
                 nodeLinks.push({
                     title: 'Show Variation Window',
                     iconCls: 'anno-icon-splitter',
-                    jscript: "lore.anno.ui.showSplitter('" + anno.id + "');"
+                    jscript: "try{lore.anno.controller.showSplitter('" + anno.id + "');}catch(e){lore.debug.anno('Error showing variation window',e)}"
                 });
             }
             n.links = nodeLinks;
