@@ -4525,6 +4525,8 @@
         types = resourcesFromCuries(atts['typeof'], this, false, context.curieOptions);
         for (i = 0; i < types.length; i += 1) {
           triple = $.rdf.triple(subject, $.rdf.type, types[i], { source: this[0] });
+          // FIXME: force override of source as this is being st incorrectly in some cases
+          triple.source = this[0];
           triple = callback.call(triple, this.get(0), triple);
           if (triple !== undefined && triple !== null) {
             triples = triples.concat(triple);
