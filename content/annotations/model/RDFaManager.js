@@ -48,7 +48,7 @@ lore.anno.ui.RDFaManager = Ext.extend(Ext.util.Observable, {
                 rdf: myrdf
             };
             
-            lore.debug.anno('gleanRDFa: ' + this.page.rdfa, this.page.rdfa);        
+            lore.debug.anno('gleanRDFa', [doc, this.page.rdfa]);        
         }catch (e) {
             lore.debug.anno("Error gleaning potential rdfa from page", e);
         }

@@ -632,8 +632,9 @@ lore.anno.ui.PageView.prototype = {
      * @param {Object} callback Function called when RDFa element is selected
      */
     turnOnPageTripleMarkers : function(callback) {
+        
         /*
-         * Utility function to Detemerine whether the triple object supplied is a relationship
+         * Utility function to Determine whether the triple object supplied is a relationship
          * understandable by a user
          */
          var isHumanReadableTriple = function( triple) {
@@ -670,78 +671,84 @@ lore.anno.ui.PageView.prototype = {
             }
             return prop;
         };
-        
-        for (var i=0 ; i < this.page.rdfa.triples.length; i++ ) {
-            // for each triple determine whether it's human readable
-            var z = this.page.rdfa.triples[i];
-            if ( !isHumanReadableTriple(z))
-                continue;
-
-            var isObject = z.property.toString().indexOf("#type") != -1;
-            
-            // Don't display fields (not an object)
-            if (!isObject) {
-                continue;
-            }
-            
-            var val = tripleURIToString(z.object);
-
-            
-            //TODO: #194 - This logic should be based on store with valid Objects
-            if ( isObject &&  val !='Agent' && val !='Work'
-             && val != 'Manifestation' && val != 'Expression')
-                continue;
+        try{
+            for (var i=0 ; i < this.page.rdfa.triples.length; i++ ) {
+                // for each triple determine whether it's human readable
+                var z = this.page.rdfa.triples[i];
+                if ( !isHumanReadableTriple(z))
+                    continue;
+    
+                var isObject = z.property.toString().indexOf("#type") != -1;
                 
-            // create a span around the location of the triple that's embedded in the HTML
-            var cw = lore.util.getContentWindow(window);
-            var doc = cw.document;
-            var r = doc.createRange();
-            r.selectNode(z.source);
-            var span = doc.createElement('span');
-            lore.util.ignoreElementForXP(span);
-            r.surroundContents(span);
-                                                                    
-            this.page.metaSelections.push(span);
-
-            var marker = doc.createElement('img');
-            lore.util.ignoreElementForXP(marker);
-            
-            marker.src = isObject ? lore.constants.icons.objectIcon
-                                  : lore.constants.icons.relIcon;
-            marker.setAttribute("rdfIndex", i);
-            span.insertBefore(marker, z.source);
-            var s = $(marker);
-        
-            //tooltip
-            marker.title = isObject ? val : tripleURIToString(z.property);
-            
-            s.hover(function () {
-                $(this).parent().css({
-                    'background-color': 'yellow'
-                });},
-                function() {
-                    $(this).parent().css({
-                        'background-color': ''
-                    });
-                });
-                
-            
-            var t = this;
-            
-            // when triple is selected, call callback and hide triples for the page
-            s.click(function () {
-                try {
-                var triple = t.page.rdfa.triples[this.getAttribute("rdfIndex")];
-                
-                if (typeof(callback) === 'function')
-                    callback(isObject, triple);
-                
-                } catch (e ) {
-                    lore.debug.anno("Error in turnOnPageTripleMarkers",e);
+                // Don't display fields (not an object)
+                if (!isObject) {
+                    continue;
                 }
                 
-                t.turnOffPageTripleMarkers();
-            });
+                var val = tripleURIToString(z.object);
+
+                //TODO: #194 - This logic should be based on store with valid Objects
+                if ( isObject &&  val !='Agent' && val !='Work'
+                 && val != 'Manifestation' && val != 'Expression')
+                    continue;
+                    
+                if (z.source[0] != window.document){ // workaround for error where rdfquery is not correctly identifying source element
+                    
+                    // create a span around the location of the triple that's embedded in the HTML
+                    var cw = lore.util.getContentWindow(window);
+                    var doc = cw.document;
+                    var r = doc.createRange();
+                    r.selectNode(z.source);
+                    
+                    var span = doc.createElement('span');
+                    lore.util.ignoreElementForXP(span);
+                    r.surroundContents(span);
+                                                                            
+                    this.page.metaSelections.push(span);
+        
+                    var marker = doc.createElement('img');
+                    lore.util.ignoreElementForXP(marker);
+                    
+                    marker.src = isObject ? lore.constants.icons.objectIcon
+                                          : lore.constants.icons.relIcon;
+                    marker.setAttribute("rdfIndex", i);
+                    span.insertBefore(marker, z.source);
+                    var s = $(marker);
+                
+                    //tooltip
+                    marker.title = isObject ? val : tripleURIToString(z.property);
+                    
+                    s.hover(function () {
+                        $(this).parent().css({
+                            'background-color': 'yellow'
+                        });},
+                        function() {
+                            $(this).parent().css({
+                                'background-color': ''
+                            });
+                        });
+                        
+                    
+                    var t = this;
+                    
+                    // when triple is selected, call callback and hide triples for the page
+                    s.click(function () {
+                        try {
+                        var triple = t.page.rdfa.triples[this.getAttribute("rdfIndex")];
+                        
+                        if (typeof(callback) === 'function')
+                            callback(isObject, triple);
+                        
+                        } catch (e ) {
+                            lore.debug.anno("Error in turnOnPageTripleMarkers",e);
+                        }
+                        
+                        t.turnOffPageTripleMarkers();
+                    });
+                }
+            }
+        } catch (ex) {
+            lore.debug.anno("Error in turnOnPageTripleMarkers",ex);
         }
     },
     
