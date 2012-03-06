@@ -244,7 +244,9 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                 if (!propData.value) {
                     propData.value = propval;
                 }
-                oThis.properties.setProperty(propData);
+                if (propData.id != lore.constants.NAMESPACES["layout"] + "loreVersion"){
+                    oThis.properties.setProperty(propData);
+                }
                 } catch (e){
                     lore.debug.ore("Error loading Resource Map properties",e);
                 }
@@ -270,15 +272,15 @@ lore.ore.model.CompoundObject = Ext.extend(Ext.util.Observable, {
                         var prefix = lore.constants.nsprefix(propsplit.ns);
                         
                         if ((prefix == "dc" || prefix == "dcterms") && propsplit.term == "title"){
-                            resourceData.title = this.value.value;
+                            resourceData.title = this.value.value.toString();
                         }
                         if (prefix == "layout" && propsplit.term == "orderIndex") {
-                            resourceData.index = this.value.value;
+                            resourceData.index = this.value.value.toString();
                         } 
                         if (prefix == "layout" && propsplit.term == "isPlaceholder") {
-                            resourceData.isPlaceholder = (this.value.value == '1');
+                            resourceData.isPlaceholder = (this.value.value.toString() == '1');
                         }
-                        var theval = this.value.value;
+                        var theval = this.value.value.toString();
                         // TODO: handle bnode values
                        /* if (this.value.type == "bnode"){
                             lore.debug.ore("looking up bnode " + this.value.value)
