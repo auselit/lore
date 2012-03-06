@@ -7,7 +7,7 @@
  */
 
 lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
-    constructor: function() {
+    constructor: function(config) {
         lore.draw2d.Line.call(this);
         this.children = new lore.draw2d.ArrayList();
         this.sourcePort=null;
@@ -20,13 +20,25 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.addFigure(this.label, new lore.draw2d.LabelLocator(this), true);
         this.router = new lore.ore.ui.graph.FanConnectionRouter();
         this.lineSegments = new lore.draw2d.ArrayList();
-        this.setRelationshipType("http://purl.org/dc/elements/1.1/","relation",false);
         this.setColor(this.lineColor);
         this.stroke = 2.5;
         this.sourceDecorator = false;
         this.targetDecorator = true; 
         this.sourceAnchor = new lore.draw2d.ChopboxConnectionAnchor();
         this.targetAnchor = new lore.draw2d.ChopboxConnectionAnchor();
+        
+        if (config && config.sourcePort){
+            this.setSource(config.sourcePort, true);
+        }
+        if (config && config.targetPort){
+            this.setTarget(config.targetPort, true);
+        }
+        
+        if (config && config.edgens && config.edgetype){
+            this.setRelationshipType(config.edgens, config.edgetype, config.symmetric, true);
+        } else {
+            this.setRelationshipType("http://purl.org/dc/elements/1.1/","relation",false);
+        }
     },
     disconnect: function() {
       if(this.sourcePort!=null)
@@ -90,14 +102,18 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
      * @param {} etype
      * @param {} symmetric
      */
-    setRelationshipType : function(enamespace, etype, symmetric) {
-        this.removeFromModel();
+    setRelationshipType : function(enamespace, etype, symmetric, skipUpdateModel) {
+        if (!skipUpdateModel){
+            this.removeFromModel();
+        }
         this.edgetype=etype;
         this.edgens=enamespace;
         this.symmetric = symmetric;
         this.label.setStyledText(etype);
         this.setSourceDecorator(symmetric);
-        this.updateModel();
+        if (!skipUpdateModel){
+            this.updateModel();
+        }
     },
     isResizeable: function(){
       return true;
@@ -121,28 +137,33 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
         this.paint();
     },
     removeFromModel: function(){
-        if (this.model && this.targetPort){
+        if (this.model && this.targetPort && this.edgetype){
             var props = this.model.get('properties');
             var prop = this.edgens + this.edgetype;
             var propIndex = props.findProperty(prop,this.targetPort.getParent().url);
             if (propIndex != -1){
                 props.removeProperty(prop,propIndex);
+            } else {
+                lore.debug.ore("warning could not find connection property to delete " + prop,this);
             }
           }
     },
     updateModel: function(){
         try{
-          if (this.model && this.targetPort){
-              
+          if (this.model && this.targetPort && this.edgetype){
+              var targetVal = this.targetPort.getParent().url;
               var props = this.model.get('properties');
-              var propData = {
+              var propIndex = props.findProperty(prop, targetVal);
+              if (propIndex == -1){
+                var propData = {
                   id: this.edgens + this.edgetype, 
                   ns: this.edgens, 
                   name: this.edgetype, 
-                  value: this.targetPort.getParent().url, 
+                  value: targetVal,
                   prefix: lore.constants.nsprefix(this.edgens)
-              };
-              props.setProperty(propData);
+                };
+                props.setProperty(propData);
+              }
           } else {
             if (!this.model){
               lore.debug.ore("Warning : no model for connection",this);
@@ -320,10 +341,12 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       else
         this.setEndPoint(this.targetPort.getAbsoluteX(), this.targetPort.getAbsoluteY());
     },
-    setSource: function(/*:lore.draw2d.Port*/ port) {
+    setSource: function(/*:lore.draw2d.Port*/ port, skipUpdateModel) {
       if(this.sourcePort!=null) {
         this.sourcePort.detachMoveListener(this);
-        this.removeFromModel();
+        if(!skipUpdateModel){
+            this.removeFromModel();
+        }
         this.model = null;
       }
     
@@ -336,15 +359,19 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       this.fireSourcePortRouteEvent();
       this.sourcePort.attachMoveListener(this);
       this.setStartPoint(port.getAbsoluteX(), port.getAbsoluteY());
-      this.updateModel();
+      if (!skipUpdateModel){
+        this.updateModel();
+      }
     },
     getSource: function(){
       return this.sourcePort;
     },
-    setTarget: function(port){
+    setTarget: function(port, skipUpdateModel){
       if(this.targetPort!=null) {
         this.targetPort.detachMoveListener(this);
-        this.removeFromModel();
+        if (!skipUpdateModel){
+            this.removeFromModel();
+        }
       }
       this.targetPort = port;
       if(this.targetPort==null)
@@ -353,7 +380,9 @@ lore.draw2d.Connection = Ext.extend(lore.draw2d.Line, {
       this.fireTargetPortRouteEvent();
       this.targetPort.attachMoveListener(this);
       this.setEndPoint(port.getAbsoluteX(), port.getAbsoluteY());
-      this.updateModel();
+      if(!skipUpdateModel){
+        this.updateModel();
+      }
     },
     getTarget: function(){
       return this.targetPort;

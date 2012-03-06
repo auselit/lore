@@ -354,20 +354,24 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     var srcPort = srcfig.getPort("output");
                     var tgtPort = tgtfig.getPort("input");
                     if (srcPort && tgtPort) {
-                        var c = new lore.draw2d.Connection();
-                        c.setSource(srcPort);
-                        c.setTarget(tgtPort);
-                        c.setRelationshipType(relresult.ns, relresult.term);
-                        c.model = srcfig.model;
+                        lore.debug.ore("add connection", srcfig.model.get('properties').getSortedArray());
+                        var c = new lore.draw2d.Connection({
+                            sourcePort: srcPort,
+                            targetPort: tgtPort,
+                            edgens: relresult.ns, 
+                            edgetype: relresult.term
+                        });
                         this.coGraph.addFigure(c);
+                        
                         return c;
+                        
                     } else {
                         throw "source or target port not defined";
                     }
                 }
             }
         } catch (e) {
-            lore.debug.ore("problem creating connection", e);
+            lore.debug.ore("Error creating connection", e);
             delete c;
         }
    },
