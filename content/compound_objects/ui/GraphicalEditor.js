@@ -354,7 +354,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
                     var srcPort = srcfig.getPort("output");
                     var tgtPort = tgtfig.getPort("input");
                     if (srcPort && tgtPort) {
-                        lore.debug.ore("add connection", srcfig.model.get('properties').getSortedArray());
                         var c = new lore.draw2d.Connection({
                             sourcePort: srcPort,
                             targetPort: tgtPort,
@@ -382,7 +381,6 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
     * @return {}
     */
    addFigure : function(opts) {
-    lore.debug.ore("addFigure",opts);
     try{
         if (!opts.batch && lore.ore.controller.checkReadOnly()){
             return;

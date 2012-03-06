@@ -895,6 +895,7 @@ Ext.apply(lore.ore.Controller.prototype, {
      * @param {} props
      */
     addResource: function(uri,props){ 
+        lore.debug.ore("add resource " + uri,props);
         // TODO: #34 MVC:  make it add to model and get view to listen on model
         Ext.getCmp("loreviews").activate("drawingarea");
         //var activeView = Ext.getCmp("loreviews").getActiveTab();
