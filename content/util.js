@@ -982,7 +982,10 @@ lore.util = {
             var styleElem = doc.createElement("style");
             styleElem.type = "text/css";
             styleElem.textContent = theCSS;
-            doc.getElementsByTagName("head")[0].appendChild(styleElem); 
+            var head = doc.getElementsByTagName("head")[0];
+            if (head){
+                head.appendChild(styleElem); 
+            }
         } catch (e){
             lore.debug.ui("Error in lore.util.insertSecureFrameStyle:",e)
         }
