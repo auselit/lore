@@ -66,7 +66,7 @@ Ext.ux.plugin.VisibilityMode = function(opt) {
           Ext.override(Ext.Element, {
               setVisible : function(visible, animate){
 
-                if(!animate || !Ext.lib.Anim){
+                //if(!animate || !Ext.lib.Anim){
                     if(this.visibilityMode === Ext.Element.DISPLAY){
                         this.setDisplayed(visible);
                     }else if(this.visibilityMode === Ext.Element.VISIBILITY){
@@ -76,7 +76,8 @@ Ext.ux.plugin.VisibilityMode = function(opt) {
                         this[visible?'removeClass':'addClass'](String(this.visibilityMode));
                     }
 
-                }else{
+                 // Disable animation as it was causing rendering problems
+                /*}else{
                     // closure for composites
                     var dom = this.dom;
                     var visMode = this.visibilityMode;
@@ -100,7 +101,7 @@ Ext.ux.plugin.VisibilityMode = function(opt) {
                                  Ext.get(dom).setOpacity(1);
                              }
                          });
-                }
+                }*/
 
                 return this;
             },
