@@ -756,7 +756,7 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                 anno.endEdit();
             }
         } catch (e){
-            lore.debug.anno("Problem parsing meta body",e);
+            lore.debug.anno("Error parsing meta body",e);
         }
     },
 

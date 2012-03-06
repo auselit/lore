@@ -54,7 +54,7 @@ Ext.apply(lore.anno.repos.RepositoryAdapter.prototype, {
                             Ext.each([resp],success, scope);
                         }
                     } catch (ex){
-                        lore.debug.anno("Problem",ex);
+                        lore.debug.anno("Error after delete annotation",ex);
                     }
                 },
 
@@ -65,7 +65,7 @@ Ext.apply(lore.anno.repos.RepositoryAdapter.prototype, {
                             Ext.each([{resp:resp,opts:opts}],failure,scope)
                         }
                     } catch (ex){
-                        lore.debug.anno("Problem",ex);
+                        lore.debug.anno("Error deleting annotation",ex);
                     }
                 },
                 method: "DELETE",
