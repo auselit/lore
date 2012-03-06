@@ -268,7 +268,7 @@ lore.ore.ui.Viewport = Ext.extend(Ext.Viewport, {
                                        handler: function(){
                                            try{
                                             if (lore.ore.reposAdapter && lore.ore.reposAdapter instanceof lore.ore.repos.RestAdapter){
-                                                 var queryURL = lore.ore.reposAdapter.reposURL + "feed?refersTo=" + lore.ore.controller.currentURL;
+                                                 var queryURL = lore.ore.reposAdapter.reposURL + "feed?refersTo=" + lore.ore.controller.currentURL.replace(/&/g,'%26');
                                                  lore.util.launchTab(queryURL,window);
                                             } else {
                                                  lore.ore.ui.vp.info("Feeds only supported for lorestore: please update your repository preferences.");
