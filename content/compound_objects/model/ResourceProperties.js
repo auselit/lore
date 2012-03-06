@@ -31,9 +31,15 @@ lore.ore.model.ResourceProperties = Ext.extend(Ext.util.Observable, {
                     propValArray[index] = config;
                     retIndex = index;
                 } else {
+                   
+                    var propIndex = this.findProperty(config.id, config.value);
+                    if (propIndex != -1){
+                        lore.debug.ore("warning creating duplicate property",config);
+                    }
                     // add new property
                     propValArray.push(config);
                     retIndex = propValArray.length - 1;
+                    
                 }
             }
             this.fireEvent('propertyChanged', config, retIndex);
