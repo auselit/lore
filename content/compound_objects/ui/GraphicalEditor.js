@@ -188,11 +188,14 @@ lore.ore.ui.GraphicalEditor = Ext.extend(Ext.Panel,{
             //lore.ore.ui.nodegrid.store.removeAll();
             lore.ore.ui.nodegrid.bindModel(null);
             lore.ore.ui.relsgrid.store.removeAll();
+            
             // Background selected: only show Resource Map properties
             lore.ore.ui.relsgrid.collapse();
             lore.ore.ui.grid.expand();
-            //FIXME: gets out of sync when new node is added 
-            //lore.ore.ui.nodegrid.collapse();
+            lore.ore.ui.nodegrid.collapse();
+            
+            // force hide mask (sometimes can still be in place when selection/deselection happens very quickly)
+            this.coGraph.hideMask();
         }
    },
    /**
