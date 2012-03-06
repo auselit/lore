@@ -22,7 +22,7 @@ Ext.apply(lore.draw2d.Command.prototype, {
     }
 });
 /** 
- * @class draw2d.CommandGroup Represents a complex command consisting of a group of other commands
+ * @class lore.draw2d.CommandGroup Represents a complex command consisting of a group of other commands
  * @extends lore.draw2d.Command
  */
 lore.draw2d.CommandGroup = Ext.extend(lore.draw2d.Command, {
