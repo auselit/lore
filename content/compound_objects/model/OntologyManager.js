@@ -227,7 +227,7 @@ Ext.apply(lore.ore.model.OntologyManager.prototype, {
         try {
             var om = this;
             var setCurrent = false;
-            if (!(this.relOntologyURL && this.relOntologyURL == ourl && !isEmptyObject(this.relOntology))){
+            if (!(this.relOntologyURL && this.relOntologyURL == ourl && !lore.util.isEmptyObject(this.relOntology))){
                 setCurrent = true;
                 this.relOntologyURL = ourl;
             }
