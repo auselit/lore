@@ -203,8 +203,11 @@ lore.util = {
     longDate : function ( adate, dateObj ) {
         if (adate instanceof Date){
             return adate.format("D, d M Y H:i:s \\G\\M\\T O");
-        } else {
-            return dateObj.parseDate(adate, 'c').format("D, d M Y H:i:s \\G\\M\\T O");
+        } else if (adate){
+            var theDate = dateObj.parseDate(adate, 'c');
+            if (theDate){
+                return theDate.format("D, d M Y H:i:s \\G\\M\\T O");
+            }
         }
     },
     /**
@@ -216,8 +219,11 @@ lore.util = {
     shortDate : function (adate, dateObj ) {
         if (adate instanceof Date){
             return adate.format("d M Y H:i:s");
-        } else {
-            return dateObj.parseDate(adate, 'c').format("d M Y H:i:s");
+        } else if (adate){
+            var theDate = dateObj.parseDate(adate, 'c');
+            if (theDate){
+                return theDate.format("d M Y H:i:s");
+            }
         }
     },
     
