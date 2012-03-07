@@ -193,7 +193,7 @@ lore.AuthManager = Ext.extend(Ext.util.Observable, {
     popupLoginWindow : function(callback) {
         var oThis = this;
         var doPopup = function(){
-            var winOpts = 'height=250,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
+            var winOpts = 'height=300,width=470,top=200,left=250,resizable,scrollbars=yes,dependent=yes';
             var loginwindow = window.openDialog("chrome://lore/content/loginWindow.xul", 'lore_login_window', winOpts,
                                                 {initURL: oThis.LOGIN_URL,
                                                  logger: lore.debug.ui});
