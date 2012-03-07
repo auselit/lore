@@ -141,16 +141,26 @@ lore.anno.ui.AnnoTreeNode = Ext.extend(Ext.tree.TreeNode, {
         for (var i = 0; i < formatStr.length; i++) {
             switch (formatStr[i]) {
                 case 't':
-                    buf += lore.util.splitTerm(anno.type).term;
+                    if (anno.type){
+                        buf += lore.util.splitTerm(anno.type).term;
+                    }
                     break;
                 case 'c':
-                    buf += anno.creator;
+                    if (anno.creator){
+                        buf += anno.creator;
+                    } else {
+                        buf += "unknown creator"
+                    }
                     break;
                 case 'd':
-                    buf += lore.util.shortDate(anno.created, Date);
+                    if (anno.created){
+                        buf += lore.util.shortDate(anno.created, Date);
+                    }
                     break;
                 case 'D':
-                    buf += lore.util.longDate(anno.created, Date);
+                    if (anno.created){
+                        buf += lore.util.longDate(anno.created, Date);
+                    }
                     break;
                 case 'r':
                     var replies = "";
@@ -883,7 +893,7 @@ lore.anno.ui.AnnoColumnTreeNode = Ext.extend(lore.anno.ui.ColumnTreeNode,{
                 privateAnno: anno.privateAnno,
                 title: getAnnoTitle(anno),
                 uiProvider: lore.anno.ui.ColumnTreeNodeUI,
-                nodeType: anno.type                
+                nodeType: anno.type
             });
             
             
