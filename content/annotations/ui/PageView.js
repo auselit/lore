@@ -348,15 +348,15 @@ lore.anno.ui.PageView.prototype = {
                                 target:cw.document,
                                 page: this.page }));
                     }
-                } catch (e) {
-                    lore.debug.anno("Error highlighting variation context", e);
+                } catch (e1) {
+                    lore.debug.anno("Error highlighting variation context", e1);
                 }
             }
         }
         } catch (e) {
             lore.debug.anno("Error in highlightAnnotation", e);
         }
-        // get colour of highlight and show marker, and generate tooltip
+            // get colour of highlight and show marker, and generate tooltip
         var cc = this.getCreatorColour(rec.data.creator);
         for ( var i=0; i < markers.length;i++) {
             markers[i].show(cc, annoStyle, true);
@@ -374,7 +374,6 @@ lore.anno.ui.PageView.prototype = {
             });
             m.tip(rec.data);
         }
-        
         return markers;
             
     },
