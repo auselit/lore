@@ -87,9 +87,21 @@
         <preferences>
             <preference id="annoserver_pref" name="extensions.lore.annoserver" type="unichar"/>
             <preference id="solr_pref" name="extensions.lore.solr" type="unichar"/>
+            <preference id="annorepostype_pref" name="extensions.lore.annorepostype" type="unichar"/>
         </preferences>
         <label control="text_annoserver">&annoserver.label;</label>
-        <textbox id="text_annoserver" preference="annoserver_pref"/>
+        <menulist editable="true" id="text_annoserver" preference="annoserver_pref"  oncommand="document.getElementById('text_annoserver').value = event.target.value; Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch).setCharPref('extensions.lore.annorepostype','danno');">
+            <menupopup>
+                <menuitem label="Aus-e-Lit" value="http://austlit.edu.au/auselit"/>
+            </menupopup>
+        </menulist>
+        <groupbox>
+            <caption label="&annomodel.label;"/>
+            <radiogroup preference="annorepostype_pref" disabled="false">
+                 <radio id="annotea_radio" label="Annotea" value="danno"/>
+                 <radio id="oac_radio" label="OAC" value="lorestore"/>
+            </radiogroup>
+        </groupbox>
         <label control="text_solr">&solr.label;</label>
         <textbox id="text_solr" preference="solr_pref"/>
    
