@@ -6,9 +6,8 @@
 <vbox>
   <text value="LORE" style="font-weight: bold; font-size: x-large;"/>
   <description style="white-space: pre;">
-LORE (Literature Object Re-use and Exchange)
-enables literary scholars to author, publish and
-search annotations and resource maps.</description>
+LORE (Literature Object Re-use and Exchange) enables literary scholars
+to author, publish and search annotations and resource maps.</description>
   <!--text value="&version; 0.25"/-->
   <separator class="thin"/>
   <text value="&createdBy;" style="font-weight: bold;"/>
@@ -17,7 +16,18 @@ search annotations and resource maps.</description>
   <text value="Aus-e-Lit Project:"/>
   <text class="text-link" onclick="window.open('http://itee.uq.edu.au/~eresearch/projects/aus-e-lit')" value="http://www.itee.uq.edu.au/~eresearch/projects/aus-e-lit/"/>
   <separator class="thin"/>
-  <text value="Credits" style="font-weight: bold;"/>
+  <text value="License:" style="font-weight: bold;"/>
+  <text value="LORE is  free software: you can redistribute it and/or modify it"/>
+  <text value="under the terms of the GNU General Public License (GNU GPL) as "/>
+  <text value="published by the Free Software Foundation, either version 3 of the"/>
+  <text value="License, or (at your option) any later version.  The code is distributed"/>
+  <text value="WITHOUT ANY WARRANTY; without even the implied warranty of"/>
+  <text value="MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."/>
+  <separator class="thin"/>
+  <text value="Source code:" style="font-weight: bold;"/>
+  <text class="text-link" onclick="window.open('https://github.com/auselit/lore')" value="https://github.com/auselit/lore"/>
+  <separator class="thin"/>
+  <text value="Credits:" style="font-weight: bold;"/>
   <text style='font-size:smaller' value="Icons used under a Creative Commons licence:"/>
   <text class="text-link" onclick="window.open('http://famfamfam.com/lab/icons/silk')" style='font-size:smaller' value="Silk : http://famfamfam.com/lab/icons/silk"/>
   <text class="text-link" onclick="window.open('http://p.yusukekamiyamane.com/')" style="font-size:smaller" value="Fugue : http://p.yusukekamiyamane.com/"/>
