@@ -85,7 +85,7 @@ lore.anno.ui.Marker.prototype = {
             lore.util.scrollToElement(this.data.nodes[0], this.target.defaultView);
         }
             
-        this.visible = true;        
+        this.visible = true;     
     },
     /**
      * Scale the image co-ordinates
@@ -293,23 +293,24 @@ lore.anno.ui.Marker.prototype = {
                     children: [d]
                 }    
             );
-
-            $(this.data.nodes[0], doc).simpletip({
-            content: descDom,
-            focus: true,
-            boundryCheck: true,
-            position: 'cursor',
-            onetip: true,       // custom config which specifies only one tip can show at a time
-            closeIcon: lore.constants.icons.closeIcon,  // close button
-            extraStyles: {
-                opacity  : "1",
-                backgroundColor : "#fcfcfc",
-                color : "#51666b",
-                border : '1.5px solid darkgrey',
-                zIndex : "99999",
-                fontFamily : 'sans-serif',
-                minWidth : "250px"}
-            });
+            if (this.data){
+                $(this.data.nodes[0], doc).simpletip({
+                content: descDom,
+                focus: true,
+                boundryCheck: true,
+                position: 'cursor',
+                onetip: true,       // custom config which specifies only one tip can show at a time
+                closeIcon: lore.constants.icons.closeIcon,  // close button
+                extraStyles: {
+                    opacity  : "1",
+                    backgroundColor : "#fcfcfc",
+                    color : "#51666b",
+                    border : '1.5px solid darkgrey',
+                    zIndex : "99999",
+                    fontFamily : 'sans-serif',
+                    minWidth : "250px"}
+                });
+            }
         }
         catch (ex) {
             lore.debug.anno("Error Tip creation failure: " + ex, ex);
