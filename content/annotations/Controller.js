@@ -515,6 +515,8 @@ Ext.apply(lore.anno.Controller.prototype, {
     
             if (!rec) { // only get selected text for annotations that aren't replies
                 try {
+                    // remove highlight before getting selection to avoid errors
+                    lore.anno.ui.pageui.removeHighlightForCurrentAnnotation();
                     // get text currently selected in the content window
                     currentContext = lore.anno.ui.pageui.getCurrentSelection();
                 } catch (e) {
