@@ -449,7 +449,6 @@ lore.anno.ui.PageView.prototype = {
      * @param {Window} contentWindow The content window the enablement applies to
      */
     enableImageHighlighting : function(contentWindow){
-    
         var cw = contentWindow ? contentWindow : lore.util.getContentWindow(window);
         var doc = cw.document;
         var imgOnly = doc.contentType.indexOf("image") == 0;
@@ -535,9 +534,14 @@ lore.anno.ui.PageView.prototype = {
                 
                 lore.debug.anno("image selection enabled for the page");
                 
-                $(lore.util.getContentWindow(window)).resize(lore.anno.ui.pageui.refreshImageMarkers);
-                $(lore.anno.ui.topView.getVariationContentWindow()).resize(lore.anno.ui.pageui.refreshImageMarkers);
-                
+                $(lore.util.getContentWindow(window)).resize(
+                    function(e){
+                        lore.anno.ui.pageui.refreshImageMarkers(e,lore.util.getContentWindow(window));
+                    });
+                $(lore.anno.ui.topView.getVariationContentWindow()).resize(
+                    function(e){
+                        lore.anno.ui.pageui.refreshImageMarkers(e,lore.anno.ui.topView.getVariationContentWindow());
+                    });
                 $(lore.util.getContentWindow(window)).unload(function(){
                     try{
                         var currentURL = this.window.location.href;
@@ -807,9 +811,11 @@ lore.anno.ui.PageView.prototype = {
             lore.debug.anno("Error in updateSplitter", e);
         }
     },
-    refreshImageMarkers : function(e){
+    refreshImageMarkers : function(e,cw){
         try {
-            var cw =  lore.util.getContentWindow(window);
+            if (!cw){
+                cw = lore.util.getContentWindow(window);
+            }
             var doc = cw.document || cw.ownerDocument;
             var imgOnly = doc.contentType.indexOf("image") == 0;
             var markers = lore.anno.ui.pageui.page.curAnnoMarkers.concat(lore.anno.ui.pageui.page.multiSelAnno);
