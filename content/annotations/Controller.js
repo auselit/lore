@@ -735,7 +735,7 @@ Ext.apply(lore.anno.Controller.prototype, {
     
             // if the record isn't found on the current page tree and it's a variation annotation
             // then need update to tree as it should appear once the save is complete
-            var refresh = anno.data.type == (lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") && (lore.anno.ui.findNode(anno.data.id, lore.anno.ui.treeroot) == null);
+            var refresh = anno.data.type == (lore.constants.NAMESPACES["vanno"] + "VariationAnnotation") && (lore.anno.controller.findNode(anno.data.id, lore.anno.ui.treeroot) == null);
     
     
             lore.anno.annoMan.persistAnnotation(anno, this.currentURL, refresh);
