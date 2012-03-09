@@ -14,7 +14,7 @@ lore.ore.ui.SlideShowPanel = Ext.extend(Ext.Panel,{
     },   
     /** jump to slide for a resource from the current Resource Map */
     showResource: function(uri){
-        Ext.getCmp("loreviews").activate(this.id);
+        Ext.getCmp("loreviews").activate("remslideview");
         // The id of the active item has the containing Resource Map appended
         this.setActiveItem(uri + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
     },

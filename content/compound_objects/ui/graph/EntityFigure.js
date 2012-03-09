@@ -581,8 +581,7 @@ Ext.extend(lore.ore.ui.graph.EntityFigure, lore.draw2d.Node, {
                 icon: "../../skin/icons/ore/picture_empty.png",
                 scope: this,
                 handler: function(evt){     
-                    Ext.getCmp("loreviews").activate("remslideview");
-                    Ext.getCmp("newss").setActiveItem(this.url + "_" + lore.ore.cache.getLoadedCompoundObjectUri());
+                    Ext.getCmp("newss").showResource(this.url);
                 }
            });
            menu.add({
