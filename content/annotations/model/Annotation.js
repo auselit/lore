@@ -448,7 +448,8 @@ Ext.apply(lore.anno.WordSerializer.prototype, {
        '<w:document xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">',
        '<w:body>',
        '<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>LORE Annotations</w:t></w:r></w:p>',
-       '<w:p><w:r><w:rPr><w:rStyle w:val="SubtleEmphasis" /> </w:rPr><w:t>Exported for {[this.processHyperlink(lore.anno.controller.currentURL, lore.anno.controller.currentURL)]},<w:br />{[new Date().format("F j, Y, g:i a")]}</w:t></w:r></w:p>',
+       '<w:p><w:r><w:rPr><w:rStyle w:val="SubtleEmphasis" /> </w:rPr><w:t>Exported {[new Date().format("F j, Y, g:i a")]}, for </w:t></w:r></w:p>',
+       '{[this.processHyperlink(lore.anno.controller.currentURL)]}',
        '<tpl for="."><tpl for="data">',
            '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr>',
            '<w:bookmarkStart w:id="{#}" w:name="_Ref{[this.getRef(values.id)]}" />',
@@ -516,17 +517,18 @@ Ext.apply(lore.anno.WordSerializer.prototype, {
                 
                 return result;
             },
-            processHyperlink: function(url, displayText){
-                return lore.util.escapeHTML(url); // FIXME
+            processHyperlink: function(url){
                 var result = "";
                 var linkidx = this.rels.indexOf(url);
                 if (linkidx != -1){
                    var linkid = "rId" + (linkidx + 1); 
-                   result += '<w:hyperlink r:id="' + linkid + '"><w:r><w:rPr><w:rStyle w:val="Hyperlink" /></w:rPr>'
-                        + "<w:t>" + lore.util.escapeHTML(displayText? displayText : url) + "</w:t>" 
-                        + "</w:r></w:hyperlink> ";
+                   result += '<w:p><w:hyperlink r:id="' + linkid + '"><w:r><w:rPr><w:rStyle w:val="Hyperlink" /></w:rPr>'
+                        + "<w:t>" + lore.util.escapeHTML(url) + "</w:t>" 
+                        + "</w:r></w:hyperlink></w:p>";
+                    
+                  
                 } else {
-                    result += "<w:r><w:t>" + (displayText ? displayText + " ": "") + url + "</w:t><w:br/></w:r>";
+                    result += "<w:p><w:pPr><w:pStyle w:val='Subtitle'/></w:pPr><w:r><w:t>" + url + "</w:t><w:br/></w:r></w:p>";
                 }
                 return result;
             },

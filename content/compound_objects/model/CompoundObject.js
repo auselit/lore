@@ -543,7 +543,8 @@ lore.ore.WordSerializer = function(){
 };
 Ext.apply(lore.ore.WordSerializer.prototype, {
     serialize: function(co) {
-        var linksArray = [];// TODO get array of aggregated resources
+        var linksArray = this.extractLinks(co);
+        
         this.docxTemplate.setRels(linksArray);
         var result = {
             docxml: this.docxTemplate.apply(co),
@@ -553,33 +554,27 @@ Ext.apply(lore.ore.WordSerializer.prototype, {
     },
     extractLinks: function(co) {
         var rels = [co.uri];
-        for (var i = 0; i < annos.length; i++){
-            var anno = annos[i];
-            rels.push(anno.data.id);
-            rels.push(anno.data.bodyURL);
-            if (anno.data.tags){
-                var splittags = anno.data.tags.split(',');
-                for (var j = 0; j < splittags.length; j++){
-                    rels.push(splittags[j]);
-                }
-            }
-            // TODO extract links from body text
-            // TODO original, variant etc
-        }
+        co.aggregatedResourceStore.each(function(rec){ 
+            rels.push(rec.get('uri').toString());
+        });
         return rels;
     },
     docxTemplate : new Ext.XTemplate(
        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
        '<w:document xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml">',
        '<w:body>',
-       '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>{[lore.util.escapeHTML(values.properties.getTitle())]}</w:t></w:r></w:p>',
+       '<w:p><w:pPr><w:pStyle w:val="Title"/></w:pPr><w:r><w:t>LORE Resource Map</w:t></w:r></w:p>',
+       '<w:p><w:r><w:rPr><w:rStyle w:val="SubtleEmphasis" /> </w:rPr><w:t>Exported {[new Date().format("F j, Y, g:i a")]}</w:t></w:r></w:p>',
+       '<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>{[values.properties.getTitle().replace(/&/g,"&amp;")]}</w:t></w:r></w:p>',
        '<tpl for="properties">{[this.displayProperties(values)]}</tpl>',
        '<w:p><w:r><w:t> ({[lore.util.escapeHTML(values.uri)]})</w:t></w:r></w:p>\n',
        '<tpl for="aggregatedResourceStore.data.items">',
        '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr>',
-       '<w:r><w:t>{[lore.util.escapeHTML(values.data.title)]}</w:t></w:r>',
+       '<w:r><w:t>{[values.data.title.replace(/&/g,"&amp;")]}</w:t></w:r>',
        '</w:p>\n',
-       '<w:p><w:pPr><w:pStyle w:val="Subtitle"/></w:pPr><w:r><w:t>{[lore.util.escapeHTML(values.data.uri)]}</w:t></w:r></w:p>\n',
+       '<tpl if="values.data.isPlaceholder!=true">',
+       '{[this.processHyperlink(values.data.uri)]}\n',
+       '</tpl>',
        '<tpl for="data.properties">{[this.displayProperties(values)]}</tpl>',
        '</tpl>',
        '</w:body></w:document>',
@@ -608,17 +603,16 @@ Ext.apply(lore.ore.WordSerializer.prototype, {
                 }
                 return result;
             },
-            processHyperlink: function(url, displayText){
-                return lore.util.escapeHTML(url); // FIXME
+            processHyperlink: function(url){
                 var result = "";
                 var linkidx = this.rels.indexOf(url);
-                if (linkidx != -1){
+                if (linkidx && linkidx != -1){
                    var linkid = "rId" + (linkidx + 1); 
-                   result += '<w:hyperlink r:id="' + linkid + '"><w:r><w:rPr><w:rStyle w:val="Hyperlink" /></w:rPr>'
-                        + "<w:t>" + lore.util.escapeHTML(displayText? displayText : url) + "</w:t>" 
-                        + "</w:r></w:hyperlink> ";
+                   result += '<w:p><w:hyperlink r:id="' + linkid + '"><w:r><w:rPr><w:rStyle w:val="Hyperlink" /></w:rPr>'
+                        + "<w:t>" + lore.util.escapeHTML(url) + "</w:t>" 
+                        + "</w:r></w:hyperlink></w:p>";
                 } else {
-                    result += "<w:r><w:t>" + (displayText ? displayText + " ": "") + url + "</w:t><w:br/></w:r>";
+                    result += "<w:p><w:pPr><w:pStyle w:val='Subtitle'/></w:pPr><w:r><w:t>" + lore.util.escapeHTML(url) + "</w:t></w:r></w:p>";
                 }
                 return result;
             },
@@ -653,7 +647,7 @@ Ext.apply(lore.ore.WordSerializer.prototype, {
                              if (i > 0) {
                                  res += ",";
                              }
-                             res += "  " + ccreator[i].value;
+                             res += "  " + ccreator[i].value.replace(/&/g,"&amp;");
                         }
                     }
                     if (ccreated) {
@@ -678,7 +672,7 @@ Ext.apply(lore.ore.WordSerializer.prototype, {
                           res += lore.ore.controller.lookupTag(subj);
                           //this.resourcePropValueTpl.apply({url: subj, title:lore.ore.controller.lookupTag(subj)}); 
                        } else {
-                          res += subj;
+                          res += subj.replace(/&/g,"&amp;");
                        }
                        
                     }
@@ -709,9 +703,9 @@ Ext.apply(lore.ore.WordSerializer.prototype, {
                             if (prop.value.toString().match("^http://") == "http://") {
                                 // property data for related resource: for looking up title etc
                                 var propR = lore.ore.cache.getLoadedCompoundObject().getAggregatedResource(prop.value);
-                                var displayVal = prop.value.toString();
+                                var displayVal = prop.value.toString().replace(/&/g,"&amp;");
                                 if (prop.prefix == "dc" && prop.name == "subject"){
-                                    displayVal = lore.ore.controller.lookupTag(prop.value.toString());
+                                    displayVal = lore.ore.controller.lookupTag(prop.value.toString()).replace(/&/g,"&amp;");
                                 }
                                 if (propR) {
                                     prop.title = propR.get('properties').getTitle() || displayVal;
