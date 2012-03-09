@@ -721,6 +721,9 @@ try {
             }
             return retVal;
         },
+        resizeVariationSplitter: function(){
+            loreoverlay.annoView().resizeVariationSplitter();
+        },
         /**
          * Update the variation splitter
          */
@@ -775,6 +778,7 @@ try {
                     document.getElementById("oobAnnoVarContentBox").setAttribute("collapsed", "true");
                     document.getElementById("oobAnnoVarContentLabel").setAttribute("value", "");
                     document.getElementById("oobAnnoVarContent").setAttribute("src", "about:blank");
+                    loreoverlay.annoView().resizeVariationSplitter();
                 }
             } catch(e) {
                 lore.debug.anno("Error in hideVariationSplitter", e);

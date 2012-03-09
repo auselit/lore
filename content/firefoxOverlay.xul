@@ -9,7 +9,7 @@
 
   <xul:vbox id="appcontent">
     <xul:tabbrowser id="content" flex="3" orient="horizontal" >
-      <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" collapsed = "true" />
+      <xul:splitter id="oobAnnoVarContentSplitter" class="chromeclass-extrachrome" collapsed = "true" oncommand="loreoverlay.resizeVariationSplitter();" />
 	 	
       <xul:vbox id="oobAnnoVarContentBox" flex="1" height="100%" width="300" persist="width" collapsed="true" >
         <xul:toolbar>

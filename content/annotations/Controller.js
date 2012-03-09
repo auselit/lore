@@ -52,6 +52,10 @@ Ext.apply(lore.anno.Controller.prototype, {
             lore.anno.ui.topView.setAnnotationsVisibility(!opts.disable);
         }
     },
+    resizeVariationSplitter : function() {
+        lore.anno.ui.pageui.refreshImageMarkers(null,lore.anno.ui.topView.getVariationContentWindow());
+        lore.anno.ui.pageui.refreshImageMarkers(null, lore.util.getContentWindow(window));
+    },
     /**
      * Hide the variation splitter window
      */
