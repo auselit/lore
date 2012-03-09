@@ -278,7 +278,7 @@ lore.anno.ui.Marker.prototype = {
                         {
                             tag: "div",
                             cls: "loreAnnoTip",
-                            style: ("margin:4px;max-width:" + (cw.innerWidth * 0.75 - 30) + ";max-height: " + (cw.innerHeight * 0.75 - 30) + ";overflow:auto"),
+                            style: ("margin:4px;max-width:" + (cw.innerWidth * 0.75 - 30) + "px;max-height:" + (cw.innerHeight * 0.75 - 30) + "px;overflow:auto"),
                             children: [
                                 lore.anno.ui.genTreeNodeText(annodata),
                                 {tag: "br"}, 
