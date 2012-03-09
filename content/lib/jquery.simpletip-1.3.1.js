@@ -29,7 +29,7 @@
     
 	var closeIcon = null;
 	if ( conf.closeIcon){
-		var closeIcon = jQuery(doc.createElement("img")).css ({'float':'right'});
+		var closeIcon = jQuery(doc.createElement("img")).css ({'float':'right'}).css('position','relative').css('right','0px');
 		closeIcon.attr('src', conf.closeIcon);
 		closeIcon.appendTo(tooltip);
 	} 
