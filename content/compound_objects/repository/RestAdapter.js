@@ -7,7 +7,7 @@ lore.ore.repos.RestAdapter = Ext.extend(lore.ore.repos.RepositoryAdapter,{
     // Override the idPrefix property with a different URL
     constructor : function(baseURL) {
         lore.ore.repos.RestAdapter.superclass.constructor.call(this, baseURL);
-        this.reposURL = baseURL + "/ore/";
+        this.reposURL = baseURL;
         this.idPrefix = this.reposURL;
         this.unsavedSuffix = "#unsaved";
     },

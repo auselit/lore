@@ -580,15 +580,18 @@ try {
                 var annoserver = this.prefs.getCharPref("annoserver");
                 var disable_co = this.prefs.getBoolPref("disable_compoundobjects");
                 var ontologies = this.prefs.getCharPref("ontologies");
+                var annoReposType = this.prefs.getCharPref("annorepostype");
+                var rdfReposType = this.prefs.getCharPref("rdfrepostype");
+                
                 if (ontologies){
                     ontologies = JSON.parse(ontologies);
                 } 
                 loreoverlay.coView().handlePreferencesChanged({
                     creator: this.prefs.getCharPref("dccreator"),
                     relonturl: this.prefs.getCharPref("relonturl"),
-                    rdfrepos: this.prefs.getCharPref("rdfrepos"),
+                    rdfrepos: (rdfReposType == 'lorestore'? annoserver + "/ore/" : this.prefs.getCharPref("rdfrepos")),
                     rdfrepostype: this.prefs.getCharPref("rdfrepostype"),
-                    annoserver: annoserver,
+                    annoserver: annoserver + (annoReposType == "danno" ? "/annotea" : "/oac/"),
                     disable: disable_co,
                     high_contrast: this.prefs.getBoolPref("high_contrast"),
                     ontologies: ontologies,
@@ -606,12 +609,11 @@ try {
         loadAnnotationPrefs: function(){
             if (this.prefs) {
                 var annoserver = this.prefs.getCharPref("annoserver");
-                // FIXME
-                var loginUrl = annoserver.replace('annotea', 'account/loggedIn.html');
-                
+                var loginUrl = annoserver + '/account/loggedIn.html';
+                var annoReposType = this.prefs.getCharPref("annorepostype");
                 loreoverlay.annoView().setPrefs({
                     creator: this.prefs.getCharPref("dccreator"),
-                    url: annoserver + "/annotea",
+                    url: annoserver + (annoReposType == "danno" ? "/annotea" : "/oac/"),
                     solr: this.prefs.getCharPref("solr"),
                     cacheTimeout: (this.prefs.getIntPref("annocache_timeout") * 1000), // to millis
                     loginUrl: loginUrl,

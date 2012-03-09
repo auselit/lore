@@ -5,7 +5,7 @@ lore.anno.repos.DannoAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
     // Override the idPrefix property with a different URL
     constructor : function(baseURL) {
         lore.anno.repos.DannoAdapter.superclass.constructor.call(this, baseURL);
-        this.reposURL = baseURL //+ "/annotea/";
+        this.reposURL = baseURL;
         this.idPrefix = this.reposURL;
         this.unsavedSuffix = "#unsaved";
         lore.debug.anno("created repos adapter",this);

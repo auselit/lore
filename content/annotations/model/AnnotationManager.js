@@ -545,41 +545,28 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
              //lore.debug.anno("annoconfig is",annoconfig);
              return annoconfig;
         };
-        var tmp = [];
-        jQuery(xmldoc).find('graph').each(function(){
+        
+        
             var rdfdb = jQuery.rdf.databank();
             var rdfobj = jQuery.rdf({databank: rdfdb});
             for (ns in lore.constants.NAMESPACES){
                 rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
             }
-            jQuery(this).find('triple').each(function(){
-                var tripleComponents = "";
-                jQuery(this).children().each(function(p){
-                   var tripleComponent = jQuery(this);
-                   if (tripleComponent.context.tagName == "uri" || tripleComponent.context.tagName == "id"){
-                        tripleComponents += "<" + tripleComponent.text() + "> ";
-                   } else if (tripleComponent.context.tagName == "plainLiteral"){
-                        tripleComponents += "\"" + tripleComponent.text() + "\"" ;
-                   }
-                });
-                ///lore.debug.anno("tripleComponents",tripleComponents)
-                rdfobj.add(tripleComponents);
+        rdfobj.load(xmldoc);
                 
-            }); 
-            lore.debug.anno("rdf obj for annotations",rdfobj);
+        
+        // TODO: allow subtypes of oac:annotation
             var annoquery = rdfobj.where('?anno a oac:Annotation');
             var replyquery = rdfobj.where('?anno a oac:Reply');
             var dataquery = rdfobj.where('?anno a oac:DataAnnotation');
             var allAnnos = annoquery.add(replyquery).add(dataquery);
+        var tmp = [];
             allAnnos.each(function(){
-                  lore.debug.anno("processing anno " + this.anno);
                   var annoconfig = processRDFProperties(this.anno, false, rdfobj);
+              lore.debug.anno("anno config for " + this.anno,annoconfig);
                   var tmpAnno = new lore.anno.Annotation(annoconfig);
                   tmp.push(tmpAnno);
             });
-        });
-        
-        lore.debug.anno("create annotations from oac rdf",tmp);
         return tmp.length <= 1 ? tmp : tmp.sort(function(a, b){
             return (a.created > b.created ? 1 : -1);
         });

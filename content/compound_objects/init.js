@@ -119,7 +119,7 @@ lore.ore.ui.init = function() {
                 relonturl: "/content/ontologies/austlitoaiore.owl",
                 rdfrepos: "http://austlit.edu.au/auselit/ore/",
                 rdfrepostype: "lorestore",
-                annoserver: "http://austlit.edu.au/auselit",
+                annoserver: "http://austlit.edu.au/auselit/annotea",
                 disable: false,
                 ontologies: '[{\"nsprefix\":\"austlit\",\"locurl\":\"/content/ontologies/AustLit.xml\",\"useanno\":\"true\",\"useco\":\"false\", \"status\":\"default\", \"nsuri\":\"http://austlit.edu.au/owl/austlit.owl#\"},{\"nsuri\":\"http://RDVocab.info/Elements/\",\"nsprefix\":\"rda\",\"locurl\":\"/content/ontologies/rda.rdf\",\"useanno\":\"false\",\"useco\":\"false\", \"status\":\"custom\"},{\"nsprefix\":\"lore\", \"locurl\":\"/content/ontologies/austlitoaiore.owl\",\"useanno\":\"false\",\"useco\":\"true\", \"status\":\"default\", \"nsuri\":\"http://austlit.edu.au/owl/austlitore.owl#\"}]',
                 editor: "grapheditor"

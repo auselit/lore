@@ -5,7 +5,7 @@ lore.anno.repos.RestAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
     // Override the idPrefix property with a different URL
     constructor : function(baseURL) {
         lore.anno.repos.RestAdapter.superclass.constructor.call(this, baseURL);
-        this.reposURL = baseURL + "/oac/";
+        this.reposURL = baseURL;
         this.idPrefix = this.reposURL;
         this.unsavedSuffix = "#unsaved";
     },
@@ -17,9 +17,6 @@ lore.anno.repos.RestAdapter = Ext.extend(lore.anno.repos.RepositoryAdapter,{
          Ext.Ajax.request({
              url: queryUrl,
              method: "GET",
-             headers: {
-                'Accept': 'application/trix' 
-             },
              disableCaching: false,
              success: function(resp, opt) {
                  try {

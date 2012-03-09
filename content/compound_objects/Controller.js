@@ -1099,11 +1099,7 @@ Ext.apply(lore.ore.Controller.prototype, {
      */
     setRepos : function(/*String*/rdfrepos, /*String*/rdfrepostype, /*String*/annoserver){
         /** The access URL of the annotation server */
-        this.annoServer = annoserver + "/annotea";
-        // if type is lorestore, use danno, ignoring separate rdfrepos pref
-        if (rdfrepostype == "lorestore"){
-            rdfrepos = annoserver + "/ore/";
-        }
+        this.annoServer = annoserver;
         if (lore.ore.reposAdapter && lore.ore.reposAdapter.reposURL == rdfrepos) {
             // same access url, use existing adapter
             return;
@@ -1151,11 +1147,9 @@ Ext.apply(lore.ore.Controller.prototype, {
             }*/
             if (currentCOMsg) {currentCOMsg.setText(Ext.util.Format.ellipsis(title, 50),false);}
         }
-        if (rdfrepostype == 'lorestore') {
-            lore.ore.reposAdapter = new lore.ore.repos.RestAdapter(annoserver);
-        } else {
-            lore.ore.ui.vp.warning("LORE only supports lorestore for Resource Maps");
-        }
+        
+        lore.ore.reposAdapter = new lore.ore.repos.RestAdapter(rdfrepos);
+        
         if (isEmpty) {
                 // empty Resource Map, reset it to get a new id
                 this.newCO(true);
@@ -1164,7 +1158,7 @@ Ext.apply(lore.ore.Controller.prototype, {
         if (lore.ore.historyManager){
             lore.ore.historyManager.onEndUpdateBatch();
         }
-        if (lore.ore.reposAdapter){
+        if (lore.ore.reposAdapter && lore.ore.ui.topView && lore.ore.ui.topView.compoundObjectsVisible()){
             // Trigger reposAdapter to get related Resource Maps
             lore.ore.reposAdapter.getCompoundObjects(this.currentURL);
         }
