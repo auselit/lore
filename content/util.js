@@ -985,12 +985,14 @@ lore.util = {
                 + '.flash-player:before, noembed:before, .media-player:before, object:before, embed:before {font-size: 10px; font-family; Arial, sans-serif; color: #cc0000; content: \"Plugins are disabled in LORE previews. Please open resource in main browser window to view Flash or other embedded content.\" !important; } '
                 + 'object[classid*=":D27CDB6E-AE6D-11cf-96B8-444553540000"],object[codebase*="swflash.cab"],object[data*=".swf"],object[type="application/x-shockwave-flash"],object[src*=".swf"],embed[type="application/x-shockwave-flash"],embed[src*=".swf"],embed[allowscriptaccess],embed[flashvars],embed[wmode]'
                 + '{display:none !important;}';
-            var styleElem = doc.createElement("style");
-            styleElem.type = "text/css";
-            styleElem.textContent = theCSS;
-            var head = doc.getElementsByTagName("head")[0];
-            if (head){
-                head.appendChild(styleElem); 
+            if (doc){
+                var styleElem = doc.createElement("style");
+                styleElem.type = "text/css";
+                styleElem.textContent = theCSS;
+                var head = doc.getElementsByTagName("head")[0];
+                if (head){
+                    head.appendChild(styleElem); 
+                }
             }
         } catch (e){
             lore.debug.ui("Error in lore.util.insertSecureFrameStyle:",e)
