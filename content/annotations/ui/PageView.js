@@ -810,14 +810,13 @@ lore.anno.ui.PageView.prototype = {
     refreshImageMarkers : function(e){
         try {
             var cw =  lore.util.getContentWindow(window);
-            var doc = cw.document;
+            var doc = cw.document || cw.ownerDocument;
             var imgOnly = doc.contentType.indexOf("image") == 0;
             var markers = lore.anno.ui.pageui.page.curAnnoMarkers.concat(lore.anno.ui.pageui.page.multiSelAnno);
-            var d = this.document || this.ownerDocument;
             for (var i = 0; i < markers.length; i++) {
                 var m = markers[i];
                 try {
-                    if (m.isImageMarker() && (m.target == d)) {
+                    if (m.isImageMarker() && (m.target == doc)) {
                         m.update();
                     }
                 } catch (ex ) {
