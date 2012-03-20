@@ -467,7 +467,8 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
              // TODO : constraints, inline body, multiple bodies, multiple targets
              // this only processes first match - ignores duplicate values for title, creator etc
              var aboutanno = rdfobj
-                .where(annoterm + " dcterms:creator ?creator")
+                .where (annoterm + " a ?type")
+                .optional(annoterm + " dcterms:creator ?creator")
                 .optional(annoterm + " dc:language ?lang")
                 .optional(annoterm + " dc:title ?title")
                 .optional(annoterm + " oac:hasTarget ?resource") 
@@ -475,9 +476,10 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                 .optional(annoterm + " dcterms:modified ?modified")
                 .optional(annoterm + " oac:hasBody ?bodyURL")
                 .optional(annoterm + " vanno:private ?privateAnno")
-                .optional(annoterm + " danno:owner ?agentId")
-                .get(0); 
-             // Look for types that aren't annotea:Annotation
+                .optional(annoterm + " danno:owner ?agentId").get(0);
+             lore.debug.anno("about anno ",aboutanno);
+             
+             // Look for non-OAC types (e.g. custom subtypes)
              var annotype = rdfobj
                 .where(annoterm + " a ?type")
                 .filter(function(){
@@ -500,27 +502,28 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
                     annoconfig[p] = lore.util.normalizeXPointer(aboutanno[p].value.toString());
                 } else if ("creator" == p){
                     var creator = aboutanno.creator;
-                    //lore.debug.anno("creator is",creator);
-                    if (creator.type == "uri"){
+                    if (creator.type == "uri"   || creator.type == "bnode"){
                        var creatorData = rdfobj.where(creator.toString() + " foaf:name ?name").get(0);
                        if (creatorData.name){
-                        annoconfig.creator = creatorData.name.value;
+                          annoconfig.creator = creatorData.name.value.toString();
                        } else {
-                        annoconfig.creator = creator.toString();
+                          annoconfig.creator = creator.toString();
                        }
                     } else {
-                        annoconfig.creator = creator;
+                          annoconfig.creator = creator;
                     }
                 } else if ("bodyURL" == p){
                     //lore.debug.anno("body " + aboutanno.bodyURL.toString(),aboutanno.bodyURL);
                     var bodyURL = aboutanno.bodyURL.toString();
                     if (bodyURL && bodyURL.indexOf("urn:uuid") != -1){
-                        var bodyData = rdfobj//.where(bodyURL + " a cnt:ContentAsXML")
-                            .where(bodyURL + " cnt:rest ?bodyContent").get(0).bodyContent.value;
-                        
-                        annoconfig.body = lore.util.sanitizeHTML(bodyData, window);
-                        
-                        //lore.debug.anno("body data is",bodyData);
+                        var bodyData = rdfobj
+                            .where(bodyURL + " cnt:rest ?bodyContent").get(0);
+                        if(bodyData && bodyData.bodyContent){
+                            if (bodyData.bodyContent.type != 'bnode'){
+                                annoconfig.body = lore.util.sanitizeHTML(bodyData.bodyContent.value.toString(), window);
+                            }
+                        }
+                        lore.debug.anno("body data is",bodyData);
                     }
                     annoconfig.bodyLoaded = true;
                     annoconfig.bodyURL = aboutanno.bodyURL.value.toString();
@@ -547,26 +550,26 @@ lore.anno.AnnotationManager = Ext.extend(Ext.util.Observable, {
         };
         
         
-            var rdfdb = jQuery.rdf.databank();
-            var rdfobj = jQuery.rdf({databank: rdfdb});
-            for (ns in lore.constants.NAMESPACES){
-                rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
-            }
+        var rdfdb = jQuery.rdf.databank();
+        var rdfobj = jQuery.rdf({databank: rdfdb});
+        for (ns in lore.constants.NAMESPACES){
+            rdfdb.prefix(ns,lore.constants.NAMESPACES[ns]);
+        }
         rdfobj.load(xmldoc);
-                
+       
         
         // TODO: allow subtypes of oac:annotation
-            var annoquery = rdfobj.where('?anno a oac:Annotation');
-            var replyquery = rdfobj.where('?anno a oac:Reply');
-            var dataquery = rdfobj.where('?anno a oac:DataAnnotation');
-            var allAnnos = annoquery.add(replyquery).add(dataquery);
+        var annoquery = rdfobj.where('?anno a oac:Annotation');
+        var replyquery = rdfobj.where('?anno a oac:Reply');
+        var dataquery = rdfobj.where('?anno a oac:DataAnnotation');
+        var allAnnos = annoquery.add(replyquery).add(dataquery);
         var tmp = [];
-            allAnnos.each(function(){
-                  var annoconfig = processRDFProperties(this.anno, false, rdfobj);
+        allAnnos.each(function(){
+              var annoconfig = processRDFProperties(this.anno, false, rdfobj);
               lore.debug.anno("anno config for " + this.anno,annoconfig);
-                  var tmpAnno = new lore.anno.Annotation(annoconfig);
-                  tmp.push(tmpAnno);
-            });
+              var tmpAnno = new lore.anno.Annotation(annoconfig);
+              tmp.push(tmpAnno);
+        });
         return tmp.length <= 1 ? tmp : tmp.sort(function(a, b){
             return (a.created > b.created ? 1 : -1);
         });
