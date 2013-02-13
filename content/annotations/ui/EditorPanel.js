@@ -42,7 +42,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
                     layout: 'form',
                     autoScroll: true,
                     id: this.genID('annotationsform'),
-                    labelWidth: 85,
+                    labelWidth: 70,
                     defaultType: 'textfield',
                     buttonAlign: 'right',
                     style: 'border:none; margin-left:10px;margin-top:10px;',
@@ -72,9 +72,14 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
                         store: new Ext.data.SimpleStore({
                             fields: ['typename', 'qtype'],
                             // FIXME: don't hardcode annotea annotation types
-                            'data': [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],['Question','http://www.w3.org/2000/10/annotationType#Question' ],
+                            'data': [['Comment', "http://www.w3.org/2000/10/annotationType#Comment"], 
+                            ['Explanation', "http://www.w3.org/2000/10/annotationType#Explanation"],
+                            ['Question','http://www.w3.org/2000/10/annotationType#Question' ],
                             ['Variation', "http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#VariationAnnotation"],
-                            ['Austlit Metadata',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#MetadataAnnotation" ]]
+                            ['Austlit Metadata',"http://austlit.edu.au/ontologies/2009/03/lit-annotation-ns#MetadataAnnotation" ],
+                            ['OAC Annotation','http://www.openannotation.org/ns/Annotation'],
+                            ['OAC Reply','http://www.openannotation.org/ns/Reply']
+                            ]
                         }),
                         valueField: 'qtype',
                         displayField: 'typename',
@@ -92,6 +97,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
                         fieldLabel: 'Creator',
                         name: 'creator',
                         allowBlank: false,
+                        hidden: true,
                         id: this.genID("creator")
                     }, {
                         fieldLabel: 'References',
@@ -140,7 +146,52 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
                             display: 'none'
                         }
                     }, {
-                        fieldLabel: 'Annotates',
+                        id: this.genID('tagselector'),
+                        xtype: 'superboxselect',
+                        allowBlank: true,
+                        msgTarget: 'under',
+                        allowAddNewData: true,
+                        fieldLabel: 'Tags',
+                        emptyText: 'Type or select tags',
+                        resizable: true,
+                        name: 'tags',
+                        pageSize: 10,
+                        store: lore.anno.thesaurus,
+                        removeValuesFromStore: false,
+                        mode: 'local',
+                        displayField: 'name',
+                        valueField: 'id',
+                        extraItemCls: 'x-tag',
+                        styleField: 'style'
+                    }, {
+                        //xtype:'fieldset',
+                       // title: 'Body',
+                        //anchor: '-30 50%',
+                        //defaults: {
+                       //     anchor: '100%' 
+                       // },
+                        //items: [{
+                        xtype: 'htmleditor',
+                        plugins: [new Ext.ux.form.HtmlEditor.Img(),
+                                  new Ext.ux.form.HtmlEditor.ForegroundFontButton()],
+                        name: 'body',
+                        fieldLabel: 'Body',
+                        id: this.genID('body'),
+                        enableFont: false,
+                        enableColors: false,
+                        enableAlignments: false,
+                        enableSourceEdit: false,
+                        anchor: '-30 55%'
+                       // anchor: '100% 100%'
+                       // }]
+                    }, {
+                        id: this.genID('metausergrid'),
+                        name: 'metausergrid',
+                        xtype: "annopropertyeditor",
+                        anchor: '-30',
+                        hidden: true
+                    }, {
+                        fieldLabel: 'Target',
                         name: 'res',
                         id: this.genID("res"),
                         disabled: true,
@@ -152,7 +203,7 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
                             'font-size': '90%'
                         }
                     }, {
-                        fieldLabel: 'Context',
+                        fieldLabel: 'Selector',
                         name: 'context',
                         readOnly: true,
                         hidden: true,
@@ -277,42 +328,6 @@ lore.anno.ui.EditorPanel = Ext.extend(Ext.form.FormPanel, {
                                 scope: this
                             }
                         ]
-                    }, {
-                        id: this.genID('tagselector'),
-                        xtype: 'superboxselect',
-                        allowBlank: true,
-                        msgTarget: 'under',
-                        allowAddNewData: true,
-                        fieldLabel: 'Tags',
-                        emptyText: 'Type or select tags',
-                        resizable: true,
-                        name: 'tags',
-                        pageSize: 10,
-                        store: lore.anno.thesaurus,
-                        removeValuesFromStore: false,
-                        mode: 'local',
-                        displayField: 'name',
-                        valueField: 'id',
-                        extraItemCls: 'x-tag',
-                        styleField: 'style'
-                    }, {
-                        fieldLabel: 'Body',
-                        xtype: 'htmleditor',
-                        plugins: [new Ext.ux.form.HtmlEditor.Img(),
-                                  new Ext.ux.form.HtmlEditor.ForegroundFontButton()],
-                        name: 'body',
-                        id: this.genID('body'),
-                        enableFont: false,
-                        enableColors: false,
-                        enableAlignments: false,
-                        enableSourceEdit: false,
-                        anchor: '-30 65%'
-                    }, {
-                        id: this.genID('metausergrid'),
-                        name: 'metausergrid',
-                        xtype: "annopropertyeditor",
-                        anchor: '-30',
-                        hidden: true
                     }, {
                         fieldLabel: 'Private',
                         xtype: 'checkbox',
